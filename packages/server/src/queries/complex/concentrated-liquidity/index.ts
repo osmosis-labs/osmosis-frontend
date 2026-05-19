@@ -550,37 +550,48 @@ export async function mapGetUserPositions({
   );
 
   // Fetch pools in batch via the sidecar so we can compute each position's
-  // status (in/near/out of range) for sorting and display. If the sidecar is
-  // unavailable, we'll fall back to direct chain RPC per missing pool below
-  // so status still gets computed.
+  // status (in/near/out of range) for sorting and display. If the sidecar
+  // call fails for a partial set we'll fall back to direct chain RPC per
+  // missing pool below; if it fails entirely we bail rather than fan out N
+  // chain queries.
   let poolItems: Pool[] = [];
+  let sidecarFailed = false;
   try {
     const pools = await getPools({ ...params, poolIds: uniquePoolIds });
     poolItems = pools.items;
-  } catch {
-    // sidecar unavailable; fall back to chain queries below
+  } catch (e) {
+    sidecarFailed = true;
+    console.warn(
+      "mapGetUserPositions: sidecar getPools failed, position status will be unranked",
+      e
+    );
   }
 
   const sqrtPriceFromChain = new Map<string, string>();
-  const missingPoolIds = uniquePoolIds.filter(
-    (id) => !poolItems.some((p) => p.id === id)
-  );
-  await Promise.all(
-    missingPoolIds.map(async (poolId) => {
-      try {
-        const { pool } = await queryPoolChain({
-          poolId,
-          chainList: params.chainList,
-        });
-        const concentrated = pool as ConcentratedPoolRawResponse;
-        if (concentrated?.current_sqrt_price) {
-          sqrtPriceFromChain.set(poolId, concentrated.current_sqrt_price);
+  if (!sidecarFailed) {
+    const missingPoolIds = uniquePoolIds.filter(
+      (id) => !poolItems.some((p) => p.id === id)
+    );
+    await Promise.all(
+      missingPoolIds.map(async (poolId) => {
+        try {
+          const { pool } = await queryPoolChain({
+            poolId,
+            chainList: params.chainList,
+          });
+          const concentrated = pool as ConcentratedPoolRawResponse;
+          if (concentrated?.current_sqrt_price) {
+            sqrtPriceFromChain.set(poolId, concentrated.current_sqrt_price);
+          }
+        } catch (e) {
+          console.warn(
+            `mapGetUserPositions: queryPoolChain failed for pool ${poolId}, status will be undefined`,
+            e
+          );
         }
-      } catch {
-        // skip; status will be undefined for this pool
-      }
-    })
-  );
+      })
+    );
+  }
 
   const userPositions = await Promise.all(
     filteredPositions.map(async (position_) => {
@@ -632,6 +643,9 @@ export async function mapGetUserPositions({
             lowerPrice: priceRange[0],
             upperPrice: priceRange[1],
             isFullRange,
+            // Unbonding and superfluid states don't apply to CL positions
+            // on this surface; passing false collapses calcPositionStatus
+            // to the in/near/out-of-range / fullRange outcomes we sort on.
             isSuperfluidStaked: false,
             isSuperfluidUnstaking: false,
             isUnbonding: false,
