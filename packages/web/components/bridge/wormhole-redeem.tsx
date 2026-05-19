@@ -12,11 +12,16 @@ import { Spinner } from "~/components/loaders";
 import { formatPretty } from "~/utils/formatter";
 
 import {
-  connectSlush,
+  type AvailableSuiWallet,
+  connectSuiWallet,
   executeSuiRedeem,
   getCoinTypeForSuiVAA,
-  type SlushConnection,
+  listAvailableSuiWallets,
+  subscribeToAvailableSuiWallets,
+  SUI_WALLET_REGISTRY,
   SuiRedeemError,
+  type SuiWalletConnection,
+  type SuiWalletId,
 } from "./wormhole-sui";
 
 const WORMHOLESCAN_API = "https://api.wormholescan.io/api/v1";
@@ -169,11 +174,10 @@ type RedeemStatus =
   | "error";
 
 const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
-const SLUSH_DOWNLOAD_URL = "https://slush.app/";
 
 type RedeemError =
   | { type: "phantom_not_installed" }
-  | { type: "slush_not_installed" }
+  | { type: "sui_wallet_not_installed" }
   | { type: "generic"; message: string }
   | null;
 
@@ -541,18 +545,20 @@ const NonSolanaRedeemPanel: FunctionComponent<{
 };
 
 /**
- * Native Sui redemption panel using Slush (formerly "Sui Wallet").
- * Speaks the Sui Wallet Standard directly via `@mysten/wallet-standard`,
- * with no React adapter / dApp-kit dependency. If the token type isn't
- * in the known mapping we fall through to `NonSolanaRedeemPanel`.
+ * Native Sui redemption panel. Speaks the Sui Wallet Standard directly
+ * via `@mysten/wallet-standard`, with no React adapter / dApp-kit
+ * dependency. Detects allowlisted Sui wallets (Slush + Phantom) and
+ * lets the user pick which one to connect. If the token type isn't in
+ * the known mapping we fall through to `NonSolanaRedeemPanel`.
  */
 const SuiRedeemPanel: FunctionComponent<{
   operation: OperationData;
   wormholescanHash: string;
   onCopy: (value: string, hint: string) => void;
   copyHint: string | null;
-  slush: SlushConnection | null;
-  onConnectSlush: () => Promise<void>;
+  availableSuiWallets: AvailableSuiWallet[];
+  connection: SuiWalletConnection | null;
+  onConnect: (walletId: SuiWalletId) => Promise<void>;
   onRedeem: () => Promise<void>;
   isLoading: boolean;
   status: RedeemStatus;
@@ -561,8 +567,9 @@ const SuiRedeemPanel: FunctionComponent<{
   wormholescanHash,
   onCopy,
   copyHint,
-  slush,
-  onConnectSlush,
+  availableSuiWallets,
+  connection,
+  onConnect,
   onRedeem,
   isLoading,
   status,
@@ -593,7 +600,8 @@ const SuiRedeemPanel: FunctionComponent<{
   return (
     <div className="space-y-3">
       <div className="rounded-lg border border-ammelia-600 bg-ammelia-600/10 p-3 text-sm text-ammelia-200">
-        VAA is signed and ready. Connect Slush to redeem natively on Sui.
+        VAA is signed and ready. Connect a Sui wallet (Slush or Phantom) to
+        redeem natively on Sui.
       </div>
 
       <div className="rounded-lg bg-osmoverse-900 p-3 text-sm">
@@ -611,20 +619,48 @@ const SuiRedeemPanel: FunctionComponent<{
         </div>
       </div>
 
-      {!slush ? (
-        <button
-          onClick={onConnectSlush}
-          disabled={isLoading}
-          className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Connect Slush Wallet
-        </button>
+      {!connection ? (
+        availableSuiWallets.length === 0 ? (
+          <div className="rounded-lg border border-osmoverse-600 bg-osmoverse-900 p-3 text-sm text-osmoverse-200">
+            <div className="mb-2">
+              No supported Sui wallet detected. Install one to redeem natively:
+            </div>
+            <div className="flex flex-col gap-1">
+              {SUI_WALLET_REGISTRY.map((descriptor) => (
+                <a
+                  key={descriptor.id}
+                  href={descriptor.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-wosmongton-300 underline"
+                >
+                  Install {descriptor.displayName}
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {availableSuiWallets.map((w) => (
+              <button
+                key={w.id}
+                onClick={() => onConnect(w.id)}
+                disabled={isLoading}
+                className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Connect {w.displayName}
+              </button>
+            ))}
+          </div>
+        )
       ) : (
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-osmoverse-900 p-3 text-sm">
-            <span className="text-osmoverse-400">Connected Slush account</span>
+            <span className="text-osmoverse-400">
+              Connected {connection.displayName} account
+            </span>
             <span className="font-mono text-xs text-white-full">
-              {shorten(slush.address)}
+              {shorten(connection.address)}
             </span>
           </div>
           <button
@@ -633,7 +669,7 @@ const SuiRedeemPanel: FunctionComponent<{
             className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {status === "signing"
-              ? "Confirm in Slush..."
+              ? `Confirm in ${connection.displayName}...`
               : status === "submitting"
               ? "Submitting on Sui..."
               : "Redeem on Sui"}
@@ -660,7 +696,11 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [copyHint, setCopyHint] = useState<string | null>(null);
 
   const [phantom, setPhantom] = useState<any>(null);
-  const [slush, setSlush] = useState<SlushConnection | null>(null);
+  const [suiConnection, setSuiConnection] =
+    useState<SuiWalletConnection | null>(null);
+  const [availableSuiWallets, setAvailableSuiWallets] = useState<
+    AvailableSuiWallet[]
+  >(() => listAvailableSuiWallets());
   const [suiRedeemTxDigest, setSuiRedeemTxDigest] = useState<string | null>(
     null
   );
@@ -683,6 +723,10 @@ export const WormholeRedeem: FunctionComponent = () => {
       clearTimeout(timer);
     };
   }, []);
+
+  // Wallet Standard registers asynchronously; subscribe so wallets that
+  // load after this component mounts are picked up without a refresh.
+  useEffect(() => subscribeToAvailableSuiWallets(setAvailableSuiWallets), []);
 
   const lookupTransaction = useCallback(async () => {
     const hash = txHash.trim();
@@ -779,26 +823,29 @@ export const WormholeRedeem: FunctionComponent = () => {
     return () => phantom.off?.("accountChanged", onAccountChanged);
   }, [phantom]);
 
-  const connectSlushWallet = useCallback(async () => {
+  const connectSui = useCallback(async (walletId: SuiWalletId) => {
     setError(null);
     try {
-      const conn = await connectSlush();
-      setSlush(conn);
+      const conn = await connectSuiWallet(walletId);
+      setSuiConnection(conn);
     } catch (err) {
-      if (err instanceof SuiRedeemError && err.code === "slush_not_installed") {
-        setError({ type: "slush_not_installed" });
+      if (
+        err instanceof SuiRedeemError &&
+        err.code === "wallet_not_installed"
+      ) {
+        setError({ type: "sui_wallet_not_installed" });
         return;
       }
       setError({
         type: "generic",
         message:
-          err instanceof Error ? err.message : "Failed to connect Slush.",
+          err instanceof Error ? err.message : "Failed to connect Sui wallet.",
       });
     }
   }, []);
 
   const executeSuiRedeemFlow = useCallback(async () => {
-    if (!operation || !slush) return;
+    if (!operation || !suiConnection) return;
     setError(null);
     setSuiRedeemTxDigest(null);
 
@@ -809,7 +856,7 @@ export const WormholeRedeem: FunctionComponent = () => {
         recipient: operation.content.standarizedProperties.toAddress,
         tokenChain: operation.content.payload.tokenChain,
         tokenAddressHex: operation.content.payload.tokenAddress,
-        slush,
+        connection: suiConnection,
       });
       setStatus("submitting");
       setSuiRedeemTxDigest(digest);
@@ -821,7 +868,7 @@ export const WormholeRedeem: FunctionComponent = () => {
       });
       setStatus("error");
     }
-  }, [operation, slush]);
+  }, [operation, suiConnection]);
 
   const executeRedeem = useCallback(async () => {
     if (!operation || !solanaWallet || !phantom) return;
@@ -964,7 +1011,7 @@ export const WormholeRedeem: FunctionComponent = () => {
         <p className="mb-4 text-sm text-osmoverse-300">
           If you have a Wormhole bridge transfer from Osmosis that is stuck,
           paste the Osmosis transaction hash below to look it up and complete
-          the redemption on Solana (Phantom) or Sui (Slush).
+          the redemption on Solana (Phantom) or Sui (Slush or Phantom).
         </p>
 
         {/* TX Hash Input */}
@@ -1006,17 +1053,22 @@ export const WormholeRedeem: FunctionComponent = () => {
                 </a>{" "}
                 to redeem.
               </>
-            ) : error.type === "slush_not_installed" ? (
+            ) : error.type === "sui_wallet_not_installed" ? (
               <>
-                Slush wallet not detected.{" "}
-                <a
-                  href={SLUSH_DOWNLOAD_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Install Slush
-                </a>{" "}
+                No supported Sui wallet detected. Install{" "}
+                {SUI_WALLET_REGISTRY.map((descriptor, idx) => (
+                  <span key={descriptor.id}>
+                    <a
+                      href={descriptor.downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {descriptor.displayName}
+                    </a>
+                    {idx < SUI_WALLET_REGISTRY.length - 1 ? " or " : ""}
+                  </span>
+                ))}{" "}
                 to redeem on Sui.
               </>
             ) : (
@@ -1198,8 +1250,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                   wormholescanHash={resolvedTxHash}
                   onCopy={copyToClipboard}
                   copyHint={copyHint}
-                  slush={slush}
-                  onConnectSlush={connectSlushWallet}
+                  availableSuiWallets={availableSuiWallets}
+                  connection={suiConnection}
+                  onConnect={connectSui}
                   onRedeem={executeSuiRedeemFlow}
                   isLoading={isLoading}
                   status={status}
@@ -1249,9 +1302,12 @@ export const WormholeRedeem: FunctionComponent = () => {
                   const isSui =
                     operation.content.payload.toChain === CHAIN_ID.sui;
                   if (status === "signing") {
-                    return isSui
-                      ? "Waiting for Slush signature..."
-                      : "Waiting for wallet signature...";
+                    if (isSui) {
+                      return suiConnection
+                        ? `Waiting for ${suiConnection.displayName} signature...`
+                        : "Waiting for your Sui wallet signature...";
+                    }
+                    return "Waiting for wallet signature...";
                   }
                   return isSui
                     ? "Submitting transaction to Sui..."

@@ -1,5 +1,10 @@
+type RegisteredWallet = { name: string };
+const mockGet: jest.Mock<RegisteredWallet[], []> = jest.fn(() => []);
+const mockOn: jest.Mock<() => void, [string, () => void]> = jest.fn(
+  (_event: string, _listener: () => void) => () => undefined
+);
 jest.mock("@mysten/wallet-standard", () => ({
-  getWallets: jest.fn(() => ({ get: () => [] })),
+  getWallets: jest.fn(() => ({ get: mockGet, on: mockOn })),
   signAndExecuteTransaction: jest.fn(),
 }));
 
@@ -9,11 +14,20 @@ import {
   executeSuiRedeem,
   getCoinTypeForSuiVAA,
   getSuiPackageIds,
+  listAvailableSuiWallets,
   normalizeSuiAddress,
+  subscribeToAvailableSuiWallets,
   SuiRedeemError,
   WORMHOLE_SUI_CORE_STATE,
   WORMHOLE_SUI_TOKEN_BRIDGE_STATE,
 } from "../wormhole-sui";
+
+afterEach(() => {
+  mockGet.mockReset();
+  mockGet.mockReturnValue([]);
+  mockOn.mockReset();
+  mockOn.mockImplementation(() => () => undefined);
+});
 
 describe("normalizeSuiAddress", () => {
   it("pads short hex strings to 32 bytes and lowercases", () => {
@@ -202,8 +216,10 @@ describe("executeSuiRedeem", () => {
   const recipient =
     "0xf2433e78acfee6ef5871f79bcb286be32ddd70b4bfe3368ac1f34c5b68b61bb0";
 
-  it("rejects when the connected Slush account isn't the recipient", async () => {
-    const slush = {
+  it("rejects when the connected Sui account isn't the recipient", async () => {
+    const connection = {
+      id: "slush" as const,
+      displayName: "Slush",
       address:
         "0x1111111111111111111111111111111111111111111111111111111111111111",
       wallet: {} as never,
@@ -216,7 +232,7 @@ describe("executeSuiRedeem", () => {
         tokenChain: 21,
         tokenAddressHex:
           "0x9258181f5ceac8dbffb7030890243caed69a9599d2886d957a9cb7656af3bdb3",
-        slush,
+        connection,
         suiClient: {
           getObject: jest.fn(),
           waitForTransaction: jest.fn(),
@@ -225,8 +241,38 @@ describe("executeSuiRedeem", () => {
     ).rejects.toMatchObject({ code: "wallet_mismatch" });
   });
 
+  it("includes the connected wallet displayName in the mismatch error so users know which wallet to switch", async () => {
+    const connection = {
+      id: "phantom" as const,
+      displayName: "Phantom",
+      address:
+        "0x1111111111111111111111111111111111111111111111111111111111111111",
+      wallet: {} as never,
+    };
+
+    await expect(
+      executeSuiRedeem({
+        vaaBase64: btoa("vaa"),
+        recipient,
+        tokenChain: 21,
+        tokenAddressHex:
+          "0x9258181f5ceac8dbffb7030890243caed69a9599d2886d957a9cb7656af3bdb3",
+        connection,
+        suiClient: {
+          getObject: jest.fn(),
+          waitForTransaction: jest.fn(),
+        },
+      })
+    ).rejects.toMatchObject({
+      code: "wallet_mismatch",
+      message: expect.stringContaining("Phantom"),
+    });
+  });
+
   it("rejects unsupported tokens before touching the wallet", async () => {
-    const slush = {
+    const connection = {
+      id: "slush" as const,
+      displayName: "Slush",
       address: recipient,
       wallet: {} as never,
     };
@@ -239,7 +285,7 @@ describe("executeSuiRedeem", () => {
         tokenChain: 2,
         tokenAddressHex:
           "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        slush,
+        connection,
         suiClient: {
           getObject,
           waitForTransaction: jest.fn(),
@@ -247,5 +293,68 @@ describe("executeSuiRedeem", () => {
       })
     ).rejects.toMatchObject({ code: "unsupported_token" });
     expect(getObject).not.toHaveBeenCalled();
+  });
+});
+
+describe("listAvailableSuiWallets", () => {
+  it("returns an empty list when no allowlisted wallets are registered", () => {
+    mockGet.mockReturnValue([{ name: "Random Other Wallet" }]);
+    expect(listAvailableSuiWallets()).toEqual([]);
+  });
+
+  it("returns Slush before Phantom (registry order) when both are present", () => {
+    // Registered in reverse order to make sure we sort by registry, not
+    // by Wallet Standard registration order.
+    mockGet.mockReturnValue([
+      { name: "Phantom" },
+      { name: "Slush" },
+      { name: "Some Other Wallet" },
+    ]);
+
+    const result = listAvailableSuiWallets();
+    expect(result.map((w) => w.id)).toEqual(["slush", "phantom"]);
+    expect(result[0].displayName).toBe("Slush");
+    expect(result[1].displayName).toBe("Phantom");
+  });
+
+  it("accepts Slush legacy names (`Sui Wallet`)", () => {
+    mockGet.mockReturnValue([{ name: "Sui Wallet" }]);
+    const result = listAvailableSuiWallets();
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("slush");
+  });
+});
+
+describe("subscribeToAvailableSuiWallets", () => {
+  it("emits the initial snapshot and re-emits on register/unregister events", () => {
+    const listeners: Record<string, () => void> = {};
+    mockOn.mockImplementation((event: string, listener: () => void) => {
+      listeners[event] = listener;
+      return () => {
+        delete listeners[event];
+      };
+    });
+    mockGet.mockReturnValue([{ name: "Slush" }]);
+
+    const callback = jest.fn();
+    const unsubscribe = subscribeToAvailableSuiWallets(callback);
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback.mock.calls[0][0].map((w: { id: string }) => w.id)).toEqual([
+      "slush",
+    ]);
+
+    // Simulate a Phantom wallet registering after subscription.
+    mockGet.mockReturnValue([{ name: "Slush" }, { name: "Phantom" }]);
+    listeners.register?.();
+
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback.mock.calls[1][0].map((w: { id: string }) => w.id)).toEqual([
+      "slush",
+      "phantom",
+    ]);
+
+    unsubscribe();
+    expect(Object.keys(listeners)).toEqual([]);
   });
 });

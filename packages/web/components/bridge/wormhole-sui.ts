@@ -15,10 +15,13 @@
  * `upgrade_cap.fields.package`, so we don't have to redeploy this
  * widget on Wormhole contract upgrades.
  *
- * Wallet integration is Slush-only via the Wallet Standard protocol
- * (`@mysten/wallet-standard`). Slush is the rebrand of the Mysten Labs
- * "Sui Wallet" extension; older builds still register under the legacy
- * name so we accept both.
+ * Wallet integration speaks the Sui Wallet Standard protocol directly
+ * (`@mysten/wallet-standard`) so we don't ship a dApp-kit dependency.
+ * We allowlist by `wallet.name` rather than auto-connecting to anything
+ * advertised on the page: a malicious extension could otherwise register
+ * a Wallet Standard wallet with a misleading name. Supported wallets are
+ * Slush (formerly "Sui Wallet") and Phantom (which has multi-chain Sui
+ * support); both register via Wallet Standard.
  */
 
 import type { WalletWithRequiredFeatures } from "@mysten/wallet-standard";
@@ -60,30 +63,58 @@ export const KNOWN_SUI_COIN_TYPES: Record<string, string> = {
     "0x2::sui::SUI",
 };
 
-const SLUSH_WALLET_NAMES = new Set([
-  "Slush",
-  "Slush — A Sui wallet",
-  "Sui Wallet",
-]);
+export type SuiWalletId = "slush" | "phantom";
+
+/**
+ * Allowlisted Wallet Standard descriptors. Order matters: we render
+ * connect buttons in this order, with Slush first because it is the
+ * Mysten-native Sui wallet. Phantom is supported as a secondary option
+ * for users who already have it installed for Solana.
+ *
+ * Each descriptor lists every `wallet.name` we accept. Slush has shipped
+ * under multiple names during its rebrand; Phantom only registers as
+ * "Phantom".
+ */
+export interface SuiWalletDescriptor {
+  id: SuiWalletId;
+  displayName: string;
+  walletNames: ReadonlySet<string>;
+  downloadUrl: string;
+}
+
+export const SUI_WALLET_REGISTRY: readonly SuiWalletDescriptor[] = [
+  {
+    id: "slush",
+    displayName: "Slush",
+    walletNames: new Set(["Slush", "Slush — A Sui wallet", "Sui Wallet"]),
+    downloadUrl: "https://slush.app/",
+  },
+  {
+    id: "phantom",
+    displayName: "Phantom",
+    walletNames: new Set(["Phantom"]),
+    downloadUrl: "https://phantom.app/",
+  },
+];
+
+const SUI_WALLET_BY_ID: Record<SuiWalletId, SuiWalletDescriptor> =
+  SUI_WALLET_REGISTRY.reduce((acc, descriptor) => {
+    acc[descriptor.id] = descriptor;
+    return acc;
+  }, {} as Record<SuiWalletId, SuiWalletDescriptor>);
+
+type SuiRedeemErrorCode =
+  | "wallet_not_installed"
+  | "unsupported_token"
+  | "wallet_mismatch"
+  | "wallet_rejected"
+  | "rpc_error";
 
 export class SuiRedeemError extends Error {
   /** Stable error code so the UI can branch without string-matching. */
-  readonly code:
-    | "slush_not_installed"
-    | "unsupported_token"
-    | "wallet_mismatch"
-    | "wallet_rejected"
-    | "rpc_error";
+  readonly code: SuiRedeemErrorCode;
 
-  constructor(
-    code:
-      | "slush_not_installed"
-      | "unsupported_token"
-      | "wallet_mismatch"
-      | "wallet_rejected"
-      | "rpc_error",
-    message: string
-  ) {
+  constructor(code: SuiRedeemErrorCode, message: string) {
     super(message);
     this.code = code;
     this.name = "SuiRedeemError";
@@ -251,42 +282,112 @@ export async function buildSuiRedeemTransaction({
   return tx;
 }
 
-export interface SlushConnection {
+export interface SuiWalletConnection {
+  id: SuiWalletId;
+  displayName: string;
   wallet: WalletWithRequiredFeatures;
   address: string;
 }
 
+export interface AvailableSuiWallet {
+  id: SuiWalletId;
+  displayName: string;
+  wallet: WalletWithRequiredFeatures;
+}
+
+function findWalletByDescriptor(
+  wallets: readonly { name: string }[],
+  descriptor: SuiWalletDescriptor
+): WalletWithRequiredFeatures | undefined {
+  return wallets.find((w) => descriptor.walletNames.has(w.name)) as
+    | WalletWithRequiredFeatures
+    | undefined;
+}
+
 /**
- * Locate the Slush wallet (formerly "Sui Wallet") and request a
- * connection. Throws `slush_not_installed` if the user has no
- * compatible Sui wallet registered via Wallet Standard.
+ * Snapshot the currently registered Sui wallets that match our
+ * allowlist, in registry order (Slush first, Phantom second). Useful
+ * for rendering a one-button-per-wallet picker. Returns an empty
+ * array in non-browser environments so SSR doesn't blow up.
  */
-export async function connectSlush(): Promise<SlushConnection> {
+export function listAvailableSuiWallets(): AvailableSuiWallet[] {
+  if (typeof window === "undefined") return [];
+  const walletsApi = getWallets();
+  const allWallets = walletsApi.get();
+  const result: AvailableSuiWallet[] = [];
+  for (const descriptor of SUI_WALLET_REGISTRY) {
+    const wallet = findWalletByDescriptor(allWallets, descriptor);
+    if (wallet) {
+      result.push({
+        id: descriptor.id,
+        displayName: descriptor.displayName,
+        wallet,
+      });
+    }
+  }
+  return result;
+}
+
+/**
+ * Subscribe to Wallet Standard register/unregister events so the UI
+ * picks up wallets that load after the widget mounts. Returns an
+ * unsubscribe function. The callback fires once immediately with the
+ * current snapshot so callers don't have to also poll separately.
+ */
+export function subscribeToAvailableSuiWallets(
+  callback: (wallets: AvailableSuiWallet[]) => void
+): () => void {
+  if (typeof window === "undefined") return () => {};
+  const walletsApi = getWallets();
+  const notify = () => callback(listAvailableSuiWallets());
+  const unsubRegister = walletsApi.on("register", notify);
+  const unsubUnregister = walletsApi.on("unregister", notify);
+  notify();
+  return () => {
+    unsubRegister();
+    unsubUnregister();
+  };
+}
+
+/**
+ * Locate the requested Sui wallet via Wallet Standard and request a
+ * connection. Throws `wallet_not_installed` if no compatible wallet
+ * is registered for the given id.
+ */
+export async function connectSuiWallet(
+  walletId: SuiWalletId
+): Promise<SuiWalletConnection> {
   if (typeof window === "undefined") {
     throw new SuiRedeemError(
-      "slush_not_installed",
-      "Slush wallet detection is only available in the browser."
+      "wallet_not_installed",
+      "Sui wallet detection is only available in the browser."
+    );
+  }
+
+  const descriptor = SUI_WALLET_BY_ID[walletId];
+  if (!descriptor) {
+    throw new SuiRedeemError(
+      "wallet_not_installed",
+      `Unknown Sui wallet id: ${walletId}`
     );
   }
 
   const walletsApi = getWallets();
   const allWallets = walletsApi.get();
-  const slush = allWallets.find((w) => SLUSH_WALLET_NAMES.has(w.name)) as
-    | WalletWithRequiredFeatures
-    | undefined;
+  const wallet = findWalletByDescriptor(allWallets, descriptor);
 
-  if (!slush) {
+  if (!wallet) {
     throw new SuiRedeemError(
-      "slush_not_installed",
-      "Slush wallet was not detected. Install the Slush extension and refresh."
+      "wallet_not_installed",
+      `${descriptor.displayName} wallet was not detected. Install the ${descriptor.displayName} extension and refresh.`
     );
   }
 
-  const connectFeature = slush.features["standard:connect"];
+  const connectFeature = wallet.features["standard:connect"];
   if (!connectFeature) {
     throw new SuiRedeemError(
-      "slush_not_installed",
-      "Slush wallet is missing the standard:connect feature."
+      "wallet_not_installed",
+      `${descriptor.displayName} wallet is missing the standard:connect feature.`
     );
   }
 
@@ -295,25 +396,33 @@ export async function connectSlush(): Promise<SlushConnection> {
   } catch (err) {
     throw new SuiRedeemError(
       "wallet_rejected",
-      err instanceof Error ? err.message : "Slush rejected the connection."
+      err instanceof Error
+        ? err.message
+        : `${descriptor.displayName} rejected the connection.`
     );
   }
 
-  const account = slush.accounts[0];
+  const account = wallet.accounts[0];
   if (!account) {
     throw new SuiRedeemError(
       "wallet_rejected",
-      "Slush returned no accounts. Unlock the wallet and try again."
+      `${descriptor.displayName} returned no accounts. Unlock the wallet and try again.`
     );
   }
 
-  return { wallet: slush, address: account.address };
+  return {
+    id: descriptor.id,
+    displayName: descriptor.displayName,
+    wallet,
+    address: account.address,
+  };
 }
 
 /**
- * End-to-end Sui redeem against Slush. Caller is expected to have
- * already verified the connected wallet address matches the VAA
- * recipient (we do it here too as a defensive check).
+ * End-to-end Sui redeem against a Wallet-Standard-compliant wallet
+ * (Slush or Phantom). Caller is expected to have already verified the
+ * connected wallet address matches the VAA recipient (we do it here
+ * too as a defensive check).
  *
  * Returns the Sui transaction digest on success.
  */
@@ -322,22 +431,22 @@ export async function executeSuiRedeem({
   recipient,
   tokenChain,
   tokenAddressHex,
-  slush,
+  connection,
   suiClient,
 }: {
   vaaBase64: string;
   recipient: string;
   tokenChain: number;
   tokenAddressHex: string;
-  slush: SlushConnection;
+  connection: SuiWalletConnection;
   suiClient?: SuiClientLike;
 }): Promise<string> {
   const normalizedRecipient = normalizeSuiAddress(recipient);
-  const normalizedSlush = normalizeSuiAddress(slush.address);
-  if (normalizedRecipient !== normalizedSlush) {
+  const normalizedSender = normalizeSuiAddress(connection.address);
+  if (normalizedRecipient !== normalizedSender) {
     throw new SuiRedeemError(
       "wallet_mismatch",
-      `Connected Slush account (${normalizedSlush}) is not the VAA recipient (${normalizedRecipient}). Redemption credits the recipient regardless, but Slush will refuse to pay gas for a stranger's claim. Switch accounts in Slush.`
+      `Connected ${connection.displayName} account (${normalizedSender}) is not the VAA recipient (${normalizedRecipient}). Redemption credits the recipient regardless, but ${connection.displayName} will refuse to pay gas for a stranger's claim. Switch accounts in your wallet.`
     );
   }
 
@@ -358,26 +467,27 @@ export async function executeSuiRedeem({
     coinType,
     packageIds,
   });
-  tx.setSender(slush.address);
+  tx.setSender(connection.address);
 
   const { signAndExecuteTransaction } = await import("@mysten/wallet-standard");
 
   // The wallet may have switched accounts (or locked entirely) between
-  // `connectSlush()` and now, so re-resolve the account before signing
-  // instead of trusting the cached one with a non-null assertion.
-  const account = slush.wallet.accounts.find(
-    (a) => a.address === slush.address
+  // `connectSuiWallet()` and now, so re-resolve the account before
+  // signing instead of trusting the cached one with a non-null
+  // assertion.
+  const account = connection.wallet.accounts.find(
+    (a) => a.address === connection.address
   );
   if (!account) {
     throw new SuiRedeemError(
       "wallet_rejected",
-      "The connected Slush account is no longer available. Reconnect and try again."
+      `The connected ${connection.displayName} account is no longer available. Reconnect and try again.`
     );
   }
 
   let digest: string;
   try {
-    const result = await signAndExecuteTransaction(slush.wallet, {
+    const result = await signAndExecuteTransaction(connection.wallet, {
       transaction: tx,
       account,
       chain: SUI_MAINNET_CHAIN,
@@ -386,7 +496,9 @@ export async function executeSuiRedeem({
   } catch (err) {
     throw new SuiRedeemError(
       "wallet_rejected",
-      err instanceof Error ? err.message : "Slush rejected the signature."
+      err instanceof Error
+        ? err.message
+        : `${connection.displayName} rejected the signature.`
     );
   }
 
@@ -399,7 +511,3 @@ export async function executeSuiRedeem({
 
   return digest;
 }
-
-export const __testables = {
-  SLUSH_WALLET_NAMES,
-};
