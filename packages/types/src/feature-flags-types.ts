@@ -30,4 +30,5 @@ export type AvailableFlags =
   | "swapped"
   | "onrampmoney"
   | "transak"
-  | "polarisBanner";
+  | "polarisBanner"
+  | "advancedCLPositions";

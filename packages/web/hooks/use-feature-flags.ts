@@ -37,6 +37,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   onrampmoney: true,
   transak: true,
   polarisBanner: false,
+  advancedCLPositions: false,
 };
 
 export function useFeatureFlags() {

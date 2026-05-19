@@ -34,7 +34,17 @@
     "low": "bajo",
     "buttonCreateAndStake": "Crear posición y apuesta",
     "estimated": "Estimado",
-    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%."
+    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%.",
+    "volatilitySlidersDescription": "Tune the lookback window and buffer to size your range against the pool's recent price action. Wider buffer = more time in range, lower fees per unit of liquidity.",
+    "advancedToggle": "Advanced",
+    "lookbackLabel": "Lookback window",
+    "bufferLabel": "Buffer beyond observed range",
+    "bufferHelp": "0% places your range at the historical min/max. Larger values pad the range. Max = full range (passive).",
+    "backtestTitle": "Estimated for last {window}",
+    "backtestApr": "APR × time in range",
+    "backtestTimeInRange": "Time in range",
+    "backtestDisclaimer": "APR is the pool's current projected APR for this tick range, based on the last seven days, multiplied by the fraction of your selected window the price spent in range. Time in range is computed from historical close prices over the window. Per-bar volume is not used, so this is not a true fee-by-fee reconstruction. Impermanent loss is not modeled. Past performance is not indicative of future results.",
+    "bufferFullRange": "Full range"
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "¿Qué es la liquidez sobrealimentada?",
