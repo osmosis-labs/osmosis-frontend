@@ -36,6 +36,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -55,6 +56,8 @@ export function useAddConcentratedLiquidityConfig(
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
+  const featureFlags = useFeatureFlags();
+  const advancedCLPositionsEnabled = featureFlags.advancedCLPositions;
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -105,6 +108,8 @@ export function useAddConcentratedLiquidityConfig(
     config.setPrices(baseDepositPrice, quoteDepositPrice);
   }
 
+  // 7-day fetch — drives the legacy moderate/aggressive presets via
+  // `_minHistoricalPrice`/`_maxHistoricalPrice`. Behavior unchanged.
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
       {
@@ -122,6 +127,28 @@ export function useAddConcentratedLiquidityConfig(
       historicalPriceData.min,
       historicalPriceData.max
     );
+
+  // 1-year fetch — drives the advanced sliders + backtest. Gated on the
+  // `advancedCLPositions` feature flag so the non-advanced flow is
+  // byte-identical (no extra network, no extra payload) when advanced is off.
+  // The lookback slider filters this dataset client-side so the user can
+  // pick an arbitrary window without triggering new fetches.
+  const { data: longHistoricalPriceData } =
+    api.edge.assets.getAssetPairHistoricalPrice.useQuery(
+      {
+        poolId,
+        baseCoinMinimalDenom:
+          pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
+        quoteCoinMinimalDenom:
+          pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
+        timeDuration: "1y",
+      },
+      { enabled: isPoolFetched && advancedCLPositionsEnabled }
+    );
+  useEffect(() => {
+    if (longHistoricalPriceData)
+      config.setHistoricalPrices(longHistoricalPriceData.prices);
+  }, [config, longHistoricalPriceData]);
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
@@ -279,6 +306,17 @@ export function useAddConcentratedLiquidityConfig(
 const MODERATE_STRATEGY_MULTIPLIER = 0.25;
 const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
+/** Default lookback in days for the sliders-driven range strategy. Matches
+ *  the legacy 7-day window. */
+const DEFAULT_LOOKBACK_DAYS = 7;
+
+/** Default buffer multiplier for the sliders-driven range strategy. Matches
+ *  the legacy "moderate" preset's padding so existing users see the same
+ *  initial range. */
+const DEFAULT_BUFFER_FRACTION = MODERATE_STRATEGY_MULTIPLIER;
+
+const MS_PER_DAY = 86_400_000;
+
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
 export class ObservableAddConcentratedLiquidityConfig {
@@ -332,6 +370,22 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @observable
   protected _maxHistoricalPrice: number | null = null;
+
+  /** Full 1-year historical price series. The lookback slider filters this
+   *  client-side so the user can pick any window without triggering new
+   *  fetches. */
+  @observable.ref
+  protected _allHistoricalPrices: { time: number; close: number }[] = [];
+
+  /** Lookback in days the sliders-driven range strategy optimizes against. */
+  @observable
+  protected _lookbackDays: number = DEFAULT_LOOKBACK_DAYS;
+
+  /** Buffer multiplier (0..N) applied to the historical (max - min) span when
+   *  computing the sliders-driven range. Matches the semantics of the legacy
+   *  preset multipliers (0.25 ≈ moderate, 0.05 ≈ aggressive). */
+  @observable
+  protected _bufferFraction: number = DEFAULT_BUFFER_FRACTION;
 
   @computed
   get pool() {
@@ -536,6 +590,113 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
+  get lookbackDays(): number {
+    return this._lookbackDays;
+  }
+
+  get bufferFraction(): number {
+    return this._bufferFraction;
+  }
+
+  /** Subset of `_allHistoricalPrices` covering the active lookback window. */
+  @computed
+  get historicalPrices(): { time: number; close: number }[] {
+    if (this._allHistoricalPrices.length === 0) return [];
+    const cutoff = Date.now() - this._lookbackDays * MS_PER_DAY;
+    return this._allHistoricalPrices.filter((p) => p.time >= cutoff);
+  }
+
+  /** Full unfiltered 1-year price series. The backtest panel filters this
+   *  with its own independent timescale slider. */
+  get allHistoricalPrices(): { time: number; close: number }[] {
+    return this._allHistoricalPrices;
+  }
+
+  /** Same series, with each close converted into display units so it can be
+   *  compared against `rangeWithCurrencyDecimals` (also display units).
+   *  The raw API value is in pool-currency raw units and must not be
+   *  compared directly against the range. */
+  @computed
+  get allHistoricalPricesInDisplayUnits(): { time: number; close: Dec }[] {
+    return this._allHistoricalPrices.map((p) => ({
+      time: p.time,
+      close: this._priceRangeInput[0].removeCurrencyDecimals(p.close),
+    }));
+  }
+
+  get minHistoricalPrice(): number | null {
+    return this._minHistoricalPrice;
+  }
+
+  get maxHistoricalPrice(): number | null {
+    return this._maxHistoricalPrice;
+  }
+
+  /** Sliders-driven price range: historical [min, max] of the lookback
+   *  window padded by (max - min) × bufferFraction, then snapped to tick
+   *  boundaries. Falls back to the 7-day API min/max if the long series
+   *  hasn't loaded yet. */
+  @computed
+  get slidersPriceRange(): [Dec, Dec] {
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
+
+    let min: number;
+    let max: number;
+    const filtered = this.historicalPrices;
+    if (filtered.length > 0) {
+      min = filtered[0].close;
+      max = filtered[0].close;
+      for (let i = 1; i < filtered.length; i++) {
+        const c = filtered[i].close;
+        if (c < min) min = c;
+        if (c > max) max = c;
+      }
+    } else if (
+      this._minHistoricalPrice !== null &&
+      this._maxHistoricalPrice !== null
+    ) {
+      min = this._minHistoricalPrice;
+      max = this._maxHistoricalPrice;
+    } else {
+      return [new Dec(0.1), new Dec(100)];
+    }
+
+    const minPrice = this._priceRangeInput[0].removeCurrencyDecimals(min);
+    const maxPrice = this._priceRangeInput[1].removeCurrencyDecimals(max);
+    const span = maxPrice.sub(minPrice).abs();
+    // Round to 6 decimals so floating-point drift doesn't blow up the Dec
+    // constructor (which is strict about input precision).
+    const buffer = Math.max(0, Math.round(this._bufferFraction * 1e6) / 1e6);
+    const priceDiff = span.mul(new Dec(buffer.toString()));
+
+    return [
+      roundPriceToNearestTick(
+        minPrice.sub(priceDiff).abs(),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        maxPrice.add(priceDiff).abs(),
+        this.pool.tickSpacing,
+        false
+      ),
+    ];
+  }
+
+  @computed
+  get slidersTickRange(): [Int, Int] {
+    return [
+      roundToNearestDivisible(
+        priceToTick(this.slidersPriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.slidersPriceRange[1]),
+        this.tickDivisor
+      ),
+    ];
+  }
+
   /** Used to ensure ticks are cleanly divisible by. */
   protected get tickDivisor() {
     return new Int(this.pool?.tickSpacing ?? 100);
@@ -649,7 +810,12 @@ export class ObservableAddConcentratedLiquidityConfig {
   }
 
   @computed
-  get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
+  get currentStrategy():
+    | "passive"
+    | "aggressive"
+    | "moderate"
+    | "sliders"
+    | null {
     const isRangePassive = this.fullRange;
     const isRangeAggressive =
       !isRangePassive &&
@@ -659,10 +825,18 @@ export class ObservableAddConcentratedLiquidityConfig {
       !isRangePassive &&
       this.tickRange[0].equals(this.moderateTickRange[0]) &&
       this.tickRange[1].equals(this.moderateTickRange[1]);
+    const isRangeSliders =
+      !isRangePassive &&
+      this.tickRange[0].equals(this.slidersTickRange[0]) &&
+      this.tickRange[1].equals(this.slidersTickRange[1]);
 
+    // Moderate/aggressive win over sliders when the ranges happen to coincide
+    // (default 7d/0.25 reproduces moderate). Keeps the legacy preset card
+    // selected by default in the non-advanced flow.
     if (isRangePassive) return "passive";
     if (isRangeModerate) return "moderate";
     if (isRangeAggressive) return "aggressive";
+    if (isRangeSliders) return "sliders";
     return null;
   }
 
@@ -1221,6 +1395,23 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
     if (min !== Infinity) this._minHistoricalPrice = min;
     if (max !== Infinity) this._maxHistoricalPrice = max;
+  };
+
+  @action
+  readonly setHistoricalPrices = (
+    prices: { time: number; close: number }[]
+  ) => {
+    this._allHistoricalPrices = prices;
+  };
+
+  @action
+  readonly setLookbackDays = (days: number) => {
+    this._lookbackDays = Math.max(0, days);
+  };
+
+  @action
+  readonly setBufferFraction = (fraction: number) => {
+    this._bufferFraction = Math.max(0, fraction);
   };
 
   @action
