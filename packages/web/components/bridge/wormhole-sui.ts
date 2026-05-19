@@ -114,6 +114,7 @@ const SUI_WALLET_BY_ID: Record<SuiWalletId, SuiWalletDescriptor> =
 
 type SuiRedeemErrorCode =
   | "wallet_not_installed"
+  | "no_sui_account"
   | "unsupported_token"
   | "wallet_mismatch"
   | "wallet_rejected"
@@ -361,10 +362,16 @@ export function subscribeToAvailableSuiWallets(
 /**
  * Locate the requested Sui wallet via Wallet Standard and request a
  * connection. Throws `wallet_not_installed` if no compatible wallet
- * is registered for the given id.
+ * is registered for the given id, or `no_sui_account` if the wallet
+ * connected but has no Sui-mainnet accounts to choose from.
+ *
+ * `preferredAddress` (typically the VAA recipient) lets us pick the
+ * account that will actually be authorised to pay gas without forcing
+ * a wallet-side switch when the user has multiple Sui accounts.
  */
 export async function connectSuiWallet(
-  walletId: SuiWalletId
+  walletId: SuiWalletId,
+  preferredAddress?: string
 ): Promise<SuiWalletConnection> {
   if (typeof window === "undefined") {
     throw new SuiRedeemError(
@@ -411,19 +418,48 @@ export async function connectSuiWallet(
     );
   }
 
-  const account = wallet.accounts[0];
-  if (!account) {
+  if (wallet.accounts.length === 0) {
     throw new SuiRedeemError(
       "wallet_rejected",
       `${descriptor.displayName} returned no accounts. Unlock the wallet and try again.`
     );
   }
 
+  // Multi-chain wallets (notably Phantom) put their Solana / BTC / EVM
+  // accounts into the same Wallet Standard `accounts` array as Sui ones,
+  // and may list a non-Sui account at index 0. Picking that blindly and
+  // feeding it through `normalizeSuiAddress` produces a malformed
+  // "0x00…<base58-blob>" address and a confusing mismatch error. Filter
+  // by the per-account `chains` tag so we only ever pick a real Sui
+  // mainnet account.
+  const suiAccounts = wallet.accounts.filter((a) =>
+    a.chains.includes(SUI_MAINNET_CHAIN)
+  );
+  if (suiAccounts.length === 0) {
+    throw new SuiRedeemError(
+      "no_sui_account",
+      `${descriptor.displayName} is connected but does not expose a Sui mainnet account. Create or enable one in ${descriptor.displayName} and try again.`
+    );
+  }
+
+  // Prefer the account that matches the VAA recipient, so users with
+  // multiple Sui accounts don't have to manually switch in the wallet
+  // before the redeem succeeds.
+  const normalizedPreferred = preferredAddress
+    ? normalizeSuiAddress(preferredAddress)
+    : null;
+  const chosen =
+    (normalizedPreferred
+      ? suiAccounts.find(
+          (a) => normalizeSuiAddress(a.address) === normalizedPreferred
+        )
+      : undefined) ?? suiAccounts[0];
+
   return {
     id: descriptor.id,
     displayName: descriptor.displayName,
     wallet,
-    address: account.address,
+    address: chosen.address,
   };
 }
 
@@ -491,6 +527,16 @@ export async function executeSuiRedeem({
     throw new SuiRedeemError(
       "wallet_rejected",
       `The connected ${connection.displayName} account is no longer available. Reconnect and try again.`
+    );
+  }
+  // Defense-in-depth: even though we filter by chain at connect time,
+  // a multi-chain wallet could have swapped its `accounts` array since
+  // then. Signing on a non-Sui-tagged account would surface a
+  // confusing wallet-side error.
+  if (!account.chains.includes(SUI_MAINNET_CHAIN)) {
+    throw new SuiRedeemError(
+      "no_sui_account",
+      `The connected ${connection.displayName} account no longer advertises a Sui mainnet chain. Reconnect with a Sui account in ${connection.displayName} and try again.`
     );
   }
 

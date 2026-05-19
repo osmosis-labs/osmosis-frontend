@@ -823,26 +823,38 @@ export const WormholeRedeem: FunctionComponent = () => {
     return () => phantom.off?.("accountChanged", onAccountChanged);
   }, [phantom]);
 
-  const connectSui = useCallback(async (walletId: SuiWalletId) => {
-    setError(null);
-    try {
-      const conn = await connectSuiWallet(walletId);
-      setSuiConnection(conn);
-    } catch (err) {
-      if (
-        err instanceof SuiRedeemError &&
-        err.code === "wallet_not_installed"
-      ) {
-        setError({ type: "sui_wallet_not_installed" });
-        return;
+  const connectSui = useCallback(
+    async (walletId: SuiWalletId) => {
+      setError(null);
+      try {
+        // Pass the VAA recipient so multi-account wallets can land on
+        // the right Sui account on first try, skipping the
+        // wallet_mismatch round-trip.
+        const recipient = operation?.content.standarizedProperties.toAddress;
+        const conn = await connectSuiWallet(walletId, recipient);
+        setSuiConnection(conn);
+      } catch (err) {
+        if (
+          err instanceof SuiRedeemError &&
+          err.code === "wallet_not_installed"
+        ) {
+          setError({ type: "sui_wallet_not_installed" });
+          return;
+        }
+        // `no_sui_account` falls through to the generic branch so the
+        // user sees the specific "create a Sui account in <wallet>"
+        // message rather than the dual install-link copy.
+        setError({
+          type: "generic",
+          message:
+            err instanceof Error
+              ? err.message
+              : "Failed to connect Sui wallet.",
+        });
       }
-      setError({
-        type: "generic",
-        message:
-          err instanceof Error ? err.message : "Failed to connect Sui wallet.",
-      });
-    }
-  }, []);
+    },
+    [operation]
+  );
 
   const executeSuiRedeemFlow = useCallback(async () => {
     if (!operation || !suiConnection) return;

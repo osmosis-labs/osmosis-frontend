@@ -1,5 +1,10 @@
-type RegisteredWallet = { name: string };
-const mockGet: jest.Mock<RegisteredWallet[], []> = jest.fn(() => []);
+type StubAccount = { address: string; chains: readonly string[] };
+type StubWallet = {
+  name: string;
+  accounts?: readonly StubAccount[];
+  features?: { "standard:connect"?: { connect: jest.Mock } };
+};
+const mockGet: jest.Mock<StubWallet[], []> = jest.fn(() => []);
 const mockOn: jest.Mock<() => void, [string, () => void]> = jest.fn(
   (_event: string, _listener: () => void) => () => undefined
 );
@@ -10,6 +15,7 @@ jest.mock("@mysten/wallet-standard", () => ({
 
 import {
   buildSuiRedeemTransaction,
+  connectSuiWallet,
   decodeBase64Vaa,
   executeSuiRedeem,
   getCoinTypeForSuiVAA,
@@ -356,5 +362,82 @@ describe("subscribeToAvailableSuiWallets", () => {
 
     unsubscribe();
     expect(Object.keys(listeners)).toEqual([]);
+  });
+});
+
+describe("connectSuiWallet", () => {
+  const SOLANA_ACCOUNT_BASE58 = "edvlfr6qnkbaphdwexqykgtcydyo4pmcvvdyfraapq6u";
+  const SUI_ACCOUNT_A =
+    "0x6c26da690be0f43f255a659dea1eaf7cca3dbc6ec431c300d61b0030e5a1897b";
+  const SUI_ACCOUNT_B =
+    "0xf2433e78acfee6ef5871f79bcb286be32ddd70b4bfe3368ac1f34c5b68b61bb0";
+
+  function makeStub(
+    name: string,
+    accounts: readonly StubAccount[]
+  ): StubWallet {
+    return {
+      name,
+      accounts,
+      features: { "standard:connect": { connect: jest.fn() } },
+    };
+  }
+
+  it("picks the Sui account out of a multi-chain Phantom wallet (bug: was picking Solana)", async () => {
+    // Reproduces the live bug: Phantom's `accounts[0]` is its Solana
+    // account, which when padded as hex produced the malformed
+    // 0x00…edvlfr… address the user saw.
+    mockGet.mockReturnValue([
+      makeStub("Phantom", [
+        { address: SOLANA_ACCOUNT_BASE58, chains: ["solana:mainnet"] },
+        { address: SUI_ACCOUNT_A, chains: ["sui:mainnet"] },
+      ]),
+    ]);
+
+    const conn = await connectSuiWallet("phantom");
+    expect(conn.address).toBe(SUI_ACCOUNT_A);
+    // The malformed pad-with-zeros form must not appear.
+    expect(conn.address).not.toContain(SOLANA_ACCOUNT_BASE58);
+  });
+
+  it("prefers the account matching `preferredAddress` so multi-Sui-account users skip the mismatch step", async () => {
+    mockGet.mockReturnValue([
+      makeStub("Slush", [
+        { address: SUI_ACCOUNT_A, chains: ["sui:mainnet"] },
+        { address: SUI_ACCOUNT_B, chains: ["sui:mainnet"] },
+      ]),
+    ]);
+
+    const conn = await connectSuiWallet("slush", SUI_ACCOUNT_B);
+    expect(conn.address).toBe(SUI_ACCOUNT_B);
+  });
+
+  it("falls back to the first Sui account when the preferred address is not present", async () => {
+    mockGet.mockReturnValue([
+      makeStub("Slush", [{ address: SUI_ACCOUNT_A, chains: ["sui:mainnet"] }]),
+    ]);
+
+    const conn = await connectSuiWallet("slush", SUI_ACCOUNT_B);
+    expect(conn.address).toBe(SUI_ACCOUNT_A);
+  });
+
+  it("throws no_sui_account when the wallet connects but exposes no Sui mainnet accounts", async () => {
+    mockGet.mockReturnValue([
+      makeStub("Phantom", [
+        { address: SOLANA_ACCOUNT_BASE58, chains: ["solana:mainnet"] },
+      ]),
+    ]);
+
+    await expect(connectSuiWallet("phantom")).rejects.toMatchObject({
+      code: "no_sui_account",
+      message: expect.stringContaining("Phantom"),
+    });
+  });
+
+  it("throws wallet_not_installed when the requested wallet is not registered", async () => {
+    mockGet.mockReturnValue([]);
+    await expect(connectSuiWallet("slush")).rejects.toMatchObject({
+      code: "wallet_not_installed",
+    });
   });
 });
