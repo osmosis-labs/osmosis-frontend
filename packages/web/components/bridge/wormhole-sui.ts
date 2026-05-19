@@ -1,6 +1,11 @@
 /**
  * Native Sui redemption for Wormhole token-bridge transfers.
  *
+ * We do this in-app rather than redirecting because the obvious external
+ * destinations (Wormholescan, Portal Bridge) do not support an Osmosis
+ * source hash or the Wormchain intermediary lookup — the user would be
+ * left holding a copyable VAA with no UI to consume it.
+ *
  * We deliberately avoid pulling in `@wormhole-foundation/sdk-sui` or any
  * dApp-kit dependencies so the attack surface stays small. The flow is
  * the same five Move calls the official SDK builds:
@@ -17,11 +22,9 @@
  *
  * Wallet integration speaks the Sui Wallet Standard protocol directly
  * (`@mysten/wallet-standard`) so we don't ship a dApp-kit dependency.
- * We allowlist by `wallet.name` rather than auto-connecting to anything
- * advertised on the page: a malicious extension could otherwise register
- * a Wallet Standard wallet with a misleading name. Supported wallets are
- * Slush (formerly "Sui Wallet") and Phantom (which has multi-chain Sui
- * support); both register via Wallet Standard.
+ * Supported wallets are Slush (formerly "Sui Wallet") and Phantom
+ * (whose multi-chain build registers as a Sui wallet via Wallet
+ * Standard); both register via Wallet Standard.
  */
 
 import type { WalletWithRequiredFeatures } from "@mysten/wallet-standard";
@@ -66,10 +69,16 @@ export const KNOWN_SUI_COIN_TYPES: Record<string, string> = {
 export type SuiWalletId = "slush" | "phantom";
 
 /**
- * Allowlisted Wallet Standard descriptors. Order matters: we render
- * connect buttons in this order, with Slush first because it is the
- * Mysten-native Sui wallet. Phantom is supported as a secondary option
- * for users who already have it installed for Solana.
+ * Allowlisted Wallet Standard descriptors. We allowlist by `wallet.name`
+ * and render one connect button per detected wallet rather than
+ * auto-connecting to anything advertised on the page: a malicious
+ * extension could otherwise register a Wallet Standard wallet with a
+ * misleading name and get silently selected.
+ *
+ * Order matters: we render connect buttons in this order, with Slush
+ * first because it is the Mysten-native Sui wallet. Phantom is supported
+ * as a secondary option for users who already have it installed for
+ * Solana.
  *
  * Each descriptor lists every `wallet.name` we accept. Slush has shipped
  * under multiple names during its rebrand; Phantom only registers as
