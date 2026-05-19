@@ -60,9 +60,11 @@ export const MyPositionsSection: FunctionComponent<{
   } else {
     if (isError) {
       return (
-        <div className="my-5 flex w-full flex-col items-center justify-center py-8">
-          <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
-          <p className="whitespace-pre-line text-center text-body1 font-body1 text-osmoverse-300">
+        <div className="my-2 flex w-full flex-col items-center justify-center gap-1 py-3">
+          <p className="text-body2 font-medium text-osmoverse-200">
+            {t("errors.uhOhSomethingWentWrong")}
+          </p>
+          <p className="whitespace-pre-line text-center text-caption text-osmoverse-400">
             {t("clPositions.errorFetchingPositions")}
           </p>
         </div>
@@ -71,9 +73,11 @@ export const MyPositionsSection: FunctionComponent<{
 
     if (!isLoading && positions && !positions.length) {
       return (
-        <div className="my-5 flex w-full flex-col items-center justify-center py-8">
-          <h6 className="mb-2">{t("clPositions.noPositions")}</h6>
-          <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
+        <div className="my-2 flex w-full flex-col items-center justify-center gap-1 py-3">
+          <p className="text-body2 font-medium text-osmoverse-200">
+            {t("clPositions.noPositions")}
+          </p>
+          <p className="max-w-md text-center text-caption text-osmoverse-400">
             {t("clPositions.noPositionsDescription")}
           </p>
         </div>

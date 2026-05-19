@@ -68,9 +68,11 @@ export const MyPoolsCardsGrid = observer(() => {
 
   if (isError) {
     return (
-      <div className="flex w-full flex-col items-center justify-center py-8">
-        <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
-        <p className="text-center text-body1 font-body1 text-osmoverse-300">
+      <div className="flex w-full flex-col items-center justify-center gap-1 py-3">
+        <p className="text-body2 font-medium text-osmoverse-200">
+          {t("errors.uhOhSomethingWentWrong")}
+        </p>
+        <p className="text-center text-caption text-osmoverse-400">
           {t("pools.errorFetchingPools")}
         </p>
       </div>
@@ -79,9 +81,11 @@ export const MyPoolsCardsGrid = observer(() => {
 
   if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) {
     return (
-      <div className="flex w-full flex-col items-center justify-center py-8">
-        <h6 className="mb-2">{t("pools.noPoolsFound")}</h6>
-        <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
+      <div className="flex w-full flex-col items-center justify-center gap-1 py-3">
+        <p className="text-body2 font-medium text-osmoverse-200">
+          {t("pools.noPoolsFound")}
+        </p>
+        <p className="max-w-md text-center text-caption text-osmoverse-400">
           {t("pools.noPoolsFoundDescription")}
         </p>
       </div>
