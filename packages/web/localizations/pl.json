@@ -88,7 +88,9 @@
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja",
     "goToPool": "Idź do basenu #{poolId}",
-    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną."
+    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
+    "noPositions": "Nie znaleziono stanowisk",
+    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie."
   },
   "copied": "Skopiowano!",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "Wszystkie Pule"
     },
+    "noPoolsFound": "Nie znaleziono żadnych basenów",
+    "noPoolsFoundDescription": "Dodaj płynność do puli, aby zacząć zdobywać nagrody.",
+    "errorFetchingPools": "Nie udało się załadować pul. Spróbuj odświeżyć stronę.",
     "APR": "APR",
     "bonded": "Związane",
     "createPool": {

@@ -29,22 +29,25 @@ export const MyPoolsCardsGrid = observer(() => {
   const account = accountStore.getWallet(chainId);
 
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
-  const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
-    api.edge.pools.getUserPools.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: Boolean(account?.address),
+  const {
+    data: allMyPoolDetails,
+    isLoading: isLoadingMyPoolDetails,
+    isError,
+  } = api.edge.pools.getUserPools.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+    },
+    {
+      enabled: Boolean(account?.address),
 
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-      }
-    );
+      },
+    }
+  );
 
   const myPoolDetails = useMemo(
     () =>
@@ -59,11 +62,30 @@ export const MyPoolsCardsGrid = observer(() => {
     useCallback((myPool) => myPool.userValue, [])
   );
 
-  if (
-    (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) ||
-    !account?.address
-  ) {
+  if (!account?.address) {
     return null;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
+        <p className="text-center text-body1 font-body1 text-osmoverse-300">
+          {t("pools.errorFetchingPools")}
+        </p>
+      </div>
+    );
+  }
+
+  if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) {
+    return (
+      <div className="flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("pools.noPoolsFound")}</h6>
+        <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
+          {t("pools.noPoolsFoundDescription")}
+        </p>
+      </div>
+    );
   }
 
   return (

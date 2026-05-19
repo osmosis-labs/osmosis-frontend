@@ -4,7 +4,7 @@ import React, { FunctionComponent, useState } from "react";
 import { MyPositionCard } from "~/components/cards";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
-import { useWalletSelect } from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -17,28 +17,32 @@ export const MyPositionsSection: FunctionComponent<{
   showSelectedRange?: boolean;
 }> = observer(({ forPoolId, showRoi = true, showSelectedRange = true }) => {
   const { accountStore, chainStore } = useStore();
+  const { t } = useTranslation();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
   const [viewMore, setViewMore] = useState(false);
 
-  const { data: positions, isLoading } =
-    api.local.concentratedLiquidity.getUserPositions.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-        forPoolId,
-      },
-      {
-        enabled: Boolean(account?.address) && !isWalletLoading,
+  const {
+    data: positions,
+    isLoading,
+    isError,
+  } = api.local.concentratedLiquidity.getUserPositions.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+      forPoolId,
+    },
+    {
+      enabled: Boolean(account?.address) && !isWalletLoading,
 
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-      }
-    );
+      },
+    }
+  );
 
   const visiblePositions = (positions ?? []).slice(
     0,
@@ -46,7 +50,28 @@ export const MyPositionsSection: FunctionComponent<{
   );
 
   if (!account?.address) return null;
-  if (!isLoading && positions && !positions.length) return null;
+
+  if (isError) {
+    return (
+      <div className="my-5 flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
+        <p className="whitespace-pre-line text-center text-body1 font-body1 text-osmoverse-300">
+          {t("clPositions.errorFetchingPositions")}
+        </p>
+      </div>
+    );
+  }
+
+  if (!isLoading && positions && !positions.length) {
+    return (
+      <div className="my-5 flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("clPositions.noPositions")}</h6>
+        <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
+          {t("clPositions.noPositionsDescription")}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="my-5 flex flex-col gap-3">

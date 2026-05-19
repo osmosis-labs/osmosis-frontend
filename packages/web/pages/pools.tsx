@@ -35,6 +35,8 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
+  const openCreatePool = useCallback(() => setIsCreatingPool(true), []);
+  const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
@@ -124,7 +126,7 @@ const Pools: NextPage = observer(function () {
       />
       <CreatePoolModal
         isOpen={isCreatingPool}
-        onRequestClose={useCallback(() => setIsCreatingPool(false), [])}
+        onRequestClose={closeCreatePool}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
         isSendingMsg={account?.txTypeInProgress !== ""}
@@ -145,19 +147,21 @@ const Pools: NextPage = observer(function () {
         />
       )}
       {account?.address && (
-        <section className="pb-[3.75rem]" ref={myPositionsRef}>
-          <h5>{t("clPositions.yourPositions")}</h5>
-          <MyPositionsSection />
-        </section>
+        <>
+          <section className="pb-[3.75rem]" ref={myPositionsRef}>
+            <h5>{t("clPositions.yourPositions")}</h5>
+            <MyPositionsSection />
+          </section>
+          <section className="pb-[3.75rem]" ref={myPoolsRef}>
+            <h5 className="md:px-3">{t("pools.myPools")}</h5>
+            <MyPoolsCardsGrid />
+          </section>
+        </>
       )}
-      <section className="pb-[3.75rem]" ref={myPoolsRef}>
-        <h5 className="md:px-3">{t("pools.myPools")}</h5>
-        <MyPoolsCardsGrid />
-      </section>
       <section>
         <AllPoolsTable
           topOffset={myPositionsHeight + myPoolsHeight}
-          onCreatePool={useCallback(() => setIsCreatingPool(true), [])}
+          onCreatePool={openCreatePool}
           {...quickActionProps}
         />
       </section>

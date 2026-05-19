@@ -88,7 +88,9 @@
     "numPositions": "不明确的",
     "onePosition": "1 个职位",
     "goToPool": "前往泳池#{poolId}",
-    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。"
+    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。",
+    "noPositions": "未找到职位",
+    "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。"
   },
   "copied": "已复制！",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "所有资金池"
     },
+    "noPoolsFound": "未找到游泳池",
+    "noPoolsFoundDescription": "向资金池注入流动性即可开始赚取奖励。",
+    "errorFetchingPools": "泳池加载失败。请尝试刷新页面。",
     "APR": "APR",
     "bonded": "已绑定",
     "createPool": {

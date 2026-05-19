@@ -88,7 +88,9 @@
     "numPositions": "indefinido",
     "onePosition": "1 posición",
     "goToPool": "Ir a la piscina #{poolId}",
-    "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia."
+    "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia.",
+    "noPositions": "No se encontraron puestos",
+    "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales."
   },
   "copied": "¡Copiado!",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "Todas las piscinas"
     },
+    "noPoolsFound": "No se encontraron piscinas",
+    "noPoolsFoundDescription": "Añade liquidez a un fondo común para empezar a ganar recompensas.",
+    "errorFetchingPools": "No se pudieron cargar las piscinas. Por favor, intente actualizar la página.",
     "APR": "TPA",
     "bonded": "Abonado",
     "createPool": {

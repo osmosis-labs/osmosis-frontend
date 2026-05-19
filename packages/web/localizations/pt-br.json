@@ -88,7 +88,9 @@
     "numPositions": "indefinido",
     "onePosition": "1 posição",
     "goToPool": "Vá para a piscina #{poolId}",
-    "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte."
+    "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte.",
+    "noPositions": "Nenhuma posição encontrada",
+    "noPositionsDescription": "Forneça liquidez concentrada a um pool para começar a ganhar recompensas de spread."
   },
   "copied": "Copiado!",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "Todas as Piscinas"
     },
+    "noPoolsFound": "Nenhuma piscina encontrada",
+    "noPoolsFoundDescription": "Adicione liquidez a um pool para começar a ganhar recompensas.",
+    "errorFetchingPools": "Não foi possível carregar suas piscinas. Tente atualizar a página.",
     "APR": "APR",
     "bonded": "Travado",
     "createPool": {

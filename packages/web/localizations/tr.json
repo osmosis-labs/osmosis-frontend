@@ -88,7 +88,9 @@
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}",
-    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin."
+    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
+    "noPositions": "Hiçbir pozisyon bulunamadı.",
+    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın."
   },
   "copied": "Kopyalandı!",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "Tüm Havuzlar"
     },
+    "noPoolsFound": "Havuz bulunamadı.",
+    "noPoolsFoundDescription": "Ödül kazanmaya başlamak için havuza likidite ekleyin.",
+    "errorFetchingPools": "Havuzlarınız yüklenemedi. Lütfen sayfayı yenilemeyi deneyin.",
     "APR": "APR",
     "bonded": "Bağlı",
     "createPool": {

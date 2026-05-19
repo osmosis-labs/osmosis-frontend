@@ -88,7 +88,9 @@
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
     "goToPool": "前往泳池 #{poolId}",
-    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。"
+    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。",
+    "noPositions": "未找到職位",
+    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。"
   },
   "copied": "複製了！",
   "app": {
@@ -533,6 +535,9 @@
       },
       "title": "全部流動性池"
     },
+    "noPoolsFound": "未找到游泳池",
+    "noPoolsFoundDescription": "向資金池注入流動性即可開始賺取獎勵。",
+    "errorFetchingPools": "泳池加載失敗。請嘗試刷新頁面。",
     "APR": "年利率(APR)",
     "bonded": "已鎖住",
     "createPool": {
