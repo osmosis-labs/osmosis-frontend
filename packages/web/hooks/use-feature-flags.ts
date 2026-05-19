@@ -34,6 +34,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   multiTxBridgeRoutes: true,
   positionMigration: true,
   solanaSkipRoutes: false,
+  advancedCLPositions: false,
 };
 
 export function useFeatureFlags() {
