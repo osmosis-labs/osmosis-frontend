@@ -51,26 +51,34 @@ export const MyPositionsSection: FunctionComponent<{
 
   if (!account?.address) return null;
 
-  if (isError) {
-    return (
-      <div className="my-5 flex w-full flex-col items-center justify-center py-8">
-        <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
-        <p className="whitespace-pre-line text-center text-body1 font-body1 text-osmoverse-300">
-          {t("clPositions.errorFetchingPositions")}
-        </p>
-      </div>
-    );
-  }
+  // Per-pool callers (pool detail page) render their own surrounding context;
+  // showing a global empty/error card there would imply the user has no
+  // positions anywhere, which is misleading. Fall back to null in that case.
+  if (forPoolId) {
+    if (isError) return null;
+    if (!isLoading && positions && !positions.length) return null;
+  } else {
+    if (isError) {
+      return (
+        <div className="my-5 flex w-full flex-col items-center justify-center py-8">
+          <h6 className="mb-2">{t("errors.uhOhSomethingWentWrong")}</h6>
+          <p className="whitespace-pre-line text-center text-body1 font-body1 text-osmoverse-300">
+            {t("clPositions.errorFetchingPositions")}
+          </p>
+        </div>
+      );
+    }
 
-  if (!isLoading && positions && !positions.length) {
-    return (
-      <div className="my-5 flex w-full flex-col items-center justify-center py-8">
-        <h6 className="mb-2">{t("clPositions.noPositions")}</h6>
-        <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
-          {t("clPositions.noPositionsDescription")}
-        </p>
-      </div>
-    );
+    if (!isLoading && positions && !positions.length) {
+      return (
+        <div className="my-5 flex w-full flex-col items-center justify-center py-8">
+          <h6 className="mb-2">{t("clPositions.noPositions")}</h6>
+          <p className="max-w-md text-center text-body1 font-body1 text-osmoverse-300">
+            {t("clPositions.noPositionsDescription")}
+          </p>
+        </div>
+      );
+    }
   }
 
   return (
