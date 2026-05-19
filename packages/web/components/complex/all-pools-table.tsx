@@ -110,7 +110,8 @@ export const AllPoolsTable = (props: AllPoolsTableProps) => {
 const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const isWide = width === 0 || width > Breakpoint.xl;
+  // width === 0 during SSR; default to the wide desktop layout to avoid a flash of the compact layout on hydration.
+  const isWide = width === 0 || width >= Breakpoint.xl;
 
   const { filters, setFilters } = useAllPoolsTable();
 
@@ -188,7 +189,7 @@ const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
       <Button
         size="md"
         onClick={onCreatePool}
-        className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
+        className="!h-9 !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
       >
         {t("pools.createPool.title")}
       </Button>
