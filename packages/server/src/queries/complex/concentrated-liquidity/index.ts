@@ -18,14 +18,17 @@ import {
   getAsset,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
-import { getPools } from "../../../queries/complex/pools";
+import { getPools, Pool } from "../../../queries/complex/pools";
 import {
   getConcentratedRangePoolApr,
   getLockableDurations,
   getPoolIncentives,
 } from "../../../queries/complex/pools/incentives";
 import { getValidatorInfo } from "../../../queries/complex/staking/validator";
-import { ConcentratedPoolRawResponse } from "../../../queries/osmosis";
+import {
+  ConcentratedPoolRawResponse,
+  queryPoolChain,
+} from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
@@ -538,61 +541,132 @@ export async function mapGetUserPositions({
 
   const positions = await positionsPromise;
 
-  const userPositions = await Promise.all(
-    positions
-      .filter((position) => {
-        if (Boolean(forPoolId) && position.position.pool_id !== forPoolId) {
-          return false;
-        }
-        return true;
-      })
-      .map(async (position_) => {
-        const { asset0, asset1, position } = position_;
+  const filteredPositions = positions.filter(
+    (position) => !forPoolId || position.position.pool_id === forPoolId
+  );
 
-        const [baseCoin, quoteCoin] = mapRawCoinToPretty(params.assetLists, [
-          asset0,
-          asset1,
-        ]);
-        if (!baseCoin || !quoteCoin) {
-          throw new Error(
-            `Error finding assets for position ${position.position_id}`
+  const uniquePoolIds = Array.from(
+    new Set(filteredPositions.map(({ position }) => position.pool_id))
+  );
+
+  // Fetch pools in batch via the sidecar so we can compute each position's
+  // status (in/near/out of range) for sorting and display. If the sidecar
+  // call fails for a partial set we'll fall back to direct chain RPC per
+  // missing pool below; if it fails entirely we bail rather than fan out N
+  // chain queries.
+  let poolItems: Pool[] = [];
+  let sidecarFailed = false;
+  try {
+    const pools = await getPools({ ...params, poolIds: uniquePoolIds });
+    poolItems = pools.items;
+  } catch (e) {
+    sidecarFailed = true;
+    console.warn(
+      "mapGetUserPositions: sidecar getPools failed, position status will be unranked",
+      e
+    );
+  }
+
+  const sqrtPriceFromChain = new Map<string, string>();
+  if (!sidecarFailed) {
+    const missingPoolIds = uniquePoolIds.filter(
+      (id) => !poolItems.some((p) => p.id === id)
+    );
+    await Promise.all(
+      missingPoolIds.map(async (poolId) => {
+        try {
+          const { pool } = await queryPoolChain({
+            poolId,
+            chainList: params.chainList,
+          });
+          const concentrated = pool as ConcentratedPoolRawResponse;
+          if (concentrated?.current_sqrt_price) {
+            sqrtPriceFromChain.set(poolId, concentrated.current_sqrt_price);
+          }
+        } catch (e) {
+          console.warn(
+            `mapGetUserPositions: queryPoolChain failed for pool ${poolId}, status will be undefined`,
+            e
           );
         }
-        const currentValue = new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
-        );
-
-        const lowerTick = new Int(position.lower_tick);
-        const upperTick = new Int(position.upper_tick);
-        const priceRange = await Promise.all([
-          getTickPrice({
-            tick: lowerTick,
-            baseCoin,
-            quoteCoin,
-          }),
-          getTickPrice({
-            tick: upperTick,
-            baseCoin,
-            quoteCoin,
-          }),
-        ]);
-
-        const isFullRange =
-          lowerTick.equals(minTick) && upperTick.equals(maxTick);
-
-        return {
-          id: position.position_id,
-          poolId: position.pool_id,
-          position: position_,
-          currentCoins: [baseCoin, quoteCoin],
-          currentValue,
-          isFullRange,
-          priceRange,
-          liquidity: new Dec(position.liquidity),
-          joinTime: new Date(position.join_time),
-        };
       })
+    );
+  }
+
+  const userPositions = await Promise.all(
+    filteredPositions.map(async (position_) => {
+      const { asset0, asset1, position } = position_;
+
+      const [baseCoin, quoteCoin] = mapRawCoinToPretty(params.assetLists, [
+        asset0,
+        asset1,
+      ]);
+      if (!baseCoin || !quoteCoin) {
+        throw new Error(
+          `Error finding assets for position ${position.position_id}`
+        );
+      }
+      const currentValue = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
+      );
+
+      const lowerTick = new Int(position.lower_tick);
+      const upperTick = new Int(position.upper_tick);
+      const priceRange = await Promise.all([
+        getTickPrice({
+          tick: lowerTick,
+          baseCoin,
+          quoteCoin,
+        }),
+        getTickPrice({
+          tick: upperTick,
+          baseCoin,
+          quoteCoin,
+        }),
+      ]);
+
+      const isFullRange =
+        lowerTick.equals(minTick) && upperTick.equals(maxTick);
+
+      const pool = poolItems.find((p) => p.id === position.pool_id);
+      const sqrtPriceStr = pool
+        ? (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
+        : sqrtPriceFromChain.get(position.pool_id);
+      const status: PositionStatus | undefined = sqrtPriceStr
+        ? calcPositionStatus({
+            currentPrice: getPriceFromSqrtPrice({
+              sqrtPrice: new BigDec(sqrtPriceStr).toDec(),
+              baseCoin,
+              quoteCoin,
+            }),
+            lowerPrice: priceRange[0],
+            upperPrice: priceRange[1],
+            isFullRange,
+            // Unbonding and superfluid states don't apply to CL positions
+            // on this surface; passing false collapses calcPositionStatus
+            // to the in/near/out-of-range / fullRange outcomes we sort on.
+            isSuperfluidStaked: false,
+            isSuperfluidUnstaking: false,
+            isUnbonding: false,
+          })
+        : isFullRange
+        ? "fullRange"
+        : undefined;
+
+      return {
+        id: position.position_id,
+        poolId: position.pool_id,
+        position: position_,
+        currentCoins: [baseCoin, quoteCoin],
+        currentValue,
+        isFullRange,
+        priceRange,
+        liquidity: new Dec(position.liquidity),
+        joinTime: new Date(position.join_time),
+        status,
+      };
+    })
   );
 
   return userPositions.filter((p): p is NonNullable<typeof p> => !!p);
