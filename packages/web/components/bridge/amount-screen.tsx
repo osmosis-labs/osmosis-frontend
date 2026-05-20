@@ -701,19 +701,29 @@ export const AmountScreen = observer(
     /** If the current direction is halted for this asset. Halt is distinct
      *  from `disabled`: halted transfers show a reason and do NOT fall back
      *  to external providers, whereas disabled transfers route to external
-     *  providers. The check uses the canonical asset for withdraw and the
-     *  destination asset on Osmosis for deposit, mirroring the disabled
-     *  check above. */
+     *  providers. Resolves the specific variant the user has selected so
+     *  the halt flag on a non-canonical IBC denom is not missed (mirrors
+     *  the `withdrawAsset` resolution in amount-and-review-screen). The
+     *  returned `assetDenom` is used in the banner title so it matches
+     *  the variant being blocked. */
     const haltState = useMemo<{
       halted: boolean;
       reason?: string;
       tooltip?: string;
+      assetDenom?: string;
     }>(() => {
       if (direction === "withdraw") {
+        const withdrawAsset =
+          assetsInOsmosis?.find(
+            (a) =>
+              a.coinDenom === selectedDenom ||
+              a.coinMinimalDenom === selectedDenom
+          ) ?? canonicalAsset;
         return {
-          halted: Boolean(canonicalAsset?.areWithdrawalsHalted),
-          reason: canonicalAsset?.withdrawalHaltReason,
-          tooltip: canonicalAsset?.tooltipMessage,
+          halted: Boolean(withdrawAsset?.areWithdrawalsHalted),
+          reason: withdrawAsset?.withdrawalHaltReason,
+          tooltip: withdrawAsset?.tooltipMessage,
+          assetDenom: withdrawAsset?.coinDenom,
         };
       }
       const osmosisAsset = assetsInOsmosis?.find(
@@ -723,8 +733,15 @@ export const AmountScreen = observer(
         halted: Boolean(osmosisAsset?.areDepositsHalted),
         reason: osmosisAsset?.depositHaltReason,
         tooltip: osmosisAsset?.tooltipMessage,
+        assetDenom: osmosisAsset?.coinDenom ?? canonicalAsset?.coinDenom,
       };
-    }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
+    }, [
+      direction,
+      canonicalAsset,
+      assetsInOsmosis,
+      toAsset?.address,
+      selectedDenom,
+    ]);
 
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
@@ -995,7 +1012,8 @@ export const AmountScreen = observer(
 
       // External-interface-only assets (e.g. NAM): no supported quote chains, no
       // disabled flag. Show the provider list inline without a button/modal.
-      if (!hasSupportedChains && !areAssetTransfersDisabled) {
+      // Suppressed when halted: a kill switch must not route to external providers.
+      if (!hasSupportedChains && !areAssetTransfersDisabled && !haltState.halted) {
         return (
           <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
             <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
@@ -1054,10 +1072,16 @@ export const AmountScreen = observer(
                   <h1 className="body2">
                     {direction === "deposit"
                       ? t("transfer.depositsHalted", {
-                          asset: canonicalAsset?.coinDenom ?? "",
+                          asset:
+                            haltState.assetDenom ??
+                            canonicalAsset?.coinDenom ??
+                            "",
                         })
                       : t("transfer.withdrawalsHalted", {
-                          asset: canonicalAsset?.coinDenom ?? "",
+                          asset:
+                            haltState.assetDenom ??
+                            canonicalAsset?.coinDenom ??
+                            "",
                         })}
                   </h1>
                   <p className="body2 text-osmoverse-300">
