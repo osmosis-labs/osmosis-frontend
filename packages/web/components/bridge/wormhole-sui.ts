@@ -305,13 +305,35 @@ export interface AvailableSuiWallet {
   wallet: WalletWithRequiredFeatures;
 }
 
+/**
+ * The single Wallet Standard feature we actually invoke from this
+ * module (via `signAndExecuteTransaction` in `@mysten/wallet-standard`).
+ * A registration that doesn't advertise this isn't a Sui wallet for
+ * our purposes — relevant when a multi-chain wallet like Phantom
+ * registers a Solana-only entry under the same `wallet.name`.
+ */
+const SUI_SIGN_FEATURE = "sui:signAndExecuteTransaction" as const;
+
+function isSuiCapableWallet(wallet: {
+  features: Record<string, unknown>;
+}): boolean {
+  return SUI_SIGN_FEATURE in wallet.features;
+}
+
+/** Sui addresses are unambiguously 32-byte `0x`-prefixed hex strings. */
+function isSuiHexAddress(address: string): boolean {
+  return /^0x[0-9a-f]{64}$/i.test(address);
+}
+
 function findWalletByDescriptor(
-  wallets: readonly { name: string }[],
+  wallets: readonly { name: string; features?: Record<string, unknown> }[],
   descriptor: SuiWalletDescriptor
 ): WalletWithRequiredFeatures | undefined {
-  return wallets.find((w) => descriptor.walletNames.has(w.name)) as
-    | WalletWithRequiredFeatures
-    | undefined;
+  return wallets.find(
+    (w) =>
+      descriptor.walletNames.has(w.name) &&
+      isSuiCapableWallet({ features: w.features ?? {} })
+  ) as WalletWithRequiredFeatures | undefined;
 }
 
 /**
@@ -429,11 +451,18 @@ export async function connectSuiWallet(
   // accounts into the same Wallet Standard `accounts` array as Sui ones,
   // and may list a non-Sui account at index 0. Picking that blindly and
   // feeding it through `normalizeSuiAddress` produces a malformed
-  // "0x00…<base58-blob>" address and a confusing mismatch error. Filter
-  // by the per-account `chains` tag so we only ever pick a real Sui
-  // mainnet account.
-  const suiAccounts = wallet.accounts.filter((a) =>
-    a.chains.includes(SUI_MAINNET_CHAIN)
+  // "0x00…<base58-blob>" address and a confusing mismatch error.
+  //
+  // We accept an account either if it advertises `sui:mainnet` in its
+  // `chains` tag (Slush's canonical behaviour) OR if the address itself
+  // is a 32-byte `0x`-prefixed hex string. Phantom doesn't populate the
+  // per-account `chains` array for its Sui account in some builds, but
+  // its Sui address is still the unambiguous discriminator: Solana
+  // (base58), Bitcoin (bech32) and Ethereum (20-byte hex) addresses
+  // never match the 64-hex-char Sui shape. See live repro tx
+  // D70648F68D1DC6A8E663D3A0841A7037D9D786AEE755F89735ACD04E5F576562.
+  const suiAccounts = wallet.accounts.filter(
+    (a) => a.chains.includes(SUI_MAINNET_CHAIN) || isSuiHexAddress(a.address)
   );
   if (suiAccounts.length === 0) {
     throw new SuiRedeemError(
@@ -529,14 +558,18 @@ export async function executeSuiRedeem({
       `The connected ${connection.displayName} account is no longer available. Reconnect and try again.`
     );
   }
-  // Defense-in-depth: even though we filter by chain at connect time,
-  // a multi-chain wallet could have swapped its `accounts` array since
-  // then. Signing on a non-Sui-tagged account would surface a
-  // confusing wallet-side error.
-  if (!account.chains.includes(SUI_MAINNET_CHAIN)) {
+  // Defense-in-depth: even though we filter at connect time, a
+  // multi-chain wallet could have swapped its `accounts` array since
+  // then. Mirror the same accept-either-chain-tag-or-Sui-hex-shape
+  // logic; signing on a non-Sui account would surface a confusing
+  // wallet-side error.
+  if (
+    !account.chains.includes(SUI_MAINNET_CHAIN) &&
+    !isSuiHexAddress(account.address)
+  ) {
     throw new SuiRedeemError(
       "no_sui_account",
-      `The connected ${connection.displayName} account no longer advertises a Sui mainnet chain. Reconnect with a Sui account in ${connection.displayName} and try again.`
+      `The connected ${connection.displayName} account no longer looks like a Sui account. Reconnect with a Sui account in ${connection.displayName} and try again.`
     );
   }
 

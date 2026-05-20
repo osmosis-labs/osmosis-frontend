@@ -1,9 +1,27 @@
 type StubAccount = { address: string; chains: readonly string[] };
+type StubWalletFeatures = {
+  "standard:connect"?: { connect: jest.Mock };
+  "sui:signAndExecuteTransaction"?: object;
+};
 type StubWallet = {
   name: string;
   accounts?: readonly StubAccount[];
-  features?: { "standard:connect"?: { connect: jest.Mock } };
+  features?: StubWalletFeatures;
 };
+
+/**
+ * Default features for a Sui-capable Wallet Standard wallet. Used by
+ * helpers throughout the file so individual tests can override only
+ * what they care about (e.g. omit `sui:signAndExecuteTransaction` to
+ * simulate a Solana-only Phantom build).
+ */
+function suiCapableFeatures(): StubWalletFeatures {
+  return {
+    "standard:connect": { connect: jest.fn() },
+    "sui:signAndExecuteTransaction": {},
+  };
+}
+
 const mockGet: jest.Mock<StubWallet[], []> = jest.fn(() => []);
 const mockOn: jest.Mock<() => void, [string, () => void]> = jest.fn(
   (_event: string, _listener: () => void) => () => undefined
@@ -304,7 +322,9 @@ describe("executeSuiRedeem", () => {
 
 describe("listAvailableSuiWallets", () => {
   it("returns an empty list when no allowlisted wallets are registered", () => {
-    mockGet.mockReturnValue([{ name: "Random Other Wallet" }]);
+    mockGet.mockReturnValue([
+      { name: "Random Other Wallet", features: suiCapableFeatures() },
+    ]);
     expect(listAvailableSuiWallets()).toEqual([]);
   });
 
@@ -312,9 +332,9 @@ describe("listAvailableSuiWallets", () => {
     // Registered in reverse order to make sure we sort by registry, not
     // by Wallet Standard registration order.
     mockGet.mockReturnValue([
-      { name: "Phantom" },
-      { name: "Slush" },
-      { name: "Some Other Wallet" },
+      { name: "Phantom", features: suiCapableFeatures() },
+      { name: "Slush", features: suiCapableFeatures() },
+      { name: "Some Other Wallet", features: suiCapableFeatures() },
     ]);
 
     const result = listAvailableSuiWallets();
@@ -324,10 +344,23 @@ describe("listAvailableSuiWallets", () => {
   });
 
   it("accepts Slush legacy names (`Sui Wallet`)", () => {
-    mockGet.mockReturnValue([{ name: "Sui Wallet" }]);
+    mockGet.mockReturnValue([
+      { name: "Sui Wallet", features: suiCapableFeatures() },
+    ]);
     const result = listAvailableSuiWallets();
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe("slush");
+  });
+
+  it("skips a name-matching wallet that doesn't advertise the Sui sign feature", () => {
+    // Phantom registers a separate Solana-only wallet under the same
+    // "Phantom" name; if it doesn't expose sui:signAndExecuteTransaction
+    // we can't redeem through it and shouldn't offer it as an option.
+    const solanaOnly: StubWalletFeatures = {
+      "standard:connect": { connect: jest.fn() },
+    };
+    mockGet.mockReturnValue([{ name: "Phantom", features: solanaOnly }]);
+    expect(listAvailableSuiWallets()).toEqual([]);
   });
 });
 
@@ -340,7 +373,9 @@ describe("subscribeToAvailableSuiWallets", () => {
         delete listeners[event];
       };
     });
-    mockGet.mockReturnValue([{ name: "Slush" }]);
+    mockGet.mockReturnValue([
+      { name: "Slush", features: suiCapableFeatures() },
+    ]);
 
     const callback = jest.fn();
     const unsubscribe = subscribeToAvailableSuiWallets(callback);
@@ -351,7 +386,10 @@ describe("subscribeToAvailableSuiWallets", () => {
     ]);
 
     // Simulate a Phantom wallet registering after subscription.
-    mockGet.mockReturnValue([{ name: "Slush" }, { name: "Phantom" }]);
+    mockGet.mockReturnValue([
+      { name: "Slush", features: suiCapableFeatures() },
+      { name: "Phantom", features: suiCapableFeatures() },
+    ]);
     listeners.register?.();
 
     expect(callback).toHaveBeenCalledTimes(2);
@@ -374,12 +412,13 @@ describe("connectSuiWallet", () => {
 
   function makeStub(
     name: string,
-    accounts: readonly StubAccount[]
+    accounts: readonly StubAccount[],
+    featureOverrides?: Partial<StubWalletFeatures>
   ): StubWallet {
     return {
       name,
       accounts,
-      features: { "standard:connect": { connect: jest.fn() } },
+      features: { ...suiCapableFeatures(), ...featureOverrides },
     };
   }
 
@@ -437,6 +476,38 @@ describe("connectSuiWallet", () => {
   it("throws wallet_not_installed when the requested wallet is not registered", async () => {
     mockGet.mockReturnValue([]);
     await expect(connectSuiWallet("slush")).rejects.toMatchObject({
+      code: "wallet_not_installed",
+    });
+  });
+
+  it("accepts a Phantom Sui account that has an empty per-account chains array (Phantom quirk)", async () => {
+    // Phantom doesn't always populate `chains` for its Sui account but
+    // the address shape is unambiguously Sui (32-byte hex). Without
+    // this allowance the user gets a misleading no_sui_account error
+    // despite having a funded Sui account in Phantom — the live repro
+    // bug behind this fix.
+    mockGet.mockReturnValue([
+      makeStub("Phantom", [
+        { address: SOLANA_ACCOUNT_BASE58, chains: ["solana:mainnet"] },
+        { address: SUI_ACCOUNT_A, chains: [] },
+      ]),
+    ]);
+
+    const conn = await connectSuiWallet("phantom");
+    expect(conn.address).toBe(SUI_ACCOUNT_A);
+  });
+
+  it("throws wallet_not_installed when a name-matching wallet lacks sui:signAndExecuteTransaction", async () => {
+    // Solana-only Phantom build: same name, no Sui sign feature.
+    mockGet.mockReturnValue([
+      {
+        name: "Phantom",
+        accounts: [{ address: SUI_ACCOUNT_A, chains: ["sui:mainnet"] }],
+        features: { "standard:connect": { connect: jest.fn() } },
+      },
+    ]);
+
+    await expect(connectSuiWallet("phantom")).rejects.toMatchObject({
       code: "wallet_not_installed",
     });
   });
