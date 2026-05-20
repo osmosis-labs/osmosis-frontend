@@ -524,12 +524,33 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
 
 type Action = "deposit" | "withdraw" | "trade" | "earn";
 
-const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
+const getActionOptions = (
+  t: MultiLanguageT,
+  showConvertButton: boolean,
+  areDepositsHalted?: boolean,
+  areWithdrawalsHalted?: boolean
+) => {
   return [
     ...(showConvertButton
       ? [
-          { key: "deposit", label: t("portfolio.deposit"), icon: "deposit" },
-          { key: "withdraw", label: t("portfolio.withdraw"), icon: "withdraw" },
+          ...(areDepositsHalted
+            ? []
+            : [
+                {
+                  key: "deposit",
+                  label: t("portfolio.deposit"),
+                  icon: "deposit",
+                },
+              ]),
+          ...(areWithdrawalsHalted
+            ? []
+            : [
+                {
+                  key: "withdraw",
+                  label: t("portfolio.withdraw"),
+                  icon: "withdraw",
+                },
+              ]),
         ]
       : []),
     { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
@@ -567,7 +588,12 @@ const AssetActionsCell: AssetCellComponent<{
   const needsConversion = coinMinimalDenom !== variantGroupKey;
   const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
-  const actionOptions = getActionOptions(t, showConvertButton);
+  const actionOptions = getActionOptions(
+    t,
+    showConvertButton,
+    areDepositsHalted,
+    areWithdrawalsHalted
+  );
   const { setIsOpenForVariant } = useAssetVariantsModalStore();
 
   const onSelectAction = (action: Action) => {
@@ -577,11 +603,13 @@ const AssetActionsCell: AssetCellComponent<{
     } else if (action === "earn") {
       router.push(`/earn?search=${coinMinimalDenom}`);
     } else if (action === "deposit") {
+      if (areDepositsHalted) return;
       bridgeAsset({
         anyDenom: coinMinimalDenom,
         direction: "deposit",
       });
     } else if (action === "withdraw") {
+      if (areWithdrawalsHalted) return;
       bridgeAsset({
         anyDenom: coinMinimalDenom,
         direction: "withdraw",

@@ -947,7 +947,8 @@ export const AmountScreen = observer(
       canonicalAsset &&
       fromChain &&
       toChain &&
-      toAsset
+      toAsset &&
+      !haltState.halted
     ) {
       useBridgeStore.getState().setType("deposit-address");
       return (
@@ -1013,7 +1014,11 @@ export const AmountScreen = observer(
       // External-interface-only assets (e.g. NAM): no supported quote chains, no
       // disabled flag. Show the provider list inline without a button/modal.
       // Suppressed when halted: a kill switch must not route to external providers.
-      if (!hasSupportedChains && !areAssetTransfersDisabled && !haltState.halted) {
+      if (
+        !hasSupportedChains &&
+        !areAssetTransfersDisabled &&
+        !haltState.halted
+      ) {
         return (
           <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
             <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
