@@ -1477,5 +1477,46 @@
       "stepTitle": "تبدیل {symbol} به {symbol}.wh",
       "description": "شما {balance} {symbol} به صورت دارایی آلویدشده دارید. Wormhole واریانت {symbol}.wh را پل می‌زند، پس ابتدا تبدیل کنید و سپس در پایین پل بزنید."
     }
+  },
+  "dca": {
+    "tabTitle": "Recurring",
+    "perExecution": "Per execution",
+    "to": "To",
+    "every": "Every",
+    "totalDeposit": "Total deposit",
+    "totalRequired": "Enter a total deposit",
+    "totalLessThanPerExec": "Total must be ≥ amount per execution",
+    "executionSummary": "~{count} executions over ~{duration}",
+    "advancedOptions": "Advanced options",
+    "slippageTolerance": "Slippage tolerance",
+    "minReceive": "Min receive per execution",
+    "optional": "Optional",
+    "startTime": "Start",
+    "startNow": "Now",
+    "startAt": "Schedule",
+    "startAtUtcNote": "Times entered are UTC. Execution is approximate, depending on block time and keeper schedule.",
+    "createOrder": "Create recurring order",
+    "confirmTitle": "Confirm recurring order",
+    "confirmTotal": "Total deposit",
+    "confirmPerExec": "Per execution",
+    "confirmInterval": "Every {interval}",
+    "confirmDuration": "Duration",
+    "confirm": "Confirm",
+    "cancelVault": "Cancel",
+    "sameDenomError": "Select different assets",
+    "activeVaults": "Active recurring orders ({count})",
+    "vaultSwapAmount": "Amount per execution",
+    "vaultBalance": "Remaining balance",
+    "vaultReceived": "Total received",
+    "estimatedFirstExecution": "Estimated for first execution. Future amounts will vary with market price.",
+    "interval": {
+      "streaming": "Streaming",
+      "every5Min": "5 min",
+      "hourly": "Hourly",
+      "every4Hours": "Every 4h",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
   }
 }

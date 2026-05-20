@@ -1,27 +1,18 @@
+import { DcaVault } from "@osmosis-labs/server";
 import { useCallback } from "react";
 
 import { DCA_CONTRACT } from "~/config/dca";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export interface DcaVault {
-  id: string;
-  sendDenom: string;
-  targetDenom: string;
-  swapAmount: string;
-  timeInterval: string;
-  status: "Scheduled" | "Active" | "Inactive" | "Cancelled";
-  balance: string;
-  swappedAmount: string;
-  receivedAmount: string;
-}
+export type { DcaVault };
 
 export function useDcaVaults() {
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const userAddress = account?.address ?? "";
 
-  const enabled = !!userAddress && !!DCA_CONTRACT;
+  const enabled = !!userAddress;
 
   const {
     data,
@@ -37,7 +28,7 @@ export function useDcaVaults() {
 
   const cancelVault = useCallback(
     async (vaultId: string) => {
-      if (!account || !DCA_CONTRACT) return;
+      if (!account) return;
       await account.cosmwasm.sendExecuteContractMsg(
         "executeWasm",
         DCA_CONTRACT,
@@ -50,7 +41,7 @@ export function useDcaVaults() {
   );
 
   return {
-    vaults: (data?.vaults ?? []) as DcaVault[],
+    vaults: data?.vaults ?? [],
     isLoading: enabled && isLoading,
     refetch,
     cancelVault,

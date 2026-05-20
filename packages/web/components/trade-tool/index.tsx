@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import { DcaTool } from "~/components/dca-tool";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { SwapTool, SwapToolProps } from "~/components/swap-tool";
 import { OrderTypeSelector } from "~/components/swap-tool/order-type-selector";
@@ -17,7 +18,7 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags, useTranslation } from "~/hooks";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -42,6 +43,7 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
 
       const { accountStore } = useStore();
       const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+      const { dcaOrders } = useFeatureFlags();
 
       useEffect(() => {
         switch (tab) {
@@ -69,7 +71,7 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
             <div className="flex w-full items-center justify-between md:gap-2">
               <SwapToolTabs activeTab={tab} setTab={setTab} />
               <div className="flex items-center gap-2">
-                {tab !== SwapToolTab.SWAP && (
+                {tab !== SwapToolTab.SWAP && tab !== SwapToolTab.RECURRING && (
                   <OrderTypeSelector
                     initialBaseDenom={previousTrade?.baseDenom}
                     initialQuoteDenom={previousTrade?.quoteDenom}
@@ -113,6 +115,9 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
                       }}
                     />
                   );
+                case SwapToolTab.RECURRING:
+                  if (!dcaOrders) return null;
+                  return <DcaTool key="tool-recurring" page={page} />;
                 case SwapToolTab.SWAP:
                 default:
                   return (
@@ -134,7 +139,7 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
                     />
                   );
               }
-            }, [page, swapToolProps, tab, previousTrade, setPreviousTrade])}
+            }, [page, swapToolProps, tab, previousTrade, setPreviousTrade, dcaOrders])}
           </div>
 
           {children}

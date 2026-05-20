@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 
 export enum SwapToolTab {
   SWAP = "swap",
   BUY = "buy",
   SELL = "sell",
+  RECURRING = "recurring",
 }
 
 interface SwapToolTabsProps {
@@ -14,18 +15,12 @@ interface SwapToolTabsProps {
   activeTab: SwapToolTab;
 }
 
-/**
- * Component for swapping between tabs on the swap modal.
- * Has three tabs:
- * - Buy
- * - Sell
- * - Swap
- */
 export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
 }) => {
   const { t } = useTranslation();
+  const { dcaOrders } = useFeatureFlags();
 
   const tabs = useMemo(
     () => [
@@ -41,8 +36,16 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
         label: t("swap.title"),
         value: SwapToolTab.SWAP,
       },
+      ...(dcaOrders
+        ? [
+            {
+              label: t("dca.tabTitle"),
+              value: SwapToolTab.RECURRING,
+            },
+          ]
+        : []),
     ],
-    [t]
+    [t, dcaOrders]
   );
 
   return (

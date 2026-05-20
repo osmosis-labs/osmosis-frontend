@@ -1477,5 +1477,46 @@
       "stepTitle": "{symbol}을 {symbol}.wh로 변환",
       "description": "합금 자산으로 {balance} {symbol}을 보유하고 있습니다. Wormhole은 {symbol}.wh 변형을 브리지하므로 먼저 변환한 다음 아래에서 브리지하세요."
     }
+  },
+  "dca": {
+    "tabTitle": "Recurring",
+    "perExecution": "Per execution",
+    "to": "To",
+    "every": "Every",
+    "totalDeposit": "Total deposit",
+    "totalRequired": "Enter a total deposit",
+    "totalLessThanPerExec": "Total must be ≥ amount per execution",
+    "executionSummary": "~{count} executions over ~{duration}",
+    "advancedOptions": "Advanced options",
+    "slippageTolerance": "Slippage tolerance",
+    "minReceive": "Min receive per execution",
+    "optional": "Optional",
+    "startTime": "Start",
+    "startNow": "Now",
+    "startAt": "Schedule",
+    "startAtUtcNote": "Times entered are UTC. Execution is approximate, depending on block time and keeper schedule.",
+    "createOrder": "Create recurring order",
+    "confirmTitle": "Confirm recurring order",
+    "confirmTotal": "Total deposit",
+    "confirmPerExec": "Per execution",
+    "confirmInterval": "Every {interval}",
+    "confirmDuration": "Duration",
+    "confirm": "Confirm",
+    "cancelVault": "Cancel",
+    "sameDenomError": "Select different assets",
+    "activeVaults": "Active recurring orders ({count})",
+    "vaultSwapAmount": "Amount per execution",
+    "vaultBalance": "Remaining balance",
+    "vaultReceived": "Total received",
+    "estimatedFirstExecution": "Estimated for first execution. Future amounts will vary with market price.",
+    "interval": {
+      "streaming": "Streaming",
+      "every5Min": "5 min",
+      "hourly": "Hourly",
+      "every4Hours": "Every 4h",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
   }
 }

@@ -29,4 +29,6 @@ export type AvailableFlags =
   | "layerswapcoinbase"
   | "swapped"
   | "onrampmoney"
-  | "polarisBanner";
+  | "polarisBanner"
+  | "dcaOrders"
+  | "dcaSubHourly";

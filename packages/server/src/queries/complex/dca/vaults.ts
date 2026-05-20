@@ -54,7 +54,7 @@ export function getDcaVaultsByOwner({
           targetDenom: v.target_denom ?? "",
           swapAmount: v.swap_amount ?? "0",
           timeInterval: formatTimeInterval(v.time_interval),
-          status: v.status ?? "Active",
+          status: v.status,
           balance: v.balance?.amount ?? "0",
           swappedAmount: v.swapped_amount?.amount ?? "0",
           receivedAmount: v.received_amount?.amount ?? "0",
