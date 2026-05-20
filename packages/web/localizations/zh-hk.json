@@ -314,20 +314,43 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
-    "noData": "沒有數據",
-    "noOrderbook": "沒有配對訂單簿",
-    "uhOhSomethingWentWrong": "呃哦，出了點問題",
-    "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
-    "startAgain": "重新開始",
     "insufficientFeeTokens": {
       "title": "沒有餘額足夠的手續費代幣",
       "body": "請在 Osmosis 上存入 OSMO 或其他支援的手續費代幣以支付網絡費用。",
       "buttonLabel": "手續費餘額不足"
-    }
+    },
+    "noData": "沒有數據",
+    "noOrderbook": "沒有配對訂單簿",
+    "uhOhSomethingWentWrong": "呃哦，出了點問題",
+    "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
+    "startAgain": "重新開始"
   },
   "estimated": "估計的",
   "frontierMigration": {
     "proceed": "繼續"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "存款已停。原住民橋樑路線已中斷。",
+      "extended_unstable_market": "存款已停。該資產長期不穩定且處於非活躍狀態。",
+      "planned_shutdown": "存款已停。資產計劃關閉。",
+      "source_chain_killed": "存款已停。資金鏈已停止營運。",
+      "manual": "存款已停止，請謹慎操作。",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "提款已停止。本地橋樑路線已中斷。",
+      "source_chain_killed": "提現已停止。源鏈已停止運作。",
+      "manual": "提款已暫停，請謹慎操作。",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "該資產的供應鏈已停止運作。",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "不穩定，請謹慎行事。",
+    "unknown": "不穩定，請謹慎行事。"
   },
   "lockToken": {
     "amountToBond": "要鎖定嘅數量",
@@ -904,6 +927,8 @@
     "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。",
     "ibcConnectionDown": "原生IBC連接不可用",
     "ibcConnectionDownDescription": "{asset}的直接IBC路線目前已中斷。以下選項可能提供替代路徑，但也可能受到影響。",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset}的原生轉帳不可用",
     "noNativeTransfersDescription": "請使用以下替代提供者之一。",
     "sendFromWalletOrExchange": "從您的錢包或交易所發送",

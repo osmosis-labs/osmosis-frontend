@@ -314,20 +314,43 @@
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
-    "noData": "કોઈ ડેટા નથી",
-    "noOrderbook": "જોડી માટે કોઈ ઓર્ડરબુક નથી",
-    "uhOhSomethingWentWrong": "ઓહ, કંઈક ખોટું થયું",
-    "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
-    "startAgain": "ફરી શરૂ કરો",
     "insufficientFeeTokens": {
       "title": "પૂરતા બેલેન્સ સાથે કોઈ ફી ટોકન નથી",
       "body": "નેટવર્ક ફી ભરપાઈ કરવા માટે Osmosis પર OSMO અથવા અન્ય સમર્થિત ફી ટોકન જમા કરો.",
       "buttonLabel": "અપૂરતું ફી બેલેન્સ"
-    }
+    },
+    "noData": "કોઈ ડેટા નથી",
+    "noOrderbook": "જોડી માટે કોઈ ઓર્ડરબુક નથી",
+    "uhOhSomethingWentWrong": "ઓહ, કંઈક ખોટું થયું",
+    "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
+    "startAgain": "ફરી શરૂ કરો"
   },
   "estimated": "અંદાજિત",
   "frontierMigration": {
     "proceed": "આગળ વધો"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "થાપણો બંધ. મૂળ પુલનો માર્ગ બંધ છે.",
+      "extended_unstable_market": "થાપણો બંધ. સંપત્તિ લાંબા સમયથી અસ્થિર અને નિષ્ક્રિય છે.",
+      "planned_shutdown": "ડિપોઝિટ બંધ. સંપત્તિ બંધ થવાનું સુનિશ્ચિત થયેલ છે.",
+      "source_chain_killed": "ડિપોઝિટ બંધ થઈ ગઈ છે. સોર્સ ચેઈનનું સંચાલન બંધ થઈ ગયું છે.",
+      "manual": "ડિપોઝીટ બંધ, સાવધાની રાખો.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "ઉપાડ બંધ. મૂળ પુલ માર્ગ બંધ છે.",
+      "source_chain_killed": "ઉપાડ બંધ થઈ ગયો છે. સોર્સ ચેઈન બંધ થઈ ગઈ છે.",
+      "manual": "ઉપાડ બંધ, સાવધાની રાખો.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "આ સંપત્તિ માટે સ્રોત શૃંખલા બંધ થઈ ગઈ છે.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "અસ્થિર, સાવધાની રાખો.",
+    "unknown": "અસ્થિર, સાવધાની રાખો."
   },
   "lockToken": {
     "amountToBond": "બોન્ડ માટે રકમ",
@@ -904,6 +927,8 @@
     "transferWillLikelyTakeLonger": "સ્થાનાંતરણ સામાન્ય કરતાં વધુ સમય લેશે અથવા સંપૂર્ણપણે નિષ્ફળ થઈ શકે છે. તમારા પોતાના જોખમે આગળ વધો.",
     "ibcConnectionDown": "મૂળ IBC કનેક્શન અનુપલબ્ધ",
     "ibcConnectionDownDescription": "{asset} માટે સીધો IBC રૂટ હાલમાં બંધ છે. નીચેના વિકલ્પો વૈકલ્પિક પાથ ઓફર કરી શકે છે, પરંતુ તે પણ અસરગ્રસ્ત હોઈ શકે છે.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset} માટે મૂળ ટ્રાન્સફર અનુપલબ્ધ",
     "noNativeTransfersDescription": "કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
     "sendFromWalletOrExchange": "તમારા વૉલેટ અથવા એક્સચેન્જમાંથી મોકલો",
