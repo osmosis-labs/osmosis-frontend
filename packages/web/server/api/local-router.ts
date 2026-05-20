@@ -3,6 +3,7 @@ import {
   cmsRouter,
   concentratedLiquidityRouter,
   createTRPCRouter,
+  dcaRouter,
   oneClickTradingRouter,
   orderbookRouter,
   paramsRouter,
@@ -31,4 +32,5 @@ export const localRouter = createTRPCRouter({
   pools: poolsRouter,
   swapped: swappedRouter,
   tokenfactory: tokenfactoryRouter,
+  dca: dcaRouter,
 });

@@ -2,6 +2,7 @@ export * from "./assets";
 export * from "./authenticators";
 export * from "./chains";
 export * from "./concentrated-liquidity";
+export * from "./dca";
 export * from "./earn";
 export * from "./get-timeout-height";
 export * from "./orderbooks";

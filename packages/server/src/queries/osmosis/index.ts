@@ -1,5 +1,6 @@
 export * from "./authenticators";
 export * from "./concentratedliquidity";
+export * from "./dca-vaults";
 export * from "./epochs";
 export * from "./icns";
 export * from "./incentives";
