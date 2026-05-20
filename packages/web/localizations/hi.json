@@ -500,7 +500,8 @@
     "undelegating": "प्रत्यायोजित न करना",
     "yourStats": "आपका पूल संतुलन",
     "onlyInRangePositions": "केवल रेंज में पदों के लिए",
-    "custom": "रिवाज़"
+    "custom": "रिवाज़",
+    "nextRewardIn": "अगला पुरस्कार"
   },
   "pools": {
     "allPools": {

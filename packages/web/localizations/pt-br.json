@@ -500,7 +500,8 @@
     "undelegating": "removendo delegação",
     "yourStats": "O saldo da sua piscina",
     "onlyInRangePositions": "Apenas para posições no intervalo",
-    "custom": "Personalizado"
+    "custom": "Personalizado",
+    "nextRewardIn": "Próxima recompensa em"
   },
   "pools": {
     "allPools": {

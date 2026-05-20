@@ -500,7 +500,8 @@
     "undelegating": "undelegating",
     "yourStats": "Your pool balance",
     "onlyInRangePositions": "Only for positions in range",
-    "custom": "Custom"
+    "custom": "Custom",
+    "nextRewardIn": "Next reward in"
   },
   "pools": {
     "allPools": {

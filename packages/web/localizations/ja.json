@@ -500,7 +500,8 @@
     "undelegating": "委任を解除する",
     "yourStats": "プール残高",
     "onlyInRangePositions": "範囲内の位置のみ",
-    "custom": "カスタム"
+    "custom": "カスタム",
+    "nextRewardIn": "次の報酬まで"
   },
   "pools": {
     "allPools": {

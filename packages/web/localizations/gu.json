@@ -500,7 +500,8 @@
     "undelegating": "સોંપણી",
     "yourStats": "તમારું પૂલ બેલેન્સ",
     "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે",
-    "custom": "કસ્ટમ"
+    "custom": "કસ્ટમ",
+    "nextRewardIn": "પછીનું પુરસ્કાર"
   },
   "pools": {
     "allPools": {

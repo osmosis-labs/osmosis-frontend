@@ -500,7 +500,8 @@
     "undelegating": "delegasyonu bozulan",
     "yourStats": "Havuz bakiyeniz",
     "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için",
-    "custom": "Gelenek"
+    "custom": "Gelenek",
+    "nextRewardIn": "Sonraki ödül"
   },
   "pools": {
     "allPools": {

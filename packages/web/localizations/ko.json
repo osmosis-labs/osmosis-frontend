@@ -500,7 +500,8 @@
     "undelegating": "위임 해제중",
     "yourStats": "내 잔액",
     "onlyInRangePositions": "범위 내 위치에만 해당",
-    "custom": "관습"
+    "custom": "관습",
+    "nextRewardIn": "다음 보상까지"
   },
   "pools": {
     "allPools": {

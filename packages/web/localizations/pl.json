@@ -500,7 +500,8 @@
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
     "onlyInRangePositions": "Tylko dla pozycji w zasięgu",
-    "custom": "Zwyczaj"
+    "custom": "Zwyczaj",
+    "nextRewardIn": "Następna nagroda za"
   },
   "pools": {
     "allPools": {

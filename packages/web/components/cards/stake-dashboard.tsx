@@ -11,7 +11,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -136,7 +136,7 @@ export const StakeDashboard: React.FC<{
         titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
-        <div className="flex w-full flex-row gap-2 py-10 sm:flex-col sm:gap-6 sm:py-4">
+        <div className="flex w-full flex-row gap-2 py-10 xl:flex-col xl:gap-6 xl:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -147,6 +147,7 @@ export const StakeDashboard: React.FC<{
             dollarAmount={fiatRewards}
             osmoAmount={summedStakeRewards}
           />
+          {balance.toDec().isPositive() && <NextRewardCountdown />}
         </div>
         <ValidatorSquadCard
           hasInsufficientBalance={hasInsufficientBalance}
@@ -185,6 +186,24 @@ export const StakeDashboard: React.FC<{
   }
 );
 
+const NextRewardCountdown: React.FC = () => {
+  const { t } = useTranslation();
+  const timeRemaining = useDailyEpochCountdown();
+
+  if (!timeRemaining) return null;
+
+  return (
+    <div className="flex w-[13rem] shrink-0 flex-col items-start justify-start gap-1 text-left xl:w-full xl:items-center">
+      <span className="caption text-sm text-osmoverse-200 md:text-xs">
+        {t("pool.nextRewardIn")}
+      </span>
+      <h3 className="whitespace-nowrap bg-superfluid bg-clip-text text-h3 tabular-nums text-transparent xl:text-h4 lg:text-h5">
+        {timeRemaining}
+      </h3>
+    </div>
+  );
+};
+
 const StakeBalances: React.FC<{
   title: string;
   dollarAmount?: PricePretty;
@@ -214,7 +233,7 @@ const StakeBalances: React.FC<{
       </span>
       <h3
         className={classNames(
-          "whitespace-nowrap",
+          "whitespace-nowrap text-h3 xl:text-h4 lg:text-h5",
           flashDollar ? "animate-flash" : ""
         )}
       >

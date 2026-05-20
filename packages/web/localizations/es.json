@@ -500,7 +500,8 @@
     "undelegating": "desautorizando",
     "yourStats": "Su saldo de la piscina",
     "onlyInRangePositions": "Solo para posiciones en rango",
-    "custom": "Costumbre"
+    "custom": "Costumbre",
+    "nextRewardIn": "Próxima recompensa en"
   },
   "pools": {
     "allPools": {

@@ -500,7 +500,8 @@
     "undelegating": "nichtdelegieren",
     "yourStats": "Ihr Pool-Guthaben",
     "onlyInRangePositions": "Nur für Positionen in Reichweite",
-    "custom": "Brauch"
+    "custom": "Brauch",
+    "nextRewardIn": "Nächste Belohnung in"
   },
   "pools": {
     "allPools": {

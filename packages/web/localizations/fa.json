@@ -500,7 +500,8 @@
     "undelegating": "در حال خروج",
     "yourStats": "موجودی استخر شما",
     "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
-    "custom": "سفارشی"
+    "custom": "سفارشی",
+    "nextRewardIn": "پاداش بعدی در"
   },
   "pools": {
     "allPools": {
