@@ -311,43 +311,52 @@ export function useDuplicatePoolCheck({
     fetchNextPage,
     isError,
   } = api.local.pools.getPools.useInfiniteQuery(
-      {
-        denoms,
-        limit: 100,
-        // Don't filter by min liquidity — a duplicate at $0 TVL is still a
-        // duplicate, and the user should know about it.
-        minLiquidityUsd: 0,
-      },
-      {
-        enabled: queryEnabled,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-        initialCursor: 0,
-        // Pool list rarely changes meaningfully for duplicate-check purposes.
-        // 5-minute staleTime avoids refetching on every modal open while still
-        // catching a freshly-created duplicate within a reasonable window.
-        staleTime: 5 * 60 * 1000,
-        // expensive query, mirrors pools-table pattern
-        trpc: { context: { skipBatch: true } },
-      }
-    );
+    {
+      denoms,
+      limit: 100,
+      // Don't filter by min liquidity — a duplicate at $0 TVL is still a
+      // duplicate, and the user should know about it.
+      minLiquidityUsd: 0,
+    },
+    {
+      enabled: queryEnabled,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+      // Pool list rarely changes meaningfully for duplicate-check purposes.
+      // 5-minute staleTime avoids refetching on every modal open while still
+      // catching a freshly-created duplicate within a reasonable window.
+      staleTime: 5 * 60 * 1000,
+      // expensive query, mirrors pools-table pattern
+      trpc: { context: { skipBatch: true } },
+    }
+  );
 
   // Auto-fetch every page so a low-TVL duplicate beyond the first page
-  // is not silently missed.
+  // is not silently missed. Skipped once the query errors — `hasNextPage`
+  // stays true after a failed `fetchNextPage()` (it's driven by the last
+  // successful page's cursor), and re-firing on every settle would create
+  // an infinite retry loop.
   useEffect(() => {
-    if (queryEnabled && hasNextPage && !isFetchingNextPage) {
+    if (queryEnabled && hasNextPage && !isFetchingNextPage && !isError) {
       fetchNextPage();
     }
-  }, [queryEnabled, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [queryEnabled, hasNextPage, isFetchingNextPage, isError, fetchNextPage]);
 
   return useMemo<DuplicatePoolCheckResult>(() => {
     if (!proposed || !queryEnabled) {
       return { status: "idle", exactMatches: [], similarMatches: [] };
     }
-    // If the first fetch errored with nothing cached, surface ready+empty
-    // rather than wedging the gate in "loading" forever. The duplicate check
-    // is a soft guard — better to let creation proceed than to deadlock.
-    if (isError && !data) {
-      return { status: "ready", exactMatches: [], similarMatches: [] };
+    // Soft-guard: on any query error, classify whatever pages we did fetch
+    // (possibly none) and resolve to "ready" rather than wedging the gate
+    // in "loading" forever. Catches both first-page failure and mid-stream
+    // pagination failure.
+    if (isError) {
+      const partial = data?.pages.flatMap((p) => p.items) ?? [];
+      const { exactMatches, similarMatches } = classifyMatches(
+        proposed,
+        partial
+      );
+      return { status: "ready", exactMatches, similarMatches };
     }
     const stillFetching = isFetching || isFetchingNextPage || hasNextPage;
     if (!data || stillFetching) {
@@ -387,7 +396,13 @@ export function useDuplicateGate({
   exactMatches: ExistingPoolSummary[];
   proposed: ProposedPool | null;
 }): void {
-  const exactMatchKey = exactMatches.map((m) => m.id).join("|");
+  // Sort ids before joining so a pure TVL reordering of the same matched
+  // set doesn't look like a different identity and silently clear the
+  // user's acknowledgement.
+  const exactMatchKey = exactMatches
+    .map((m) => m.id)
+    .sort()
+    .join("|");
   const isPending = proposed !== null && status === "loading";
   const hasExact = exactMatches.length > 0;
 

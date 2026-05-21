@@ -24,11 +24,7 @@ const fiat = (n: number) => new PricePretty(usd, new Dec(n));
 const tvl = (n: number): Pool["totalFiatValueLocked"] => fiat(n);
 const spread = (s: string): RatePretty => new RatePretty(new Dec(s));
 
-const baseFields = (
-  id: string,
-  tvlNumber: number,
-  spreadFactor: string
-) => ({
+const baseFields = (id: string, tvlNumber: number, spreadFactor: string) => ({
   id,
   spreadFactor: spread(spreadFactor),
   reserveCoins: [] as CoinPretty[],
