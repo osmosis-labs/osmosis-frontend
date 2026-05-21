@@ -35,14 +35,6 @@ export const DuplicatePoolCallout: FunctionComponent<
 }) => {
   const { t } = useTranslation();
 
-  if (
-    status === "ready" &&
-    exactMatches.length === 0 &&
-    similarMatches.length === 0
-  ) {
-    return null;
-  }
-
   if (status === "loading") {
     return (
       <div className="rounded-xl bg-osmoverse-900 px-4 py-3 text-osmoverse-300">
@@ -65,6 +57,11 @@ export const DuplicatePoolCallout: FunctionComponent<
         </span>
       </div>
     );
+  }
+
+  // idle, or ready/error with empty buckets — nothing to render.
+  if (exactMatches.length === 0 && similarMatches.length === 0) {
+    return null;
   }
 
   return (
