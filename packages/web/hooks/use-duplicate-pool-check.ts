@@ -305,7 +305,7 @@ export function useDuplicatePoolCheck({
 
   const {
     data,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -385,12 +385,16 @@ export function useDuplicatePoolCheck({
       );
       return { status: "error", exactMatches, similarMatches };
     }
+    // Use `isLoading` (initial-fetch-only), not `isFetching` (also true on
+    // background refetches). Otherwise a focus-driven refetch under
+    // `staleTime: 0` would briefly drop us back to "loading" with empty
+    // matches, which `useDuplicateGate` would observe as `hasExact = false`
+    // and use to clear the user's acknowledgement mid-refetch.
     // Treat `hasNextPage` as "still fetching" only while we're still
-    // willing to fetch more (i.e. under the MAX_PAGES cap). Past the cap
-    // the cursor is still non-empty but we've decided to stop, so the
-    // hook should resolve rather than hang in "loading".
+    // willing to fetch more (under the MAX_PAGES cap); past the cap the
+    // cursor is still non-empty but we've decided to stop.
     const stillFetching =
-      isFetching || isFetchingNextPage || (hasNextPage && canFetchMore);
+      isLoading || isFetchingNextPage || (hasNextPage && canFetchMore);
     if (!data || stillFetching) {
       return { status: "loading", exactMatches: [], similarMatches: [] };
     }
@@ -404,7 +408,7 @@ export function useDuplicatePoolCheck({
     proposed,
     queryEnabled,
     data,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     isError,
