@@ -7,6 +7,7 @@ import {
 import {
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTimeLimit,
+  OptionalOneClickCategory,
 } from "@osmosis-labs/types";
 import type { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
@@ -121,6 +122,10 @@ export interface OneClickTradingInfo {
   readonly sessionStartedAtUnix: number;
   readonly allowedMessages: string[];
   readonly hasSeenExpiryToast: boolean;
+  /** Which optional permission categories were enabled at session creation.
+   *  Absent on sessions created before this field existed; readers should
+   *  default to all-on for those for backwards compatibility. */
+  readonly enabledOptionalCategories?: Record<OptionalOneClickCategory, boolean>;
 }
 
 /**

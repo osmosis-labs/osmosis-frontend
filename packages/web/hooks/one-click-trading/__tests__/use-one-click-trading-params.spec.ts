@@ -44,7 +44,10 @@ const defaultOneClickTradingInfo: OneClickTradingInfo = {
 
 const defaultApiResponse: Pick<
   OneClickTradingTransactionParams,
-  "networkFeeLimit" | "spendLimit" | "sessionPeriod"
+  | "networkFeeLimit"
+  | "spendLimit"
+  | "sessionPeriod"
+  | "enabledOptionalCategories"
 > & {
   spendLimitTokenDecimals: number;
 } = {
@@ -57,6 +60,7 @@ const defaultApiResponse: Pick<
   sessionPeriod: {
     end: DEFAULT_SESSION_PERIOD,
   },
+  enabledOptionalCategories: { poolManagement: true },
 };
 
 // msw-trpc did not deserialize the spendLimit prop, so we mock it here

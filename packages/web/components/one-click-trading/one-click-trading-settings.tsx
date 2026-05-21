@@ -1,6 +1,11 @@
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  DEFAULT_ENABLED_OPTIONAL_CATEGORIES,
+  OneClickTradingTransactionParams,
+  OPTIONAL_ONE_CLICK_CATEGORIES,
+  OptionalOneClickCategory,
+} from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -120,6 +125,18 @@ export function compare1CTTransactionParams({
 
   if (prevParams?.networkFeeLimit !== nextParams?.networkFeeLimit) {
     changes.push("networkFeeLimit");
+  }
+
+  const prevCategories = prevParams?.enabledOptionalCategories;
+  const nextCategories = nextParams?.enabledOptionalCategories;
+  if (
+    prevCategories &&
+    nextCategories &&
+    OPTIONAL_ONE_CLICK_CATEGORIES.some(
+      (category) => prevCategories[category] !== nextCategories[category]
+    )
+  ) {
+    changes.push("enabledOptionalCategories");
   }
 
   return changes;
@@ -498,6 +515,27 @@ export const OneClickTradingSettings = ({
                   />
                 </div>
 
+                <PermissionsSection
+                  enabledOptionalCategories={
+                    transaction1CTParams?.enabledOptionalCategories ??
+                    DEFAULT_ENABLED_OPTIONAL_CATEGORIES
+                  }
+                  onChange={(category, enabled) =>
+                    setTransaction1CTParams((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            enabledOptionalCategories: {
+                              ...prev.enabledOptionalCategories,
+                              [category]: enabled,
+                            },
+                          }
+                        : prev
+                    )
+                  }
+                  isDisabled={isDisabled}
+                />
+
                 {standalone &&
                   hasExistingSession &&
                   changes.filter((c) => c !== "isEnabled").length > 0 &&
@@ -625,6 +663,75 @@ const SettingRow = ({
     >
       <p className="text-subtitle1 font-subtitle1">{title}</p>
       <div>{content}</div>
+    </div>
+  );
+};
+
+interface PermissionsSectionProps {
+  enabledOptionalCategories: Record<OptionalOneClickCategory, boolean>;
+  onChange: (category: OptionalOneClickCategory, enabled: boolean) => void;
+  isDisabled?: boolean;
+}
+
+/** Literal translation keys per category, kept here so the localizations
+ *  key-usage test (which grep's tsx source for the literal string) sees
+ *  every key. Adding a new optional category requires extending this map. */
+const CATEGORY_TRANSLATION_KEYS: Record<
+  OptionalOneClickCategory,
+  { label: string; caption: string }
+> = {
+  poolManagement: {
+    label: "oneClickTrading.settings.permissions.poolManagement.label",
+    caption: "oneClickTrading.settings.permissions.poolManagement.caption",
+  },
+};
+
+/** Renders one toggle per optional category. Forced categories (swaps,
+ *  rewards) are not exposed - they're always on. */
+const PermissionsSection: FunctionComponent<PermissionsSectionProps> = ({
+  enabledOptionalCategories,
+  onChange,
+  isDisabled,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={classNames(
+        "flex flex-col gap-2 px-8 pt-2",
+        isDisabled && "pointer-events-none opacity-50"
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <p className="text-subtitle1 font-subtitle1">
+          {t("oneClickTrading.settings.permissions.title")}
+        </p>
+      </div>
+      <p className="text-caption font-caption text-osmoverse-300">
+        {t("oneClickTrading.settings.permissions.caption")}
+      </p>
+      <div className="flex flex-col">
+        {OPTIONAL_ONE_CLICK_CATEGORIES.map((category) => {
+          const keys = CATEGORY_TRANSLATION_KEYS[category];
+          return (
+            <div
+              key={category}
+              className="flex items-start justify-between gap-4 border-b border-osmoverse-700 py-3.5 last:border-none"
+            >
+              <div className="flex flex-col">
+                <p className="text-subtitle2 font-subtitle2">{t(keys.label)}</p>
+                <p className="text-caption font-caption text-osmoverse-400">
+                  {t(keys.caption)}
+                </p>
+              </div>
+              <Switch
+                checked={enabledOptionalCategories[category]}
+                onCheckedChange={(checked) => onChange(category, checked)}
+                disabled={isDisabled}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

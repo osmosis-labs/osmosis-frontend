@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { Spinner } from "~/components/loaders";
+import { OneClickPermissionsSummary } from "~/components/one-click-trading/one-click-permissions-summary";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 
@@ -97,10 +98,17 @@ export const OneClickTradingWelcomeBack = ({
         />
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col items-center gap-1">
         <p className="text-center text-caption font-caption text-osmoverse-300">
           {t("oneClickTrading.welcomeBack.description")}
         </p>
+        <OneClickPermissionsSummary
+          enabledOptionalCategories={
+            transaction1CTParams?.enabledOptionalCategories
+          }
+          includeForced
+          className="text-center"
+        />
       </div>
     </div>
   );

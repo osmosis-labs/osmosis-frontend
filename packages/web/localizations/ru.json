@@ -377,6 +377,13 @@
     "settings": "Настройки"
   },
   "oneClickTrading": {
+    "permissionsSummary": {
+      "prefix": "Includes:",
+      "categoryLabel": {
+        "swaps": "Swaps",
+        "rewards": "Rewards & claims"
+      }
+    },
     "toast": {
       "oneClickTradingActive": "Торговля в 1 клик активна",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
@@ -448,6 +455,14 @@
         "message": "Хотите ли вы сохранить существующие настройки торговли в 1 клик?",
         "cancelButton": "Отмена",
         "discardButton": "Отказаться"
+      },
+      "permissions": {
+        "title": "Permissions",
+        "caption": "Swaps and reward claims are always allowed. Narrow the scope to just what you need - you can always start a fresh session later with broader permissions.",
+        "poolManagement": {
+          "label": "Pool management",
+          "caption": "Add, remove, and create liquidity positions on Osmosis pools."
+        }
       }
     },
     "welcomeBack": {
