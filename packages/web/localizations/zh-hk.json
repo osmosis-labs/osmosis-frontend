@@ -1035,7 +1035,8 @@
       "price": "價格",
       "volume": "體積",
       "advanced": "先進的",
-      "simple": "簡單的"
+      "simple": "簡單的",
+      "lastUpdate": "最後更新: {time}"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",

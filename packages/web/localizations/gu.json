@@ -1035,7 +1035,8 @@
       "price": "કિંમત",
       "volume": "વોલ્યુમ",
       "advanced": "અદ્યતન",
-      "simple": "સરળ"
+      "simple": "સરળ",
+      "lastUpdate": "છેલ્લું અપડેટ: {time}"
     },
     "watchlist": "વૉચલિસ્ટ",
     "marketCapRank": "માર્કેટ કેપ રેન્ક",

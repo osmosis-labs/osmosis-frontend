@@ -1035,7 +1035,8 @@
       "price": "Cena",
       "volume": "Tom",
       "advanced": "Zaawansowany",
-      "simple": "Prosty"
+      "simple": "Prosty",
+      "lastUpdate": "Ostatnia aktualizacja: {time}"
     },
     "watchlist": "Lista obserwowanych",
     "marketCapRank": "Ranking kapitalizacji rynkowej",

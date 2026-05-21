@@ -1035,7 +1035,8 @@
       "price": "कीमत",
       "volume": "आयतन",
       "advanced": "विकसित",
-      "simple": "सरल"
+      "simple": "सरल",
+      "lastUpdate": "अंतिम अपडेट: {time}"
     },
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",

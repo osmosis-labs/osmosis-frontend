@@ -7,12 +7,13 @@ export function humanizeTime(
   value: number | string;
   unitTranslationKey: string;
 }[] {
-  // If less than a minute, show seconds
-  const secondsDiff = date.diff(dayjs(), "seconds");
+  // Use absolute diffs so both future ("in 2 hours") and past ("2 hours ago")
+  // produce the same unit/value breakdown. Direction is the caller's concern.
+  const secondsDiff = Math.abs(date.diff(dayjs(), "seconds"));
   if (secondsDiff < 60) {
     return [
       {
-        value: Math.max(secondsDiff, 0),
+        value: secondsDiff,
         unitTranslationKey:
           secondsDiff === 1
             ? useShortTimeUnits
@@ -25,7 +26,7 @@ export function humanizeTime(
     ];
   }
 
-  const minutesDiff = date.diff(dayjs(), "minutes");
+  const minutesDiff = Math.abs(date.diff(dayjs(), "minutes"));
   if (minutesDiff < 60) {
     return [
       {
@@ -42,9 +43,9 @@ export function humanizeTime(
     ];
   }
 
-  const hoursDiff = date.diff(dayjs(), "hours");
+  const hoursDiff = Math.abs(date.diff(dayjs(), "hours"));
   if (hoursDiff < 24) {
-    const minutes = date.diff(dayjs(), "minutes") % 60;
+    const minutes = Math.abs(date.diff(dayjs(), "minutes")) % 60;
     return [
       {
         value: hoursDiff,
@@ -71,9 +72,9 @@ export function humanizeTime(
     ];
   }
 
-  const daysDiff = date.diff(dayjs(), "days");
+  const daysDiff = Math.abs(date.diff(dayjs(), "days"));
   if (daysDiff < 30) {
-    const hours = date.diff(dayjs(), "hours") % 24;
+    const hours = Math.abs(date.diff(dayjs(), "hours")) % 24;
     return [
       {
         value: daysDiff,

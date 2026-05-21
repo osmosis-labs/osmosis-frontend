@@ -1035,7 +1035,8 @@
       "price": "Price",
       "volume": "Volume",
       "advanced": "Advanced",
-      "simple": "Simple"
+      "simple": "Simple",
+      "lastUpdate": "Last update: {time}"
     },
     "watchlist": "Watchlist",
     "marketCapRank": "Market cap rank",

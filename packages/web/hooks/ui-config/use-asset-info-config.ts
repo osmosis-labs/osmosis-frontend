@@ -177,6 +177,29 @@ export const useAssetInfoConfig = (
     config.setHistoricalDataError(isErrorCoingecko);
   }
 
+  // Independent query for the single most recent price point at the finest
+  // available bucket. Used so the stale-data pill shows a consistent
+  // "last update" across timeframes instead of jittering with each range's
+  // bucket size. The input intentionally does NOT include historicalRange or
+  // dataType — those would invalidate the cache on every timeframe switch.
+  const { data: latestPricePoint } =
+    api.edge.assets.getAssetLatestPricePoint.useQuery(
+      {
+        coinMinimalDenom: coinMinimalDenom ?? denom,
+        realtime,
+      },
+      {
+        enabled: Boolean(coinMinimalDenom ?? denom),
+        staleTime: realtime ? 3000 : 1000 * 60 * 3,
+        cacheTime: realtime ? 3000 : 1000 * 60 * 6,
+        trpc: { context: { skipBatch: true } },
+      }
+    );
+
+  config.setLatestPricePointTimeSec(
+    latestPricePoint ? latestPricePoint.time : undefined
+  );
+
   return config;
 };
 
@@ -191,6 +214,11 @@ export const AvailablePriceRanges = {
 
 export type PriceRange =
   (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
+
+const DEFAULT_STALE_THRESHOLD_MS = 60 * 60 * 1000;
+const STALE_THRESHOLD_MS_BY_RANGE: Partial<Record<PriceRange, number>> = {
+  "1h": 15 * 60 * 1000,
+};
 
 const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
@@ -239,6 +267,9 @@ export class ObservableAssetInfoConfig {
   @observable
   protected _isHistoricalDataLoading: boolean = false;
 
+  @observable
+  protected _latestPricePointTimeSec?: number = undefined;
+
   protected _disposers: (() => void)[] = [];
 
   denom: string;
@@ -248,6 +279,11 @@ export class ObservableAssetInfoConfig {
   @action
   readonly setHistoricalData = (data: TokenHistoricalPrice[]) => {
     this._historicalData = data;
+  };
+
+  @action
+  readonly setLatestPricePointTimeSec = (timeSec?: number) => {
+    this._latestPricePointTimeSec = timeSec;
   };
 
   @computed
@@ -305,6 +341,29 @@ export class ObservableAssetInfoConfig {
     const data: ChartTick[] = [...this.historicalChartData];
 
     return data.pop();
+  }
+
+  @computed
+  get lastChartTimestampMs(): number | undefined {
+    return this._latestPricePointTimeSec !== undefined
+      ? this._latestPricePointTimeSec * 1000
+      : undefined;
+  }
+
+  // Reactivity note: reads Date.now() but is recomputed when
+  // _latestPricePointTimeSec or _historicalRange changes, which is sufficient
+  // since the chart rerenders on those triggers. Do not wrap in setInterval.
+  @computed
+  get historicalChartStale(): boolean {
+    if (this.isHistoricalDataLoading || this.historicalChartUnavailable) {
+      return false;
+    }
+    if (this._latestPricePointTimeSec === undefined) return false;
+    const threshold =
+      STALE_THRESHOLD_MS_BY_RANGE[this._historicalRange] ??
+      DEFAULT_STALE_THRESHOLD_MS;
+    const ageMs = Date.now() - this._latestPricePointTimeSec * 1000;
+    return ageMs > threshold;
   }
 
   @computed
