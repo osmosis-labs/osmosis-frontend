@@ -512,6 +512,29 @@ export const assetsRouter = createTRPCRouter({
         }).catch((e) => captureErrorAndReturn(e, []));
       }
     }),
+  /**
+   * Returns the single most recent historical price point at the finest
+   * available bucket. Used to render a timeframe-independent "last update"
+   * value (e.g. for a stale-data indicator) without re-keying off whichever
+   * range the chart happens to be displaying.
+   */
+  getAssetLatestPricePoint: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenom: z.string(),
+        realtime: z.boolean().optional(),
+      })
+    )
+    .query(({ input: { coinMinimalDenom, realtime } }) =>
+      getAssetHistoricalPrice({
+        coinMinimalDenom,
+        timeFrame: 5,
+        numRecentFrames: 1,
+        realtime,
+      })
+        .then((points) => points[points.length - 1] ?? null)
+        .catch((e) => captureErrorAndReturn(e, null))
+    ),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
