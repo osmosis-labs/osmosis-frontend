@@ -115,12 +115,12 @@ export const SelectType: FunctionComponent<{
           })()}
         </div>
       )}
-      <div className="flex w-full flex-wrap justify-center gap-4">
+      <div className="flex w-full justify-center gap-4 md:flex-wrap">
         {others.map((type) => {
           const { caption, imageSrc, iconId } = getTypeConfig(type)!;
           return (
             <button
-              className="w-full max-w-[296px]"
+              className="min-w-0 flex-1 md:w-full md:max-w-[296px] md:flex-none"
               key={type}
               onClick={() => setSelectedType(type)}
             >
