@@ -11,7 +11,7 @@ import {
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
@@ -19,8 +19,12 @@ import { DuplicatePoolCallout } from "~/components/complex/pool/create/duplicate
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { CL_POOL_CREATION_TICK_SPACING } from "~/config";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
-import { useDuplicatePoolCheck } from "~/hooks/use-duplicate-pool-check";
+import {
+  useDuplicateGate,
+  useDuplicatePoolCheck,
+} from "~/hooks/use-duplicate-pool-check";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -39,8 +43,6 @@ interface SetBaseInfosProps {
   setPoolId: (value: string) => void;
   onUseExistingPool?: (poolId: string) => void;
 }
-
-const CL_TICK_SPACING = 100;
 
 export const SetBaseInfos = observer(
   ({
@@ -101,24 +103,19 @@ export const SetBaseInfos = observer(
         denom0: baseDenom,
         denom1: quoteDenom,
         spreadFactor: selectedSpread,
-        tickSpacing: CL_TICK_SPACING,
+        tickSpacing: CL_POOL_CREATION_TICK_SPACING,
       };
     }, [baseDenom, quoteDenom, selectedSpread]);
     const duplicateCheck = useDuplicatePoolCheck({
       proposed: duplicateProposed,
       enabled: Boolean(baseDenom && quoteDenom),
     });
-    const hasExactDuplicate = duplicateCheck.exactMatches.length > 0;
-
-    // Sync gate flag onto the config so step-base / the create button can
-    // disable when an exact duplicate is unacknowledged. Resetting the
-    // acknowledgement on hasExactDuplicate=false also covers the pair / fee
-    // change case: the underlying query re-runs and exactMatches updates,
-    // which clears the prior acknowledgement.
-    useEffect(() => {
-      config.duplicateBlocking = hasExactDuplicate;
-      if (!hasExactDuplicate) config.duplicateAcknowledged = false;
-    }, [config, hasExactDuplicate]);
+    useDuplicateGate({
+      config,
+      status: duplicateCheck.status,
+      exactMatches: duplicateCheck.exactMatches,
+      proposed: duplicateProposed,
+    });
 
     const is18DecimalBase =
       selectedBase?.token.coinDecimals === 18 &&
@@ -268,7 +265,7 @@ export const SetBaseInfos = observer(
                 .sendCreateConcentratedPoolMsg(
                   selectedBase?.token.coinMinimalDenom!,
                   selectedQuote?.token.coinMinimalDenom!,
-                  100,
+                  CL_POOL_CREATION_TICK_SPACING,
                   +selectedSpread,
                   undefined,
                   (res) => {

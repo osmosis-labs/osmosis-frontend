@@ -24,9 +24,13 @@ const fiat = (n: number) => new PricePretty(usd, new Dec(n));
 const tvl = (n: number): Pool["totalFiatValueLocked"] => fiat(n);
 const spread = (s: string): RatePretty => new RatePretty(new Dec(s));
 
-const baseFields = (id: string, tvlNumber: number) => ({
+const baseFields = (
+  id: string,
+  tvlNumber: number,
+  spreadFactor: string
+) => ({
   id,
-  spreadFactor: spread("0.003"),
+  spreadFactor: spread(spreadFactor),
   reserveCoins: [] as CoinPretty[],
   totalFiatValueLocked: tvl(tvlNumber),
 });
@@ -38,7 +42,7 @@ function weightedPool(
   tvlNumber = 100
 ): Pool {
   return {
-    ...baseFields(id, tvlNumber),
+    ...baseFields(id, tvlNumber, swapFee),
     type: "weighted",
     raw: {
       id,
@@ -63,7 +67,7 @@ function stablePool(
   tvlNumber = 100
 ): Pool {
   return {
-    ...baseFields(id, tvlNumber),
+    ...baseFields(id, tvlNumber, swapFee),
     type: "stable",
     raw: {
       address: "",
@@ -87,9 +91,8 @@ function clPool(
   tvlNumber = 100
 ): Pool {
   return {
-    ...baseFields(id, tvlNumber),
+    ...baseFields(id, tvlNumber, spreadFactor),
     type: "concentrated",
-    spreadFactor: spread(spreadFactor),
     raw: {
       address: "",
       incentives_address: "",
@@ -299,6 +302,18 @@ describe("classifyMatches — stable", () => {
         ["1000000", "1"],
         "0.0001"
       ),
+    ];
+    const { exactMatches, similarMatches } = classifyMatches(
+      proposed,
+      candidates
+    );
+    expect(exactMatches).toHaveLength(0);
+    expect(similarMatches).toHaveLength(1);
+  });
+
+  it("flags identical denoms + identical scaling + different swap fee as similar, not exact", () => {
+    const candidates: Pool[] = [
+      stablePool("3", [{ denom: ATOM }, { denom: OSMO }], ["1", "1"], "0.003"),
     ];
     const { exactMatches, similarMatches } = classifyMatches(
       proposed,

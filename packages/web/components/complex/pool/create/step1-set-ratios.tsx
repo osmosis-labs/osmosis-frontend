@@ -2,7 +2,7 @@ import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { DuplicatePoolCallout } from "~/components/complex/pool/create/duplicate-pool-callout";
 import { StepBase } from "~/components/complex/pool/create/step-base";
@@ -14,6 +14,7 @@ import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import {
   type ProposedPool,
+  useDuplicateGate,
   useDuplicatePoolCheck,
 } from "~/hooks/use-duplicate-pool-check";
 
@@ -91,14 +92,7 @@ export const Step1SetRatios: FunctionComponent<Step1Props> = observer(
       proposed,
       enabled: true,
     });
-
-    // Sync the gate flag onto the config so step-base can disable Next when
-    // there's an unacknowledged exact duplicate.
-    useEffect(() => {
-      const hasExact = exactMatches.length > 0;
-      config.duplicateBlocking = hasExact;
-      if (!hasExact) config.duplicateAcknowledged = false;
-    }, [config, exactMatches.length]);
+    useDuplicateGate({ config, status, exactMatches, proposed });
 
     return (
       <StepBase step={1} {...props}>

@@ -1,5 +1,13 @@
-import type { Pool } from "@osmosis-labs/server";
+import {
+  getConcentratedRaw,
+  getPoolRawDenoms,
+  getStableRaw,
+  getWeightedRaw,
+  type Pool,
+} from "@osmosis-labs/server";
+import type { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec } from "@osmosis-labs/unit";
+import { runInAction } from "mobx";
 import { useEffect, useMemo } from "react";
 
 import { api } from "~/utils/trpc";
@@ -97,50 +105,19 @@ function sameDenomSet(a: string[], b: string[]): boolean {
   return true;
 }
 
-function poolDenoms(pool: Pool): string[] {
-  const raw = pool.raw as Record<string, unknown>;
-  if (pool.type === "weighted" && Array.isArray(raw.pool_assets)) {
-    return (raw.pool_assets as Array<{ token: { denom: string } }>).map(
-      (a) => a.token.denom
-    );
-  }
-  if (pool.type === "stable" && Array.isArray(raw.pool_liquidity)) {
-    return (raw.pool_liquidity as Array<{ denom: string }>).map((a) => a.denom);
-  }
-  if (
-    pool.type === "concentrated" &&
-    typeof raw.token0 === "string" &&
-    typeof raw.token1 === "string"
-  ) {
-    return [raw.token0 as string, raw.token1 as string];
-  }
-  // Cosmwasm types — fall back to reserveCoins
-  return pool.reserveCoins.map((c) => c.currency.coinMinimalDenom);
-}
-
-function poolSwapFee(pool: Pool): string | undefined {
-  const raw = pool.raw as Record<string, unknown>;
-  if (pool.type === "weighted" || pool.type === "stable") {
-    const params = raw.pool_params as { swap_fee?: string } | undefined;
-    return params?.swap_fee;
-  }
-  if (pool.type === "concentrated") {
-    return typeof raw.spread_factor === "string"
-      ? (raw.spread_factor as string)
-      : undefined;
-  }
-  return undefined;
+/** Pool fee in canonical decimal-string form, regardless of pool type. The
+ *  server already normalises `pool_params.swap_fee` (weighted/stable) and
+ *  `spread_factor` (concentrated) into `pool.spreadFactor`. */
+function poolFeeDec(pool: Pool): string {
+  return pool.spreadFactor.toDec().toString();
 }
 
 function isExactWeighted(
   proposed: Extract<ProposedPool, { kind: "weighted" }>,
   pool: Pool
 ): boolean {
-  if (pool.type !== "weighted") return false;
-  const raw = pool.raw as {
-    pool_assets?: Array<{ weight: string; token: { denom: string } }>;
-    total_weight?: string;
-  };
+  const raw = getWeightedRaw(pool);
+  if (!raw) return false;
   const assets = raw.pool_assets;
   const totalWeight = raw.total_weight;
   if (!assets || !totalWeight) return false;
@@ -179,20 +156,15 @@ function isExactWeighted(
       .toString();
     if (proposedScaled !== existingScaled) return false;
   }
-  const fee = poolSwapFee(pool);
-  if (fee === undefined) return false;
-  return decEq(fee, proposed.swapFee);
+  return decEq(poolFeeDec(pool), proposed.swapFee);
 }
 
 function isExactStable(
   proposed: Extract<ProposedPool, { kind: "stable" }>,
   pool: Pool
 ): boolean {
-  if (pool.type !== "stable") return false;
-  const raw = pool.raw as {
-    pool_liquidity?: Array<{ denom: string }>;
-    scaling_factors?: string[];
-  };
+  const raw = getStableRaw(pool);
+  if (!raw) return false;
   const liquidity = raw.pool_liquidity;
   const factors = raw.scaling_factors;
   if (!liquidity || !factors) return false;
@@ -206,20 +178,15 @@ function isExactStable(
     if (proposedFactor === undefined) return false;
     if (!decEq(String(proposedFactor), factors[i])) return false;
   }
-  return true;
+  return decEq(poolFeeDec(pool), proposed.swapFee);
 }
 
 function isExactConcentrated(
   proposed: Extract<ProposedPool, { kind: "concentrated" }>,
   pool: Pool
 ): boolean {
-  if (pool.type !== "concentrated") return false;
-  const raw = pool.raw as {
-    token0?: string;
-    token1?: string;
-    spread_factor?: string;
-    tick_spacing?: string;
-  };
+  const raw = getConcentratedRaw(pool);
+  if (!raw) return false;
   if (!raw.token0 || !raw.token1) return false;
   const proposedCanonical = canonicalizeCLPair(
     proposed.denom0,
@@ -232,11 +199,9 @@ function isExactConcentrated(
   ) {
     return false;
   }
-  if (raw.spread_factor === undefined) return false;
-  if (!decEq(raw.spread_factor, proposed.spreadFactor)) return false;
+  if (!decEq(poolFeeDec(pool), proposed.spreadFactor)) return false;
   if (raw.tick_spacing === undefined) return false;
-  if (!decEq(raw.tick_spacing, String(proposed.tickSpacing))) return false;
-  return true;
+  return decEq(raw.tick_spacing, String(proposed.tickSpacing));
 }
 
 function hasSameDenomSet(proposed: ProposedPool, pool: Pool): boolean {
@@ -250,12 +215,11 @@ function hasSameDenomSet(proposed: ProposedPool, pool: Pool): boolean {
     proposed.kind === "concentrated"
       ? [proposed.denom0, proposed.denom1]
       : proposed.denoms;
-  return sameDenomSet(proposedDenoms, poolDenoms(pool));
+  return sameDenomSet(proposedDenoms, getPoolRawDenoms(pool));
 }
 
 function summarize(pool: Pool): ExistingPoolSummary {
-  const fee = poolSwapFee(pool);
-  const denoms = poolDenoms(pool);
+  const denoms = getPoolRawDenoms(pool);
   // Map each denom to its display symbol via the pool's reserveCoins lookup.
   // reserveCoins ordering does not always match raw denom ordering, so resolve
   // by minimal denom rather than index.
@@ -272,7 +236,7 @@ function summarize(pool: Pool): ExistingPoolSummary {
     totalFiatValueLocked: pool.totalFiatValueLocked,
     tvlNumber: Number(pool.totalFiatValueLocked.toDec().toString()),
     detailUrl: `/pool/${pool.id}`,
-    feeRaw: fee ?? "",
+    feeRaw: poolFeeDec(pool),
   };
 }
 
@@ -339,8 +303,14 @@ export function useDuplicatePoolCheck({
   const denoms = proposed ? getProposedDenoms(proposed) : [];
   const queryEnabled = enabled && denoms.length >= 2;
 
-  const { data, isFetching, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    api.local.pools.getPools.useInfiniteQuery(
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    isError,
+  } = api.local.pools.getPools.useInfiniteQuery(
       {
         denoms,
         limit: 100,
@@ -373,6 +343,12 @@ export function useDuplicatePoolCheck({
     if (!proposed || !queryEnabled) {
       return { status: "idle", exactMatches: [], similarMatches: [] };
     }
+    // If the first fetch errored with nothing cached, surface ready+empty
+    // rather than wedging the gate in "loading" forever. The duplicate check
+    // is a soft guard — better to let creation proceed than to deadlock.
+    if (isError && !data) {
+      return { status: "ready", exactMatches: [], similarMatches: [] };
+    }
     const stillFetching = isFetching || isFetchingNextPage || hasNextPage;
     if (!data || stillFetching) {
       return { status: "loading", exactMatches: [], similarMatches: [] };
@@ -390,5 +366,41 @@ export function useDuplicatePoolCheck({
     isFetching,
     isFetchingNextPage,
     hasNextPage,
+    isError,
   ]);
+}
+
+/** Wraps the gate-flag writes onto `ObservableCreatePoolConfig`. Sets
+ *  `duplicateBlocking` while the duplicate check is loading or has an exact
+ *  match, and resets `duplicateAcknowledged` when the matched-pool identity
+ *  changes (or when there's no exact match). Both writes go through a single
+ *  `runInAction` per change to keep mobx semantics clean and avoid the
+ *  side-effect-from-component-effect pattern. */
+export function useDuplicateGate({
+  config,
+  status,
+  exactMatches,
+  proposed,
+}: {
+  config: ObservableCreatePoolConfig;
+  status: DuplicatePoolCheckResult["status"];
+  exactMatches: ExistingPoolSummary[];
+  proposed: ProposedPool | null;
+}): void {
+  const exactMatchKey = exactMatches.map((m) => m.id).join("|");
+  const isPending = proposed !== null && status === "loading";
+  const hasExact = exactMatches.length > 0;
+
+  useEffect(() => {
+    runInAction(() => {
+      config.duplicateBlocking = isPending || hasExact;
+      if (!hasExact) config.duplicateAcknowledged = false;
+    });
+  }, [config, isPending, hasExact]);
+
+  useEffect(() => {
+    runInAction(() => {
+      config.duplicateAcknowledged = false;
+    });
+  }, [config, exactMatchKey]);
 }
