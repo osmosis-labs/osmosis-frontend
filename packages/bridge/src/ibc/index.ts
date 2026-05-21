@@ -355,31 +355,10 @@ export class IbcBridgeProvider implements BridgeProvider {
     );
   }
 
-  async getExternalUrl({
-    fromChain,
-    toChain,
-    fromAsset,
-    toAsset,
-  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "cosmos") {
-      return undefined;
-    }
-
-    const url = new URL("https://app.tfm.com/");
-    if (fromChain) {
-      url.searchParams.set("chainFrom", fromChain.chainId);
-    }
-    if (fromAsset) {
-      url.searchParams.set("token0", fromAsset.address);
-    }
-    if (toChain) {
-      url.searchParams.set("chainTo", toChain.chainId);
-    }
-    if (toAsset) {
-      url.searchParams.set("token1", toAsset.address);
-    }
-
-    return { urlProviderName: "TFM", url };
+  async getExternalUrl(
+    _params: GetBridgeExternalUrlParams
+  ): Promise<BridgeExternalUrl | undefined> {
+    return undefined;
   }
 
   async getProtoRegistry() {

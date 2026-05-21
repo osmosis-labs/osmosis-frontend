@@ -48,10 +48,15 @@ import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
+import {
+  depositHaltReasonKey,
+  withdrawalHaltReasonKey,
+} from "~/utils/halt-reasons";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 import { ChainLogo } from "../assets/chain-logo";
+import { LinkifiedText } from "../linkified-text";
 import {
   SupportedAssetWithAmount,
   SupportedBridgeInfo,
@@ -62,8 +67,8 @@ import {
   chainTypesRequiringManualAddress,
 } from "./bridge-wallet-select-modal";
 import {
+  ExternalOnlyProviderList,
   MoreBridgeOptionsModal,
-  OnlyExternalBridgeSuggest,
 } from "./more-bridge-options";
 import {
   BridgeProviderDropdownRow,
@@ -115,7 +120,6 @@ interface AmountScreenProps {
   quote: BridgeQuote;
 
   onConfirm: () => void;
-  onClose: () => void;
 }
 
 export const AmountScreen = observer(
@@ -157,7 +161,6 @@ export const AmountScreen = observer(
     quote,
 
     onConfirm,
-    onClose,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
@@ -695,6 +698,51 @@ export const AmountScreen = observer(
           );
     }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
 
+    /** If the current direction is halted for this asset. Halt is distinct
+     *  from `disabled`: halted transfers show a reason and do NOT fall back
+     *  to external providers, whereas disabled transfers route to external
+     *  providers. Resolves the specific variant the user has selected so
+     *  the halt flag on a non-canonical IBC denom is not missed (mirrors
+     *  the `withdrawAsset` resolution in amount-and-review-screen). The
+     *  returned `assetDenom` is used in the banner title so it matches
+     *  the variant being blocked. */
+    const haltState = useMemo<{
+      halted: boolean;
+      reason?: string;
+      tooltip?: string;
+      assetDenom?: string;
+    }>(() => {
+      if (direction === "withdraw") {
+        const withdrawAsset =
+          assetsInOsmosis?.find(
+            (a) =>
+              a.coinDenom === selectedDenom ||
+              a.coinMinimalDenom === selectedDenom
+          ) ?? canonicalAsset;
+        return {
+          halted: Boolean(withdrawAsset?.areWithdrawalsHalted),
+          reason: withdrawAsset?.withdrawalHaltReason,
+          tooltip: withdrawAsset?.tooltipMessage,
+          assetDenom: withdrawAsset?.coinDenom,
+        };
+      }
+      const osmosisAsset = assetsInOsmosis?.find(
+        (a) => a.coinMinimalDenom === toAsset?.address
+      );
+      return {
+        halted: Boolean(osmosisAsset?.areDepositsHalted),
+        reason: osmosisAsset?.depositHaltReason,
+        tooltip: osmosisAsset?.tooltipMessage,
+        assetDenom: osmosisAsset?.coinDenom ?? canonicalAsset?.coinDenom,
+      };
+    }, [
+      direction,
+      canonicalAsset,
+      assetsInOsmosis,
+      toAsset?.address,
+      selectedDenom,
+    ]);
+
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
         if (isNil(fromAsset?.decimals)) return;
@@ -899,7 +947,8 @@ export const AmountScreen = observer(
       canonicalAsset &&
       fromChain &&
       toChain &&
-      toAsset
+      toAsset &&
+      !haltState.halted
     ) {
       useBridgeStore.getState().setType("deposit-address");
       return (
@@ -927,6 +976,7 @@ export const AmountScreen = observer(
       !isLoading &&
       (!hasSupportedChains ||
         areAssetTransfersDisabled ||
+        haltState.halted ||
         !fromChain ||
         !fromAsset ||
         !toChain ||
@@ -934,31 +984,171 @@ export const AmountScreen = observer(
         hasBalanceError ||
         !quote.enabled)
     ) {
+      // When there are no supported chains (e.g. external-interface-only assets like
+      // NAM), fromAsset/toAsset/fromChain/toChain are all undefined. Build fallbacks
+      // from canonicalAsset so the MoreBridgeOptionsModal can still fire its query and
+      // surface any external_interface transfer methods from the asset list.
+      const canonicalAssetFallback = canonicalAsset
+        ? {
+            address: canonicalAsset.coinMinimalDenom,
+            decimals: canonicalAsset.coinDecimals,
+            denom: canonicalAsset.coinDenom,
+            coinGeckoId: canonicalAsset.coinGeckoId,
+          }
+        : undefined;
+      const osmosisChainFallback: BridgeChainWithDisplayInfo = {
+        chainId: accountStore.osmosisChainId,
+        chainType: "cosmos" as const,
+        bech32Prefix: "osmo",
+        prettyName: "Osmosis",
+      };
+
+      const fallbackFromAsset = fromAsset ?? canonicalAssetFallback;
+      const fallbackToAsset = toAsset ?? canonicalAssetFallback;
+      const fallbackFromChain =
+        fromChain ??
+        (direction === "withdraw" ? osmosisChainFallback : undefined);
+      const fallbackToChain =
+        toChain ?? (direction === "deposit" ? osmosisChainFallback : undefined);
+
+      // External-interface-only assets (e.g. NAM): no supported quote chains, no
+      // disabled flag. Show the provider list inline without a button/modal.
+      // Suppressed when halted: a kill switch must not route to external providers.
+      if (
+        !hasSupportedChains &&
+        !areAssetTransfersDisabled &&
+        !haltState.halted
+      ) {
+        return (
+          <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
+            <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
+              {!canonicalAsset ? (
+                <SkeletonLoader className="h-8 w-full max-w-sm md:h-4" />
+              ) : (
+                <>
+                  <span>
+                    {direction === "deposit"
+                      ? t("transfer.deposit")
+                      : t("transfer.withdraw")}
+                  </span>{" "}
+                  <button
+                    className="flex items-center gap-3"
+                    onClick={() => setCurrentScreen(BridgeScreen.Asset)}
+                  >
+                    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                      <EntityImage
+                        logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
+                        name={canonicalAsset.coinName}
+                        symbol={canonicalAsset.coinDenom}
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <span>{canonicalAsset.coinDenom}</span>
+                  </button>
+                </>
+              )}
+            </div>
+            <ExternalOnlyProviderList
+              assetDenom={canonicalAsset?.coinDenom ?? ""}
+              direction={direction}
+              fromAsset={fallbackFromAsset}
+              toAsset={fallbackToAsset}
+              fromChain={fallbackFromChain}
+              toChain={fallbackToChain}
+              toAddress={toAddress}
+              bridges={supportedBridgeInfo.allBridges}
+            />
+          </div>
+        );
+      }
+
       return (
         <>
           {hasSupportedChains && chainSelection}
-          <OnlyExternalBridgeSuggest
-            direction={direction}
-            toChain={toChain}
-            toAsset={
-              // If we haven't supported a chain, we can't suggest an asset
-              // so we use the canonical asset as a fallback
-              canonicalAsset && !toAsset && !hasSupportedChains
-                ? {
-                    address: canonicalAsset?.coinMinimalDenom,
-                    decimals: canonicalAsset?.coinDecimals,
-                    denom: canonicalAsset?.coinDenom,
-                    coinGeckoId: canonicalAsset?.coinGeckoId,
-                  }
-                : toAsset
-            }
-            canonicalAssetDenom={canonicalAsset?.coinDenom}
-            fromChain={fromChain}
-            fromAsset={fromAsset}
-            toAddress={toAddress}
-            bridges={supportedBridgeInfo.allBridges}
-            onDone={onClose}
-          />
+          <div className="flex flex-col gap-3">
+            {haltState.halted ? (
+              <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                <Icon
+                  id="alert-triangle"
+                  className="h-6 w-6 shrink-0 text-rust-600"
+                />
+                <div className="flex flex-col">
+                  <h1 className="body2">
+                    {direction === "deposit"
+                      ? t("transfer.depositsHalted", {
+                          asset:
+                            haltState.assetDenom ??
+                            canonicalAsset?.coinDenom ??
+                            "",
+                        })
+                      : t("transfer.withdrawalsHalted", {
+                          asset:
+                            haltState.assetDenom ??
+                            canonicalAsset?.coinDenom ??
+                            "",
+                        })}
+                  </h1>
+                  <p className="body2 text-osmoverse-300">
+                    {t(
+                      direction === "deposit"
+                        ? depositHaltReasonKey(haltState.reason)
+                        : withdrawalHaltReasonKey(haltState.reason)
+                    )}
+                  </p>
+                  {haltState.tooltip && (
+                    <p className="caption mt-1 text-osmoverse-400">
+                      <LinkifiedText text={haltState.tooltip} />
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              areAssetTransfersDisabled && (
+                <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                  <Icon
+                    id="alert-triangle"
+                    className="h-6 w-6 shrink-0 text-rust-600"
+                  />
+                  <div className="flex flex-col">
+                    <h1 className="body2">{t("transfer.ibcConnectionDown")}</h1>
+                    <p className="body2 text-osmoverse-300">
+                      {t("transfer.ibcConnectionDownDescription", {
+                        asset: canonicalAsset?.coinDenom ?? "",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              )
+            )}
+            {!haltState.halted && (
+              <>
+                <Button
+                  variant="default"
+                  className="w-full md:h-12"
+                  onClick={() => setAreMoreOptionsVisible(true)}
+                  disabled={isNil(fallbackFromAsset) || isNil(fallbackToAsset)}
+                >
+                  <div className="md:subtitle1 text-h6 font-h6">
+                    {direction === "deposit"
+                      ? t("transfer.moreDepositOptions")
+                      : t("transfer.moreWithdrawOptions")}
+                  </div>
+                </Button>
+                <MoreBridgeOptionsModal
+                  direction={direction}
+                  isOpen={areMoreOptionsVisible}
+                  fromAsset={fallbackFromAsset}
+                  toAsset={fallbackToAsset}
+                  fromChain={fallbackFromChain}
+                  toChain={fallbackToChain}
+                  toAddress={toAddress}
+                  bridges={supportedBridgeInfo.allBridges}
+                  onRequestClose={() => setAreMoreOptionsVisible(false)}
+                />
+              </>
+            )}
+          </div>
         </>
       );
     }

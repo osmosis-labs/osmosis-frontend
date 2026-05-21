@@ -314,20 +314,43 @@
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
-    "noData": "Нет данных",
-    "noOrderbook": "Нет книги заказов для пары",
-    "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
-    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
-    "startAgain": "Начать заново",
     "insufficientFeeTokens": {
       "title": "Нет токенов для оплаты комиссии с достаточным балансом",
       "body": "Внесите OSMO или другой поддерживаемый токен комиссии в Osmosis, чтобы покрыть сетевой сбор.",
       "buttonLabel": "Недостаточный баланс для комиссии"
-    }
+    },
+    "noData": "Нет данных",
+    "noOrderbook": "Нет книги заказов для пары",
+    "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
+    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
+    "startAgain": "Начать заново"
   },
   "estimated": "Оцененный",
   "frontierMigration": {
     "proceed": "Продолжить"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Внесение депозитов приостановлено. Маршрут по местному мосту закрыт.",
+      "extended_unstable_market": "Приём депозитов приостановлен. Актив был нестабилен и неактивен в течение длительного периода времени.",
+      "planned_shutdown": "Прием депозитов приостановлен. Объект планируется закрыть.",
+      "source_chain_killed": "Запуск месторождений приостановлен. Работа цепочки поставок прекращена.",
+      "manual": "Приём депозитов приостановлен, будьте осторожны.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Отступление приостановлено. Маршрут через местный мост недоступен.",
+      "source_chain_killed": "Вывоз приостановлен. Работа цепочки поставок прекращена.",
+      "manual": "Вывод средств приостановлен, соблюдайте осторожность.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "Производство данного актива прекращено.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Нестабильная обстановка, следует проявлять осторожность.",
+    "unknown": "Нестабильная обстановка, следует проявлять осторожность."
   },
   "lockToken": {
     "amountToBond": "Сумма залога",
@@ -500,7 +523,8 @@
     "undelegating": "отказ от делегирования",
     "yourStats": "Ваш баланс в пуле",
     "onlyInRangePositions": "Только для позиций в диапазоне",
-    "custom": "Обычай"
+    "custom": "Обычай",
+    "nextRewardIn": "Следующая награда через"
   },
   "pools": {
     "allPools": {
@@ -832,14 +856,11 @@
       "titleWithdraw": "Больше вариантов вывода",
       "depositDescriptionUnknown": "Чтобы внести {denom} , используйте альтернативного поставщика.",
       "withdrawDescriptionUnknown": "Чтобы вывести {denom} , используйте альтернативного поставщика.",
-      "singleDescriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} , используйте {service} .",
-      "singleDescriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} , используйте {service} .",
-      "descriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
-      "descriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
       "chooseAnAlternativeProviderDeposit": "Выберите альтернативного поставщика для внесения {asset} из {fromChain} в {toChain}",
       "chooseAnAlternativeProviderWithdraw": "Выберите альтернативного поставщика для вывода {asset} из {fromChain} в {toChain}",
       "depositWith": "Депозит с",
-      "withdrawWith": "Вывод средств с помощью"
+      "withdrawWith": "Вывод средств с помощью",
+      "noAlternativesFound": "Альтернативные поставщики для этого маршрута не найдены."
     },
     "assetSelectScreen": {
       "titleDeposit": "Выберите актив для депозита",
@@ -890,7 +911,6 @@
     "transferWithNoun": "Передача с помощью {noun}",
     "risks": "Преодоление сопряжено с риском.",
     "learnMore": "Узнать больше",
-    "openNoun": "Открыть {noun}",
     "accountNotFound": "Аккаунт не найден",
     "sendFundsToAccount": "Пожалуйста, отправьте газовый токен на ваш счет {chain} перед переводом {asset} .",
     "insufficientFundsForFees": "Недостаточно средств для оплаты комиссий",
@@ -906,6 +926,12 @@
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, обновите страницу и повторите попытку или воспользуйтесь альтернативным приложением для перевода средств в Osmosis.",
     "assetIsCurrentlyUnstable": "Передачи {asset} в настоящее время нестабильны.",
     "transferWillLikelyTakeLonger": "Переносы, скорее всего, займут больше времени, чем обычно, или могут полностью завершиться неудачей. Действуйте на свой страх и риск.",
+    "ibcConnectionDown": "Нативное подключение IBC недоступно",
+    "ibcConnectionDownDescription": "Прямой IBC-маршрут для {asset} в настоящее время недоступен. Варианты ниже могут предложить альтернативный путь, но также могут быть затронуты.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "noNativeTransfers": "Нативные переводы недоступны для {asset}",
+    "noNativeTransfersDescription": "Пожалуйста, воспользуйтесь одним из альтернативных поставщиков ниже.",
     "sendFromWalletOrExchange": "Отправьте из своего кошелька или обменяйте",
     "scanWithMobileWallet": "Сканируйте с помощью мобильного кошелька",
     "or": "или",
@@ -975,6 +1001,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Сплавленный актив",
+      "alloyedBody": "Это сплавленный актив Osmosis. Базовый контракт контролируется ончейн-управлением Osmosis.",
+      "renouncedTitle": "Администратор отказался",
+      "renouncedBody": "Ни один адрес не может выпускать, сжигать или изменять этот токен. Администратор был навсегда передан на адрес сжигания.",
+      "governanceTitle": "Контролируется управлением",
+      "governanceBody": "Изменения этого токена требуют предложения ончейн-управления Osmosis.",
+      "contractTitle": "Администратор — это контракт или мультисиг",
+      "contractBody": "Администратор — это адрес смарт-контракта или мультисига. Поведение зависит от его кода или подписантов.",
+      "walletTitle": "Администратор — это единственный кошелек",
+      "walletBody": "Единственный кошелек может в любой момент выпускать новые средства, сжигать токены или изменять метаданные. Убедитесь, что доверяете эмитенту."
+    },
     "explorePools": "Исследуйте бассейны",
     "yourBalance": "Ваш баланс",
     "onOsmosis": "по осмосу",

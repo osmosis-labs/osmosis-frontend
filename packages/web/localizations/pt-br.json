@@ -314,20 +314,43 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados",
-    "noOrderbook": "Sem carteira de pedidos para par",
-    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
-    "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
-    "startAgain": "Comece de novo",
     "insufficientFeeTokens": {
       "title": "Nenhum token de taxa com saldo suficiente",
       "body": "Deposite OSMO ou outro token de taxa compatível na Osmosis para cobrir a taxa de rede.",
       "buttonLabel": "Saldo de taxa insuficiente"
-    }
+    },
+    "noData": "Sem dados",
+    "noOrderbook": "Sem carteira de pedidos para par",
+    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
+    "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
+    "startAgain": "Comece de novo"
   },
   "estimated": "Estimado",
   "frontierMigration": {
     "proceed": "Prosseguir"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Depósitos interrompidos. Rota da ponte indígena interditada.",
+      "extended_unstable_market": "Depósitos suspensos. O ativo está instável e inativo há um longo período.",
+      "planned_shutdown": "Depósitos suspensos. O ativo está programado para ser desativado.",
+      "source_chain_killed": "Depósitos suspensos. A cadeia de suprimentos parou de operar.",
+      "manual": "Depósitos suspensos, tenha cautela.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Retiradas suspensas. Rota da ponte indígena interditada.",
+      "source_chain_killed": "Saques suspensos. A cadeia de origem parou de funcionar.",
+      "manual": "Retiradas suspensas, tenha cautela.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "A cadeia de suprimentos para este ativo cessou suas operações.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Instável, tenha cautela.",
+    "unknown": "Instável, tenha cautela."
   },
   "lockToken": {
     "amountToBond": "Quantia para travar",
@@ -500,7 +523,8 @@
     "undelegating": "removendo delegação",
     "yourStats": "O saldo da sua piscina",
     "onlyInRangePositions": "Apenas para posições no intervalo",
-    "custom": "Personalizado"
+    "custom": "Personalizado",
+    "nextRewardIn": "Próxima recompensa em"
   },
   "pools": {
     "allPools": {
@@ -832,14 +856,11 @@
       "titleWithdraw": "Mais opções de retirada",
       "depositDescriptionUnknown": "Para depositar {denom} , use um provedor alternativo.",
       "withdrawDescriptionUnknown": "Para retirar {denom} , use um provedor alternativo.",
-      "singleDescriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use {service} .",
-      "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use {service} .",
-      "descriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
-      "descriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
       "chooseAnAlternativeProviderDeposit": "Escolha um provedor alternativo para depositar {asset} de {fromChain} para {toChain}",
       "chooseAnAlternativeProviderWithdraw": "Escolha um provedor alternativo para retirar {asset} de {fromChain} para {toChain}",
       "depositWith": "Deposite com",
-      "withdrawWith": "Retirar com"
+      "withdrawWith": "Retirar com",
+      "noAlternativesFound": "Nenhum provedor alternativo encontrado para esta rota."
     },
     "assetSelectScreen": {
       "titleDeposit": "Selecione um ativo para depositar",
@@ -890,7 +911,6 @@
     "transferWithNoun": "Transferir com {noun}",
     "risks": "Fazer uma ponte traz riscos.",
     "learnMore": "Saber mais",
-    "openNoun": "Abra {noun}",
     "accountNotFound": "Conta não encontrada",
     "sendFundsToAccount": "Envie um token de gás para sua conta {chain} antes de transferir {asset} .",
     "insufficientFundsForFees": "Fundos insuficientes para taxas",
@@ -906,6 +926,12 @@
     "sorryForTheInconvenience": "Desculpe pela inconveniência. Atualize a página e tente novamente ou use um aplicativo alternativo para transferir seus fundos para o Osmosis.",
     "assetIsCurrentlyUnstable": "As transferências {asset} estão instáveis no momento",
     "transferWillLikelyTakeLonger": "As transferências provavelmente levarão mais tempo do que o normal ou poderão falhar totalmente. Prossiga por sua conta e risco.",
+    "ibcConnectionDown": "Conexão IBC nativa indisponível",
+    "ibcConnectionDownDescription": "A rota IBC direta para {asset} está atualmente inativa. As opções abaixo podem oferecer um caminho alternativo, mas também podem ser afetadas.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "noNativeTransfers": "Transferências nativas indisponíveis para {asset}",
+    "noNativeTransfersDescription": "Por favor, use um dos provedores alternativos abaixo.",
     "sendFromWalletOrExchange": "Envie da sua carteira ou bolsa",
     "scanWithMobileWallet": "Digitalize com sua carteira móvel",
     "or": "ou",
@@ -975,6 +1001,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Ativo aliado",
+      "alloyedBody": "Este é um ativo aliado da Osmosis. O contrato subjacente é controlado pela governança on-chain da Osmosis.",
+      "renouncedTitle": "Administrador renunciado",
+      "renouncedBody": "Nenhum endereço pode cunhar, queimar ou alterar este token. A administração foi transferida permanentemente para o endereço de queima.",
+      "governanceTitle": "Controlado pela governança",
+      "governanceBody": "Alterações neste token exigem uma proposta de governança on-chain da Osmosis.",
+      "contractTitle": "O administrador é um contrato ou multisig",
+      "contractBody": "O administrador é um endereço de contrato inteligente ou multisig. O comportamento depende de seu código ou signatários.",
+      "walletTitle": "O administrador é uma carteira única",
+      "walletBody": "Uma única carteira pode cunhar nova oferta, queimar tokens ou alterar metadados a qualquer momento. Verifique se você confia no emissor."
+    },
     "explorePools": "Explorar piscinas",
     "yourBalance": "Seu balanço",
     "onOsmosis": "em osmose",

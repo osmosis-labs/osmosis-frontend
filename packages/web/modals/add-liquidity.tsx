@@ -97,8 +97,6 @@ export const AddLiquidityModal: FunctionComponent<
     const poolRaw = pool.raw as ConcentratedPoolRawResponse;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const hasTVL =
-      pool.tvlUnknown || !pool.totalFiatValueLocked.toDec().isZero();
 
     // Check if values are zero (handles both "0" and "0.000000..." strings)
     const isSqrtPriceZero = currentSqrtPrice
@@ -108,11 +106,14 @@ export const AddLiquidityModal: FunctionComponent<
       ? parseFloat(currentTickLiquidity) === 0
       : false;
 
-    // Tier 1: Uninitialized Pool - has never been initialized (no price set)
-    // Only classify as uninitialized if there's NO TVL at all
-    // Note: Inactive pools (TVL > 0 but zero tick liquidity) are handled inside AddConcLiquidity component
-    const isUninitializedPool =
-      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    // Tier 1: Uninitialized Pool - has never been initialized (no first
+    // position created). On Osmosis CL, current_sqrt_price only becomes
+    // non-zero when the first position is created, so this is a reliable
+    // chain-derived signal regardless of whether TVL is known. Avoid relying
+    // on hasTVL here so a future regression in the TVL signal cannot route
+    // an uninitialized pool into the inactive flow.
+    // Note: Inactive pools (positions exist but all out of range) are handled inside AddConcLiquidity component
+    const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero;
 
     // For uninitialized pools (but NOT inactive pools), show the initial liquidity addition interface
     // Inactive pools already have out-of-range liquidity, so they should use the normal add liquidity flow

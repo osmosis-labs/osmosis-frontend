@@ -8,4 +8,5 @@ export * from "./mint";
 export * from "./orderbooks";
 export * from "./poolmanager";
 export * from "./superfluid";
+export * from "./tokenfactory";
 export * from "./txfees";

@@ -314,20 +314,43 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
-    "noData": "没有数据",
-    "noOrderbook": "暂无订单簿",
-    "uhOhSomethingWentWrong": "哦，出问题了",
-    "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
-    "startAgain": "重新开始",
     "insufficientFeeTokens": {
       "title": "没有余额足够的手续费代币",
       "body": "请在 Osmosis 上充值 OSMO 或其他受支持的手续费代币以支付网络费用。",
       "buttonLabel": "手续费余额不足"
-    }
+    },
+    "noData": "没有数据",
+    "noOrderbook": "暂无订单簿",
+    "uhOhSomethingWentWrong": "哦，出问题了",
+    "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
+    "startAgain": "重新开始"
   },
   "estimated": "估计的",
   "frontierMigration": {
     "proceed": "继续"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "存款已停止。原住民桥梁路线已中断。",
+      "extended_unstable_market": "存款已停止。该资产长期不稳定且处于非活跃状态。",
+      "planned_shutdown": "存款已停止。资产计划关闭。",
+      "source_chain_killed": "存款已停止。资金链已停止运营。",
+      "manual": "存款已停止，请谨慎操作。",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "提款已停止。本地桥梁路线已中断。",
+      "source_chain_killed": "提现已停止。源链已停止运营。",
+      "manual": "提款已暂停，请谨慎操作。",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "该资产的供应链已停止运作。",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "不稳定，请谨慎行事。",
+    "unknown": "不稳定，请谨慎行事。"
   },
   "lockToken": {
     "amountToBond": "绑定数量",
@@ -500,7 +523,8 @@
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
     "onlyInRangePositions": "仅适用于范围内的位置",
-    "custom": "风俗"
+    "custom": "风俗",
+    "nextRewardIn": "下次奖励"
   },
   "pools": {
     "allPools": {
@@ -832,14 +856,11 @@
       "titleWithdraw": "更多提款选项",
       "depositDescriptionUnknown": "要存入{denom} ，请使用其他提供商。",
       "withdrawDescriptionUnknown": "要撤回{denom} ，请使用其他提供商。",
-      "singleDescriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用{service} 。",
-      "singleDescriptionWithdraw": "要将{denom}从{networkA}撤回到{networkB} ，请使用{service} 。",
-      "descriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用以下备选提供商之一。",
-      "descriptionWithdraw": "要将{denom}从{networkA}撤回至{networkB} ，请使用以下备选提供商之一。",
       "chooseAnAlternativeProviderDeposit": "选择替代提供商将{asset}从{fromChain}存入{toChain}",
       "chooseAnAlternativeProviderWithdraw": "选择替代提供商将{asset}从{fromChain}提取到{toChain}",
       "depositWith": "存款",
-      "withdrawWith": "提款"
+      "withdrawWith": "提款",
+      "noAlternativesFound": "未找到此路线的替代提供商。"
     },
     "assetSelectScreen": {
       "titleDeposit": "选择要存入的资产",
@@ -890,7 +911,6 @@
     "transferWithNoun": "使用{noun}进行传输",
     "risks": "桥接伴随着风险。",
     "learnMore": "了解更多",
-    "openNoun": "打开{noun}",
     "accountNotFound": "未找到帐户",
     "sendFundsToAccount": "在转移 {\"type {chain} {asset} chain\"} 账户发送一个 gas 代币。",
     "insufficientFundsForFees": "费用资金不足",
@@ -906,6 +926,12 @@
     "sorryForTheInconvenience": "抱歉造成不便。请刷新页面并重试，或使用其他应用程序将您的资金转入 Osmosis。",
     "assetIsCurrentlyUnstable": "{asset}转移目前不稳定",
     "transferWillLikelyTakeLonger": "转账可能比平时耗时更长，甚至可能完全失败。请自行承担风险。",
+    "ibcConnectionDown": "原生IBC连接不可用",
+    "ibcConnectionDownDescription": "{asset}的直接IBC路线目前已中断。以下选项可能提供替代路径，但也可能受到影响。",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "noNativeTransfers": "{asset}的原生转账不可用",
+    "noNativeTransfersDescription": "请使用以下替代提供商之一。",
     "sendFromWalletOrExchange": "从您的钱包或交易所发送",
     "scanWithMobileWallet": "使用您的手机钱包扫描",
     "or": "或者",
@@ -975,6 +1001,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "合金资产",
+      "alloyedBody": "这是 Osmosis 合金资产。底层合约由链上 Osmosis 治理控制。",
+      "renouncedTitle": "管理员已放弃",
+      "renouncedBody": "没有地址可以铸造、销毁或更改此代币。管理员已永久转移到销毁地址。",
+      "governanceTitle": "由治理控制",
+      "governanceBody": "更改此代币需要链上 Osmosis 治理提案。",
+      "contractTitle": "管理员是合约或多签",
+      "contractBody": "管理员是智能合约或多签地址。其行为取决于其代码或签名者。",
+      "walletTitle": "管理员是单一钱包",
+      "walletBody": "单一钱包可以随时铸造新供应、销毁代币或更改元数据。请确认您信任发行方。"
+    },
     "explorePools": "探索泳池",
     "yourBalance": "您的余额",
     "onOsmosis": "论渗透",

@@ -1,18 +1,15 @@
 import classNames from "classnames";
-import dayjs from "dayjs";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent } from "react";
 
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { Breakpoint, useTranslation } from "~/hooks";
+import { Breakpoint, useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { SkeletonLoader } from "../loaders/skeleton-loader";
-
-const REWARD_EPOCH_IDENTIFIER = "day";
 
 export const PoolsOverview: FunctionComponent<
   { setIsCreatingPool: () => void } & CustomClasses
@@ -23,37 +20,7 @@ export const PoolsOverview: FunctionComponent<
   const { data: osmo, isFetched } = api.edge.assets.getMarketAsset.useQuery({
     findMinDenomOrSymbol: "OSMO",
   });
-  const { data: epochs } = api.local.params.getEpochs.useQuery();
-
-  // update time every second
-  const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
-  useEffect(() => {
-    const updateTimeRemaining = () => {
-      if (!epochs) return;
-      const epoch = epochs.find(
-        (e) => e.identifier === REWARD_EPOCH_IDENTIFIER
-      );
-      if (!epoch) return;
-      const now = new Date();
-      const epochRemainingTime = dayjs.duration(
-        dayjs(epoch.endTime).diff(dayjs(now), "second"),
-        "second"
-      );
-      const epochRemainingTimeString =
-        epochRemainingTime.asSeconds() <= 0
-          ? dayjs.duration(0, "seconds").format("HH-mm-ss")
-          : epochRemainingTime.format("HH-mm-ss");
-      const [epochRemainingHour, epochRemainingMinute, epochRemainingSeconds] =
-        epochRemainingTimeString.split("-");
-      setTimeRemaining(
-        `${epochRemainingHour}:${epochRemainingMinute}:${epochRemainingSeconds}`
-      );
-    };
-    const intervalId = setInterval(updateTimeRemaining, 1000);
-    updateTimeRemaining();
-
-    return () => clearInterval(intervalId);
-  }, [epochs]);
+  const timeRemaining = useDailyEpochCountdown();
 
   return (
     <div

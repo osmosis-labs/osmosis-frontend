@@ -14,7 +14,7 @@ export const BridgeLogoUrls: Record<Bridge, string> = {
 export const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
-  IBC: "/external-bridges/tfm.svg",
+  IBC: "/bridges/ibc.svg",
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/bridges/wormhole.svg",
   Generic: "/external-bridges/generic.svg",

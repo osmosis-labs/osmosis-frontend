@@ -167,10 +167,39 @@ export interface Asset {
   verified: boolean;
   /** If true is preview only, not ready for production. */
   preview: boolean;
-  /** Transfers are unstable. */
+  /** Warning-only flag indicating the asset's transfer path has been unstable.
+   *  Does not gate any UI; surfaces a banner / icon. */
   unstable: boolean;
-  /** Transfers should not be possible. */
+  /** Closed-set reason for `unstable`. Each value has a localised string.
+   *  Free-form curator context, when present, lives in the shared
+   *  `tooltipMessage` field. */
+  unstableReason?: "ibc_client" | "source_chain_killed" | "market" | "manual";
+  /** ISO UTC timestamp of the start of the most recent unstable incident.
+   *  Anchors the 60/90-day lifecycle clock in the assetlists repo. */
+  lastDowntimeDate?: string;
+  /** ISO UTC timestamp of the most recent recovery, if the asset has
+   *  recovered since `lastDowntimeDate`. */
+  lastRecoveryDate?: string;
+  /** Internal-deposit UX override: skip native flow, route user to an
+   *  external provider (e.g. Composable, Wormhole). Unchanged semantics. */
   disabled: boolean;
+  /** Deposits are halted (kill switch, distinct from `disabled`). The
+   *  asset-page Deposit button is greyed and the bridge flow blocks the
+   *  deposit direction. */
+  haltDeposits?: boolean;
+  /** Closed-set reason for the deposit halt; drives the localised banner. */
+  depositHaltReason?:
+    | "bridge_down"
+    | "extended_unstable_market"
+    | "planned_shutdown"
+    | "source_chain_killed"
+    | "manual";
+  /** Withdrawals are halted (kill switch). */
+  haltWithdrawals?: boolean;
+  /** Closed-set reason for the withdrawal halt; drives the localised banner. */
+  withdrawalHaltReason?: "bridge_down" | "source_chain_killed" | "manual";
+  /** ISO UTC date when this asset is scheduled to be shut down. */
+  plannedShutdownDate?: string;
 
   categories: string[];
   /** Data needed for calculating this token's price via Osmosis pools. */
@@ -210,8 +239,30 @@ export type MinimalAsset = {
   chainSuggestionDenom?: string;
   /** Transfers are allowed, but unstable. */
   isUnstable: boolean;
-  /** Transfers are NOT allowed. */
+  /** Closed-set reason for `isUnstable`; drives the localised banner.
+   *  Free-form curator context lives in the shared `tooltipMessage` field. */
+  unstableReason?: "ibc_client" | "source_chain_killed" | "market" | "manual";
+  /** ISO UTC start of the current unstable incident. */
+  lastDowntimeDate?: string;
+  /** ISO UTC recovery timestamp, if any. */
+  lastRecoveryDate?: string;
+  /** Native transfer flow is skipped; user is routed to external providers. */
   areTransfersDisabled: boolean;
+  /** Deposits are halted (kill switch); asset-page Deposit button should be greyed. */
+  areDepositsHalted: boolean;
+  /** Closed-set reason for the deposit halt. */
+  depositHaltReason?:
+    | "bridge_down"
+    | "extended_unstable_market"
+    | "planned_shutdown"
+    | "source_chain_killed"
+    | "manual";
+  /** Withdrawals are halted (kill switch); asset-page Withdraw button should be greyed. */
+  areWithdrawalsHalted: boolean;
+  /** Closed-set reason for the withdrawal halt. */
+  withdrawalHaltReason?: "bridge_down" | "source_chain_killed" | "manual";
+  /** ISO UTC date when this asset is scheduled to be shut down. */
+  plannedShutdownDate?: string;
   /** Is verified by community. */
   isVerified: boolean;
   /** Flag indicating if this asset is an alloyed asset. */

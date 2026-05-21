@@ -314,20 +314,43 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
-    "noData": "データなし",
-    "noOrderbook": "ペアの注文書はありません",
-    "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
-    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
-    "startAgain": "再開する",
     "insufficientFeeTokens": {
       "title": "残高が十分な手数料トークンがありません",
       "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
       "buttonLabel": "手数料の残高が不足しています"
-    }
+    },
+    "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません",
+    "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
+    "startAgain": "再開する"
   },
   "estimated": "推定",
   "frontierMigration": {
     "proceed": "進む"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "預金の受け入れは停止されました。ネイティブブリッジのルートは通行止めです。",
+      "extended_unstable_market": "預金の受け入れが停止されました。資産は長期間にわたり不安定で、取引が停止しています。",
+      "planned_shutdown": "預金の受け入れを停止しました。当該施設は閉鎖予定です。",
+      "source_chain_killed": "入金が停止されました。供給チェーンが操業を停止しました。",
+      "manual": "入金が停止されています。ご注意ください。",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "引き出しは停止されました。ネイティブブリッジルートは通行止めです。",
+      "source_chain_killed": "引き出しは停止されました。ソースチェーンは運用を停止しました。",
+      "manual": "引き出しは停止されています。ご注意ください。",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "この資産の供給元チェーンは運用を停止しました。",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "不安定な状態ですので、ご注意ください。",
+    "unknown": "不安定な状態ですので、ご注意ください。"
   },
   "lockToken": {
     "amountToBond": "保証金額",
@@ -500,7 +523,8 @@
     "undelegating": "委任を解除する",
     "yourStats": "プール残高",
     "onlyInRangePositions": "範囲内の位置のみ",
-    "custom": "カスタム"
+    "custom": "カスタム",
+    "nextRewardIn": "次の報酬まで"
   },
   "pools": {
     "allPools": {
@@ -832,14 +856,11 @@
       "titleWithdraw": "引き出しオプションの追加",
       "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
       "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
-      "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
-      "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
-      "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
-      "descriptionWithdraw": "{denom}を{networkA}から{networkB}に引き出すには、次の代替プロバイダーのいずれかを使用してください。",
       "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
       "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
-      "withdrawWith": "撤退する"
+      "withdrawWith": "撤退する",
+      "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。"
     },
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
@@ -890,7 +911,6 @@
     "transferWithNoun": "{noun}で転送する",
     "risks": "ブリッジングにはリスクが伴います。",
     "learnMore": "もっと詳しく知る",
-    "openNoun": "{noun}を開く",
     "accountNotFound": "アカウントが見つかりません",
     "sendFundsToAccount": "{ {chain} {asset} chain\"} アカウントにガス トークンを送信してください。",
     "insufficientFundsForFees": "手数料の資金が不足している",
@@ -906,6 +926,12 @@
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。ページを更新してもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
     "assetIsCurrentlyUnstable": "{asset}の転送は現在不安定です",
     "transferWillLikelyTakeLonger": "転送には通常より時間がかかるか、完全に失敗する可能性があります。自己責任で進めてください。",
+    "ibcConnectionDown": "ネイティブIBC接続が利用不可",
+    "ibcConnectionDownDescription": "{asset}の直接IBCルートは現在停止しています。以下のオプションは代替パスを提供できる場合がありますが、同様に影響を受ける可能性があります。",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "noNativeTransfers": "{asset}のネイティブ転送が利用不可",
+    "noNativeTransfersDescription": "以下の代替プロバイダーのいずれかをご利用ください。",
     "sendFromWalletOrExchange": "ウォレットまたは取引所から送金する",
     "scanWithMobileWallet": "モバイルウォレットでスキャン",
     "or": "または",
@@ -975,6 +1001,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "アロイド資産",
+      "alloyedBody": "これはOsmosisアロイド資産です。基礎となるコントラクトはオンチェーンのOsmosisガバナンスによって管理されています。",
+      "renouncedTitle": "管理者放棄済み",
+      "renouncedBody": "このトークンを発行、焼却、変更できるアドレスはありません。管理者はバーンアドレスに永久に移管されました。",
+      "governanceTitle": "ガバナンスによる管理",
+      "governanceBody": "このトークンの変更には、オンチェーンのOsmosisガバナンス提案が必要です。",
+      "contractTitle": "管理者はコントラクトまたはマルチシグです",
+      "contractBody": "管理者はスマートコントラクトまたはマルチシグアドレスです。動作はそのコードまたは署名者に依存します。",
+      "walletTitle": "管理者は単一のウォレットです",
+      "walletBody": "単一のウォレットがいつでも新しい供給を発行したり、トークンを焼却したり、メタデータを変更したりできます。発行者を信頼できることを確認してください。"
+    },
     "explorePools": "プールを探索する",
     "yourBalance": "あなたのバランス",
     "onOsmosis": "浸透について",

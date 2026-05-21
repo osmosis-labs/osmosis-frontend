@@ -167,16 +167,20 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       ? parseFloat(currentTickLiquidity) === 0
       : false;
 
-    // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
-    // This happens when all liquidity positions are out of range
-    // Check this FIRST because a pool can have out-of-range liquidity (TVL > 0)
-    // with zero tick liquidity and zero sqrt price
-    const isInactivePool = isTickLiquidityZero && hasTVL;
+    // Tier 1: Uninitialized Pool - has never been initialized (no first
+    // position created). On Osmosis CL, current_sqrt_price only becomes
+    // non-zero when the first position is created, so this is a reliable
+    // chain-derived signal regardless of whether TVL is known. Avoid relying
+    // on hasTVL here so a future regression in the TVL signal cannot route
+    // an uninitialized pool into the inactive flow.
+    const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero;
 
-    // Tier 1: Uninitialized Pool - has never been initialized (no price set)
-    // Only classify as uninitialized if there's NO TVL at all
-    const isUninitializedPool =
-      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
+    // This happens when all liquidity positions are out of range. Made
+    // mutually exclusive with the uninitialized tier above so a pool with
+    // zero sqrt price never registers as inactive.
+    const isInactivePool =
+      !isUninitializedPool && isTickLiquidityZero && hasTVL;
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">

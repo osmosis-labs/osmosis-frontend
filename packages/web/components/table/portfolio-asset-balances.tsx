@@ -24,6 +24,7 @@ import {
 import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { PrivateText } from "~/components/privacy";
 import { AssetCell } from "~/components/table/cells/asset";
+import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import {
   Breakpoint,
@@ -46,6 +47,10 @@ import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
+import {
+  depositHaltReasonKey,
+  withdrawalHaltReasonKey,
+} from "~/utils/halt-reasons";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
@@ -519,12 +524,33 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
 
 type Action = "deposit" | "withdraw" | "trade" | "earn";
 
-const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
+const getActionOptions = (
+  t: MultiLanguageT,
+  showConvertButton: boolean,
+  areDepositsHalted?: boolean,
+  areWithdrawalsHalted?: boolean
+) => {
   return [
     ...(showConvertButton
       ? [
-          { key: "deposit", label: t("portfolio.deposit"), icon: "deposit" },
-          { key: "withdraw", label: t("portfolio.withdraw"), icon: "withdraw" },
+          ...(areDepositsHalted
+            ? []
+            : [
+                {
+                  key: "deposit",
+                  label: t("portfolio.deposit"),
+                  icon: "deposit",
+                },
+              ]),
+          ...(areWithdrawalsHalted
+            ? []
+            : [
+                {
+                  key: "withdraw",
+                  label: t("portfolio.withdraw"),
+                  icon: "withdraw",
+                },
+              ]),
         ]
       : []),
     { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
@@ -544,6 +570,11 @@ const AssetActionsCell: AssetCellComponent<{
   coinDenom,
   coinImageUrl,
   isVerified,
+  areDepositsHalted,
+  areWithdrawalsHalted,
+  depositHaltReason,
+  withdrawalHaltReason,
+  tooltipMessage,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
 }) => {
@@ -557,7 +588,12 @@ const AssetActionsCell: AssetCellComponent<{
   const needsConversion = coinMinimalDenom !== variantGroupKey;
   const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
-  const actionOptions = getActionOptions(t, showConvertButton);
+  const actionOptions = getActionOptions(
+    t,
+    showConvertButton,
+    areDepositsHalted,
+    areWithdrawalsHalted
+  );
   const { setIsOpenForVariant } = useAssetVariantsModalStore();
 
   const onSelectAction = (action: Action) => {
@@ -567,11 +603,13 @@ const AssetActionsCell: AssetCellComponent<{
     } else if (action === "earn") {
       router.push(`/earn?search=${coinMinimalDenom}`);
     } else if (action === "deposit") {
+      if (areDepositsHalted) return;
       bridgeAsset({
         anyDenom: coinMinimalDenom,
         direction: "deposit",
       });
     } else if (action === "withdraw") {
+      if (areWithdrawalsHalted) return;
       bridgeAsset({
         anyDenom: coinMinimalDenom,
         direction: "withdraw",
@@ -610,36 +648,71 @@ const AssetActionsCell: AssetCellComponent<{
             </Button>
           ) : (
             <>
-              <Button
-                size="icon"
-                variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  bridgeAsset({
-                    anyDenom: coinMinimalDenom,
-                    direction: "deposit",
-                  });
-                }}
-              >
-                <Icon id="deposit" height={20} width={20} />
-              </Button>
-              <Button
-                size="icon"
-                variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  bridgeAsset({
-                    anyDenom: coinMinimalDenom,
-                    direction: "withdraw",
-                  });
-                }}
-              >
-                <Icon id="withdraw" height={20} width={20} />
-              </Button>
+              {areDepositsHalted ? (
+                <Tooltip
+                  content={
+                    tooltipMessage ?? t(depositHaltReasonKey(depositHaltReason))
+                  }
+                >
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
+                    disabled
+                  >
+                    <Icon id="deposit" height={20} width={20} />
+                  </Button>
+                </Tooltip>
+              ) : (
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    bridgeAsset({
+                      anyDenom: coinMinimalDenom,
+                      direction: "deposit",
+                    });
+                  }}
+                >
+                  <Icon id="deposit" height={20} width={20} />
+                </Button>
+              )}
+              {areWithdrawalsHalted ? (
+                <Tooltip
+                  content={
+                    tooltipMessage ??
+                    t(withdrawalHaltReasonKey(withdrawalHaltReason))
+                  }
+                >
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
+                    disabled
+                  >
+                    <Icon id="withdraw" height={20} width={20} />
+                  </Button>
+                </Tooltip>
+              ) : (
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    bridgeAsset({
+                      anyDenom: coinMinimalDenom,
+                      direction: "withdraw",
+                    });
+                  }}
+                >
+                  <Icon id="withdraw" height={20} width={20} />
+                </Button>
+              )}
             </>
           )}
         </>

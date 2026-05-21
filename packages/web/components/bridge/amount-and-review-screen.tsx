@@ -304,7 +304,6 @@ export const AmountAndReviewScreen = observer(
               setFiatAmount={setFiatAmount}
               quote={quote}
               onConfirm={() => setCurrentScreen(BridgeScreen.Review)}
-              onClose={onClose}
             />
           )}
         </Screen>

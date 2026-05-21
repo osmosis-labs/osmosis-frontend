@@ -269,6 +269,8 @@ export const assetsRouter = createTRPCRouter({
           excludeVariants: z.boolean().optional(),
           excludeStablecoins: z.boolean().optional(),
           minLiquidity: z.number().optional(),
+          minVolume24h: z.number().optional(),
+          maxPriceChange24h: z.number().optional(),
         })
       )
     )
@@ -286,6 +288,8 @@ export const assetsRouter = createTRPCRouter({
           excludeVariants,
           excludeStablecoins,
           minLiquidity,
+          minVolume24h,
+          maxPriceChange24h,
         },
         ctx,
       }) =>
@@ -300,6 +304,8 @@ export const assetsRouter = createTRPCRouter({
               excludeVariants,
               excludeStablecoins,
               minLiquidity,
+              minVolume24h,
+              maxPriceChange24h,
             });
 
             // sorting
@@ -341,6 +347,8 @@ export const assetsRouter = createTRPCRouter({
             excludeVariants,
             excludeStablecoins,
             minLiquidity,
+            minVolume24h,
+            maxPriceChange24h,
           }),
           cursor,
           limit,
@@ -643,18 +651,26 @@ export const assetsRouter = createTRPCRouter({
             ...asset,
             priceChange24h: marketAsset?.price24hChange,
             liquidity: marketAsset?.liquidity,
+            volume24h: marketAsset?.volume24h,
           };
         })
       );
 
-      // Filter for assets with price change data and at least $1k liquidity
+      // Quality floors: $5k liquidity, $1k 24h volume, and reject implausible
+      // price changes (>1000%) that usually indicate stale data or a price
+      // blip in a shallow pool rather than a real move.
       const qualifyingAssets = marketAssets.filter((asset) => {
         if (asset.priceChange24h === undefined) return false;
+        // RatePretty stores rates as fractions (50% => 0.5), so 1000% => 10.
+        if (asset.priceChange24h.toDec().gt(new Dec(10))) return false;
 
         const liquidityDec = asset.liquidity?.toDec();
-        if (!liquidityDec) return false;
+        if (!liquidityDec || !liquidityDec.gte(new Dec(5000))) return false;
 
-        return liquidityDec.gte(new Dec(1000));
+        const volumeDec = asset.volume24h?.toDec();
+        if (!volumeDec || !volumeDec.gte(new Dec(1000))) return false;
+
+        return true;
       });
 
       return sort(qualifyingAssets, "priceChange24h").slice(0, topN);

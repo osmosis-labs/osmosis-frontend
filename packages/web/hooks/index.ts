@@ -7,6 +7,7 @@ export * from "./use-amplitude-analytics";
 export * from "./use-asset-variants-toast";
 export * from "./use-boolean-with-window-event";
 export * from "./use-connect-wallet-modal-redirect";
+export * from "./use-daily-epoch-countdown";
 export * from "./use-dimension";
 export * from "./use-disclosure";
 export * from "./use-feature-flags";

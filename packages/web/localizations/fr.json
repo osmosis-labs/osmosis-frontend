@@ -314,20 +314,43 @@
     "invalidAmounts": "Montant(s) invalide(s)",
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
-    "noData": "Pas de données",
-    "noOrderbook": "Pas de carnet de commandes pour la paire",
-    "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
-    "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
-    "startAgain": "Recommencer",
     "insufficientFeeTokens": {
       "title": "Aucun jeton de frais avec un solde suffisant",
       "body": "Déposez de l'OSMO ou un autre jeton de frais pris en charge sur Osmosis pour couvrir les frais de réseau.",
       "buttonLabel": "Solde de frais insuffisant"
-    }
+    },
+    "noData": "Pas de données",
+    "noOrderbook": "Pas de carnet de commandes pour la paire",
+    "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
+    "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
+    "startAgain": "Recommencer"
   },
   "estimated": "Estimé",
   "frontierMigration": {
     "proceed": "Procéder"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Les dépôts sont interrompus. La voie d'accès au pont autochtone est coupée.",
+      "extended_unstable_market": "Les dépôts sont suspendus. L'actif est instable et inactif depuis une période prolongée.",
+      "planned_shutdown": "Les dépôts sont suspendus. L'actif est programmé pour être mis hors service.",
+      "source_chain_killed": "Les dépôts sont suspendus. La chaîne d'approvisionnement est à l'arrêt.",
+      "manual": "Les dépôts sont suspendus, soyez prudents.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Retraits interrompus. La voie de passage du pont autochtone est coupée.",
+      "source_chain_killed": "Les retraits sont suspendus. La chaîne source est hors service.",
+      "manual": "Retraits suspendus, soyez prudents.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "La chaîne d'approvisionnement de cet actif a cessé ses activités.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Instable, soyez prudent.",
+    "unknown": "Instable, soyez prudent."
   },
   "lockToken": {
     "amountToBond": "Montant à bloquer",
@@ -500,7 +523,8 @@
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage",
-    "custom": "Coutume"
+    "custom": "Coutume",
+    "nextRewardIn": "Prochaine récompense dans"
   },
   "pools": {
     "allPools": {
@@ -832,14 +856,11 @@
       "titleWithdraw": "Plus d'options de retrait",
       "depositDescriptionUnknown": "Pour déposer {denom} , veuillez utiliser un autre fournisseur.",
       "withdrawDescriptionUnknown": "Pour retirer {denom} , veuillez utiliser un autre fournisseur.",
-      "singleDescriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
-      "singleDescriptionWithdraw": "Pour retirer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
-      "descriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",
-      "descriptionWithdraw": "Pour retirer {denom} de {networkA} à {networkB} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",
       "chooseAnAlternativeProviderDeposit": "Choisissez un autre fournisseur pour déposer {asset} de {fromChain} à {toChain}",
       "chooseAnAlternativeProviderWithdraw": "Choisissez un autre fournisseur pour retirer {asset} de {fromChain} à {toChain}",
       "depositWith": "Dépôt avec",
-      "withdrawWith": "Retirer avec"
+      "withdrawWith": "Retirer avec",
+      "noAlternativesFound": "Aucun fournisseur alternatif trouvé pour cette route."
     },
     "assetSelectScreen": {
       "titleDeposit": "Sélectionnez un actif à déposer",
@@ -890,7 +911,6 @@
     "transferWithNoun": "Transférer avec {noun}",
     "risks": "Le rapprochement comporte des risques.",
     "learnMore": "Apprendre encore plus",
-    "openNoun": "Ouvrir {noun}",
     "accountNotFound": "Compte non trouvé",
     "sendFundsToAccount": "Veuillez envoyer un jeton de gaz à votre compte {chain} avant de transférer {asset} .",
     "insufficientFundsForFees": "Fonds insuffisants pour les frais",
@@ -906,6 +926,12 @@
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez actualiser la page et réessayer ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
     "assetIsCurrentlyUnstable": "Les transferts {asset} sont actuellement instables",
     "transferWillLikelyTakeLonger": "Les transferts prendront probablement plus de temps que d’habitude ou pourraient échouer complètement. Procédez à vos propres risques.",
+    "ibcConnectionDown": "Connexion IBC native indisponible",
+    "ibcConnectionDownDescription": "La route IBC directe pour {asset} est actuellement indisponible. Les options ci-dessous peuvent offrir un chemin alternatif, mais peuvent également être affectées.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "noNativeTransfers": "Transferts natifs indisponibles pour {asset}",
+    "noNativeTransfersDescription": "Veuillez utiliser l’un des fournisseurs alternatifs ci-dessous.",
     "sendFromWalletOrExchange": "Envoyez depuis votre portefeuille ou échangez",
     "scanWithMobileWallet": "Scannez avec votre portefeuille mobile",
     "or": "ou",
@@ -975,6 +1001,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Actif allié",
+      "alloyedBody": "Il s'agit d'un actif allié Osmosis. Le contrat sous-jacent est contrôlé par la gouvernance on-chain d'Osmosis.",
+      "renouncedTitle": "Administration renoncée",
+      "renouncedBody": "Aucune adresse ne peut frapper, brûler ou modifier ce token. L'administration a été transférée de manière permanente à l'adresse de brûlage.",
+      "governanceTitle": "Contrôlé par la gouvernance",
+      "governanceBody": "Les modifications de ce token nécessitent une proposition de gouvernance on-chain Osmosis.",
+      "contractTitle": "L'administrateur est un contrat ou un multisig",
+      "contractBody": "L'administrateur est une adresse de contrat intelligent ou de multisig. Le comportement dépend de son code ou de ses signataires.",
+      "walletTitle": "L'administrateur est un portefeuille unique",
+      "walletBody": "Un seul portefeuille peut frapper de nouvelles unités, brûler des tokens ou modifier les métadonnées à tout moment. Vérifiez que vous faites confiance à l'émetteur."
+    },
     "explorePools": "Explorez les piscines",
     "yourBalance": "Votre solde",
     "onOsmosis": "sur l'osmose",
