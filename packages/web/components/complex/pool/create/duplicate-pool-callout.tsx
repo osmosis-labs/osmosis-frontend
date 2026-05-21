@@ -53,7 +53,11 @@ export const DuplicatePoolCallout: FunctionComponent<
     );
   }
 
-  if (status === "error" && exactMatches.length === 0) {
+  if (
+    status === "error" &&
+    exactMatches.length === 0 &&
+    similarMatches.length === 0
+  ) {
     return (
       <div className="rounded-xl border border-rust-500 bg-osmoverse-900 px-4 py-3 text-osmoverse-300">
         <span className="caption">

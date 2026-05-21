@@ -332,16 +332,39 @@ export function useDuplicatePoolCheck({
     }
   );
 
-  // Auto-fetch every page so a low-TVL duplicate beyond the first page
+  // Cap auto-pagination so a popular token (USDC, OSMO) can't trigger
+  // dozens of sequential API calls and block the user for many seconds
+  // while the gate sits in "loading". Pages are TVL-desc, so any duplicate
+  // worth warning about is well within the first MAX_PAGES * 100 = 2000
+  // pools. If a duplicate sits below that, the user is making it anyway —
+  // the soft warning surface doesn't justify a multi-second blocked UI.
+  const MAX_PAGES = 20;
+  const fetchedPageCount = data?.pages.length ?? 0;
+  const canFetchMore = fetchedPageCount < MAX_PAGES;
+
+  // Auto-fetch the next page so a low-TVL duplicate beyond the first page
   // is not silently missed. Skipped once the query errors — `hasNextPage`
   // stays true after a failed `fetchNextPage()` (it's driven by the last
   // successful page's cursor), and re-firing on every settle would create
-  // an infinite retry loop.
+  // an infinite retry loop. Also skipped once we hit the page cap.
   useEffect(() => {
-    if (queryEnabled && hasNextPage && !isFetchingNextPage && !isError) {
+    if (
+      queryEnabled &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !isError &&
+      canFetchMore
+    ) {
       fetchNextPage();
     }
-  }, [queryEnabled, hasNextPage, isFetchingNextPage, isError, fetchNextPage]);
+  }, [
+    queryEnabled,
+    hasNextPage,
+    isFetchingNextPage,
+    isError,
+    canFetchMore,
+    fetchNextPage,
+  ]);
 
   return useMemo<DuplicatePoolCheckResult>(() => {
     if (!proposed || !queryEnabled) {
@@ -362,7 +385,12 @@ export function useDuplicatePoolCheck({
       );
       return { status: "error", exactMatches, similarMatches };
     }
-    const stillFetching = isFetching || isFetchingNextPage || hasNextPage;
+    // Treat `hasNextPage` as "still fetching" only while we're still
+    // willing to fetch more (i.e. under the MAX_PAGES cap). Past the cap
+    // the cursor is still non-empty but we've decided to stop, so the
+    // hook should resolve rather than hang in "loading".
+    const stillFetching =
+      isFetching || isFetchingNextPage || (hasNextPage && canFetchMore);
     if (!data || stillFetching) {
       return { status: "loading", exactMatches: [], similarMatches: [] };
     }
@@ -380,6 +408,7 @@ export function useDuplicatePoolCheck({
     isFetchingNextPage,
     hasNextPage,
     isError,
+    canFetchMore,
   ]);
 }
 
@@ -416,6 +445,20 @@ export function useDuplicateGate({
       if (!hasExact) config.duplicateAcknowledged = false;
     });
   }, [config, isPending, hasExact]);
+
+  // Reset blocking flags on unmount only. The create-pool config is a
+  // singleton owned by the parent modal, so without this cleanup a stale
+  // `duplicateBlocking = true` from a previous pool-type's flow would leak
+  // into the next mount and briefly disable the new flow's button until
+  // the first paint's effect corrects it.
+  useEffect(() => {
+    return () => {
+      runInAction(() => {
+        config.duplicateBlocking = false;
+        config.duplicateAcknowledged = false;
+      });
+    };
+  }, [config]);
 
   useEffect(() => {
     runInAction(() => {
