@@ -314,20 +314,43 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
-    "noData": "Nu există date",
-    "noOrderbook": "Fără carnet de comandă pentru pereche",
-    "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
-    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
-    "startAgain": "Incepe din nou",
     "insufficientFeeTokens": {
       "title": "Niciun token de comision cu sold suficient",
       "body": "Depune OSMO sau un alt token de comision acceptat pe Osmosis pentru a acoperi comisionul de rețea.",
       "buttonLabel": "Sold insuficient pentru comision"
-    }
+    },
+    "noData": "Nu există date",
+    "noOrderbook": "Fără carnet de comandă pentru pereche",
+    "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
+    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
+    "startAgain": "Incepe din nou"
   },
   "estimated": "Estimată",
   "frontierMigration": {
     "proceed": "Continuați"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Depozitele au fost oprite. Traseul podului nativ este oprit.",
+      "extended_unstable_market": "Depozitele au fost oprite. Activul a fost instabil și inactiv pentru o perioadă extinsă de timp.",
+      "planned_shutdown": "Depozitele au fost oprite. Activul este programat pentru închidere.",
+      "source_chain_killed": "Depozitele au fost oprite. Lanțul sursă și-a încetat activitatea.",
+      "manual": "Depozitele au fost oprite, fiți prudenți.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Retragerile au fost oprite. Ruta podului nativ este oprită.",
+      "source_chain_killed": "Retragerile au fost oprite. Lanțul sursă a încetat să funcționeze.",
+      "manual": "Retragerile au fost oprite, fiți prudenți.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "Lanțul sursă pentru acest element și-a încetat activitatea.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Instabil, fiți precauți.",
+    "unknown": "Instabil, fiți precauți."
   },
   "lockToken": {
     "amountToBond": "Suma blocata",
@@ -905,6 +928,8 @@
     "transferWillLikelyTakeLonger": "Transferurile vor dura probabil mai mult decât de obicei sau pot eșua complet. Procedați pe propriul risc.",
     "ibcConnectionDown": "Conexiunea IBC nativă este indisponibilă",
     "ibcConnectionDownDescription": "Ruta IBC directă pentru {asset} este momentan inactivă. Opțiunile de mai jos pot oferi o cale alternativă, dar pot fi și ele afectate.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Transferurile native sunt indisponibile pentru {asset}",
     "noNativeTransfersDescription": "Vă rugăm să utilizați unul dintre furnizorii alternativi de mai jos.",
     "sendFromWalletOrExchange": "Trimiteți din portofel sau schimb",

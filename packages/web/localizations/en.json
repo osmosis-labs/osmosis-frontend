@@ -329,6 +329,29 @@
   "frontierMigration": {
     "proceed": "Proceed"
   },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Deposits halted. Native bridge route is down.",
+      "extended_unstable_market": "Deposits halted. Asset has been unstable and inactive for an extended period.",
+      "planned_shutdown": "Deposits halted. Asset is scheduled for shutdown.",
+      "source_chain_killed": "Deposits halted. Source chain has ceased operation.",
+      "manual": "Deposits halted, exercise caution.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Withdrawals halted. Native bridge route is down.",
+      "source_chain_killed": "Withdrawals halted. Source chain has ceased operation.",
+      "manual": "Withdrawals halted, exercise caution.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "Source chain for this asset has ceased operation.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Unstable, exercise caution.",
+    "unknown": "Unstable, exercise caution."
+  },
   "lockToken": {
     "amountToBond": "Amount to bond",
     "availableToken": "Available",
@@ -905,6 +928,8 @@
     "transferWillLikelyTakeLonger": "Transfers will likely take longer than usual or may fail entirely. Proceed at your own risk.",
     "ibcConnectionDown": "Native IBC connection unavailable",
     "ibcConnectionDownDescription": "The direct IBC route for {asset} is currently down. The options below may offer an alternative path, but may also be affected.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native transfers unavailable for {asset}",
     "noNativeTransfersDescription": "Please use one of the alternative providers below.",
     "sendFromWalletOrExchange": "Send from your wallet or exchange",

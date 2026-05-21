@@ -16,6 +16,10 @@ import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
+import {
+  depositHaltReasonKey,
+  withdrawalHaltReasonKey,
+} from "~/utils/halt-reasons";
 import { api } from "~/utils/trpc";
 
 export const AssetBalance = observer(({ className }: CustomClasses) => {
@@ -56,17 +60,31 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
     ? !isStrandedToken // new flow supports native assets, disable only stranded tokens
     : Boolean(data?.transferMethods.length); // old flow requires transfer methods
 
+  const depositsHalted = asset.areDepositsHalted;
+  const withdrawalsHalted = asset.areWithdrawalsHalted;
+
+  const depositDisabledReason = isStrandedToken
+    ? t("assets.strandedTokenDepositDisabled")
+    : depositsHalted
+    ? asset.tooltipMessage ?? t(depositHaltReasonKey(asset.depositHaltReason))
+    : undefined;
+  const withdrawDisabledReason = isStrandedToken
+    ? t("assets.strandedTokenWithdrawDisabled")
+    : withdrawalsHalted
+    ? asset.tooltipMessage ??
+      t(withdrawalHaltReasonKey(asset.withdrawalHaltReason))
+    : undefined;
+
   const ConditionalTooltip = ({
     children,
-    showTooltip,
     content,
-  }: PropsWithChildren<{ showTooltip: boolean; content: string }>) =>
-    showTooltip ? (
-      <Tooltip content={content} className="h-full w-full">
+  }: PropsWithChildren<{ content: string | undefined }>) =>
+    content ? (
+      <Tooltip content={content} className="h-full flex-1">
         {children as ReactElement}
       </Tooltip>
     ) : (
-      <>{children}</>
+      <div className="flex h-full flex-1">{children}</div>
     );
 
   return (
@@ -105,10 +123,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
 
       {(transferEnabled || isStrandedToken) && (
         <div className="flex gap-3">
-          <ConditionalTooltip
-            showTooltip={isStrandedToken}
-            content={t("assets.strandedTokenDepositDisabled")}
-          >
+          <ConditionalTooltip content={depositDisabledReason}>
             <Button
               size="lg-full"
               className="flex flex-1 items-center"
@@ -118,16 +133,13 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
                   direction: "deposit",
                 })
               }
-              disabled={!transferEnabled}
+              disabled={!transferEnabled || depositsHalted}
             >
               <Icon className="mr-2" id="deposit" height={16} width={16} />
               {t("assets.historyTable.colums.deposit")}
             </Button>
           </ConditionalTooltip>
-          <ConditionalTooltip
-            showTooltip={isStrandedToken}
-            content={t("assets.strandedTokenWithdrawDisabled")}
-          >
+          <ConditionalTooltip content={withdrawDisabledReason}>
             <Button
               size="lg-full"
               className="flex flex-1 items-center"
@@ -138,7 +150,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
                   direction: "withdraw",
                 })
               }
-              disabled={!transferEnabled || !data?.amount}
+              disabled={!transferEnabled || !data?.amount || withdrawalsHalted}
             >
               <Icon className="mr-2" id="withdraw" height={16} width={16} />
               {t("assets.historyTable.colums.withdraw")}

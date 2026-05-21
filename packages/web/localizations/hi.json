@@ -314,20 +314,43 @@
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
-    "noData": "कोई डेटा नहीं",
-    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं",
-    "uhOhSomethingWentWrong": "ओह ओह, कुछ ग़लत हो गया",
-    "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
-    "startAgain": "फिर से शुरू करें",
     "insufficientFeeTokens": {
       "title": "पर्याप्त शेष राशि वाला कोई शुल्क टोकन नहीं है",
       "body": "नेटवर्क शुल्क को कवर करने के लिए Osmosis पर OSMO या अन्य समर्थित शुल्क टोकन जमा करें।",
       "buttonLabel": "अपर्याप्त शुल्क शेष राशि"
-    }
+    },
+    "noData": "कोई डेटा नहीं",
+    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं",
+    "uhOhSomethingWentWrong": "ओह ओह, कुछ ग़लत हो गया",
+    "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
+    "startAgain": "फिर से शुरू करें"
   },
   "estimated": "अनुमानित",
   "frontierMigration": {
     "proceed": "आगे बढ़ना"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "जमाव कार्य रोक दिया गया है। मूल निवासी पुल मार्ग बंद है।",
+      "extended_unstable_market": "जमा प्रक्रिया रोक दी गई है। संपत्ति लंबे समय से अस्थिर और निष्क्रिय है।",
+      "planned_shutdown": "जमा राशि रोक दी गई है। संपत्ति को बंद करने की योजना है।",
+      "source_chain_killed": "जमा प्रक्रिया रोक दी गई है। स्रोत श्रृंखला ने परिचालन बंद कर दिया है।",
+      "manual": "जमा राशि रोक दी गई है, सावधानी बरतें।",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "निकासी रोक दी गई है। मूल निवासी पुल मार्ग बंद है।",
+      "source_chain_killed": "निकासी रोक दी गई है। स्रोत श्रृंखला ने परिचालन बंद कर दिया है।",
+      "manual": "निकासी रोक दी गई है, सावधानी बरतें।",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "इस परिसंपत्ति के लिए स्रोत श्रृंखला ने परिचालन बंद कर दिया है।",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "अस्थिर, सावधानी बरतें।",
+    "unknown": "अस्थिर, सावधानी बरतें।"
   },
   "lockToken": {
     "amountToBond": "बंधपत्र की राशि",
@@ -905,6 +928,8 @@
     "transferWillLikelyTakeLonger": "स्थानांतरण में सामान्य से अधिक समय लग सकता है या यह पूरी तरह विफल हो सकता है। अपने जोखिम पर आगे बढ़ें।",
     "ibcConnectionDown": "नेटिव IBC कनेक्शन अनुपलब्ध",
     "ibcConnectionDownDescription": "{asset} के लिए सीधा IBC मार्ग वर्तमान में बंद है। नीचे दिए गए विकल्प एक वैकल्पिक पथ प्रदान कर सकते हैं, लेकिन वे भी प्रभावित हो सकते हैं।",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset} के लिए नेटिव ट्रांसफर अनुपलब्ध",
     "noNativeTransfersDescription": "कृपया नीचे दिए गए वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
     "sendFromWalletOrExchange": "अपने वॉलेट या एक्सचेंज से भेजें",

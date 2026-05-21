@@ -314,20 +314,43 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok",
-    "noOrderbook": "Çift için Sipariş Defteri Yok",
-    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
-    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
-    "startAgain": "Tekrar başla",
     "insufficientFeeTokens": {
       "title": "Yeterli bakiyeye sahip ücret tokeni yok",
       "body": "Ağ ücretini karşılamak için Osmosis üzerinde OSMO veya desteklenen başka bir ücret tokeni yatırın.",
       "buttonLabel": "Yetersiz ücret bakiyesi"
-    }
+    },
+    "noData": "Veri yok",
+    "noOrderbook": "Çift için Sipariş Defteri Yok",
+    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
+    "startAgain": "Tekrar başla"
   },
   "estimated": "Tahmini",
   "frontierMigration": {
     "proceed": "Devam et"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "Para yatırma işlemleri durduruldu. Yerli köprü güzergahı kapalı.",
+      "extended_unstable_market": "Para yatırma işlemleri durduruldu. Varlık uzun süredir istikrarsız ve hareketsiz durumda.",
+      "planned_shutdown": "Para yatırma işlemleri durduruldu. Tesisin kapatılması planlanıyor.",
+      "source_chain_killed": "Para yatırma işlemleri durduruldu. Kaynak zinciri faaliyetlerini durdurdu.",
+      "manual": "Para yatırma işlemleri durduruldu, dikkatli olun.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "Para çekme işlemleri durduruldu. Yerli köprü güzergahı kapalı.",
+      "source_chain_killed": "Para çekme işlemleri durduruldu. Kaynak zinciri faaliyetlerini durdurdu.",
+      "manual": "Para çekme işlemleri durduruldu, dikkatli olun.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "Bu varlığın tedarik zinciri faaliyetlerini durdurmuştur.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "Dengesiz, dikkatli olun.",
+    "unknown": "Dengesiz, dikkatli olun."
   },
   "lockToken": {
     "amountToBond": "Bağlanacak miktar",
@@ -905,6 +928,8 @@
     "transferWillLikelyTakeLonger": "Aktarımlar muhtemelen normalden daha uzun sürecek veya tamamen başarısız olabilecektir. Riski size ait olmak üzere devam edin.",
     "ibcConnectionDown": "Yerel IBC bağlantısı kullanılamıyor",
     "ibcConnectionDownDescription": "{asset} için doğrudan IBC rotası şu anda çalışmıyor. Aşağıdaki seçenekler alternatif bir yol sunabilir, ancak bunlar da etkilenmiş olabilir.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset} için yerel transferler kullanılamıyor",
     "noNativeTransfersDescription": "Lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
     "sendFromWalletOrExchange": "Cüzdanınızdan veya borsadan gönderin",

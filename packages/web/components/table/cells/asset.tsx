@@ -6,6 +6,7 @@ import { LinkifiedText } from "~/components/linkified-text";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
+import { unstableReasonKey } from "~/utils/halt-reasons";
 
 /** Width should be defined by parent elements. */
 export const AssetCell: FunctionComponent<
@@ -17,6 +18,8 @@ export const AssetCell: FunctionComponent<
     tooltipMessage?: string;
     isInUserWatchlist: boolean;
     onClickWatchlist: () => void;
+    isUnstable: boolean;
+    unstableReason?: string;
   }>
 > = ({
   coinDenom,
@@ -26,6 +29,8 @@ export const AssetCell: FunctionComponent<
   tooltipMessage,
   isInUserWatchlist,
   onClickWatchlist,
+  isUnstable,
+  unstableReason,
 }) => {
   const { t } = useTranslation();
 
@@ -69,6 +74,14 @@ export const AssetCell: FunctionComponent<
               <Tooltip content={t("components.selectToken.unverifiedAsset")}>
                 <Icon
                   id="alert-triangle"
+                  className="h-5 w-5 text-osmoverse-300"
+                />
+              </Tooltip>
+            )}
+            {isUnstable && (
+              <Tooltip content={t(unstableReasonKey(unstableReason))}>
+                <Icon
+                  id="alert-circle"
                   className="h-5 w-5 text-osmoverse-300"
                 />
               </Tooltip>

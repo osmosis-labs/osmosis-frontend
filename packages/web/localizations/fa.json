@@ -314,20 +314,43 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد",
-    "noOrderbook": "بدون دفترچه سفارش برای جفت",
-    "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
-    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
-    "startAgain": "دوباره شروع کن",
     "insufficientFeeTokens": {
       "title": "هیچ توکن کارمزدی با موجودی کافی وجود ندارد",
       "body": "برای پوشش کارمزد شبکه، OSMO یا یک توکن کارمزد پشتیبانی‌شده دیگر را در Osmosis واریز کنید.",
       "buttonLabel": "موجودی کارمزد کافی نیست"
-    }
+    },
+    "noData": "اطلاعاتی وجود ندارد",
+    "noOrderbook": "بدون دفترچه سفارش برای جفت",
+    "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
+    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
+    "startAgain": "دوباره شروع کن"
   },
   "estimated": "تخمین زده",
   "frontierMigration": {
     "proceed": "ادامه دهید"
+  },
+  "halt": {
+    "deposit": {
+      "bridge_down": "واریزها متوقف شده است. مسیر پل بومی خراب است.",
+      "extended_unstable_market": "واریز وجه متوقف شده است. دارایی برای مدت طولانی ناپایدار و غیرفعال بوده است.",
+      "planned_shutdown": "سپرده‌ها متوقف شدند. دارایی برای تعطیلی برنامه‌ریزی شده است.",
+      "source_chain_killed": "واریز وجه متوقف شد. زنجیره منبع (Source Chain) فعالیت خود را متوقف کرده است.",
+      "manual": "واریز وجه متوقف شده است، احتیاط کنید.",
+      "unknown": "Deposits halted."
+    },
+    "withdrawal": {
+      "bridge_down": "برداشت‌ها متوقف شد. مسیر پل بومی از کار افتاده است.",
+      "source_chain_killed": "برداشت‌ها متوقف شد. زنجیره منبع فعالیت خود را متوقف کرده است.",
+      "manual": "برداشت‌ها متوقف شده است، احتیاط کنید.",
+      "unknown": "Withdrawals halted."
+    }
+  },
+  "unstable": {
+    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "source_chain_killed": "زنجیره منبع برای این دارایی متوقف شده است.",
+    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "manual": "ناپایدار، احتیاط کنید.",
+    "unknown": "ناپایدار، احتیاط کنید."
   },
   "lockToken": {
     "amountToBond": "مقدار قفل شده",
@@ -905,6 +928,8 @@
     "transferWillLikelyTakeLonger": "نقل و انتقالات احتمالاً بیشتر از حد معمول طول می کشد یا ممکن است به طور کامل شکست بخورد. با مسئولیت خود ادامه دهید.",
     "ibcConnectionDown": "اتصال IBC بومی در دسترس نیست",
     "ibcConnectionDownDescription": "مسیر مستقیم IBC برای {asset} در حال حاضر قطع است. گزینه‌های زیر ممکن است مسیر جایگزینی ارائه دهند، اما ممکن است تحت تأثیر نیز باشند.",
+    "depositsHalted": "{asset} deposits are halted",
+    "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "انتقالات بومی برای {asset} در دسترس نیست",
     "noNativeTransfersDescription": "لطفاً از یکی از ارائه‌دهندگان جایگزین زیر استفاده کنید.",
     "sendFromWalletOrExchange": "از کیف پول یا صرافی خود ارسال کنید",
