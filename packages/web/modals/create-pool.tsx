@@ -68,7 +68,7 @@ export const CreatePoolModal: FunctionComponent<
     >
       {config.poolType === null && (
         <SelectType
-          types={["weighted", "stable", "concentrated"]}
+          types={["concentrated", "weighted", "stable"]}
           selectType={(type) => {
             config.setPoolType(type);
             setCurStep(1);

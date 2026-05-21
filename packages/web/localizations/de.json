@@ -539,6 +539,7 @@
       "token": "Zeichen",
       "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird.",
       "weightedPool": "Gewichtsbecken",
+      "recommended": "Empfohlen",
       "duplicateCheck": {
         "exactTitle": "Ein Pool mit diesen Parametern existiert bereits",
         "exactCaption": "Das Erstellen eines Duplikats teilt die Liquidität und fragmentiert das Volumen. Pools können nach der Erstellung nicht entfernt werden, fügen Sie stattdessen Liquidität zum bestehenden Pool hinzu.",
@@ -551,7 +552,8 @@
         "viewPool": "Pool anzeigen",
         "useExistingPool": "Stattdessen Liquidität hinzufügen",
         "acknowledge": "Mir ist bewusst, dass ein Pool mit diesen Parametern bereits existiert, und ich möchte trotzdem ein Duplikat erstellen.",
-        "checking": "Suche nach bestehenden Pools…"
+        "checking": "Suche nach bestehenden Pools…",
+        "errorCaption": "Wir konnten nicht auf doppelte Pools prüfen. Bitte mit Vorsicht fortfahren, ein Duplikat dieses Pools könnte bereits existieren."
       }
     },
     "createSupercharged": {

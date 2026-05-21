@@ -539,6 +539,7 @@
       "token": "토큰",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해했습니다.",
       "weightedPool": "가중비율 풀",
+      "recommended": "추천",
       "duplicateCheck": {
         "exactTitle": "이러한 매개변수를 가진 풀이 이미 존재합니다",
         "exactCaption": "중복을 생성하면 유동성이 분산되고 거래량이 분할됩니다. 풀은 생성 후 제거할 수 없으므로, 기존 풀에 유동성을 추가하는 것을 고려하세요.",
@@ -551,7 +552,8 @@
         "viewPool": "풀 보기",
         "useExistingPool": "대신 유동성 추가",
         "acknowledge": "이러한 매개변수를 가진 풀이 이미 존재함을 이해하며, 그래도 중복을 생성하고 싶습니다.",
-        "checking": "기존 풀 확인 중…"
+        "checking": "기존 풀 확인 중…",
+        "errorCaption": "기존 중복 풀을 확인할 수 없었습니다. 주의해서 진행하세요. 이 풀의 중복이 이미 존재할 수 있습니다."
       }
     },
     "createSupercharged": {

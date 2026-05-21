@@ -539,6 +539,7 @@
       "token": "Token",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "weightedPool": "Ağırlıklı havuz",
+      "recommended": "Önerilen",
       "duplicateCheck": {
         "exactTitle": "Bu parametrelere sahip bir havuz zaten var",
         "exactCaption": "Bir kopya oluşturmak likiditeyi böler ve hacmi parçalar. Havuzlar oluşturulduktan sonra kaldırılamaz, bu yüzden mevcut havuza likidite eklemeyi düşünün.",
@@ -551,7 +552,8 @@
         "viewPool": "Havuzu görüntüle",
         "useExistingPool": "Onun yerine likidite ekle",
         "acknowledge": "Bu parametrelere sahip bir havuzun zaten var olduğunu anlıyorum ve yine de bir kopya oluşturmak istiyorum.",
-        "checking": "Mevcut havuzlar kontrol ediliyor…"
+        "checking": "Mevcut havuzlar kontrol ediliyor…",
+        "errorCaption": "Mevcut yinelenen havuzları kontrol edemedik. Dikkatli ilerleyin, bu havuzun bir kopyası zaten mevcut olabilir."
       }
     },
     "createSupercharged": {

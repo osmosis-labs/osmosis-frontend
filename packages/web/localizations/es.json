@@ -539,6 +539,7 @@
       "token": "Token",
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "weightedPool": "Grupo ponderado",
+      "recommended": "Recomendado",
       "duplicateCheck": {
         "exactTitle": "Ya existe un pool con estos parámetros",
         "exactCaption": "Crear un duplicado divide la liquidez y fragmenta el volumen. Los pools no se pueden eliminar una vez creados, así que considera aportar liquidez al pool existente.",
@@ -551,7 +552,8 @@
         "viewPool": "Ver pool",
         "useExistingPool": "Aportar liquidez en su lugar",
         "acknowledge": "Entiendo que ya existe un pool con estos parámetros y aun así quiero crear un duplicado.",
-        "checking": "Buscando pools existentes…"
+        "checking": "Buscando pools existentes…",
+        "errorCaption": "No pudimos comprobar si existen pools duplicados. Continúa con precaución, es posible que ya exista un duplicado de este pool."
       }
     },
     "createSupercharged": {

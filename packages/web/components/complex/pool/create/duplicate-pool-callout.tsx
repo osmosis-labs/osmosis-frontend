@@ -53,6 +53,16 @@ export const DuplicatePoolCallout: FunctionComponent<
     );
   }
 
+  if (status === "error" && exactMatches.length === 0) {
+    return (
+      <div className="rounded-xl border border-rust-500 bg-osmoverse-900 px-4 py-3 text-osmoverse-300">
+        <span className="caption">
+          {t("pools.createPool.duplicateCheck.errorCaption")}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
       {exactMatches.length > 0 && (

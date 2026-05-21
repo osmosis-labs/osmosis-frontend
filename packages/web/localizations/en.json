@@ -539,6 +539,7 @@
       "token": "Token",
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
       "weightedPool": "Weighted pool",
+      "recommended": "Recommended",
       "duplicateCheck": {
         "exactTitle": "A pool with these parameters already exists",
         "exactCaption": "Creating a duplicate splits liquidity and fragments volume. Pools cannot be removed once created, so consider providing liquidity to the existing pool instead.",
@@ -551,7 +552,8 @@
         "viewPool": "View pool",
         "useExistingPool": "Provide liquidity instead",
         "acknowledge": "I understand a pool with these parameters already exists and want to create a duplicate anyway.",
-        "checking": "Checking for existing pools…"
+        "checking": "Checking for existing pools…",
+        "errorCaption": "We couldn't check for existing duplicate pools. Proceed with caution, a duplicate of this pool may already exist."
       }
     },
     "createSupercharged": {

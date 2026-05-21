@@ -67,7 +67,7 @@ export interface ExistingPoolSummary {
 }
 
 export interface DuplicatePoolCheckResult {
-  status: "idle" | "loading" | "ready";
+  status: "idle" | "loading" | "ready" | "error";
   exactMatches: ExistingPoolSummary[];
   similarMatches: ExistingPoolSummary[];
 }
@@ -322,10 +322,11 @@ export function useDuplicatePoolCheck({
       enabled: queryEnabled,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      // Pool list rarely changes meaningfully for duplicate-check purposes.
-      // 5-minute staleTime avoids refetching on every modal open while still
-      // catching a freshly-created duplicate within a reasonable window.
-      staleTime: 5 * 60 * 1000,
+      // Pool creation is irreversible and fee-bearing, so the check prefers
+      // freshness over cache reuse. A pool created seconds ago must surface
+      // here, not get hidden behind a stale-while-revalidate window.
+      staleTime: 0,
+      refetchOnMount: "always",
       // expensive query, mirrors pools-table pattern
       trpc: { context: { skipBatch: true } },
     }
@@ -346,17 +347,20 @@ export function useDuplicatePoolCheck({
     if (!proposed || !queryEnabled) {
       return { status: "idle", exactMatches: [], similarMatches: [] };
     }
-    // Soft-guard: on any query error, classify whatever pages we did fetch
-    // (possibly none) and resolve to "ready" rather than wedging the gate
-    // in "loading" forever. Catches both first-page failure and mid-stream
-    // pagination failure.
+    // On any query error, surface an explicit "error" state rather than
+    // hanging in "loading" or pretending the check passed. The downstream
+    // gate does NOT block on error (avoids deadlocking creation if SQS is
+    // unavailable); the callout shows that we can't guarantee no duplicate
+    // exists, and the user can retry by reopening the flow. Whatever pages
+    // were successfully fetched are still classified so any duplicates we
+    // did see are surfaced.
     if (isError) {
       const partial = data?.pages.flatMap((p) => p.items) ?? [];
       const { exactMatches, similarMatches } = classifyMatches(
         proposed,
         partial
       );
-      return { status: "ready", exactMatches, similarMatches };
+      return { status: "error", exactMatches, similarMatches };
     }
     const stillFetching = isFetching || isFetchingNextPage || hasNextPage;
     if (!data || stillFetching) {

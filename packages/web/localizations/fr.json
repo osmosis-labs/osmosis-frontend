@@ -539,6 +539,7 @@
       "token": "Jeton",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "weightedPool": "Piscine pondérée",
+      "recommended": "Recommandé",
       "duplicateCheck": {
         "exactTitle": "Un pool avec ces paramètres existe déjà",
         "exactCaption": "Créer un doublon divise la liquidité et fragmente le volume. Les pools ne peuvent pas être supprimés une fois créés, préférez ajouter de la liquidité au pool existant.",
@@ -551,7 +552,8 @@
         "viewPool": "Voir le pool",
         "useExistingPool": "Ajouter de la liquidité à la place",
         "acknowledge": "Je comprends qu'un pool avec ces paramètres existe déjà et je souhaite tout de même créer un doublon.",
-        "checking": "Recherche des pools existants…"
+        "checking": "Recherche des pools existants…",
+        "errorCaption": "Nous n'avons pas pu vérifier l'existence de pools en doublon. Continuez avec prudence, un doublon de ce pool peut déjà exister."
       }
     },
     "createSupercharged": {

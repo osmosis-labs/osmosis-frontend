@@ -539,6 +539,7 @@
       "token": "Token",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony",
+      "recommended": "Zalecane",
       "duplicateCheck": {
         "exactTitle": "Pula z tymi parametrami już istnieje",
         "exactCaption": "Tworzenie duplikatu dzieli płynność i fragmentuje wolumen. Pul nie można usunąć po utworzeniu, więc rozważ dodanie płynności do istniejącej puli.",
@@ -551,7 +552,8 @@
         "viewPool": "Zobacz pulę",
         "useExistingPool": "Zamiast tego dodaj płynność",
         "acknowledge": "Rozumiem, że pula z tymi parametrami już istnieje i mimo to chcę utworzyć duplikat.",
-        "checking": "Wyszukiwanie istniejących pul…"
+        "checking": "Wyszukiwanie istniejących pul…",
+        "errorCaption": "Nie mogliśmy sprawdzić istniejących zduplikowanych pul. Kontynuuj ostrożnie, duplikat tej puli może już istnieć."
       }
     },
     "createSupercharged": {
