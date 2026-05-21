@@ -325,6 +325,7 @@ export const CosmosWalletState: FunctionComponent<
             <Screen screenName={WalletSelect1CTScreens.Introduction}>
               <div className="flex flex-col px-8">
                 <IntroducingOneClick
+                  transaction1CTParams={transaction1CTParams}
                   onStartTrading={() => {
                     setShow1CTConnectAWallet(true);
 

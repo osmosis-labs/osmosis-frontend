@@ -5,7 +5,10 @@ import {
   getSessionAuthenticator,
   queryAuthenticatorSpendLimit,
 } from "@osmosis-labs/server";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  DEFAULT_ENABLED_OPTIONAL_CATEGORIES,
+  OneClickTradingTransactionParams,
+} from "@osmosis-labs/types";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
@@ -21,7 +24,10 @@ export const oneClickTradingRouter = createTRPCRouter({
     }): Promise<
       Pick<
         OneClickTradingTransactionParams,
-        "networkFeeLimit" | "spendLimit" | "sessionPeriod"
+        | "networkFeeLimit"
+        | "spendLimit"
+        | "sessionPeriod"
+        | "enabledOptionalCategories"
       > & {
         spendLimitTokenDecimals: number;
       }
@@ -35,6 +41,7 @@ export const oneClickTradingRouter = createTRPCRouter({
         sessionPeriod: {
           end: "7days" as const,
         },
+        enabledOptionalCategories: DEFAULT_ENABLED_OPTIONAL_CATEGORIES,
       };
     }
   ),

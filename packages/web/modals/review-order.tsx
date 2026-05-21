@@ -21,6 +21,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { OneClickPermissionsSummary } from "~/components/one-click-trading/one-click-permissions-summary";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
@@ -898,27 +899,35 @@ const OneClickTradingPanel = ({
           </div>
         </div>
         {transactionParams?.isOneClickEnabled && (
-          <p className="text-body2 font-body2 text-osmoverse-300">
-            {t("oneClickTrading.reviewOrder.paramsDescription", {
-              sessionLength: t(
-                `oneClickTrading.sessionPeriods.${
-                  transactionParams?.sessionPeriod.end ?? "1hour"
-                }`
-              ),
-              spendLimit:
-                transactionParams?.spendLimit.toString() ??
-                t("oneClickTrading.reviewOrder.defaultSpendLimit"),
-            })}
-            {" · "}
-            <UIButton
-              variant="link"
-              size="md"
-              className="text-wosmongton-300 px-0 py-0"
-              onClick={onParamsChange}
-            >
-              {t("oneClickTrading.reviewOrder.change")}
-            </UIButton>
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-body2 font-body2 text-osmoverse-300">
+              {t("oneClickTrading.reviewOrder.paramsDescription", {
+                sessionLength: t(
+                  `oneClickTrading.sessionPeriods.${
+                    transactionParams?.sessionPeriod.end ?? "1hour"
+                  }`
+                ),
+                spendLimit:
+                  transactionParams?.spendLimit.toString() ??
+                  t("oneClickTrading.reviewOrder.defaultSpendLimit"),
+              })}
+              {" · "}
+              <UIButton
+                variant="link"
+                size="md"
+                className="text-wosmongton-300 px-0 py-0"
+                onClick={onParamsChange}
+              >
+                {t("oneClickTrading.reviewOrder.change")}
+              </UIButton>
+            </p>
+            <OneClickPermissionsSummary
+              enabledOptionalCategories={
+                transactionParams?.enabledOptionalCategories
+              }
+              className="text-body2 font-body2"
+            />
+          </div>
         )}
       </div>
     </>

@@ -1,10 +1,13 @@
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import Image from "next/image";
 
 import { Pill } from "~/components/indicators/pill";
+import { OneClickPermissionsSummary } from "~/components/one-click-trading/one-click-permissions-summary";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 interface IntroducingOneClickProps {
+  transaction1CTParams?: OneClickTradingTransactionParams;
   onStartTrading: () => void;
   onClickEditParams?: () => void;
   isLoading?: boolean;
@@ -12,6 +15,7 @@ interface IntroducingOneClickProps {
 }
 
 export const IntroducingOneClick = ({
+  transaction1CTParams,
   onClickEditParams,
   onStartTrading,
   isLoading,
@@ -58,18 +62,27 @@ export const IntroducingOneClick = ({
       >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
-      <p className="px-8 text-caption text-osmoverse-300">
-        {t("oneClickTrading.introduction.defaultParameters")} –{" "}
+      <div className="-mx-8 flex flex-col items-center gap-1 self-stretch">
+        <p className="whitespace-nowrap text-caption text-osmoverse-300">
+          {t("oneClickTrading.introduction.defaultParameters")}
+        </p>
+        <OneClickPermissionsSummary
+          enabledOptionalCategories={
+            transaction1CTParams?.enabledOptionalCategories
+          }
+          includeForced
+          className="whitespace-nowrap text-center"
+        />
         <Button
           variant="link"
-          className="!inline !px-0 !text-caption text-wosmongton-300"
+          className="!inline-flex !px-0 !text-caption text-wosmongton-300"
           size="sm"
           onClick={onClickEditParams}
           disabled={isLoading || isDisabled}
         >
           {t("oneClickTrading.introduction.changeButton")}
         </Button>
-      </p>
+      </div>
     </div>
   );
 };

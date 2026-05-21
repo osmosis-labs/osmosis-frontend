@@ -8,6 +8,7 @@ import {
 import {
   AuthenticatorType,
   AvailableOneClickTradingMessages,
+  getAllowedMessagesForCategories,
   OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
   OneClickTradingTransactionParams,
@@ -224,6 +225,7 @@ export async function onAdd1CTSession({
     hasSeenExpiryToast: false,
     humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
     userOsmoAddress,
+    enabledOptionalCategories: transaction1CTParams.enabledOptionalCategories,
   });
 
   localStorage.setItem(OneClickFloatingBannerDoNotShowKey, "true");
@@ -284,14 +286,10 @@ export async function makeCreate1CTSessionMessage({
     .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
     .truncate()
     .toString();
-  const allowedMessages: AvailableOneClickTradingMessages[] = [
-    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
-    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
-    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
-    "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
-    "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
-  ];
+  const allowedMessages: AvailableOneClickTradingMessages[] =
+    getAllowedMessagesForCategories(
+      transaction1CTParams.enabledOptionalCategories
+    );
 
   let sessionPeriod: OneClickTradingTimeLimit;
   switch (transaction1CTParams.sessionPeriod.end) {

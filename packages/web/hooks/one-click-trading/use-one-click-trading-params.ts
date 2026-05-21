@@ -1,6 +1,9 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  DEFAULT_ENABLED_OPTIONAL_CATEGORIES,
+  OneClickTradingTransactionParams,
+} from "@osmosis-labs/types";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { OneClickTradingMaxGasLimit, runIfFn } from "@osmosis-labs/utils";
 import {
@@ -48,6 +51,11 @@ export function getParametersFromOneClickTradingInfo({
         DecUtils.getTenExponentN(oneClickTradingInfo.spendLimit.decimals)
       )
     ),
+    // Sessions created before this field existed get the all-on default so
+    // their behaviour is unchanged.
+    enabledOptionalCategories:
+      oneClickTradingInfo.enabledOptionalCategories ??
+      DEFAULT_ENABLED_OPTIONAL_CATEGORIES,
   };
 }
 
@@ -168,5 +176,9 @@ export function useOneClickTradingParams({
 }
 
 export type OneClickTradingParamsChanges = Array<
-  "spendLimit" | "sessionPeriod" | "isEnabled" | "networkFeeLimit"
+  | "spendLimit"
+  | "sessionPeriod"
+  | "isEnabled"
+  | "networkFeeLimit"
+  | "enabledOptionalCategories"
 >;
