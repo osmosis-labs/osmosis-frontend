@@ -49,7 +49,9 @@ jest.mock("@mysten/wallet-standard", () => ({
 
 import {
   checkIfRedeemed,
+  fetchGovernorDelay,
   findWormchainRecvTx,
+  formatGovernorReleaseCountdown,
   lookupOsmosisIbcPacket,
   resolveOperation,
   WormholeRedeem,
@@ -578,5 +580,191 @@ describe("resolveOperation", () => {
     await expect(resolveOperation(OSMOSIS_HASH)).rejects.toThrow(
       /Wormchain receive hash/i
     );
+  });
+});
+
+// Fixtures: a Wormchain-emitter operation with no VAA yet. Mirrors the
+// shape of `/api/v1/operations` while the chain governor is holding the
+// VAA (i.e. before `vaa.raw` is populated).
+const OPERATION_WITHOUT_VAA = {
+  ...OPERATION_SUI_COMPLETED,
+  vaa: { raw: "", guardianSetIndex: 0 },
+  targetChain: undefined,
+} as const;
+
+describe("fetchGovernorDelay", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it("returns null when the operation already has a signed VAA", async () => {
+    const fetchSpy = jest.fn();
+    global.fetch = fetchSpy;
+
+    const result = await fetchGovernorDelay(OPERATION_SUI_COMPLETED as any);
+
+    expect(result).toBeNull();
+    // Skipping the governor lookups entirely keeps the happy path snappy.
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("returns kind=enqueued with releaseTime when the VAA is in the chain's queue", async () => {
+    const RELEASE_TIME = 1779540976; // matches enqueued_vaas.releaseTime
+
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ isEnqueued: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              sequence: "51994",
+              emitterAddress:
+                "0xaeb534c45c3049d380b9d9b966f9895f53abd4301bfaff407fa09dea8ae7a924",
+              chainId: 3104,
+              releaseTime: RELEASE_TIME,
+              txHash: "0xabc",
+            },
+          ],
+        }),
+      });
+
+    const result = await fetchGovernorDelay(OPERATION_WITHOUT_VAA as any);
+
+    expect(result).toEqual({
+      kind: "enqueued",
+      releaseTime: RELEASE_TIME,
+      usdAmount: Number(OPERATION_SUI_COMPLETED.data.usdAmount),
+    });
+  });
+
+  it("still returns kind=enqueued (without releaseTime) when the row isn't in the enqueued list yet", async () => {
+    // Wormholescan occasionally returns `isEnqueued: true` slightly
+    // before the enqueued list endpoint catches up. We must still show
+    // the badge — just without a countdown — rather than suppressing it.
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ isEnqueued: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [] }),
+      });
+
+    const result = await fetchGovernorDelay(OPERATION_WITHOUT_VAA as any);
+
+    expect(result?.kind).toBe("enqueued");
+    expect(result?.releaseTime).toBeUndefined();
+  });
+
+  it("returns kind=likely-enqueued when the transfer value exceeds the best guardian's headroom", async () => {
+    // is_vaa_enqueued is `false` (propagation window). Fall back to
+    // comparing the transfer's USD value against the chain's
+    // max-available notional.
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ isEnqueued: false }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { availableNotional: 10 } }),
+      });
+
+    const usdAmount = Number(OPERATION_SUI_COMPLETED.data.usdAmount);
+    const result = await fetchGovernorDelay(OPERATION_WITHOUT_VAA as any);
+
+    expect(result).toEqual({
+      kind: "likely-enqueued",
+      availableNotional: 10,
+      usdAmount,
+    });
+  });
+
+  it("returns null when the transfer fits within the available headroom", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ isEnqueued: false }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { availableNotional: 1_000_000 } }),
+      });
+
+    const result = await fetchGovernorDelay(OPERATION_WITHOUT_VAA as any);
+
+    expect(result).toBeNull();
+  });
+
+  it("returns null when the governor endpoints all fail", async () => {
+    // Governor lookups are best-effort. A flaky guardian endpoint must
+    // never block the user from at least seeing the existing
+    // "VAA not yet available" error.
+    global.fetch = jest.fn().mockRejectedValue(new Error("Network error"));
+
+    const result = await fetchGovernorDelay(OPERATION_WITHOUT_VAA as any);
+
+    expect(result).toBeNull();
+  });
+
+  it("returns null when usdAmount is not a finite number", async () => {
+    // Wormholescan occasionally returns a non-numeric placeholder for
+    // transfers the notional pricing service hasn't scored yet. Without
+    // a number we can't render the badge meaningfully, so we bail
+    // before even hitting the governor endpoints to avoid spurious
+    // "$NaN" copy.
+    const op = {
+      ...OPERATION_WITHOUT_VAA,
+      data: { ...OPERATION_WITHOUT_VAA.data, usdAmount: "n/a" },
+    };
+    const fetchSpy = jest.fn();
+    global.fetch = fetchSpy;
+
+    const result = await fetchGovernorDelay(op as any);
+
+    expect(result).toBeNull();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("formatGovernorReleaseCountdown", () => {
+  it("renders hours + minutes for long waits", () => {
+    const now = 1_000_000_000_000;
+    const releaseTime = Math.floor(now / 1000) + 3 * 3600 + 25 * 60;
+    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+      "Releases in 3h 25m"
+    );
+  });
+
+  it("renders minutes only when less than an hour remains", () => {
+    const now = 1_000_000_000_000;
+    const releaseTime = Math.floor(now / 1000) + 7 * 60;
+    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+      "Releases in 7m"
+    );
+  });
+
+  it("renders 'Releases shortly' for the last minute", () => {
+    const now = 1_000_000_000_000;
+    const releaseTime = Math.floor(now / 1000) + 30;
+    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+      "Releases shortly"
+    );
+  });
+
+  it("falls back to the generic 24h string when releaseTime is missing", () => {
+    expect(formatGovernorReleaseCountdown(undefined)).toBe("Up to 24 hours");
   });
 });
