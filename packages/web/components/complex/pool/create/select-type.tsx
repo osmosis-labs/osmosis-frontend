@@ -59,14 +59,68 @@ export const SelectType: FunctionComponent<{
   const disableNext =
     account?.walletStatus !== WalletStatus.Connected || !selectedType;
 
+  // Supercharged is the recommended path: render it on its own row above
+  // the others, larger and with a highlighted border + "Recommended" badge.
+  const recommendedType: PoolType = "concentrated";
+  const recommended = types.find((t) => t === recommendedType);
+  const others = types.filter((t) => t !== recommendedType);
+
   return (
     <div className="flex flex-col gap-8 pt-8">
-      <div className="flex w-full flex-wrap justify-center gap-4">
-        {types.map((type) => {
+      {recommended && (
+        <div className="flex justify-center">
+          {(() => {
+            const type = recommended;
+            const { caption, imageSrc, iconId } = getTypeConfig(type)!;
+            const isSelected = selectedType === type;
+            return (
+              <button
+                className="w-full max-w-[616px]"
+                key={type}
+                onClick={() => setSelectedType(type)}
+              >
+                <div
+                  className={classNames(
+                    "relative flex flex-col gap-5 rounded-2xl border-2 py-12",
+                    isSelected
+                      ? "border-wosmongton-300 bg-wosmongton-500"
+                      : "border-wosmongton-500 bg-osmoverse-900"
+                  )}
+                >
+                  <span className="caption absolute right-4 top-4 rounded-full bg-wosmongton-500 px-3 py-1 text-white-full">
+                    {t("pools.createPool.recommended")}
+                  </span>
+                  <div
+                    className={classNames("mx-auto transition", {
+                      "-rotate-6 scale-110": isSelected,
+                    })}
+                  >
+                    {iconId ? (
+                      <Icon id={iconId} width={96} height={96} />
+                    ) : (
+                      <Image
+                        src={imageSrc}
+                        alt={caption}
+                        height={96}
+                        width={96}
+                      />
+                    )}
+                  </div>
+                  <div className="mx-auto">
+                    <h5 className="md:subtitle1">{caption}</h5>
+                  </div>
+                </div>
+              </button>
+            );
+          })()}
+        </div>
+      )}
+      <div className="flex w-full justify-center gap-4 md:flex-wrap">
+        {others.map((type) => {
           const { caption, imageSrc, iconId } = getTypeConfig(type)!;
           return (
             <button
-              className="w-full max-w-[296px]"
+              className="min-w-0 flex-1 md:w-full md:max-w-[296px] md:flex-none"
               key={type}
               onClick={() => setSelectedType(type)}
             >

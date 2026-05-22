@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
@@ -6,6 +7,8 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Breakpoint, useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -16,6 +19,25 @@ export const PoolsOverview: FunctionComponent<
 > = ({ className, setIsCreatingPool }) => {
   const { width } = useWindowSize();
   const { t } = useTranslation();
+
+  // Open the wallet-select modal first when the user is disconnected, then
+  // fall through to opening the create-pool modal. Keeps the button label
+  // as "Create New Pool" rather than swapping in a "Connect wallet" label.
+  const { accountStore } = useStore();
+  const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
+  const { onOpenWalletSelect } = useWalletSelect();
+  const onCreatePoolClick = () => {
+    if (osmosisAccount?.walletStatus !== WalletStatus.Connected) {
+      onOpenWalletSelect({
+        walletOptions: [
+          { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+        ],
+        onConnect: setIsCreatingPool,
+      });
+      return;
+    }
+    setIsCreatingPool();
+  };
 
   const { data: osmo, isFetched } = api.edge.assets.getMarketAsset.useQuery({
     findMinDenomOrSymbol: "OSMO",
@@ -84,7 +106,7 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute bottom-7 right-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          onClick={setIsCreatingPool}
+          onClick={onCreatePoolClick}
           // TODO - ideally we shouldn't use overrides, reconsider this one off design
           className="!bg-osmoverse-700 hover:!bg-osmoverse-600"
         >

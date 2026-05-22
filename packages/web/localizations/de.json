@@ -545,6 +545,7 @@
       "buttonAddToken": "Neues Token hinzufügen",
       "buttonCreate": "Pool erstellen",
       "buttonNext": "Nächste",
+      "removeToken": "Token entfernen",
       "infoCaption": "Übertragen auf den Osmose-Gemeinschaftspool",
       "infoMessage": "Gebühr für die Poolerstellung",
       "scalingFactorController": "Skalierungsfaktorregler einstellen (optional)",
@@ -561,7 +562,23 @@
       "title": "Neuen Pool erstellen",
       "token": "Zeichen",
       "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird.",
-      "weightedPool": "Gewichtsbecken"
+      "weightedPool": "Gewichtsbecken",
+      "recommended": "Empfohlen",
+      "duplicateCheck": {
+        "exactTitle": "Ein Pool mit diesen Parametern existiert bereits",
+        "exactCaption": "Das Erstellen eines Duplikats teilt die Liquidität und fragmentiert das Volumen. Pools können nach der Erstellung nicht entfernt werden, fügen Sie stattdessen Liquidität zum bestehenden Pool hinzu.",
+        "similarTitle": "Ähnliche Pools existieren bereits",
+        "similarCaption": "Diese Pools teilen die gleichen Assets, verwenden aber andere Parameter. Überprüfen Sie sie, bevor Sie einen neuen erstellen.",
+        "poolRow": "Pool #{poolId}",
+        "poolRowWithSymbols": "Pool #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Gebühr",
+        "viewPool": "Pool anzeigen",
+        "useExistingPool": "Stattdessen Liquidität hinzufügen",
+        "acknowledge": "Mir ist bewusst, dass ein Pool mit diesen Parametern bereits existiert, und ich möchte trotzdem ein Duplikat erstellen.",
+        "checking": "Suche nach bestehenden Pools…",
+        "errorCaption": "Wir konnten nicht auf doppelte Pools prüfen. Bitte mit Vorsicht fortfahren, ein Duplikat dieses Pools könnte bereits existieren."
+      }
     },
     "createSupercharged": {
       "createNew": "Neuen Supercharged-Pool erstellen",

@@ -71,6 +71,14 @@ export class ObservableCreatePoolConfig {
   @observable
   public _acknowledgeFee = false;
 
+  @observable
+  public _duplicateAcknowledged = false;
+
+  /** Set by the create-pool UI when an exact-duplicate pool is detected and
+   *  the user must explicitly acknowledge before proceeding. */
+  @observable
+  public _duplicateBlocking = false;
+
   protected _opts: CreatePoolConfigOpts;
 
   @observable
@@ -142,6 +150,22 @@ export class ObservableCreatePoolConfig {
 
   set acknowledgeFee(ack: boolean) {
     runInAction(() => (this._acknowledgeFee = ack));
+  }
+
+  get duplicateAcknowledged() {
+    return this._duplicateAcknowledged;
+  }
+
+  set duplicateAcknowledged(ack: boolean) {
+    runInAction(() => (this._duplicateAcknowledged = ack));
+  }
+
+  get duplicateBlocking() {
+    return this._duplicateBlocking;
+  }
+
+  set duplicateBlocking(blocking: boolean) {
+    runInAction(() => (this._duplicateBlocking = blocking));
   }
 
   @computed

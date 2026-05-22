@@ -16,6 +16,7 @@ interface CreateCLPoolProps {
   advanceStep?: () => void;
   backStep?: () => void;
   fullClose?: () => void;
+  onUseExistingPool?: (poolId: string) => void;
 }
 
 export type SelectionToken = {
@@ -39,11 +40,13 @@ const USDC_ASSET: SelectionToken = {
 
 export const CreateCLPool = observer(
   ({
+    config,
     onBack,
     onClose,
     currentStep,
     advanceStep,
     fullClose,
+    onUseExistingPool,
   }: CreateCLPoolProps) => {
     const { t } = useTranslation();
     const [selectedBase, setSelectedBase] = useState<SelectionToken>();
@@ -56,12 +59,14 @@ export const CreateCLPool = observer(
         case 1:
           return (
             <SetBaseInfos
+              config={config}
               advanceStep={advanceStep}
               selectedBase={selectedBase}
               selectedQuote={selectedQuote}
               setSelectedBase={setSelectedBase}
               setSelectedQuote={setSelectedQuote}
               setPoolId={setPoolId}
+              onUseExistingPool={onUseExistingPool}
             />
           );
         case 2:
@@ -75,12 +80,14 @@ export const CreateCLPool = observer(
           );
       }
     }, [
+      config,
       advanceStep,
       currentStep,
       fullClose,
       poolId,
       selectedBase,
       selectedQuote,
+      onUseExistingPool,
     ]);
 
     return (

@@ -545,6 +545,7 @@
       "buttonAddToken": "Adauga token nou",
       "buttonCreate": "Creeaza Pool",
       "buttonNext": "Urmatorul",
+      "removeToken": "Elimină tokenul",
       "infoCaption": "Transferat catre pool-ul comunitatii Osmosis",
       "infoMessage": "Taxa creeare pool",
       "scalingFactorController": "Seteaza factorul de scalare(optional)",
@@ -561,7 +562,23 @@
       "title": "Creeaza Pool Nou",
       "token": "Token",
       "undersandCost": "Inteleg ca adaugarea unui nou pool costa {POOL_CREATION_FEE}.",
-      "weightedPool": "pool ponderat"
+      "weightedPool": "pool ponderat",
+      "recommended": "Recomandat",
+      "duplicateCheck": {
+        "exactTitle": "Există deja un pool cu acești parametri",
+        "exactCaption": "Crearea unui duplicat împarte lichiditatea și fragmentează volumul. Pool-urile nu pot fi eliminate după creare, așa că ia în considerare adăugarea de lichiditate la pool-ul existent.",
+        "similarTitle": "Există deja pool-uri similare",
+        "similarCaption": "Aceste pool-uri au aceleași active, dar folosesc parametri diferiți. Verifică-le înainte de a crea unul nou.",
+        "poolRow": "Pool #{poolId}",
+        "poolRowWithSymbols": "Pool #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Taxă",
+        "viewPool": "Vezi pool-ul",
+        "useExistingPool": "Adaugă lichiditate în schimb",
+        "acknowledge": "Înțeleg că există deja un pool cu acești parametri și totuși vreau să creez un duplicat.",
+        "checking": "Se caută pool-urile existente…",
+        "errorCaption": "Nu am putut verifica pool-urile duplicate existente. Continuă cu precauție, un duplicat al acestui pool poate exista deja."
+      }
     },
     "createSupercharged": {
       "createNew": "Creați un nou bazin supraalimentat",

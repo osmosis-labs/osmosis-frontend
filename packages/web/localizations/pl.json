@@ -545,6 +545,7 @@
       "buttonAddToken": "Dodaj nowy token",
       "buttonCreate": "Stwórz Pulę",
       "buttonNext": "Dalej",
+      "removeToken": "Usuń token",
       "infoCaption": "Przeniesione do Puli Społecznośći Osmosis",
       "infoMessage": "Prowizja Tworzenia Puli",
       "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
@@ -561,7 +562,23 @@
       "title": "Stwórz nową pulę",
       "token": "Token",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
-      "weightedPool": "Basen ważony"
+      "weightedPool": "Basen ważony",
+      "recommended": "Zalecane",
+      "duplicateCheck": {
+        "exactTitle": "Pula z tymi parametrami już istnieje",
+        "exactCaption": "Tworzenie duplikatu dzieli płynność i fragmentuje wolumen. Pul nie można usunąć po utworzeniu, więc rozważ dodanie płynności do istniejącej puli.",
+        "similarTitle": "Podobne pule już istnieją",
+        "similarCaption": "Te pule mają te same assets, ale używają innych parametrów. Sprawdź je przed utworzeniem nowej.",
+        "poolRow": "Pula #{poolId}",
+        "poolRowWithSymbols": "Pula #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Opłata",
+        "viewPool": "Zobacz pulę",
+        "useExistingPool": "Zamiast tego dodaj płynność",
+        "acknowledge": "Rozumiem, że pula z tymi parametrami już istnieje i mimo to chcę utworzyć duplikat.",
+        "checking": "Wyszukiwanie istniejących pul…",
+        "errorCaption": "Nie mogliśmy sprawdzić istniejących zduplikowanych pul. Kontynuuj ostrożnie, duplikat tej puli może już istnieć."
+      }
     },
     "createSupercharged": {
       "createNew": "Utwórz nowy pulę doładowaną",

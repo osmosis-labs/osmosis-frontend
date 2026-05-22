@@ -545,6 +545,7 @@
       "buttonAddToken": "Add new token",
       "buttonCreate": "Create Pool",
       "buttonNext": "Next",
+      "removeToken": "Remove token",
       "infoCaption": "Transferred to the Osmosis community pool",
       "infoMessage": "Pool Creation Fee",
       "scalingFactorController": "Set scaling factor controller (optional)",
@@ -561,7 +562,23 @@
       "title": "Create New Pool",
       "token": "Token",
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
-      "weightedPool": "Weighted pool"
+      "weightedPool": "Weighted pool",
+      "recommended": "Recommended",
+      "duplicateCheck": {
+        "exactTitle": "A pool with these parameters already exists",
+        "exactCaption": "Creating a duplicate splits liquidity and fragments volume. Pools cannot be removed once created, so consider providing liquidity to the existing pool instead.",
+        "similarTitle": "Similar pools already exist",
+        "similarCaption": "These pools share the same assets but use different parameters. Review them before creating a new one.",
+        "poolRow": "Pool #{poolId}",
+        "poolRowWithSymbols": "Pool #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Fee",
+        "viewPool": "View pool",
+        "useExistingPool": "Provide liquidity instead",
+        "acknowledge": "I understand a pool with these parameters already exists and want to create a duplicate anyway.",
+        "checking": "Checking for existing pools…",
+        "errorCaption": "We couldn't check for existing duplicate pools. Proceed with caution, a duplicate of this pool may already exist."
+      }
     },
     "createSupercharged": {
       "createNew": "Create New Supercharged Pool",

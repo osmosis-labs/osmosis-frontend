@@ -133,6 +133,10 @@ const Pools: NextPage = observer(function () {
         createPoolConfig={createPoolConfig}
         isSendingMsg={account?.txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
+        onUseExistingPool={useCallback((poolId: string) => {
+          setIsCreatingPool(false);
+          setAddLiquidityModalPoolId(poolId);
+        }, [])}
       />
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
