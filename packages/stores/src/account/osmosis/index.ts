@@ -369,6 +369,7 @@ export class OsmosisAccountImpl {
     shareOutAmount: string,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
@@ -450,8 +451,8 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           // Refresh the balances
@@ -488,6 +489,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
@@ -578,8 +580,8 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
@@ -619,6 +621,7 @@ export class OsmosisAccountImpl {
     quoteDeposit?: { currency: Currency; amount: string },
     maxSlippage = "15",
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
@@ -761,8 +764,11 @@ export class OsmosisAccountImpl {
         : "clCreatePosition",
       [msg],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      // Only forward 1CT signOptions on the non-superfluid branch -
+      // MsgCreateFullRangePositionAndSuperfluidDelegate isn't in the 1CT
+      // allowlist, so the chain-side check would reject it anyway.
+      superfluidValidatorAddress ? undefined : signOptions,
       (tx) => {
         if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
@@ -802,6 +808,7 @@ export class OsmosisAccountImpl {
     memo: string = "",
     base: { token: AppCurrency; amount: string },
     quote: { token: AppCurrency; amount: string },
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     let token_min_amount0 = "0";
@@ -844,8 +851,8 @@ export class OsmosisAccountImpl {
       "clCreatePosition",
       [msg],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           onFulfill?.(tx);
@@ -946,6 +953,7 @@ export class OsmosisAccountImpl {
     },
     maxSlippage = "20",
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     // calculate desired amounts with slippage
@@ -991,8 +999,11 @@ export class OsmosisAccountImpl {
       "clAddToPosition",
       [msg],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      // The superfluid branch emits MsgAddToConcentratedLiquiditySuperfluidPosition,
+      // which isn't in the 1CT allowlist; only forward signOptions on the plain
+      // MsgAddToPosition branch.
+      isSuperfluidStaked ? undefined : signOptions,
       (tx) => {
         if (!tx.code) {
           // refresh relevant balances
@@ -1041,6 +1052,7 @@ export class OsmosisAccountImpl {
     positionId: string,
     liquidityAmount: Dec,
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = await makeWithdrawPositionMsg({
@@ -1054,8 +1066,8 @@ export class OsmosisAccountImpl {
       "clWithdrawPosition",
       [msg],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
@@ -1105,6 +1117,7 @@ export class OsmosisAccountImpl {
     positionIdsWithSpreadRewards: string[],
     positionIdsWithIncentiveRewards: string[],
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const spreadRewardsMsg = await makeCollectSpreadRewardsMsg({
@@ -1143,8 +1156,8 @@ export class OsmosisAccountImpl {
         return msgs;
       },
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
@@ -1458,6 +1471,7 @@ export class OsmosisAccountImpl {
     poolExitFee: Dec,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const mkp = this.makeCoinPretty;
@@ -1523,8 +1537,8 @@ export class OsmosisAccountImpl {
       "exitPool",
       [msg],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
@@ -2016,6 +2030,7 @@ export class OsmosisAccountImpl {
    */
   async sendWithdrawDelegationRewardsMsg(
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(
@@ -2027,8 +2042,8 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           // Refresh the balances
@@ -2059,6 +2074,7 @@ export class OsmosisAccountImpl {
   async sendSetValidatorSetPreferenceMsg(
     validators: string[],
     memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const weight = new Dec(1).quo(new Dec(validators.length)).toString();
@@ -2081,8 +2097,8 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      undefined,
-      undefined,
+      signOptions?.fee,
+      signOptions,
       (tx) => {
         if (!tx.code) {
           // Refresh the balances

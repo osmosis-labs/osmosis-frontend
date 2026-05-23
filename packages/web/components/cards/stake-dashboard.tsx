@@ -79,11 +79,15 @@ export const StakeDashboard: React.FC<{
 
       if (account?.osmosis) {
         account.osmosis
-          .sendWithdrawDelegationRewardsMsg("", (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([EventName.Stake.collectRewardsCompleted]);
+          .sendWithdrawDelegationRewardsMsg(
+            "",
+            { useOneClickTrading: accountStore.useOneClickTrading },
+            (tx: DeliverTxResponse) => {
+              if (tx.code === 0) {
+                logEvent([EventName.Stake.collectRewardsCompleted]);
+              }
             }
-          })
+          )
           .catch(console.error);
       }
     }, [account, logEvent]);

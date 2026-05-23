@@ -168,6 +168,7 @@ export function useAddConcentratedLiquidityConfig(
             quoteDepositValue,
             undefined,
             undefined,
+            { useOneClickTrading: accountStore.useOneClickTrading },
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
@@ -237,6 +238,7 @@ export function useAddConcentratedLiquidityConfig(
             coin1,
             undefined,
             undefined,
+            { useOneClickTrading: accountStore.useOneClickTrading },
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {

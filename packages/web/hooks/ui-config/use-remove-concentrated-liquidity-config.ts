@@ -72,6 +72,7 @@ export function useRemoveConcentratedLiquidityConfig(
               position.id,
               liquidity,
               undefined,
+              { useOneClickTrading: accountStore.useOneClickTrading },
               (tx) => {
                 if (tx.code) {
                   reject(tx.rawLog);

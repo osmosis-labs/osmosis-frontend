@@ -125,6 +125,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           claimableSpreadRewardPositions.map(({ id }) => id),
           claimableIncentivePositions.map(({ id }) => id),
           undefined,
+          { useOneClickTrading: accountStore.useOneClickTrading },
           (tx) => {
             if (!tx.code) {
               logEvent([

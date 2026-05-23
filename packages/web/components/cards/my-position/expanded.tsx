@@ -152,6 +152,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           hasSpreadRewards ? [rawPosition.position.position_id] : [],
           hasIncentiveRewards ? [rawPosition.position.position_id] : [],
           undefined,
+          { useOneClickTrading: accountStore.useOneClickTrading },
           (tx) => {
             if (!tx.code) {
               logEvent([

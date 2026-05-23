@@ -60,6 +60,7 @@ export function useAddLiquidityConfig(
             },
             undefined,
             undefined,
+            { useOneClickTrading: accountStore.useOneClickTrading },
             () => resolve()
           );
         } else if (config.shareOutAmount) {
@@ -68,6 +69,7 @@ export function useAddLiquidityConfig(
             config.shareOutAmount.toDec().toString(),
             undefined,
             undefined,
+            { useOneClickTrading: accountStore.useOneClickTrading },
             () => resolve()
           );
         }

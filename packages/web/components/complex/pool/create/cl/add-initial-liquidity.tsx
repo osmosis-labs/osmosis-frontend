@@ -175,6 +175,7 @@ export const AddInitialLiquidity = observer(
                     amount: quoteAmount,
                     token: selectedQuote.token,
                   },
+                  { useOneClickTrading: accountStore.useOneClickTrading },
                   () => {
                     onClose?.();
                   }

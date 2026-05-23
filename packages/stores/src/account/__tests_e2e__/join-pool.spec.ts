@@ -90,7 +90,8 @@ describe("Join Pool Tx", () => {
           shareOutAmount,
           maxSlippage,
           "",
-          (tx) => {
+          undefined,
+          (tx: any) => {
             resolve(tx);
           }
         )
@@ -178,7 +179,8 @@ describe("Join Pool Tx", () => {
           shareOutAmount,
           maxSlippage,
           "",
-          (tx) => {
+          undefined,
+          (tx: any) => {
             resolve(tx);
           }
         )

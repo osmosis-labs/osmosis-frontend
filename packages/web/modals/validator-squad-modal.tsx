@@ -501,6 +501,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           await account.osmosis.sendSetValidatorSetPreferenceMsg(
             operatorAddresses,
             "",
+            { useOneClickTrading: accountStore.useOneClickTrading },
             onRequestClose
           );
         }

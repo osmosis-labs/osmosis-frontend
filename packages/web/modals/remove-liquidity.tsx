@@ -59,6 +59,7 @@ export const RemoveLiquidityModal: FunctionComponent<
             new Dec(exitFee),
             undefined,
             undefined,
+            { useOneClickTrading: accountStore.useOneClickTrading },
             (tx) => {
               if (Boolean(tx.code)) reject();
               else resolve();

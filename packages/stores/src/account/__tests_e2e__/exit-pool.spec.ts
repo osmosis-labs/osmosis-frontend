@@ -82,7 +82,8 @@ describe("Exit Pool Tx", () => {
             queryPool!.sharePool!.exitFee,
             "0",
             "",
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) rejects(tx);
               else resolve(tx);
             }
@@ -106,7 +107,8 @@ describe("Exit Pool Tx", () => {
             queryPool!.sharePool!.exitFee,
             "1",
             "",
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) rejects(tx);
               else resolve(tx);
             }
@@ -130,7 +132,8 @@ describe("Exit Pool Tx", () => {
             queryPool!.sharePool!.exitFee,
             "",
             "",
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) rejects(tx);
               else resolve(tx);
             }

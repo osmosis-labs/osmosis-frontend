@@ -33,7 +33,7 @@ describe("Create CL Positions Txs", () => {
         1,
         0.001, // must have spread factor to generate fees
         undefined,
-        (tx) => {
+        (tx: any) => {
           if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
@@ -88,7 +88,8 @@ describe("Create CL Positions Txs", () => {
             },
             undefined,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -132,7 +133,8 @@ describe("Create CL Positions Txs", () => {
             undefined,
             undefined,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -162,7 +164,8 @@ describe("Create CL Positions Txs", () => {
             { denom: "ubar", amount: calculatedAmount1 },
             undefined,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -197,7 +200,8 @@ describe("Create CL Positions Txs", () => {
             { denom: "ubar", amount: calculatedAmount1 },
             undefined,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -227,7 +231,8 @@ describe("Create CL Positions Txs", () => {
         lastPositionId,
         position.liquidity!.mul(new Dec(0.5)),
         undefined,
-        (tx) => {
+        undefined,
+        (tx: any) => {
           if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
@@ -265,7 +270,8 @@ describe("Create CL Positions Txs", () => {
         lastPositionId,
         position.liquidity!,
         undefined,
-        (tx) => {
+        undefined,
+        (tx: any) => {
           if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
@@ -324,7 +330,8 @@ describe("Create CL Positions Txs", () => {
           },
           undefined,
           undefined,
-          (tx) => {
+          undefined,
+          (tx: any) => {
             if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }

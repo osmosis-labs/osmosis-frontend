@@ -57,7 +57,8 @@ describe("Collect Cl Fees Txs", () => {
             userPositionIds,
             userPositionIds,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -80,7 +81,8 @@ describe("Collect Cl Fees Txs", () => {
             userPositionIds,
             userPositionIds,
             undefined,
-            (tx) => {
+            undefined,
+            (tx: any) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
@@ -124,7 +126,8 @@ describe("Collect Cl Fees Txs", () => {
           },
           undefined,
           undefined,
-          (tx) => {
+          undefined,
+          (tx: any) => {
             if (tx.code) reject(tx.rawLog);
             else resolve();
           }
