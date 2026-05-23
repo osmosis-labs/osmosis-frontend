@@ -185,7 +185,7 @@ export const AmountScreen = observer(
     const [pendingChainApproval, setPendingChainApproval] = useState(false);
     const [wishesToProceed, setWishesToProceed] = useState(false);
 
-    const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
+    const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("crypto");
     const {
       isOpen: isBridgeWalletSelectOpen,
       onClose: onCloseBridgeWalletSelect,
