@@ -1246,6 +1246,11 @@
       "title": "Cena graniczna poniżej ceny rynkowej",
       "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "Wpisz kwotę do",
     "toSell": "sprzedać",
     "toBuy": "kupić",

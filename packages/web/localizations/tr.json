@@ -1246,6 +1246,11 @@
       "title": "Limit fiyatı piyasa fiyatının altında",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "Bir miktar girin",
     "toSell": "satmak",
     "toBuy": "satın almak",

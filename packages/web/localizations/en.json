@@ -1246,6 +1246,11 @@
       "title": "Limit price below market price",
       "description": "If you proceed your order may be filled at an undesirable price."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "Enter an amount",
     "toSell": "to sell",
     "toBuy": "to buy",

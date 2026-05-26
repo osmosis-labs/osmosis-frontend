@@ -1246,6 +1246,11 @@
       "title": "બજાર કિંમત નીચે કિંમત મર્યાદા",
       "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "માટે રકમ દાખલ કરો",
     "toSell": "વેચવા માટે",
     "toBuy": "ખરીદવા માટે",

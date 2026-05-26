@@ -1246,6 +1246,11 @@
       "title": "Preț limită sub prețul pieței",
       "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "Introduceți o sumă la",
     "toSell": "a vinde",
     "toBuy": "să cumpere",
