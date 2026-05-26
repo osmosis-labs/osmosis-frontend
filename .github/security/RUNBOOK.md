@@ -16,10 +16,10 @@ Triage in order:
 2. **Is the underlying change actually intentional?**
    - If you accidentally bumped something or pulled in an unexpected transitive dep, fix the manifest / lockfile and push again. The gate re-runs automatically.
    - If the bump is intentional and the finding is real but low-risk for our use, you need an override.
-3. **Request an override** by opening a follow-up PR that adds an entry to [`.github/security/dep-overrides.yml`](./dep-overrides.yml). Required fields:
+3. **Request an override** from `@osmosis-labs/merge-perms`. The follow-up PR that adds an entry to [`.github/security/dep-overrides.yml`](./dep-overrides.yml) must be opened by, or contain an entry added by, an approving reviewer other than the PR author being unblocked. Required fields:
    - `package`, `version`, `integrity` (copy from `yarn.lock`).
    - `reason` - one-sentence justification; this is the audit trail.
-   - `added_by` - your GitHub username. Must not equal the PR author of the PR being unblocked.
+   - `added_by` - GitHub username of the approving reviewer who added the override entry. Must not equal the PR author of the PR being unblocked.
    - `added_at` / `expires_at` - ISO dates, max 90 days apart.
    - The override PR is reviewed by `@osmosis-labs/merge-perms` (enforced via CODEOWNERS).
 4. **After the override merges to your branch's base** (`stage`), rebase or merge `stage` into your PR. The gate re-runs and the override is applied; the sticky comment flips to APPROVED.
