@@ -8,8 +8,8 @@ import {
   queryClParams,
   queryPositionById,
 } from "@osmosis-labs/server";
-import { PricePretty } from "@osmosis-labs/unit";
 import { AppCurrency } from "@osmosis-labs/types";
+import { PricePretty } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
