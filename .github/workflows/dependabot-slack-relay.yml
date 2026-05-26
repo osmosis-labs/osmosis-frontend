@@ -22,8 +22,9 @@ on:
   dependabot_alert:
     types: [created, reopened, reintroduced]
 
-permissions:
-  contents: read
+# Workflow only POSTs to an external Slack webhook; it neither reads the repo
+# nor uses GITHUB_TOKEN, so grant no token permissions at all.
+permissions: {}
 
 jobs:
   notify:
