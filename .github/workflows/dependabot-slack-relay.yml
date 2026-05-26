@@ -1,0 +1,57 @@
+name: Dependabot Alerts -> Slack
+
+# Routes GitHub's Dependabot alert events to #dependabot-alerts via a
+# pre-provisioned Slack incoming webhook (SLACK_WEBHOOK_DEPENDABOT_ALERTS).
+#
+# Why a custom relay: GitHub's official Slack integration's
+# `/github subscribe ... dependabot_alerts` was deprecated alongside the
+# legacy `repository_vulnerability_alert` webhook and never re-implemented
+# for the newer `dependabot_alert` event. See MTN-53 for the resolved
+# decision (Option A - relay workflow) and MTN-34 for the broader gate
+# initiative this supports.
+#
+# Trigger scope is deliberately narrow:
+#   - `created`       new vulnerability reported on a dep we use.
+#   - `reopened`      previously dismissed alert is back (e.g. dep
+#                     re-added).
+#   - `reintroduced`  a fix was reverted; vulnerability is live again.
+# Dismissals (`dismissed`, `fixed`, `auto_dismissed`) are intentionally
+# excluded so Slack doesn't get noisy on healthy churn.
+
+on:
+  dependabot_alert:
+    types: [created, reopened, reintroduced]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Slack
+        env:
+          WEBHOOK: ${{ secrets.SLACK_WEBHOOK_DEPENDABOT_ALERTS }}
+          ACTION: ${{ github.event.action }}
+          PKG: ${{ github.event.alert.dependency.package.name }}
+          ECO: ${{ github.event.alert.dependency.package.ecosystem }}
+          SEV: ${{ github.event.alert.security_advisory.severity }}
+          SUMMARY: ${{ github.event.alert.security_advisory.summary }}
+          URL: ${{ github.event.alert.html_url }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::SLACK_WEBHOOK_DEPENDABOT_ALERTS is not set; skipping"
+            exit 0
+          fi
+          payload=$(jq -nc \
+            --arg action "$ACTION" \
+            --arg pkg "$PKG" \
+            --arg eco "$ECO" \
+            --arg sev "$SEV" \
+            --arg summary "$SUMMARY" \
+            --arg url "$URL" \
+            '{text: ":warning: Dependabot alert *\($action)*\n*\($pkg)* (\($eco)) - *\($sev)*\n\($summary)\n\($url)"}')
+          curl -sS --fail-with-body -X POST \
+            -H 'Content-type: application/json' \
+            --data "$payload" \
+            "$WEBHOOK"
