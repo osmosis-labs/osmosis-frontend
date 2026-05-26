@@ -195,7 +195,7 @@ export const useAssetInfoConfig = (
   // window + 30min cache so timeframe switches don't refetch and a
   // transitioning asset still recovers within minutes. The pill copy is
   // day-precision anyway, so 5min lag isn't user-visible.
-  const { data: latestPricePoint, isFetching: isFetchingLatestPricePoint } =
+  const { data: latestPricePoint } =
     api.edge.assets.getAssetLatestPricePoint.useQuery(
       {
         coinMinimalDenom: coinMinimalDenom ?? denom,
@@ -209,11 +209,12 @@ export const useAssetInfoConfig = (
       }
     );
 
-  // Only push to the observable on a settled response. While the query is
-  // refetching, `data` is briefly `undefined`; writing that through would
-  // flash the pill off then back on. A settled `null` (cascade found no
-  // points) is a real "no data" signal and should clear the observable.
-  if (!isFetchingLatestPricePoint) {
+  // Only write when the query has a defined response (a real point or a
+  // settled `null` meaning the cascade found no data). On the initial load
+  // before any cache is populated, `data` is `undefined` and we leave the
+  // freshly-constructed observable empty rather than write `undefined`
+  // through (which would also clear a cached value during a remount).
+  if (latestPricePoint !== undefined) {
     config.setLatestPricePointTimeSec(latestPricePoint?.time);
   }
 
