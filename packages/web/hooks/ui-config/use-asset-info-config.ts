@@ -182,6 +182,17 @@ export const useAssetInfoConfig = (
   // "last update" across timeframes instead of jittering with each range's
   // bucket size. The input intentionally does NOT include historicalRange or
   // dataType — those would invalidate the cache on every timeframe switch.
+  //
+  // Cache + stale times are deliberately decoupled from the `realtime` flag
+  // that drives the chart's historical-price query. The pill's underlying
+  // datum (the most recent on-chain trade timestamp) only changes when a new
+  // trade lands; for a stale asset that's days or weeks apart. A 3s stale
+  // time (matching the chart's `realtime` cadence) would refire the query
+  // on every focus / remount, and on the cascade path that means up to 3
+  // SQS calls (5min → 60min → 1440min) every 3 seconds. Use a 5min stale
+  // window + 30min cache so timeframe switches don't refetch and a
+  // transitioning asset still recovers within minutes. The pill copy is
+  // day-precision anyway, so 5min lag isn't user-visible.
   const { data: latestPricePoint } =
     api.edge.assets.getAssetLatestPricePoint.useQuery(
       {
@@ -190,8 +201,8 @@ export const useAssetInfoConfig = (
       },
       {
         enabled: Boolean(coinMinimalDenom ?? denom),
-        staleTime: realtime ? 3000 : 1000 * 60 * 3,
-        cacheTime: realtime ? 3000 : 1000 * 60 * 6,
+        staleTime: 1000 * 60 * 5,
+        cacheTime: 1000 * 60 * 30,
         trpc: { context: { skipBatch: true } },
       }
     );
