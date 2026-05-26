@@ -2,6 +2,7 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcMsw } from "~/__tests__/msw";
@@ -12,7 +13,6 @@ import {
 } from "~/__tests__/test-utils";
 import { ChainList } from "~/config/generated/chain-list";
 
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useAmountInput } from "../use-amount-input";
 
 describe("useAmountInput", () => {
@@ -240,6 +240,90 @@ describe("useAmountInput", () => {
       expect(result.current.isMaxValue).toBe(false);
       expect(result.current.isHalfValue).toBe(true);
       expect(result.current.inputAmount).toBe("500");
+    });
+  });
+
+  it("calculates quarter amount", async () => {
+    const mockGasAmount = new CoinPretty(
+      osmoMockCurrency,
+      new Dec(1).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+    );
+
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency, gasAmount: mockGasAmount })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
+    await connectTestWallet({
+      accountStore: rootStore.accountStore,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.setFraction(0.25);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isMaxValue).toBe(false);
+      expect(result.current.isHalfValue).toBe(false);
+      expect(result.current.isQuarterValue).toBe(true);
+      expect(result.current.isThreeQuartersValue).toBe(false);
+      expect(result.current.inputAmount).toBe("250");
+    });
+
+    // amount-vs-balance fallback: manual entry equal to balance * 0.25 should
+    // still light up isQuarterValue after the fraction is cleared.
+    act(() => {
+      result.current.setAmount("250");
+    });
+
+    await waitFor(() => {
+      expect(result.current.fraction).toBe(null);
+      expect(result.current.isQuarterValue).toBe(true);
+    });
+  });
+
+  it("calculates three-quarters amount", async () => {
+    const mockGasAmount = new CoinPretty(
+      osmoMockCurrency,
+      new Dec(1).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
+    );
+
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({ currency: osmoMockCurrency, gasAmount: mockGasAmount })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+
+    await connectTestWallet({
+      accountStore: rootStore.accountStore,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.setFraction(0.75);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isMaxValue).toBe(false);
+      expect(result.current.isHalfValue).toBe(false);
+      expect(result.current.isQuarterValue).toBe(false);
+      expect(result.current.isThreeQuartersValue).toBe(true);
+      expect(result.current.inputAmount).toBe("750");
+    });
+
+    act(() => {
+      result.current.setAmount("750");
+    });
+
+    await waitFor(() => {
+      expect(result.current.fraction).toBe(null);
+      expect(result.current.isThreeQuartersValue).toBe(true);
     });
   });
 

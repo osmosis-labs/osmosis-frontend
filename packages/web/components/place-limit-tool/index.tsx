@@ -31,6 +31,10 @@ import {
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
+import {
+  AmountPresetFraction,
+  AmountPresetRow,
+} from "~/components/swap-tool/amount-preset-row";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
@@ -789,6 +793,36 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 assetQueryInput={swapState.marketState.assetsQueryInput}
               />
             </div>
+            {(() => {
+              // Pick the underlying input whose balance the fraction should
+              // apply against. For market mode it's `marketState.inAmountInput`
+              // (sell tab denominates this in base, buy tab in quote — both
+              // correctly the asset the user is spending). For limit mode the
+              // sell tab uses `swapState.inAmountInput` (base, the asset being
+              // sold). Limit-buy is omitted because `swapState.inAmountInput`
+              // is denominated in the asset being acquired, so a balance
+              // fraction has no useful meaning there.
+              const presetInput =
+                type === "market"
+                  ? swapState.marketState.inAmountInput
+                  : tab === "sell"
+                  ? swapState.inAmountInput
+                  : null;
+              if (!presetInput) return null;
+              const balanceZero =
+                !presetInput.balance || presetInput.balance.toDec().isZero();
+              return (
+                <AmountPresetRow
+                  onSelect={(fraction: AmountPresetFraction) => {
+                    presetInput.setFraction(fraction);
+                    inputRef.current?.focus();
+                  }}
+                  activeFraction={presetInput.fraction}
+                  isDisabled={balanceZero}
+                  isLoadingMax={false}
+                />
+              );
+            })()}
             <AssetFieldsetFooter>
               <button
                 type="button"
