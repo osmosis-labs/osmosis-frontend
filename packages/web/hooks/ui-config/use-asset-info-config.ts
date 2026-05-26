@@ -177,6 +177,8 @@ export const useAssetInfoConfig = (
     config.setHistoricalDataError(isErrorCoingecko);
   }
 
+  config.setUsingCoingeckoFallback(enableCoinGecko);
+
   // Independent query for the single most recent price point at the finest
   // available bucket. Used so the stale-data pill shows a consistent
   // "last update" across timeframes instead of jittering with each range's
@@ -193,7 +195,7 @@ export const useAssetInfoConfig = (
   // window + 30min cache so timeframe switches don't refetch and a
   // transitioning asset still recovers within minutes. The pill copy is
   // day-precision anyway, so 5min lag isn't user-visible.
-  const { data: latestPricePoint } =
+  const { data: latestPricePoint, isFetching: isFetchingLatestPricePoint } =
     api.edge.assets.getAssetLatestPricePoint.useQuery(
       {
         coinMinimalDenom: coinMinimalDenom ?? denom,
@@ -207,9 +209,13 @@ export const useAssetInfoConfig = (
       }
     );
 
-  config.setLatestPricePointTimeSec(
-    latestPricePoint ? latestPricePoint.time : undefined
-  );
+  // Only push to the observable on a settled response. While the query is
+  // refetching, `data` is briefly `undefined`; writing that through would
+  // flash the pill off then back on. A settled `null` (cascade found no
+  // points) is a real "no data" signal and should clear the observable.
+  if (!isFetchingLatestPricePoint) {
+    config.setLatestPricePointTimeSec(latestPricePoint?.time);
+  }
 
   return config;
 };
@@ -281,6 +287,9 @@ export class ObservableAssetInfoConfig {
   @observable
   protected _latestPricePointTimeSec?: number = undefined;
 
+  @observable
+  protected _usingCoingeckoFallback: boolean = false;
+
   protected _disposers: (() => void)[] = [];
 
   denom: string;
@@ -295,6 +304,11 @@ export class ObservableAssetInfoConfig {
   @action
   readonly setLatestPricePointTimeSec = (timeSec?: number) => {
     this._latestPricePointTimeSec = timeSec;
+  };
+
+  @action
+  readonly setUsingCoingeckoFallback = (usingFallback: boolean) => {
+    this._usingCoingeckoFallback = usingFallback;
   };
 
   @computed
@@ -369,6 +383,11 @@ export class ObservableAssetInfoConfig {
     if (this.isHistoricalDataLoading || this.historicalChartUnavailable) {
       return false;
     }
+    // The latest-price-point query is an on-chain cascade. When the chart
+    // is rendering CoinGecko data (on-chain history was empty for the
+    // range), an old on-chain timestamp is not meaningful for what the
+    // user is looking at, so suppress the pill in that case.
+    if (this._usingCoingeckoFallback) return false;
     if (this._latestPricePointTimeSec === undefined) return false;
     const threshold =
       STALE_THRESHOLD_MS_BY_RANGE[this._historicalRange] ??
