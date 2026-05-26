@@ -7,4 +7,14 @@
 # detector scripts and workflow. Owned by merge-perms so any change to the
 # gate's behavior, override list, or operational docs is reviewed by a
 # trusted maintainer. See MTN-34 for the broader initiative.
+#
+# NOTE: merge-perms is intentionally the v1 review team (broad scope, low
+# team-sprawl, lets the gate land fast). Plan to tighten to a scoped
+# @osmosis-labs/security-reviewers team after go-live if broader membership
+# proves too noisy or rubber-stamp-prone. Tracked in MTN-79.
 /.github/security/  @osmosis-labs/merge-perms
+
+# Self-protection: CODEOWNERS itself must be reviewed by the same team, so a
+# future PR cannot weaken or remove the rule above without merge-perms
+# approval. Without this line, the lock can unlock itself.
+/.github/CODEOWNERS  @osmosis-labs/merge-perms

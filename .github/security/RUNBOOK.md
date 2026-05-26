@@ -2,6 +2,8 @@
 
 ## TL;DR
 
+> **Status:** the gate is being built in phases under MTN-34. This file (MTN-54 / Phase 01) lands inert configuration scaffolding only - no workflow runs yet, and no PR is being scanned. The behaviour described below takes effect once the gate workflow lands in MTN-56 (Phase 03) and is flipped to `gate` mode in MTN-57 (Phase 04).
+
 - A blocking CI check (`dep-security-gate`) scans every PR that touches `yarn.lock` or `package.json` for supply-chain risk.
 - A REJECTED verdict means the merge is blocked until either the underlying finding is resolved or an override is approved by `@osmosis-labs/merge-perms`.
 - Behavior (block vs advisory) and Slack verbosity are configured in [`.github/security/gate-config.yml`](./gate-config.yml).
