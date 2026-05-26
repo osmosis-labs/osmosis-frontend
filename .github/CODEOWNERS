@@ -1,0 +1,10 @@
+# GitHub CODEOWNERS for osmosis-frontend
+#
+# Lines later in the file take precedence over earlier ones. See
+# https://docs.github.com/en/repositories/managing-your-repositories-settings-and-customization/customizing-your-repository/about-code-owners
+
+# Dependency Security Gate configuration, overrides, runbook, and (future)
+# detector scripts and workflow. Owned by merge-perms so any change to the
+# gate's behavior, override list, or operational docs is reviewed by a
+# trusted maintainer. See MTN-34 for the broader initiative.
+/.github/security/  @osmosis-labs/merge-perms
