@@ -1052,7 +1052,8 @@
       "price": "قیمت",
       "volume": "جلد",
       "advanced": "پیشرفته",
-      "simple": "ساده"
+      "simple": "ساده",
+      "lastUpdate": "آخرین به‌روزرسانی: {time}"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",

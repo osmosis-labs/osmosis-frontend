@@ -1,8 +1,10 @@
 import { Dec } from "@osmosis-labs/unit";
+import dayjs from "dayjs";
 import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
+import { Icon } from "~/components/assets";
 import { ChartUnavailable } from "~/components/chart";
 import {
   HistoricalChart,
@@ -26,6 +28,7 @@ import {
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { AvailablePriceRanges } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
+import { humanizeTime } from "~/utils/date";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
@@ -46,6 +49,11 @@ export const AssetPriceChart: FunctionComponent = observer(() => {
   return (
     <section className="relative flex flex-col justify-between gap-3">
       {assetInfoConfig.mode === "simple" ? <ChartHeader /> : null}
+
+      {assetInfoConfig.mode === "simple" &&
+      assetInfoConfig.historicalChartStale ? (
+        <StaleDataPill timestampMs={assetInfoConfig.lastChartTimestampMs} />
+      ) : null}
 
       <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.mode === "advanced" ? (
@@ -221,3 +229,44 @@ const ChartHeader = observer(() => {
     </header>
   );
 });
+
+const COMPACT_UNIT_BY_KEY: Record<string, string> = {
+  "timeUnits.second": "s",
+  "timeUnits.seconds": "s",
+  "timeUnitsShort.second": "s",
+  "timeUnitsShort.seconds": "s",
+  "timeUnits.minute": "m",
+  "timeUnits.minutes": "m",
+  "timeUnitsShort.minute": "m",
+  "timeUnitsShort.minutes": "m",
+  "timeUnits.hour": "h",
+  "timeUnits.hours": "h",
+  "timeUnitsShort.hour": "h",
+  "timeUnitsShort.hours": "h",
+  "timeUnits.day": "d",
+  "timeUnits.days": "d",
+  "timeUnitsShort.day": "d",
+  "timeUnitsShort.days": "d",
+};
+
+const StaleDataPill: FunctionComponent<{ timestampMs?: number }> = ({
+  timestampMs,
+}) => {
+  const { t } = useTranslation();
+  if (!timestampMs) return null;
+  const parts = humanizeTime(dayjs(timestampMs));
+  const compact = parts
+    .map((p) => {
+      const suffix = COMPACT_UNIT_BY_KEY[p.unitTranslationKey];
+      return suffix ? `${p.value}${suffix}` : `${p.value}`;
+    })
+    .join(" ");
+  return (
+    <div className="absolute right-20 top-0 z-10 flex items-center gap-1.5 rounded-full border border-rust-500/40 bg-osmoverse-800 px-3 py-1">
+      <Icon id="alert-triangle" className="h-4 w-4 text-rust-400" />
+      <span className="caption text-osmoverse-200">
+        {t("tokenInfos.chart.lastUpdate", { time: compact })}
+      </span>
+    </div>
+  );
+};

@@ -1052,7 +1052,8 @@
       "price": "Preț",
       "volume": "Volum",
       "advanced": "Avansat",
-      "simple": "Simplu"
+      "simple": "Simplu",
+      "lastUpdate": "Ultima actualizare: {time}"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",

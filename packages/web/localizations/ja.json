@@ -1052,7 +1052,8 @@
       "price": "価格",
       "volume": "音量",
       "advanced": "高度な",
-      "simple": "単純"
+      "simple": "単純",
+      "lastUpdate": "最終更新: {time}"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",

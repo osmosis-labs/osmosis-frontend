@@ -1052,7 +1052,8 @@
       "price": "Prix",
       "volume": "Volume",
       "advanced": "Avancé",
-      "simple": "Simple"
+      "simple": "Simple",
+      "lastUpdate": "Dernière mise à jour : {time}"
     },
     "watchlist": "Liste de surveillance",
     "marketCapRank": "Classement de la capitalisation boursière",

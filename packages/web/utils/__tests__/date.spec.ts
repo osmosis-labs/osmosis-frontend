@@ -72,5 +72,31 @@ cases(
         { value: dayjs().add(32, "days").format("MMM D, YYYY"), unit: "" },
       ],
     },
+    {
+      name: "should return seconds for less than a minute in the past",
+      input: -30, // 30 seconds ago
+      expected: [{ value: 30, unit: "seconds" }],
+    },
+    {
+      name: "should return minutes for less than an hour in the past",
+      input: -120, // 2 minutes ago
+      expected: [{ value: 2, unit: "minutes" }],
+    },
+    {
+      name: "should return hours and minutes for less than a day in the past",
+      input: -(2 * 60 * 60 + 30 * 60), // 2h 30m ago
+      expected: [
+        { value: 2, unit: "hours" },
+        { value: 30, unit: "minutes" },
+      ],
+    },
+    {
+      name: "should return days and hours for less than 30 days in the past",
+      input: -(4 * 24 * 60 * 60 + 5 * 60 * 60), // 4d 5h ago
+      expected: [
+        { value: 4, unit: "days" },
+        { value: 5, unit: "hours" },
+      ],
+    },
   ]
 );

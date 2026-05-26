@@ -1052,7 +1052,8 @@
       "price": "Fiyat",
       "volume": "Hacim",
       "advanced": "Gelişmiş",
-      "simple": "Basit"
+      "simple": "Basit",
+      "lastUpdate": "Son güncelleme: {time}"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
