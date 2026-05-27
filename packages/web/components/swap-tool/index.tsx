@@ -338,6 +338,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !swapState.inAmountInput?.balance?.toDec().isZero() &&
       swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
+    const onSelectAmountPreset = useCallback(
+      (fraction: AmountPresetFraction) => {
+        if (quoteType !== "out-given-in") {
+          setQuoteType("out-given-in");
+        }
+        swapState.inAmountInput.setFraction(fraction);
+        fromAmountInputEl.current?.focus();
+      },
+      [quoteType, setQuoteType, swapState.inAmountInput]
+    );
+
     const isConfirmationDisabled =
       isSendingTx ||
       isWalletLoading ||
@@ -442,6 +453,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     openAddFundsModal={openAddFundsModal}
                   />
                 </AssetFieldsetHeader>
+                {account?.isWalletConnected &&
+                  swapState.inAmountInput.balance &&
+                  !swapState.inAmountInput.balance.toDec().isZero() && (
+                    <div className="flex justify-end">
+                      <AmountPresetRow
+                        onSelect={onSelectAmountPreset}
+                        activeFraction={swapState.inAmountInput.fraction}
+                        isDisabled={false}
+                        isMaxDisabled={
+                          swapState.inAmountInput.notEnoughBalanceForMax
+                        }
+                        isLoadingMax={isLoadingMaxButton}
+                      />
+                    </div>
+                  )}
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
                     ref={fromAmountInputEl}
@@ -495,26 +521,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     data-testid="token-in"
                   />
                 </div>
-                <AmountPresetRow
-                  onSelect={useCallback(
-                    (fraction: AmountPresetFraction) => {
-                      if (quoteType !== "out-given-in") {
-                        setQuoteType("out-given-in");
-                      }
-                      swapState.inAmountInput.setFraction(fraction);
-                      fromAmountInputEl.current?.focus();
-                    },
-                    [quoteType, setQuoteType, swapState.inAmountInput]
-                  )}
-                  activeFraction={swapState.inAmountInput.fraction}
-                  isDisabled={
-                    !swapState.inAmountInput.balance ||
-                    swapState.inAmountInput.balance.toDec().isZero() ||
-                    swapState.inAmountInput.notEnoughBalanceForMax ||
-                    isLoadingMaxButton
-                  }
-                  isLoadingMax={isLoadingMaxButton}
-                />
                 <AssetFieldsetFooter>
                   <span
                     className={classNames(

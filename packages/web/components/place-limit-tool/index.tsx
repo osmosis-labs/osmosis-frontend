@@ -171,6 +171,15 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const [fiatAmount, setFiatAmount] = useState<string>("");
 
+    // Highlight state for the amount presets in limit-buy. Unlike market and
+    // limit-sell (which drive a `useAmountInput` whose own `fraction` tracks
+    // the active preset), limit-buy computes the spend amount imperatively via
+    // `setAmountSafe`, so the active fraction has to be tracked here and
+    // cleared whenever the user edits the amount manually.
+    const [limitBuyFraction, setLimitBuyFraction] = useState<number | null>(
+      null
+    );
+
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
     useEffect(() => {
@@ -365,6 +374,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
+    // Applies a fraction of the quote balance the buyer spends in limit-buy.
+    // Mirrors the previous Max button's buy math (quote balance when the fiat
+    // field is focused, quote balance converted to base via the limit price
+    // when the token field is focused), scaled by the chosen fraction.
+    const setLimitBuyBalanceFraction = useCallback(
+      (fraction: AmountPresetFraction) => {
+        const quoteBalance = swapState.quoteTokenBalance?.toDec();
+        if (!quoteBalance) return;
+        const scaledQuote = quoteBalance.mul(new Dec(fraction));
+        const amount =
+          focused === "fiat"
+            ? scaledQuote.toString()
+            : swapState.priceState.price && !swapState.priceState.price.isZero()
+            ? scaledQuote.quo(swapState.priceState.price).toString()
+            : undefined;
+        if (amount === undefined) return;
+        setAmountSafe(focused, amount);
+        setLimitBuyFraction(fraction);
+      },
+      [
+        focused,
+        setAmountSafe,
+        swapState.quoteTokenBalance,
+        swapState.priceState.price,
+      ]
+    );
+
     // Adjusts the token value when the user updates the fiat value
     useEffect(() => {
       if (
@@ -427,44 +463,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.priceState.price,
       type,
       swapState.baseAsset?.coinDecimals,
-    ]);
-
-    const toggleMax = useCallback(() => {
-      if (tab === "buy") {
-        // Tab is buy so use quote amount
-
-        // Determine amount based on current input
-        const amount =
-          focused === "fiat"
-            ? swapState.quoteTokenBalance?.toDec().toString()
-            : swapState.quoteTokenBalance
-                ?.toDec()
-                .quo(swapState.priceState.price)
-                .toString();
-
-        setAmountSafe(focused, amount);
-
-        return;
-      }
-
-      // Tab must be sell so we use base amount
-
-      // Determine amount based on current input
-      const amount =
-        focused === "token"
-          ? swapState.baseTokenBalance?.toDec().toString()
-          : swapState.baseTokenBalance
-              ?.toDec()
-              .mul(swapState.priceState.price)
-              .toString();
-      return setAmountSafe(focused, amount);
-    }, [
-      tab,
-      setAmountSafe,
-      swapState.baseTokenBalance,
-      swapState.quoteTokenBalance,
-      focused,
-      swapState.priceState.price,
     ]);
 
     const inputValue = useMemo(() => {
@@ -714,9 +712,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             <AssetFieldsetHeader>
               <AssetFieldsetHeaderLabel>
                 <span
-                  className={classNames("body2 sm:caption text-osmoverse-300", {
-                    "text-rust-400": errorDisplay,
-                  })}
+                  className={classNames(
+                    "body2 sm:caption py-1.5 text-osmoverse-300",
+                    {
+                      "text-rust-400": errorDisplay,
+                    }
+                  )}
                 >
                   {errorDisplay ? (
                     errorDisplay
@@ -745,11 +746,63 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         notation: "standard",
                       })
                 }
-                onMax={toggleMax}
                 openAddFundsModal={openAddFundsModal}
                 showAddFundsButton={!hasFunds}
               />
             </AssetFieldsetHeader>
+            {hasFunds && (
+              <div className="flex justify-end">
+                {(() => {
+                  // Limit-buy is special: the visible spend amount is driven
+                  // by `fiatAmount` / `swapState.inAmountInput` through
+                  // `setAmountSafe`, not by a single `useAmountInput` whose
+                  // `fraction` we can reuse. So it routes through the
+                  // imperative `setLimitBuyBalanceFraction` and tracks its
+                  // own highlight in `limitBuyFraction`.
+                  if (type === "limit" && tab === "buy") {
+                    const balanceZero =
+                      !swapState.quoteTokenBalance ||
+                      swapState.quoteTokenBalance.toDec().isZero();
+                    return (
+                      <AmountPresetRow
+                        onSelect={(fraction: AmountPresetFraction) => {
+                          setLimitBuyBalanceFraction(fraction);
+                          inputRef.current?.focus();
+                        }}
+                        activeFraction={limitBuyFraction}
+                        isDisabled={balanceZero}
+                        isLoadingMax={false}
+                      />
+                    );
+                  }
+
+                  // Market mode and limit-sell drive a `useAmountInput`
+                  // directly, always on the asset the user spends:
+                  //  - market: `marketState.inAmountInput` (sell tab is base,
+                  //    buy tab is quote).
+                  //  - limit sell: `swapState.inAmountInput` (base, the asset
+                  //    being sold).
+                  const presetInput =
+                    type === "market"
+                      ? swapState.marketState.inAmountInput
+                      : swapState.inAmountInput;
+                  const balanceZero =
+                    !presetInput.balance ||
+                    presetInput.balance.toDec().isZero();
+                  return (
+                    <AmountPresetRow
+                      onSelect={(fraction: AmountPresetFraction) => {
+                        presetInput.setFraction(fraction);
+                        inputRef.current?.focus();
+                      }}
+                      activeFraction={presetInput.fraction}
+                      isDisabled={balanceZero}
+                      isLoadingMax={false}
+                    />
+                  );
+                })()}
+              </div>
+            )}
             <div className="flex items-center justify-between py-3 ">
               <AssetFieldsetInput
                 page={page}
@@ -770,7 +823,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     ? "0.01"
                     : inputValue
                 }
-                onInputChange={(e) => setAmountSafe(focused, e.target.value)}
+                onInputChange={(e) => {
+                  setLimitBuyFraction(null);
+                  setAmountSafe(focused, e.target.value);
+                }}
                 data-testid={`trade-input-${type}`}
               />
               <AssetFieldsetTokenSelector
@@ -793,36 +849,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 assetQueryInput={swapState.marketState.assetsQueryInput}
               />
             </div>
-            {(() => {
-              // Pick the underlying input whose balance the fraction should
-              // apply against. For market mode it's `marketState.inAmountInput`
-              // (sell tab denominates this in base, buy tab in quote — both
-              // correctly the asset the user is spending). For limit mode the
-              // sell tab uses `swapState.inAmountInput` (base, the asset being
-              // sold). Limit-buy is omitted because `swapState.inAmountInput`
-              // is denominated in the asset being acquired, so a balance
-              // fraction has no useful meaning there.
-              const presetInput =
-                type === "market"
-                  ? swapState.marketState.inAmountInput
-                  : tab === "sell"
-                  ? swapState.inAmountInput
-                  : null;
-              if (!presetInput) return null;
-              const balanceZero =
-                !presetInput.balance || presetInput.balance.toDec().isZero();
-              return (
-                <AmountPresetRow
-                  onSelect={(fraction: AmountPresetFraction) => {
-                    presetInput.setFraction(fraction);
-                    inputRef.current?.focus();
-                  }}
-                  activeFraction={presetInput.fraction}
-                  isDisabled={balanceZero}
-                  isLoadingMax={false}
-                />
-              );
-            })()}
             <AssetFieldsetFooter>
               <button
                 type="button"
