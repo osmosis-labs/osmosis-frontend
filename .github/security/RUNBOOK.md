@@ -1,50 +1,83 @@
-# Dependency Security Gate - RUNBOOK (v1)
+# Security Gate - Runbook (incident response)
 
-## TL;DR
+> **Audience:** on-call / maintainer / anyone who reached this doc because something is broken or feels wrong. For day-to-day tasks (unblocking a REJECTED PR, approving an override), see [USER_GUIDE.md](./USER_GUIDE.md). For "which doc do I want?", see [README.md](./README.md).
 
-> **Status:** the gate is being built in phases under MTN-34. This file (MTN-54 / Phase 01) lands inert configuration scaffolding only - no workflow runs yet, and no PR is being scanned. The behaviour described below takes effect once the gate workflow lands in MTN-56 (Phase 03) and is flipped to `gate` mode in MTN-57 (Phase 04).
+> **Status:** the gate is being built in phases under [MTN-34](https://linear.app/osmosis/issue/MTN-34). The incident scenarios below assume the gate is live (post-MTN-57 / Phase 04). Each section is marked with the phase that populates it; until that phase ships, the section is a stub.
 
-- A blocking CI check (`dep-security-gate`) scans every PR that touches `yarn.lock` or `package.json` for supply-chain risk.
-- A REJECTED verdict means the merge is blocked until either the underlying finding is resolved or an override is approved by `@osmosis-labs/security-reviewers`.
-- Behavior (block vs advisory) and Slack verbosity are configured in [`.github/security/gate-config.yml`](./gate-config.yml).
+## When you reach for this doc
 
-> This is the minimal v1 runbook. It will be expanded iteratively under MTN-64 (Phase 11) as real questions and incidents accumulate. Until then, escalate edge cases in `#security-gate-alerts`.
+- Something is failing or blocking that shouldn't be: workflow error, Socket outage, gate REJECTing valid PRs.
+- A real attack is suspected and you need to know what to do *and not do* (do not override).
+- An override turned out, post-hoc, to have approved something bad.
 
-## I just got a REJECTED comment on my PR - what now?
+If none of the above, you probably want [USER_GUIDE.md](./USER_GUIDE.md) instead.
 
-Triage in order:
+## Socket outage
 
-1. **Read the sticky comment.** The aggregator names exactly which detector fired (`lockfile-diff`, `socket`, or `dep-review`), which package, and the kind of finding (e.g. `republish`, `install-script`, `new-bin`, known CVE, behavioral risk).
-2. **Is the underlying change actually intentional?**
-   - If you accidentally bumped something or pulled in an unexpected transitive dep, fix the manifest / lockfile and push again. The gate re-runs automatically.
-   - If the bump is intentional and the finding is real but low-risk for our use, you need an override.
-3. **Request an override** from `@osmosis-labs/security-reviewers`. The follow-up PR that adds an entry to [`.github/security/dep-overrides.yml`](./dep-overrides.yml) must be opened by, or contain an entry added by, an approving reviewer other than the PR author being unblocked. Required fields:
-   - `package`, `version`, `integrity` (copy from `yarn.lock`).
-   - `reason` - one-sentence justification; this is the audit trail.
-   - `added_by` - GitHub username of the approving reviewer who added the override entry. Must not equal the PR author of the PR being unblocked.
-   - `added_at` / `expires_at` - ISO dates, max 90 days apart.
-   - The override PR is reviewed by `@osmosis-labs/security-reviewers` (enforced via CODEOWNERS).
-4. **After the override merges to your branch's base** (`stage`), rebase or merge `stage` into your PR. The gate re-runs and the override is applied; the sticky comment flips to APPROVED.
-5. **If the finding looks like a real attack** (Shai-Hulud-class republish, install script reaching out to a suspicious host, etc.), do NOT override. Post in `#security-gate-alerts` and tag `@osmosis-labs/security-reviewers` for incident handling.
+> **Populated in MTN-56 (Phase 03 - Workflow).**
 
-## How do I read the sticky comment?
+This section will cover:
 
-The aggregator (MTN-55 / Phase 02) emits a single sticky comment per PR with three sections:
+- **Symptoms.** Socket-API calls in the workflow time out or 5xx; aggregator emits REJECTED verdicts with `reason: socket_unavailable`; sticky comments fire on every PR; #security-gate-alerts fills up.
+- **Expected behaviour.** The gate fails *closed* by design - Socket being missing is treated as a high-severity finding, so all PRs touching deps are REJECTED until Socket recovers. This is intentional; do not override around it.
+- **Diagnosis.** Check Socket's status page (`status.socket.dev` or the current equivalent) and the `socket` job logs in a recent failed workflow run.
+- **Escalation.** Notify `#security-gate-alerts` with the suspected duration.
+- **Temporary `advisory` flip.** If the outage is prolonged (>= 1 hour) and dev velocity is impacted, open a fast-track PR against [`gate-config.yml`](./gate-config.yml) flipping `mode: gate` to `mode: advisory`. CODEOWNERS reviews. **Always paired with a flip-back PR queued and a stated plan for when Socket recovers.** The flip itself posts an always-on Slack alert.
 
-- **Verdict header** - one of `APPROVED`, `NEEDS_HUMAN_REVIEW`, or `REJECTED`, plus the reason.
-- **Summary table** - one row per detector with finding counts at each severity.
-- **Findings detail** - collapsed `<details>` blocks per finding with the kind, package, evidence, and a link back to this runbook.
+## Workflow errors
 
-Always-on Slack alerts (REJECTED verdicts, override events, republish detections, Socket outages, workflow errors) post to `#security-gate-alerts` regardless of `slack_verbosity`.
+> **Populated in MTN-55 (Phase 02 - Detectors) and MTN-56 (Phase 03 - Workflow).**
 
-## How do I change the gate's mode or Slack verbosity?
+This section will cover aggregator-specific failure modes:
 
-Open a PR that edits [`.github/security/gate-config.yml`](./gate-config.yml). The file is owned by `@osmosis-labs/security-reviewers` via CODEOWNERS, so it forces a review.
+- Missing detector input (lockfile-diff or dep-review JSON not uploaded).
+- Malformed [`dep-overrides.yml`](./dep-overrides.yml) causing aggregator crash.
+- Socket-API transient timeout vs sustained outage (different escalation paths).
+- Workflow YAML syntax errors (caught in CI; re-running rarely helps).
+- Concurrency-cancelled run vs actual error.
 
-- `mode: gate` -> REJECTED verdicts block merges.
-- `mode: advisory` -> REJECTED verdicts still post the sticky comment and Slack alert, but the status check passes. Use this only for short windows (false-positive investigation, infrastructure recovery, etc.) and flip back as soon as possible.
-- `slack_verbosity: verbose | alerts | silent` - tune signal-to-noise in `#security-gate-alerts`. Always-on events (see above) bypass this setting.
+## Gate stuck blocking valid PRs
 
-## Vercel residual-risk note
+> **Populated in MTN-57 (Phase 04 - Go-live) and iteratively after.**
 
-The gate runs in GitHub Actions. Vercel builds the merged commit independently and does NOT run the gate. The mitigation is structural: because nothing reaches `stage` without passing the gate, Vercel only ever builds commits that have already been cleared. Runtime egress monitoring on the Vercel side is out of scope for this initiative (StepSecurity Harden-Runner is Linux-runner-only and is tracked separately under MTN-59 / Phase 06).
+This section will cover symptom -> diagnosis -> action for cases where the gate appears to misbehave:
+
+- Lockfile-diff false positive on a legitimate dep bump (e.g. a re-publish that's actually upstream-correct).
+- Over-aggressive Socket alert on a known-good package.
+- Override entry that looks valid but isn't being picked up by the aggregator (check `integrity`, `expires_at`, `added_by`).
+
+Bias is **override-and-document** rather than weakening detector calibration on a single example.
+
+## Republish detected (suspected real attack)
+
+> **Populated iteratively (MTN-64).**
+
+This section will cover incident response for Shai-Hulud-class events:
+
+- **Do not override.** A republish is the strongest signal we have of a maintainer-account compromise. Overriding propagates the compromise to `stage`.
+- Notify `#security-gate-alerts` and tag `@osmosis-labs/security-reviewers`.
+- Verification: pull integrity hashes from `yarn.lock` head vs base, cross-reference against the package's npm history.
+- If confirmed: full incident-response playbook (to be expanded in MTN-64 after the first real incident or near-miss).
+
+## Override granted that turned out to be unsafe
+
+> **Populated in MTN-58 (Phase 05 - Slash override).**
+
+This section will cover incident response when an override is granted in good faith but later proves to have approved a real vulnerability:
+
+- How to revoke (manifest path: edit `dep-overrides.yml`; slash-command path: re-emit failing status check + roll the change).
+- Audit-trail reading - who approved, when, with what reason. Slack always-on log + workflow artifacts.
+- Post-mortem template.
+
+---
+
+## Scope & limitations (residual risk)
+
+The gate runs in GitHub Actions. Vercel builds the merged commit independently and does NOT run the gate. The mitigation is structural: because nothing reaches `stage` without passing the gate, Vercel only ever builds commits that have already been cleared. Runtime egress monitoring on the Vercel side is out of scope for this initiative; StepSecurity Harden-Runner is Linux-runner-only and is tracked separately under MTN-59 (Phase 06).
+
+## See also
+
+- [README.md](./README.md) - landing page.
+- [USER_GUIDE.md](./USER_GUIDE.md) - day-to-day PR-author and reviewer tasks.
+- [`gate-config.yml`](./gate-config.yml) - live config (mode + verbosity).
+- [MTN-34](https://linear.app/osmosis/issue/MTN-34) - parent initiative.
