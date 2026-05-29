@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
@@ -8,7 +8,6 @@ import { Layerswap } from "~/integrations/layerswap";
 import { Moonpay } from "~/integrations/moonpay";
 import { OnrampMoney } from "~/integrations/onrampmoney";
 import { Swapped } from "~/integrations/swapped";
-import { useTransakModal } from "~/integrations/transak";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
@@ -16,38 +15,20 @@ const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
   layerswapcoinbase: "Coinbase Layer Swap",
   moonpay: "MoonPay",
   onrampmoney: "Onramp.money",
-  transak: "Transak",
 };
 
 export const FiatRampsModal: FunctionComponent<
   {
     fiatRampKey: FiatRampKey;
     assetKey: string;
-    transakModalProps?: Parameters<typeof useTransakModal>[0];
   } & ModalBaseProps
 > = (props) => {
   const flags = useFeatureFlags();
-  const { fiatRampKey, isOpen } = props;
-
-  const { setModal } = useTransakModal({
-    onRequestClose: props.onRequestClose,
-    ...props.transakModalProps,
-  });
-
-  useEffect(() => {
-    if (fiatRampKey === "transak") {
-      if (isOpen) {
-        setModal(true);
-      } else {
-        setModal(false);
-      }
-    }
-  }, [fiatRampKey, isOpen, setModal]);
+  const { fiatRampKey } = props;
 
   return (
     <ModalBase
       {...props}
-      overlayClassName={fiatRampKey === "transak" ? "!hidden" : undefined}
       className="m-0 w-fit p-0 !bg-osmoverse-900"
       hideCloseButton
       hideDefaultBackButton

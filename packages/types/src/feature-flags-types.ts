@@ -29,5 +29,4 @@ export type AvailableFlags =
   | "layerswapcoinbase"
   | "swapped"
   | "onrampmoney"
-  | "transak"
   | "polarisBanner";
