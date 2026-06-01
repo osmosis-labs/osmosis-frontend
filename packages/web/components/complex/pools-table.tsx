@@ -68,7 +68,8 @@ export const incentiveTypes: PoolIncentiveFilter[] = [
 
 export interface PoolsTableFilters {
   searchQuery: string | null;
-  poolIncentivesFilter: PoolIncentiveFilter[];
+  /** Optional. When omitted, all incentive types are included (no filtering). */
+  poolIncentivesFilter?: PoolIncentiveFilter[];
   poolTypesFilter: PoolTypeFilter[];
   denoms?: string[];
 }
@@ -159,7 +160,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
         "cosmwasm",
       ],
-      incentiveTypes: filters.poolIncentivesFilter,
+      incentiveTypes: filters.poolIncentivesFilter ?? incentiveTypes,
       sort: sortKey
         ? {
             keyPath: sortKey,

@@ -9,10 +9,8 @@ import {
 import { useCallback } from "react";
 
 import {
-  incentiveTypes,
   marketIncentivePoolsSortKeys,
   poolFilterTypes,
-  PoolIncentiveFilter,
   PoolsTable,
   PoolTypeFilter,
 } from "~/components/complex/pools-table";
@@ -46,9 +44,10 @@ const useAllPoolsTable = () => {
       ).withDefault(
         poolFilterTypes.filter((type) => type !== "cosmwasm-transmuter")
       ),
-      poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
-        parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
-      ).withDefault([...incentiveTypes]),
+      // The incentive-type filter UI was removed in the pools page redesign.
+      // PoolsTable defaults poolIncentivesFilter to all incentive types (no
+      // filtering) when the prop is absent, so we no longer track it as URL
+      // state here.
     },
     {
       history: "push",
