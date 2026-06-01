@@ -4,7 +4,6 @@ import { SpriteIconId } from "~/config";
 export type FiatRampKey =
   | "moonpay"
   | "swapped"
-  | "transak"
   | "layerswapcoinbase"
   | "onrampmoney";
 export const FiatRampDisplayInfos: Record<
@@ -26,12 +25,6 @@ export const FiatRampDisplayInfos: Record<
     rampKey: "swapped",
     iconUrl: "/logos/swapped.svg",
     displayName: "Swapped",
-  },
-  transak: {
-    rampKey: "transak",
-    iconUrl: "/logos/transak.svg",
-    displayName: "Transak",
-    logoId: "transak-logo",
   },
   layerswapcoinbase: {
     rampKey: "layerswapcoinbase",

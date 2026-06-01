@@ -195,18 +195,6 @@
   }
 }
 
-.html-transak-closed {
-  overflow: auto !important;
-}
-
-.transak_modal-overlay {
-  z-index: 9999 !important;
-}
-
-.transak_modal {
-  z-index: 9999 !important;
-}
-
 .ReactModal__Overlay {
   opacity: 0;
   transition: opacity 150ms ease-in;

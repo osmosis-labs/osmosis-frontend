@@ -75,7 +75,6 @@
     "@tanstack/react-table": "^8.10.3",
     "@tanstack/react-virtual": "^3.0.0-beta.63",
     "@tippyjs/react": "^4.2.6",
-    "@transak/transak-sdk": "^1.2.2",
     "@trpc/client": "^10.45.1",
     "@trpc/next": "^10.45.1",
     "@trpc/react-query": "^10.45.1",
