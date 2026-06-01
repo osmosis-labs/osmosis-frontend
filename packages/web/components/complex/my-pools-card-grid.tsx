@@ -79,7 +79,11 @@ export const MyPoolsCardsGrid = observer(() => {
     );
   }
 
-  if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) {
+  // Empty state is keyed off the raw user-pool list, not the sliced +
+  // dust-filtered view. A wallet that holds only sub-penny LP (hide-dust on),
+  // or whose surviving pools fall outside the initial slice, would otherwise
+  // show "no pools found" despite having pool positions.
+  if (!isLoadingMyPoolDetails && (allMyPoolDetails?.length ?? 0) === 0) {
     return (
       <div className="flex w-full flex-col items-center justify-center gap-1 py-3">
         <p className="text-body2 font-medium text-osmoverse-200">
