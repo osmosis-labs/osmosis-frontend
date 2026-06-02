@@ -169,11 +169,14 @@ safety net while reducing per-cron-tick noise from up to 9 Slack alerts down to
 ### Topup dispatch model (dedup)
 
 Topup dispatch is decoupled from the per-region/per-push balance checks so the
-"E2E: Topup Test Accounts" workflow fires **at most once per low-balance
+"E2E: Topup Test Accounts" workflow normally fires **about once per low-balance
 episode** instead of once per push and once per region (which raced and produced
 same-second and minutes-apart duplicate dispatches). One topup run refills
 **all four accounts** (preview + US/EU/SG), so a single dispatch always covers
-everyone.
+everyone. Note the dedup is **best-effort, not a hard guarantee**: the guard is a
+non-atomic `gh run list` check, so two dispatchers firing in the same instant can
+still both dispatch (harmless — the second run finds accounts already funded and
+sends nothing).
 
 | Workflow | Dispatches topup? | Notes |
 |----------|-------------------|-------|
@@ -188,13 +191,15 @@ Two complementary mechanisms keep dispatch deduplicated:
   independent per-preflight dispatches, which removes the same-tick race (the
   three preflights ran in parallel and all saw "nothing in flight").
 - **Cooldown guard** — every dispatcher skips if a topup is already
-  `queued`/`in_progress`, **or** a real topup `conclusion == "success"` within
-  the last ~45 min (`COOLDOWN_SECONDS=2700`). This removes cross-tick and
-  cross-workflow repeats. 45 min is deliberately below the 60 min cron so a
-  still-low account is still refilled on the next hourly tick. **Failed** runs do
-  not count (so a bad/partial topup can be retried immediately), and **dry runs**
-  do not count (they move no funds — excluded via the topup workflow's
-  `run-name`, matched with `displayTitle | startswith("Dry run")`).
+  `queued`/`in_progress`, **or** a real successful topup (`conclusion == "success"`)
+  whose run was **created within the last ~45 min** (`COOLDOWN_SECONDS=2700`). The
+  window is keyed off the run's `createdAt` (≈ when it was dispatched/queued), not
+  its completion time, because the intent is to rate-limit how often we dispatch.
+  This removes cross-tick and cross-workflow repeats. 45 min is deliberately below
+  the 60 min cron so a still-low account is still refilled on the next hourly tick.
+  **Failed** runs do not count (so a bad/partial topup can be retried immediately),
+  and **dry runs** do not count (they move no funds — excluded via the topup
+  workflow's `run-name`, matched with `displayTitle | startswith("Dry run")`).
 
 The per-region Slack alerts remain independent of dispatch, so a persistently
 low account still pages every cron tick even while dispatch is on cooldown.

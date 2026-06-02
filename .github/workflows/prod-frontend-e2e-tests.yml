@@ -107,12 +107,17 @@ jobs:
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
               # Dedup guard (Phase A / MTN-97): skip if a topup is already in
-              # flight, OR a real (non-dry-run) topup completed successfully
-              # within the ~45 min cooldown. 45 min is deliberately below the
-              # 60 min monitoring cron so a still-low account is still refilled
-              # on the next hourly tick; the window only collapses same-tick and
-              # cross-workflow bursts. Failed runs do NOT count (so a bad topup
-              # can be retried immediately); dry runs do NOT count (no funds move).
+              # flight, OR a real (non-dry-run) successful topup was *created*
+              # (`createdAt`, i.e. dispatched/queued) within the ~45 min cooldown.
+              # The window is keyed off createdAt (≈ dispatch time), not the
+              # completion time, since the intent is to rate-limit how often we
+              # dispatch. 45 min is deliberately below the 60 min monitoring cron
+              # so a still-low account is still refilled on the next hourly tick;
+              # the window only collapses same-tick and cross-workflow bursts.
+              # Failed runs do NOT count (so a bad topup can be retried
+              # immediately); dry runs do NOT count (no funds move). Note this is
+              # a best-effort, non-atomic check — two dispatchers firing in the
+              # same instant can still both dispatch.
               COOLDOWN_SECONDS=2700
               RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
                 --json status,conclusion,displayTitle,createdAt \

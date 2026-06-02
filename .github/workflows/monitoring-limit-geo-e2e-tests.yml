@@ -278,12 +278,16 @@ jobs:
           SG_OUTCOME: ${{ needs.preflight-sg.outputs.outcome }}
         run: |
           # Dedup guard (Phase A / MTN-97): skip if a topup is already in flight,
-          # OR a real (non-dry-run) topup completed successfully within the
-          # ~45 min cooldown. 45 min is deliberately below the 60 min cron so a
-          # still-low account is still refilled on the next hourly tick; the
-          # window only collapses same-tick and cross-workflow bursts. Failed
-          # runs do NOT count (so a bad topup can be retried immediately); dry
-          # runs do NOT count (they move no funds).
+          # OR a real (non-dry-run) successful topup was *created* (`createdAt`,
+          # i.e. dispatched/queued) within the ~45 min cooldown. The window is
+          # keyed off createdAt (≈ dispatch time), not completion time, since the
+          # intent is to rate-limit how often we dispatch. 45 min is deliberately
+          # below the 60 min cron so a still-low account is still refilled on the
+          # next hourly tick; the window only collapses same-tick and
+          # cross-workflow bursts. Failed runs do NOT count (so a bad topup can be
+          # retried immediately); dry runs do NOT count (they move no funds).
+          # Best-effort, non-atomic: two dispatchers firing at the same instant
+          # can still both dispatch.
           COOLDOWN_SECONDS=2700
           RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
             --json status,conclusion,displayTitle,createdAt \
