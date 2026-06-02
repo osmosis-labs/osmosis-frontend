@@ -8,6 +8,7 @@ as well as standalone utility scripts for on-chain operations (e.g. cancelling o
 - [Environment Variables](#environment-variables)
 - [Running Tests](#running-tests)
 - [Balance Checking](#balance-checking)
+  - [Topup dispatch model (dedup)](#topup-dispatch-model-dedup)
 - [Required Token Balances](#required-token-balances)
 - [Order Cleanup Scripts](#order-cleanup-scripts)
 - [Fund Management](#fund-management)
@@ -159,11 +160,44 @@ alert at most per workflow run (or per region, for the geo-monitoring workflow).
 | `monitoring-limit-geo-e2e-tests.yml` | `preflight-us` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
 
 Each `preflight-*` job in the geo-monitoring workflow runs the balance pipeline
-(check → alert if low → dispatch topup if low → expose `outcome` output) **once**
-per region per cron tick. Test jobs use `if: needs.preflight-XX.outputs.outcome
-!= 'fail'` to skip cleanly when the wallet is critically low — preserving the
-original fail-stop safety net while reducing per-cron-tick noise from up to
-9 Slack alerts and 3 topup dispatches down to 1 + 1 per region.
+(check → alert if low → expose `outcome` output) **once** per region per cron
+tick. Test jobs use `if: needs.preflight-XX.outputs.outcome != 'fail'` to skip
+cleanly when the wallet is critically low — preserving the original fail-stop
+safety net while reducing per-cron-tick noise from up to 9 Slack alerts down to
+1 per region.
+
+### Topup dispatch model (dedup)
+
+Topup dispatch is decoupled from the per-region/per-push balance checks so the
+"E2E: Topup Test Accounts" workflow fires **at most once per low-balance
+episode** instead of once per push and once per region (which raced and produced
+same-second and minutes-apart duplicate dispatches). One topup run refills
+**all four accounts** (preview + US/EU/SG), so a single dispatch always covers
+everyone.
+
+| Workflow | Dispatches topup? | Notes |
+|----------|-------------------|-------|
+| `monitoring-limit-geo-e2e-tests.yml` | Yes — single `topup-dispatch` job | `needs` all 3 preflights; dispatches once if any region is `warn`/`fail`. This is the primary funding path (hourly cron) and keeps the preview account funded too. |
+| `prod-frontend-e2e-tests.yml` | Yes — `check-balances` job | Master-push path; same cooldown guard. |
+| `frontend-e2e-tests.yml` | **No** (Phase A / MTN-97) | Preview push keeps the low-balance Slack alert + critical-fail gate, but no longer dispatches — the hourly monitoring path already refills the preview account. |
+
+Two complementary mechanisms keep dispatch deduplicated:
+
+- **Consolidation** — the geo-monitoring workflow uses one `topup-dispatch` job
+  (`needs: [preflight-us, preflight-eu, preflight-sg]`) instead of three
+  independent per-preflight dispatches, which removes the same-tick race (the
+  three preflights ran in parallel and all saw "nothing in flight").
+- **Cooldown guard** — every dispatcher skips if a topup is already
+  `queued`/`in_progress`, **or** a real topup `conclusion == "success"` within
+  the last ~45 min (`COOLDOWN_SECONDS=2700`). This removes cross-tick and
+  cross-workflow repeats. 45 min is deliberately below the 60 min cron so a
+  still-low account is still refilled on the next hourly tick. **Failed** runs do
+  not count (so a bad/partial topup can be retried immediately), and **dry runs**
+  do not count (they move no funds — excluded via the topup workflow's
+  `run-name`, matched with `displayTitle | startswith("Dry run")`).
+
+The per-region Slack alerts remain independent of dispatch, so a persistently
+low account still pages every cron tick even while dispatch is on cooldown.
 
 ### Exit Codes
 
@@ -392,6 +426,12 @@ warning suggests lowering the relevant reserve input if it becomes persistent.
 1. Run with dry run → see per-account balances, targets, and deficits
 2. Run live → sends only the deficits
 3. If interrupted, re-run safely — already-topped-up accounts are skipped
+
+**Who dispatches this workflow automatically?** See
+[Topup dispatch model (dedup)](#topup-dispatch-model-dedup) above — the
+geo-monitoring `topup-dispatch` job and the prod-master `check-balances` job,
+both behind a shared in-flight + ~45 min success cooldown guard so only one
+auto-topup fires per low-balance episode.
 
 ---
 

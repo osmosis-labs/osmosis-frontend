@@ -106,9 +106,24 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-              if [ "$PENDING" -gt 0 ]; then
-                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              # Dedup guard (Phase A / MTN-97): skip if a topup is already in
+              # flight, OR a real (non-dry-run) topup completed successfully
+              # within the ~45 min cooldown. 45 min is deliberately below the
+              # 60 min monitoring cron so a still-low account is still refilled
+              # on the next hourly tick; the window only collapses same-tick and
+              # cross-workflow bursts. Failed runs do NOT count (so a bad topup
+              # can be retried immediately); dry runs do NOT count (no funds move).
+              COOLDOWN_SECONDS=2700
+              RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
+                --json status,conclusion,displayTitle,createdAt \
+                --jq "[.[]
+                  | select((.displayTitle | startswith(\"Dry run\")) | not)
+                  | select(
+                      .status == \"queued\" or .status == \"in_progress\"
+                      or (.conclusion == \"success\" and ((now - (.createdAt | fromdateiso8601)) < $COOLDOWN_SECONDS))
+                    )] | length")
+              if [ "$RECENT" -gt 0 ]; then
+                echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
               else
                 gh workflow run "E2E: Topup Test Accounts" \
                   --ref stage \
