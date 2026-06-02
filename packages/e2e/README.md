@@ -9,6 +9,7 @@ as well as standalone utility scripts for on-chain operations (e.g. cancelling o
 - [Running Tests](#running-tests)
 - [Balance Checking](#balance-checking)
   - [Topup dispatch model (dedup)](#topup-dispatch-model-dedup)
+- [Transaction Confirmation](#transaction-confirmation)
 - [Required Token Balances](#required-token-balances)
 - [Order Cleanup Scripts](#order-cleanup-scripts)
 - [Fund Management](#fund-management)
@@ -217,6 +218,37 @@ requirement is unavailable after retries — see "Price-Aware Checks" above.
 The Slack alert wording in that case calls out the cause ("price service
 unavailable — couldn't verify, dispatching topup as precaution") so it isn't
 mistaken for an actual shortage.
+
+## Transaction Confirmation
+
+Trade tests (swap / buy / sell) confirm a transaction succeeded using **two
+signals that race**, so a flaky WebSocket can't produce a false failure:
+
+1. **Primary — WebSocket toast.** The in-app "Transaction Successful" toast is
+   driven by the app's WebSocket `TxTracer` (`packages/tx/src/tracer.ts`). It's
+   fast and is what passes in non-proxied (US / preview / prod) runs.
+2. **Fallback — REST poll.** The EU/SG monitoring suites drive the browser
+   through an HTTP CONNECT proxy, over which long-lived WebSockets frequently
+   stall or disconnect — so the toast may never render even though the tx was
+   broadcast and included on-chain. To cover that, `TradePage.startTxConfirmation()`
+   also captures the broadcast tx hash from the app's `/api/broadcast-transaction`
+   response and polls the Osmosis LCD `GET /cosmos/tx/v1beta1/txs/{hash}` directly
+   from the Node test process (see `utils/tx-confirm.ts`). That fetch does **not**
+   go through the browser proxy, so it's reliable regardless of WebSocket health.
+
+Whichever signal confirms first wins (the loser is aborted); the test only fails
+if **both** time out, or if the REST poll sees the tx included with a non-zero
+code (a genuine on-chain failure). `getTransactionUrl()` likewise falls back to
+the captured hash (Mintscan URL) when the success-toast link is absent.
+
+The REST endpoint is `REST_ENDPOINT` (default `https://lcd.osmosis.zone`, see
+`utils/config.ts`). `TradePage.goto()` additionally retries with backoff so a
+proxy stall on initial page load surfaces as a recoverable retry rather than a
+hard `beforeAll` timeout.
+
+> Note: this is an E2E-layer safety net. A complementary product-side change —
+> making the app's own `broadcastMsgs` fall back to REST when `TxTracer`
+> exhausts its WebSocket endpoints — is tracked separately and ships as its own PR.
 
 ## Required Token Balances
 
