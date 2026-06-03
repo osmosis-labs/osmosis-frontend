@@ -709,11 +709,38 @@ export class TradePage extends BasePage {
       { timeout }
     );
     const body = (await resp.json()) as {
-      tx_response?: { txhash?: string };
+      tx_response?: {
+        txhash?: string;
+        code?: number;
+        codespace?: string;
+        raw_log?: string;
+      };
+      code?: number;
+      message?: string;
     };
-    const hash = body?.tx_response?.txhash;
+    const txResponse = body?.tx_response;
+    const hash = txResponse?.txhash;
+
+    // Surface the broadcast result so a tx that is rejected at CheckTx (returns a
+    // hash but is never included → LCD "tx not found") is diagnosable from CI
+    // logs. `code === 0` means accepted into the mempool; a non-zero `code` +
+    // `raw_log`/`codespace` is the ante-handler rejection reason (sequence, fee,
+    // signature, etc.). Logged, not thrown, so the REST poll still runs.
+    console.log(
+      `Broadcast response: httpStatus=${resp.status()} ` +
+        `code=${txResponse?.code ?? body?.code ?? "?"} ` +
+        `codespace=${txResponse?.codespace ?? "-"} ` +
+        `txhash=${hash ?? "none"}` +
+        (txResponse?.raw_log ? ` raw_log=${txResponse.raw_log}` : "") +
+        (!txResponse && body?.message ? ` message=${body.message}` : "")
+    );
+
     if (!hash) {
-      throw new Error("broadcast response contained no txhash");
+      throw new Error(
+        `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
+          `code=${txResponse?.code ?? body?.code ?? "?"}, ` +
+          `message=${body?.message ?? txResponse?.raw_log ?? "none"})`
+      );
     }
     return String(hash).toLowerCase();
   }
