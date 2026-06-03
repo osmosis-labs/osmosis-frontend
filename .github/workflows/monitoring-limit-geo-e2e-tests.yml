@@ -18,13 +18,19 @@ jobs:
   # every swap/trade/limit job. They:
   #   - check the monitoring wallet's balance,
   #   - send AT MOST one Slack alert if low,
-  #   - dispatch AT MOST one topup workflow if low,
   #   - export `outcome` (pass | warn | fail | error) so the test jobs can
   #     skip themselves when the wallet is critically low.
   #
   # Before this refactor each of fe-swap-*, fe-trade-*, fe-limit-* ran the
   # same five balance steps independently, producing up to 9 Slack alerts
   # and up to 3 topup-workflow dispatches per cron tick.
+  #
+  # Topup dispatch is NOT done per-preflight anymore (Phase A / MTN-97). The
+  # three preflights run in parallel and each used to hit `gh run list` in the
+  # same second, so all three saw "nothing in flight" and dispatched — 3 full
+  # top-ups per tick for work that a single run already covers (one topup run
+  # refills US/EU/SG/preview). Dispatch is now centralised in the single
+  # `topup-dispatch` job below, which `needs` all three preflights.
   # -------------------------------------------------------------------------
 
   preflight-us:
@@ -95,24 +101,6 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
-          else
-            gh workflow run "E2E: Topup Test Accounts" \
-              --ref stage \
-              -f dry_run=false \
-              -f topup_multiplier=3.0 \
-              -f reserve_osmo=5 \
-              -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
-          fi
 
   preflight-eu:
     name: preflight-eu-balance
@@ -182,24 +170,6 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
-          else
-            gh workflow run "E2E: Topup Test Accounts" \
-              --ref stage \
-              -f dry_run=false \
-              -f topup_multiplier=3.0 \
-              -f reserve_osmo=5 \
-              -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
-          fi
 
   preflight-sg:
     name: preflight-sg-balance
@@ -269,15 +239,66 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
+
+  # -------------------------------------------------------------------------
+  # Single, deduplicated topup dispatcher (Phase A / MTN-97).
+  #
+  # `needs` all three preflights and dispatches AT MOST ONE topup per cron tick
+  # if any region reports a low balance (warn/fail). One topup run refills every
+  # account (US/EU/SG/preview), so a single dispatch covers all regions.
+  #
+  # Dedup model:
+  #   - Consolidation (this single job) removes the same-tick 3x race: the three
+  #     preflights used to each dispatch in parallel.
+  #   - The cooldown guard below removes cross-tick / cross-workflow repeats
+  #     (this job + prod-frontend-e2e all check the same workflow's recent runs).
+  # The per-region Slack alerts stay in each preflight, so a persistently low
+  # account still pages every tick even while dispatch is on cooldown.
+  # -------------------------------------------------------------------------
+  topup-dispatch:
+    name: topup-dispatch
+    runs-on: ubuntu-latest
+    needs: [preflight-us, preflight-eu, preflight-sg]
+    if: >-
+      always() && (
+        needs.preflight-us.outputs.outcome == 'warn' || needs.preflight-us.outputs.outcome == 'fail' ||
+        needs.preflight-eu.outputs.outcome == 'warn' || needs.preflight-eu.outputs.outcome == 'fail' ||
+        needs.preflight-sg.outputs.outcome == 'warn' || needs.preflight-sg.outputs.outcome == 'fail'
+      )
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Trigger automatic topup (deduplicated)
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          US_OUTCOME: ${{ needs.preflight-us.outputs.outcome }}
+          EU_OUTCOME: ${{ needs.preflight-eu.outputs.outcome }}
+          SG_OUTCOME: ${{ needs.preflight-sg.outputs.outcome }}
         run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
+          # Dedup guard (Phase A / MTN-97): skip if a topup is already in flight,
+          # OR a real (non-dry-run) successful topup was *created* (`createdAt`,
+          # i.e. dispatched/queued) within the ~45 min cooldown. The window is
+          # keyed off createdAt (≈ dispatch time), not completion time, since the
+          # intent is to rate-limit how often we dispatch. 45 min is deliberately
+          # below the 60 min cron so a still-low account is still refilled on the
+          # next hourly tick; the window only collapses same-tick and
+          # cross-workflow bursts. Failed runs do NOT count (so a bad topup can be
+          # retried immediately); dry runs do NOT count (they move no funds).
+          # Best-effort, non-atomic: two dispatchers firing at the same instant
+          # can still both dispatch.
+          COOLDOWN_SECONDS=2700
+          RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
+            --json status,conclusion,displayTitle,createdAt \
+            --jq "[.[]
+              | select((.displayTitle | startswith(\"Dry run\")) | not)
+              | select(
+                  .status == \"queued\" or .status == \"in_progress\"
+                  or (.conclusion == \"success\" and ((now - (.createdAt | fromdateiso8601)) < $COOLDOWN_SECONDS))
+                )] | length")
+          if [ "$RECENT" -gt 0 ]; then
+            echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
           else
             gh workflow run "E2E: Topup Test Accounts" \
               --ref stage \
@@ -285,7 +306,7 @@ jobs:
               -f topup_multiplier=3.0 \
               -f reserve_osmo=5 \
               -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
+            echo "Topup workflow dispatched (US=$US_OUTCOME EU=$EU_OUTCOME SG=$SG_OUTCOME)."
           fi
 
   # -------------------------------------------------------------------------
