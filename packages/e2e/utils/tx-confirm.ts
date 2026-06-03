@@ -54,8 +54,19 @@ export async function pollTxOnChain(
       throw new Error("pollTxOnChain aborted");
     }
 
+    // WHATWG fetch has no default timeout, so a single hung request could
+    // block past `deadline` and never reach the throw below. Bound each attempt
+    // (capped at 10s, never beyond the remaining budget) with an
+    // AbortController, and also abort it if the caller's signal fires (e.g. the
+    // WS toast already confirmed success).
+    const attemptController = new AbortController();
+    const onCallerAbort = () => attemptController.abort();
+    const attemptMs = Math.max(0, Math.min(deadline - Date.now(), 10_000));
+    const attemptTimer = setTimeout(() => attemptController.abort(), attemptMs);
+    signal?.addEventListener("abort", onCallerAbort, { once: true });
+
     try {
-      const res = await fetch(url, { signal });
+      const res = await fetch(url, { signal: attemptController.signal });
       if (res.ok) {
         const json = (await res.json()) as {
           tx_response?: { code?: number; height?: string; raw_log?: string };
@@ -78,12 +89,16 @@ export async function pollTxOnChain(
       }
       // 404 / not indexed yet — keep polling until the deadline.
     } catch (err) {
-      // Re-throw a genuine on-chain failure or an abort; swallow network blips.
+      // Re-throw a genuine on-chain failure or a caller abort; swallow network
+      // blips and per-attempt timeouts (the loop re-checks the deadline next).
       if (signal?.aborted) throw err;
       if (err instanceof Error && err.message.startsWith(`tx ${hash} failed`)) {
         throw err;
       }
-      // transient fetch error — keep polling
+      // transient fetch error / per-attempt timeout — keep polling
+    } finally {
+      clearTimeout(attemptTimer);
+      signal?.removeEventListener("abort", onCallerAbort);
     }
 
     await new Promise((resolve) => setTimeout(resolve, intervalMs));

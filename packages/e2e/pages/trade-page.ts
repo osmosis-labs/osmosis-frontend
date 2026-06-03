@@ -91,12 +91,16 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`🔄 Retry goto attempt ${attempt}/${retries}...`);
         }
-        const assetPromise = this.page.waitForRequest("**/assets.json", {
-          timeout: 30_000,
-        });
-        await this.page.goto("/");
-        const request = await assetPromise;
-        expect(request).toBeTruthy();
+        // Wait for the assets.json *response* (not just the request being
+        // issued) and assert it loaded successfully, so a stalled/failed load
+        // surfaces as a retryable error rather than a false "ready". Using
+        // Promise.all ties both promises together, so if goto() throws the
+        // waitForResponse promise is still handled (no unhandled rejection).
+        const [assetResponse] = await Promise.all([
+          this.page.waitForResponse("**/assets.json", { timeout: 30_000 }),
+          this.page.goto("/"),
+        ]);
+        expect(assetResponse.ok()).toBeTruthy();
         // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
         await this.page.waitForTimeout(2000);
         const currentUrl = this.page.url();
@@ -829,8 +833,8 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
-    await this.confirmSwapBtn.click();
     const confirmation = this.startTxConfirmation();
+    await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
   }
@@ -868,8 +872,8 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
-    await this.confirmSwapBtn.click();
     const confirmation = this.startTxConfirmation();
+    await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
   }
@@ -947,8 +951,8 @@ export class TradePage extends BasePage {
           await this.setSlippageTolerance(slippagePercent);
         }
 
-        await this.confirmSwapBtn.click({ timeout: 5000 });
         const confirmation = this.startTxConfirmation();
+        await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
 
         if (attempt > 0) {
