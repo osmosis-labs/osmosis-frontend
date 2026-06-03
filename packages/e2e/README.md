@@ -32,8 +32,8 @@ All you need to add is a private key for the wallet being used:
 | Secret | Label | Address |
 |--------|-------|---------|
 | `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview + prod frontend tests) | `TBD` |
-| `TEST_PRIVATE_KEY_SG` | Monitoring SG region (swap, trade) | `TBD` |
-| `TEST_PRIVATE_KEY_EU` | Monitoring EU region (swap, trade, limit) | `TBD` |
+| `TEST_PRIVATE_KEY_SG` | Monitoring SG region (swap only — proxy) | `TBD` |
+| `TEST_PRIVATE_KEY_EU` | Monitoring EU region (swap only — proxy) | `TBD` |
 | `TEST_PRIVATE_KEY_US` | Monitoring US region (swap, trade, limit) | `TBD` |
 
 All wallet addresses are derived from the private key at runtime using `deriveAddress()` in `utils/wallet-utils.ts`.
@@ -156,8 +156,8 @@ alert at most per workflow run (or per region, for the geo-monitoring workflow).
 |----------|-----------|----------------|---------|
 | `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
 | `prod-frontend-e2e-tests.yml` | `check-balances` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `preflight-sg` | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `preflight-eu` | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `preflight-sg` | `fe-swap-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `preflight-eu` | `fe-swap-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `preflight-us` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
 
 Each `preflight-*` job in the geo-monitoring workflow runs the balance pipeline
@@ -245,6 +245,22 @@ The REST endpoint is `REST_ENDPOINT` (default `https://lcd.osmosis.zone`, see
 `utils/config.ts`). `TradePage.goto()` additionally retries with backoff so a
 proxy stall on initial page load surfaces as a recoverable retry rather than a
 hard `beforeAll` timeout.
+
+### Why proxy regions (EU/SG) run swap-only
+
+Market and limit orders are intentionally **not** run over the EU/SG proxies —
+those regions run swaps only. Over the HTTP CONNECT proxy the
+estimate→broadcast window widens to tens of seconds, during which Osmosis's
+dynamic EIP base fee can drift past the app's fee buffer (`cur_eip_base_fee` ×
+`1.65`, frozen at estimate time). The market/limit txs are then rejected at
+`CheckTx` with `code 13` "insufficient fee" — they get a hash but are never
+included, so the LCD reports `tx not found`. This was a deterministic artifact
+of the proxy latency, not a product regression on the happy path: the same
+specs pass `code 0` on US-direct. Swap legs stay over the proxy because they
+validate the proxy path + WebSocket/REST confirmation cheaply with stable
+assets; market/limit run on US-direct where they're representative. See
+**MTN-98** for the full root-cause evidence and the deferred product-side fee
+fix.
 
 > Note: this is an E2E-layer safety net. A complementary product-side change —
 > making the app's own `broadcastMsgs` fall back to REST when `TxTracer`
@@ -368,7 +384,6 @@ The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step**
 
 | Workflow | Job(s) | Account cleaned |
 |---|---|---|
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | `TEST_PRIVATE_KEY_EU` (Monitoring EU) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | `TEST_PRIVATE_KEY_US` (Monitoring US) |
 | `frontend-e2e-tests.yml` | `preview-trade-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
 
