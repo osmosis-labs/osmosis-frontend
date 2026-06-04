@@ -19,7 +19,7 @@ import { REST_ENDPOINT } from "./config";
 
 /** Mintscan tx URL, matching the app's Osmosis `explorerUrlToTx` format. */
 export function buildExplorerTxUrl(hash: string): string {
-  return `https://www.mintscan.io/osmosis/txs/${hash}`;
+  return `https://www.mintscan.io/osmosis/txs/${hash.toUpperCase()}`;
 }
 
 export interface PollTxOptions {
