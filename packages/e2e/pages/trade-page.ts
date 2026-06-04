@@ -771,17 +771,35 @@ export class TradePage extends BasePage {
     // Clear any hash from a previous trade so getTransactionUrl can't reuse it.
     this.lastTxHash = undefined;
     const controller = new AbortController();
+    // Single overall budget shared by the hash-capture + REST-poll phases, so
+    // this can't run ~2x `timeout` (capture up to `timeout`, then poll for
+    // another full `timeout`).
+    const deadline = Date.now() + timeout;
 
-    const toastPromise = this.trxSuccessful
-      .waitFor({ state: "visible", timeout })
-      .then(() => "WebSocket toast" as const);
+    // Guard against a stale "Transaction Successful" toast from a previous trade
+    // (success toasts auto-close after ~7s): if one is already visible, wait for
+    // it to clear before arming the visible-wait, otherwise the race could
+    // resolve instantly on the old toast. Bounded + non-throwing, so it adds no
+    // latency or flake on the normal path (no toast present → proceeds at once).
+    const toastPromise = (async () => {
+      const stale = await this.trxSuccessful.isVisible().catch(() => false);
+      if (stale) {
+        await this.trxSuccessful
+          .waitFor({ state: "hidden", timeout: 8_000 })
+          .catch(() => {});
+      }
+      await this.trxSuccessful.waitFor({ state: "visible", timeout });
+      return "WebSocket toast" as const;
+    })();
 
     const restPromise = this.captureBroadcastHash(timeout).then((hash) => {
       this.lastTxHash = hash;
       console.log(`Captured broadcast tx hash: ${hash}`);
-      return pollTxOnChain(hash, { timeout, signal: controller.signal }).then(
-        () => "REST LCD poll" as const
-      );
+      const remaining = Math.max(0, deadline - Date.now());
+      return pollTxOnChain(hash, {
+        timeout: remaining,
+        signal: controller.signal,
+      }).then(() => "REST LCD poll" as const);
     });
 
     return Promise.any([toastPromise, restPromise])
@@ -851,7 +869,7 @@ export class TradePage extends BasePage {
    * - Waits for buy button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
+   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -922,7 +940,7 @@ export class TradePage extends BasePage {
    * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
+   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
    * - Retries only on swap button disabled errors; other errors fail immediately
    */
   async swapAndApprove(

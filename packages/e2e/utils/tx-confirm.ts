@@ -101,7 +101,13 @@ export async function pollTxOnChain(
       signal?.removeEventListener("abort", onCallerAbort);
     }
 
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    // Cap the inter-poll sleep to the remaining budget so we don't overshoot
+    // the deadline by up to `intervalMs` on the final iteration.
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) break;
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(intervalMs, remaining))
+    );
   }
 
   throw new Error(`tx ${hash} not confirmed on-chain within ${timeout}ms`);
