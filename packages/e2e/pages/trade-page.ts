@@ -5,6 +5,7 @@ import {
   expect,
 } from "@playwright/test";
 
+import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage, waitForKeplrApproval } from "./keplr-helper";
 
@@ -41,6 +42,8 @@ export class TradePage extends BasePage {
   readonly limitPrice: Locator;
   readonly slippageInput: Locator;
   readonly buySellTimeout = 30_000;
+  /** Hash of the most recently broadcast tx, captured for the REST fallback. */
+  private lastTxHash?: string;
 
   constructor(page: Page) {
     super(page);
@@ -72,16 +75,51 @@ export class TradePage extends BasePage {
       .first();
   }
 
-  async goto() {
-    const assetPromise = this.page.waitForRequest("**/assets.json");
-    await this.page.goto("/");
-    const request = await assetPromise;
-    expect(request).toBeTruthy();
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000);
-    const currentUrl = this.page.url();
-    console.log(`FE opened at: ${currentUrl}`);
-    await this.dismissVariantsPopupIfPresent();
+  /**
+   * Navigate to the app home and wait for tokens to load.
+   *
+   * Retries with backoff because the EU/SG monitoring suites load the app
+   * through an HTTP CONNECT proxy where the initial page load / `assets.json`
+   * fetch can intermittently stall — previously this surfaced as a hard
+   * `beforeAll` timeout (e.g. the 180s monitoring.limit hook on EU) instead of
+   * a recoverable retry.
+   */
+  async goto(retries = 2) {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`🔄 Retry goto attempt ${attempt}/${retries}...`);
+        }
+        // Wait for the assets.json *response* (not just the request being
+        // issued) and assert it loaded successfully, so a stalled/failed load
+        // surfaces as a retryable error rather than a false "ready". Using
+        // Promise.all ties both promises together, so if goto() throws the
+        // waitForResponse promise is still handled (no unhandled rejection).
+        const [assetResponse] = await Promise.all([
+          this.page.waitForResponse("**/assets.json", { timeout: 30_000 }),
+          this.page.goto("/"),
+        ]);
+        expect(assetResponse.ok()).toBeTruthy();
+        // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
+        await this.page.waitForTimeout(2000);
+        const currentUrl = this.page.url();
+        console.log(`FE opened at: ${currentUrl}`);
+        await this.dismissVariantsPopupIfPresent();
+        return;
+      } catch (error: any) {
+        lastError = error;
+        console.warn(
+          `⚠️ goto attempt ${attempt + 1}/${retries + 1} failed: ${
+            error?.message ?? error
+          }`
+        );
+        if (attempt < retries) {
+          await this.page.waitForTimeout(2000 * (attempt + 1));
+        }
+      }
+    }
+    throw lastError;
   }
 
   async gotoOrdersHistory(timeout = 1) {
@@ -283,10 +321,28 @@ export class TradePage extends BasePage {
   }
 
   async getTransactionUrl() {
-    const trxUrl = await this.trxLink.getAttribute("href", { timeout: 10000 });
-    console.log(`Trx url: ${trxUrl}`);
-    await this.page.reload();
-    return trxUrl;
+    try {
+      const trxUrl = await this.trxLink.getAttribute("href", {
+        timeout: 10000,
+      });
+      console.log(`Trx url: ${trxUrl}`);
+      await this.page.reload();
+      return trxUrl;
+    } catch (error) {
+      // The "View explorer" link lives in the same success toast that the WS
+      // TxTracer drives; over the geo proxies it may never render even when the
+      // tx is confirmed on-chain (see startTxConfirmation). Fall back to the
+      // hash captured from the broadcast response so the test can still proceed.
+      if (this.lastTxHash) {
+        const fallbackUrl = buildExplorerTxUrl(this.lastTxHash);
+        console.log(
+          `Success-toast link absent; using captured tx hash: ${fallbackUrl}`
+        );
+        await this.page.reload();
+        return fallbackUrl;
+      }
+      throw error;
+    }
   }
 
   async isTransactionBroadcasted(delay = 5) {
@@ -645,6 +701,124 @@ export class TradePage extends BasePage {
   }
 
   /**
+   * Captures the broadcast tx hash from the app's `/api/broadcast-transaction`
+   * response. Must be armed BEFORE the Keplr approval click, since the broadcast
+   * only happens after approval. Resolves with the lowercase tx hash.
+   */
+  private async captureBroadcastHash(timeout: number): Promise<string> {
+    const resp = await this.page.waitForResponse(
+      (r) =>
+        r.url().includes("/api/broadcast-transaction") &&
+        r.request().method() === "POST",
+      { timeout }
+    );
+    const body = (await resp.json()) as {
+      tx_response?: {
+        txhash?: string;
+        code?: number;
+        codespace?: string;
+        raw_log?: string;
+      };
+      code?: number;
+      message?: string;
+    };
+    const txResponse = body?.tx_response;
+    const hash = txResponse?.txhash;
+
+    // Surface the broadcast result so a tx that is rejected at CheckTx (returns a
+    // hash but is never included → LCD "tx not found") is diagnosable from CI
+    // logs. `code === 0` means accepted into the mempool; a non-zero `code` +
+    // `raw_log`/`codespace` is the ante-handler rejection reason (sequence, fee,
+    // signature, etc.). Logged, not thrown, so the REST poll still runs.
+    console.log(
+      `Broadcast response: httpStatus=${resp.status()} ` +
+        `code=${txResponse?.code ?? body?.code ?? "?"} ` +
+        `codespace=${txResponse?.codespace ?? "-"} ` +
+        `txhash=${hash ?? "none"}` +
+        (txResponse?.raw_log ? ` raw_log=${txResponse.raw_log}` : "") +
+        (!txResponse && body?.message ? ` message=${body.message}` : "")
+    );
+
+    if (!hash) {
+      throw new Error(
+        `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
+          `code=${txResponse?.code ?? body?.code ?? "?"}, ` +
+          `message=${body?.message ?? txResponse?.raw_log ?? "none"})`
+      );
+    }
+    return String(hash).toLowerCase();
+  }
+
+  /**
+   * Confirms a just-submitted transaction succeeded, resilient to WebSocket
+   * flakiness over the EU/SG geo proxies.
+   *
+   * Two signals race:
+   *   1. Primary (WebSocket): the in-app "Transaction Successful" toast, driven
+   *      by the app's WS `TxTracer`. Fast, but over the HTTP CONNECT proxy the
+   *      WebSocket often stalls/disconnects, so the toast may never render even
+   *      when the tx is included on-chain.
+   *   2. Fallback (REST): capture the broadcast tx hash and poll the Osmosis LCD
+   *      `GET /cosmos/tx/v1beta1/txs/{hash}` directly from Node (NOT through the
+   *      browser proxy), passing as soon as the tx is on-chain with code 0.
+   *
+   * Whichever confirms first wins; the loser is aborted. Only if BOTH fail does
+   * this reject. This must be armed before the Keplr approval click (mirroring
+   * the previous `expect(trxSuccessful).toBeVisible()` arm) so the broadcast
+   * response isn't missed.
+   */
+  startTxConfirmation(timeout = 40_000): Promise<void> {
+    // Clear any hash from a previous trade so getTransactionUrl can't reuse it.
+    this.lastTxHash = undefined;
+    const controller = new AbortController();
+    // Single overall budget shared by the hash-capture + REST-poll phases, so
+    // this can't run ~2x `timeout` (capture up to `timeout`, then poll for
+    // another full `timeout`).
+    const deadline = Date.now() + timeout;
+
+    // Guard against a stale "Transaction Successful" toast from a previous trade
+    // (success toasts auto-close after ~7s): if one is already visible, wait for
+    // it to clear before arming the visible-wait, otherwise the race could
+    // resolve instantly on the old toast. Bounded + non-throwing, so it adds no
+    // latency or flake on the normal path (no toast present → proceeds at once).
+    const toastPromise = (async () => {
+      const stale = await this.trxSuccessful.isVisible().catch(() => false);
+      if (stale) {
+        await this.trxSuccessful
+          .waitFor({ state: "hidden", timeout: 8_000 })
+          .catch(() => {});
+      }
+      await this.trxSuccessful.waitFor({ state: "visible", timeout });
+      return "WebSocket toast" as const;
+    })();
+
+    const restPromise = this.captureBroadcastHash(timeout).then((hash) => {
+      this.lastTxHash = hash;
+      console.log(`Captured broadcast tx hash: ${hash}`);
+      const remaining = Math.max(0, deadline - Date.now());
+      return pollTxOnChain(hash, {
+        timeout: remaining,
+        signal: controller.signal,
+      }).then(() => "REST LCD poll" as const);
+    });
+
+    return Promise.any([toastPromise, restPromise])
+      .then((winner) => {
+        controller.abort();
+        console.log(`✓ Transaction confirmed via ${winner}.`);
+      })
+      .catch((err: any) => {
+        controller.abort();
+        const detail = err?.errors
+          ? err.errors.map((e: any) => e?.message ?? String(e)).join(" | ")
+          : (err?.message ?? String(err));
+        throw new Error(
+          `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
+        );
+      });
+  }
+
+  /**
    * Initiates a sell transaction with simplified approval flow.
    * Automatically waits for transaction confirmation on blockchain.
    *
@@ -656,7 +830,7 @@ export class TradePage extends BasePage {
    * - Waits for sell button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
+   * - Confirms via WebSocket toast OR proxy-safe REST poll (see startTxConfirmation)
    * - No retry logic - for retry support, use sellAndGetWalletMsg()
    */
   async sellAndApprove(
@@ -677,12 +851,10 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
+    const confirmation = this.startTxConfirmation();
     await this.confirmSwapBtn.click();
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
     await this.justApproveIfNeeded(context);
-    await successPromise;
+    await confirmation;
   }
 
   /**
@@ -697,7 +869,7 @@ export class TradePage extends BasePage {
    * - Waits for buy button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
+   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -718,12 +890,10 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
+    const confirmation = this.startTxConfirmation();
     await this.confirmSwapBtn.click();
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
     await this.justApproveIfNeeded(context);
-    await successPromise;
+    await confirmation;
   }
 
   /**
@@ -770,7 +940,7 @@ export class TradePage extends BasePage {
    * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
+   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
    * - Retries only on swap button disabled errors; other errors fail immediately
    */
   async swapAndApprove(
@@ -799,10 +969,8 @@ export class TradePage extends BasePage {
           await this.setSlippageTolerance(slippagePercent);
         }
 
+        const confirmation = this.startTxConfirmation();
         await this.confirmSwapBtn.click({ timeout: 5000 });
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
-        });
         await this.justApproveIfNeeded(context);
 
         if (attempt > 0) {
@@ -811,7 +979,7 @@ export class TradePage extends BasePage {
           );
         }
 
-        await successPromise;
+        await confirmation;
 
         return;
       } catch (error: any) {
