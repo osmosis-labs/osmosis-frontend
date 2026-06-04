@@ -296,7 +296,16 @@ jobs:
               | select(
                   .status == \"queued\" or .status == \"in_progress\"
                   or (.conclusion == \"success\" and ((now - (.createdAt | fromdateiso8601)) < $COOLDOWN_SECONDS))
-                )] | length")
+                )] | length" || echo "")
+          # Fail open (MTN-110): if the gh/jq lookup errored, RECENT is
+          # empty/non-numeric — treat it as "nothing recent" and dispatch
+          # rather than silently skip. A duplicate topup is harmless (the
+          # script re-checks balances and only sends deficits); a skipped
+          # dispatch is the starvation bug this guard exists to prevent.
+          if ! [[ "$RECENT" =~ ^[0-9]+$ ]]; then
+            echo "Topup cooldown lookup failed (gh/jq) — proceeding to dispatch."
+            RECENT=0
+          fi
           if [ "$RECENT" -gt 0 ]; then
             echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
           else
