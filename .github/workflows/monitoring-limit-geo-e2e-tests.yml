@@ -270,9 +270,13 @@ jobs:
       contents: read
     steps:
       - name: Trigger automatic topup (deduplicated)
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # This job has no `actions/checkout`, so `gh` can't infer the repo
+          # from a local git remote (it would fail with "not a git repository").
+          # `GH_REPO` tells `gh` which repo to operate on for both the cooldown
+          # `gh run list` lookup and the `gh workflow run` dispatch below.
+          GH_REPO: ${{ github.repository }}
           US_OUTCOME: ${{ needs.preflight-us.outputs.outcome }}
           EU_OUTCOME: ${{ needs.preflight-eu.outputs.outcome }}
           SG_OUTCOME: ${{ needs.preflight-sg.outputs.outcome }}
