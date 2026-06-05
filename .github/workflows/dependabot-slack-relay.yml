@@ -19,10 +19,17 @@ name: Dependabot Alerts -> Slack
 # CI), mirroring the missing-webhook guard.
 #
 # Dedup: stateless time window. Each run posts open alerts whose `updated_at`
-# is within the lookback window (cron interval + buffer). `updated_at` bumps on
-# create, reopen and reintroduce, so all three desired transitions are caught.
-# The buffer favours never missing an alert at the cost of a rare duplicate if
-# a scheduled run is delayed beyond the buffer.
+# is within the lookback window. `updated_at` bumps on create, reopen and
+# reintroduce, so all three desired transitions are caught.
+#
+# The window (75m) is deliberately wider than the cron interval (60m), so
+# consecutive runs ALWAYS overlap by ~15m. This is intentional: it guarantees we
+# never miss an alert even if a scheduled run starts late (GitHub's scheduler is
+# best-effort and can lag several minutes). The cost is that an alert updated
+# inside the overlap is posted by both runs, so the occasional duplicate in
+# #dependabot-alerts is expected — we favour never-miss over never-duplicate.
+# (The relay is stateless by design; true cross-run dedup would need persisted
+# state, which isn't worth the complexity for low-volume security alerts.)
 
 on:
   schedule:
@@ -86,10 +93,15 @@ jobs:
           fi
 
           # --paginate concatenates one JSON array per page; slurp + add merges
-          # them, then keep alerts updated within the window.
-          jq -s --arg since "$SINCE" -c \
+          # them, then keep alerts updated within the window. A parse failure
+          # (e.g. unexpected API response shape) warns and exits 0 rather than
+          # failing the job under `set -e` — a scheduled relay should not fail CI.
+          if ! jq -s --arg since "$SINCE" -c \
             'add | map(select(.updated_at >= $since)) | .[]' \
-            alerts_raw.json > alerts.ndjson
+            alerts_raw.json > alerts.ndjson 2> jq_err.txt; then
+            echo "::warning::Failed to parse Dependabot alerts response: $(cat jq_err.txt)"
+            exit 0
+          fi
 
           COUNT=$(wc -l < alerts.ndjson | tr -d ' ')
           echo "Found ${COUNT} alert(s) in window."
@@ -115,8 +127,13 @@ jobs:
               --arg ghsa "$GHSA" \
               --arg url "$URL" \
               '{text: ":warning: Dependabot alert *\($action)*\n*\($pkg)* (\($eco)) - *\($sev)*\n\($summary) \($ghsa)\n\($url)"}')
-            curl -sS --fail-with-body -X POST \
+            # Non-blocking: a Slack failure (non-2xx via --fail-with-body) only
+            # warns so the loop keeps relaying the remaining alerts and the job
+            # does not go red under `set -e`.
+            if ! curl -sS --fail-with-body -X POST \
               -H 'Content-type: application/json' \
               --data "$payload" \
-              "$WEBHOOK"
+              "$WEBHOOK"; then
+              echo "::warning::Slack POST failed for alert: ${GHSA:-$URL}"
+            fi
           done < alerts.ndjson
