@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { PoolCard } from "~/components/cards";
+import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -49,17 +50,22 @@ export const MyPoolsCardsGrid = observer(() => {
     }
   );
 
-  const myPoolDetails = useMemo(
-    () =>
-      showMoreMyPools
-        ? allMyPoolDetails
-        : allMyPoolDetails?.slice(0, poolCountShowMoreThreshold),
-    [allMyPoolDetails, poolCountShowMoreThreshold, showMoreMyPools]
+  // Apply the dust filter to the full user-pool list, then slice for display.
+  // Empty state and the Show More button key off this filtered length so the
+  // two stay consistent: a wallet holding only sub-penny LP (hide-dust on)
+  // shows the empty card (not an empty grid + orphan Show More), and a wallet
+  // with real pools never shows a false "no pools found".
+  const dustFilteredPools = useHideDustUserSetting(
+    allMyPoolDetails ?? [],
+    useCallback((myPool) => myPool.userValue, [])
   );
 
-  const dustFilteredPools = useHideDustUserSetting(
-    myPoolDetails ?? [],
-    useCallback((myPool) => myPool.userValue, [])
+  const visiblePools = useMemo(
+    () =>
+      showMoreMyPools
+        ? dustFilteredPools
+        : dustFilteredPools.slice(0, poolCountShowMoreThreshold),
+    [dustFilteredPools, poolCountShowMoreThreshold, showMoreMyPools]
   );
 
   if (!account?.address) {
@@ -68,31 +74,19 @@ export const MyPoolsCardsGrid = observer(() => {
 
   if (isError) {
     return (
-      <div className="flex w-full flex-col items-center justify-center gap-1 py-3">
-        <p className="text-body2 font-medium text-osmoverse-200">
-          {t("errors.uhOhSomethingWentWrong")}
-        </p>
-        <p className="text-center text-caption text-osmoverse-400">
-          {t("pools.errorFetchingPools")}
-        </p>
-      </div>
+      <SectionPlaceholderCard
+        heading={t("errors.uhOhSomethingWentWrong")}
+        body={t("pools.errorFetchingPools")}
+      />
     );
   }
 
-  // Empty state is keyed off the raw user-pool list, not the sliced +
-  // dust-filtered view. A wallet that holds only sub-penny LP (hide-dust on),
-  // or whose surviving pools fall outside the initial slice, would otherwise
-  // show "no pools found" despite having pool positions.
-  if (!isLoadingMyPoolDetails && (allMyPoolDetails?.length ?? 0) === 0) {
+  if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) {
     return (
-      <div className="flex w-full flex-col items-center justify-center gap-1 py-3">
-        <p className="text-body2 font-medium text-osmoverse-200">
-          {t("pools.noPoolsFound")}
-        </p>
-        <p className="max-w-md text-center text-caption text-osmoverse-400">
-          {t("pools.noPoolsFoundDescription")}
-        </p>
-      </div>
+      <SectionPlaceholderCard
+        heading={t("pools.noPoolsFound")}
+        body={t("pools.noPoolsFoundDescription")}
+      />
     );
   }
 
@@ -110,7 +104,7 @@ export const MyPoolsCardsGrid = observer(() => {
           </>
         ) : (
           <>
-            {dustFilteredPools.map(
+            {visiblePools.map(
               ({
                 id,
                 type,
@@ -183,7 +177,7 @@ export const MyPoolsCardsGrid = observer(() => {
           </>
         )}
       </div>
-      {(allMyPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
+      {dustFilteredPools.length > poolCountShowMoreThreshold && (
         <div className="mx-auto">
           <ShowMoreButton
             isOn={showMoreMyPools}

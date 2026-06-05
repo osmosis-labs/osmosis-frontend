@@ -34,6 +34,9 @@ export const CheckboxSelect: FunctionComponent<
       {({ open }) => (
         <>
           <MenuButton
+            // px-[11px] on hover/open is border-2 compensation: the border
+            // grows from 1px to 2px, so padding drops 1px each side to keep
+            // the button width (and label position) from shifting.
             className={classNames(
               "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-3 text-sm transition-colors md:w-full",
               "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[11px]",

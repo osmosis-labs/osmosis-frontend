@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 
 import { MyPositionCard } from "~/components/cards";
+import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
@@ -60,27 +61,22 @@ export const MyPositionsSection: FunctionComponent<{
   } else {
     if (isError) {
       return (
-        <div className="my-2 flex w-full flex-col items-center justify-center gap-1 py-3">
-          <p className="text-body2 font-medium text-osmoverse-200">
-            {t("errors.uhOhSomethingWentWrong")}
-          </p>
-          <p className="whitespace-pre-line text-center text-caption text-osmoverse-400">
-            {t("clPositions.errorFetchingPositions")}
-          </p>
-        </div>
+        <SectionPlaceholderCard
+          className="my-2"
+          heading={t("errors.uhOhSomethingWentWrong")}
+          body={t("clPositions.errorFetchingPositions")}
+          bodyClassName="whitespace-pre-line"
+        />
       );
     }
 
     if (!isLoading && positions && !positions.length) {
       return (
-        <div className="my-2 flex w-full flex-col items-center justify-center gap-1 py-3">
-          <p className="text-body2 font-medium text-osmoverse-200">
-            {t("clPositions.noPositions")}
-          </p>
-          <p className="max-w-md text-center text-caption text-osmoverse-400">
-            {t("clPositions.noPositionsDescription")}
-          </p>
-        </div>
+        <SectionPlaceholderCard
+          className="my-2"
+          heading={t("clPositions.noPositions")}
+          body={t("clPositions.noPositionsDescription")}
+        />
       );
     }
   }

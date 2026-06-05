@@ -41,6 +41,9 @@ const Pools: NextPage = observer(function () {
     if (!account?.address) {
       onOpenWalletSelect({
         walletOptions: [{ walletType: "cosmos", chainId }],
+        // Auto-open the create-pool modal once the wallet connects, so a
+        // disconnected user who clicks Create Pool doesn't have to click again.
+        onConnect: () => setIsCreatingPool(true),
       });
       return;
     }
