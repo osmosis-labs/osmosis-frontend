@@ -25,8 +25,21 @@ import {
 } from "./wormhole-sui";
 
 const WORMHOLESCAN_API = "https://api.wormholescan.io/api/v1";
+// The chain-governor `is_vaa_enqueued` lookup lives under the legacy
+// guardian-compatible namespace (`/v1`), not the wormholescan namespace.
+const WORMHOLESCAN_LEGACY_API = "https://api.wormholescan.io/v1";
 const WORMHOLESCAN_UI = "https://wormholescan.io";
 const SOLANA_RPC = "https://solana-rpc.publicnode.com";
+
+// Hard-coded by the Wormhole protocol: the chain governor enforces a sliding
+// 24-hour notional limit per chain. Used for the "up to 24 hours" copy in
+// the delay badge.
+const GOVERNOR_DELAY_HOURS = 24;
+// Learn-more link surfaced in the delay badge. Points at the protocol
+// blog post rather than the whitepaper because it's much shorter and
+// reader-friendly.
+const GOVERNOR_LEARN_MORE_URL =
+  "https://wormhole.com/blog/understanding-the-flow-canceling-governor-in-wormhole";
 
 // Wormhole gateway channel from Osmosis -> Wormchain (the IBC translator).
 // MsgTransfer's source_channel on Osmosis is `channel-2186`; on Wormchain
@@ -168,10 +181,57 @@ type RedeemStatus =
   | "already_redeemed"
   | "checking_solana"
   | "ready"
+  | "governor_delayed"
   | "signing"
   | "submitting"
   | "success"
   | "error";
+
+/**
+ * Outcome of inspecting the Wormhole chain governor for a given operation.
+ *
+ * `enqueued` means a `is_vaa_enqueued` response confirmed this specific
+ * VAA is being held; `releaseTime` is populated when we could also find
+ * the row in the chain's enqueued list.
+ *
+ * `likely-enqueued` is the heuristic fallback used during the propagation
+ * window where the operation is observable but the guardians have not yet
+ * marked the VAA as enqueued. We compare its USD value to the best
+ * available guardian headroom; if it doesn't fit, it almost certainly
+ * will be queued shortly.
+ */
+export interface GovernorDelay {
+  kind: "enqueued" | "likely-enqueued";
+  /** Unix seconds when the governor will release the VAA. Only present
+   *  for the `enqueued` kind, and only when the row was findable in the
+   *  per-chain enqueued list. */
+  releaseTime?: number;
+  /** USD notional value of the in-flight transfer. */
+  usdAmount: number;
+  /** Best per-guardian headroom remaining on the source chain, in USD.
+   *  Only present for the `likely-enqueued` kind. */
+  availableNotional?: number;
+}
+
+interface IsVaaEnqueuedResponse {
+  isEnqueued?: boolean;
+}
+
+interface EnqueuedVaasResponse {
+  data?: {
+    sequence: string | number;
+    emitterAddress?: string;
+    chainId?: number;
+    releaseTime?: number;
+    txHash?: string;
+  }[];
+}
+
+interface MaxAvailableResponse {
+  data?: {
+    availableNotional?: number;
+  };
+}
 
 const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
@@ -459,6 +519,132 @@ export async function resolveOperation(
   };
 }
 
+/**
+ * Inspect Wormhole's chain governor to determine whether an operation that
+ * has no VAA yet is being delayed by the daily-limit rate limiter.
+ *
+ * Returns `null` when the operation already has a signed VAA, when the
+ * governor isn't holding it and the value fits within available headroom,
+ * or when any of the governor endpoints are unreachable / malformed —
+ * the caller falls through to the existing "VAA not yet available" path
+ * in that case so a governor outage can never block a redeem.
+ *
+ * Lookup order mirrors what Wormholescan's UI does:
+ *  1. `/v1/governor/is_vaa_enqueued/{chain}/{emitter}/{seq}` — definitive
+ *     answer once the guardians have observed the VAA.
+ *  2. `/api/v1/governor/enqueued_vaas/{chain}` — populate `releaseTime`
+ *     so we can show a countdown.
+ *  3. Heuristic: during the propagation window between source-tx
+ *     confirmation and the guardians enqueueing the VAA, the operation
+ *     can already be observed via the operations endpoint while
+ *     `is_vaa_enqueued` is still `false`. In that window, comparing the
+ *     transfer's USD value against the best guardian's headroom from
+ *     `/api/v1/governor/notional/max_available/{chain}` lets us preempt
+ *     the badge with a "likely-enqueued" softer copy.
+ */
+export async function fetchGovernorDelay(
+  operation: OperationData
+): Promise<GovernorDelay | null> {
+  if (operation.vaa?.raw) {
+    return null;
+  }
+
+  const chain = operation.emitterChain;
+  const emitter = operation.emitterAddress.hex;
+  const sequence = operation.sequence;
+  const usdAmount = Number(operation.data?.usdAmount);
+  if (!Number.isFinite(usdAmount)) {
+    return null;
+  }
+
+  let isEnqueued = false;
+  try {
+    const res = await fetchWithTimeout(
+      `${WORMHOLESCAN_LEGACY_API}/governor/is_vaa_enqueued/${chain}/${encodeURIComponent(
+        emitter
+      )}/${encodeURIComponent(sequence)}`
+    );
+    if (res.ok) {
+      const json = (await res.json()) as IsVaaEnqueuedResponse;
+      isEnqueued = json.isEnqueued === true;
+    }
+  } catch {
+    // Governor endpoints are best-effort; fall through.
+  }
+
+  if (isEnqueued) {
+    let releaseTime: number | undefined;
+    try {
+      const res = await fetchWithTimeout(
+        `${WORMHOLESCAN_API}/governor/enqueued_vaas/${chain}?pageSize=1000`
+      );
+      if (res.ok) {
+        const json = (await res.json()) as EnqueuedVaasResponse;
+        const row = json.data?.find(
+          (v) =>
+            String(v.sequence) === String(sequence) &&
+            (!v.emitterAddress ||
+              v.emitterAddress.replace(/^0x/, "").toLowerCase() ===
+                emitter.toLowerCase())
+        );
+        if (row?.releaseTime && Number.isFinite(row.releaseTime)) {
+          releaseTime = row.releaseTime;
+        }
+      }
+    } catch {
+      // Missing `releaseTime` just means we render the generic "up to 24h"
+      // copy instead of a countdown; not a reason to suppress the badge.
+    }
+    return { kind: "enqueued", releaseTime, usdAmount };
+  }
+
+  // Heuristic fallback: pre-enqueue window.
+  try {
+    const res = await fetchWithTimeout(
+      `${WORMHOLESCAN_API}/governor/notional/max_available/${chain}`
+    );
+    if (!res.ok) return null;
+    const json = (await res.json()) as MaxAvailableResponse;
+    const available = Number(json.data?.availableNotional);
+    if (!Number.isFinite(available)) return null;
+    if (usdAmount > available) {
+      return {
+        kind: "likely-enqueued",
+        availableNotional: available,
+        usdAmount,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+/**
+ * Format a Unix release timestamp as a short countdown for the delay badge.
+ * Returns `"Releases shortly"` when ≤ 60 seconds remain so the copy doesn't
+ * jitter against the 1-minute ticker.
+ */
+export function formatGovernorReleaseCountdown(
+  releaseTime: number | undefined,
+  now: number = Date.now()
+): string {
+  if (!releaseTime) {
+    return `Up to ${GOVERNOR_DELAY_HOURS} hours`;
+  }
+  const remainingSeconds = Math.max(0, releaseTime - Math.floor(now / 1000));
+  if (remainingSeconds <= 60) {
+    return "Releases shortly";
+  }
+  const hours = Math.floor(remainingSeconds / 3600);
+  const minutes = Math.floor((remainingSeconds % 3600) / 60);
+  if (hours <= 0) {
+    return `Releases in ${minutes}m`;
+  }
+  return `Releases in ${hours}h ${minutes}m`;
+}
+
 function getDestinationExplorerUrl(
   toChain: number,
   hash: string
@@ -694,6 +880,13 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [resolvedTxHash, setResolvedTxHash] = useState<string | null>(null);
   const [derivedFromOsmosis, setDerivedFromOsmosis] = useState(false);
   const [copyHint, setCopyHint] = useState<string | null>(null);
+  const [governorDelay, setGovernorDelay] = useState<GovernorDelay | null>(
+    null
+  );
+  // Forces the countdown to re-render every minute while in the delay
+  // state. Cheap and avoids a second `useEffect` boundary inside the
+  // render branch.
+  const [, setCountdownTick] = useState(0);
 
   const [phantom, setPhantom] = useState<any>(null);
   const [suiConnection, setSuiConnection] =
@@ -728,6 +921,16 @@ export const WormholeRedeem: FunctionComponent = () => {
   // load after this component mounts are picked up without a refresh.
   useEffect(() => subscribeToAvailableSuiWallets(setAvailableSuiWallets), []);
 
+  // Tick the governor countdown once a minute while the badge is shown.
+  // We deliberately avoid sub-minute granularity: the underlying release
+  // time has minute-level precision from the governor and a faster ticker
+  // would just thrash React.
+  useEffect(() => {
+    if (status !== "governor_delayed") return;
+    const interval = setInterval(() => setCountdownTick((t) => t + 1), 60_000);
+    return () => clearInterval(interval);
+  }, [status]);
+
   const lookupTransaction = useCallback(async () => {
     const hash = txHash.trim();
     if (!hash) return;
@@ -740,6 +943,7 @@ export const WormholeRedeem: FunctionComponent = () => {
     setLookedUpTxHash(hash);
     setResolvedTxHash(null);
     setDerivedFromOsmosis(false);
+    setGovernorDelay(null);
 
     try {
       const {
@@ -749,6 +953,18 @@ export const WormholeRedeem: FunctionComponent = () => {
       } = await resolveOperation(hash);
 
       if (!op.vaa?.raw) {
+        // Surface the chain-governor delay before falling back to the
+        // generic "not yet available" error so users on a queued VAA
+        // know to wait instead of retrying every few seconds.
+        const delay = await fetchGovernorDelay(op);
+        if (delay) {
+          setOperation(op);
+          setResolvedTxHash(wormHash);
+          setDerivedFromOsmosis(derived);
+          setGovernorDelay(delay);
+          setStatus("governor_delayed");
+          return;
+        }
         throw new Error(
           "VAA not yet available. The Wormhole guardians may still be processing this transaction."
         );
@@ -1169,6 +1385,61 @@ export const WormholeRedeem: FunctionComponent = () => {
               </div>
             )}
 
+            {status === "governor_delayed" && governorDelay && (
+              <div className="space-y-3">
+                <div className="rounded-lg border border-rust-600 bg-rust-600/10 p-3 text-sm text-rust-200">
+                  <div className="mb-1 font-semibold text-rust-200">
+                    Daily limit exceeded
+                  </div>
+                  <p className="text-rust-200/90">
+                    {governorDelay.kind === "enqueued"
+                      ? `This transfer will take up to ${GOVERNOR_DELAY_HOURS} hours to complete as Wormhole has reached the daily transfer limit for ${getChainLabel(
+                          operation.emitterChain
+                        )}. This is a normal and temporary security feature of the Wormhole network.`
+                      : `This transfer's value (~${formatPretty(
+                          new PricePretty(
+                            DEFAULT_VS_CURRENCY,
+                            new Dec(governorDelay.usdAmount.toString())
+                          )
+                        )}) exceeds the available headroom on ${getChainLabel(
+                          operation.emitterChain
+                        )} (~${formatPretty(
+                          new PricePretty(
+                            DEFAULT_VS_CURRENCY,
+                            new Dec(
+                              (governorDelay.availableNotional ?? 0).toString()
+                            )
+                          )
+                        )} remaining). The Wormhole guardians will likely queue it for up to ${GOVERNOR_DELAY_HOURS} hours.`}
+                  </p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="font-mono text-xs text-rust-200">
+                      {governorDelay.kind === "enqueued"
+                        ? formatGovernorReleaseCountdown(
+                            governorDelay.releaseTime
+                          )
+                        : `Up to ${GOVERNOR_DELAY_HOURS} hours`}
+                    </span>
+                    <a
+                      href={GOVERNOR_LEARN_MORE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-rust-200 underline"
+                    >
+                      Learn more
+                    </a>
+                  </div>
+                </div>
+                <button
+                  onClick={lookupTransaction}
+                  disabled={isLoading}
+                  className="w-full rounded-lg border border-osmoverse-600 bg-osmoverse-900 px-4 py-2 text-sm font-medium text-white-full transition-colors hover:bg-osmoverse-800 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Check again
+                </button>
+              </div>
+            )}
+
             {status === "already_redeemed" &&
               (() => {
                 const toChainId = operation.content.payload.toChain;
@@ -1255,6 +1526,7 @@ export const WormholeRedeem: FunctionComponent = () => {
 
             {status !== "already_redeemed" &&
               status !== "success" &&
+              status !== "governor_delayed" &&
               operation.content.payload.toChain === CHAIN_ID.sui &&
               resolvedTxHash && (
                 <SuiRedeemPanel
