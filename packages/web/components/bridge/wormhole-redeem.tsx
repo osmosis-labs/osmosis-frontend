@@ -1526,6 +1526,7 @@ export const WormholeRedeem: FunctionComponent = () => {
 
             {status !== "already_redeemed" &&
               status !== "success" &&
+              status !== "governor_delayed" &&
               operation.content.payload.toChain === CHAIN_ID.sui &&
               resolvedTxHash && (
                 <SuiRedeemPanel

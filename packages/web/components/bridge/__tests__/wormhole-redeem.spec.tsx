@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import { apiClient } from "@osmosis-labs/utils";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 
 const mockClaimKey = {
@@ -736,6 +736,55 @@ describe("fetchGovernorDelay", () => {
 
     expect(result).toBeNull();
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("WormholeRedeem governor_delayed render guard", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it("does not mount a redeem panel for a Sui-destination op held by the governor", async () => {
+    // resolveOperation: direct Wormholescan hit returns a VAA-less,
+    // Sui-destination operation.
+    mockedApiClient.mockResolvedValueOnce({
+      operations: [OPERATION_WITHOUT_VAA],
+    });
+    // fetchGovernorDelay: the VAA is enqueued in the chain governor.
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ isEnqueued: true }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: [] }),
+      });
+
+    render(<WormholeRedeem />);
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Osmosis transaction hash..."),
+      { target: { value: WORMCHAIN_HASH } }
+    );
+    fireEvent.click(screen.getByText("Lookup"));
+
+    // The governor delay badge renders for the queued transfer.
+    expect(await screen.findByText("Daily limit exceeded")).toBeInTheDocument();
+
+    // The Sui redeem panel must NOT mount: governor_delayed leaves
+    // `operation.vaa.raw === ""`, and the panel would otherwise invite the
+    // user to redeem an empty VAA. Both the native Sui panel and its
+    // generic Wormholescan fallback advertise "VAA is signed and ready",
+    // so its absence proves neither rendered.
+    expect(
+      screen.queryByText(/VAA is signed and ready/i)
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Redeem on Sui")).not.toBeInTheDocument();
   });
 });
 
