@@ -16,7 +16,7 @@ jobs:
       environment_url: ${{steps.vercel.outputs.environment_url}}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - id: vercel
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -37,13 +37,14 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
@@ -185,7 +186,7 @@ jobs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
@@ -197,8 +198,9 @@ jobs:
           echo "$BASE_URL"
           echo "$BRANCH_NAME"
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install Playwright
         run: |
@@ -224,7 +226,7 @@ jobs:
       - name: upload Swap test results
         if: failure() || success()
         id: swap-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: osmo-swap-test-results
           path: packages/e2e/playwright-report
@@ -235,7 +237,7 @@ jobs:
     needs: [wait-for-deployment, preview-swap-osmo-tests, check-balances]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
@@ -247,11 +249,12 @@ jobs:
           echo "$BASE_URL"
           echo "$BRANCH_NAME"
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -275,7 +278,7 @@ jobs:
       - name: upload Swap test results
         if: failure() || success()
         id: swap-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: usdc-swap-test-results
           path: packages/e2e/playwright-report
@@ -286,16 +289,17 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -318,7 +322,7 @@ jobs:
       - name: upload Portfolio and transactions test results
         if: failure()
         id: portfolio-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: preview-portfolio-trx-test-results
           path: packages/e2e/playwright-report
@@ -329,16 +333,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -356,7 +361,7 @@ jobs:
       - name: upload pools test results
         if: failure()
         id: pools-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: preview-pools-test-results
           path: packages/e2e/playwright-report
@@ -368,16 +373,17 @@ jobs:
       [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -407,7 +413,7 @@ jobs:
       - name: upload Trade test results
         if: failure()
         id: preview-trade-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: preview-trade-test-results
           path: packages/e2e/playwright-report
@@ -418,16 +424,17 @@ jobs:
     needs: [wait-for-deployment, check-balances]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -451,7 +458,7 @@ jobs:
       - name: upload Claim test results
         if: failure()
         id: claim-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: preview-claim-test-results
           path: packages/e2e/playwright-report
