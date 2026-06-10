@@ -115,6 +115,14 @@ export const AddLiquidityModal: FunctionComponent<
     </ModalBase>
   );
 
+  const errorModal = (
+    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+      <div className="flex items-center justify-center py-16">
+        <p className="body2 text-osmoverse-300">{t("errors.fallbackText1")}</p>
+      </div>
+    </ModalBase>
+  );
+
   // If we don't yet know the pool type (no hint from the caller and the query
   // is still in flight), show a loading state rather than defaulting to the
   // share-pool (weighted) UI below — otherwise a concentrated (supercharged)
@@ -127,8 +135,10 @@ export const AddLiquidityModal: FunctionComponent<
   if (isConcentrated) {
     // The concentrated UI needs the full fetched pool data (raw sqrt price,
     // reserve coins). When the type came from the caller, the query may still
-    // be resolving, so wait for it here without flashing the weighted UI.
-    if (!pool) return loadingModal;
+    // be resolving, so wait for it without flashing the weighted UI. Once the
+    // query settles without a pool (error / not found), surface an error
+    // instead of spinning forever.
+    if (!pool) return isPoolLoading ? loadingModal : errorModal;
 
     // Pool state detection based on liquidity
     const poolRaw = pool.raw as ConcentratedPoolRawResponse;
