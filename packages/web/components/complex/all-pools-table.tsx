@@ -12,6 +12,7 @@ import {
   marketIncentivePoolsSortKeys,
   poolFilterTypes,
   PoolsTable,
+  PoolType,
   PoolTypeFilter,
 } from "~/components/complex/pools-table";
 import { Button } from "~/components/ui/button";
@@ -64,7 +65,7 @@ const useAllPoolsTable = () => {
 
 interface AllPoolsTableProps {
   topOffset: number;
-  quickAddLiquidity: (poolId: string) => void;
+  quickAddLiquidity: (poolId: string, poolType: PoolType) => void;
   onCreatePool: () => void;
 }
 

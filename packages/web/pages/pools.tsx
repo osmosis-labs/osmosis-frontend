@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { PoolType } from "~/components/complex/pools-table";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -59,13 +60,16 @@ const Pools: NextPage = observer(function () {
   );
 
   // pool quick action modals
-  const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
-    string | null
-  >(null);
+  const [addLiquidityModalPool, setAddLiquidityModalPool] = useState<{
+    id: string;
+    /** Known pool type, when available, to render the correct add-liquidity UI without waiting on a refetch. */
+    type?: PoolType;
+  } | null>(null);
 
   const quickActionProps = {
     quickAddLiquidity: useCallback(
-      (poolId: string) => setAddLiquidityModalPoolId(poolId),
+      (poolId: string, poolType: PoolType) =>
+        setAddLiquidityModalPool({ id: poolId, type: poolType }),
       []
     ),
   };
@@ -146,17 +150,18 @@ const Pools: NextPage = observer(function () {
         onCreatePool={onCreatePool}
         onUseExistingPool={useCallback((poolId: string) => {
           setIsCreatingPool(false);
-          setAddLiquidityModalPoolId(poolId);
+          setAddLiquidityModalPool({ id: poolId });
         }, [])}
       />
-      {addLiquidityModalPoolId && (
+      {addLiquidityModalPool && (
         <AddLiquidityModal
           title={t("addLiquidity.titleInPool", {
-            poolId: addLiquidityModalPoolId,
+            poolId: addLiquidityModalPool.id,
           })}
-          poolId={addLiquidityModalPoolId}
+          poolId={addLiquidityModalPool.id}
+          poolType={addLiquidityModalPool.type}
           isOpen={true}
-          onRequestClose={() => setAddLiquidityModalPoolId(null)}
+          onRequestClose={() => setAddLiquidityModalPool(null)}
         />
       )}
       {account?.address && (

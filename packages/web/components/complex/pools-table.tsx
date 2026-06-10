@@ -30,6 +30,8 @@ import { api, RouterOutputs } from "~/utils/trpc";
 import { Tooltip } from "../tooltip";
 
 type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
+/** Full pool type union (includes cosmwasm), as returned by the pools queries. */
+export type PoolType = Pool["type"];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 export type PoolIncentiveFilter = NonNullable<
@@ -81,7 +83,7 @@ export interface PoolsTabelSortParams {
 
 interface PoolsTableProps {
   topOffset?: number;
-  quickAddLiquidity?: (poolId: string) => void;
+  quickAddLiquidity?: (poolId: string, poolType: PoolType) => void;
   limit?: number;
   disablePagination?: boolean;
   filters?: PoolsTableFilters;
@@ -321,7 +323,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               poolId={row.original.id}
               onAddLiquidity={
                 quickAddLiquidity
-                  ? () => quickAddLiquidity(row.original.id)
+                  ? () => quickAddLiquidity(row.original.id, row.original.type)
                   : undefined
               }
             />
