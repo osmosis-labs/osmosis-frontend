@@ -65,12 +65,15 @@ export const AddLiquidityModal: FunctionComponent<
     api.local.pools.getPool.useQuery({ poolId });
 
   // Prefer the caller-provided type so we can pick the correct UI synchronously;
-  // fall back to the fetched pool type for callers that only pass an id.
-  // TODO(follow-up PR): the pool-detail callers (components/pool-detail/share.tsx
-  // and pool-detail/concentrated.tsx) still open this modal with only a poolId,
-  // so they re-fetch the pool to determine the type. They already have the pool
-  // object in scope and could pass `poolType` here to skip that refetch too;
-  // left out of this change to keep the footprint small.
+  // fall back to the fetched pool type for callers that only pass an id. Callers
+  // that omit poolType still render correctly (loading -> correct UI, never a
+  // weighted flash) via the guards below; passing it only skips the brief fetch.
+  // TODO(follow-up PR): the remaining id-only callers — pool-detail
+  // (components/pool-detail/share.tsx, pool-detail/concentrated.tsx) and the
+  // create-pool "use existing pool" flow (pages/pools.tsx -> CreatePoolModal
+  // onUseExistingPool, where the duplicate-pool callout already has the type) —
+  // could pass `poolType` to skip the refetch. Left out here to keep the
+  // footprint small (threading the type through several create-pool components).
   const resolvedPoolType = props.poolType ?? pool?.type;
   const isConcentrated = resolvedPoolType === "concentrated";
 
@@ -125,14 +128,6 @@ export const AddLiquidityModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-
-  // If we don't yet know the pool type (no hint from the caller and the query
-  // is still in flight), show a loading state rather than defaulting to the
-  // share-pool (weighted) UI below — otherwise a concentrated (supercharged)
-  // pool flashes the weighted modal before the query resolves.
-  if (!resolvedPoolType && isPoolLoading) {
-    return loadingModal;
-  }
 
   // add concentrated liquidity
   if (isConcentrated) {
@@ -248,6 +243,16 @@ export const AddLiquidityModal: FunctionComponent<
         </ModalBase>
       </>
     );
+  }
+
+  // If we still don't know the pool type at all (no hint from the caller and
+  // the query hasn't produced a pool), don't fall through to the share-pool
+  // (weighted) UI below — otherwise a concentrated (supercharged) pool flashes
+  // the weighted modal before the query resolves. Show loading while the query
+  // is in flight, or an error once it has settled without a pool (error /
+  // offline / not found).
+  if (!resolvedPoolType) {
+    return isPoolLoading ? loadingModal : errorModal;
   }
 
   // add share pool liquidity
