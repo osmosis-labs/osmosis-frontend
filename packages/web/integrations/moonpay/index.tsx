@@ -1,7 +1,8 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { apiClient } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useMedia } from "react-use";
 
 import { MoonpaySignUrlResponse } from "~/integrations/moonpay/types";
@@ -13,20 +14,6 @@ const MoonPayBuyWidget = dynamic(
   { ssr: false }
 );
 
-async function generateMoonpayUrlSignature(url: string): Promise<string> {
-  return (
-    await apiClient<MoonpaySignUrlResponse>(
-      "/api/integrations/moonpay/sign-url",
-      {
-        method: "POST",
-        data: {
-          url,
-        },
-      }
-    )
-  ).signature;
-}
-
 export const Moonpay: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = observer(({ assetKey, isOpen }) => {
@@ -36,7 +23,38 @@ export const Moonpay: FunctionComponent<
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
-  let walletAddress = account?.address;
+  const walletAddress = account?.address;
+
+  const generateMoonpayUrlSignature = useCallback(
+    async (url: string): Promise<string> => {
+      const parsed = new URL(url);
+
+      return (
+        await apiClient<MoonpaySignUrlResponse>(
+          "/api/integrations/moonpay/sign-url",
+          {
+            method: "POST",
+            data: {
+              walletAddress: walletAddress!,
+              currencyCode:
+                parsed.searchParams.get("currencyCode") ?? undefined,
+              defaultCurrencyCode:
+                parsed.searchParams.get("defaultCurrencyCode") ?? undefined,
+              baseCurrencyCode:
+                parsed.searchParams.get("baseCurrencyCode") ?? undefined,
+              baseCurrencyAmount:
+                parsed.searchParams.get("baseCurrencyAmount") ?? undefined,
+            },
+          }
+        )
+      ).signature;
+    },
+    [walletAddress]
+  );
+
+  if (!(account?.walletStatus === WalletStatus.Connected) || !walletAddress) {
+    return null;
+  }
 
   return (
     <MoonPayBuyWidget
