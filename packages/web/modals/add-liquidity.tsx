@@ -117,8 +117,11 @@ export const AddLiquidityModal: FunctionComponent<
 
   const errorModal = (
     <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
-      <div className="flex items-center justify-center py-16">
-        <p className="body2 text-osmoverse-300">{t("errors.fallbackText1")}</p>
+      <div className="flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("addLiquidity.title")}</h6>
+        <p className="text-body1 font-body1 text-osmoverse-300">
+          {t("errors.fallbackText1")}
+        </p>
       </div>
     </ModalBase>
   );
