@@ -55,11 +55,15 @@ export const MyPositionsSection: FunctionComponent<{
   // Per-pool callers (pool detail page) render their own surrounding context;
   // showing a global empty/error card there would imply the user has no
   // positions anywhere, which is misleading. Fall back to null in that case.
+  //
+  // The error branches only fire on a hard failure with no data: React Query
+  // keeps the last good result during a failed background refetch (refocus,
+  // flaky network), so a populated list isn't swapped for an error.
   if (forPoolId) {
-    if (isError) return null;
+    if (isError && !positions) return null;
     if (!isLoading && positions && !positions.length) return null;
   } else {
-    if (isError) {
+    if (isError && !positions) {
       return (
         <SectionPlaceholderCard
           className="my-2"

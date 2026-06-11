@@ -72,7 +72,11 @@ export const MyPoolsCardsGrid = observer(() => {
     return null;
   }
 
-  if (isError) {
+  // Only surface the error card on a hard failure with no data to show. React
+  // Query keeps the last good result during a failed background refetch (e.g.
+  // on window refocus or a flaky network), so don't swap a populated list for
+  // an error in that case.
+  if (isError && !allMyPoolDetails) {
     return (
       <SectionPlaceholderCard
         heading={t("errors.uhOhSomethingWentWrong")}
