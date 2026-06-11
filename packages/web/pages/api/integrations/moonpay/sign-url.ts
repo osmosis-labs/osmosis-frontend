@@ -5,6 +5,7 @@ import {
   parseMoonpaySignRequestBody,
   signMoonpayUrl,
 } from "~/server/integrations/moonpay/sign-moonpay-url";
+import { InvalidOsmosisWalletAddressError } from "~/server/integrations/validate-osmosis-wallet-address";
 
 /**
  * Signs a MoonPay URL for client side usage as specified in https://dev.moonpay.com/docs/on-ramp-enhance-security-using-signed-urls
@@ -34,8 +35,13 @@ export default async function signMoonPayUrl(
 
     return res.status(200).send({ signature });
   } catch (error) {
-    if (error instanceof MoonpaySignUrlError) {
-      return res.status(error.statusCode).send({ error: error.message });
+    if (
+      error instanceof MoonpaySignUrlError ||
+      error instanceof InvalidOsmosisWalletAddressError
+    ) {
+      const statusCode =
+        error instanceof MoonpaySignUrlError ? error.statusCode : 400;
+      return res.status(statusCode).send({ error: error.message });
     }
 
     return res

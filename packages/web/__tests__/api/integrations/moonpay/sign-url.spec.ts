@@ -57,6 +57,24 @@ describe("POST /api/integrations/moonpay/sign-url", () => {
     });
   });
 
+  it("rejects invalid wallet addresses with 400", async () => {
+    const req = {
+      method: "POST",
+      body: {
+        walletAddress: "not-a-wallet",
+        currencyCode: "OSMO",
+      },
+    } as NextApiRequest;
+    const res = createMockResponse();
+
+    await signMoonPayUrl(req, res);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: expect.stringContaining("valid bech32 address"),
+    });
+  });
+
   it("signs validated wallet params instead of a client-built URL", async () => {
     const req = {
       method: "POST",

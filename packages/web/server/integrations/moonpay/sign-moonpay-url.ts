@@ -30,7 +30,7 @@ export function parseMoonpaySignRequestBody(
 
   const record = body as Record<string, unknown>;
 
-  if ("url" in record && record.url != null && record.url !== "") {
+  if ("url" in record) {
     throw new MoonpaySignUrlError(
       "Raw MoonPay URLs are not accepted; send walletAddress and currency parameters instead"
     );

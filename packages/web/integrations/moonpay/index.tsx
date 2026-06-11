@@ -27,27 +27,54 @@ export const Moonpay: FunctionComponent<
 
   const generateMoonpayUrlSignature = useCallback(
     async (url: string): Promise<string> => {
-      const parsed = new URL(url);
+      let parsed: URL;
+      try {
+        parsed = new URL(url);
+      } catch (error) {
+        console.error("Failed to parse MoonPay widget URL", { url, error });
+        throw new Error("Invalid MoonPay widget URL");
+      }
 
-      return (
-        await apiClient<MoonpaySignUrlResponse>(
-          "/api/integrations/moonpay/sign-url",
-          {
-            method: "POST",
-            data: {
-              walletAddress: walletAddress!,
-              currencyCode:
-                parsed.searchParams.get("currencyCode") ?? undefined,
-              defaultCurrencyCode:
-                parsed.searchParams.get("defaultCurrencyCode") ?? undefined,
-              baseCurrencyCode:
-                parsed.searchParams.get("baseCurrencyCode") ?? undefined,
-              baseCurrencyAmount:
-                parsed.searchParams.get("baseCurrencyAmount") ?? undefined,
-            },
-          }
-        )
-      ).signature;
+      const urlWalletAddress = parsed.searchParams.get("walletAddress");
+      if (urlWalletAddress && urlWalletAddress !== walletAddress) {
+        throw new Error(
+          "Connected wallet address does not match MoonPay widget URL"
+        );
+      }
+
+      const addressToSign = urlWalletAddress ?? walletAddress;
+      if (!addressToSign) {
+        throw new Error("No wallet address available for MoonPay signing");
+      }
+
+      try {
+        return (
+          await apiClient<MoonpaySignUrlResponse>(
+            "/api/integrations/moonpay/sign-url",
+            {
+              method: "POST",
+              data: {
+                walletAddress: addressToSign,
+                currencyCode:
+                  parsed.searchParams.get("currencyCode") ?? undefined,
+                defaultCurrencyCode:
+                  parsed.searchParams.get("defaultCurrencyCode") ?? undefined,
+                baseCurrencyCode:
+                  parsed.searchParams.get("baseCurrencyCode") ?? undefined,
+                baseCurrencyAmount:
+                  parsed.searchParams.get("baseCurrencyAmount") ?? undefined,
+              },
+            }
+          )
+        ).signature;
+      } catch (error) {
+        console.error("Failed to sign MoonPay URL", {
+          walletAddress: addressToSign,
+          url,
+          error,
+        });
+        throw new Error("Failed to sign MoonPay URL");
+      }
     },
     [walletAddress]
   );

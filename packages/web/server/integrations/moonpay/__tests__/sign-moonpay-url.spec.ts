@@ -34,6 +34,15 @@ describe("MoonPay signing oracle prevention", () => {
     ).toThrow(/Raw MoonPay URLs are not accepted/);
   });
 
+  it("rejects requests that include url even when null or empty", () => {
+    expect(() => parseMoonpaySignRequestBody({ url: null })).toThrow(
+      /Raw MoonPay URLs are not accepted/
+    );
+    expect(() => parseMoonpaySignRequestBody({ url: "" })).toThrow(
+      /Raw MoonPay URLs are not accepted/
+    );
+  });
+
   it("rejects invalid bech32 wallet addresses", () => {
     expect(() =>
       signMoonpayUrl(
