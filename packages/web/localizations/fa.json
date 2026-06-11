@@ -88,7 +88,9 @@
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
     "goToPool": "رفتن به استخر #{poolId}",
-    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید."
+    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید.",
+    "noPositions": "هیچ موقعیتی یافت نشد",
+    "noPositionsDescription": "نقدینگی متمرکز را برای یک استخر فراهم کنید تا بتوانید پاداش‌های اسپرد را دریافت کنید."
   },
   "copied": "کپی شده!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC",
       "moonpayCountrySupport": "165+ کشور"
     },
-    "incentive": {
-      "title": "انواع مشوق"
-    },
     "MAX": "حداکثر",
     "pool": {
       "title": "استخرها"
@@ -270,8 +269,7 @@
       "transmuter": "تبدیل کننده",
       "orderbook": "دفترچه سفارش",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "بدون انگیزه"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "اتصال کیف پول",
@@ -536,6 +534,9 @@
       },
       "title": "جستجو در استخرها"
     },
+    "noPoolsFound": "هیچ استخری یافت نشد",
+    "noPoolsFoundDescription": "برای شروع کسب پاداش، نقدینگی را به استخر اضافه کنید.",
+    "errorFetchingPools": "بارگیری استخرهای شما ناموفق بود. لطفاً صفحه را رفرش کنید.",
     "APR": "نرخ بازدهی",
     "bonded": "قفل شده",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
-    "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز",
     "aprBreakdown": {
       "swapFees": "کارمزد تعویض",
       "boost": "تقویت کنید",

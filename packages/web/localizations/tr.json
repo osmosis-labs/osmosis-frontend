@@ -88,7 +88,9 @@
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}",
-    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin."
+    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
+    "noPositions": "Hiçbir pozisyon bulunamadı.",
+    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın."
   },
   "copied": "Kopyalandı!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler",
       "moonpayCountrySupport": "165+ ülke"
     },
-    "incentive": {
-      "title": "Teşvik türleri"
-    },
     "MAX": "MAKS",
     "pool": {
       "title": "Havuz türleri"
@@ -270,8 +269,7 @@
       "transmuter": "Dönüştürücü",
       "orderbook": "Sipariş Defteri",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Teşvik yok"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Cüzdanı bağla",
@@ -536,6 +534,9 @@
       },
       "title": "Tüm Havuzlar"
     },
+    "noPoolsFound": "Havuz bulunamadı.",
+    "noPoolsFoundDescription": "Ödül kazanmaya başlamak için havuza likidite ekleyin.",
+    "errorFetchingPools": "Havuzlarınız yüklenemedi. Lütfen sayfayı yenilemeyi deneyin.",
     "APR": "APR",
     "bonded": "Bağlı",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
-    "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre",
     "aprBreakdown": {
       "swapFees": "Takas ücretleri",
       "boost": "Artırmak",

@@ -88,7 +88,9 @@
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
     "goToPool": "Mergi la piscina #{poolId}",
-    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența."
+    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența.",
+    "noPositions": "Nu s-au găsit poziții",
+    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread."
   },
   "copied": "Copiat!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
       "moonpayCountrySupport": "Peste 165 de țări"
     },
-    "incentive": {
-      "title": "Tipuri de stimulente"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Tipuri de piscine"
@@ -270,8 +269,7 @@
       "transmuter": "Transmutator",
       "orderbook": "Carnet de comandă",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Fără incentivi"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Conecteaza Portofel",
@@ -536,6 +534,9 @@
       },
       "title": "Toate pool-urile"
     },
+    "noPoolsFound": "Nu s-au găsit piscine",
+    "noPoolsFoundDescription": "Adaugă lichiditate la un fond de investiții pentru a începe să câștigi recompense.",
+    "errorFetchingPools": "Nu s-au putut încărca grupurile. Vă rugăm să încercați să actualizați pagina.",
     "APR": "APR",
     "bonded": "Blocate",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "Lichiditatea mea",
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
-    "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
     "aprBreakdown": {
       "swapFees": "Taxe de schimb",
       "boost": "Boost",

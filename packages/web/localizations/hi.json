@@ -88,7 +88,9 @@
     "numPositions": "{numPositions} पद",
     "onePosition": "1 पद",
     "goToPool": "पूल # पर जाएँ #{poolId}",
-    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।"
+    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।",
+    "noPositions": "कोई पद नहीं मिला",
+    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।"
   },
   "copied": "कॉपी किया गया!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
       "moonpayCountrySupport": "165+ देश"
     },
-    "incentive": {
-      "title": "प्रोत्साहन के प्रकार"
-    },
     "MAX": "अधिकतम",
     "pool": {
       "title": "पूल के प्रकार"
@@ -270,8 +269,7 @@
       "transmuter": "ट्रांसमीटर",
       "orderbook": "ऑर्डरबुक",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "कोई प्रोत्साहन नहीं"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "वॉलेट कनेक्ट करें",
@@ -536,6 +534,9 @@
       },
       "title": "पूल खोजें"
     },
+    "noPoolsFound": "कोई पूल नहीं मिला",
+    "noPoolsFoundDescription": "रिवॉर्ड कमाना शुरू करने के लिए पूल में लिक्विडिटी जोड़ें।",
+    "errorFetchingPools": "आपके पूल लोड करने में विफल रहे। कृपया पृष्ठ को रीफ़्रेश करने का प्रयास करें।",
     "APR": "एपीआर",
     "bonded": "बंधुआ",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "मेरी तरलता",
     "myPools": "आपके तालाब",
     "poolId": "पूल # {id}",
-    "priceOsmo": "ओस्मो कीमत",
-    "rewardDistribution": "में पुरस्कार वितरण",
     "aprBreakdown": {
       "swapFees": "स्वैप फीस",
       "boost": "बढ़ाना",

@@ -88,7 +88,9 @@
     "numPositions": "不明确的",
     "onePosition": "1 个职位",
     "goToPool": "前往泳池#{poolId}",
-    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。"
+    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。",
+    "noPositions": "未找到职位",
+    "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。"
   },
   "copied": "已复制！",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "支持OSMO、USDC",
       "moonpayCountrySupport": "165+ 个国家"
     },
-    "incentive": {
-      "title": "激励类型"
-    },
     "MAX": "最大",
     "pool": {
       "title": "游泳池類型"
@@ -270,8 +269,7 @@
       "transmuter": "转化器",
       "orderbook": "订单簿",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "无激励"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "连接钱包",
@@ -536,6 +534,9 @@
       },
       "title": "所有资金池"
     },
+    "noPoolsFound": "未找到游泳池",
+    "noPoolsFoundDescription": "向资金池注入流动性即可开始赚取奖励。",
+    "errorFetchingPools": "泳池加载失败。请尝试刷新页面。",
     "APR": "APR",
     "bonded": "已绑定",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
-    "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
     "aprBreakdown": {
       "swapFees": "掉期费用",
       "boost": "促进",

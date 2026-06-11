@@ -88,7 +88,9 @@
     "numPositions": "{numPositions} Positionen",
     "onePosition": "1 Position",
     "goToPool": "Gehen Sie zu Pool #{poolId}",
-    "errorFetchingPositions": "Positionsdetails konnten nicht abgerufen werden. Versuchen Sie, die Seite zu aktualisieren. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support."
+    "errorFetchingPositions": "Positionsdetails konnten nicht abgerufen werden. Versuchen Sie, die Seite zu aktualisieren. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
+    "noPositions": "Keine Positionen gefunden",
+    "noPositionsDescription": "Stelle einem Pool konzentrierte Liquidität zur Verfügung, um Spread-Prämien zu verdienen."
   },
   "copied": "Kopiert!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "Unterstützt OSMO, USDC",
       "moonpayCountrySupport": "165+ Länder"
     },
-    "incentive": {
-      "title": "Anreizarten"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Pooltypen"
@@ -270,8 +269,7 @@
       "transmuter": "Transmuter",
       "orderbook": "Orderbuch",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Keine Anreize"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Wallet verbinden",
@@ -536,6 +534,9 @@
       },
       "title": "Entdecken Sie Pools"
     },
+    "noPoolsFound": "Keine Pools gefunden",
+    "noPoolsFoundDescription": "Füge einem Pool Liquidität hinzu, um Belohnungen zu verdienen.",
+    "errorFetchingPools": "Ihre Pools konnten nicht geladen werden. Bitte aktualisieren Sie die Seite.",
     "APR": "APR",
     "bonded": "Gebunden",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "Meine Liquidität",
     "myPools": "Ihre Pools",
     "poolId": "Pool # {id}",
-    "priceOsmo": "OSMO-Preis",
-    "rewardDistribution": "Belohnungsverteilung in",
     "aprBreakdown": {
       "swapFees": "Swap-Gebühren",
       "boost": "Schub",

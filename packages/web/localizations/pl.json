@@ -88,7 +88,9 @@
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja",
     "goToPool": "Idź do basenu #{poolId}",
-    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną."
+    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
+    "noPositions": "Nie znaleziono stanowisk",
+    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie."
   },
   "copied": "Skopiowano!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC",
       "moonpayCountrySupport": "165+ krajów"
     },
-    "incentive": {
-      "title": "Rodzaje zachęt"
-    },
     "MAX": "MAKSIMUM",
     "pool": {
       "title": "Typy basenów"
@@ -270,8 +269,7 @@
       "transmuter": "Transmutator",
       "orderbook": "Księga zamówień",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Brak zachęt"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Połącz portfel",
@@ -536,6 +534,9 @@
       },
       "title": "Wszystkie Pule"
     },
+    "noPoolsFound": "Nie znaleziono żadnych basenów",
+    "noPoolsFoundDescription": "Dodaj płynność do puli, aby zacząć zdobywać nagrody.",
+    "errorFetchingPools": "Nie udało się załadować pul. Spróbuj odświeżyć stronę.",
     "APR": "APR",
     "bonded": "Związane",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
-    "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za",
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",

@@ -88,7 +88,9 @@
     "numPositions": "{numPositions} positions",
     "onePosition": "1 position",
     "goToPool": "Go to pool #{poolId}",
-    "errorFetchingPositions": "Failed to fetch position details. Please try refreshing the page. If the problem persists, contact support."
+    "errorFetchingPositions": "Failed to fetch position details. Please try refreshing the page. If the problem persists, contact support.",
+    "noPositions": "No positions found",
+    "noPositionsDescription": "Provide concentrated liquidity to a pool to start earning spread rewards."
   },
   "copied": "Copied!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "Supports OSMO, USDC",
       "moonpayCountrySupport": "165+ countries"
     },
-    "incentive": {
-      "title": "Incentive types"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Pool types"
@@ -270,8 +269,7 @@
       "transmuter": "Transmuter",
       "orderbook": "Orderbook",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "No incentives"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connect wallet",
@@ -536,6 +534,9 @@
       },
       "title": "Discover Pools"
     },
+    "noPoolsFound": "No pools found",
+    "noPoolsFoundDescription": "Add liquidity to a pool to start earning rewards.",
+    "errorFetchingPools": "Failed to load your pools. Please try refreshing the page.",
     "APR": "APR",
     "bonded": "Bonded",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "My Liquidity",
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
-    "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in",
     "aprBreakdown": {
       "swapFees": "Swap fees",
       "boost": "Boost",

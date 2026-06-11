@@ -88,7 +88,9 @@
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
     "goToPool": "પૂલ #{poolId} પર જાઓ",
-    "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો."
+    "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો.",
+    "noPositions": "કોઈ પદ મળ્યું નથી.",
+    "noPositionsDescription": "સ્પ્રેડ રિવોર્ડ્સ કમાવવા માટે પૂલને કેન્દ્રિત તરલતા પ્રદાન કરો."
   },
   "copied": "નકલ કરી!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "moonpayCountrySupport": "165+ દેશો"
     },
-    "incentive": {
-      "title": "પ્રોત્સાહન પ્રકારો"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "પૂલ પ્રકારો"
@@ -270,8 +269,7 @@
       "transmuter": "ટ્રાન્સમ્યુટર",
       "orderbook": "ઓર્ડરબુક",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "કોઈ પ્રોત્સાહન નથી"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",
@@ -536,6 +534,9 @@
       },
       "title": "પુલ શોધો"
     },
+    "noPoolsFound": "કોઈ પૂલ મળ્યા નથી.",
+    "noPoolsFoundDescription": "પુરસ્કારો મેળવવા માટે પૂલમાં તરલતા ઉમેરો.",
+    "errorFetchingPools": "તમારા પૂલ લોડ કરવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો.",
     "APR": "APR",
     "bonded": "બંધાયેલા",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "મારી લિક્વિડિટી",
     "myPools": "તમારા પૂલ",
     "poolId": "પૂલ # {id}",
-    "priceOsmo": "OSMO કિંમત",
-    "rewardDistribution": "માં પુરસ્કાર વિતરણ",
     "aprBreakdown": {
       "swapFees": "સ્વેપ ફી",
       "boost": "બુસ્ટ",

@@ -88,7 +88,9 @@
     "numPositions": "indéfini",
     "onePosition": "1 poste",
     "goToPool": "Aller à la piscine #{poolId}",
-    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support."
+    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support.",
+    "noPositions": "Aucune position trouvée",
+    "noPositionsDescription": "Apportez une liquidité concentrée à un pool pour commencer à percevoir des récompenses de spread."
   },
   "copied": "Copié!",
   "app": {
@@ -245,9 +247,6 @@
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC",
       "moonpayCountrySupport": "Plus de 165 pays"
     },
-    "incentive": {
-      "title": "Types d'incitations"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Types de piscines"
@@ -270,8 +269,7 @@
       "transmuter": "Transmutateur",
       "orderbook": "Carnet de commandes",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Pas d'incitations"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connecter le portefeuille",
@@ -536,6 +534,9 @@
       },
       "title": "Tous les Bassins"
     },
+    "noPoolsFound": "Aucune piscine trouvée",
+    "noPoolsFoundDescription": "Ajoutez des liquidités à un pool pour commencer à gagner des récompenses.",
+    "errorFetchingPools": "Impossible de charger vos piscines. Veuillez actualiser la page.",
     "APR": "TAP",
     "bonded": "Cautionné",
     "createPool": {
@@ -596,8 +597,6 @@
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
-    "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans",
     "aprBreakdown": {
       "swapFees": "Frais de swap",
       "boost": "Booster",
