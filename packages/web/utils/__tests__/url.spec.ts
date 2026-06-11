@@ -68,6 +68,13 @@ describe("findAllowedRestEndpoint", () => {
     ).toBe("https://fake-endpoint.com");
   });
 
+  it("returns the canonical allowlist value on match", () => {
+    const allowlisted = "https://FAKE-ENDPOINT.COM/";
+    expect(
+      findAllowedRestEndpoint("https://fake-endpoint.com", [allowlisted])
+    ).toBe(normalizeRestBaseUrl(allowlisted));
+  });
+
   it("matches path-prefixed endpoints", () => {
     expect(findAllowedRestEndpoint(cosmosDirectoryOsmosis, allowed)).toBe(
       cosmosDirectoryOsmosis

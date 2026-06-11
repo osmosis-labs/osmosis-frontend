@@ -30,8 +30,9 @@ export function findAllowedRestEndpoint(
 
   for (const address of allowedAddresses) {
     try {
-      if (normalizeRestBaseUrl(address) === normalizedEndpoint) {
-        return normalizedEndpoint;
+      const canonical = normalizeRestBaseUrl(address);
+      if (canonical === normalizedEndpoint) {
+        return canonical;
       }
     } catch {
       continue;
