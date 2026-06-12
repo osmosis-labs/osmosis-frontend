@@ -5,6 +5,10 @@ import dynamic from "next/dynamic";
 import { FunctionComponent, useCallback } from "react";
 import { useMedia } from "react-use";
 
+import {
+  MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
+  MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
+} from "~/integrations/moonpay/constants";
 import { MoonpaySignUrlResponse } from "~/integrations/moonpay/types";
 import { ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
@@ -60,9 +64,11 @@ export const Moonpay: FunctionComponent<
                 defaultCurrencyCode:
                   parsed.searchParams.get("defaultCurrencyCode") ?? undefined,
                 baseCurrencyCode:
-                  parsed.searchParams.get("baseCurrencyCode") ?? undefined,
+                  parsed.searchParams.get("baseCurrencyCode") ??
+                  MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
                 baseCurrencyAmount:
-                  parsed.searchParams.get("baseCurrencyAmount") ?? undefined,
+                  parsed.searchParams.get("baseCurrencyAmount") ??
+                  MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
               },
             }
           )
@@ -88,6 +94,7 @@ export const Moonpay: FunctionComponent<
       className="!m-0 !border-[0px]"
       variant="embedded"
       baseCurrencyCode={assetKey}
+      baseCurrencyAmount={MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT}
       defaultCurrencyCode="OSMO"
       visible={isOpen}
       walletAddress={walletAddress}

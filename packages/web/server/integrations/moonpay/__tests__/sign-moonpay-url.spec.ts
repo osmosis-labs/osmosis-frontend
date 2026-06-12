@@ -85,6 +85,21 @@ describe("MoonPay legitimate signing", () => {
     expect(parsed.searchParams.get("walletAddress")).toBe(VALID_WALLET);
     expect(parsed.searchParams.get("currencyCode")).toBe("OSMO");
     expect(parsed.searchParams.get("baseCurrencyCode")).toBe("USD");
+    expect(parsed.searchParams.get("baseCurrencyAmount")).toBe("200");
+  });
+
+  it("includes default baseCurrencyAmount when not provided in params", () => {
+    const url = buildMoonpayUrl(
+      {
+        walletAddress: VALID_WALLET,
+        currencyCode: "OSMO",
+      },
+      TEST_KEYS.publicKey
+    );
+
+    const parsed = new URL(url);
+    expect(parsed.searchParams.get("baseCurrencyCode")).toBe("USD");
+    expect(parsed.searchParams.get("baseCurrencyAmount")).toBe("200");
   });
 
   it("returns a signature that MoonPay SDK accepts for server-built URLs", () => {

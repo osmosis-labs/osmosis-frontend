@@ -1,6 +1,11 @@
 import { MoonPay } from "@moonpay/moonpay-node";
 import { isCosmosAddressValid } from "@osmosis-labs/utils";
 
+import {
+  MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
+  MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
+} from "~/integrations/moonpay/constants";
+
 export class MoonpaySignUrlError extends Error {
   constructor(message: string, readonly statusCode: number = 400) {
     super(message);
@@ -71,15 +76,11 @@ export function buildMoonpayUrl(
     apiKey: publicKey,
     walletAddress: params.walletAddress,
     currencyCode,
+    baseCurrencyCode:
+      params.baseCurrencyCode ?? MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
+    baseCurrencyAmount:
+      params.baseCurrencyAmount ?? MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
   });
-
-  if (params.baseCurrencyCode) {
-    searchParams.set("baseCurrencyCode", params.baseCurrencyCode);
-  }
-
-  if (params.baseCurrencyAmount) {
-    searchParams.set("baseCurrencyAmount", params.baseCurrencyAmount);
-  }
 
   const host = publicKey.startsWith("pk_live")
     ? "https://buy.moonpay.com"
