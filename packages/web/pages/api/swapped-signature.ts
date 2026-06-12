@@ -5,7 +5,6 @@ import {
   signSwappedUrl,
   SwappedSignUrlError,
 } from "~/server/integrations/swapped/sign-swapped-url";
-import { InvalidOsmosisWalletAddressError } from "~/server/integrations/validate-osmosis-wallet-address";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,13 +27,8 @@ export default async function handler(
 
     return res.status(200).json({ url });
   } catch (error) {
-    if (
-      error instanceof SwappedSignUrlError ||
-      error instanceof InvalidOsmosisWalletAddressError
-    ) {
-      const statusCode =
-        error instanceof SwappedSignUrlError ? error.statusCode : 400;
-      return res.status(statusCode).json({ error: error.message });
+    if (error instanceof SwappedSignUrlError) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
 
     return res

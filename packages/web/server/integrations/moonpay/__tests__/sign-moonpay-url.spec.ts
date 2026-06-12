@@ -52,7 +52,7 @@ describe("MoonPay signing oracle prevention", () => {
         },
         TEST_KEYS
       )
-    ).toThrow(/valid bech32 address/);
+    ).toThrow(/valid Osmosis address/);
   });
 
   it("rejects non-osmo bech32 wallet addresses", () => {
@@ -64,7 +64,7 @@ describe("MoonPay signing oracle prevention", () => {
         },
         TEST_KEYS
       )
-    ).toThrow(/Osmosis \(osmo\) address/);
+    ).toThrow(/valid Osmosis address/);
   });
 });
 

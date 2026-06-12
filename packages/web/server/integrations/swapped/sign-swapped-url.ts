@@ -1,6 +1,5 @@
+import { isCosmosAddressValid } from "@osmosis-labs/utils";
 import crypto from "crypto";
-
-import { validateOsmosisWalletAddress } from "../validate-osmosis-wallet-address";
 
 export const SWAPPED_WIDGET_PUBLIC_KEY =
   "pk_live_bf928a1d16cbf9f4e4b1280d87c30dc5";
@@ -41,7 +40,11 @@ export function signSwappedUrl(
   walletAddress: string,
   secretKey: string
 ): { url: string } {
-  validateOsmosisWalletAddress(walletAddress);
+  if (!isCosmosAddressValid({ address: walletAddress, bech32Prefix: "osmo" })) {
+    throw new SwappedSignUrlError(
+      "walletAddress must be a valid Osmosis address"
+    );
+  }
 
   const originalUrl = `https://widget.swapped.com?apiKey=${SWAPPED_WIDGET_PUBLIC_KEY}&currencyCode=${CURRENCY_CODE}&walletAddress=${walletAddress}&baseCurrencyCode=${BASE_CURRENCY_CODE}&baseCurrencyAmount=${BASE_CURRENCY_AMOUNT}&style=${STYLE}`;
 

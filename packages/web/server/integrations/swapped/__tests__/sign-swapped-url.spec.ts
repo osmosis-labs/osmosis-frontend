@@ -13,7 +13,7 @@ const TEST_SECRET = "test-swapped-secret";
 describe("Swapped signing oracle prevention", () => {
   it("rejects invalid wallet addresses that were previously accepted", () => {
     expect(() => signSwappedUrl("not-a-wallet", TEST_SECRET)).toThrow(
-      /valid bech32 address/
+      /valid Osmosis address/
     );
   });
 
@@ -23,7 +23,7 @@ describe("Swapped signing oracle prevention", () => {
         "cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a",
         TEST_SECRET
       )
-    ).toThrow(/Osmosis \(osmo\) address/);
+    ).toThrow(/valid Osmosis address/);
   });
 });
 

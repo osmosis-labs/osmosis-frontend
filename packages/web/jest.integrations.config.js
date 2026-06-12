@@ -20,7 +20,9 @@ const config = {
   testEnvironment: "node",
 };
 
+const esmModules = ["@moonpay/moonpay-node", "@osmosis-labs/utils"];
+
 module.exports = async () => ({
   ...(await createJestConfig(config)()),
-  transformIgnorePatterns: ["node_modules/(?!(@moonpay/moonpay-node)/)"],
+  transformIgnorePatterns: [`node_modules/(?!(${esmModules.join("|")})/)`],
 });

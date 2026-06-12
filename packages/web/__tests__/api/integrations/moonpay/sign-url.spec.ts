@@ -71,7 +71,7 @@ describe("POST /api/integrations/moonpay/sign-url", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({
-      error: expect.stringContaining("valid bech32 address"),
+      error: expect.stringContaining("valid Osmosis address"),
     });
   });
 

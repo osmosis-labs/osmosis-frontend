@@ -1,6 +1,5 @@
 import { MoonPay } from "@moonpay/moonpay-node";
-
-import { validateOsmosisWalletAddress } from "../validate-osmosis-wallet-address";
+import { isCosmosAddressValid } from "@osmosis-labs/utils";
 
 export class MoonpaySignUrlError extends Error {
   constructor(message: string, readonly statusCode: number = 400) {
@@ -54,7 +53,16 @@ export function buildMoonpayUrl(
   params: MoonpaySignUrlParams,
   publicKey: string
 ): string {
-  validateOsmosisWalletAddress(params.walletAddress);
+  if (
+    !isCosmosAddressValid({
+      address: params.walletAddress,
+      bech32Prefix: "osmo",
+    })
+  ) {
+    throw new MoonpaySignUrlError(
+      "walletAddress must be a valid Osmosis address"
+    );
+  }
 
   const currencyCode =
     params.currencyCode ?? params.defaultCurrencyCode ?? "OSMO";
