@@ -77,8 +77,10 @@ jobs:
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
@@ -96,9 +98,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       # Auto-dispatch a topup when the preview account is low (restored in
       # MTN-110). Phase A (MTN-97) removed this and delegated funding to the
       # hourly monitoring-limit-geo topup-dispatch job, but that job only gates

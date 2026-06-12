@@ -9,12 +9,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Slack Notification
-        uses: 8398a7/action-slack@v3
+        uses: slackapi/slack-github-action@v3
         with:
-          status: ${{ job.status }}
-          text: New PR opened to master branch
-          author_name: GitHub Action
-          fields: repo,message,commit,author,action,eventName,ref,workflow
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ANNOUNCEMENT_WEBHOOK_URL }}
+          webhook: ${{ secrets.SLACK_ANNOUNCEMENT_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          # PR title is escaped via toJSON so quotes/backslashes can't break the payload JSON.
+          payload: |
+            {
+              "text": ${{ toJSON(format('New PR opened to master branch: {0}', github.event.pull_request.title)) }},
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "New PR opened to master branch", "emoji": true }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(format('*<{0}|#{1}: {2}>*', github.event.pull_request.html_url, github.event.pull_request.number, github.event.pull_request.title)) }}
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": ${{ toJSON(format('*Repository:* {0}', github.repository)) }} },
+                    { "type": "mrkdwn", "text": ${{ toJSON(format('*Author:* {0}', github.event.pull_request.user.login)) }} },
+                    { "type": "mrkdwn", "text": ${{ toJSON(format('*Branch:* {0} → {1}', github.event.pull_request.head.ref, github.event.pull_request.base.ref)) }} }
+                  ]
+                }
+              ]
+            }
