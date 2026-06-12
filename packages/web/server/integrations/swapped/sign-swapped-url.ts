@@ -19,10 +19,16 @@ export class SwappedSignUrlError extends Error {
 export function parseSwappedSignRequestBody(body: unknown): {
   walletAddress: string;
 } {
-  const parsed =
-    typeof body === "string"
-      ? (JSON.parse(body) as Record<string, unknown>)
-      : (body as Record<string, unknown>);
+  let parsed: Record<string, unknown>;
+  if (typeof body === "string") {
+    try {
+      parsed = JSON.parse(body) as Record<string, unknown>;
+    } catch {
+      throw new SwappedSignUrlError("Malformed JSON request body");
+    }
+  } else {
+    parsed = body as Record<string, unknown>;
+  }
 
   if (parsed == null || typeof parsed !== "object") {
     throw new SwappedSignUrlError("Invalid request body");

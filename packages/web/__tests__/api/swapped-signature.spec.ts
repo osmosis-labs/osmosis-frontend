@@ -38,6 +38,21 @@ describe("POST /api/swapped-signature", () => {
     process.env = env;
   });
 
+  it("rejects malformed JSON request bodies with 400", async () => {
+    const req = {
+      method: "POST",
+      body: "{not-json",
+    } as NextApiRequest;
+    const res = createMockResponse();
+
+    await swappedSignatureHandler(req, res);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: "Malformed JSON request body",
+    });
+  });
+
   it("rejects invalid wallet addresses that were previously accepted", async () => {
     const req = {
       method: "POST",

@@ -11,6 +11,12 @@ const ATTACKER_WALLET = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
 const TEST_SECRET = "test-swapped-secret";
 
 describe("Swapped signing oracle prevention", () => {
+  it("rejects malformed JSON request bodies", () => {
+    expect(() => parseSwappedSignRequestBody("{not-json")).toThrow(
+      /Malformed JSON request body/
+    );
+  });
+
   it("rejects invalid wallet addresses that were previously accepted", () => {
     expect(() => signSwappedUrl("not-a-wallet", TEST_SECRET)).toThrow(
       /valid Osmosis address/

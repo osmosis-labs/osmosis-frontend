@@ -31,6 +31,10 @@ export default async function handler(
       return res.status(error.statusCode).json({ error: error.message });
     }
 
+    if (error instanceof SyntaxError) {
+      return res.status(400).json({ error: "Malformed JSON request body" });
+    }
+
     return res
       .status(500)
       .json({ error: "An unexpected error occurred. Please try again." });
