@@ -264,8 +264,12 @@ const Wormhole: FunctionComponent = () => {
   let config: WormholeConnectConfig = {
     networks: ["solana", "osmosis", "sui", "aptos", "ethereum"],
     rpcs: {
-      solana:
-        "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
+      // Was a hardcoded Helius URL with a shared public API key that
+      // routinely 429s; the widget interprets failed `getAccountInfo`
+      // lookups as "no ATA exists" and shows a misleading create-account
+      // banner. Use the same keyless endpoint the recovery widget below
+      // relies on (see SOLANA_RPC in components/bridge/wormhole-redeem.tsx).
+      solana: "https://solana-rpc.publicnode.com",
       wormchain: "https://wormchain-rpc.polkachu.com",
       ethereum: "https://ethereum-rpc.publicnode.com",
       osmosis: "https://rpc.osmosis.zone",
