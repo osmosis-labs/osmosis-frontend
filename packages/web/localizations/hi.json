@@ -852,6 +852,7 @@
     "convertTo": "में बदलो",
     "depositAs": "इस प्रकार जमा करें",
     "withdrawAs": "इस प्रकार वापस लें",
+    "withdrawViaRoute": "{route} के माध्यम से",
     "recommended": "अनुशंसित",
     "fee": "शुल्क",
     "fees": "फीस",

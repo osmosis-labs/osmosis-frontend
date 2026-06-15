@@ -852,6 +852,7 @@
     "convertTo": "Convert to",
     "depositAs": "Deposit as",
     "withdrawAs": "Withdraw as",
+    "withdrawViaRoute": "via {route}",
     "recommended": "Recommended",
     "fee": "fee",
     "fees": "fees",

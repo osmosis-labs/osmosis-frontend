@@ -1,4 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import type { Bridge } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -23,6 +24,36 @@ interface BridgeReceiveAssetDropdownProps {
   assetsInOsmosis: MinimalAsset[];
   counterpartySupportedAssetsByChainId: Record<string, SupportedAsset[]>;
 }
+
+/**
+ * Map a bridge provider id to a short, user-facing route name. Used to tell
+ * apart withdraw variants that share the same counterparty denom (e.g. both
+ * the Nomic and Int3face routes report `denom: "BTC"`), where the only real
+ * differentiator is which bridge performs the transfer.
+ */
+const bridgeRouteName: Partial<Record<Bridge, string>> = {
+  Nomic: "Nomic",
+  Int3face: "Int3face",
+};
+
+/**
+ * Resolve a short, user-facing route name for a withdraw row, given the
+ * currently-selected Osmosis variant. Returns the first named bridge from the
+ * row's `supportedVariants[fromAddress]` map, or undefined for generic routes.
+ *
+ * Assumes a given counterparty denom is carried by at most one named bridge
+ * (true for the BTC/alloy variants today: Nomic xor Int3face per destination),
+ * so picking the first match is unambiguous.
+ */
+const getWithdrawRouteLabel = (
+  asset: SupportedAsset,
+  fromAddress: string
+): string | undefined => {
+  const bridge = Object.keys(asset.supportedVariants[fromAddress] ?? {}).find(
+    (bridge) => bridgeRouteName[bridge as Bridge]
+  );
+  return bridge ? bridgeRouteName[bridge as Bridge] : undefined;
+};
 
 export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDropdownProps> =
   observer(
@@ -171,7 +202,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                 ) : (
                   <>
                     {counterpartySupportedAssetsByChainId[toAsset.chainId].map(
-                      (asset, index, assets) => {
+                      (asset, index) => {
                         const onClick = () => {
                           setToAsset(asset);
                         };
@@ -186,10 +217,13 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               asset.denom === a.coinDenom
                           ) ?? assetsInOsmosis[0];
 
-                        const revealAddress = assets[0].denom === asset.denom;
+                        const routeLabel = getWithdrawRouteLabel(
+                          asset,
+                          fromAsset.address
+                        );
 
                         return (
-                          <MenuItem key={asset.denom}>
+                          <MenuItem key={asset.address}>
                             <button
                               className={classNames(
                                 "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
@@ -211,16 +245,17 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               <div className="flex flex-col">
                                 <p className="body1 md:body2">
                                   {t("transfer.withdrawAs")} {asset.denom}
+                                  {routeLabel
+                                    ? ` ${t("transfer.withdrawViaRoute", {
+                                        route: routeLabel,
+                                      })}`
+                                    : ""}
                                 </p>
-                                {isCanonicalAsset ? (
+                                {isCanonicalAsset && (
                                   <p className="body2 text-osmoverse-300">
                                     {t("transfer.recommended")}
                                   </p>
-                                ) : revealAddress ? (
-                                  <p className="body2 text-osmoverse-300">
-                                    {asset.address}
-                                  </p>
-                                ) : null}
+                                )}
                               </div>
                             </button>
                           </MenuItem>

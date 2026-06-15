@@ -852,6 +852,7 @@
     "convertTo": "تبدیل به",
     "depositAs": "سپرده گذاری به عنوان",
     "withdrawAs": "برداشت به عنوان",
+    "withdrawViaRoute": "از طریق {route}",
     "recommended": "توصیه شده",
     "fee": "هزینه",
     "fees": "هزینه ها",

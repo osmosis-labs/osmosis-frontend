@@ -852,6 +852,7 @@
     "convertTo": "로 변환하다",
     "depositAs": "다음으로 입금",
     "withdrawAs": "다음으로 인출",
+    "withdrawViaRoute": "{route} 경유",
     "recommended": "추천",
     "fee": "요금",
     "fees": "수수료",
