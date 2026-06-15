@@ -101,6 +101,9 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
       topN: isLargeTablet ? 3 : undefined,
     });
 
+  const hasNewAssets =
+    !isTopNewAssetsLoading && (topNewAssets ?? []).length > 0;
+
   // Filter upcoming assets to only include those with specific launch dates
   const qualifyingUpcomingAssets = (topUpcomingAssets ?? []).filter((asset) =>
     hasSpecificLaunchDate(asset.estimatedLaunchDateUtc)
@@ -108,29 +111,41 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   const hasQualifyingUpcomingAssets =
     !isTopUpcomingAssetsLoading && qualifyingUpcomingAssets.length > 0;
 
+  // Top Gainers always renders; New and Upcoming are conditional. Drive the
+  // grid layout off the count of visible tiles so the row reflows to fill the
+  // freed space instead of leaving a gap.
+  const visibleTileCount =
+    1 + (hasNewAssets ? 1 : 0) + (hasQualifyingUpcomingAssets ? 1 : 0);
+
   return (
     <div
       className={classNames(
         "lg:no-scrollbar grid gap-6 xl:gap-8 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-scroll",
         {
-          // When Upcoming is hidden, use 2-column grid with Top Gainers spanning 2 rows
-          "grid-cols-2 xl:grid-rows-2": !hasQualifyingUpcomingAssets,
-          // When Upcoming is shown, use 3-column grid
-          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2":
-            hasQualifyingUpcomingAssets,
+          // Gainers-only: single column, no row span.
+          "grid-cols-1": visibleTileCount === 1,
+          // Two tiles: 2 columns, Top Gainers spans 2 rows on xl.
+          "grid-cols-2 xl:grid-rows-2": visibleTileCount === 2,
+          // Three tiles: 3 columns collapsing to 2x2 on xl.
+          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2": visibleTileCount === 3,
         },
         className
       )}
     >
+      {hasNewAssets && (
+        <AssetHighlights
+          className="lg:w-[80%] lg:shrink-0 lg:snap-center"
+          title={t("assets.highlights.new")}
+          isLoading={isTopNewAssetsLoading}
+          assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
+          highlight="new"
+        />
+      )}
       <AssetHighlights
-        className="lg:w-[80%] lg:shrink-0 lg:snap-center"
-        title={t("assets.highlights.new")}
-        isLoading={isTopNewAssetsLoading}
-        assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-        highlight="new"
-      />
-      <AssetHighlights
-        className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
+        className={classNames("lg:w-[80%] lg:shrink-0 lg:snap-center", {
+          // Only span 2 rows when there is a second row to share with.
+          "xl:row-span-2 lg:row-auto": visibleTileCount > 1,
+        })}
         title={t("assets.highlights.topGainers")}
         subtitle="24h"
         isLoading={isTopGainerAssetsLoading}
