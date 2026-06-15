@@ -22,7 +22,7 @@
     "@types/node": "22.17.1",
     "bignumber.js": "9.1.2",
     "dotenv": "17.2.1",
-    "tsx": "^4.6.2",
+    "tsx": "^4.22.4",
     "typescript": "5.9.2"
   }
 }
