@@ -608,11 +608,19 @@ export const AmountScreen = observer(
      *
      * Supported assets resolve incrementally (one query per bridge provider),
      * so the first non-empty list may be missing higher-priority providers that
-     * haven't responded yet. We seed when no asset is selected, and while still
-     * loading we also re-point to the current first (recommended) asset if a
-     * later-arriving provider reordered it — so the auto-selected asset matches
-     * the row badged "Recommended" (index 0). The dropdown is hidden until
-     * loading completes, so this never overrides a deliberate user selection.
+     * haven't responded yet. We seed when no asset is selected, and re-point to
+     * the current first (recommended) asset if a later-arriving provider
+     * reordered it — so the auto-selected asset matches the row badged
+     * "Recommended" (index 0).
+     *
+     * The realign is fenced on the dropdown not yet being interactable rather
+     * than on `isLoadingSupportedAssets` alone: both that flag and the sorted
+     * list derive from the same query results, so on the terminal settle render
+     * `isLoadingSupportedAssets` is already false in the same commit that
+     * reorders index 0. Gating on interactability covers that render while
+     * keeping the no-override guarantee — the dropdown's only user-facing
+     * setToAsset is reachable solely behind the composite `!isLoading` gate, so
+     * a realign and a deliberate user pick are mutually exclusive.
      */
     useEffect(() => {
       if (
@@ -625,9 +633,13 @@ export const AmountScreen = observer(
 
         if (counterpartyAssets && counterpartyAssets.length > 0) {
           const recommendedAsset = counterpartyAssets[0];
+          // The dropdown only becomes interactable once loading is done and
+          // there is more than one variant to choose from.
+          const isDropdownInteractable =
+            !isLoadingSupportedAssets && counterpartyAssets.length > 1;
           const shouldSeed = isNil(toAsset);
           const shouldRealign =
-            isLoadingSupportedAssets &&
+            !isDropdownInteractable &&
             !isNil(toAsset) &&
             toAsset.address !== recommendedAsset.address;
 
