@@ -605,11 +605,18 @@ export const AmountScreen = observer(
     /**
      * Withdraw
      * Set the initial destination asset based on the source asset.
+     *
+     * Supported assets resolve incrementally (one query per bridge provider),
+     * so the first non-empty list may be missing higher-priority providers that
+     * haven't responded yet. We seed when no asset is selected, and while still
+     * loading we also re-point to the current first (recommended) asset if a
+     * later-arriving provider reordered it — so the auto-selected asset matches
+     * the row badged "Recommended" (index 0). The dropdown is hidden until
+     * loading completes, so this never overrides a deliberate user selection.
      */
     useEffect(() => {
       if (
         direction === "withdraw" &&
-        isNil(toAsset) &&
         counterpartySupportedAssetsByChainId &&
         toChain
       ) {
@@ -617,12 +624,22 @@ export const AmountScreen = observer(
           counterpartySupportedAssetsByChainId[toChain.chainId];
 
         if (counterpartyAssets && counterpartyAssets.length > 0) {
-          setToAsset(counterpartyAssets[0]);
+          const recommendedAsset = counterpartyAssets[0];
+          const shouldSeed = isNil(toAsset);
+          const shouldRealign =
+            isLoadingSupportedAssets &&
+            !isNil(toAsset) &&
+            toAsset.address !== recommendedAsset.address;
+
+          if (shouldSeed || shouldRealign) {
+            setToAsset(recommendedAsset);
+          }
         }
       }
     }, [
       counterpartySupportedAssetsByChainId,
       direction,
+      isLoadingSupportedAssets,
       setToAsset,
       toAsset,
       toChain,
