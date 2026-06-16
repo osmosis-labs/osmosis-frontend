@@ -21,6 +21,12 @@ interface BridgeReceiveAssetDropdownProps {
   fromAsset: SupportedAssetWithAmount;
   toAsset: SupportedAsset;
   setToAsset: (asset: SupportedAsset) => void;
+  /**
+   * Records a deliberate user selection of a withdraw variant, distinctly from
+   * the parent's auto-seed/realign writes that also go through `setToAsset`.
+   * Withdraw branch only; falls back to `setToAsset` when not provided.
+   */
+  onUserSelectAsset?: (asset: SupportedAsset) => void;
   assetsInOsmosis: MinimalAsset[];
   counterpartySupportedAssetsByChainId: Record<string, SupportedAsset[]>;
 }
@@ -66,6 +72,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
       fromAsset,
       toAsset,
       setToAsset,
+      onUserSelectAsset,
       assetsInOsmosis,
       counterpartySupportedAssetsByChainId,
     }) => {
@@ -208,7 +215,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                     {counterpartySupportedAssetsByChainId[toAsset.chainId].map(
                       (asset, index) => {
                         const onClick = () => {
-                          setToAsset(asset);
+                          (onUserSelectAsset ?? setToAsset)(asset);
                         };
 
                         const isSelected = toAsset?.address === asset.address;

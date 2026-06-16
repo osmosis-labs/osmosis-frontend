@@ -17,6 +17,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useMeasure, useUnmount } from "react-use";
@@ -186,6 +187,16 @@ export const AmountScreen = observer(
     const [wishesToProceed, setWishesToProceed] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
+
+    // True once the user deliberately picks a withdraw variant from the receive
+    // dropdown. While true, the realign effect won't re-point `toAsset` to the
+    // provider list's current index 0, so a later provider settle or a
+    // background refetch that cosmetically reorders index 0 can't swap the asset
+    // out from under a deliberate choice. Self-resets whenever `toAsset` returns
+    // to nil (chain switch resetAssets(), or the parent's onTransfer reset) —
+    // see the realign effect, which is the single reset point.
+    const userHasPickedToAssetRef = useRef(false);
+
     const {
       isOpen: isBridgeWalletSelectOpen,
       onClose: onCloseBridgeWalletSelect,
@@ -604,23 +615,27 @@ export const AmountScreen = observer(
 
     /**
      * Withdraw
-     * Set the initial destination asset based on the source asset.
+     * Set and maintain the destination asset for the withdraw flow.
      *
      * Supported assets resolve incrementally (one query per bridge provider),
      * so the first non-empty list may be missing higher-priority providers that
-     * haven't responded yet. We seed when no asset is selected, and re-point to
-     * the current first (recommended) asset if a later-arriving provider
-     * reordered it — so the auto-selected asset matches the row badged
-     * "Recommended" (index 0).
+     * haven't responded yet, and a later settle (or a background refetch) can
+     * reorder index 0 — the row badged "Recommended".
      *
-     * The realign is fenced on the dropdown not yet being interactable rather
-     * than on `isLoadingSupportedAssets` alone: both that flag and the sorted
-     * list derive from the same query results, so on the terminal settle render
-     * `isLoadingSupportedAssets` is already false in the same commit that
-     * reorders index 0. Gating on interactability covers that render while
-     * keeping the no-override guarantee — the dropdown's only user-facing
-     * setToAsset is reachable solely behind the composite `!isLoading` gate, so
-     * a realign and a deliberate user pick are mutually exclusive.
+     * - Seed `toAsset` to index 0 whenever none is selected (initial load, and
+     *   after every reset that nulls `toAsset`: chain switch resetAssets(), or
+     *   the parent's onTransfer reset). Seeding never consults the user-pick
+     *   flag, so it can't be blocked into stranding `toAsset === undefined`.
+     * - Realign a still-auto-selected `toAsset` to the current index 0 only
+     *   while `userHasPickedToAssetRef` is false. This fires on the terminal
+     *   settle render (where `isLoadingSupportedAssets` is already false in the
+     *   same commit that reorders index 0, which is why a loading/interactable
+     *   gate could not cover it) but is suppressed the moment the user makes a
+     *   deliberate pick — so neither a late provider settle nor a background
+     *   refetch swaps the asset out from under a deliberate choice.
+     *
+     * The pick flag self-resets here whenever `toAsset` is nil, so user intent
+     * is cleared on every reset path without threading anything into the parent.
      */
     useEffect(() => {
       if (
@@ -628,19 +643,24 @@ export const AmountScreen = observer(
         counterpartySupportedAssetsByChainId &&
         toChain
       ) {
+        if (isNil(toAsset)) {
+          userHasPickedToAssetRef.current = false;
+        }
+
         const counterpartyAssets =
           counterpartySupportedAssetsByChainId[toChain.chainId];
 
         if (counterpartyAssets && counterpartyAssets.length > 0) {
           const recommendedAsset = counterpartyAssets[0];
-          // The dropdown only becomes interactable once loading is done and
-          // there is more than one variant to choose from.
-          const isDropdownInteractable =
-            !isLoadingSupportedAssets && counterpartyAssets.length > 1;
           const shouldSeed = isNil(toAsset);
+          // Realign a stale auto-seeded asset to the current index 0 only while
+          // the user has not deliberately picked. The chainId guard prevents a
+          // settle observed for a chain we've already switched away from from
+          // realigning a previous-chain toAsset onto the new chain's asset.
           const shouldRealign =
-            !isDropdownInteractable &&
+            !userHasPickedToAssetRef.current &&
             !isNil(toAsset) &&
+            toAsset.chainId === toChain.chainId &&
             toAsset.address !== recommendedAsset.address;
 
           if (shouldSeed || shouldRealign) {
@@ -651,7 +671,6 @@ export const AmountScreen = observer(
     }, [
       counterpartySupportedAssetsByChainId,
       direction,
-      isLoadingSupportedAssets,
       setToAsset,
       toAsset,
       toChain,
@@ -853,6 +872,14 @@ export const AmountScreen = observer(
       setToAsset(undefined);
     };
 
+    const onUserSelectToAsset = useCallback(
+      (asset: SupportedAsset) => {
+        userHasPickedToAssetRef.current = true;
+        setToAsset(asset);
+      },
+      [setToAsset]
+    );
+
     const resetInput = () => {
       setCryptoAmount("");
       setFiatAmount("");
@@ -960,6 +987,7 @@ export const AmountScreen = observer(
           fromAsset={fromAsset}
           toAsset={toAsset}
           setToAsset={setToAsset}
+          onUserSelectAsset={onUserSelectToAsset}
           assetsInOsmosis={assetsInOsmosis}
           counterpartySupportedAssetsByChainId={
             counterpartySupportedAssetsByChainId
