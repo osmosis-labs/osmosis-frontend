@@ -113,12 +113,21 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   const visibleTileCount =
     1 + (hasNewAssets ? 1 : 0) + (hasQualifyingUpcomingAssets ? 1 : 0);
 
+  const isGainersOnly = visibleTileCount === 1;
+
   // Top Gainers row count by its own layout (New/Upcoming always fetch 3):
   //  - gainers-only: full width, 6 rows across two columns (3 per column)
   //  - large-tablet snap carousel: 6 in a single-column swipe card
   //  - desktop multi-tile single-column card: 3
-  const isGainersOnly = visibleTileCount === 1;
-  const topGainerCount = isGainersOnly || isLargeTablet ? 6 : 3;
+  //
+  // Only switch the count once New/Upcoming have settled. While they load,
+  // `isGainersOnly` is transiently true (their `has*` flags are false), and
+  // letting that drive `topN` would change the query key mid-load, discarding
+  // the cache hit and forcing a redundant refetch when data arrives.
+  const isHighlightLayoutSettled =
+    !isTopNewAssetsLoading && !isTopUpcomingAssetsLoading;
+  const topGainerCount =
+    isLargeTablet || (isHighlightLayoutSettled && isGainersOnly) ? 6 : 3;
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
     api.edge.assets.getTopGainerAssets.useQuery({
       topN: topGainerCount,
