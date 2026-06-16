@@ -6233,35 +6233,17 @@
   resolved "https://registry.npmjs.org/@protobufjs/base64/-/base64-1.1.2.tgz"
   integrity sha512-AZkcAA5vnN/v4PDqKyMR5lx7hZttPDgClv83E//FMNhR2TMcLUhfRUBHCmSl0oi9zMgDDqRUJkSxO3wm85+XLg==
 
-"@protobufjs/codegen@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/@protobufjs/codegen/-/codegen-2.0.4.tgz"
-  integrity sha512-YyFaikqM5sH0ziFZCN3xDC7zeGaB/d0IUb9CATugHWbd1FRFwWwt4ld4OYMPWu5a3Xe01mGAULCdqhMlPl29Jg==
-
-"@protobufjs/codegen@^2.0.5":
+"@protobufjs/codegen@^2.0.4", "@protobufjs/codegen@^2.0.5":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@protobufjs/codegen/-/codegen-2.0.5.tgz#d9315ad7cf3f30aac70bda3c068443dc6f143659"
   integrity sha512-zgXFLzW3Ap33e6d0Wlj4MGIm6Ce8O89n/apUaGNB/jx+hw+ruWEp7EwGUshdLKVRCxZW12fp9r40E1mQrf/34g==
 
-"@protobufjs/eventemitter@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@protobufjs/eventemitter/-/eventemitter-1.1.0.tgz"
-  integrity sha1-NVy8mLr61ZePntCV85diHx0Ga3A=
-
-"@protobufjs/eventemitter@^1.1.1":
+"@protobufjs/eventemitter@^1.1.0", "@protobufjs/eventemitter@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@protobufjs/eventemitter/-/eventemitter-1.1.1.tgz#d512cb26c0ae026091ee2c1167f1be6faf5c842a"
   integrity sha512-vW1GmwMZNnL+gMRaovlh9yZX74kc+TTU3FObkkurpMaRtBfLP3ldjS9KQWlwZgraRE0+dheEEoAxdzcJQ8eXZg==
 
-"@protobufjs/fetch@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@protobufjs/fetch/-/fetch-1.1.0.tgz"
-  integrity sha1-upn7WYYUr2VwDBYZ/wbUVLDYTEU=
-  dependencies:
-    "@protobufjs/aspromise" "^1.1.1"
-    "@protobufjs/inquire" "^1.1.0"
-
-"@protobufjs/fetch@^1.1.1":
+"@protobufjs/fetch@^1.1.0", "@protobufjs/fetch@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@protobufjs/fetch/-/fetch-1.1.1.tgz#4d6fc00c8fb64016a5c81b469d549046350f1065"
   integrity sha512-GpptLrs57adMSuHi3VNj0mAF8dwh36LMaYF6XyJ6JMWlVsc+t42tm1HSEDmOs3A8fC9yyeisgLhsTVQokOZ0zw==
@@ -6273,12 +6255,7 @@
   resolved "https://registry.npmjs.org/@protobufjs/float/-/float-1.0.2.tgz"
   integrity sha1-Xp4avctz/Ap8uLKR33jIy9l7h9E=
 
-"@protobufjs/inquire@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@protobufjs/inquire/-/inquire-1.1.0.tgz"
-  integrity sha1-/yAOPnzyQp4tyvwRQIKOjMY48Ik=
-
-"@protobufjs/inquire@^1.1.2":
+"@protobufjs/inquire@^1.1.0", "@protobufjs/inquire@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/inquire/-/inquire-1.1.2.tgz#ae64fbc014ff44c8bfad03dd4c93cd2d6a4c82db"
   integrity sha512-pa0vFRuws4wkvaXKK1uXZMAwAX4/t8ANaJo45iw/oQHNQ9q5xUzwgFmVJGXiga2BeN+zpX7Vf9vmsiIa2J+MUw==
@@ -6293,12 +6270,7 @@
   resolved "https://registry.npmjs.org/@protobufjs/pool/-/pool-1.1.0.tgz"
   integrity sha1-Cf0V8tbTq/qbZbw2ZQbWrXhG/1Q=
 
-"@protobufjs/utf8@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
-  integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
-
-"@protobufjs/utf8@^1.1.1":
+"@protobufjs/utf8@^1.1.0", "@protobufjs/utf8@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.1.tgz#eaee5900122c110a3dbcb728c0597014a2621774"
   integrity sha512-oOAWABowe8EAbMyWKM0tYDKi8Yaox52D+HWZhAIJqQXbqe0xI/GV7FhLWqlEKreMkfDjshR5FKgi3mnle0h6Eg==
@@ -7836,10 +7808,12 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@>=13.7.0":
-  version "20.6.3"
-  resolved "https://registry.npmjs.org/@types/node/-/node-20.6.3.tgz"
-  integrity sha512-HksnYH4Ljr4VQgEy2lTStbCKv/P590tmPe5HqOnv9Gprffgv5WXAY+Y5Gqniu0GGqeTCUdBnzC3QSrzPkBkAMA==
+"@types/node@*", "@types/node@22.17.1", "@types/node@>=13.7.0":
+  version "22.17.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.17.1.tgz#484a755050497ebc3b37ff5adb7470f2e3ea5f5b"
+  integrity sha512-y3tBaz+rjspDTylNjAX37jEC3TETEFGNJL6uQDxwF9/8GLLIjW1rvVHlynyuUKMnMr1Roq8jOv3vkopBjC4/VA==
+  dependencies:
+    undici-types "~6.21.0"
 
 "@types/node@10.12.18":
   version "10.12.18"
@@ -7850,13 +7824,6 @@
   version "11.11.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-11.11.6.tgz"
   integrity sha512-Exw4yUWMBXM3X+8oqzJNRqZSwUAaS4+7NdvHqQuFi/d+synz++xmX3QIf+BFqneW8N31R8Ky+sikfZUXq07ggQ==
-
-"@types/node@22.17.1":
-  version "22.17.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.17.1.tgz#484a755050497ebc3b37ff5adb7470f2e3ea5f5b"
-  integrity sha512-y3tBaz+rjspDTylNjAX37jEC3TETEFGNJL6uQDxwF9/8GLLIjW1rvVHlynyuUKMnMr1Roq8jOv3vkopBjC4/VA==
-  dependencies:
-    undici-types "~6.21.0"
 
 "@types/node@^12.12.54":
   version "12.20.55"
@@ -16656,20 +16623,15 @@ log-update@^4.0.0:
     slice-ansi "^4.0.0"
     wrap-ansi "^6.2.0"
 
-long@*, "long@^3 || ^4 || ^5", long@^5.0.0, long@^5.2.0, long@^5.2.1, long@^5.2.3:
-  version "5.2.3"
-  resolved "https://registry.npmjs.org/long/-/long-5.2.3.tgz"
-  integrity sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==
+long@*, "long@^3 || ^4 || ^5", long@^5.0.0, long@^5.2.0, long@^5.2.1, long@^5.2.3, long@^5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/long/-/long-5.3.2.tgz#1d84463095999262d7d7b7f8bfd4a8cc55167f83"
+  integrity sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==
 
 long@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/long/-/long-4.0.0.tgz"
   integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
-
-long@^5.3.2:
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/long/-/long-5.3.2.tgz#1d84463095999262d7d7b7f8bfd4a8cc55167f83"
-  integrity sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
   version "1.4.0"
@@ -19230,9 +19192,9 @@ protobufjs@^6.11.2, protobufjs@^6.8.8, protobufjs@~6.11.2, protobufjs@~6.11.3:
     long "^4.0.0"
 
 protobufjs@^7.5.5:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.6.2.tgz#2659f77bd8d54778814c274dc0df808f54c88918"
-  integrity sha512-N9EiLovGEQOJSPF26Ij7qUGvahfEnq0eeYZ02aigIedkmz1qZSwjnP9SBITHJuF/6MYbIW4HDN8zdYjsjqJKXQ==
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.6.3.tgz#92cc8806db61393e68f6a2eb742c1d9c0cafd672"
+  integrity sha512-+k0vdJKNdW+Vu+dYe8tZA/VvQb6XKNWexC6URwBFXxNnjLJz9nQJCemGyNgRAWD+B7+nGNc9qMPGwcD7s4nzUw==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
