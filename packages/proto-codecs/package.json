@@ -48,7 +48,7 @@
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.1.2",
-    "tsx": "^4.6.2"
+    "tsx": "^4.22.4"
   },
   "dependencies": {
     "@cosmjs/amino": "0.32.3",
