@@ -323,7 +323,9 @@ export const AssetHighlights: FunctionComponent<
           // desktop (where the tile spans full width on its own), collapsing to
           // one column on small screens so rows never cramp.
           "grid grid-cols-2 gap-x-8 md:grid-cols-1": columns === 2,
-          "gap-1": isLoading,
+          // gap-y only: tighten vertical spacing during load without
+          // overriding the column gap (gap-1 shorthand would clobber gap-x-8).
+          "gap-y-1": isLoading,
         })}
       >
         {isLoading ? (
