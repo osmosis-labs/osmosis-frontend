@@ -1399,6 +1399,12 @@
   "taprootAddressNotSupported": "Taprootアドレスは出金には対応していません",
   "wormhole": {
     "deprecationTitle": "Wormholeサポートは廃止予定です",
-    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。"
+    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。",
+    "bridgeStepTitle": "Wormholeでブリッジ",
+    "refreshBalance": "残高を更新",
+    "convertAlloy": {
+      "stepTitle": "{symbol}を{symbol}.whに変換",
+      "description": "アロイド資産として {balance} {symbol} を保有しています。Wormholeは{symbol}.whバリアントをブリッジするため、先に変換してから下でブリッジしてください。"
+    }
   }
 }

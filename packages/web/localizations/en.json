@@ -1399,6 +1399,12 @@
   "taprootAddressNotSupported": "Taproot addresses are not supported for withdrawals",
   "wormhole": {
     "deprecationTitle": "Wormhole support is being deprecated",
-    "deprecationSubtitle": "We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis."
+    "deprecationSubtitle": "We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis.",
+    "bridgeStepTitle": "Bridge via Wormhole",
+    "refreshBalance": "Refresh balance",
+    "convertAlloy": {
+      "stepTitle": "Convert {symbol} to {symbol}.wh",
+      "description": "You hold {balance} {symbol} as the alloyed asset. Wormhole bridges the {symbol}.wh variant, so convert first, then bridge below."
+    }
   }
 }
