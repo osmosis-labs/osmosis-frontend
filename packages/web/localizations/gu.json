@@ -852,6 +852,7 @@
     "convertTo": "માં કન્વર્ટ કરો",
     "depositAs": "તરીકે જમા",
     "withdrawAs": "તરીકે પાછી ખેંચો",
+    "withdrawViaRoute": "{route} મારફતે",
     "recommended": "ભલામણ કરેલ",
     "fee": "ફી",
     "fees": "ફી",

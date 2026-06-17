@@ -852,6 +852,7 @@
     "convertTo": "转换成",
     "depositAs": "存款为",
     "withdrawAs": "提款方式",
+    "withdrawViaRoute": "通过 {route}",
     "recommended": "受到推崇的",
     "fee": "费用",
     "fees": "费用",

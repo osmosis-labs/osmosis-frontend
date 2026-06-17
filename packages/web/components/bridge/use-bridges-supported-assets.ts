@@ -14,11 +14,17 @@ const supportedAssetsBridges: Bridge[] = [
   "Squid",
   "IBC",
   "Nomic",
+  // Wormhole is ordered ahead of Int3face so that the in-alloy SOL.wh route is
+  // recommended (index 0) for SOL withdrawals over the not-in-alloy SOL.int3
+  // route. Note this makes the default SOL withdraw an external-url route
+  // (Wormhole returns ["external-url"]) rather than Int3face's in-app quote.
+  // The withdraw dropdown scopes supported assets to the selected asset family,
+  // so this reorder only affects the SOL withdraw row ordering.
+  "Wormhole",
   "Int3face",
-  // include nomic, nitro, wormhole, and penumbra for suggesting BTC + SOL + TRX assets and chains
+  // include nomic, nitro, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
-  "Wormhole",
   "Nitro",
   "Penumbra",
 ];

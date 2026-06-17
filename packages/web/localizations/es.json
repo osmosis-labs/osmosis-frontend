@@ -852,6 +852,7 @@
     "convertTo": "Convertir a",
     "depositAs": "Depositar como",
     "withdrawAs": "Retirarse como",
+    "withdrawViaRoute": "vía {route}",
     "recommended": "Recomendado",
     "fee": "tarifa",
     "fees": "honorarios",

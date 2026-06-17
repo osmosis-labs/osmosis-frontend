@@ -852,6 +852,7 @@
     "convertTo": "Schimba in",
     "depositAs": "Depozit ca",
     "withdrawAs": "Retrage ca",
+    "withdrawViaRoute": "prin {route}",
     "recommended": "Recomandat",
     "fee": "taxa",
     "fees": "taxe",

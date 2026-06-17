@@ -852,6 +852,7 @@
     "convertTo": "Перевести в",
     "depositAs": "Депозит как",
     "withdrawAs": "Вывести как",
+    "withdrawViaRoute": "через {route}",
     "recommended": "рекомендуемые",
     "fee": "платеж",
     "fees": "сборы",

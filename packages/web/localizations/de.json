@@ -852,6 +852,7 @@
     "convertTo": "Konvertieren zu",
     "depositAs": "Einzahlung als",
     "withdrawAs": "Abheben als",
+    "withdrawViaRoute": "über {route}",
     "recommended": "Empfohlen",
     "fee": "Gebühr",
     "fees": "Gebühren",

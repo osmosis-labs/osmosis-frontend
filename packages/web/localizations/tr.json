@@ -852,6 +852,7 @@
     "convertTo": "E dönüşmek",
     "depositAs": "Şu şekilde yatırın:",
     "withdrawAs": "Olarak geri çekil",
+    "withdrawViaRoute": "{route} ile",
     "recommended": "Tavsiye edilen",
     "fee": "ücret",
     "fees": "ücretler",
