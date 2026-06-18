@@ -5,12 +5,24 @@ import { LRUCache } from "lru-cache";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
 import { queryUpcomingAssets } from "../../github";
 
+/** An asset is considered "new" for this many ms after its listing date. */
+export const NEW_ASSET_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** Parses a raw listing date to epoch ms, or undefined if missing/unparseable. */
+function parseListingDate(listingDate: string | undefined): number | undefined {
+  if (!listingDate) return undefined;
+  const ms = new Date(listingDate).getTime();
+  return Number.isNaN(ms) ? undefined : ms;
+}
+
 /** Filters an asset for whether it is included in the given list of categories. */
 export function isAssetInCategories(asset: Asset, categories: string[]) {
   return categories.some((category) => {
-    // "new" category is an asset with a listing date.
+    // "new" category is an asset listed within the last NEW_ASSET_WINDOW_MS.
     if (category === "new") {
-      return Boolean(asset.listingDate);
+      const listed = parseListingDate(asset.listingDate);
+      if (listed === undefined) return false;
+      return Date.now() - listed <= NEW_ASSET_WINDOW_MS;
     }
 
     return asset.categories.includes(category);
@@ -26,11 +38,12 @@ export function getAssetListingDate({
 }): Date | undefined {
   const assets = assetLists.flatMap(({ assets }) => assets);
 
-  const date = assets.find(
-    (asset) => asset.coinMinimalDenom === coinMinimalDenom
-  )?.listingDate;
+  const listed = parseListingDate(
+    assets.find((asset) => asset.coinMinimalDenom === coinMinimalDenom)
+      ?.listingDate
+  );
 
-  if (date) return new Date(date);
+  if (listed !== undefined) return new Date(listed);
 }
 
 const upcomingAssetsCache = new LRUCache<string, CacheEntry>(
