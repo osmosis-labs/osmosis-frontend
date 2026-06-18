@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Taproot 地址不支持提现",
   "wormhole": {
     "deprecationTitle": "Wormhole 支持正在被弃用",
-    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。"
+    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。",
+    "bridgeStepTitle": "通过 Wormhole 跨链",
+    "refreshBalance": "刷新余额",
+    "convertAlloy": {
+      "stepTitle": "将 {symbol} 转换为 {symbol}.wh",
+      "description": "您持有 {balance} {symbol} 作为合金资产。Wormhole 跨链的是 {symbol}.wh 变体，请先转换，然后在下方跨链。"
+    }
   }
 }

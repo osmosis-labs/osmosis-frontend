@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Adresy Taproot nie są obsługiwane w przypadku wypłat",
   "wormhole": {
     "deprecationTitle": "Wsparcie dla Wormhole jest wycofywane",
-    "deprecationSubtitle": "Nie zalecamy przesyłania dodatkowych aktywów do Osmosis za pośrednictwem Wormhole. Ta strona jest dostępna, aby pomóc Ci wypłacić istniejące aktywa Wormhole z Osmosis."
+    "deprecationSubtitle": "Nie zalecamy przesyłania dodatkowych aktywów do Osmosis za pośrednictwem Wormhole. Ta strona jest dostępna, aby pomóc Ci wypłacić istniejące aktywa Wormhole z Osmosis.",
+    "bridgeStepTitle": "Zmostkuj przez Wormhole",
+    "refreshBalance": "Odśwież saldo",
+    "convertAlloy": {
+      "stepTitle": "Konwertuj {symbol} na {symbol}.wh",
+      "description": "Posiadasz {balance} {symbol} jako aktywo stopowe. Wormhole mostkuje wariant {symbol}.wh, więc najpierw skonwertuj, a potem zmostkuj poniżej."
+    }
   }
 }

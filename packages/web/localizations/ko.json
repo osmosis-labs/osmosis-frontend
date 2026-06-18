@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Taproot 주소는 출금에 지원되지 않습니다.",
   "wormhole": {
     "deprecationTitle": "Wormhole 지원이 중단될 예정입니다",
-    "deprecationSubtitle": "Wormhole을 통해 Osmosis로 추가 자산을 브리징하는 것을 권장하지 않습니다. 이 페이지는 Osmosis에서 기존 Wormhole 브리징 자산을 인출하는 데 도움을 드리기 위해 제공됩니다."
+    "deprecationSubtitle": "Wormhole을 통해 Osmosis로 추가 자산을 브리징하는 것을 권장하지 않습니다. 이 페이지는 Osmosis에서 기존 Wormhole 브리징 자산을 인출하는 데 도움을 드리기 위해 제공됩니다.",
+    "bridgeStepTitle": "Wormhole로 브리지",
+    "refreshBalance": "잔액 새로고침",
+    "convertAlloy": {
+      "stepTitle": "{symbol}을 {symbol}.wh로 변환",
+      "description": "합금 자산으로 {balance} {symbol}을 보유하고 있습니다. Wormhole은 {symbol}.wh 변형을 브리지하므로 먼저 변환한 다음 아래에서 브리지하세요."
+    }
   }
 }

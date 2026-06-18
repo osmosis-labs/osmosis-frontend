@@ -344,3 +344,13 @@
 .breakspaces {
   white-space-collapse: break-spaces;
 }
+
+/*
+ * Trim the embedded Wormhole Connect widget's content margin so it sits flush
+ * inside our bridge step box. The widget is a third-party CDN bundle rendered
+ * into #wormhole-connect with hashed MUI/emotion class names, so we match the
+ * stable `-appContent` suffix rather than the changeable hash prefix.
+ */
+#wormhole-connect [class*="-appContent"] {
+  margin: 0 !important;
+}

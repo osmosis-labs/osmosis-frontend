@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Las direcciones Taproot no son compatibles con los retiros",
   "wormhole": {
     "deprecationTitle": "La compatibilidad con Wormhole se está descontinuando",
-    "deprecationSubtitle": "No recomendamos enviar activos adicionales a Osmosis a través de Wormhole. Esta página está disponible para ayudarle a retirar activos existentes bridgeados mediante Wormhole de Osmosis."
+    "deprecationSubtitle": "No recomendamos enviar activos adicionales a Osmosis a través de Wormhole. Esta página está disponible para ayudarle a retirar activos existentes bridgeados mediante Wormhole de Osmosis.",
+    "bridgeStepTitle": "Usar el puente de Wormhole",
+    "refreshBalance": "Actualizar saldo",
+    "convertAlloy": {
+      "stepTitle": "Convertir {symbol} a {symbol}.wh",
+      "description": "Tienes {balance} {symbol} como activo aleado. Wormhole usa el puente con la variante {symbol}.wh, así que convierte primero y luego usa el puente abajo."
+    }
   }
 }

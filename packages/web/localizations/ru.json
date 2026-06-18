@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Адреса Taproot не поддерживаются для вывода средств.",
   "wormhole": {
     "deprecationTitle": "Поддержка Wormhole прекращается",
-    "deprecationSubtitle": "Мы не рекомендуем переводить дополнительные активы в Osmosis через Wormhole. Эта страница доступна для того, чтобы помочь вам вывести существующие активы, переведённые через Wormhole, из Osmosis."
+    "deprecationSubtitle": "Мы не рекомендуем переводить дополнительные активы в Osmosis через Wormhole. Эта страница доступна для того, чтобы помочь вам вывести существующие активы, переведённые через Wormhole, из Osmosis.",
+    "bridgeStepTitle": "Бридж через Wormhole",
+    "refreshBalance": "Обновить баланс",
+    "convertAlloy": {
+      "stepTitle": "Конвертировать {symbol} в {symbol}.wh",
+      "description": "У вас есть {balance} {symbol} в виде alloyed-актива. Wormhole делает бридж варианта {symbol}.wh, поэтому сначала конвертируйте, затем используйте бридж ниже."
+    }
   }
 }

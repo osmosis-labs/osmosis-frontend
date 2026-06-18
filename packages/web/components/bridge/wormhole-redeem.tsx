@@ -1231,9 +1231,9 @@ export const WormholeRedeem: FunctionComponent = () => {
   ].includes(status);
 
   return (
-    <div className="mx-auto mt-6 max-w-2xl px-4 pb-40">
-      <div className="rounded-2xl border border-osmoverse-600 bg-osmoverse-800 p-6">
-        <h2 className="mb-4 text-lg font-semibold text-white-full">
+    <div>
+      <div className="rounded-3xl border border-osmoverse-700 bg-osmoverse-850 p-5">
+        <h2 className="subtitle1 mb-1 text-white-full">
           Redeem a stuck Wormhole transfer
         </h2>
         <p className="mb-4 text-sm text-osmoverse-300">

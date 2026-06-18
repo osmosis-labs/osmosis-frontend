@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Taproot adresleri çekimler için desteklenmiyor",
   "wormhole": {
     "deprecationTitle": "Wormhole desteği kaldırılıyor",
-    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir."
+    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir.",
+    "bridgeStepTitle": "Wormhole ile köprüle",
+    "refreshBalance": "Bakiyeyi yenile",
+    "convertAlloy": {
+      "stepTitle": "{symbol} ı {symbol}.wh ye dönüştür",
+      "description": "Alaşımlı varlık olarak {balance} {symbol} tutuyorsunuz. Wormhole {symbol}.wh varyantını köprüler, bu yüzden önce dönüştürün, sonra aşağıda köprüleyin."
+    }
   }
 }

@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "निकासी के लिए टैपरूट पते समर्थित नहीं हैं",
   "wormhole": {
     "deprecationTitle": "Wormhole सहायता बंद की जा रही है",
-    "deprecationSubtitle": "हम Wormhole के माध्यम से Osmosis में अतिरिक्त संपत्ति ब्रिज करने की सिफारिश नहीं करते हैं। यह पृष्ठ आपको Osmosis से मौजूदा Wormhole-ब्रिज की गई संपत्ति निकालने में सहायता के लिए उपलब्ध है।"
+    "deprecationSubtitle": "हम Wormhole के माध्यम से Osmosis में अतिरिक्त संपत्ति ब्रिज करने की सिफारिश नहीं करते हैं। यह पृष्ठ आपको Osmosis से मौजूदा Wormhole-ब्रिज की गई संपत्ति निकालने में सहायता के लिए उपलब्ध है।",
+    "bridgeStepTitle": "Wormhole के माध्यम से ब्रिज करें",
+    "refreshBalance": "बैलेंस रिफ़्रेश करें",
+    "convertAlloy": {
+      "stepTitle": "{symbol} को {symbol}.wh में बदलें",
+      "description": "आपके पास एलॉयड एसेट के रूप में {balance} {symbol} है। Wormhole {symbol}.wh वैरिएंट को ब्रिज करता है, इसलिए पहले कन्वर्ट करें, फिर नीचे ब्रिज करें।"
+    }
   }
 }

@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "آدرس‌های Taproot برای برداشت وجه پشتیبانی نمی‌شوند.",
   "wormhole": {
     "deprecationTitle": "پشتیبانی Wormhole در حال منسوخ شدن است",
-    "deprecationSubtitle": "ما توصیه نمی‌کنیم دارایی‌های اضافی را از طریق Wormhole به Osmosis منتقل کنید. این صفحه برای کمک به شما در خروج دارایی‌های موجود Wormhole از Osmosis در دسترس است."
+    "deprecationSubtitle": "ما توصیه نمی‌کنیم دارایی‌های اضافی را از طریق Wormhole به Osmosis منتقل کنید. این صفحه برای کمک به شما در خروج دارایی‌های موجود Wormhole از Osmosis در دسترس است.",
+    "bridgeStepTitle": "پل زدن از طریق Wormhole",
+    "refreshBalance": "به‌روزرسانی موجودی",
+    "convertAlloy": {
+      "stepTitle": "تبدیل {symbol} به {symbol}.wh",
+      "description": "شما {balance} {symbol} به صورت دارایی آلویدشده دارید. Wormhole واریانت {symbol}.wh را پل می‌زند، پس ابتدا تبدیل کنید و سپس در پایین پل بزنید."
+    }
   }
 }

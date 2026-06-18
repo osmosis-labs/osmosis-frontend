@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "ઉપાડ માટે ટેપરૂટ સરનામાંઓ સમર્થિત નથી.",
   "wormhole": {
     "deprecationTitle": "Wormhole સપોર્ટ બંધ કરવામાં આવી રહ્યો છે",
-    "deprecationSubtitle": "અમે Wormhole મારફતે Osmosis માં વધારાની સંપત્તિ બ્રિજ કરવાની ભલામણ કરતા નથી. આ પૃષ્ઠ Osmosis માંથી હાલની Wormhole-બ્રિજ કરેલી સંપત્તિ ઉપાડવામાં તમને સહાય કરવા માટે ઉપલબ્ધ છે."
+    "deprecationSubtitle": "અમે Wormhole મારફતે Osmosis માં વધારાની સંપત્તિ બ્રિજ કરવાની ભલામણ કરતા નથી. આ પૃષ્ઠ Osmosis માંથી હાલની Wormhole-બ્રિજ કરેલી સંપત્તિ ઉપાડવામાં તમને સહાય કરવા માટે ઉપલબ્ધ છે.",
+    "bridgeStepTitle": "Wormhole દ્વારા બ્રિજ કરો",
+    "refreshBalance": "બેલેન્સ રિફ્રેશ કરો",
+    "convertAlloy": {
+      "stepTitle": "{symbol} ને {symbol}.wh માં કન્વર્ટ કરો",
+      "description": "તમારી પાસે {balance} {symbol} એલોય્ડ એસેટ તરીકે છે. Wormhole {symbol}.wh વેરિઅન્ટ બ્રિજ કરે છે, તેથી પહેલા કન્વર્ટ કરો, પછી નીચે બ્રિજ કરો."
+    }
   }
 }

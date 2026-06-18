@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Taproot-Adressen werden für Abhebungen nicht unterstützt",
   "wormhole": {
     "deprecationTitle": "Wormhole-Unterstützung wird eingestellt",
-    "deprecationSubtitle": "Wir empfehlen nicht, zusätzliche Assets über Wormhole zu Osmosis zu bridgen. Diese Seite hilft Ihnen, bestehende über Wormhole gebridgte Assets von Osmosis abzuheben."
+    "deprecationSubtitle": "Wir empfehlen nicht, zusätzliche Assets über Wormhole zu Osmosis zu bridgen. Diese Seite hilft Ihnen, bestehende über Wormhole gebridgte Assets von Osmosis abzuheben.",
+    "bridgeStepTitle": "Über Wormhole bridgen",
+    "refreshBalance": "Guthaben aktualisieren",
+    "convertAlloy": {
+      "stepTitle": "{symbol} in {symbol}.wh umwandeln",
+      "description": "Du hältst {balance} {symbol} als alloyierten Vermögenswert. Wormhole bridgt die {symbol}.wh-Variante, also wandle zuerst um und bridge dann unten."
+    }
   }
 }

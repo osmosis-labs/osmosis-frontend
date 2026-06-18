@@ -1400,6 +1400,12 @@
   "taprootAddressNotSupported": "Adresele Taproot nu sunt acceptate pentru retrageri",
   "wormhole": {
     "deprecationTitle": "Suportul pentru Wormhole este în curs de retragere",
-    "deprecationSubtitle": "Nu recomandăm transferul de active suplimentare către Osmosis prin Wormhole. Această pagină este disponibilă pentru a vă ajuta să retrageți activele existente bridge-uite prin Wormhole din Osmosis."
+    "deprecationSubtitle": "Nu recomandăm transferul de active suplimentare către Osmosis prin Wormhole. Această pagină este disponibilă pentru a vă ajuta să retrageți activele existente bridge-uite prin Wormhole din Osmosis.",
+    "bridgeStepTitle": "Fă puntea prin Wormhole",
+    "refreshBalance": "Reîmprospătează soldul",
+    "convertAlloy": {
+      "stepTitle": "Convertește {symbol} în {symbol}.wh",
+      "description": "Deții {balance} {symbol} ca activ aliat. Wormhole face puntea variantei {symbol}.wh, așa că convertește mai întâi, apoi fă puntea mai jos."
+    }
   }
 }

@@ -16,6 +16,14 @@ const WormholeRedeem = dynamic(
   { ssr: false }
 );
 
+const WormholeAlloyConvert = dynamic(
+  () =>
+    import("~/components/bridge/wormhole-alloy-convert").then(
+      (mod) => mod.WormholeAlloyConvert
+    ),
+  { ssr: false }
+);
+
 type PaletteColor = {
   50: string;
   100: string;
@@ -85,7 +93,9 @@ type WormholeConnectPartialTheme = {
 const customTheme: WormholeConnectPartialTheme = {
   mode: "dark",
   background: {
-    default: theme.colors.osmoverse["900"],
+    // Match the bridge step box so the widget blends in rather than reading as
+    // a nested card-within-a-box.
+    default: theme.colors.osmoverse["850"],
   },
   primary: {
     "50": theme.colors.wosmongton["100"],
@@ -254,6 +264,11 @@ const Wormhole: FunctionComponent = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  // The Connect widget mounts once on script execution and exposes no balance
+  // refresh API, so after the user converts their alloy to the `.wh` variant it
+  // keeps showing the stale balance. Bumping this re-mounts the widget div and
+  // re-injects (cache-busted) the bundle so it re-reads balances from scratch.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
 
@@ -384,15 +399,44 @@ const Wormhole: FunctionComponent = () => {
     bridgeDefaults.toNetwork = toNetwork as ChainName;
   }
   if (token) {
-    bridgeDefaults.token = token;
+    // Wormhole Connect keys native Solana SOL as "SOL" (no Osmosis foreign
+    // asset) and the Osmosis-side wrapped form as "WSOL" (the SOL.wh denom). An
+    // Osmosis→Solana withdrawal therefore has to use "WSOL" or Connect can't
+    // resolve the source asset and won't prefill the token. The asset list
+    // hands off with token=SOL, so translate it here for that direction.
+    bridgeDefaults.token =
+      token === "SOL" && bridgeDefaults.fromNetwork === "osmosis"
+        ? "WSOL"
+        : token;
   }
   config.bridgeDefaults = bridgeDefaults;
 
   useEffect(() => {
+    // The Connect bundle reads `data-config` once on init and never re-reads it.
+    // Wait for the router to be ready so `config.bridgeDefaults` (built from the
+    // from/to/token query params) is populated before the script loads —
+    // otherwise the widget initialises with empty defaults and the deep-linked
+    // direction/token are lost.
+    if (!router.isReady) return;
+
+    // Each reload needs the spinner back until the re-injected bundle re-mounts.
+    setScriptLoaded(false);
+
+    // Removing the <script> node on cleanup does not abort an in-flight load, so
+    // a superseded reload's onload could still fire and flip scriptLoaded for a
+    // bundle that is no longer mounted. Guard the callbacks against a stale run.
+    let cancelled = false;
+
     const script = document.createElement("script");
     script.type = "module";
-    script.src =
-      "https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.21/dist/main.js";
+    // The bundle mounts once on execution and finds #wormhole-connect by id.
+    // To force a re-mount (after a convert) we re-key the container div AND
+    // re-run the module — module scripts are cached by resolved URL, so a
+    // changing query string is what makes the browser execute it again. The SRI
+    // hash is content-addressed (unpkg serves identical bytes for the
+    // query-string variants), so it still matches across the cache-busted URLs.
+    const cacheBust = reloadKey > 0 ? `?reload=${reloadKey}` : "";
+    script.src = `https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.21/dist/main.js${cacheBust}`;
     script.defer = true;
     /**
      * On version bumps make sure to update the hash.
@@ -401,17 +445,26 @@ const Wormhole: FunctionComponent = () => {
     script.integrity =
       "sha384-zGJnnw0Y8umaoMLkKqntkswRCTpYwMyu960bF3J77xySwmusndSEX9d4xUN/JXCl";
     script.crossOrigin = "anonymous";
-    script.onload = () => setScriptLoaded(true);
+    script.onload = () => {
+      if (!cancelled) setScriptLoaded(true);
+    };
+    // A failed integrity check or network error would otherwise leave the
+    // spinner up and the refresh button disabled forever with no recovery.
+    // Surface the bridge again so the user can retry via the refresh button.
+    script.onerror = () => {
+      if (!cancelled) setScriptLoaded(true);
+    };
     document.body.appendChild(script);
 
     return () => {
+      cancelled = true;
       document.body.removeChild(script);
     };
-  }, []);
+  }, [router.isReady, reloadKey]);
 
   return (
     <div className="bg-osmoverse-900">
-      <div className="mx-auto max-w-2xl px-4 pt-8">
+      <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pt-8 pb-16">
         <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
           <Icon
             id="alert-triangle"
@@ -426,19 +479,66 @@ const Wormhole: FunctionComponent = () => {
             </p>
           </div>
         </div>
-      </div>
-      {!scriptLoaded && (
-        <div className="flex h-screen w-full items-center justify-center">
-          <Spinner />
+
+        {/* Step 1 (optional): convert the alloy → its Wormhole `.wh` variant
+         * (allSOL→SOL.wh, allSUI→SUI.wh, allAPT→APT.wh) before bridging. The
+         * component self-gates on the destination + whether the user holds the
+         * alloy. */}
+        <WormholeAlloyConvert toNetwork={toNetwork} token={token} />
+
+        {/* Bridge step: the embedded Wormhole Connect widget. The widget brings
+         * its own generous internal padding and now shares the box background,
+         * so the container is pulled tight with negative margins to absorb the
+         * widget's built-in whitespace. */}
+        <div className="flex flex-col gap-1 rounded-3xl border border-osmoverse-700 bg-osmoverse-850 px-5 pt-5 pb-1">
+          <div className="flex items-center justify-between">
+            <h2 className="subtitle1 text-white-full">
+              {t("wormhole.bridgeStepTitle")}
+            </h2>
+            {/* The widget reads balances once on mount with no refresh API, so
+             * after a convert it can show a stale balance. This re-mounts and
+             * re-injects the bundle to re-read it. */}
+            <button
+              type="button"
+              onClick={() => {
+                // Show the spinner on this same render — without it the re-keyed
+                // (empty) container would flash visible for a frame before the
+                // effect resets scriptLoaded.
+                setScriptLoaded(false);
+                setReloadKey((k) => k + 1);
+              }}
+              disabled={!scriptLoaded}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-osmoverse-300 transition-colors hover:bg-osmoverse-800 hover:text-white-full disabled:opacity-50"
+            >
+              <Icon id="refresh-ccw" className="h-4 w-4" />
+              <span className="caption">{t("wormhole.refreshBalance")}</span>
+            </button>
+          </div>
+          {(!scriptLoaded || !router.isReady) && (
+            <div className="flex w-full items-center justify-center py-16">
+              <Spinner />
+            </div>
+          )}
+          {/* Internal widget spacing is tightened via #wormhole-connect rules
+           * in globals.css (its DOM is a third-party CDN bundle). The key forces
+           * a fresh container on reload so the re-injected bundle mounts into an
+           * empty element rather than one holding a stale React root. */}
+          {router.isReady && (
+            <div
+              key={reloadKey}
+              id="wormhole-connect"
+              data-config={JSON.stringify(config)}
+              data-theme={JSON.stringify(customTheme)}
+              style={{ display: scriptLoaded ? "block" : "none" }}
+            ></div>
+          )}
         </div>
-      )}
-      <div
-        id="wormhole-connect"
-        data-config={JSON.stringify(config)}
-        data-theme={JSON.stringify(customTheme)}
-        style={{ display: scriptLoaded ? "block" : "none" }}
-      ></div>
-      <WormholeRedeem />
+
+        {/* Optional recovery step for stuck/unredeemed transfers — a sibling
+         * box in the step column. */}
+        <WormholeRedeem />
+      </div>
+
       {/**
        * On version bumps make sure to update the hash.
        * @see https://www.srihash.org/ - to compute it
