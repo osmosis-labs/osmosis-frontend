@@ -787,26 +787,17 @@ export class TradePage extends BasePage {
 
     // Guard against a stale "Transaction Successful" toast from a previous trade
     // (success toasts auto-close after ~7s): if one is already visible, wait for
-    // it to clear before arming the visible-wait, otherwise the race could
-    // resolve instantly on the old toast. Bounded + non-throwing on the normal
-    // path (no toast present → proceeds at once). If the stale toast never
-    // clears, we reject this branch rather than let the still-visible old toast
-    // be mistaken for the in-flight trade's confirmation — only the REST poll
-    // may confirm in that case.
+    // it to *hide* and then for a fresh toast to become visible, so we confirm
+    // on THIS trade's toast rather than resolving instantly on the old one —
+    // and, since the confirm flow runs concurrently, without discarding the
+    // in-flight trade's toast either. On the normal path (no toast present) we
+    // proceed straight to the visible-wait. If the stale toast never clears
+    // within the bound, the hidden-wait throws and this branch defers to the
+    // REST poll (a still-visible toast can't be disambiguated from text alone).
     const toastPromise = (async () => {
       const stale = await this.trxSuccessful.isVisible().catch(() => false);
       if (stale) {
-        await this.trxSuccessful
-          .waitFor({ state: "hidden", timeout: 8_000 })
-          .catch(() => {});
-        const stillStale = await this.trxSuccessful
-          .isVisible()
-          .catch(() => false);
-        if (stillStale) {
-          throw new Error(
-            "Stale success toast did not clear; deferring to REST poll."
-          );
-        }
+        await this.trxSuccessful.waitFor({ state: "hidden", timeout: 8_000 });
       }
       await this.trxSuccessful.waitFor({ state: "visible", timeout });
       return "WebSocket toast" as const;
@@ -818,6 +809,14 @@ export class TradePage extends BasePage {
     // a shared deadline could otherwise starve the REST fallback of time to
     // observe on-chain inclusion even when the tx actually succeeded.
     const restPromise = this.captureBroadcastHash(timeout).then((hash) => {
+      // If the toast already won and aborted this branch, don't mutate shared
+      // state from the losing branch: a late-resolving capture (e.g. from a
+      // back-to-back trade) could otherwise clobber `lastTxHash`.
+      if (controller.signal.aborted) {
+        throw new Error(
+          "REST confirmation branch aborted before hash capture."
+        );
+      }
       this.lastTxHash = hash;
       console.log(`Captured broadcast tx hash: ${hash}`);
       return pollTxOnChain(hash, {

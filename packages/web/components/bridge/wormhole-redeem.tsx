@@ -552,12 +552,12 @@ export async function fetchGovernorDelay(
 
   const chain = operation.emitterChain;
   const emitter = operation.emitterAddress.hex;
-  // Normalize once (strip any `0x` prefix + lowercase). The enqueued-list
+  // Normalize once (strip any `0x`/`0X` prefix + lowercase). The enqueued-list
   // rows are normalized the same way, so a `0x`-prefixed or mixed-case
   // emitter still matches and `releaseTime` populates. We also use this
   // form for the `is_vaa_enqueued` request path to keep both sides
   // consistent.
-  const emitterNormalized = emitter.replace(/^0x/, "").toLowerCase();
+  const emitterNormalized = emitter.replace(/^0x/i, "").toLowerCase();
   const sequence = operation.sequence;
   const usdAmount = Number(operation.data?.usdAmount);
   if (!Number.isFinite(usdAmount)) {
@@ -591,7 +591,7 @@ export async function fetchGovernorDelay(
           (v) =>
             String(v.sequence) === String(sequence) &&
             (!v.emitterAddress ||
-              v.emitterAddress.replace(/^0x/, "").toLowerCase() ===
+              v.emitterAddress.replace(/^0x/i, "").toLowerCase() ===
                 emitterNormalized)
         );
         if (row?.releaseTime && Number.isFinite(row.releaseTime)) {
