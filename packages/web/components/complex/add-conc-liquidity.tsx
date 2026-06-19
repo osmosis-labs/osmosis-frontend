@@ -175,6 +175,26 @@ const AddConcLiqView: FunctionComponent<
       chartConfig.setPriceRange(rangeWithCurrencyDecimals);
     }, [chartConfig, rangeWithCurrencyDecimals]);
 
+    // Hoisted out of the JSX below: these were previously declared inside the
+    // `singleAssetMode ? … : …` ternary's two-asset branch, so toggling
+    // single-asset mode changed the number of hooks this component called and
+    // crashed the render ("rendered fewer hooks than expected"). They must run
+    // unconditionally on every render regardless of mode.
+    const onUpdateBaseDeposit = useCallback(
+      (amount: string) => {
+        setAnchorAsset("base");
+        baseDepositAmountIn.setAmount(amount);
+      },
+      [baseDepositAmountIn, setAnchorAsset]
+    );
+    const onUpdateQuoteDeposit = useCallback(
+      (amount: string) => {
+        setAnchorAsset("quote");
+        quoteDepositAmountIn.setAmount(amount);
+      },
+      [quoteDepositAmountIn, setAnchorAsset]
+    );
+
     return (
       <>
         <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
@@ -394,13 +414,7 @@ const AddConcLiqView: FunctionComponent<
                 currency={pool?.reserveCoins[0]?.currency}
                 className="md:!px-4 md:!py-4"
                 priceInputClass=" md:!w-full"
-                onUpdate={useCallback(
-                  (amount) => {
-                    setAnchorAsset("base");
-                    baseDepositAmountIn.setAmount(amount);
-                  },
-                  [baseDepositAmountIn, setAnchorAsset]
-                )}
+                onUpdate={onUpdateBaseDeposit}
                 onMax={setBaseDepositAmountMax}
                 currentValue={baseDepositAmountIn.amount}
                 outOfRange={quoteDepositOnly}
@@ -410,13 +424,7 @@ const AddConcLiqView: FunctionComponent<
                 currency={pool?.reserveCoins[1]?.currency}
                 className="md:!px-4 md:!py-4"
                 priceInputClass=" md:!w-full"
-                onUpdate={useCallback(
-                  (amount) => {
-                    setAnchorAsset("quote");
-                    quoteDepositAmountIn.setAmount(amount);
-                  },
-                  [quoteDepositAmountIn, setAnchorAsset]
-                )}
+                onUpdate={onUpdateQuoteDeposit}
                 onMax={setQuoteDepositAmountMax}
                 currentValue={quoteDepositAmountIn.amount}
                 outOfRange={baseDepositOnly}
