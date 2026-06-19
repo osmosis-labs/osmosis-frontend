@@ -1,5 +1,12 @@
 import type { Asset } from "@osmosis-labs/types";
 
+// Sibling: `external-url-constituents.ts` aggregates the external bridge links
+// of MANY constituent variants as fallbacks. This file is the other half: it
+// picks ONE variant to pre-convert the alloy into before a third-party
+// hand-off. Both feed `getExternalUrls` and both expand the same
+// `variantGroupKey` family; that shared expansion is slated to collapse into
+// the unified resolver.
+
 /** The variant a third-party external-interface site recognises in place of the
  *  alloy the user holds. */
 export interface ExternalUrlConvertVariant {

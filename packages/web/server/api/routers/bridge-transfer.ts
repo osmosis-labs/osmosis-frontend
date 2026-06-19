@@ -44,6 +44,7 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+import { getAlloyConstituentExternalInterfaceMethods } from "~/server/api/routers/bridge/external-url-constituents";
 import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -629,15 +630,40 @@ export const bridgeTransferRouter = createTRPCRouter({
         (asset) => asset.coinMinimalDenom === input.toAsset?.address
       );
 
+      // When the user transfers an alloy (the from-asset on a withdraw, the
+      // to-asset on a deposit), aggregate the `external_interface` methods of
+      // the alloy's constituent variants too, not just the alloy's own. An
+      // alloy such as allBTC carries no transfer methods of its own, so without
+      // this a down quote route leaves no external fallback even though the
+      // constituents carry usable bridge URLs. Constituents whose active
+      // direction is kill-switched are skipped inside the helper so dead links
+      // are not surfaced. Dedup by provider name / host is handled below, so
+      // constituent methods that collide with the alloy's own (e.g. Sologenic
+      // on both allXRP and XRP.coreum) are collapsed.
+      const constituentExternalMethods = [
+        ...getAlloyConstituentExternalInterfaceMethods({
+          alloy: assetListFromAsset,
+          assets: allAssetListAssets,
+          direction: "withdraw",
+        }),
+        ...getAlloyConstituentExternalInterfaceMethods({
+          alloy: assetListToAsset,
+          assets: allAssetListAssets,
+          direction: "deposit",
+        }),
+      ];
+
       const externalTransferMethods = (
-        assetListFromAsset?.transferMethods.filter(
+        (assetListFromAsset?.transferMethods.filter(
           ({ type }) => type === "external_interface"
-        ) ?? []
-      ).concat(
-        assetListToAsset?.transferMethods.filter(
-          ({ type }) => type === "external_interface"
-        ) ?? []
-      ) as ExternalInterfaceBridgeTransferMethod[];
+        ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
+      )
+        .concat(
+          (assetListToAsset?.transferMethods.filter(
+            ({ type }) => type === "external_interface"
+          ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
+        )
+        .concat(constituentExternalMethods);
 
       externalTransferMethods.forEach(
         ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
