@@ -57,8 +57,13 @@ export const AddLiquidityModal: FunctionComponent<
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
     useState(false);
 
-  const { config: addConliqConfig, addLiquidity: addConLiquidity } =
-    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+  const {
+    config: addConliqConfig,
+    addLiquidity: addConLiquidity,
+    zapInLiquidity,
+    zapQuote,
+    zapSlippageConfig,
+  } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
@@ -79,10 +84,26 @@ export const AddLiquidityModal: FunctionComponent<
 
   const config = isConcentrated ? addConliqConfig : addLiquidityConfig;
 
+  // In single-asset mode, block submission until the swap quote is ready
+  // (unless the range is one-sided and no swap is needed).
+  const zapNotReady =
+    isConcentrated &&
+    addConliqConfig.singleAssetMode &&
+    Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
+    (zapQuote.isLoading || !zapQuote.quote);
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: config.error !== undefined || isSendingMsg,
+      disabled: config.error !== undefined || isSendingMsg || zapNotReady,
       onClick: () => {
+        // Single-asset zap-in (CL only): swap + create position in one tx.
+        // Superfluid staking is full-range two-asset only, so it never applies
+        // here.
+        if (isConcentrated && addConliqConfig.singleAssetMode) {
+          zapInLiquidity().then(() => props.onRequestClose());
+          return;
+        }
+
         // New CL position: move to next step if superfluid validator selection is needed
         if (isConcentrated && addConliqConfig.shouldBeSuperfluidStaked) {
           setShowSuperfluidValidatorModal(true);
@@ -237,6 +258,8 @@ export const AddLiquidityModal: FunctionComponent<
         >
           <AddConcLiquidity
             addLiquidityConfig={addConliqConfig}
+            zapQuote={zapQuote}
+            zapSlippageConfig={zapSlippageConfig}
             actionButton={accountActionButton}
             onRequestClose={props.onRequestClose}
           />
