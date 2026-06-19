@@ -38,15 +38,13 @@
     "singleAsset": {
       "toggleSingle": "Single asset",
       "toggleTwo": "Two assets",
-      "assetToDeposit": "Asset to deposit",
       "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} will be swapped to {outDenom} to match the position ratio.",
       "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
       "estimatedReceived": "Estimated {denom} received",
       "priceImpact": "Price impact",
       "swapFee": "Swap fee",
       "maxSlippage": "Max slippage",
-      "route": "Route",
-      "atomicNote": "One transaction, one fee, two operations — the swap and the deposit settle together. If either can't complete within your slippage tolerance, the whole transaction is cancelled and your funds stay in your wallet.",
+      "atomicNote": "One transaction, one fee, two operations. The swap and the deposit settle together; if either can't complete within your slippage tolerance, the whole transaction is cancelled and your funds stay in your wallet.",
       "quoteLoading": "Finding the best swap…"
     }
   },
