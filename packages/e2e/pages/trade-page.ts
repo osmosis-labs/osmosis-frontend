@@ -89,7 +89,7 @@ export class TradePage extends BasePage {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         if (attempt > 0) {
-          console.log(`🔄 Retry goto attempt ${attempt}/${retries}...`);
+          console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
         // Wait for the assets.json *response* (not just the request being
         // issued) and assert it loaded successfully, so a stalled/failed load
@@ -110,7 +110,7 @@ export class TradePage extends BasePage {
       } catch (error: any) {
         lastError = error;
         console.warn(
-          `⚠️ goto attempt ${attempt + 1}/${retries + 1} failed: ${
+          `WARN goto attempt ${attempt + 1}/${retries + 1} failed: ${
             error?.message ?? error
           }`
         );
@@ -119,7 +119,14 @@ export class TradePage extends BasePage {
         }
       }
     }
-    throw lastError;
+    // Always rethrow an Error (never a bare non-Error value) so the stack and
+    // context survive into CI logs.
+    throw new Error(
+      `goto failed after ${retries + 1} attempts: ${
+        lastError instanceof Error ? lastError.message : String(lastError)
+      }`,
+      { cause: lastError }
+    );
   }
 
   async gotoOrdersHistory(timeout = 1) {
@@ -777,47 +784,65 @@ export class TradePage extends BasePage {
     // Clear any hash from a previous trade so getTransactionUrl can't reuse it.
     this.lastTxHash = undefined;
     const controller = new AbortController();
-    // Single overall budget shared by the hash-capture + REST-poll phases, so
-    // this can't run ~2x `timeout` (capture up to `timeout`, then poll for
-    // another full `timeout`).
-    const deadline = Date.now() + timeout;
 
     // Guard against a stale "Transaction Successful" toast from a previous trade
     // (success toasts auto-close after ~7s): if one is already visible, wait for
     // it to clear before arming the visible-wait, otherwise the race could
-    // resolve instantly on the old toast. Bounded + non-throwing, so it adds no
-    // latency or flake on the normal path (no toast present → proceeds at once).
+    // resolve instantly on the old toast. Bounded + non-throwing on the normal
+    // path (no toast present → proceeds at once). If the stale toast never
+    // clears, we reject this branch rather than let the still-visible old toast
+    // be mistaken for the in-flight trade's confirmation — only the REST poll
+    // may confirm in that case.
     const toastPromise = (async () => {
       const stale = await this.trxSuccessful.isVisible().catch(() => false);
       if (stale) {
         await this.trxSuccessful
           .waitFor({ state: "hidden", timeout: 8_000 })
           .catch(() => {});
+        const stillStale = await this.trxSuccessful
+          .isVisible()
+          .catch(() => false);
+        if (stillStale) {
+          throw new Error(
+            "Stale success toast did not clear; deferring to REST poll."
+          );
+        }
       }
       await this.trxSuccessful.waitFor({ state: "visible", timeout });
       return "WebSocket toast" as const;
     })();
 
+    // Give the on-chain REST poll a full `timeout` budget measured from when
+    // the broadcast hash is captured, rather than the leftover of a single
+    // shared deadline. Keplr review/approval happens before the broadcast, so
+    // a shared deadline could otherwise starve the REST fallback of time to
+    // observe on-chain inclusion even when the tx actually succeeded.
     const restPromise = this.captureBroadcastHash(timeout).then((hash) => {
       this.lastTxHash = hash;
       console.log(`Captured broadcast tx hash: ${hash}`);
-      const remaining = Math.max(0, deadline - Date.now());
       return pollTxOnChain(hash, {
-        timeout: remaining,
+        timeout,
         signal: controller.signal,
       }).then(() => "REST LCD poll" as const);
     });
 
+    // After Promise.any settles on the winner, the losing branch keeps running
+    // and eventually rejects (the toast `waitFor` times out, or the REST poll
+    // aborts). Attach no-op catches so that late rejection doesn't surface as
+    // an unhandled promise rejection in Playwright/Node.
+    toastPromise.catch(() => {});
+    restPromise.catch(() => {});
+
     return Promise.any([toastPromise, restPromise])
       .then((winner) => {
         controller.abort();
-        console.log(`✓ Transaction confirmed via ${winner}.`);
+        console.log(`Transaction confirmed via ${winner}.`);
       })
       .catch((err: any) => {
         controller.abort();
         const detail = err?.errors
           ? err.errors.map((e: any) => e?.message ?? String(e)).join(" | ")
-          : (err?.message ?? String(err));
+          : err?.message ?? String(err);
         throw new Error(
           `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
         );
