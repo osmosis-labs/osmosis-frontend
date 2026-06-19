@@ -427,20 +427,24 @@ export function useAddConcentratedLiquidityConfig(
           const tokenOutMinAmount = new Dec(outMicro)
             .mul(slippageMultiplier)
             .truncate();
+          if (tokenOutMinAmount.lte(new Int(0)))
+            throw new Error("Swap output floor rounds to zero");
 
-          // Amounts the position is supplied with (micro): the exact remaining
-          // provided side, and the swap's guaranteed-minimum output side.
+          // Amounts the position is supplied with (micro). Both sides use their
+          // *expected* amount: the exact remaining provided side, and the swap's
+          // expected output. `MsgCreatePosition`'s `tokensProvided` is the max
+          // the chain pulls, so supplying the expected (not the floored minimum)
+          // output lets the full swap proceeds land in the position rather than
+          // stranding the positive-slippage remainder as wallet dust. Slippage
+          // protection lives on `tokenMinAmountN` below, applied once, mirroring
+          // the two-asset path (`sendCreateConcentratedLiquidityPositionMsg`).
           const providedRemaining = requiredSwap.inputAmount.sub(
             requiredSwap.swapInAmount
           );
           const baseMicro =
-            config.singleAssetSide === "base"
-              ? providedRemaining
-              : tokenOutMinAmount;
+            config.singleAssetSide === "base" ? providedRemaining : outMicro;
           const quoteMicro =
-            config.singleAssetSide === "base"
-              ? tokenOutMinAmount
-              : providedRemaining;
+            config.singleAssetSide === "base" ? outMicro : providedRemaining;
 
           const tokensProvided = [
             { denom: baseCurrency.coinMinimalDenom, amount: baseMicro },
@@ -449,8 +453,10 @@ export function useAddConcentratedLiquidityConfig(
             .sort((a, b) => a.denom.localeCompare(b.denom))
             .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
-          // token0/token1 minima: a slippage buffer below the supplied amounts
-          // (token0 = base, token1 = quote — CL pools enforce base denom < quote).
+          // token0/token1 minima: a single slippage buffer below the expected
+          // supplied amounts (token0 = base, token1 = quote; CL pools enforce
+          // base denom < quote). Applied once here, never compounded with the
+          // swap-leg floor.
           const tokenMinAmount0 = new Dec(baseMicro)
             .mul(slippageMultiplier)
             .truncate()
