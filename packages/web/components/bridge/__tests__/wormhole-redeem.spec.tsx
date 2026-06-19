@@ -47,6 +47,8 @@ jest.mock("@mysten/wallet-standard", () => ({
   signAndExecuteTransaction: jest.fn(),
 }));
 
+import { MultiLanguageProvider, t } from "~/hooks/language";
+
 import {
   checkIfRedeemed,
   fetchGovernorDelay,
@@ -58,6 +60,15 @@ import {
 } from "../wormhole-redeem";
 
 const mockedApiClient = apiClient as unknown as jest.Mock;
+
+// WormholeRedeem now consumes the i18n context, so it must render under a
+// language provider. We deliberately use just the MultiLanguageProvider
+// (not the full renderWithProviders) to avoid pulling in the store/tRPC
+// providers, which would clash with this file's minimal module mocks.
+const renderWithI18n = (ui: React.ReactElement) =>
+  render(
+    <MultiLanguageProvider defaultLanguage="en">{ui}</MultiLanguageProvider>
+  );
 
 const makeOperation = (overrides = {}) => ({
   id: "test-op",
@@ -152,7 +163,7 @@ describe("checkIfRedeemed", () => {
 
 describe("WormholeRedeem", () => {
   it("renders the heading and input", () => {
-    render(<WormholeRedeem />);
+    renderWithI18n(<WormholeRedeem />);
 
     expect(
       screen.getByText("Redeem a stuck Wormhole transfer")
@@ -164,7 +175,7 @@ describe("WormholeRedeem", () => {
   });
 
   it("disables the lookup button when input is empty", () => {
-    render(<WormholeRedeem />);
+    renderWithI18n(<WormholeRedeem />);
 
     const button = screen.getByText("Lookup");
     expect(button).toBeDisabled();
@@ -765,7 +776,7 @@ describe("WormholeRedeem governor_delayed render guard", () => {
         json: async () => ({ data: [] }),
       });
 
-    render(<WormholeRedeem />);
+    renderWithI18n(<WormholeRedeem />);
 
     fireEvent.change(
       screen.getByPlaceholderText("Osmosis transaction hash..."),
@@ -792,7 +803,7 @@ describe("formatGovernorReleaseCountdown", () => {
   it("renders hours + minutes for long waits", () => {
     const now = 1_000_000_000_000;
     const releaseTime = Math.floor(now / 1000) + 3 * 3600 + 25 * 60;
-    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+    expect(formatGovernorReleaseCountdown(t, releaseTime, now)).toBe(
       "Releases in 3h 25m"
     );
   });
@@ -800,7 +811,7 @@ describe("formatGovernorReleaseCountdown", () => {
   it("renders minutes only when less than an hour remains", () => {
     const now = 1_000_000_000_000;
     const releaseTime = Math.floor(now / 1000) + 7 * 60;
-    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+    expect(formatGovernorReleaseCountdown(t, releaseTime, now)).toBe(
       "Releases in 7m"
     );
   });
@@ -808,12 +819,12 @@ describe("formatGovernorReleaseCountdown", () => {
   it("renders 'Releases shortly' for the last minute", () => {
     const now = 1_000_000_000_000;
     const releaseTime = Math.floor(now / 1000) + 30;
-    expect(formatGovernorReleaseCountdown(releaseTime, now)).toBe(
+    expect(formatGovernorReleaseCountdown(t, releaseTime, now)).toBe(
       "Releases shortly"
     );
   });
 
   it("falls back to the generic 24h string when releaseTime is missing", () => {
-    expect(formatGovernorReleaseCountdown(undefined)).toBe("Up to 24 hours");
+    expect(formatGovernorReleaseCountdown(t, undefined)).toBe("Up to 24 hours");
   });
 });
