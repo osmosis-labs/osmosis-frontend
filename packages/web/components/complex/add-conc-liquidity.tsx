@@ -1,5 +1,5 @@
 import type { Pool } from "@osmosis-labs/server";
-import { Dec, DecUtils } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -21,11 +21,13 @@ import {
   PriceChartHeader,
 } from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { RecapRow } from "~/components/ui/recap-row";
 import { EventName } from "~/config/analytics-events";
 import {
   ObservableAddConcentratedLiquidityConfig,
@@ -36,6 +38,8 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import type { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import type { useClZapQuote } from "~/hooks/use-cl-zap-quote";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -61,317 +65,546 @@ const HistoricalPriceChart = dynamic(
 export const AddConcLiquidity: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    zapQuote?: ReturnType<typeof useClZapQuote>;
+    zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ className, addLiquidityConfig, actionButton }) => {
-  const { poolId } = addLiquidityConfig;
+> = observer(
+  ({
+    className,
+    addLiquidityConfig,
+    zapQuote,
+    zapSlippageConfig,
+    actionButton,
+  }) => {
+    const { poolId } = addLiquidityConfig;
 
-  const { data: pool } = api.local.pools.getPool.useQuery({
-    poolId,
-  });
+    const { data: pool } = api.local.pools.getPool.useQuery({
+      poolId,
+    });
 
-  return (
-    <div className={classNames("flex flex-col gap-5", className)}>
-      <AddConcLiqView
-        pool={pool}
-        addLiquidityConfig={addLiquidityConfig}
-        actionButton={actionButton}
-      />
-    </div>
-  );
-});
+    return (
+      <div className={classNames("flex flex-col gap-5", className)}>
+        <AddConcLiqView
+          pool={pool}
+          addLiquidityConfig={addLiquidityConfig}
+          zapQuote={zapQuote}
+          zapSlippageConfig={zapSlippageConfig}
+          actionButton={actionButton}
+        />
+      </div>
+    );
+  }
+);
 
 const AddConcLiqView: FunctionComponent<
   {
     pool?: Pool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    zapQuote?: ReturnType<typeof useClZapQuote>;
+    zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
-  const {
-    poolId,
-    rangeWithCurrencyDecimals,
-    fullRange,
-    baseDepositAmountIn,
-    quoteDepositAmountIn,
-    baseDepositOnly,
-    quoteDepositOnly,
-    depositPercentages,
-    currentPriceWithDecimals,
-    shouldBeSuperfluidStaked,
-    tickRange,
-    error: addLiqError,
-    setElectSuperfluidStaking,
-    setMaxRange,
-    setMinRange,
-    setAnchorAsset,
-    setBaseDepositAmountMax,
-    setQuoteDepositAmountMax,
-    setFullRange,
-  } = addLiquidityConfig;
+> = observer(
+  ({
+    addLiquidityConfig,
+    zapQuote,
+    zapSlippageConfig,
+    actionButton,
+    pool,
+    isInactivePool,
+  }) => {
+    const {
+      poolId,
+      rangeWithCurrencyDecimals,
+      fullRange,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      baseDepositOnly,
+      quoteDepositOnly,
+      depositPercentages,
+      currentPriceWithDecimals,
+      shouldBeSuperfluidStaked,
+      tickRange,
+      singleAssetMode,
+      setSingleAssetMode,
+      error: addLiqError,
+      setElectSuperfluidStaking,
+      setMaxRange,
+      setMinRange,
+      setAnchorAsset,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+      setFullRange,
+    } = addLiquidityConfig;
 
-  const { t } = useTranslation();
-  const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
-  const hasInitializedInactivePool = useRef(false);
+    const { t } = useTranslation();
+    const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
+    const hasInitializedInactivePool = useRef(false);
 
-  const { derivedDataStore, queriesExternalStore } = useStore();
-  const chartConfig = useHistoricalAndLiquidityData(poolId);
+    const { derivedDataStore, queriesExternalStore } = useStore();
+    const chartConfig = useHistoricalAndLiquidityData(poolId);
 
-  // Default to passive strategy for inactive pools (only on mount)
-  useEffect(() => {
-    if (isInactivePool && !fullRange && !hasInitializedInactivePool.current) {
-      setFullRange(true);
-      hasInitializedInactivePool.current = true;
-    }
-  }, [isInactivePool, fullRange, setFullRange]);
+    // Default to passive strategy for inactive pools (only on mount)
+    useEffect(() => {
+      if (isInactivePool && !fullRange && !hasInitializedInactivePool.current) {
+        setFullRange(true);
+        hasInitializedInactivePool.current = true;
+      }
+    }, [isInactivePool, fullRange, setFullRange]);
 
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
+    const superfluidPoolDetail =
+      derivedDataStore.superfluidPoolDetails.get(poolId);
 
-  const { yRange, xRange, depthChartData } = chartConfig;
+    const { yRange, xRange, depthChartData } = chartConfig;
 
-  const sfStakingDisabled = !fullRange || Boolean(addLiqError);
+    const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
-  const queryCurrentRangeApr = fullRange
-    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
-    : queriesExternalStore.queryPriceRangeAprs.get(
-        poolId,
-        tickRange[0],
-        tickRange[1]
-      );
-  // sync the price range of the add liq config and the chart config
-  // sync the initial hover price
-  // TODO: this is a code smell. the chart config should observe the add liq config
-  //        this may be acieved by using an interface
-  useEffect(() => {
-    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, rangeWithCurrencyDecimals]);
+    const queryCurrentRangeApr = fullRange
+      ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
+      : queriesExternalStore.queryPriceRangeAprs.get(
+          poolId,
+          tickRange[0],
+          tickRange[1]
+        );
+    // sync the price range of the add liq config and the chart config
+    // sync the initial hover price
+    // TODO: this is a code smell. the chart config should observe the add liq config
+    //        this may be acieved by using an interface
+    useEffect(() => {
+      chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+    }, [chartConfig, rangeWithCurrencyDecimals]);
 
-  return (
-    <>
-      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step1Title")}
-        </h6>
-        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
-          {t("addConcentratedLiquidity.priceShownIn", {
-            base: baseDepositAmountIn.sendCurrency.coinDenom,
-            quote: quoteDepositAmountIn.sendCurrency.coinDenom,
-          })}
-        </span>
-      </div>
-      <div className="flex flex-col">
-        <span className="subtitle1 px-4 pb-3">
-          {t("addConcentratedLiquidity.priceRange")}
-        </span>
-        <div className="flex w-full gap-1">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {chartConfig.isHistoricalDataLoading ? (
-              <Spinner className="m-auto" />
-            ) : chartConfig.historicalChartUnavailable ? (
-              <ChartUnavailable />
-            ) : (
-              <>
-                <ChartHeader
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-                <Chart
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-              </>
-            )}
-          </div>
-          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
-            <div className="flex flex-1 flex-col">
-              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
-                <ChartButton
-                  alt="refresh"
-                  icon="refresh-ccw"
-                  selected={false}
-                  onClick={() => chartConfig.resetZoom()}
-                />
-                <ChartButton
-                  alt="zoom out"
-                  icon="zoom-out"
-                  selected={false}
-                  onClick={chartConfig.zoomOut}
-                />
-                <ChartButton
-                  alt="zoom in"
-                  icon="zoom-in"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
-                />
-              </div>
-              <ConcentratedLiquidityDepthChart
-                min={Number(rangeWithCurrencyDecimals[0].toString())}
-                max={Number(rangeWithCurrencyDecimals[1].toString())}
-                yRange={yRange}
-                xRange={xRange}
-                data={depthChartData}
-                annotationDatum={useMemo(
-                  () => ({
-                    price: Number(currentPriceWithDecimals.toString()),
-                    depth: chartConfig.xRange[1],
-                  }),
-                  [chartConfig.xRange, currentPriceWithDecimals]
-                )}
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(
-                  debounce((num: number) => setMaxRange(num.toString()), 250),
-                  []
-                )}
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(
-                  debounce((num: number) => setMinRange(num.toString()), 250),
-                  []
-                )}
-                onSubmitMin={useCallback(
-                  (val: number) => {
-                    setMinRange(val.toString());
-                  },
-                  [setMinRange]
-                )}
-                onSubmitMax={useCallback(
-                  (val: number) => {
-                    setMaxRange(val.toString());
-                  },
-                  [setMaxRange]
-                )}
-                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
-                horizontal
-                fullRange={fullRange}
-              />
-              {queryCurrentRangeApr.apr && (
-                <div className="absolute right-8 top-5 flex select-none flex-col text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <span className="text-osmoverse-300">
-                      {t("addConcentratedLiquidity.estimated")}
-                    </span>
-                    <Tooltip
-                      content={
-                        <span>
-                          {t("addConcentratedLiquidity.estimatedInfo")}
-                        </span>
-                      }
-                    >
-                      <Icon id="info" height={15} width={15} />
-                    </Tooltip>
-                  </div>
-                  {queryCurrentRangeApr.isFetching ? (
-                    <Spinner className="m-auto mt-1.5" />
-                  ) : (
-                    <h5 className="text-osmoverse-100">
-                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
-                      {t("pool.APR")}
-                    </h5>
-                  )}
-                </div>
+    return (
+      <>
+        <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
+          <h6 className="mx-auto whitespace-nowrap">
+            {t("addConcentratedLiquidity.step1Title")}
+          </h6>
+          <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
+            {t("addConcentratedLiquidity.priceShownIn", {
+              base: baseDepositAmountIn.sendCurrency.coinDenom,
+              quote: quoteDepositAmountIn.sendCurrency.coinDenom,
+            })}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="subtitle1 px-4 pb-3">
+            {t("addConcentratedLiquidity.priceRange")}
+          </span>
+          <div className="flex w-full gap-1">
+            <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+              {chartConfig.isHistoricalDataLoading ? (
+                <Spinner className="m-auto" />
+              ) : chartConfig.historicalChartUnavailable ? (
+                <ChartUnavailable />
+              ) : (
+                <>
+                  <ChartHeader
+                    chartConfig={chartConfig}
+                    addLiquidityConfig={addLiquidityConfig}
+                  />
+                  <Chart
+                    chartConfig={chartConfig}
+                    addLiquidityConfig={addLiquidityConfig}
+                  />
+                </>
               )}
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
-              <PriceInputBox
-                label={t("addConcentratedLiquidity.high")}
-                forPriceIndex={1}
-                addConcLiquidityConfig={addLiquidityConfig}
-                inputRef={highSpotPriceInputRef}
-              />
-              <PriceInputBox
-                label={t("addConcentratedLiquidity.low")}
-                forPriceIndex={0}
-                addConcLiquidityConfig={addLiquidityConfig}
-              />
+            <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+              <div className="flex flex-1 flex-col">
+                <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
+                  <ChartButton
+                    alt="refresh"
+                    icon="refresh-ccw"
+                    selected={false}
+                    onClick={() => chartConfig.resetZoom()}
+                  />
+                  <ChartButton
+                    alt="zoom out"
+                    icon="zoom-out"
+                    selected={false}
+                    onClick={chartConfig.zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={chartConfig.zoomIn}
+                  />
+                </div>
+                <ConcentratedLiquidityDepthChart
+                  min={Number(rangeWithCurrencyDecimals[0].toString())}
+                  max={Number(rangeWithCurrencyDecimals[1].toString())}
+                  yRange={yRange}
+                  xRange={xRange}
+                  data={depthChartData}
+                  annotationDatum={useMemo(
+                    () => ({
+                      price: Number(currentPriceWithDecimals.toString()),
+                      depth: chartConfig.xRange[1],
+                    }),
+                    [chartConfig.xRange, currentPriceWithDecimals]
+                  )}
+                  // eslint-disable-next-line react-hooks/exhaustive-deps
+                  onMoveMax={useCallback(
+                    debounce((num: number) => setMaxRange(num.toString()), 250),
+                    []
+                  )}
+                  // eslint-disable-next-line react-hooks/exhaustive-deps
+                  onMoveMin={useCallback(
+                    debounce((num: number) => setMinRange(num.toString()), 250),
+                    []
+                  )}
+                  onSubmitMin={useCallback(
+                    (val: number) => {
+                      setMinRange(val.toString());
+                    },
+                    [setMinRange]
+                  )}
+                  onSubmitMax={useCallback(
+                    (val: number) => {
+                      setMaxRange(val.toString());
+                    },
+                    [setMaxRange]
+                  )}
+                  offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                  horizontal
+                  fullRange={fullRange}
+                />
+                {queryCurrentRangeApr.apr && (
+                  <div className="absolute right-8 top-5 flex select-none flex-col text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <span className="text-osmoverse-300">
+                        {t("addConcentratedLiquidity.estimated")}
+                      </span>
+                      <Tooltip
+                        content={
+                          <span>
+                            {t("addConcentratedLiquidity.estimatedInfo")}
+                          </span>
+                        }
+                      >
+                        <Icon id="info" height={15} width={15} />
+                      </Tooltip>
+                    </div>
+                    {queryCurrentRangeApr.isFetching ? (
+                      <Spinner className="m-auto mt-1.5" />
+                    ) : (
+                      <h5 className="text-osmoverse-100">
+                        {queryCurrentRangeApr.apr.maxDecimals(1).toString() ??
+                          ""}{" "}
+                        {t("pool.APR")}
+                      </h5>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
+                <PriceInputBox
+                  label={t("addConcentratedLiquidity.high")}
+                  forPriceIndex={1}
+                  addConcLiquidityConfig={addLiquidityConfig}
+                  inputRef={highSpotPriceInputRef}
+                />
+                <PriceInputBox
+                  label={t("addConcentratedLiquidity.low")}
+                  forPriceIndex={0}
+                  addConcLiquidityConfig={addLiquidityConfig}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <StrategySelectorGroup
-        addLiquidityConfig={addLiquidityConfig}
-        highSpotPriceInputRef={highSpotPriceInputRef}
-        isInactivePool={isInactivePool}
-      />
-      <section className="flex flex-col">
-        <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
-          {t("addConcentratedLiquidity.amountToDeposit")}
-          {superfluidPoolDetail.isSuperfluid && (
-            <div className="flex gap-3">
-              <Checkbox
-                id="superfluid-stake"
-                variant="secondary"
-                checked={shouldBeSuperfluidStaked}
-                onClick={() => {
-                  setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
-                }}
-                disabled={sfStakingDisabled}
+        <StrategySelectorGroup
+          addLiquidityConfig={addLiquidityConfig}
+          highSpotPriceInputRef={highSpotPriceInputRef}
+          isInactivePool={isInactivePool}
+        />
+        <section className="flex flex-col">
+          <div className="subtitle1 flex place-content-between items-center px-4 pb-3">
+            <div className="flex items-center gap-3">
+              {t("addConcentratedLiquidity.amountToDeposit")}
+              <MenuToggle
+                selectedOptionId={singleAssetMode ? "single" : "two"}
+                options={[
+                  {
+                    id: "two",
+                    display: t(
+                      "addConcentratedLiquidity.singleAsset.toggleTwo"
+                    ),
+                  },
+                  {
+                    id: "single",
+                    display: t(
+                      "addConcentratedLiquidity.singleAsset.toggleSingle"
+                    ),
+                  },
+                ]}
+                onSelect={(id) => setSingleAssetMode(id === "single")}
+                classes={{ toggleContainer: "!h-8 !py-1" }}
               />
-              <label
-                htmlFor="superfluid-stake"
-                className={classNames("flex flex-col gap-1", {
-                  "opacity-30": sfStakingDisabled,
-                })}
-              >
-                <h6 className="md:text-subtitle1 md:font-subtitle1">
-                  {t("lockToken.superfluidStake")}{" "}
-                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
-                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
-                        0
-                      )} APR)`
-                    : undefined}
-                </h6>
-                <span className="caption text-osmoverse-300">
-                  {t("lockToken.bondingRequirement", {
-                    numDays: superfluidPoolDetail.unstakingDuration
-                      .asDays()
-                      .toString(),
+            </div>
+            {!singleAssetMode && superfluidPoolDetail.isSuperfluid && (
+              <div className="flex gap-3">
+                <Checkbox
+                  id="superfluid-stake"
+                  variant="secondary"
+                  checked={shouldBeSuperfluidStaked}
+                  onClick={() => {
+                    setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
+                  }}
+                  disabled={sfStakingDisabled}
+                />
+                <label
+                  htmlFor="superfluid-stake"
+                  className={classNames("flex flex-col gap-1", {
+                    "opacity-30": sfStakingDisabled,
                   })}
-                </span>
-              </label>
+                >
+                  <h6 className="md:text-subtitle1 md:font-subtitle1">
+                    {t("lockToken.superfluidStake")}{" "}
+                    {superfluidPoolDetail.superfluidApr.toDec().isPositive()
+                      ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
+                          0
+                        )} APR)`
+                      : undefined}
+                  </h6>
+                  <span className="caption text-osmoverse-300">
+                    {t("lockToken.bondingRequirement", {
+                      numDays: superfluidPoolDetail.unstakingDuration
+                        .asDays()
+                        .toString(),
+                    })}
+                  </span>
+                </label>
+              </div>
+            )}
+          </div>
+          {singleAssetMode ? (
+            <SingleAssetDeposit
+              addLiquidityConfig={addLiquidityConfig}
+              zapQuote={zapQuote}
+              zapSlippageConfig={zapSlippageConfig}
+              pool={pool}
+            />
+          ) : (
+            <div className="flex justify-center gap-3 md:flex-col">
+              <DepositAmountGroup
+                currency={pool?.reserveCoins[0]?.currency}
+                className="md:!px-4 md:!py-4"
+                priceInputClass=" md:!w-full"
+                onUpdate={useCallback(
+                  (amount) => {
+                    setAnchorAsset("base");
+                    baseDepositAmountIn.setAmount(amount);
+                  },
+                  [baseDepositAmountIn, setAnchorAsset]
+                )}
+                onMax={setBaseDepositAmountMax}
+                currentValue={baseDepositAmountIn.amount}
+                outOfRange={quoteDepositOnly}
+                percentage={depositPercentages[0]}
+              />
+              <DepositAmountGroup
+                currency={pool?.reserveCoins[1]?.currency}
+                className="md:!px-4 md:!py-4"
+                priceInputClass=" md:!w-full"
+                onUpdate={useCallback(
+                  (amount) => {
+                    setAnchorAsset("quote");
+                    quoteDepositAmountIn.setAmount(amount);
+                  },
+                  [quoteDepositAmountIn, setAnchorAsset]
+                )}
+                onMax={setQuoteDepositAmountMax}
+                currentValue={quoteDepositAmountIn.amount}
+                outOfRange={baseDepositOnly}
+                percentage={depositPercentages[1]}
+              />
             </div>
           )}
+        </section>
+        {actionButton}
+      </>
+    );
+  }
+);
+
+/**
+ * Single-asset deposit ("zap-in") section: the user picks one side and an
+ * amount; the frontend computes the swap split, shows the breakdown and quote
+ * details, and the parent submits a single swap + create-position transaction.
+ */
+const SingleAssetDeposit: FunctionComponent<{
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  zapQuote?: ReturnType<typeof useClZapQuote>;
+  zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+  pool?: Pool;
+}> = observer(({ addLiquidityConfig, zapQuote, zapSlippageConfig, pool }) => {
+  const { t } = useTranslation();
+  const {
+    singleAssetSide,
+    setSingleAssetSide,
+    singleAssetDepositAmountIn,
+    requiredSwap,
+    setBaseDepositAmountMax,
+    setQuoteDepositAmountMax,
+  } = addLiquidityConfig;
+
+  const baseCurrency = pool?.reserveCoins[0]?.currency;
+  const quoteCurrency = pool?.reserveCoins[1]?.currency;
+  const selectedCurrency =
+    singleAssetSide === "base" ? baseCurrency : quoteCurrency;
+
+  const quote = zapQuote?.quote;
+  const needsSwap = Boolean(requiredSwap?.needsSwap);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="px-4">
+        <MenuToggle
+          selectedOptionId={singleAssetSide}
+          options={[
+            { id: "base", display: baseCurrency?.coinDenom ?? "" },
+            { id: "quote", display: quoteCurrency?.coinDenom ?? "" },
+          ]}
+          onSelect={(id) => setSingleAssetSide(id as "base" | "quote")}
+        />
+      </div>
+      <DepositAmountGroup
+        currency={selectedCurrency}
+        className="md:!px-4 md:!py-4"
+        priceInputClass=" md:!w-full"
+        onUpdate={useCallback(
+          (amount) => {
+            singleAssetDepositAmountIn.setAmount(amount);
+          },
+          [singleAssetDepositAmountIn]
+        )}
+        onMax={
+          singleAssetSide === "base"
+            ? setBaseDepositAmountMax
+            : setQuoteDepositAmountMax
+        }
+        currentValue={singleAssetDepositAmountIn.amount}
+        percentage={new RatePretty(1)}
+      />
+
+      {requiredSwap && (
+        <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
+          {needsSwap ? (
+            <p className="body2 text-osmoverse-200">
+              {t("addConcentratedLiquidity.singleAsset.splitBreakdown", {
+                inputAmount: formatPretty(
+                  new CoinPretty(
+                    requiredSwap.tokenInCurrency,
+                    requiredSwap.inputAmount
+                  ).hideDenom(true)
+                ),
+                inputDenom: requiredSwap.tokenInCurrency.coinDenom,
+                swapAmount: formatPretty(
+                  new CoinPretty(
+                    requiredSwap.tokenInCurrency,
+                    requiredSwap.swapInAmount
+                  ).hideDenom(true)
+                ),
+                outDenom: requiredSwap.tokenOutCurrency.coinDenom,
+              })}
+            </p>
+          ) : (
+            <p className="body2 text-osmoverse-200">
+              {t("addConcentratedLiquidity.singleAsset.noSwapNeeded", {
+                inputDenom: requiredSwap.tokenInCurrency.coinDenom,
+              })}
+            </p>
+          )}
+
+          {needsSwap &&
+            (zapQuote?.isLoading || !quote ? (
+              <div className="flex items-center gap-2 py-2 text-osmoverse-300">
+                <Spinner className="!h-4 !w-4" />
+                <span className="caption">
+                  {t("addConcentratedLiquidity.singleAsset.quoteLoading")}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <RecapRow
+                  left={t(
+                    "addConcentratedLiquidity.singleAsset.estimatedReceived",
+                    { denom: requiredSwap.tokenOutCurrency.coinDenom }
+                  )}
+                  right={
+                    <span className="body2 text-white-full">
+                      {formatPretty(quote.amount)}
+                    </span>
+                  }
+                />
+                {quote.priceImpactTokenOut && (
+                  <RecapRow
+                    left={t("addConcentratedLiquidity.singleAsset.priceImpact")}
+                    right={
+                      <span className="body2 text-osmoverse-200">
+                        {formatPretty(quote.priceImpactTokenOut.maxDecimals(2))}
+                      </span>
+                    }
+                  />
+                )}
+                {quote.swapFee && (
+                  <RecapRow
+                    left={t("addConcentratedLiquidity.singleAsset.swapFee")}
+                    right={
+                      <span className="body2 text-osmoverse-200">
+                        {formatPretty(quote.swapFee.maxDecimals(3))}
+                      </span>
+                    }
+                  />
+                )}
+                {zapSlippageConfig && (
+                  <RecapRow
+                    left={t("addConcentratedLiquidity.singleAsset.maxSlippage")}
+                    right={
+                      <SlippageSelector slippageConfig={zapSlippageConfig} />
+                    }
+                  />
+                )}
+              </div>
+            ))}
+
+          <p className="caption text-osmoverse-400">
+            {t("addConcentratedLiquidity.singleAsset.atomicNote")}
+          </p>
         </div>
-        <div className="flex justify-center gap-3 md:flex-col">
-          <DepositAmountGroup
-            currency={pool?.reserveCoins[0]?.currency}
-            className="md:!px-4 md:!py-4"
-            priceInputClass=" md:!w-full"
-            onUpdate={useCallback(
-              (amount) => {
-                setAnchorAsset("base");
-                baseDepositAmountIn.setAmount(amount);
-              },
-              [baseDepositAmountIn, setAnchorAsset]
-            )}
-            onMax={setBaseDepositAmountMax}
-            currentValue={baseDepositAmountIn.amount}
-            outOfRange={quoteDepositOnly}
-            percentage={depositPercentages[0]}
-          />
-          <DepositAmountGroup
-            currency={pool?.reserveCoins[1]?.currency}
-            className="md:!px-4 md:!py-4"
-            priceInputClass=" md:!w-full"
-            onUpdate={useCallback(
-              (amount) => {
-                setAnchorAsset("quote");
-                quoteDepositAmountIn.setAmount(amount);
-              },
-              [quoteDepositAmountIn, setAnchorAsset]
-            )}
-            onMax={setQuoteDepositAmountMax}
-            currentValue={quoteDepositAmountIn.amount}
-            outOfRange={baseDepositOnly}
-            percentage={depositPercentages[1]}
-          />
-        </div>
-      </section>
-      {actionButton}
-    </>
+      )}
+    </div>
   );
 });
+
+/** Compact inline preset slippage selector for the zap-in swap leg. */
+const SlippageSelector: FunctionComponent<{
+  slippageConfig: ReturnType<typeof useSlippageConfig>;
+}> = observer(({ slippageConfig }) => (
+  <div className="flex items-center gap-1">
+    {slippageConfig.selectableSlippages.map((slippage) => (
+      <button
+        key={slippage.index}
+        type="button"
+        onClick={() => slippageConfig.select(slippage.index)}
+        className={classNames(
+          "caption rounded-lg px-2 py-1 transition-colors",
+          slippage.selected
+            ? "bg-osmoverse-700 text-white-full"
+            : "text-osmoverse-300 hover:bg-osmoverse-800"
+        )}
+      >
+        {formatPretty(slippage.slippage)}
+      </button>
+    ))}
+  </div>
+));
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
