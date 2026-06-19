@@ -8,6 +8,7 @@ import {
   BigDec,
   calcAmount0,
   calcAmount1,
+  calcZapInSwapAmount,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -31,11 +32,21 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { action, autorun, computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  autorun,
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+} from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
+import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { ClZapQuote, useClZapQuote } from "~/hooks/use-cl-zap-quote";
+import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -52,6 +63,9 @@ export function useAddConcentratedLiquidityConfig(
   config: ObservableAddConcentratedLiquidityConfig;
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
+  zapInLiquidity: () => Promise<void>;
+  zapQuote: ReturnType<typeof useClZapQuote>;
+  zapSlippageConfig: ReturnType<typeof useSlippageConfig>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -59,6 +73,16 @@ export function useAddConcentratedLiquidityConfig(
 
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
+
+  // Single-asset zap-in reuses the user's general swap slippage scope.
+  const zapSlippageConfig = useSlippageConfig();
+
+  // Persist the single-asset toggle per-pool (preference, not shareable state).
+  const [persistedSingleAssetMode, setPersistedSingleAssetMode] =
+    useLocalStorageState<boolean>(
+      `cl-add-position-single-asset-mode:${poolId}`,
+      false
+    );
 
   const { data: pool, isFetched: isPoolFetched } =
     api.local.pools.getPool.useQuery(
@@ -89,6 +113,22 @@ export function useAddConcentratedLiquidityConfig(
       }
     },
     [config]
+  );
+
+  // Hydrate the single-asset toggle from the persisted per-pool preference.
+  useEffect(() => {
+    config.setSingleAssetMode(persistedSingleAssetMode);
+  }, [config, persistedSingleAssetMode]);
+
+  // Persist subsequent toggles. `reaction` (unlike `autorun`) doesn't fire on
+  // setup, so it can't clobber the stored preference before hydration above.
+  useEffect(
+    () =>
+      reaction(
+        () => config.singleAssetMode,
+        (singleAssetMode) => setPersistedSingleAssetMode(singleAssetMode)
+      ),
+    [config, setPersistedSingleAssetMode]
   );
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
@@ -122,6 +162,18 @@ export function useAddConcentratedLiquidityConfig(
       historicalPriceData.min,
       historicalPriceData.max
     );
+
+  // Quote the single-asset zap-in swap leg. Reactive to `config.requiredSwap`
+  // (the modal consuming this hook is an mobx observer). Disabled outside
+  // single-asset mode and when no swap is needed (range one-sided on the
+  // provided side), so it never queries unnecessarily.
+  const requiredSwap = config.requiredSwap;
+  const zapQuote = useClZapQuote({
+    tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
+    tokenInDenom: requiredSwap?.tokenInCurrency.coinMinimalDenom ?? "",
+    tokenOutDenom: requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
+    enabled: config.singleAssetMode && Boolean(requiredSwap?.needsSwap),
+  });
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
@@ -273,7 +325,182 @@ export function useAddConcentratedLiquidityConfig(
     ]
   );
 
-  return { config, addLiquidity, increaseLiquidity };
+  const zapInLiquidity = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const requiredSwap = config.requiredSwap;
+          if (!requiredSwap) throw new Error("No single-asset amount entered");
+
+          const [lowerTick, upperTick] = config.tickRange;
+          const baseCurrency = config.baseDepositAmountIn.sendCurrency;
+          const quoteCurrency = config.quoteDepositAmountIn.sendCurrency;
+
+          const baseEvent = {
+            isSingleAsset: true,
+            volatilityType: config.currentStrategy ?? "",
+            poolId,
+            rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
+            rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
+          };
+          logEvent([
+            EventName.ConcentratedLiquidity.addLiquidityStarted,
+            baseEvent,
+          ]);
+
+          const onFulfill = (tx: {
+            code?: number | string;
+            rawLog?: string;
+          }) => {
+            if (tx.code) reject(tx.rawLog);
+            else {
+              Promise.all([
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                  { poolId }
+                ),
+                apiUtils.local.pools.getPool.invalidate({ poolId }),
+              ])
+                .then(() => resolve())
+                .catch(reject);
+              logEvent([
+                EventName.ConcentratedLiquidity.addLiquidityCompleted,
+                baseEvent,
+              ]);
+            }
+          };
+
+          // Range entirely on the provided asset's side: no swap, create a
+          // one-sided position directly with the full provided amount.
+          if (!requiredSwap.needsSwap) {
+            const providedSide =
+              config.singleAssetSide === "base"
+                ? {
+                    base: {
+                      currency: baseCurrency,
+                      amount: config.baseDepositAmountIn.amount,
+                    },
+                    quote: undefined,
+                  }
+                : {
+                    base: undefined,
+                    quote: {
+                      currency: quoteCurrency,
+                      amount: config.quoteDepositAmountIn.amount,
+                    },
+                  };
+
+            await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+              poolId,
+              lowerTick,
+              upperTick,
+              undefined,
+              providedSide.base,
+              providedSide.quote,
+              undefined,
+              undefined,
+              onFulfill
+            );
+            return;
+          }
+
+          const quote = zapQuote.quote;
+          if (!quote) throw new Error("Swap quote not ready");
+
+          const slippageMultiplier = new Dec(1).sub(
+            zapSlippageConfig.slippage.toDec()
+          );
+
+          // Swap route(s) from the SQS quote, verbatim.
+          const routes = quote.split.map(
+            (route: ClZapQuote["split"][number]) => ({
+              pools: route.pools.map(
+                (routePool: { id: string }, i: number) => ({
+                  id: routePool.id,
+                  tokenOutDenom: route.tokenOutDenoms[i],
+                })
+              ),
+              tokenInAmount: route.initialAmount.toString(),
+            })
+          );
+
+          const outMicro = new Int(quote.amount.toCoin().amount);
+          const tokenOutMinAmount = new Dec(outMicro)
+            .mul(slippageMultiplier)
+            .truncate();
+
+          // Amounts the position is supplied with (micro): the exact remaining
+          // provided side, and the swap's guaranteed-minimum output side.
+          const providedRemaining = requiredSwap.inputAmount.sub(
+            requiredSwap.swapInAmount
+          );
+          const baseMicro =
+            config.singleAssetSide === "base"
+              ? providedRemaining
+              : tokenOutMinAmount;
+          const quoteMicro =
+            config.singleAssetSide === "base"
+              ? tokenOutMinAmount
+              : providedRemaining;
+
+          const tokensProvided = [
+            { denom: baseCurrency.coinMinimalDenom, amount: baseMicro },
+            { denom: quoteCurrency.coinMinimalDenom, amount: quoteMicro },
+          ]
+            .sort((a, b) => a.denom.localeCompare(b.denom))
+            .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+          // token0/token1 minima: a slippage buffer below the supplied amounts
+          // (token0 = base, token1 = quote — CL pools enforce base denom < quote).
+          const tokenMinAmount0 = new Dec(baseMicro)
+            .mul(slippageMultiplier)
+            .truncate()
+            .toString();
+          const tokenMinAmount1 = new Dec(quoteMicro)
+            .mul(slippageMultiplier)
+            .truncate()
+            .toString();
+
+          await account?.osmosis.sendZapInToConcentratedPositionMsg(
+            poolId,
+            lowerTick,
+            upperTick,
+            {
+              routes,
+              tokenInCoinMinimalDenom:
+                requiredSwap.tokenInCurrency.coinMinimalDenom,
+              tokenOutMinAmount: tokenOutMinAmount.toString(),
+            },
+            tokensProvided,
+            tokenMinAmount0,
+            tokenMinAmount1,
+            undefined,
+            onFulfill
+          );
+        } catch (e: any) {
+          console.error(e);
+          reject(e.message);
+        }
+      }),
+    [
+      poolId,
+      account?.osmosis,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils.local.pools.getPool,
+      config,
+      zapQuote.quote,
+      zapSlippageConfig,
+      logEvent,
+    ]
+  );
+
+  return {
+    config,
+    addLiquidity,
+    increaseLiquidity,
+    zapInLiquidity,
+    zapQuote,
+    zapSlippageConfig,
+  };
 }
 
 const MODERATE_STRATEGY_MULTIPLIER = 0.25;
@@ -320,6 +547,16 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @observable
   protected _anchorAsset: "base" | "quote" = "base";
+
+  /** When true, the user deposits a single asset and the frontend swaps part of
+   *  it (zap-in) to match the position's required ratio. Distinct from
+   *  `_anchorAsset` (which only drives the two-asset counterparty autocalc). */
+  @observable
+  protected _singleAssetMode = false;
+
+  /** Which side the user is providing in single-asset mode. */
+  @observable
+  protected _singleAssetSide: "base" | "quote" = "base";
 
   @observable
   protected _superfluidStakingElected = false;
@@ -620,6 +857,75 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._quoteDepositAmountIn;
   }
 
+  get singleAssetMode(): boolean {
+    return this._singleAssetMode;
+  }
+
+  get singleAssetSide(): "base" | "quote" {
+    return this._singleAssetSide;
+  }
+
+  /** The amount config for the side the user provides in single-asset mode. */
+  @computed
+  get singleAssetDepositAmountIn(): AmountConfig {
+    return this._singleAssetSide === "base"
+      ? this._baseDepositAmountIn
+      : this._quoteDepositAmountIn;
+  }
+
+  /**
+   * In single-asset mode, the swap leg required to convert part of the provided
+   * asset into the counterparty so the post-swap amounts match the position's
+   * required ratio at the chosen range. `undefined` outside single-asset mode or
+   * before a positive amount is entered. When `swapInAmount` is zero the range
+   * is entirely on the provided asset's side and no swap is needed.
+   */
+  @computed
+  get requiredSwap():
+    | {
+        inputAmount: Int;
+        swapInAmount: Int;
+        tokenInCurrency: AmountConfig["sendCurrency"];
+        tokenOutCurrency: AmountConfig["sendCurrency"];
+        needsSwap: boolean;
+      }
+    | undefined {
+    if (!this._singleAssetMode || !this.pool) return undefined;
+    if (this.pool.currentSqrtPrice.isZero()) return undefined;
+
+    const side = this._singleAssetSide;
+    const inputConfig =
+      side === "base" ? this._baseDepositAmountIn : this._quoteDepositAmountIn;
+    const inputAmount = new Int(inputConfig.getAmountPrimitive().amount);
+    if (inputAmount.lte(new Int(0))) return undefined;
+
+    const [lowerTick, upperTick] = this.tickRange;
+    const swapInAmount = calcZapInSwapAmount({
+      inputAmount,
+      inputSide: side,
+      lowerTick,
+      upperTick,
+      currentSqrtPrice: this.pool.currentSqrtPrice,
+    });
+
+    const tokenInCurrency =
+      side === "base"
+        ? this._baseDepositAmountIn.sendCurrency
+        : this._quoteDepositAmountIn.sendCurrency;
+    const tokenOutCurrency =
+      side === "base"
+        ? this._quoteDepositAmountIn.sendCurrency
+        : this._baseDepositAmountIn.sendCurrency;
+
+    return {
+      inputAmount,
+      swapInAmount,
+      tokenInCurrency,
+      tokenOutCurrency,
+      needsSwap: swapInAmount.gt(new Int(0)),
+    };
+  }
+
   @computed
   get baseDepositOnly(): boolean {
     // can be 0 if no positions in pool
@@ -672,6 +978,11 @@ export class ObservableAddConcentratedLiquidityConfig {
       return new InvalidRangeError(
         "lower range must be less than upper range."
       );
+    }
+
+    // In single-asset mode only the provided side's input is relevant.
+    if (this._singleAssetMode) {
+      return this.singleAssetDepositAmountIn.error;
     }
 
     if (this.quoteDepositOnly) {
@@ -871,6 +1182,11 @@ export class ObservableAddConcentratedLiquidityConfig {
         const amount0 = new Int(baseAmountRaw);
         const anchor = this._anchorAsset;
 
+        // In single-asset mode the counterparty comes from the swap quote, not
+        // the two-asset autocalc — suppress this autorun so it doesn't fight the
+        // zap-in by double-writing the counterparty amount.
+        if (this._singleAssetMode) return;
+
         // TODO: check counterparty balance and subtract to not exceed that
         // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
 
@@ -931,6 +1247,9 @@ export class ObservableAddConcentratedLiquidityConfig {
           this.quoteDepositAmountIn.getAmountPrimitive().amount;
         const amount1 = new Int(quoteAmountRaw);
         const anchor = this._anchorAsset;
+
+        // Suppressed in single-asset mode (see the base autorun above).
+        if (this._singleAssetMode) return;
 
         if (anchor !== "quote" || amount1.lte(new Int(0))) return;
 
@@ -1039,6 +1358,34 @@ export class ObservableAddConcentratedLiquidityConfig {
   @action
   readonly setAnchorAsset = (anchor: "base" | "quote") => {
     this._anchorAsset = anchor;
+  };
+
+  @action
+  readonly setSingleAssetMode = (enabled: boolean) => {
+    this._singleAssetMode = enabled;
+    if (enabled) {
+      // The counterparty is derived from the swap quote in single-asset mode;
+      // clear any amount the two-asset autocalc previously wrote so it isn't
+      // sent as a deposit.
+      const counterparty =
+        this._singleAssetSide === "base"
+          ? this._quoteDepositAmountIn
+          : this._baseDepositAmountIn;
+      counterparty.setIsMax(false);
+      counterparty.setAmount("0");
+    }
+  };
+
+  @action
+  readonly setSingleAssetSide = (side: "base" | "quote") => {
+    this._singleAssetSide = side;
+    this._anchorAsset = side;
+    this._baseDepositAmountIn.setIsMax(false);
+    this._quoteDepositAmountIn.setIsMax(false);
+    // zero the counterparty so the previously-provided side doesn't linger
+    const counterparty =
+      side === "base" ? this._quoteDepositAmountIn : this._baseDepositAmountIn;
+    counterparty.setAmount("0");
   };
 
   @action
