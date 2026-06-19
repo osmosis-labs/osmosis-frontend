@@ -20,7 +20,6 @@ import {
   UserOsmoAddressSchema,
 } from "@osmosis-labs/trpc";
 import { isInsufficientFeeError } from "@osmosis-labs/tx";
-import { TRPCError } from "@trpc/server";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
@@ -39,11 +38,13 @@ import {
   TronChainInfo,
   XrplChainInfo,
 } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 
@@ -618,13 +619,15 @@ export const bridgeTransferRouter = createTRPCRouter({
         Boolean(externalUrl)
       );
 
+      const allAssetListAssets = ctx.assetLists.flatMap(({ assets }) => assets);
+
       // add external urls for external interfaces from asset list, as long as not already added
-      const assetListFromAsset = ctx.assetLists
-        .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
-      const assetListToAsset = ctx.assetLists
-        .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
+      const assetListFromAsset = allAssetListAssets.find(
+        (asset) => asset.coinMinimalDenom === input.fromAsset?.address
+      );
+      const assetListToAsset = allAssetListAssets.find(
+        (asset) => asset.coinMinimalDenom === input.toAsset?.address
+      );
 
       const externalTransferMethods = (
         assetListFromAsset?.transferMethods.filter(
@@ -679,8 +682,29 @@ export const bridgeTransferRouter = createTRPCRouter({
         }
       );
 
+      // For an alloy withdrawal, a third-party external-interface site (e.g.
+      // Sologenic for allXRP, Picasso for allSOL) only recognises a specific
+      // bridge *variant* (XRP.coreum, SOL.pica), not the alloy denom the user
+      // holds. Resolve, per external URL, the sibling variant whose own
+      // `external_interface` carries the same provider name, so the client can
+      // convert alloy -> variant before opening the URL. Data-driven via the
+      // alloy's variantGroupKey; no per-site hardcoding.
+      const withdrawAlloy =
+        input.fromChain?.chainId === "osmosis-1"
+          ? assetListFromAsset ?? null
+          : null;
+
+      const externalUrlsWithConvert = externalUrls.map((externalUrl) => ({
+        ...externalUrl,
+        convertToVariant: resolveExternalUrlConvertVariant({
+          urlProviderName: externalUrl.urlProviderName,
+          alloy: withdrawAlloy,
+          assets: allAssetListAssets,
+        }),
+      }));
+
       return {
-        externalUrls,
+        externalUrls: externalUrlsWithConvert,
       };
     }),
 

@@ -1,0 +1,129 @@
+import { CoinPretty } from "@osmosis-labs/unit";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
+
+import { SwapTool } from "~/components/swap-tool";
+import { useTranslation } from "~/hooks";
+import { ModalBase } from "~/modals";
+import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+/** Variant a third-party external-interface site recognises in place of the
+ *  alloy. Resolved server-side in `getExternalUrls` from the alloy's
+ *  variantGroupKey family; see bridge-transfer.ts. */
+export interface ConvertToVariant {
+  coinMinimalDenom: string;
+  decimals: number;
+  symbol: string;
+}
+
+/**
+ * Hand-off for an alloy withdrawal whose external-interface site (e.g.
+ * Sologenic for allXRP, Picasso for allSOL) only recognises a bridge *variant*,
+ * not the alloy denom the user holds. Opening the URL directly would strand the
+ * user on a site that rejects the alloy.
+ *
+ * When the user holds the alloy (and not already the variant) this renders a
+ * convert step instead of a plain link: a modal embedding the swap tool
+ * defaulted to alloy → variant (1:1 via the transmuter). The third-party URL is
+ * opened only from `onSwapSuccess`, so a failed, rejected, or
+ * transmuter-cap-blocked convert never redirects (the swap tool surfaces the
+ * error in place). Once the user holds the variant the convert is skipped and
+ * the link opens directly.
+ */
+export const ExternalUrlConvertOption: FunctionComponent<{
+  url: URL;
+  providerName: string;
+  /** The alloy being withdrawn (the swap input). */
+  alloyMinimalDenom: string;
+  convertToVariant: ConvertToVariant;
+  /** Render prop for the clickable surface (splash CTA or list row). Receives
+   *  `href` when the link should open directly, or `onClick` when a convert
+   *  must run first. */
+  children: (props: { href?: string; onClick?: () => void }) => React.ReactNode;
+}> = observer(
+  ({ url, providerName, alloyMinimalDenom, convertToVariant, children }) => {
+    const { accountStore } = useStore();
+    const { t } = useTranslation();
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+    const [isConvertOpen, setIsConvertOpen] = useState(false);
+
+    const openUrl = useCallback(() => {
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+    }, [url]);
+
+    // Use the full balance set (every denom), not the portfolio's top-N
+    // allocations — the alloy/variant may be a long-tail holding.
+    const { data: userBalances } = api.local.balances.getUserBalances.useQuery(
+      { bech32Address: account?.address ?? "" },
+      { enabled: !!account?.address }
+    );
+
+    const holdsAlloy = useMemo(() => {
+      const coin = userBalances?.find(
+        ({ denom }) => denom === alloyMinimalDenom
+      )?.coin;
+      return Boolean(coin?.toDec().isPositive());
+    }, [userBalances, alloyMinimalDenom]);
+
+    const holdsVariant = useMemo(() => {
+      const coin = userBalances?.find(
+        ({ denom }) => denom === convertToVariant.coinMinimalDenom
+      )?.coin as CoinPretty | undefined;
+      return Boolean(coin?.toDec().isPositive());
+    }, [userBalances, convertToVariant.coinMinimalDenom]);
+
+    // Convert only when the user holds the alloy but not yet the variant the
+    // site accepts. Otherwise behave exactly like the plain link.
+    const needsConvert = holdsAlloy && !holdsVariant;
+
+    return (
+      <>
+        {needsConvert
+          ? children({ onClick: () => setIsConvertOpen(true) })
+          : children({ href: url.toString() })}
+        {needsConvert && (
+          <ModalBase
+            isOpen={isConvertOpen}
+            onRequestClose={() => setIsConvertOpen(false)}
+            title={
+              <div className="md:subtitle1 mx-auto text-h6 font-h6">
+                {t("transfer.moreBridgeOptions.convertBeforeWithdraw.title", {
+                  variant: convertToVariant.symbol,
+                  provider: providerName,
+                })}
+              </div>
+            }
+            className="!max-w-[30rem]"
+          >
+            <p className="body2 py-4 text-center text-osmoverse-300">
+              {t(
+                "transfer.moreBridgeOptions.convertBeforeWithdraw.description",
+                { variant: convertToVariant.symbol, provider: providerName }
+              )}
+            </p>
+            {/*
+             * useQueryParams={false}: the bridge flow owns the page query
+             * params; controlled mode keeps the swap state in local React state
+             * so it never writes them. The third-party URL opens only on a
+             * successful convert, so a failed/rejected/cap-blocked swap never
+             * redirects.
+             */}
+            <SwapTool
+              useQueryParams={false}
+              useOtherCurrencies={false}
+              page="Bridge Page"
+              initialSendTokenDenom={alloyMinimalDenom}
+              initialOutTokenDenom={convertToVariant.coinMinimalDenom}
+              onSwapSuccess={() => {
+                setIsConvertOpen(false);
+                openUrl();
+              }}
+            />
+          </ModalBase>
+        )}
+      </>
+    );
+  }
+);

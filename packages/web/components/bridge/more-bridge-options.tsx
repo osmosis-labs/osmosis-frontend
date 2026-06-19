@@ -4,11 +4,23 @@ import Link from "next/link";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { ExternalUrlConvertOption } from "~/components/bridge/external-url-convert";
 import { SkeletonLoader } from "~/components/loaders";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { api } from "~/utils/trpc";
+
+type ExternalUrl = {
+  urlProviderName: string;
+  url: URL;
+  logo: string;
+  convertToVariant?: {
+    coinMinimalDenom: string;
+    decimals: number;
+    symbol: string;
+  };
+};
 
 interface MoreBridgeOptionsProps {
   direction: "deposit" | "withdraw";
@@ -72,13 +84,14 @@ function ExternalProviderList({
     );
   }
 
+  // On a withdrawal the source asset is the (possibly alloyed) asset being sent.
+  const withdrawAlloyMinimalDenom =
+    direction === "withdraw" ? fromAsset?.address : undefined;
+
   // Single provider: centered splash with large logo and primary CTA
   if (externalUrlsData?.externalUrls.length === 1) {
-    const {
-      urlProviderName: providerName,
-      url,
-      logo,
-    } = externalUrlsData.externalUrls[0];
+    const externalUrl = externalUrlsData.externalUrls[0];
+    const { urlProviderName: providerName, logo } = externalUrl;
     return (
       <div className="flex flex-col items-center gap-6 py-4">
         <Image
@@ -88,58 +101,115 @@ function ExternalProviderList({
           height={100}
           className="rounded-2xl"
         />
-        <a
-          href={url.toString()}
-          target="_blank"
-          rel="noreferrer"
-          className="subtitle1 flex w-full items-center justify-center gap-2 rounded-2xl bg-wosmongton-700 px-6 py-4 transition-colors duration-200 hover:bg-wosmongton-700/80"
+        <ExternalUrlOption
+          externalUrl={externalUrl}
+          direction={direction}
+          withdrawAlloyMinimalDenom={withdrawAlloyMinimalDenom}
         >
-          {t(
-            direction === "deposit"
-              ? "transfer.moreBridgeOptions.depositWith"
-              : "transfer.moreBridgeOptions.withdrawWith"
-          )}{" "}
-          {providerName}
-          <Icon id="arrow-up-right" className="text-white-full" />
-        </a>
+          {({ href, onClick }) => (
+            <a
+              href={href}
+              onClick={onClick}
+              {...(href ? { target: "_blank", rel: "noreferrer" } : {})}
+              className="subtitle1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-wosmongton-700 px-6 py-4 transition-colors duration-200 hover:bg-wosmongton-700/80"
+            >
+              {t(
+                direction === "deposit"
+                  ? "transfer.moreBridgeOptions.depositWith"
+                  : "transfer.moreBridgeOptions.withdrawWith"
+              )}{" "}
+              {providerName}
+              <Icon id="arrow-up-right" className="text-white-full" />
+            </a>
+          )}
+        </ExternalUrlOption>
       </div>
     );
   }
 
   return (
     <>
-      {externalUrlsData?.externalUrls.map(
-        ({ urlProviderName: providerName, url, logo }) => (
-          <a
+      {externalUrlsData?.externalUrls.map((externalUrl) => {
+        const { urlProviderName: providerName, url, logo } = externalUrl;
+        return (
+          <ExternalUrlOption
             key={url.toString()}
-            href={url.toString()}
-            target="_blank"
-            rel="noreferrer"
-            className="subtitle1 md:caption flex items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:bg-transparent md:px-2 md:py-2"
+            externalUrl={externalUrl}
+            direction={direction}
+            withdrawAlloyMinimalDenom={withdrawAlloyMinimalDenom}
           >
-            <div className="flex items-center gap-3">
-              <Image
-                alt={`${providerName} logo`}
-                src={logo}
-                width={44}
-                height={42}
-              />
-              <span>
-                {t(
-                  direction === "deposit"
-                    ? "transfer.moreBridgeOptions.depositWith"
-                    : "transfer.moreBridgeOptions.withdrawWith"
-                )}{" "}
-                {providerName}
-              </span>
-            </div>
-            <Icon id="arrow-up-right" className="text-osmoverse-400" />
-          </a>
-        )
-      )}
+            {({ href, onClick }) => (
+              <a
+                href={href}
+                onClick={onClick}
+                {...(href ? { target: "_blank", rel: "noreferrer" } : {})}
+                className="subtitle1 md:caption flex w-full cursor-pointer items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:bg-transparent md:px-2 md:py-2"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    alt={`${providerName} logo`}
+                    src={logo}
+                    width={44}
+                    height={42}
+                  />
+                  <span>
+                    {t(
+                      direction === "deposit"
+                        ? "transfer.moreBridgeOptions.depositWith"
+                        : "transfer.moreBridgeOptions.withdrawWith"
+                    )}{" "}
+                    {providerName}
+                  </span>
+                </div>
+                <Icon id="arrow-up-right" className="text-osmoverse-400" />
+              </a>
+            )}
+          </ExternalUrlOption>
+        );
+      })}
     </>
   );
 }
+
+/**
+ * Renders one external-URL bridge option. When the option carries a
+ * `convertToVariant` (an alloy withdrawal whose third-party site only
+ * recognises a specific variant), it routes the click through the pre-convert
+ * flow; otherwise it opens the URL directly. Both the single-provider splash
+ * and the multi-provider list use this so the convert path is never bypassed.
+ */
+const ExternalUrlOption: FunctionComponent<{
+  externalUrl: ExternalUrl;
+  direction: "deposit" | "withdraw";
+  withdrawAlloyMinimalDenom?: string;
+  children: (props: { href?: string; onClick?: () => void }) => React.ReactNode;
+}> = ({ externalUrl, direction, withdrawAlloyMinimalDenom, children }) => {
+  const { url, urlProviderName, convertToVariant } = externalUrl;
+
+  // Pre-convert only applies to an alloy withdrawal whose site needs a variant.
+  // ExternalUrlConvertOption decides per-balance whether to actually intercept
+  // the click (convert) or fall through to opening the URL.
+  if (
+    direction === "withdraw" &&
+    withdrawAlloyMinimalDenom &&
+    convertToVariant
+  ) {
+    return (
+      <ExternalUrlConvertOption
+        url={url}
+        providerName={urlProviderName}
+        alloyMinimalDenom={withdrawAlloyMinimalDenom}
+        convertToVariant={convertToVariant}
+      >
+        {children}
+      </ExternalUrlConvertOption>
+    );
+  }
+
+  // No convert needed: render as a real link so middle-click / open-in-new-tab
+  // keep working.
+  return <>{children({ href: url.toString() })}</>;
+};
 
 /** Inline provider list for assets that only support external transfers (e.g. NAM). */
 export const ExternalOnlyProviderList: FunctionComponent<

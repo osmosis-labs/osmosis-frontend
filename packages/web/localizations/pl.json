@@ -876,7 +876,11 @@
       "chooseAnAlternativeProviderWithdraw": "Wybierz alternatywnego dostawcę, aby wycofać {asset} z {fromChain} do {toChain}",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z",
-      "noAlternativesFound": "Nie znaleziono alternatywnych dostawców dla tej trasy."
+      "noAlternativesFound": "Nie znaleziono alternatywnych dostawców dla tej trasy.",
+      "convertBeforeWithdraw": {
+        "title": "Najpierw przekonwertuj na {variant}",
+        "description": "{provider} akceptuje tylko {variant}. Przekonwertuj swoje saldo alloyed na {variant} poniżej, a następnie przejdź do {provider}, aby zakończyć wypłatę."
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Wybierz zasób do zdeponowania",

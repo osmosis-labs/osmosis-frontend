@@ -876,7 +876,11 @@
       "chooseAnAlternativeProviderWithdraw": "選擇替代提供者將{asset}從{fromChain}撤回到{toChain}",
       "depositWith": "存款於",
       "withdrawWith": "撤回與",
-      "noAlternativesFound": "找不到此路線的替代提供者。"
+      "noAlternativesFound": "找不到此路線的替代提供者。",
+      "convertBeforeWithdraw": {
+        "title": "請先轉換為 {variant}",
+        "description": "{provider} 僅接受 {variant}。請在下方將您的合金餘額轉換為 {variant}，然後繼續前往 {provider} 完成提款。"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "選擇要存入的資產",
