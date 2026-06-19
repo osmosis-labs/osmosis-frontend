@@ -797,6 +797,143 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Single-asset "zap-in" into a concentrated liquidity position. Composes a
+   * swap and a create-position into a single atomic transaction (one signature,
+   * one fee): the swap leg converts part of the provided asset into the
+   * counterparty so the resulting two amounts match the position's required
+   * ratio, then the position is created. Both messages revert together if either
+   * fails — there is no chain-side partial settlement.
+   *
+   * The caller (see `useAddConcentratedLiquidityConfig` / `use-cl-zap-quote`) is
+   * responsible for computing the swap split via SQS and the slippage-adjusted
+   * minima; this method only composes the messages.
+   *
+   * @param poolId CL pool to create the position in.
+   * @param lowerTick Lower tick index.
+   * @param upperTick Upper tick index.
+   * @param swapIn SQS route(s), the token being swapped in, and the
+   *   slippage-adjusted minimum out amount (all micro amounts).
+   * @param tokensProvided Coins to provide to the position, denom-sorted, in
+   *   micro amounts (remaining input side + the swap's expected output side).
+   * @param tokenMinAmount0 Slippage floor for token0 on the create-position leg.
+   * @param tokenMinAmount1 Slippage floor for token1 on the create-position leg.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendZapInToConcentratedPositionMsg(
+    poolId: string,
+    lowerTick: Int,
+    upperTick: Int,
+    swapIn: {
+      routes: {
+        pools: { id: string; tokenOutDenom: string }[];
+        tokenInAmount: string;
+      }[];
+      tokenInCoinMinimalDenom: string;
+      tokenOutMinAmount: string;
+    },
+    tokensProvided: { denom: string; amount: string }[],
+    tokenMinAmount0: string,
+    tokenMinAmount1: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const queries = this.queries;
+
+    let queryPool = queries.queryPools.getPool(poolId);
+    if (!queryPool) {
+      try {
+        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
+      } catch (e) {
+        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
+      }
+      queryPool = queries.queryPools.getPool(poolId);
+    }
+
+    if (!queryPool) {
+      throw new Error(`Pool #${poolId} not found`);
+    }
+
+    const clInfo = queryPool.concentratedLiquidityPoolInfo;
+    if (queryPool.pool.type !== "concentrated" || !clInfo) {
+      throw new Error("Must be concentrated pool");
+    }
+
+    if (swapIn.routes.length < 1 || swapIn.routes[0].pools.length < 1) {
+      throw new Error("Zap-in requires a non-empty swap route");
+    }
+
+    // avoid serializing 0 ticks issue, mirroring create-position
+    if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
+    if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clZapInPosition",
+      async () => {
+        const swapMsg =
+          swapIn.routes.length === 1
+            ? await makeSwapExactAmountInMsg({
+                pools: swapIn.routes[0].pools,
+                tokenIn: {
+                  coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                  amount: swapIn.routes[0].tokenInAmount,
+                },
+                tokenOutMinAmount: swapIn.tokenOutMinAmount,
+                userOsmoAddress: this.address,
+              })
+            : await makeSplitRoutesSwapExactAmountInMsg({
+                routes: swapIn.routes,
+                tokenIn: {
+                  coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                },
+                tokenOutMinAmount: swapIn.tokenOutMinAmount,
+                userOsmoAddress: this.address,
+              });
+
+        const createPositionMsg = await makeCreatePositionMsg({
+          poolId: BigInt(poolId),
+          lowerTick: BigInt(lowerTick.toString()),
+          upperTick: BigInt(upperTick.toString()),
+          sender: this.address,
+          tokenMinAmount0,
+          tokenMinAmount1,
+          tokensProvided,
+        });
+
+        return [swapMsg, createPositionMsg];
+      },
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryAccountsPositions
+            .get(this.address)
+            ?.waitFreshResponse();
+
+          const newPositionID = findNewClPositionId(tx);
+          if (newPositionID) {
+            setTimeout(() => {
+              this.queriesExternalStore?.queryPositionsPerformaceMetrics
+                .get(newPositionID)
+                ?.waitFreshResponse();
+            }, 30_000);
+          }
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   async sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
     poolId: string,
     memo: string = "",
