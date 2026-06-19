@@ -37,15 +37,23 @@ import type {
  * custom external flow, so its `external_interface` is intentional. `unstable`
  * is warning-only and does not gate the UI, so unstable constituents are kept.
  *
- * Scope: this returns every viable variant in the family, including ones that
- * bridge to a differently-wrapped form of the asset (e.g. for allBTC, the
- * EVM-wrapped WBTC.eth / cbBTC / FBTC variants route out via Squid, alongside
- * the native-BTC ckBTC / nBTC / BTC.int3 variants). Whether a "withdraw BTC"
- * fallback should be narrowed to same-asset exits only is a canonical-variant
- * judgment with no single discriminating field in the asset list (symbol and
- * counterparty chain type both overlap across native and wrapped variants), so
- * it is intentionally left to the unified alloy -> variant resolver rather than
- * encoded as a per-asset heuristic here.
+ * Membership gating (REQUIRED): `variantGroupKey` is a display/grouping key, NOT
+ * alloy pool membership. A variant can share the alloy's `variantGroupKey` while
+ * not being a constituent of the alloy's transmuter pool, so the user cannot
+ * convert the alloy into it 1:1 and any route to it is a dead end. Concrete live
+ * example: BTC.int3 shares the allBTC group key but is NOT in the allBTC pool.
+ * The caller therefore must pass `memberDenoms` — the alloy's true pool-member
+ * denom set, read from the CW pool contract (`get_total_pool_liquidity` on
+ * `alloy.contract`, via `getCachedTransmuterTotalPoolLiquidity`). Only variants
+ * in that set are surfaced. Pass an empty set to surface nothing; the caller
+ * should only invoke this once it has resolved membership (fallback path).
+ *
+ * Scope (separate from membership): even among true members, this returns every
+ * viable one, including ones that bridge to a differently-wrapped form of the
+ * asset (e.g. EVM-wrapped WBTC variants via Squid). Narrowing a "withdraw BTC"
+ * fallback to same-asset exits only is a canonical-variant judgment with no
+ * single discriminating field in the asset list, so it is left to the unified
+ * resolver.
  *
  * The returned methods are not deduped among themselves; the caller is
  * responsible for collapsing duplicates (e.g. a provider that appears on both
@@ -55,6 +63,7 @@ export function getAlloyConstituentExternalInterfaceMethods({
   alloy,
   assets,
   direction,
+  memberDenoms,
 }: {
   alloy:
     | Pick<Asset, "coinMinimalDenom" | "isAlloyed" | "variantGroupKey">
@@ -62,6 +71,10 @@ export function getAlloyConstituentExternalInterfaceMethods({
     | undefined;
   assets: Asset[];
   direction: "deposit" | "withdraw";
+  /** The alloy's true pool-member coinMinimalDenoms (from the transmuter pool).
+   *  A grouped variant not in this set is excluded — it is not redeemable from
+   *  the alloy. */
+  memberDenoms: Set<string>;
 }): ExternalInterfaceBridgeTransferMethod[] {
   if (!alloy?.isAlloyed) return [];
 
@@ -69,7 +82,8 @@ export function getAlloyConstituentExternalInterfaceMethods({
   // `variantGroupKey` points back at the alloy's `coinMinimalDenom`. Match on
   // the alloy's own denom so we never depend on the alloy carrying its own
   // counterparty/transfer data. Exclude the alloy's own entry and any nested
-  // alloy so only true variants contribute.
+  // alloy so only true variants contribute, then gate by actual pool membership
+  // so we never surface a group-sibling the user cannot obtain from the alloy.
   const alloyDenom = alloy.coinMinimalDenom;
 
   return assets
@@ -78,6 +92,7 @@ export function getAlloyConstituentExternalInterfaceMethods({
         asset.variantGroupKey === alloyDenom &&
         asset.coinMinimalDenom !== alloyDenom &&
         !asset.isAlloyed &&
+        memberDenoms.has(asset.coinMinimalDenom) &&
         // Skip a constituent whose active direction is kill-switched; its
         // bridge link is dead right now.
         !(direction === "withdraw" && asset.haltWithdrawals) &&

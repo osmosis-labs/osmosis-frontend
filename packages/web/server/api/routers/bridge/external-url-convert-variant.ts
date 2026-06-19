@@ -19,21 +19,31 @@ export interface ExternalUrlConvertVariant {
  * Sologenic for allXRP, Picasso for allSOL) only recognises a specific bridge
  * *variant* (XRP.coreum, SOL.pica), not the alloy denom the user holds. Given
  * the external URL's provider name and the alloy being withdrawn, resolve the
- * sibling variant (same `variantGroupKey`) whose own `external_interface`
- * carries the same provider name, so the caller can convert alloy -> variant
- * before opening the URL.
+ * sibling variant whose own `external_interface` carries the same provider name,
+ * so the caller can convert alloy -> variant before opening the URL.
+ *
+ * Membership gating (REQUIRED): the matched variant MUST be a true constituent
+ * of the alloy's transmuter pool — i.e. its `coinMinimalDenom` is in
+ * `memberDenoms` (read from `get_total_pool_liquidity` on `alloy.contract`).
+ * `variantGroupKey` alone is a display grouping, not pool membership: a grouped
+ * sibling that is not pooled cannot be obtained by converting the alloy, so
+ * pre-selecting it would instruct a transmuter swap the pool rejects. This
+ * helper drives an action (the convert), so the gate is correctness-critical.
  *
  * Returns `undefined` when:
  * - the from-asset is not an alloy, or
- * - no sibling variant carries an `external_interface` with that provider name.
+ * - no pooled member variant carries an `external_interface` with that provider
+ *   name.
  *
- * Purely data-driven via the alloy's variant group; no per-site hardcoding. The
- * matched variant must not be the alloy itself.
+ * Data-driven via the alloy's pool membership + variant group; no per-site
+ * hardcoding. The matched variant must not be the alloy itself or a nested
+ * alloy.
  */
 export function resolveExternalUrlConvertVariant({
   urlProviderName,
   alloy,
   assets,
+  memberDenoms,
 }: {
   urlProviderName: string;
   /** The from-asset of the withdrawal (the alloy candidate). */
@@ -43,6 +53,9 @@ export function resolveExternalUrlConvertVariant({
   > | null;
   /** All asset-list assets (flattened). */
   assets: Asset[];
+  /** The alloy's true pool-member coinMinimalDenoms (from the transmuter pool).
+   *  Only a member can be a valid convert target. */
+  memberDenoms: Set<string>;
 }): ExternalUrlConvertVariant | undefined {
   if (!alloy?.isAlloyed || !alloy.variantGroupKey) return undefined;
 
@@ -50,6 +63,8 @@ export function resolveExternalUrlConvertVariant({
     (asset) =>
       asset.variantGroupKey === alloy.variantGroupKey &&
       asset.coinMinimalDenom !== alloy.coinMinimalDenom &&
+      !asset.isAlloyed &&
+      memberDenoms.has(asset.coinMinimalDenom) &&
       asset.transferMethods.some(
         (method) =>
           method.type === "external_interface" &&

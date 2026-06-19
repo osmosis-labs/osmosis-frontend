@@ -79,6 +79,11 @@ const variantAsset = asset({
 
 const assets = [alloyAsset, variantAsset];
 
+/** Default member set: every non-alloy asset is treated as a true pool member.
+ *  Membership-gating tests pass a restricted set explicitly. */
+const allMembers = (list: Asset[]): Set<string> =>
+  new Set(list.filter((a) => !a.isAlloyed).map((a) => a.coinMinimalDenom));
+
 describe("resolveExternalUrlConvertVariant", () => {
   it("resolves the sibling variant whose external_interface matches the provider", () => {
     expect(
@@ -86,6 +91,7 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: SOLOGENIC,
         alloy: alloyAsset,
         assets,
+        memberDenoms: allMembers(assets),
       })
     ).toEqual({
       coinMinimalDenom: VARIANT_DENOM,
@@ -99,6 +105,7 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: SOLOGENIC,
         alloy: { ...variantAsset, isAlloyed: false },
         assets,
+        memberDenoms: allMembers(assets),
       })
     ).toBeUndefined();
   });
@@ -109,6 +116,7 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: SOLOGENIC,
         alloy: null,
         assets,
+        memberDenoms: allMembers(assets),
       })
     ).toBeUndefined();
   });
@@ -119,6 +127,7 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: "Some Other Bridge",
         alloy: alloyAsset,
         assets,
+        memberDenoms: allMembers(assets),
       })
     ).toBeUndefined();
   });
@@ -130,6 +139,7 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: SOLOGENIC,
         alloy: alloyAsset,
         assets: [alloyAsset],
+        memberDenoms: allMembers([alloyAsset]),
       })
     ).toBeUndefined();
   });
@@ -152,6 +162,46 @@ describe("resolveExternalUrlConvertVariant", () => {
         urlProviderName: SOLOGENIC,
         alloy: alloyAsset,
         assets: [alloyAsset, otherGroupVariant],
+        memberDenoms: allMembers([alloyAsset, otherGroupVariant]),
+      })
+    ).toBeUndefined();
+  });
+
+  it("returns undefined when the matching sibling is not a pool member", () => {
+    // The variant carries the matching provider AND shares the group key, but
+    // is NOT in the alloy's transmuter pool, so it is not a valid convert
+    // target (the alloy cannot be redeemed into it).
+    expect(
+      resolveExternalUrlConvertVariant({
+        urlProviderName: SOLOGENIC,
+        alloy: alloyAsset,
+        assets,
+        memberDenoms: new Set(), // variantAsset is not a member
+      })
+    ).toBeUndefined();
+  });
+
+  it("does not match a sibling that is itself an alloy", () => {
+    const nestedAlloy = asset({
+      coinMinimalDenom: "factory/.../alloyed/allNested",
+      symbol: "XRP.nested",
+      isAlloyed: true,
+      variantGroupKey: ALLOY_DENOM,
+      transferMethods: [
+        {
+          name: SOLOGENIC,
+          type: "external_interface",
+          withdrawUrl: "https://sologenic.org/bridge/coreum-bridge",
+        },
+      ],
+    });
+    expect(
+      resolveExternalUrlConvertVariant({
+        urlProviderName: SOLOGENIC,
+        alloy: alloyAsset,
+        assets: [alloyAsset, nestedAlloy],
+        // Even if (wrongly) listed as a member, the isAlloyed guard excludes it.
+        memberDenoms: new Set([nestedAlloy.coinMinimalDenom]),
       })
     ).toBeUndefined();
   });

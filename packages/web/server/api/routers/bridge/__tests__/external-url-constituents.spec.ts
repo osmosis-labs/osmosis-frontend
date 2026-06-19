@@ -41,6 +41,11 @@ const externalInterface = (
   ...urls,
 });
 
+/** Default member set: treat every non-alloy asset as a true pool member.
+ *  Tests that exercise membership gating pass a restricted set explicitly. */
+const allMembers = (assets: Asset[]): Set<string> =>
+  new Set(assets.filter((a) => !a.isAlloyed).map((a) => a.coinMinimalDenom));
+
 const ibcMethod = {
   type: "ibc" as const,
   counterparty: {
@@ -88,6 +93,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
       alloy,
       assets,
       direction: "withdraw",
+      memberDenoms: allMembers(assets),
     });
 
     // Order is incidental (asset-list iteration order); assert membership, not
@@ -122,6 +128,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
       alloy,
       assets: [alloy, nestedAlloy, realVariant],
       direction: "withdraw",
+      memberDenoms: allMembers([alloy, nestedAlloy, realVariant]),
     });
 
     expect(result.map((m) => m.name)).toEqual(["WBTC Bridge"]);
@@ -147,6 +154,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
       alloy,
       assets: [alloy, variant],
       direction: "withdraw",
+      memberDenoms: allMembers([alloy, variant]),
     });
 
     // Only the variant's method, not the alloy's own (caller adds the alloy's
@@ -168,6 +176,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy: variant,
         assets: [variant],
         direction: "withdraw",
+        memberDenoms: allMembers([variant]),
       })
     ).toEqual([]);
   });
@@ -178,6 +187,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy: null,
         assets: [],
         direction: "withdraw",
+        memberDenoms: new Set(),
       })
     ).toEqual([]);
     expect(
@@ -185,6 +195,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy: undefined,
         assets: [],
         direction: "withdraw",
+        memberDenoms: new Set(),
       })
     ).toEqual([]);
   });
@@ -208,6 +219,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, variant],
         direction: "withdraw",
+        memberDenoms: allMembers([alloy, variant]),
       })
     ).toEqual([]);
   });
@@ -237,6 +249,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
       alloy,
       assets: [alloy, xrpVariant, btcVariant],
       direction: "withdraw",
+      memberDenoms: allMembers([alloy, xrpVariant, btcVariant]),
     });
 
     expect(result.map((m) => m.name)).toEqual(["Sologenic TX Bridge"]);
@@ -267,6 +280,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
       alloy,
       assets: [alloy, variant],
       direction: "withdraw",
+      memberDenoms: allMembers([alloy, variant]),
     });
 
     expect(method.depositUrl).toBe(
@@ -305,6 +319,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, haltedVariant, liveVariant],
         direction: "withdraw",
+        memberDenoms: allMembers([alloy, haltedVariant, liveVariant]),
       });
 
       expect(result.map((m) => m.name)).toEqual(["Omnity Bridge"]);
@@ -328,6 +343,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, withdrawHalted],
         direction: "deposit",
+        memberDenoms: allMembers([alloy, withdrawHalted]),
       });
 
       expect(result.map((m) => m.name)).toEqual(["Nitro Router"]);
@@ -346,6 +362,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, depositHalted],
         direction: "deposit",
+        memberDenoms: allMembers([alloy, depositHalted]),
       });
 
       expect(result).toEqual([]);
@@ -364,6 +381,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, disabledVariant],
         direction: "withdraw",
+        memberDenoms: allMembers([alloy, disabledVariant]),
       });
 
       expect(result.map((m) => m.name)).toEqual(["Nomic"]);
@@ -382,9 +400,58 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         alloy,
         assets: [alloy, unstableVariant],
         direction: "withdraw",
+        memberDenoms: allMembers([alloy, unstableVariant]),
       });
 
       expect(result.map((m) => m.name)).toEqual(["Int3face Bridge"]);
+    });
+  });
+
+  describe("pool membership gating", () => {
+    const alloy = asset({
+      coinMinimalDenom: ALL_BTC,
+      isAlloyed: true,
+      variantGroupKey: ALL_BTC,
+      transferMethods: [],
+    });
+    // A true pool constituent.
+    const ckBTC = asset({
+      coinMinimalDenom: "ibc/CKBTC",
+      isAlloyed: false,
+      variantGroupKey: ALL_BTC,
+      transferMethods: [externalInterface("Omnity Bridge")],
+    });
+    // Shares the allBTC variantGroupKey but is NOT in the allBTC pool (the
+    // real-world BTC.int3 case). Must never be surfaced to an allBTC holder.
+    const btcInt3 = asset({
+      coinMinimalDenom: "ibc/BTC_INT3",
+      isAlloyed: false,
+      variantGroupKey: ALL_BTC,
+      transferMethods: [externalInterface("Int3face Bridge")],
+    });
+    const assets = [alloy, ckBTC, btcInt3];
+
+    it("excludes a grouped variant that is not a pool member (BTC.int3 for allBTC)", () => {
+      const result = getAlloyConstituentExternalInterfaceMethods({
+        alloy,
+        assets,
+        direction: "withdraw",
+        // Only ckBTC is a real pool member; BTC.int3 is grouped but not pooled.
+        memberDenoms: new Set([ckBTC.coinMinimalDenom]),
+      });
+
+      expect(result.map((m) => m.name)).toEqual(["Omnity Bridge"]);
+    });
+
+    it("surfaces nothing when no grouped variant is a pool member", () => {
+      const result = getAlloyConstituentExternalInterfaceMethods({
+        alloy,
+        assets,
+        direction: "withdraw",
+        memberDenoms: new Set(),
+      });
+
+      expect(result).toEqual([]);
     });
   });
 });
