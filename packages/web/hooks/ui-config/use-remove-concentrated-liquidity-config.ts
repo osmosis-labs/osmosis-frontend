@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useZapOutQuote } from "~/hooks/use-zap-out-quote";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -96,13 +97,13 @@ export function useRemoveConcentratedLiquidityConfig(
     return Number(baseValue.quo(total).toString());
   })();
 
-  // The swap leg needed to reach the target value split (zap-out). The
-  // output-mix slider is always shown; "single-asset mode" is implicit, it is
-  // simply whether the target differs from the position's current ratio enough
-  // that a swap is required. `calcZapOutSwapAmount` returns a zero swap when the
-  // target equals the current value split (the no-swap point the handle starts
-  // at), so `needsSwap` is the single-asset signal — no explicit toggle.
-  const requiredSwap: ZapOutRequiredSwap | undefined = (() => {
+  // Compute the swap leg for a given target value-split. `calcZapOutSwapAmount`
+  // returns a zero swap when the target equals the current value split (the
+  // no-swap point the handle starts at), so `needsSwap` is the single-asset
+  // signal — no explicit toggle.
+  const computeRequiredSwap = (
+    targetFraction: number
+  ): ZapOutRequiredSwap | undefined => {
     if (!currentSqrtPrice || !withdrawn) return undefined;
 
     const baseWithdrawn = new Int(withdrawn.base.toCoin().amount);
@@ -114,9 +115,7 @@ export function useRemoveConcentratedLiquidityConfig(
       baseWithdrawn,
       quoteWithdrawn,
       currentSqrtPrice,
-      targetBaseValueFraction: new BigDec(
-        config.targetBaseValueFraction.toString()
-      ),
+      targetBaseValueFraction: new BigDec(targetFraction.toString()),
     });
 
     const baseCurrency = withdrawn.base.currency;
@@ -131,15 +130,29 @@ export function useRemoveConcentratedLiquidityConfig(
       tokenOutCurrency,
       needsSwap: swapInAmount.gt(new Int(0)),
     };
-  })();
+  };
 
-  // Quote the swap leg (exact-in). Disabled when no swap is needed (handle at
-  // the no-swap point), so it never queries unnecessarily.
+  // Live swap for the instant display (the "X will be swapped" line, the
+  // slider, value/percent breakdown).
+  const requiredSwap = computeRequiredSwap(config.targetBaseValueFraction);
+
+  // Debounced swap that drives the actual quote, so dragging the slider doesn't
+  // fire a quote on every tick — only after it settles for 500ms. The instant
+  // display above still reflects the live target.
+  const [debouncedTargetFraction, setDebouncedTargetFraction] =
+    useDebouncedState(config.targetBaseValueFraction, 500);
+  useEffect(() => {
+    setDebouncedTargetFraction(config.targetBaseValueFraction);
+  }, [config.targetBaseValueFraction, setDebouncedTargetFraction]);
+  const quotedSwap = computeRequiredSwap(debouncedTargetFraction);
+
+  // Quote the (debounced) swap leg (exact-in). Disabled when no swap is needed
+  // (handle at the no-swap point), so it never queries unnecessarily.
   const zapQuote = useZapOutQuote({
-    tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
-    tokenInDenom: requiredSwap?.tokenInCurrency.coinMinimalDenom ?? "",
-    tokenOutDenom: requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
-    enabled: Boolean(requiredSwap?.needsSwap),
+    tokenInAmount: quotedSwap?.swapInAmount.toString() ?? "0",
+    tokenInDenom: quotedSwap?.tokenInCurrency.coinMinimalDenom ?? "",
+    tokenOutDenom: quotedSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
+    enabled: Boolean(quotedSwap?.needsSwap),
   });
 
   const removeLiquidity = useCallback(
@@ -185,7 +198,9 @@ export function useRemoveConcentratedLiquidityConfig(
           const liquidity = config.effectiveLiquidity;
           if (!liquidity) return reject("Invalid liquidity");
           if (!account) return reject("No account");
-          if (!requiredSwap?.needsSwap || !zapQuote.quote)
+          // Submit against the debounced swap the quote was computed for, not
+          // the live (possibly mid-drag) one.
+          if (!quotedSwap?.needsSwap || !zapQuote.quote)
             return reject("Swap quote not ready");
 
           const slippageMultiplier = new Dec(1).sub(
@@ -198,7 +213,7 @@ export function useRemoveConcentratedLiquidityConfig(
           // swap (and whole tx) reverts. MsgWithdrawPosition carries no minima,
           // so this lower bound plus the swap's tokenOutMinAmount are the only
           // slippage guards.
-          const swapInLowerBound = new Dec(requiredSwap.swapInAmount)
+          const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
             .mul(slippageMultiplier)
             .truncate();
           if (swapInLowerBound.lte(new Int(0)))
@@ -240,7 +255,7 @@ export function useRemoveConcentratedLiquidityConfig(
             {
               routes,
               tokenInCoinMinimalDenom:
-                requiredSwap.tokenInCurrency.coinMinimalDenom,
+                quotedSwap.tokenInCurrency.coinMinimalDenom,
               tokenOutMinAmount: tokenOutMinAmount.toString(),
             },
             undefined,
@@ -272,7 +287,7 @@ export function useRemoveConcentratedLiquidityConfig(
       config.effectiveLiquidity,
       config.percentage,
       account,
-      requiredSwap,
+      quotedSwap,
       zapQuote.quote,
       zapSlippageConfig,
       logEvent,
