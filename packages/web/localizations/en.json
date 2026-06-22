@@ -36,15 +36,11 @@
     "estimated": "Estimated",
     "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%.",
     "singleAsset": {
-      "toggleSingle": "Single asset",
-      "toggleTwo": "Two assets",
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} will be swapped to {outDenom} to match the position ratio.",
+      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
       "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "estimatedReceived": "Estimated {denom} received",
-      "priceImpact": "Price impact",
-      "swapFee": "Swap fee",
-      "maxSlippage": "Max slippage",
-      "atomicNote": "One transaction, one fee, two operations. The swap and the deposit settle together; if either can't complete within your slippage tolerance, the whole transaction is cancelled and your funds stay in your wallet.",
+      "valueIn": "Value in",
+      "valueOut": "Value out",
+      "totalCost": "Total cost",
       "quoteLoading": "Finding the best swap…"
     }
   },

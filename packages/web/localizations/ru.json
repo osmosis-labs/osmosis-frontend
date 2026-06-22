@@ -34,7 +34,15 @@
     "low": "низкий",
     "buttonCreateAndStake": "Создать позицию и ставку",
     "estimated": "Оцененный",
-    "estimatedInfo": "Это оценка, основанная на текущих выбранных ценах. Фактическая годовая процентная ставка может отличаться. Если позиция выйдет за пределы диапазона, годовая процентная ставка составит 0%."
+    "estimatedInfo": "Это оценка, основанная на текущих выбранных ценах. Фактическая годовая процентная ставка может отличаться. Если позиция выйдет за пределы диапазона, годовая процентная ставка составит 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
+      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
+      "valueIn": "Value in",
+      "valueOut": "Value out",
+      "totalCost": "Total cost",
+      "quoteLoading": "Finding the best swap…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Что такое повышенная ликвидность?",
