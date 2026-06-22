@@ -208,5 +208,27 @@ describe("calcZapInSwapAmount", () => {
       });
       expect(swap.toString()).toBe("0");
     });
+
+    // A dust input on a genuinely two-sided range truncates the swap split to
+    // zero. Callers must treat this as "too small", NOT as "one-sided range, no
+    // swap needed" — otherwise they would submit a one-sided position for a
+    // range that needs both tokens, which reverts on-chain. The range-side
+    // classification (spot strictly inside [lower, upper]) is what distinguishes
+    // the two; this asserts the truncation half of that contract.
+    it("truncates to 0 for a dust input on a two-sided range", () => {
+      const centered = geometricMeanSqrtPrice(lowerTick, upperTick);
+      const swap = calcZapInSwapAmount({
+        inputAmount: new Int(1), // 1 micro unit, smallest possible
+        inputSide: "base",
+        lowerTick,
+        upperTick,
+        currentSqrtPrice: centered,
+      });
+      // spot is strictly inside the range, so the position is two-sided, yet the
+      // swap rounds to nothing.
+      expect(centered.gt(new BigDec(tickToSqrtPrice(lowerTick)))).toBe(true);
+      expect(centered.lt(new BigDec(tickToSqrtPrice(upperTick)))).toBe(true);
+      expect(swap.toString()).toBe("0");
+    });
   });
 });

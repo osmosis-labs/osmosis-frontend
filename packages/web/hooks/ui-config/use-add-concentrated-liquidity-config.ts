@@ -16,6 +16,7 @@ import {
   priceToTick,
   roundPriceToNearestTick,
   roundToNearestDivisible,
+  tickToSqrtPrice,
 } from "@osmosis-labs/math";
 import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import {
@@ -116,12 +117,15 @@ export function useAddConcentratedLiquidityConfig(
   );
 
   // Hydrate the single-asset toggle from the persisted per-pool preference.
+  // Pairs with the persist `reaction` below: hydration writes config <- storage,
+  // the reaction writes storage <- config. The loop is safe because both sides
+  // converge to the same boolean (mobx/setState no-op on equal values).
   useEffect(() => {
     config.setSingleAssetMode(persistedSingleAssetMode);
   }, [config, persistedSingleAssetMode]);
 
   // Persist subsequent toggles. `reaction` (unlike `autorun`) doesn't fire on
-  // setup, so it can't clobber the stored preference before hydration above.
+  // setup, so it can't clobber the stored preference before the hydration above.
   useEffect(
     () =>
       reaction(
@@ -369,6 +373,15 @@ export function useAddConcentratedLiquidityConfig(
             }
           };
 
+          // A two-sided range that needs no swap only because the split
+          // truncated to zero (dust input) must not be sent as a one-sided
+          // position — the chain would reject or strand it. Reject early.
+          if (!requiredSwap.needsSwap && !requiredSwap.rangeIsOneSided) {
+            throw new Error(
+              "Deposit amount too small to compute a swap for this range"
+            );
+          }
+
           // Range entirely on the provided asset's side: no swap, create a
           // one-sided position directly with the full provided amount.
           if (!requiredSwap.needsSwap) {
@@ -456,7 +469,10 @@ export function useAddConcentratedLiquidityConfig(
           // token0/token1 minima: a single slippage buffer below the expected
           // supplied amounts (token0 = base, token1 = quote; CL pools enforce
           // base denom < quote). Applied once here, never compounded with the
-          // swap-leg floor.
+          // swap-leg floor. On the swapped side this floor equals the swap's
+          // own `tokenOutMinAmount` (both are expected-out x (1 - slip)), so a
+          // worst-case fill leaves no extra create-position margin by design;
+          // the two legs share one slippage and revert together atomically.
           const tokenMinAmount0 = new Dec(baseMicro)
             .mul(slippageMultiplier)
             .truncate()
@@ -482,9 +498,9 @@ export function useAddConcentratedLiquidityConfig(
             undefined,
             onFulfill
           );
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.error(e);
-          reject(e.message);
+          reject(e instanceof Error ? e.message : String(e));
         }
       }),
     [
@@ -902,6 +918,10 @@ export class ObservableAddConcentratedLiquidityConfig {
         tokenInCurrency: AmountConfig["sendCurrency"];
         tokenOutCurrency: AmountConfig["sendCurrency"];
         needsSwap: boolean;
+        /** True when spot is outside the chosen range, so the position is
+         *  genuinely one-sided and no swap is correct. Distinct from a two-sided
+         *  range whose swap split merely truncated to zero on a dust input. */
+        rangeIsOneSided: boolean;
       }
     | undefined {
     if (!this._singleAssetMode || !this.pool) return undefined;
@@ -922,6 +942,16 @@ export class ObservableAddConcentratedLiquidityConfig {
       currentSqrtPrice: this.pool.currentSqrtPrice,
     });
 
+    // Classify spot vs range the same way calcZapInSwapAmount does internally,
+    // so the caller can tell a genuinely one-sided range (no swap correct) apart
+    // from a two-sided range whose split truncated to zero on a tiny input.
+    const currentSqrtPrice = this.pool.currentSqrtPrice;
+    const lowerSqrtPrice = new BigDec(tickToSqrtPrice(lowerTick));
+    const upperSqrtPrice = new BigDec(tickToSqrtPrice(upperTick));
+    const rangeIsOneSided =
+      currentSqrtPrice.lte(lowerSqrtPrice) ||
+      currentSqrtPrice.gte(upperSqrtPrice);
+
     const tokenInCurrency =
       side === "base"
         ? this._baseDepositAmountIn.sendCurrency
@@ -937,7 +967,50 @@ export class ObservableAddConcentratedLiquidityConfig {
       tokenInCurrency,
       tokenOutCurrency,
       needsSwap: swapInAmount.gt(new Int(0)),
+      rangeIsOneSided,
     };
+  }
+
+  /**
+   * Authoritative UI/submit state for single-asset mode, so the message, the
+   * quote gating, and the submit button all read one source of truth:
+   * - `undefined`  not in single-asset mode / pool not ready
+   * - `empty`      no positive amount typed yet
+   * - `too-small`  a positive amount was typed but it is below the token's
+   *                precision (rounds to 0 micro) or its swap split rounds to
+   *                zero on a two-sided range — not submittable
+   * - `one-sided`  spot is outside the range; deposit one asset, no swap
+   * - `swap`       a swap is required to reach the position ratio
+   */
+  @computed
+  get singleAssetInputState():
+    | undefined
+    | "empty"
+    | "too-small"
+    | "one-sided"
+    | "swap" {
+    if (!this._singleAssetMode || !this.pool) return undefined;
+
+    const inputConfig =
+      this._singleAssetSide === "base"
+        ? this._baseDepositAmountIn
+        : this._quoteDepositAmountIn;
+
+    // Raw typed value (display units) vs the micro amount. A non-empty raw value
+    // that floors to 0 micro is a sub-precision "too small" input, not "empty".
+    const rawAmount = inputConfig.amount?.trim() ?? "";
+    const hasTypedPositive = rawAmount !== "" && Number(rawAmount) > 0;
+    const microAmount = new Int(inputConfig.getAmountPrimitive().amount);
+
+    if (!hasTypedPositive && microAmount.lte(new Int(0))) return "empty";
+    if (microAmount.lte(new Int(0))) return "too-small";
+
+    const swap = this.requiredSwap;
+    if (!swap) return "too-small";
+    if (swap.needsSwap) return "swap";
+    // No swap, but only valid when the range is genuinely one-sided. A two-sided
+    // range whose swap rounds to zero is a dust input.
+    return swap.rangeIsOneSided ? "one-sided" : "too-small";
   }
 
   @computed
