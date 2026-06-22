@@ -76,6 +76,8 @@
     "collectAllRewards": "Collect All Rewards",
     "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}.",
     "increaseLiquidity": "Increase Liquidity",
     "migrateLiquidity": "Migrate Liquidity",
     "migrateDescription": "Move your {baseSymbol}/{fromUsdcSymbol} position (pool {fromPoolId}) to {baseSymbol}/{toUsdcSymbol} (pool {toPoolId}). Same price range, same fee tier.",
