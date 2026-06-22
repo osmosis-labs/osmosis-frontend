@@ -863,6 +863,14 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._quoteDepositAmountIn;
   }
 
+  get baseDepositPrice(): PricePretty | null {
+    return this._baseDepositPrice;
+  }
+
+  get quoteDepositPrice(): PricePretty | null {
+    return this._quoteDepositPrice;
+  }
+
   get singleAssetMode(): boolean {
     return this._singleAssetMode;
   }

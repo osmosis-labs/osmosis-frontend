@@ -1,3 +1,4 @@
+import { Disclosure } from "@headlessui/react";
 import type { Pool } from "@osmosis-labs/server";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -14,6 +15,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import {
@@ -21,12 +23,13 @@ import {
   PriceChartHeader,
 } from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
-import { MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders/spinner";
+import { RouteLane } from "~/components/swap-tool/split-route";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { EventName } from "~/config/analytics-events";
 import {
@@ -35,6 +38,10 @@ import {
   useTranslation,
 } from "~/hooks";
 import {
+  getTokenInFeeAmountFiatValue,
+  getTokenOutFiatValue,
+} from "~/hooks/fiat-getters";
+import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
@@ -42,6 +49,7 @@ import type { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import type { useClZapQuote } from "~/hooks/use-cl-zap-quote";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
@@ -67,6 +75,9 @@ export const AddConcLiquidity: FunctionComponent<
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     zapQuote?: ReturnType<typeof useClZapQuote>;
     zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+    zapHighCost?: boolean;
+    zapCostAcknowledged?: boolean;
+    onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
@@ -76,6 +87,9 @@ export const AddConcLiquidity: FunctionComponent<
     addLiquidityConfig,
     zapQuote,
     zapSlippageConfig,
+    zapHighCost,
+    zapCostAcknowledged,
+    onZapCostAcknowledgedChange,
     actionButton,
   }) => {
     const { poolId } = addLiquidityConfig;
@@ -91,6 +105,9 @@ export const AddConcLiquidity: FunctionComponent<
           addLiquidityConfig={addLiquidityConfig}
           zapQuote={zapQuote}
           zapSlippageConfig={zapSlippageConfig}
+          zapHighCost={zapHighCost}
+          zapCostAcknowledged={zapCostAcknowledged}
+          onZapCostAcknowledgedChange={onZapCostAcknowledgedChange}
           actionButton={actionButton}
         />
       </div>
@@ -104,6 +121,9 @@ const AddConcLiqView: FunctionComponent<
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     zapQuote?: ReturnType<typeof useClZapQuote>;
     zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+    zapHighCost?: boolean;
+    zapCostAcknowledged?: boolean;
+    onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
@@ -112,6 +132,9 @@ const AddConcLiqView: FunctionComponent<
     addLiquidityConfig,
     zapQuote,
     zapSlippageConfig,
+    zapHighCost,
+    zapCostAcknowledged,
+    onZapCostAcknowledgedChange,
     actionButton,
     pool,
     isInactivePool,
@@ -129,7 +152,9 @@ const AddConcLiqView: FunctionComponent<
       shouldBeSuperfluidStaked,
       tickRange,
       singleAssetMode,
+      singleAssetSide,
       setSingleAssetMode,
+      setSingleAssetSide,
       error: addLiqError,
       setElectSuperfluidStaking,
       setMaxRange,
@@ -347,24 +372,16 @@ const AddConcLiqView: FunctionComponent<
           <div className="subtitle1 flex place-content-between items-center px-4 pb-3">
             <div className="flex items-center gap-3">
               {t("addConcentratedLiquidity.amountToDeposit")}
-              <MenuToggle
-                selectedOptionId={singleAssetMode ? "single" : "two"}
-                options={[
-                  {
-                    id: "two",
-                    display: t(
-                      "addConcentratedLiquidity.singleAsset.toggleTwo"
-                    ),
-                  },
-                  {
-                    id: "single",
-                    display: t(
-                      "addConcentratedLiquidity.singleAsset.toggleSingle"
-                    ),
-                  },
-                ]}
-                onSelect={(id) => setSingleAssetMode(id === "single")}
-                classes={{ toggleContainer: "!h-8 !py-1" }}
+              <AssetModeSelector
+                baseCurrency={pool?.reserveCoins[0]?.currency}
+                quoteCurrency={pool?.reserveCoins[1]?.currency}
+                singleAssetMode={singleAssetMode}
+                singleAssetSide={singleAssetSide}
+                onSelectTwoAsset={() => setSingleAssetMode(false)}
+                onSelectSingleAsset={(side) => {
+                  setSingleAssetSide(side);
+                  setSingleAssetMode(true);
+                }}
               />
             </div>
             {!singleAssetMode && superfluidPoolDetail.isSuperfluid && (
@@ -408,6 +425,9 @@ const AddConcLiqView: FunctionComponent<
               addLiquidityConfig={addLiquidityConfig}
               zapQuote={zapQuote}
               zapSlippageConfig={zapSlippageConfig}
+              zapHighCost={zapHighCost}
+              zapCostAcknowledged={zapCostAcknowledged}
+              onZapCostAcknowledgedChange={onZapCostAcknowledgedChange}
               pool={pool}
             />
           ) : (
@@ -450,169 +470,394 @@ const SingleAssetDeposit: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
   zapQuote?: ReturnType<typeof useClZapQuote>;
   zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+  zapHighCost?: boolean;
+  zapCostAcknowledged?: boolean;
+  onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
   pool?: Pool;
-}> = observer(({ addLiquidityConfig, zapQuote, zapSlippageConfig, pool }) => {
-  const { t } = useTranslation();
-  const {
-    singleAssetSide,
-    setSingleAssetSide,
-    singleAssetDepositAmountIn,
-    requiredSwap,
-    setBaseDepositAmountMax,
-    setQuoteDepositAmountMax,
-  } = addLiquidityConfig;
+}> = observer(
+  ({
+    addLiquidityConfig,
+    zapQuote,
+    zapSlippageConfig,
+    zapHighCost,
+    zapCostAcknowledged,
+    onZapCostAcknowledgedChange,
+    pool,
+  }) => {
+    const { t } = useTranslation();
+    const {
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      requiredSwap,
+      baseDepositPrice,
+      quoteDepositPrice,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+    } = addLiquidityConfig;
 
-  const baseCurrency = pool?.reserveCoins[0]?.currency;
-  const quoteCurrency = pool?.reserveCoins[1]?.currency;
-  const selectedCurrency =
-    singleAssetSide === "base" ? baseCurrency : quoteCurrency;
+    // The side is chosen on the asset-mode selector row above; this section just
+    // renders the deposit input and quote breakdown for the selected side.
+    const baseCurrency = pool?.reserveCoins[0]?.currency;
+    const quoteCurrency = pool?.reserveCoins[1]?.currency;
+    const selectedCurrency =
+      singleAssetSide === "base" ? baseCurrency : quoteCurrency;
 
-  const quote = zapQuote?.quote;
-  const needsSwap = Boolean(requiredSwap?.needsSwap);
+    const quote = zapQuote?.quote;
+    const needsSwap = Boolean(requiredSwap?.needsSwap);
+
+    // Minimum the swap leg guarantees: quote out minus the user's slippage. This
+    // is the floor the on-chain swap reverts below (mirrors `zapInLiquidity`),
+    // surfaced so the user sees the guaranteed amount, not just the estimate.
+    const minReceived =
+      quote && zapSlippageConfig
+        ? quote.amount.mul(new Dec(1).sub(zapSlippageConfig.slippage.toDec()))
+        : undefined;
+
+    // Fiat value the user puts in vs. the total value landing in the position
+    // (retained input side + swapped output side). The gap is the all-in cost of
+    // the zap: swap fee + price impact. Surfaced instead of price impact, which
+    // alone only covers the swap leg, not the whole deposit.
+    //
+    // Both sides are valued off the SAME token-in price, deriving the swap output
+    // value from price impact + fee (the swap tool's `getTokenOutFiatValue`
+    // method), not an independent output oracle price. Mixing two price sources
+    // let the swap look value-positive (value out > value in), which is
+    // impossible for a fee-and-impact-bearing swap.
+    const inputPrice =
+      singleAssetSide === "base" ? baseDepositPrice : quoteDepositPrice;
+
+    const valueIn =
+      requiredSwap && inputPrice
+        ? inputPrice.mul(
+            new CoinPretty(
+              requiredSwap.tokenInCurrency,
+              requiredSwap.inputAmount
+            )
+          )
+        : undefined;
+
+    // Value of just the swapped portion of the input, then the swap output's value
+    // after price impact and fee. The retained portion keeps its full input value.
+    const swapInValue =
+      requiredSwap && inputPrice
+        ? inputPrice.mul(
+            new CoinPretty(
+              requiredSwap.tokenInCurrency,
+              requiredSwap.swapInAmount
+            )
+          )
+        : undefined;
+
+    const valueOut =
+      requiredSwap && quote && inputPrice && swapInValue
+        ? inputPrice
+            .mul(
+              new CoinPretty(
+                requiredSwap.tokenInCurrency,
+                requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
+              )
+            )
+            .add(
+              getTokenOutFiatValue(
+                quote.priceImpactTokenOut?.toDec(),
+                swapInValue.toDec()
+              ).sub(
+                getTokenInFeeAmountFiatValue(
+                  requiredSwap.tokenInCurrency,
+                  quote.tokenInFeeAmount,
+                  inputPrice
+                )
+              )
+            )
+        : undefined;
+
+    // Total cost of the zap: the full value lost between what goes in and what
+    // lands in the position (swap fee + price impact combined). Shown below the
+    // swap-fee row since it includes that fee. Flagged rust at the swap tool's
+    // high-impact threshold so a thin-pool loss can't slip by unnoticed.
+    const totalCost = valueIn && valueOut ? valueIn.sub(valueOut) : undefined;
+    const totalCostPercent =
+      totalCost && valueIn && valueIn.toDec().isPositive()
+        ? new RatePretty(totalCost.toDec().quo(valueIn.toDec()))
+        : undefined;
+    const isCostHigh = Boolean(
+      quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
+    );
+
+    return (
+      <div className="flex flex-col gap-3">
+        <DepositAmountGroup
+          currency={selectedCurrency}
+          className="md:!px-4 md:!py-4"
+          priceInputClass=" md:!w-full"
+          onUpdate={useCallback(
+            (amount) => {
+              singleAssetDepositAmountIn.setAmount(amount);
+            },
+            [singleAssetDepositAmountIn]
+          )}
+          onMax={
+            singleAssetSide === "base"
+              ? setBaseDepositAmountMax
+              : setQuoteDepositAmountMax
+          }
+          currentValue={singleAssetDepositAmountIn.amount}
+          percentage={new RatePretty(1)}
+        />
+
+        {requiredSwap && (
+          <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
+            {needsSwap ? (
+              <p className="body2 text-center text-osmoverse-200">
+                {t("addConcentratedLiquidity.singleAsset.splitBreakdown", {
+                  inputAmount: formatPretty(
+                    new CoinPretty(
+                      requiredSwap.tokenInCurrency,
+                      requiredSwap.inputAmount
+                    ).hideDenom(true)
+                  ),
+                  inputDenom: requiredSwap.tokenInCurrency.coinDenom,
+                  swapAmount: formatPretty(
+                    new CoinPretty(
+                      requiredSwap.tokenInCurrency,
+                      requiredSwap.swapInAmount
+                    ).hideDenom(true)
+                  ),
+                  swapPercent: formatPretty(
+                    new RatePretty(
+                      requiredSwap.swapInAmount
+                        .toDec()
+                        .quo(requiredSwap.inputAmount.toDec())
+                    ).maxDecimals(1)
+                  ),
+                  outDenom: requiredSwap.tokenOutCurrency.coinDenom,
+                })}
+              </p>
+            ) : (
+              <p className="body2 text-center text-osmoverse-200">
+                {t("addConcentratedLiquidity.singleAsset.noSwapNeeded", {
+                  inputDenom: requiredSwap.tokenInCurrency.coinDenom,
+                })}
+              </p>
+            )}
+
+            {needsSwap &&
+              (zapQuote?.isLoading || !quote ? (
+                <div className="flex items-center gap-2 py-2 text-osmoverse-300">
+                  <Spinner className="!h-4 !w-4" />
+                  <span className="caption">
+                    {t("addConcentratedLiquidity.singleAsset.quoteLoading")}
+                  </span>
+                </div>
+              ) : (
+                <div className="mx-auto flex w-full max-w-lg flex-col">
+                  {minReceived && (
+                    <RecapRow
+                      left={t("receiveAtLeast")}
+                      right={
+                        <span className="body2 text-white-full">
+                          {formatPretty(minReceived)}
+                        </span>
+                      }
+                    />
+                  )}
+                  {valueIn && (
+                    <RecapRow
+                      left={t("addConcentratedLiquidity.singleAsset.valueIn")}
+                      right={
+                        <span className="body2 text-osmoverse-200">
+                          {formatPretty(valueIn, { maxDecimals: 2 })}
+                        </span>
+                      }
+                    />
+                  )}
+                  {valueOut && (
+                    <RecapRow
+                      left={t("addConcentratedLiquidity.singleAsset.valueOut")}
+                      right={
+                        <span className="body2 text-osmoverse-200">
+                          {formatPretty(valueOut, { maxDecimals: 2 })}
+                        </span>
+                      }
+                    />
+                  )}
+                  {quote.swapFee && quote.tokenInFeeAmount && (
+                    <RecapRow
+                      left={t("pools.aprBreakdown.swapFees")}
+                      right={
+                        <span className="body2 text-osmoverse-200">
+                          {formatPretty(
+                            new CoinPretty(
+                              requiredSwap.tokenInCurrency,
+                              quote.tokenInFeeAmount
+                            )
+                          )}{" "}
+                          ({quote.swapFee.toString()})
+                        </span>
+                      }
+                    />
+                  )}
+                  {totalCost && totalCostPercent && (
+                    <RecapRow
+                      left={
+                        <Tooltip
+                          content={t("tradeDetails.outputDifference.content")}
+                        >
+                          <span>
+                            {t(
+                              "addConcentratedLiquidity.singleAsset.totalCost"
+                            )}
+                          </span>
+                        </Tooltip>
+                      }
+                      right={
+                        <span
+                          className={classNames(
+                            "body2",
+                            isCostHigh ? "text-rust-400" : "text-osmoverse-200"
+                          )}
+                        >
+                          -{formatPretty(totalCost, { maxDecimals: 2 })} (
+                          {formatPretty(totalCostPercent.maxDecimals(2))})
+                        </span>
+                      }
+                    />
+                  )}
+                  {zapSlippageConfig && (
+                    <RecapRow
+                      left={t("swap.settings.slippage")}
+                      right={
+                        <SlippageInput slippageConfig={zapSlippageConfig} />
+                      }
+                    />
+                  )}
+                  {quote.split.length > 0 && (
+                    <Disclosure>
+                      {({ open }) => (
+                        <>
+                          <Disclosure.Button className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
+                            <span className="sm:caption text-osmoverse-300">
+                              {t("swap.autoRouter")}
+                            </span>
+                            <div className="flex items-center gap-1 text-wosmongton-300">
+                              <span>
+                                {quote.split.length}{" "}
+                                {quote.split.length === 1
+                                  ? t("swap.route")
+                                  : t("swap.routes")}
+                              </span>
+                              <Icon
+                                id="chevron-down"
+                                className={classNames(
+                                  "h-[7px] w-3 text-wosmongton-200 transition-transform",
+                                  { "rotate-180": open }
+                                )}
+                              />
+                            </div>
+                          </Disclosure.Button>
+                          <Disclosure.Panel className="flex w-full flex-col gap-2 pb-2">
+                            {quote.split.map((route) => (
+                              <RouteLane
+                                key={route.pools.map(({ id }) => id).join()}
+                                route={route}
+                              />
+                            ))}
+                          </Disclosure.Panel>
+                        </>
+                      )}
+                    </Disclosure>
+                  )}
+                </div>
+              ))}
+
+            {zapHighCost && (
+              <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
+                <div className="flex items-center justify-center gap-2 text-rust-300">
+                  <Icon
+                    id="alert-circle-filled"
+                    width={16}
+                    height={16}
+                    className="shrink-0"
+                  />
+                  <p className="body2 text-center">
+                    {t("transfer.priceImpactWarning", {
+                      priceImpact: formatPretty(
+                        quote?.priceImpactTokenOut ?? new RatePretty(0)
+                      ),
+                    })}
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  <label htmlFor="cl-zap-high-cost-ack" className="body2">
+                    {t("transfer.confirm")}
+                  </label>
+                  <Checkbox
+                    id="cl-zap-high-cost-ack"
+                    variant="destructive"
+                    checked={Boolean(zapCostAcknowledged)}
+                    onCheckedChange={(checked) =>
+                      onZapCostAcknowledgedChange?.(checked === true)
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+/** Editable slippage-tolerance input for the zap-in swap leg, mirroring the
+ *  swap tool / review-order slippage box. */
+const SlippageInput: FunctionComponent<{
+  slippageConfig: ReturnType<typeof useSlippageConfig>;
+}> = observer(({ slippageConfig }) => {
+  const [manualSlippage, setManualSlippage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleChange = useCallback(
+    (value: string) => {
+      if (value === "" || isNaN(+value)) {
+        setManualSlippage("");
+        slippageConfig.setManualSlippage(slippageConfig.defaultManualSlippage);
+        return;
+      }
+      setManualSlippage(value);
+      slippageConfig.setManualSlippage(new Dec(+value).toString());
+    },
+    [slippageConfig]
+  );
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="px-4">
-        <MenuToggle
-          selectedOptionId={singleAssetSide}
-          options={[
-            { id: "base", display: baseCurrency?.coinDenom ?? "" },
-            { id: "quote", display: quoteCurrency?.coinDenom ?? "" },
-          ]}
-          onSelect={(id) => setSingleAssetSide(id as "base" | "quote")}
-        />
-      </div>
-      <DepositAmountGroup
-        currency={selectedCurrency}
-        className="md:!px-4 md:!py-4"
-        priceInputClass=" md:!w-full"
-        onUpdate={useCallback(
-          (amount) => {
-            singleAssetDepositAmountIn.setAmount(amount);
-          },
-          [singleAssetDepositAmountIn]
-        )}
-        onMax={
-          singleAssetSide === "base"
-            ? setBaseDepositAmountMax
-            : setQuoteDepositAmountMax
-        }
-        currentValue={singleAssetDepositAmountIn.amount}
-        percentage={new RatePretty(1)}
-      />
-
-      {requiredSwap && (
-        <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
-          {needsSwap ? (
-            <p className="body2 text-osmoverse-200">
-              {t("addConcentratedLiquidity.singleAsset.splitBreakdown", {
-                inputAmount: formatPretty(
-                  new CoinPretty(
-                    requiredSwap.tokenInCurrency,
-                    requiredSwap.inputAmount
-                  ).hideDenom(true)
-                ),
-                inputDenom: requiredSwap.tokenInCurrency.coinDenom,
-                swapAmount: formatPretty(
-                  new CoinPretty(
-                    requiredSwap.tokenInCurrency,
-                    requiredSwap.swapInAmount
-                  ).hideDenom(true)
-                ),
-                outDenom: requiredSwap.tokenOutCurrency.coinDenom,
-              })}
-            </p>
-          ) : (
-            <p className="body2 text-osmoverse-200">
-              {t("addConcentratedLiquidity.singleAsset.noSwapNeeded", {
-                inputDenom: requiredSwap.tokenInCurrency.coinDenom,
-              })}
-            </p>
-          )}
-
-          {needsSwap &&
-            (zapQuote?.isLoading || !quote ? (
-              <div className="flex items-center gap-2 py-2 text-osmoverse-300">
-                <Spinner className="!h-4 !w-4" />
-                <span className="caption">
-                  {t("addConcentratedLiquidity.singleAsset.quoteLoading")}
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <RecapRow
-                  left={t(
-                    "addConcentratedLiquidity.singleAsset.estimatedReceived",
-                    { denom: requiredSwap.tokenOutCurrency.coinDenom }
-                  )}
-                  right={
-                    <span className="body2 text-white-full">
-                      {formatPretty(quote.amount)}
-                    </span>
-                  }
-                />
-                {quote.priceImpactTokenOut && (
-                  <RecapRow
-                    left={t("addConcentratedLiquidity.singleAsset.priceImpact")}
-                    right={
-                      <span className="body2 text-osmoverse-200">
-                        {formatPretty(quote.priceImpactTokenOut.maxDecimals(2))}
-                      </span>
-                    }
-                  />
-                )}
-                {quote.swapFee && (
-                  <RecapRow
-                    left={t("addConcentratedLiquidity.singleAsset.swapFee")}
-                    right={
-                      <span className="body2 text-osmoverse-200">
-                        {formatPretty(quote.swapFee.maxDecimals(3))}
-                      </span>
-                    }
-                  />
-                )}
-                {zapSlippageConfig && (
-                  <RecapRow
-                    left={t("addConcentratedLiquidity.singleAsset.maxSlippage")}
-                    right={
-                      <SlippageSelector slippageConfig={zapSlippageConfig} />
-                    }
-                  />
-                )}
-              </div>
-            ))}
-
-          <p className="caption text-osmoverse-400">
-            {t("addConcentratedLiquidity.singleAsset.atomicNote")}
-          </p>
-        </div>
+    <div
+      className={classNames(
+        "body2 flex w-fit items-center justify-center overflow-hidden rounded-lg px-2 py-0.5 text-center transition-all",
+        isEditing
+          ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900"
+          : "border border-osmoverse-700 bg-osmoverse-850"
       )}
+    >
+      <AutosizeInput
+        type="text"
+        inputMode="decimal"
+        minWidth={36}
+        placeholder={slippageConfig.defaultManualSlippage + "%"}
+        className="body2 w-fit bg-transparent px-0"
+        inputClassName="body2 !bg-transparent text-right placeholder:text-wosmongton-300 focus:text-center transition-all focus-visible:outline-none"
+        value={manualSlippage}
+        onFocus={() => {
+          slippageConfig.setIsManualSlippage(true);
+          setIsEditing(true);
+        }}
+        onBlur={() => setIsEditing(false)}
+        onChange={(e) => handleChange(e.target.value)}
+      />
+      {manualSlippage !== "" && <span className="body2">%</span>}
     </div>
   );
 });
-
-/** Compact inline preset slippage selector for the zap-in swap leg. */
-const SlippageSelector: FunctionComponent<{
-  slippageConfig: ReturnType<typeof useSlippageConfig>;
-}> = observer(({ slippageConfig }) => (
-  <div className="flex items-center gap-1">
-    {slippageConfig.selectableSlippages.map((slippage) => (
-      <button
-        key={slippage.index}
-        type="button"
-        onClick={() => slippageConfig.select(slippage.index)}
-        className={classNames(
-          "caption rounded-lg px-2 py-1 transition-colors",
-          slippage.selected
-            ? "bg-osmoverse-700 text-white-full"
-            : "text-osmoverse-300 hover:bg-osmoverse-800"
-        )}
-      >
-        {formatPretty(slippage.slippage)}
-      </button>
-    ))}
-  </div>
-));
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -748,6 +993,120 @@ const StrategySelectorGroup: FunctionComponent<
     </section>
   );
 });
+
+/** Currency shape needed to render an asset icon. */
+type IconCurrency = {
+  coinDenom: string;
+  coinMinimalDenom: string;
+  coinImageUrl?: string;
+};
+
+/** A single selectable icon in the asset-mode selector. Mirrors the
+ *  volatility-strategy cards: a 2px `bg-supercharged` gradient frame around an
+ *  inner card reads as a border on the selected option, not a fill. */
+const AssetModeOption: FunctionComponent<{
+  selected: boolean;
+  onClick: () => void;
+  label: string;
+  children: ReactNode;
+}> = ({ selected, onClick, label, children }) => (
+  <button
+    type="button"
+    aria-label={label}
+    aria-pressed={selected}
+    title={label}
+    onClick={onClick}
+    className={classNames(
+      "flex items-center justify-center rounded-xl p-[2px] transition-colors",
+      {
+        "bg-supercharged": selected,
+        "hover:bg-osmoverse-700": !selected,
+      }
+    )}
+  >
+    <div className="flex h-full w-full items-center justify-center rounded-[0.625rem] bg-osmoverse-800 px-2 py-1.5">
+      {children}
+    </div>
+  </button>
+);
+
+/**
+ * Text-free, icon-based selector for the deposit mode on the CL add-position
+ * row. The overlapping pair icon selects two-asset mode; each individual token
+ * icon selects single-asset mode for that side. The active option is
+ * highlighted with the same `bg-supercharged` treatment as the volatility
+ * strategy cards, so the chosen side reads off this one row and the single-asset
+ * section no longer needs its own base/quote toggle.
+ */
+const AssetModeSelector: FunctionComponent<{
+  baseCurrency?: IconCurrency;
+  quoteCurrency?: IconCurrency;
+  singleAssetMode: boolean;
+  singleAssetSide: "base" | "quote";
+  onSelectTwoAsset: () => void;
+  onSelectSingleAsset: (side: "base" | "quote") => void;
+}> = ({
+  baseCurrency,
+  quoteCurrency,
+  singleAssetMode,
+  singleAssetSide,
+  onSelectTwoAsset,
+  onSelectSingleAsset,
+}) => {
+  // Pool data not loaded yet: nothing to render the icons from.
+  if (!baseCurrency || !quoteCurrency) return null;
+
+  // All three options render at the same icon height so they sit on one row
+  // (the shared PoolAssetsIcon is taller than the row, so the pair is composed
+  // from two overlapping icons at this size instead).
+  const iconSize = 24;
+  const overlap = 8;
+
+  const assetIcon = (currency: IconCurrency) => (
+    <EntityImage
+      logoURIs={getLogoURIs(currency.coinImageUrl)}
+      name={currency.coinDenom}
+      symbol={currency.coinDenom}
+      width={iconSize}
+      height={iconSize}
+    />
+  );
+
+  return (
+    <div className="flex items-center gap-1 rounded-2xl bg-osmoverse-800 p-0">
+      <AssetModeOption
+        selected={!singleAssetMode}
+        onClick={onSelectTwoAsset}
+        label={`${baseCurrency.coinDenom} / ${quoteCurrency.coinDenom}`}
+      >
+        <div
+          className="relative flex items-center"
+          style={{ width: iconSize * 2 - overlap, height: iconSize }}
+        >
+          {/* base on top of quote, matching the pool-title overlap order */}
+          <div style={{ left: iconSize - overlap }} className="absolute z-0">
+            {assetIcon(quoteCurrency)}
+          </div>
+          <div className="absolute left-0 z-10">{assetIcon(baseCurrency)}</div>
+        </div>
+      </AssetModeOption>
+      <AssetModeOption
+        selected={singleAssetMode && singleAssetSide === "base"}
+        onClick={() => onSelectSingleAsset("base")}
+        label={baseCurrency.coinDenom}
+      >
+        {assetIcon(baseCurrency)}
+      </AssetModeOption>
+      <AssetModeOption
+        selected={singleAssetMode && singleAssetSide === "quote"}
+        onClick={() => onSelectSingleAsset("quote")}
+        label={quoteCurrency.coinDenom}
+      >
+        {assetIcon(quoteCurrency)}
+      </AssetModeOption>
+    </div>
+  );
+};
 
 const PresetStrategyCard: FunctionComponent<
   {
