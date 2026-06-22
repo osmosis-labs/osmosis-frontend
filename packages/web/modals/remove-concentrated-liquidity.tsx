@@ -11,9 +11,11 @@ import { observer } from "mobx-react-lite";
 import React, {
   FunctionComponent,
   ReactNode,
+  useCallback,
   useEffect,
   useState,
 } from "react";
+import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
@@ -122,6 +124,91 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const needsSwap = singleAssetExitEnabled && Boolean(requiredSwap?.needsSwap);
   const quote = zapQuote.quote;
 
+  // Whole-position value in vs out: the total value being withdrawn, and the
+  // total value the user ends holding after the swap (the retained side at full
+  // value plus the swapped side's value minus impact + fee). The gap is the
+  // swap cost, expressed against the entire position.
+  const positionValueIn =
+    baseAssetValue && quoteAssetValue
+      ? baseAssetValue.add(quoteAssetValue)
+      : undefined;
+
+  // Price of the side being swapped, used to value the swapped slice and to
+  // express the swapped amount as a % of the whole position's value.
+  const swapSidePrice =
+    requiredSwap?.swapSide === "base" ? baseAssetPrice : quoteAssetPrice;
+  const swapInValue =
+    requiredSwap && swapSidePrice
+      ? new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          new CoinPretty(
+            requiredSwap.tokenInCurrency,
+            requiredSwap.swapInAmount
+          )
+            .toDec()
+            .mul(swapSidePrice.toDec())
+        )
+      : undefined;
+
+  // Value lost on the swapped slice (impact + fee), then the whole-position
+  // value out. Uses the swap tool's fiat method so value out can't exceed in.
+  const swapValueOut =
+    quote && swapInValue && swapSidePrice && requiredSwap
+      ? getTokenOutFiatValue(
+          quote.priceImpactTokenOut?.toDec(),
+          swapInValue.toDec()
+        ).sub(
+          getTokenInFeeAmountFiatValue(
+            requiredSwap.tokenInCurrency,
+            quote.tokenInFeeAmount,
+            swapSidePrice
+          )
+        )
+      : undefined;
+  const swapCost =
+    swapInValue && swapValueOut
+      ? swapInValue.toDec().sub(swapValueOut.toDec())
+      : undefined;
+  const positionValueOut =
+    positionValueIn && swapCost
+      ? new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          positionValueIn.toDec().sub(swapCost)
+        )
+      : positionValueIn;
+
+  // % of the position's value being swapped (not the slider position).
+  const swapPercentOfPosition =
+    swapInValue && positionValueIn && positionValueIn.toDec().isPositive()
+      ? new RatePretty(swapInValue.toDec().quo(positionValueIn.toDec()))
+      : undefined;
+
+  // Minimum holdings after exit, per token: the retained (un-swapped) side at
+  // its firm withdrawn amount, plus the target side's withdrawn amount plus the
+  // swap's slippage-floored output. Drops any side that rounds to zero (e.g. a
+  // full single-asset exit leaves only the target). Covers both symbols, since
+  // a mix exit returns both.
+  const minReceivedCoins: CoinPretty[] = (() => {
+    if (!needsSwap || !requiredSwap || !quote || !baseAsset || !quoteAsset)
+      return [];
+    const swapMinOut = quote.amount.mul(
+      new Dec(1).sub(zapSlippageConfig.slippage.toDec())
+    );
+    const swapSideWithdrawn =
+      requiredSwap.swapSide === "base" ? baseAsset : quoteAsset;
+    const targetSideWithdrawn =
+      requiredSwap.swapSide === "base" ? quoteAsset : baseAsset;
+
+    // Retained amount of the sold side = withdrawn minus what we swap.
+    const retained = swapSideWithdrawn.sub(
+      new CoinPretty(swapSideWithdrawn.currency, requiredSwap.swapInAmount)
+    );
+    // Target side: its own withdrawn amount plus the swap's minimum output.
+    const targetTotal = targetSideWithdrawn.add(swapMinOut);
+
+    return [targetTotal, retained].filter((c) => c.toDec().isPositive());
+  })();
+
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
   // explicit Confirm before it can be submitted.
   const [costAcknowledged, setCostAcknowledged] = useState(false);
@@ -227,10 +314,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               <Slider
                 className="flex-1"
                 variant="secondary"
-                value={[Math.round(config.targetBaseValueFraction * 100)]}
+                // Left end = base (matches the left icon), right end = quote.
+                // The slider position is the quote-value fraction, the inverse of
+                // the stored base-value fraction, so the handle sits under the
+                // icon it favours.
+                value={[Math.round((1 - config.targetBaseValueFraction) * 100)]}
                 onValueChange={(value: number[]) => {
                   config.setTargetBaseValueFraction(
-                    Number((value[0] / 100).toFixed(2))
+                    Number((1 - value[0] / 100).toFixed(2))
                   );
                 }}
                 min={0}
@@ -255,9 +346,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     ),
                     inDenom: requiredSwap.tokenInCurrency.coinDenom,
                     swapPercent: formatPretty(
-                      new RatePretty(
-                        config.targetBaseValueFraction
-                      ).maxDecimals(0)
+                      (swapPercentOfPosition ?? new RatePretty(0)).maxDecimals(
+                        0
+                      )
                     ),
                     outDenom: requiredSwap.tokenOutCurrency.coinDenom,
                   })}
@@ -278,6 +369,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   <ZapOutBreakdown
                     quote={quote}
                     requiredSwap={requiredSwap}
+                    valueOut={positionValueOut}
+                    minReceivedCoins={minReceivedCoins}
                     zapSlippageConfig={zapSlippageConfig}
                   />
                 )}
@@ -351,58 +444,32 @@ const ZapOutBreakdown: FunctionComponent<{
   requiredSwap: NonNullable<
     ReturnType<typeof useRemoveConcentratedLiquidityConfig>["requiredSwap"]
   >;
+  /** Whole-position value the user ends holding after the swap. Value in is the
+   *  headline total above the amount slider, so it is not repeated here. */
+  valueOut?: PricePretty;
+  /** Minimum holdings after exit, per token (retained side + target side's
+   *  slippage-floored total). Covers both symbols for a mix exit. */
+  minReceivedCoins: CoinPretty[];
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
-}> = observer(({ quote, requiredSwap, zapSlippageConfig }) => {
+}> = observer((props) => {
+  const { quote, requiredSwap, valueOut, minReceivedCoins, zapSlippageConfig } =
+    props;
   const { t } = useTranslation();
-
-  const minReceived = quote.amount.mul(
-    new Dec(1).sub(zapSlippageConfig.slippage.toDec())
-  );
-
-  // Value in (the swapped side's value) vs value out (after impact + fee),
-  // valued off the single token-in price, mirroring the swap tool.
-  const { price: tokenInPrice } = usePrice(requiredSwap.tokenInCurrency);
-  const swapInValue = tokenInPrice
-    ? tokenInPrice.mul(
-        new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.swapInAmount)
-      )
-    : undefined;
-  const valueOut =
-    tokenInPrice && swapInValue
-      ? getTokenOutFiatValue(
-          quote.priceImpactTokenOut?.toDec(),
-          swapInValue.toDec()
-        ).sub(
-          getTokenInFeeAmountFiatValue(
-            requiredSwap.tokenInCurrency,
-            quote.tokenInFeeAmount,
-            tokenInPrice
-          )
-        )
-      : undefined;
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col">
       <RecapRow
         left={t("receiveAtLeast")}
         right={
-          <span className="body2 text-white-full">
-            {formatPretty(minReceived)}
+          <span className="body2 text-right text-white-full">
+            {minReceivedCoins
+              .map((c) => formatPretty(c, { maxDecimals: 6 }))
+              .join(" + ")}
           </span>
         }
       />
-      {swapInValue && (
-        <RecapRow
-          left={t("addConcentratedLiquidity.singleAsset.valueIn")}
-          right={
-            <span className="body2 text-osmoverse-200">
-              {formatPretty(swapInValue, { maxDecimals: 2 })}
-            </span>
-          }
-        />
-      )}
       {valueOut && (
         <RecapRow
           left={t("addConcentratedLiquidity.singleAsset.valueOut")}
@@ -429,6 +496,10 @@ const ZapOutBreakdown: FunctionComponent<{
           }
         />
       )}
+      <RecapRow
+        left={t("swap.settings.slippage")}
+        right={<SlippageInput slippageConfig={zapSlippageConfig} />}
+      />
       {quote.split.length > 0 && (
         <Disclosure>
           {({ open }) => (
@@ -465,6 +536,63 @@ const ZapOutBreakdown: FunctionComponent<{
           )}
         </Disclosure>
       )}
+    </div>
+  );
+});
+
+/** Editable slippage-tolerance input for the zap-out swap leg, mirroring the
+ *  zap-in / swap-tool slippage box. Copied to keep the exit feature independent
+ *  from the zap-in PR; can DRY once both have shipped. */
+const SlippageInput: FunctionComponent<{
+  slippageConfig: ReturnType<
+    typeof useRemoveConcentratedLiquidityConfig
+  >["zapSlippageConfig"];
+}> = observer(({ slippageConfig }) => {
+  const [manualSlippage, setManualSlippage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleChange = useCallback(
+    (value: string) => {
+      const parsed = Number(value);
+      if (value === "" || !Number.isFinite(parsed)) {
+        setManualSlippage("");
+        slippageConfig.setManualSlippage(slippageConfig.defaultManualSlippage);
+        return;
+      }
+      // Clamp to a sane range so a negative / huge / non-finite entry can't
+      // produce a nonsensical minimum or break the Dec math.
+      const clamped = Math.max(0, Math.min(50, parsed));
+      setManualSlippage(clamped.toString());
+      slippageConfig.setManualSlippage(new Dec(clamped).toString());
+    },
+    [slippageConfig]
+  );
+
+  return (
+    <div
+      className={classNames(
+        "body2 flex w-fit items-center justify-center overflow-hidden rounded-lg px-2 py-0.5 text-center transition-all",
+        isEditing
+          ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900"
+          : "border border-osmoverse-700 bg-osmoverse-850"
+      )}
+    >
+      <AutosizeInput
+        type="text"
+        inputMode="decimal"
+        minWidth={36}
+        placeholder={slippageConfig.defaultManualSlippage + "%"}
+        className="body2 w-fit bg-transparent px-0"
+        inputClassName="body2 !bg-transparent text-right placeholder:text-wosmongton-300 focus:text-center transition-all focus-visible:outline-none"
+        value={manualSlippage}
+        onFocus={() => {
+          slippageConfig.setIsManualSlippage(true);
+          setIsEditing(true);
+        }}
+        onBlur={() => setIsEditing(false)}
+        onChange={(e) => handleChange(e.target.value)}
+      />
+      {manualSlippage !== "" && <span className="body2">%</span>}
     </div>
   );
 });
