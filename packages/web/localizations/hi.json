@@ -879,7 +879,8 @@
       "noAlternativesFound": "इस रूट के लिए कोई वैकल्पिक प्रदाता नहीं मिला।",
       "convertBeforeWithdraw": {
         "title": "पहले {variant} में बदलें",
-        "description": "{provider} केवल {variant} स्वीकार करता है। नीचे अपने अलॉयड बैलेंस को {variant} में बदलें, फिर अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।"
+        "description": "{provider} केवल {variant} स्वीकार करता है। नीचे अपने अलॉयड बैलेंस को {variant} में बदलें, फिर अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।",
+        "currentVariantBalance": "वर्तमान {variant} शेष:"
       }
     },
     "assetSelectScreen": {

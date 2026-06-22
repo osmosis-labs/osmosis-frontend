@@ -879,7 +879,8 @@
       "noAlternativesFound": "આ રૂટ માટે કોઈ વૈકલ્પિક પ્રદાતા મળ્યા નથી.",
       "convertBeforeWithdraw": {
         "title": "પહેલા {variant} માં રૂપાંતરિત કરો",
-        "description": "{provider} ફક્ત {variant} સ્વીકારે છે. તમારી alloyed બેલેન્સને નીચે {variant} માં રૂપાંતરિત કરો, પછી તમારી ઉપાડ પૂર્ણ કરવા માટે {provider} પર ચાલુ રાખો."
+        "description": "{provider} ફક્ત {variant} સ્વીકારે છે. તમારી alloyed બેલેન્સને નીચે {variant} માં રૂપાંતરિત કરો, પછી તમારી ઉપાડ પૂર્ણ કરવા માટે {provider} પર ચાલુ રાખો.",
+        "currentVariantBalance": "વર્તમાન {variant} બેલેન્સ:"
       }
     },
     "assetSelectScreen": {

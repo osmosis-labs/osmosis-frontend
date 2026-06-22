@@ -879,7 +879,8 @@
       "noAlternativesFound": "Альтернативные поставщики для этого маршрута не найдены.",
       "convertBeforeWithdraw": {
         "title": "Сначала конвертируйте в {variant}",
-        "description": "{provider} принимает только {variant}. Конвертируйте ваш сплавленный баланс в {variant} ниже, затем перейдите к {provider}, чтобы завершить вывод средств."
+        "description": "{provider} принимает только {variant}. Конвертируйте ваш сплавленный баланс в {variant} ниже, затем перейдите к {provider}, чтобы завершить вывод средств.",
+        "currentVariantBalance": "Текущий баланс {variant}:"
       }
     },
     "assetSelectScreen": {

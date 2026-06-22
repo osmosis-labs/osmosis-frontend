@@ -879,7 +879,8 @@
       "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد.",
       "convertBeforeWithdraw": {
         "title": "ابتدا به {variant} تبدیل کنید",
-        "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید."
+        "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",
+        "currentVariantBalance": "موجودی فعلی {variant}:"
       }
     },
     "assetSelectScreen": {

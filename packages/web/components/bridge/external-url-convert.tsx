@@ -6,6 +6,7 @@ import { SwapTool } from "~/components/swap-tool";
 import { useTranslation } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 /** Variant a third-party external-interface site recognises in place of the
@@ -23,13 +24,19 @@ export interface ConvertToVariant {
  * not the alloy denom the user holds. Opening the URL directly would strand the
  * user on a site that rejects the alloy.
  *
- * When the user holds the alloy (and not already the variant) this renders a
- * convert step instead of a plain link: a modal embedding the swap tool
- * defaulted to alloy → variant (1:1 via the transmuter). The third-party URL is
- * opened only from `onSwapSuccess`, so a failed, rejected, or
- * transmuter-cap-blocked convert never redirects (the swap tool surfaces the
- * error in place). Once the user holds the variant the convert is skipped and
- * the link opens directly.
+ * When the user holds the alloy this renders a convert step instead of a plain
+ * link: a modal embedding the swap tool defaulted to alloy → variant (1:1 via
+ * the transmuter). The third-party URL is opened only from `onSwapSuccess`, so a
+ * failed, rejected, or transmuter-cap-blocked convert never redirects (the swap
+ * tool surfaces the error in place).
+ *
+ * The convert is offered whenever the user holds the alloy, even if they also
+ * already hold some of the variant: a dust/partial variant balance must not
+ * suppress the chance to convert the alloy they're trying to withdraw. The swap
+ * tool surfaces the alloy (input) balance but not the variant (output) balance,
+ * so the modal additionally shows the user's current variant balance to inform
+ * how much to convert. Only when the user holds no alloy at all does the link
+ * open directly.
  */
 export const ExternalUrlConvertOption: FunctionComponent<{
   url: URL;
@@ -55,10 +62,11 @@ export const ExternalUrlConvertOption: FunctionComponent<{
 
     // Use the full balance set (every denom), not the portfolio's top-N
     // allocations — the alloy/variant may be a long-tail holding.
-    const { data: userBalances } = api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
-      { enabled: !!account?.address }
-    );
+    const { data: userBalances, isLoading: isLoadingBalances } =
+      api.local.balances.getUserBalances.useQuery(
+        { bech32Address: account?.address ?? "" },
+        { enabled: !!account?.address }
+      );
 
     const holdsAlloy = useMemo(() => {
       const coin = userBalances?.find(
@@ -67,20 +75,36 @@ export const ExternalUrlConvertOption: FunctionComponent<{
       return Boolean(coin?.toDec().isPositive());
     }, [userBalances, alloyMinimalDenom]);
 
-    const holdsVariant = useMemo(() => {
-      const coin = userBalances?.find(
-        ({ denom }) => denom === convertToVariant.coinMinimalDenom
-      )?.coin as CoinPretty | undefined;
-      return Boolean(coin?.toDec().isPositive());
-    }, [userBalances, convertToVariant.coinMinimalDenom]);
+    // The user's existing balance of the variant the site accepts. Shown in the
+    // convert modal so a user who already holds some (e.g. dust) can see it and
+    // decide how much more to convert — the swap tool itself does not surface
+    // the output-token balance.
+    const variantBalance = useMemo(
+      () =>
+        userBalances?.find(
+          ({ denom }) => denom === convertToVariant.coinMinimalDenom
+        )?.coin as CoinPretty | undefined,
+      [userBalances, convertToVariant.coinMinimalDenom]
+    );
 
-    // Convert only when the user holds the alloy but not yet the variant the
-    // site accepts. Otherwise behave exactly like the plain link.
-    const needsConvert = holdsAlloy && !holdsVariant;
+    // While a connected wallet's balances are still loading we cannot tell
+    // whether a convert is required, so we must NOT emit a direct href — a fast
+    // click would strand the user on a site that rejects the alloy. Render an
+    // inert surface until balances resolve.
+    const balancesPending =
+      !!account?.address && (isLoadingBalances || !userBalances);
+
+    // Offer the convert whenever the user holds the alloy. We deliberately do
+    // NOT also require "doesn't hold the variant": a dust/partial variant
+    // balance must not suppress converting the alloy. The swap modal shows both
+    // balances and lets the user choose the amount.
+    const needsConvert = holdsAlloy;
 
     return (
       <>
-        {needsConvert
+        {balancesPending
+          ? children({})
+          : needsConvert
           ? children({ onClick: () => setIsConvertOpen(true) })
           : children({ href: url.toString() })}
         {needsConvert && (
@@ -103,6 +127,19 @@ export const ExternalUrlConvertOption: FunctionComponent<{
                 { variant: convertToVariant.symbol, provider: providerName }
               )}
             </p>
+            {variantBalance?.toDec().isPositive() && (
+              <div className="body2 flex items-center justify-center gap-1 pb-2 text-osmoverse-400">
+                <span>
+                  {t(
+                    "transfer.moreBridgeOptions.convertBeforeWithdraw.currentVariantBalance",
+                    { variant: convertToVariant.symbol }
+                  )}
+                </span>
+                <span className="text-osmoverse-200">
+                  {formatPretty(variantBalance)}
+                </span>
+              </div>
+            )}
             {/*
              * useQueryParams={false}: the bridge flow owns the page query
              * params; controlled mode keeps the swap state in local React state

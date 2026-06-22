@@ -879,7 +879,8 @@
       "noAlternativesFound": "No se encontraron proveedores alternativos para esta ruta.",
       "convertBeforeWithdraw": {
         "title": "Convierte primero a {variant}",
-        "description": "{provider} solo acepta {variant}. Convierte tu saldo aleado a {variant} a continuación y luego continúa con {provider} para completar tu retiro."
+        "description": "{provider} solo acepta {variant}. Convierte tu saldo aleado a {variant} a continuación y luego continúa con {provider} para completar tu retiro.",
+        "currentVariantBalance": "Saldo actual de {variant}:"
       }
     },
     "assetSelectScreen": {

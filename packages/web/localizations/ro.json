@@ -879,7 +879,8 @@
       "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută.",
       "convertBeforeWithdraw": {
         "title": "Convertiți mai întâi în {variant}",
-        "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea."
+        "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",
+        "currentVariantBalance": "Sold curent {variant}:"
       }
     },
     "assetSelectScreen": {

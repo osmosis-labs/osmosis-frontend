@@ -879,7 +879,8 @@
       "noAlternativesFound": "Bu rota için alternatif sağlayıcı bulunamadı.",
       "convertBeforeWithdraw": {
         "title": "Önce {variant} öğesine dönüştürün",
-        "description": "{provider} yalnızca {variant} kabul eder. Alaşımlı bakiyenizi aşağıda {variant} öğesine dönüştürün, ardından çekme işleminizi tamamlamak için {provider} ile devam edin."
+        "description": "{provider} yalnızca {variant} kabul eder. Alaşımlı bakiyenizi aşağıda {variant} öğesine dönüştürün, ardından çekme işleminizi tamamlamak için {provider} ile devam edin.",
+        "currentVariantBalance": "Mevcut {variant} bakiyesi:"
       }
     },
     "assetSelectScreen": {

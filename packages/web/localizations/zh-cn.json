@@ -879,7 +879,8 @@
       "noAlternativesFound": "未找到此路线的替代提供商。",
       "convertBeforeWithdraw": {
         "title": "请先转换为 {variant}",
-        "description": "{provider} 仅接受 {variant}。请在下方将您的合金余额转换为 {variant}，然后继续前往 {provider} 完成提款。"
+        "description": "{provider} 仅接受 {variant}。请在下方将您的合金余额转换为 {variant}，然后继续前往 {provider} 完成提款。",
+        "currentVariantBalance": "当前 {variant} 余额："
       }
     },
     "assetSelectScreen": {

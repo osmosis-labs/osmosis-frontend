@@ -879,7 +879,8 @@
       "noAlternativesFound": "Nenhum provedor alternativo encontrado para esta rota.",
       "convertBeforeWithdraw": {
         "title": "Converta primeiro para {variant}",
-        "description": "{provider} aceita apenas {variant}. Converta seu saldo alloyed para {variant} abaixo e, em seguida, continue para {provider} para concluir sua retirada."
+        "description": "{provider} aceita apenas {variant}. Converta seu saldo alloyed para {variant} abaixo e, em seguida, continue para {provider} para concluir sua retirada.",
+        "currentVariantBalance": "Saldo atual de {variant}:"
       }
     },
     "assetSelectScreen": {

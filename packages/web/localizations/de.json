@@ -879,7 +879,8 @@
       "noAlternativesFound": "Keine alternativen Anbieter für diese Route gefunden.",
       "convertBeforeWithdraw": {
         "title": "Zuerst in {variant} umwandeln",
-        "description": "{provider} akzeptiert nur {variant}. Wandeln Sie Ihr Alloyed-Guthaben unten in {variant} um und fahren Sie dann mit {provider} fort, um Ihre Auszahlung abzuschließen."
+        "description": "{provider} akzeptiert nur {variant}. Wandeln Sie Ihr Alloyed-Guthaben unten in {variant} um und fahren Sie dann mit {provider} fort, um Ihre Auszahlung abzuschließen.",
+        "currentVariantBalance": "Aktuelles {variant}-Guthaben:"
       }
     },
     "assetSelectScreen": {
