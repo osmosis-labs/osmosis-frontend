@@ -123,8 +123,8 @@ const APPROVE_BUTTON_TIMEOUT_MS = 10_000;
  *
  * The popup frequently comes up blank or renders the Approve button late in
  * headless CI, so a single `waitFor` is flaky. We retry the load + button
- * steps with a reload in between: a reload makes the popup re-read the still
- * -pending approval from the background service worker (the request is queued
+ * steps with a reload in between: a reload makes the popup re-read the
+ * still-pending approval from the background service worker (the request is queued
  * there, so it survives the reload). Each failed attempt logs which step timed
  * out, so a hard failure points at the real cause instead of a generic
  * "Approve not visible".
@@ -167,7 +167,7 @@ export async function waitForKeplrApproval(
           state: "visible",
           timeout: APPROVE_BUTTON_TIMEOUT_MS,
         });
-        await approveBtn.click();
+        await approveBtn.click({ timeout: APPROVE_BUTTON_TIMEOUT_MS });
         console.log(
           `Clicking Approve in Keplr popup${
             attempt > 1 ? ` (attempt ${attempt}/${attempts})` : ""

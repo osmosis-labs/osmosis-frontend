@@ -136,7 +136,7 @@ export class WalletPage {
     const READY_TIMEOUT = 20_000
 
     try {
-      await this.saveBtn.waitFor({ state: 'visible', timeout: READY_TIMEOUT })
+      await expect(this.saveBtn, 'Save CTA not enabled').toBeEnabled({ timeout: READY_TIMEOUT })
     } catch (err) {
       const screenshotPath = `test-results/keplr-chains-debug-${Date.now()}.png`
       await this.page
