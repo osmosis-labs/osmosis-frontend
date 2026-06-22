@@ -1,5 +1,7 @@
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
+import { usePreviousWhen } from "~/hooks/use-previous-when";
+import { makeRouterErrorFromTrpcError } from "~/hooks/use-swap";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 /** SQS out-given-in quote, as returned by the local quote router. */
@@ -51,7 +53,7 @@ export function useClZapQuote({
     tokenInDenom !== tokenOutDenom;
 
   const {
-    data: quote,
+    data: freshQuote,
     isLoading,
     isError,
     error,
@@ -77,11 +79,39 @@ export function useClZapQuote({
     }
   );
 
+  // Hold the last successful quote so the breakdown doesn't collapse to a
+  // spinner on each 5s background refetch (mirrors the swap tool's
+  // `usePreviousWhen` over its quote).
+  const previousQuote = usePreviousWhen(freshQuote, (q) => Boolean(q));
+
+  // Only fall back to the held quote when it was computed for the SAME input
+  // amount. After an amount edit the held quote is for the old amount; reusing
+  // it for display would be wrong (and `zapInLiquidity` derives the swap leg
+  // from the quote's own `initialAmount`), so we let it show loading in that
+  // brief window rather than render a mismatched quote.
+  const heldMatchesInput =
+    previousQuote &&
+    previousQuote.split
+      .reduce((sum, s) => sum.add(s.initialAmount), new Int(0))
+      .toString() === tokenInAmount;
+
+  const quote = freshQuote ?? (heldMatchesInput ? previousQuote : undefined);
+
+  // Map the raw SQS/tRPC error string to a typed router error (NoRouteError /
+  // NotEnoughLiquidityError / NotEnoughQuotedError / generic), reusing the swap
+  // tool's mapper so the consumer can show the accurate cause via `tError`
+  // rather than a single catch-all message.
+  const routerError = makeRouterErrorFromTrpcError(error?.message)?.error;
+
   return {
     quote,
-    isLoading: isEnabled && isLoading,
+    // Only surface loading on the genuine first fetch (no quote to show yet),
+    // not on background refetches — that's what caused the flicker.
+    isLoading: isEnabled && isLoading && !quote,
     isError,
     error,
+    /** Typed router error for `tError`-based copy; undefined when no error. */
+    routerError,
     isEnabled,
   };
 }
