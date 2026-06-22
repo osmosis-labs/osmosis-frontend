@@ -100,8 +100,7 @@ export function useClZapQuote({
   // Dropping it lets the consumer show the error (typed `routerError`) instead.
   // The flicker the hold prevents only applies to transient success refetches.
   const quote =
-    freshQuote ??
-    (heldMatchesInput && !isError ? previousQuote : undefined);
+    freshQuote ?? (heldMatchesInput && !isError ? previousQuote : undefined);
 
   // Map the raw SQS/tRPC error string to a typed router error (NoRouteError /
   // NotEnoughLiquidityError / NotEnoughQuotedError / generic), reusing the swap
