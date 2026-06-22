@@ -104,12 +104,22 @@ export const AddLiquidityModal: FunctionComponent<
     Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
     (zapQuote.isLoading || !zapQuote.quote);
 
+  // Block an empty or sub-precision/dust single-asset amount (an amount that
+  // rounds to zero micro units, or whose swap rounds to zero on a two-sided
+  // range) — it can't produce a valid position.
+  const zapInputInvalid =
+    isConcentrated &&
+    addConliqConfig.singleAssetMode &&
+    (addConliqConfig.singleAssetInputState === "empty" ||
+      addConliqConfig.singleAssetInputState === "too-small");
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
         config.error !== undefined ||
         isSendingMsg ||
         zapNotReady ||
+        zapInputInvalid ||
         (zapHighCost && !zapCostAcknowledged),
       onClick: () => {
         // Single-asset zap-in (CL only): swap + create position in one tx.

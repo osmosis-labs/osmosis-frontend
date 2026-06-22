@@ -25,6 +25,7 @@ import {
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders/spinner";
+import { tError } from "~/components/localization";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
@@ -489,6 +490,7 @@ const SingleAssetDeposit: FunctionComponent<{
       singleAssetSide,
       singleAssetDepositAmountIn,
       requiredSwap,
+      singleAssetInputState,
       baseDepositPrice,
       quoteDepositPrice,
       setBaseDepositAmountMax,
@@ -605,9 +607,10 @@ const SingleAssetDeposit: FunctionComponent<{
           percentage={new RatePretty(1)}
         />
 
-        {requiredSwap && (
+        {(singleAssetInputState === "swap" ||
+          singleAssetInputState === "one-sided") && (
           <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
-            {needsSwap ? (
+            {singleAssetInputState === "swap" && requiredSwap ? (
               <p className="body2 text-center text-osmoverse-200">
                 {t("addConcentratedLiquidity.singleAsset.splitBreakdown", {
                   inputAmount: formatPretty(
@@ -633,22 +636,34 @@ const SingleAssetDeposit: FunctionComponent<{
                   outDenom: requiredSwap.tokenOutCurrency.coinDenom,
                 })}
               </p>
-            ) : (
+            ) : requiredSwap ? (
               <p className="body2 text-center text-osmoverse-200">
                 {t("addConcentratedLiquidity.singleAsset.noSwapNeeded", {
                   inputDenom: requiredSwap.tokenInCurrency.coinDenom,
                 })}
               </p>
-            )}
+            ) : null}
 
             {needsSwap &&
-              (zapQuote?.isLoading || !quote ? (
-                <div className="flex items-center gap-2 py-2 text-osmoverse-300">
+              requiredSwap &&
+              (zapQuote?.isLoading ? (
+                <div className="flex items-center justify-center gap-2 py-2 text-osmoverse-300">
                   <Spinner className="!h-4 !w-4" />
                   <span className="caption">
                     {t("addConcentratedLiquidity.singleAsset.quoteLoading")}
                   </span>
                 </div>
+              ) : !quote ? (
+                // Not loading and still no quote: surface the actual cause from
+                // the typed router error (no route / insufficient liquidity /
+                // amount too small to quote) instead of an eternal spinner. When
+                // SQS returns nothing without an error (sub-minimum amount), fall
+                // back to "amount too low". Submit stays disabled either way.
+                <p className="caption py-2 text-center text-rust-300">
+                  {zapQuote?.routerError
+                    ? t(...tError(zapQuote.routerError))
+                    : t("transfer.transferAmountTooLowValueLoss")}
+                </p>
               ) : (
                 <div className="mx-auto flex w-full max-w-lg flex-col">
                   {minReceived && (
