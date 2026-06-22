@@ -5,7 +5,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
@@ -77,6 +77,19 @@ export const AddLiquidityModal: FunctionComponent<
       zapQuote.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
   );
 
+  // Reset the acknowledgement when the trade context changes, so a stale
+  // "confirmed" can't carry over to a different high-impact trade. Keyed on the
+  // projected swap amount (changes when the user edits amount / side / range,
+  // NOT on the 5s quote refetch) and whether the warning is currently showing.
+  // Deliberately not keyed on the live quote output, which would uncheck the box
+  // on every refetch tick.
+  const zapCostContextKey = `${
+    addConliqConfig.requiredSwap?.swapInAmount.toString() ?? ""
+  }:${zapHighCost}`;
+  useEffect(() => {
+    setZapCostAcknowledged(false);
+  }, [zapCostContextKey]);
+
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
     api.local.pools.getPool.useQuery({ poolId });
@@ -97,12 +110,17 @@ export const AddLiquidityModal: FunctionComponent<
   const config = isConcentrated ? addConliqConfig : addLiquidityConfig;
 
   // In single-asset mode, block submission until the swap quote is ready
-  // (unless the range is one-sided and no swap is needed).
+  // (unless the range is one-sided and no swap is needed). Also block on a
+  // quote error: a failed refetch can leave a stale held quote that would
+  // otherwise be broadcast.
   const zapNotReady =
     isConcentrated &&
     addConliqConfig.singleAssetMode &&
     Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
-    (zapQuote.isLoading || !zapQuote.quote);
+    (zapQuote.isLoading ||
+      !zapQuote.quote ||
+      zapQuote.isError ||
+      Boolean(zapQuote.routerError));
 
   // Block an empty or sub-precision/dust single-asset amount (an amount that
   // rounds to zero micro units, or whose swap rounds to zero on a two-sided
