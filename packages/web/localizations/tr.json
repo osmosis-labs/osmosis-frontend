@@ -98,7 +98,9 @@
     "goToPool": "havuza git #{poolId}",
     "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
     "noPositions": "Hiçbir pozisyon bulunamadı.",
-    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın."
+    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "Kopyalandı!",
   "app": {

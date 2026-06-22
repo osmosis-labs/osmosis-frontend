@@ -98,7 +98,9 @@
     "goToPool": "પૂલ #{poolId} પર જાઓ",
     "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો.",
     "noPositions": "કોઈ પદ મળ્યું નથી.",
-    "noPositionsDescription": "સ્પ્રેડ રિવોર્ડ્સ કમાવવા માટે પૂલને કેન્દ્રિત તરલતા પ્રદાન કરો."
+    "noPositionsDescription": "સ્પ્રેડ રિવોર્ડ્સ કમાવવા માટે પૂલને કેન્દ્રિત તરલતા પ્રદાન કરો.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "નકલ કરી!",
   "app": {

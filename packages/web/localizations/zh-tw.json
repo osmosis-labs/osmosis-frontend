@@ -98,7 +98,9 @@
     "goToPool": "前往泳池#{poolId}",
     "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。",
     "noPositions": "未找到職位",
-    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。"
+    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "複製了！",
   "app": {

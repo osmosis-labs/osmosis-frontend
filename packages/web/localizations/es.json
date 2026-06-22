@@ -98,7 +98,9 @@
     "goToPool": "Ir a la piscina #{poolId}",
     "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia.",
     "noPositions": "No se encontraron puestos",
-    "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales."
+    "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "¡Copiado!",
   "app": {

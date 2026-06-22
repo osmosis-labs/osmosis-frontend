@@ -98,7 +98,9 @@
     "goToPool": "पूल # पर जाएँ #{poolId}",
     "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।",
     "noPositions": "कोई पद नहीं मिला",
-    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।"
+    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "कॉपी किया गया!",
   "app": {

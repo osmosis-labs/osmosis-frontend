@@ -98,7 +98,9 @@
     "goToPool": "Aller à la piscine #{poolId}",
     "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support.",
     "noPositions": "Aucune position trouvée",
-    "noPositionsDescription": "Apportez une liquidité concentrée à un pool pour commencer à percevoir des récompenses de spread."
+    "noPositionsDescription": "Apportez une liquidité concentrée à un pool pour commencer à percevoir des récompenses de spread.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "Copié!",
   "app": {

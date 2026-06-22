@@ -18,8 +18,19 @@ export class ObservableRemoveConcentratedLiquidityConfig {
   @observable
   position: Position;
 
+  /** Target fraction of the withdrawn *value* to end holding in base (token0),
+   *  in `[0, 1]`. The always-shown output-mix slider drives this. Initialised to
+   *  the position's current value split (the no-swap point) by the consumer once
+   *  the spot price is known; a swap fires only when it moves off that point. */
+  @observable
+  protected _targetBaseValueFraction = 0.5;
+
   get percentage(): number {
     return this._percentage;
+  }
+
+  get targetBaseValueFraction(): number {
+    return this._targetBaseValueFraction;
   }
 
   /** Gets the user-selected percentage of the position's liquidity. */
@@ -103,5 +114,10 @@ export class ObservableRemoveConcentratedLiquidityConfig {
   @action
   setPosition(position: Position) {
     this.position = position;
+  }
+
+  @action
+  setTargetBaseValueFraction(fraction: number) {
+    this._targetBaseValueFraction = fraction;
   }
 }

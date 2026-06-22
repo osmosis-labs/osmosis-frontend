@@ -98,7 +98,9 @@
     "goToPool": "Mergi la piscina #{poolId}",
     "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența.",
     "noPositions": "Nu s-au găsit poziții",
-    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread."
+    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "Copiat!",
   "app": {
