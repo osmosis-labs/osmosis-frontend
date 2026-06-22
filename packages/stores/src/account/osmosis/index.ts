@@ -860,7 +860,10 @@ export class OsmosisAccountImpl {
       throw new Error("Must be concentrated pool");
     }
 
-    if (swapIn.routes.length < 1 || swapIn.routes[0].pools.length < 1) {
+    if (
+      swapIn.routes.length < 1 ||
+      swapIn.routes.some((route) => route.pools.length < 1)
+    ) {
       throw new Error("Zap-in requires a non-empty swap route");
     }
 
