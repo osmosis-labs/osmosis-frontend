@@ -95,7 +95,13 @@ export function useClZapQuote({
       .reduce((sum, s) => sum.add(s.initialAmount), new Int(0))
       .toString() === tokenInAmount;
 
-  const quote = freshQuote ?? (heldMatchesInput ? previousQuote : undefined);
+  // Don't fall back to the held quote when the latest fetch errored: holding it
+  // would render a valid-looking breakdown while submit is silently disabled.
+  // Dropping it lets the consumer show the error (typed `routerError`) instead.
+  // The flicker the hold prevents only applies to transient success refetches.
+  const quote =
+    freshQuote ??
+    (heldMatchesInput && !isError ? previousQuote : undefined);
 
   // Map the raw SQS/tRPC error string to a typed router error (NoRouteError /
   // NotEnoughLiquidityError / NotEnoughQuotedError / generic), reusing the swap
