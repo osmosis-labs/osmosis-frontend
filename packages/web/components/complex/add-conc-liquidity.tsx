@@ -834,13 +834,17 @@ const SlippageInput: FunctionComponent<{
 
   const handleChange = useCallback(
     (value: string) => {
-      if (value === "" || isNaN(+value)) {
+      const parsed = Number(value);
+      if (value === "" || !Number.isFinite(parsed)) {
         setManualSlippage("");
         slippageConfig.setManualSlippage(slippageConfig.defaultManualSlippage);
         return;
       }
-      setManualSlippage(value);
-      slippageConfig.setManualSlippage(new Dec(+value).toString());
+      // Clamp to a sane range so a negative / huge / non-finite entry can't
+      // produce a nonsensical minReceived or break the Dec math.
+      const clamped = Math.max(0, Math.min(50, parsed));
+      setManualSlippage(clamped.toString());
+      slippageConfig.setManualSlippage(new Dec(clamped).toString());
     },
     [slippageConfig]
   );

@@ -41,7 +41,7 @@ import {
   observable,
   reaction,
 } from "mobx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { EventName } from "~/config";
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
@@ -118,21 +118,33 @@ export function useAddConcentratedLiquidityConfig(
 
   // Hydrate the single-asset toggle from the persisted per-pool preference.
   // Pairs with the persist `reaction` below: hydration writes config <- storage,
-  // the reaction writes storage <- config. The loop is safe because both sides
-  // converge to the same boolean (mobx/setState no-op on equal values).
+  // the reaction writes storage <- config.
+  //
+  // `useLocalStorageState` returns its default until an effect reads storage, so
+  // `persistedSingleAssetMode` arrives as the default first and the real value
+  // after. We mark hydration "done" only once and gate the persist reaction on
+  // it, so the intermediate default can't be written back over the stored value
+  // for the current pool (the localStorage race on poolId change).
+  const hydratedForPoolRef = useRef<string>();
   useEffect(() => {
     config.setSingleAssetMode(persistedSingleAssetMode);
-  }, [config, persistedSingleAssetMode]);
+    hydratedForPoolRef.current = poolId;
+  }, [config, persistedSingleAssetMode, poolId]);
 
   // Persist subsequent toggles. `reaction` (unlike `autorun`) doesn't fire on
-  // setup, so it can't clobber the stored preference before the hydration above.
+  // setup; the hydration guard additionally prevents persisting before the
+  // stored value for this pool has been read.
   useEffect(
     () =>
       reaction(
         () => config.singleAssetMode,
-        (singleAssetMode) => setPersistedSingleAssetMode(singleAssetMode)
+        (singleAssetMode) => {
+          if (hydratedForPoolRef.current === poolId) {
+            setPersistedSingleAssetMode(singleAssetMode);
+          }
+        }
       ),
-    [config, setPersistedSingleAssetMode]
+    [config, poolId, setPersistedSingleAssetMode]
   );
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
