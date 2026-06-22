@@ -3,6 +3,7 @@ import {
   NotInitializedError,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
+import { Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent } from "react";
@@ -57,6 +58,11 @@ export const AddLiquidityModal: FunctionComponent<
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
     useState(false);
 
+  // High price-impact acknowledgement for the single-asset zap-in. Mirrors the
+  // swap confirmation modal's high-loss treatment: the user must explicitly
+  // confirm before a high-impact deposit can be submitted.
+  const [zapCostAcknowledged, setZapCostAcknowledged] = useState(false);
+
   const {
     config: addConliqConfig,
     addLiquidity: addConLiquidity,
@@ -64,6 +70,12 @@ export const AddLiquidityModal: FunctionComponent<
     zapQuote,
     zapSlippageConfig,
   } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+
+  // Same high-impact threshold the swap tool uses (price impact worse than -10%).
+  const zapHighCost = Boolean(
+    addConliqConfig.singleAssetMode &&
+      zapQuote.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
+  );
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
@@ -94,7 +106,11 @@ export const AddLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: config.error !== undefined || isSendingMsg || zapNotReady,
+      disabled:
+        config.error !== undefined ||
+        isSendingMsg ||
+        zapNotReady ||
+        (zapHighCost && !zapCostAcknowledged),
       onClick: () => {
         // Single-asset zap-in (CL only): swap + create position in one tx.
         // Superfluid staking is full-range two-asset only, so it never applies
@@ -260,6 +276,9 @@ export const AddLiquidityModal: FunctionComponent<
             addLiquidityConfig={addConliqConfig}
             zapQuote={zapQuote}
             zapSlippageConfig={zapSlippageConfig}
+            zapHighCost={zapHighCost}
+            zapCostAcknowledged={zapCostAcknowledged}
+            onZapCostAcknowledgedChange={setZapCostAcknowledged}
             actionButton={accountActionButton}
             onRequestClose={props.onRequestClose}
           />

@@ -34,7 +34,15 @@
     "low": "faible",
     "buttonCreateAndStake": "Créer une position et un enjeu",
     "estimated": "Estimé",
-    "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %."
+    "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %.",
+    "singleAsset": {
+      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
+      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
+      "valueIn": "Value in",
+      "valueOut": "Value out",
+      "totalCost": "Total cost",
+      "quoteLoading": "Finding the best swap…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
