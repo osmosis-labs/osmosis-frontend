@@ -98,7 +98,9 @@
     "goToPool": "プール #{poolId}に移動します",
     "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。",
     "noPositions": "求人情報は見つかりませんでした。",
-    "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。"
+    "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "コピーしました！",
   "app": {

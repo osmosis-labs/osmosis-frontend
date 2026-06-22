@@ -98,7 +98,9 @@
     "goToPool": "Idź do basenu #{poolId}",
     "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
     "noPositions": "Nie znaleziono stanowisk",
-    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie."
+    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "Skopiowano!",
   "app": {

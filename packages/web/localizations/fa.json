@@ -98,7 +98,9 @@
     "goToPool": "رفتن به استخر #{poolId}",
     "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید.",
     "noPositions": "هیچ موقعیتی یافت نشد",
-    "noPositionsDescription": "نقدینگی متمرکز را برای یک استخر فراهم کنید تا بتوانید پاداش‌های اسپرد را دریافت کنید."
+    "noPositionsDescription": "نقدینگی متمرکز را برای یک استخر فراهم کنید تا بتوانید پاداش‌های اسپرد را دریافت کنید.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "کپی شده!",
   "app": {

@@ -98,7 +98,9 @@
     "goToPool": "前往泳池#{poolId}",
     "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。",
     "noPositions": "未找到职位",
-    "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。"
+    "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "已复制！",
   "app": {

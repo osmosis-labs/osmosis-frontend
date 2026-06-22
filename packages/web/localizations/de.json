@@ -98,7 +98,9 @@
     "goToPool": "Gehen Sie zu Pool #{poolId}",
     "errorFetchingPositions": "Positionsdetails konnten nicht abgerufen werden. Versuchen Sie, die Seite zu aktualisieren. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
     "noPositions": "Keine Positionen gefunden",
-    "noPositionsDescription": "Stelle einem Pool konzentrierte Liquidität zur Verfügung, um Spread-Prämien zu verdienen."
+    "noPositionsDescription": "Stelle einem Pool konzentrierte Liquidität zur Verfügung, um Spread-Prämien zu verdienen.",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
   },
   "copied": "Kopiert!",
   "app": {
