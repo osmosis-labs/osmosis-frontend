@@ -36,7 +36,7 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
@@ -324,6 +324,17 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     Number((1 - value[0] / 100).toFixed(2))
                   );
                 }}
+                onValueCommit={(value: number[]) => {
+                  // Snap back to the no-swap start point when released within 2%
+                  // of it, so a near-miss doesn't trigger a tiny pointless swap.
+                  const target = 1 - value[0] / 100;
+                  if (
+                    currentBaseValueFraction !== undefined &&
+                    Math.abs(target - currentBaseValueFraction) <= 0.02
+                  ) {
+                    config.setTargetBaseValueFraction(currentBaseValueFraction);
+                  }
+                }}
                 min={0}
                 max={100}
                 step={1}
@@ -412,7 +423,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           </div>
         )}
         {(claimableRewardCoins?.length ?? 0) > 0 && (
-          <div className="mt-8 flex w-full flex-col gap-3 py-3">
+          <div className="flex w-full flex-col gap-3 py-3">
             <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
               {t("clPositions.pendingRewards")}
             </div>
@@ -464,9 +475,7 @@ const ZapOutBreakdown: FunctionComponent<{
         left={t("receiveAtLeast")}
         right={
           <span className="body2 text-right text-white-full">
-            {minReceivedCoins
-              .map((c) => formatPretty(c, { maxDecimals: 6 }))
-              .join(" + ")}
+            {minReceivedCoins.map((c) => formatPretty(c)).join(" + ")}
           </span>
         }
       />
@@ -475,7 +484,7 @@ const ZapOutBreakdown: FunctionComponent<{
           left={t("addConcentratedLiquidity.singleAsset.valueOut")}
           right={
             <span className="body2 text-osmoverse-200">
-              {formatPretty(valueOut, { maxDecimals: 2 })}
+              {formatFiatPrice(valueOut)}
             </span>
           }
         />
