@@ -260,15 +260,11 @@ export function useRemoveConcentratedLiquidityConfig(
           if (swapInLowerBound.lte(new Int(0)))
             return reject("Swap input too small after slippage");
 
-          const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
-          const tokenOutMinAmount = new Dec(outMicro)
-            .mul(slippageMultiplier)
-            .truncate();
-          if (tokenOutMinAmount.lte(new Int(0)))
-            return reject("Swap output floor rounds to zero");
-
-          // Swap route(s) from the SQS quote, verbatim, but with the swap leg's
-          // tokenInAmount replaced by the conservative lower bound.
+          // Swap route(s) from the SQS quote, verbatim, but with each leg's
+          // tokenInAmount replaced by the conservative lower bound (so the swap
+          // can't try to spend more than the withdraw yields after spot drift).
+          // Truncation is per-leg, so the actual total input is slightly below
+          // the full quote input.
           const routes = zapQuote.quote.split.map((route) => ({
             pools: route.pools.map((routePool, i: number) => ({
               id: routePool.id,
@@ -279,6 +275,31 @@ export function useRemoveConcentratedLiquidityConfig(
               .truncate()
               .toString(),
           }));
+
+          // The min-out must track the ACTUAL scaled input, not the full quote
+          // output: scale the expected output by the realised input ratio
+          // (sum of scaled leg inputs / full quote input), then apply the user
+          // slippage. Output scales ~linearly with input at the same rate, so a
+          // min-out tied to the larger full-quote output would make the swap
+          // revert even when the withdraw succeeds.
+          const fullInput = zapQuote.quote.split.reduce(
+            (sum, route) => sum.add(new Dec(route.initialAmount)),
+            new Dec(0)
+          );
+          const scaledInput = routes.reduce(
+            (sum, route) => sum.add(new Dec(route.tokenInAmount)),
+            new Dec(0)
+          );
+          const inputRatio = fullInput.isZero()
+            ? new Dec(0)
+            : scaledInput.quo(fullInput);
+          const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
+          const tokenOutMinAmount = new Dec(outMicro)
+            .mul(inputRatio)
+            .mul(slippageMultiplier)
+            .truncate();
+          if (tokenOutMinAmount.lte(new Int(0)))
+            return reject("Swap output floor rounds to zero");
 
           logEvent([
             EventName.ConcentratedLiquidity.removeLiquidityClicked,
