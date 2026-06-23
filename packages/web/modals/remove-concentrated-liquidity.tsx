@@ -70,6 +70,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     zapSlippageConfig,
     requiredSwap,
     currentBaseValueFraction,
+    quoteInSync,
   } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
@@ -221,8 +222,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       disabled:
         config.error !== undefined ||
         isSendingMsg ||
-        // Block submission while a needed swap quote isn't ready.
-        (needsSwap && (zapQuote.isLoading || !quote)) ||
+        // Block submission while a needed swap quote isn't ready, or while the
+        // quote (debounced) doesn't yet reflect the live slider target, so we
+        // never execute a stale target mix.
+        (needsSwap && (zapQuote.isLoading || !quote || !quoteInSync)) ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
