@@ -35,8 +35,14 @@ export interface ConvertToVariant {
  * suppress the chance to convert the alloy they're trying to withdraw. The swap
  * tool surfaces the alloy (input) balance but not the variant (output) balance,
  * so the modal additionally shows the user's current variant balance to inform
- * how much to convert. Only when the user holds no alloy at all does the link
- * open directly.
+ * how much to convert.
+ *
+ * The plain direct link is used only when we can be sure no convert is needed:
+ * either no wallet is connected, or a connected wallet's balance query has
+ * confidently resolved (settled, no error) and shows no alloy. While balances
+ * are loading, refetching, or errored, the convert path is used instead — a
+ * stale or unknown balance must never produce a direct hand-off that could
+ * strand a holder on a site that rejects the alloy.
  */
 export const ExternalUrlConvertOption: FunctionComponent<{
   url: URL;
@@ -62,11 +68,14 @@ export const ExternalUrlConvertOption: FunctionComponent<{
 
     // Use the full balance set (every denom), not the portfolio's top-N
     // allocations — the alloy/variant may be a long-tail holding.
-    const { data: userBalances, isLoading: isLoadingBalances } =
-      api.local.balances.getUserBalances.useQuery(
-        { bech32Address: account?.address ?? "" },
-        { enabled: !!account?.address }
-      );
+    const {
+      data: userBalances,
+      isFetching: isFetchingBalances,
+      isError: isBalancesError,
+    } = api.local.balances.getUserBalances.useQuery(
+      { bech32Address: account?.address ?? "" },
+      { enabled: !!account?.address }
+    );
 
     const holdsAlloy = useMemo(() => {
       const coin = userBalances?.find(
@@ -87,26 +96,30 @@ export const ExternalUrlConvertOption: FunctionComponent<{
       [userBalances, convertToVariant.coinMinimalDenom]
     );
 
-    // While a connected wallet's balances are still loading we cannot tell
-    // whether a convert is required, so we must NOT emit a direct href — a fast
-    // click would strand the user on a site that rejects the alloy. Render an
-    // inert surface until balances resolve.
-    const balancesPending =
-      !!account?.address && (isLoadingBalances || !userBalances);
+    // The only unsafe outcome is emitting a direct href when the user actually
+    // holds the alloy — that strands them on a site that rejects the alloy
+    // denom. So among *connected* wallets we emit the direct link ONLY when the
+    // balance query has confidently resolved (settled, not fetching, no error)
+    // and shows no alloy. Every uncertain connected case — loading, a background
+    // refetch in flight (a stale "no alloy" snapshot must not clear the gate),
+    // or a query error — falls through to the convert path rather than the
+    // direct link; if the user turns out not to hold the alloy the modal's swap
+    // tool just shows a zero balance (mild friction), nobody is stranded.
+    //
+    // With no connected wallet there is nothing to convert and no balance to
+    // protect, so the plain link is correct (preserves middle-click / new-tab).
+    const isConnected = !!account?.address;
+    const balancesResolved =
+      isConnected && !isFetchingBalances && !isBalancesError;
 
-    // Offer the convert whenever the user holds the alloy. We deliberately do
-    // NOT also require "doesn't hold the variant": a dust/partial variant
-    // balance must not suppress converting the alloy. The swap modal shows both
-    // balances and lets the user choose the amount.
-    const needsConvert = holdsAlloy;
+    const offerDirectLink = !isConnected || (balancesResolved && !holdsAlloy);
+    const needsConvert = !offerDirectLink;
 
     return (
       <>
-        {balancesPending
-          ? children({})
-          : needsConvert
-          ? children({ onClick: () => setIsConvertOpen(true) })
-          : children({ href: url.toString() })}
+        {offerDirectLink
+          ? children({ href: url.toString() })
+          : children({ onClick: () => setIsConvertOpen(true) })}
         {needsConvert && (
           <ModalBase
             isOpen={isConvertOpen}
