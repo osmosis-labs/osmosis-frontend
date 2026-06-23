@@ -766,8 +766,14 @@ export class TradePage extends BasePage {
    * this reject. This must be armed before the Keplr approval click (mirroring
    * the previous `expect(trxSuccessful).toBeVisible()` arm) so the broadcast
    * response isn't missed.
+   *
+   * The budget must outlast the worst-case `waitForKeplrApproval` retry window
+   * (up to 3 load+Approve attempts with reloads between, ~60-75s when the popup
+   * is slow/blank in CI). The broadcast can't land until Approve is clicked, and
+   * this deadline is anchored before that click, so a too-short budget would time
+   * out mid-retry and spuriously fail an approval that ultimately succeeds.
    */
-  startTxConfirmation(timeout = 40_000): Promise<void> {
+  startTxConfirmation(timeout = 120_000): Promise<void> {
     // Clear any hash from a previous trade so getTransactionUrl can't reuse it.
     this.lastTxHash = undefined;
     const controller = new AbortController();
