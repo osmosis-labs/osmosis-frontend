@@ -36,12 +36,12 @@
     "estimated": "Tahmini",
     "estimatedInfo": "Bu, mevcut seçilmiş fiyatlara dayalı bir tahmindir. Gerçek APR değişebilir. Konum aralığın dışına çıkarsa APR %0 olacaktır.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "{inputAmount} {inputDenom} bakiyenizden {swapAmount} {inputDenom} ({swapPercent}), pozisyon oranını eşleştirmek için {outDenom} ile takas edilecektir.",
+      "noSwapNeeded": "Seçili aralık yalnızca {inputDenom} gerektiriyor, bu nedenle takas gerekli değildir.",
+      "valueIn": "Gelen değer",
+      "valueOut": "Giden değer",
+      "totalCost": "Toplam maliyet",
+      "quoteLoading": "En iyi takas bulunuyor…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
     "noPositions": "Hiçbir pozisyon bulunamadı.",
     "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Olarak al",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) {outDenom} ile takas edilecektir."
   },
   "copied": "Kopyalandı!",
   "app": {

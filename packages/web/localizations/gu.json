@@ -36,12 +36,12 @@
     "estimated": "અંદાજિત",
     "estimatedInfo": "આ વર્તમાન પસંદ કરેલ કિંમતો પર આધારિત અંદાજ છે. વાસ્તવિક APR અલગ અલગ હોઈ શકે છે. જો સ્થિતિ શ્રેણીની બહાર જાય, તો APR 0% હશે.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "તમારા {inputAmount} {inputDenom}માંથી, {swapAmount} {inputDenom} ({swapPercent}) સ્થિતિ ગુણોત્તર સાથે મેળ ખાવા માટે {outDenom}માં સ્વેપ કરવામાં આવશે.",
+      "noSwapNeeded": "તમારી પસંદ કરેલી શ્રેણીને માત્ર {inputDenom}ની જરૂર છે, તેથી કોઈ સ્વેપની જરૂર નથી.",
+      "valueIn": "આવતું મૂલ્ય",
+      "valueOut": "બહાર આવતું મૂલ્ય",
+      "totalCost": "કુલ ખર્ચ",
+      "quoteLoading": "શ્રેષ્ઠ સ્વેપ શોધી રહ્યા છીએ…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો.",
     "noPositions": "કોઈ પદ મળ્યું નથી.",
     "noPositionsDescription": "સ્પ્રેડ રિવોર્ડ્સ કમાવવા માટે પૂલને કેન્દ્રિત તરલતા પ્રદાન કરો.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "આ રૂપે મેળવો",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) {outDenom}માં સ્વેપ કરવામાં આવશે."
   },
   "copied": "નકલ કરી!",
   "app": {
