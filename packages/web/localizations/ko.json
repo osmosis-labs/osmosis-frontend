@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "먼저 {variant}(으)로 변환하세요",
         "description": "{provider}은(는) {variant}만 허용합니다. 아래에서 합금(alloyed) 잔액을 {variant}(으)로 변환한 다음, {provider}(으)로 이동하여 인출을 완료하세요.",
-        "currentVariantBalance": "현재 {variant} 잔액:"
+        "currentVariantBalance": "현재 {variant} 잔액:",
+        "successTitle": "{variant}로 변환됨",
+        "successDescription": "{variant}가 준비되었습니다. {provider}로 이동하여 출금을 완료하세요.",
+        "continueTo": "{provider}로 계속"
       }
     },
     "assetSelectScreen": {

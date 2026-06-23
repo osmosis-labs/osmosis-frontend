@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "ابتدا به {variant} تبدیل کنید",
         "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",
-        "currentVariantBalance": "موجودی فعلی {variant}:"
+        "currentVariantBalance": "موجودی فعلی {variant}:",
+        "successTitle": "به {variant} تبدیل شد",
+        "successDescription": "{variant} شما آماده است. برای تکمیل برداشت به {provider} ادامه دهید.",
+        "continueTo": "ادامه به {provider}"
       }
     },
     "assetSelectScreen": {

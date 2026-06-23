@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "请先转换为 {variant}",
         "description": "{provider} 仅接受 {variant}。请在下方将您的合金余额转换为 {variant}，然后继续前往 {provider} 完成提款。",
-        "currentVariantBalance": "当前 {variant} 余额："
+        "currentVariantBalance": "当前 {variant} 余额：",
+        "successTitle": "已转换为 {variant}",
+        "successDescription": "您的 {variant} 已就绪。继续前往 {provider} 完成提现。",
+        "continueTo": "继续前往 {provider}"
       }
     },
     "assetSelectScreen": {

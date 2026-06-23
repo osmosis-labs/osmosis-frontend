@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { SwapTool } from "~/components/swap-tool";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
@@ -61,10 +62,20 @@ export const ExternalUrlConvertOption: FunctionComponent<{
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [isConvertOpen, setIsConvertOpen] = useState(false);
+    // Set once the alloy -> variant convert has succeeded. We do NOT auto-open
+    // the third-party URL from onSwapSuccess: that runs after async wallet
+    // approval, outside the user-gesture chain, so browsers block the popup.
+    // Instead we surface a "Continue" button whose click is a fresh gesture.
+    const [convertSucceeded, setConvertSucceeded] = useState(false);
 
     const openUrl = useCallback(() => {
       window.open(url.toString(), "_blank", "noopener,noreferrer");
     }, [url]);
+
+    const closeModal = useCallback(() => {
+      setIsConvertOpen(false);
+      setConvertSucceeded(false);
+    }, []);
 
     // Use the full balance set (every denom), not the portfolio's top-N
     // allocations — the alloy/variant may be a long-tail holding.
@@ -129,54 +140,92 @@ export const ExternalUrlConvertOption: FunctionComponent<{
         {isConvertOpen && (
           <ModalBase
             isOpen={isConvertOpen}
-            onRequestClose={() => setIsConvertOpen(false)}
+            onRequestClose={closeModal}
             title={
               <div className="md:subtitle1 mx-auto text-h6 font-h6">
-                {t("transfer.moreBridgeOptions.convertBeforeWithdraw.title", {
-                  variant: convertToVariant.symbol,
-                  provider: providerName,
-                })}
+                {t(
+                  convertSucceeded
+                    ? "transfer.moreBridgeOptions.convertBeforeWithdraw.successTitle"
+                    : "transfer.moreBridgeOptions.convertBeforeWithdraw.title",
+                  { variant: convertToVariant.symbol, provider: providerName }
+                )}
               </div>
             }
             className="!max-w-[30rem]"
           >
-            <p className="body2 py-4 text-center text-osmoverse-300">
-              {t(
-                "transfer.moreBridgeOptions.convertBeforeWithdraw.description",
-                { variant: convertToVariant.symbol, provider: providerName }
-              )}
-            </p>
-            {variantBalance?.toDec().isPositive() && (
-              <div className="body2 flex items-center justify-center gap-1 pb-2 text-osmoverse-400">
-                <span>
+            {convertSucceeded ? (
+              // Post-convert hand-off. Opening the URL here is driven by the
+              // user's button click (a fresh gesture), so it isn't popup-blocked
+              // the way an auto-open from onSwapSuccess would be.
+              <div className="flex flex-col gap-4 py-4">
+                <p className="body2 text-center text-osmoverse-300">
                   {t(
-                    "transfer.moreBridgeOptions.convertBeforeWithdraw.currentVariantBalance",
-                    { variant: convertToVariant.symbol }
+                    "transfer.moreBridgeOptions.convertBeforeWithdraw.successDescription",
+                    { variant: convertToVariant.symbol, provider: providerName }
                   )}
-                </span>
-                <span className="text-osmoverse-200">
-                  {formatPretty(variantBalance)}
-                </span>
+                </p>
+                <Button
+                  onClick={() => {
+                    openUrl();
+                    closeModal();
+                  }}
+                >
+                  {t(
+                    "transfer.moreBridgeOptions.convertBeforeWithdraw.continueTo",
+                    { provider: providerName }
+                  )}
+                </Button>
               </div>
+            ) : (
+              <>
+                <p className="body2 py-4 text-center text-osmoverse-300">
+                  {t(
+                    "transfer.moreBridgeOptions.convertBeforeWithdraw.description",
+                    { variant: convertToVariant.symbol, provider: providerName }
+                  )}
+                </p>
+                {variantBalance?.toDec().isPositive() && (
+                  <div className="body2 flex items-center justify-center gap-1 pb-2 text-osmoverse-400">
+                    <span>
+                      {t(
+                        "transfer.moreBridgeOptions.convertBeforeWithdraw.currentVariantBalance",
+                        { variant: convertToVariant.symbol }
+                      )}
+                    </span>
+                    <span className="text-osmoverse-200">
+                      {formatPretty(variantBalance)}
+                    </span>
+                  </div>
+                )}
+                {/*
+                 * useQueryParams={false}: the bridge flow owns the page query
+                 * params; controlled mode keeps the swap state in local React
+                 * state so it never writes them.
+                 */}
+                <SwapTool
+                  useQueryParams={false}
+                  useOtherCurrencies={false}
+                  page="Bridge Page"
+                  initialSendTokenDenom={alloyMinimalDenom}
+                  initialOutTokenDenom={convertToVariant.coinMinimalDenom}
+                  onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
+                    // Only hand off if the completed swap was actually
+                    // alloy -> variant. The swap tool still exposes the asset
+                    // switch, so a reversed swap must NOT trigger the
+                    // third-party hand-off this flow exists to gate.
+                    if (
+                      sendTokenDenom === alloyMinimalDenom &&
+                      outTokenDenom === convertToVariant.coinMinimalDenom
+                    ) {
+                      setConvertSucceeded(true);
+                    } else {
+                      // Wrong direction — just close; no hand-off.
+                      closeModal();
+                    }
+                  }}
+                />
+              </>
             )}
-            {/*
-             * useQueryParams={false}: the bridge flow owns the page query
-             * params; controlled mode keeps the swap state in local React state
-             * so it never writes them. The third-party URL opens only on a
-             * successful convert, so a failed/rejected/cap-blocked swap never
-             * redirects.
-             */}
-            <SwapTool
-              useQueryParams={false}
-              useOtherCurrencies={false}
-              page="Bridge Page"
-              initialSendTokenDenom={alloyMinimalDenom}
-              initialOutTokenDenom={convertToVariant.coinMinimalDenom}
-              onSwapSuccess={() => {
-                setIsConvertOpen(false);
-                openUrl();
-              }}
-            />
           </ModalBase>
         )}
       </>

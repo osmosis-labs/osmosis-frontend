@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "Zuerst in {variant} umwandeln",
         "description": "{provider} akzeptiert nur {variant}. Wandeln Sie Ihr Alloyed-Guthaben unten in {variant} um und fahren Sie dann mit {provider} fort, um Ihre Auszahlung abzuschließen.",
-        "currentVariantBalance": "Aktuelles {variant}-Guthaben:"
+        "currentVariantBalance": "Aktuelles {variant}-Guthaben:",
+        "successTitle": "In {variant} umgewandelt",
+        "successDescription": "Ihr {variant} ist bereit. Fahren Sie mit {provider} fort, um Ihre Auszahlung abzuschließen.",
+        "continueTo": "Weiter zu {provider}"
       }
     },
     "assetSelectScreen": {

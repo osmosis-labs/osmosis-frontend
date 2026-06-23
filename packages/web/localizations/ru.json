@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "Сначала конвертируйте в {variant}",
         "description": "{provider} принимает только {variant}. Конвертируйте ваш сплавленный баланс в {variant} ниже, затем перейдите к {provider}, чтобы завершить вывод средств.",
-        "currentVariantBalance": "Текущий баланс {variant}:"
+        "currentVariantBalance": "Текущий баланс {variant}:",
+        "successTitle": "Конвертировано в {variant}",
+        "successDescription": "Ваш {variant} готов. Перейдите к {provider}, чтобы завершить вывод.",
+        "continueTo": "Перейти к {provider}"
       }
     },
     "assetSelectScreen": {

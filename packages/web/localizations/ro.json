@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "Convertiți mai întâi în {variant}",
         "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",
-        "currentVariantBalance": "Sold curent {variant}:"
+        "currentVariantBalance": "Sold curent {variant}:",
+        "successTitle": "Convertit în {variant}",
+        "successDescription": "{variant} este gata. Continuați la {provider} pentru a finaliza retragerea.",
+        "continueTo": "Continuați la {provider}"
       }
     },
     "assetSelectScreen": {

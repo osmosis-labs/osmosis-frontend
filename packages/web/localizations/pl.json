@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "Najpierw przekonwertuj na {variant}",
         "description": "{provider} akceptuje tylko {variant}. Przekonwertuj swoje saldo alloyed na {variant} poniżej, a następnie przejdź do {provider}, aby zakończyć wypłatę.",
-        "currentVariantBalance": "Aktualne saldo {variant}:"
+        "currentVariantBalance": "Aktualne saldo {variant}:",
+        "successTitle": "Przekonwertowano na {variant}",
+        "successDescription": "Twój {variant} jest gotowy. Przejdź do {provider}, aby dokończyć wypłatę.",
+        "continueTo": "Przejdź do {provider}"
       }
     },
     "assetSelectScreen": {

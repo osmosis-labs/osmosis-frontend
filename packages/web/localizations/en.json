@@ -880,7 +880,10 @@
       "convertBeforeWithdraw": {
         "title": "Convert to {variant} first",
         "description": "{provider} only accepts {variant}. Convert your alloyed balance to {variant} below, then continue to {provider} to complete your withdrawal.",
-        "currentVariantBalance": "Current {variant} balance:"
+        "currentVariantBalance": "Current {variant} balance:",
+        "successTitle": "Converted to {variant}",
+        "successDescription": "Your {variant} is ready. Continue to {provider} to complete your withdrawal.",
+        "continueTo": "Continue to {provider}"
       }
     },
     "assetSelectScreen": {
