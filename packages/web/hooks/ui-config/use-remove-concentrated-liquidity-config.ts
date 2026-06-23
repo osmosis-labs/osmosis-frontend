@@ -5,7 +5,7 @@ import type {
   UserPosition,
 } from "@osmosis-labs/server";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
-import { Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
@@ -46,6 +46,10 @@ export function useRemoveConcentratedLiquidityConfig(
   /** True when the (debounced) quote reflects the live slider target. Submission
    *  must be blocked while false, or it would execute a stale target mix. */
   quoteInSync: boolean;
+  /** The enforced swap-leg minimum output (target-side currency), matching what
+   *  the tx submits, so the "receive at least" display can't overstate it.
+   *  Undefined when no swap is needed or the quote isn't ready. */
+  swapMinOut: CoinPretty | undefined;
 } {
   const { accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -169,6 +173,63 @@ export function useRemoveConcentratedLiquidityConfig(
     enabled: Boolean(quotedSwap?.needsSwap),
   });
 
+  // The swap-leg execution plan: the slippage-scaled per-leg routes and the
+  // resulting tokenOutMinAmount. Derived once and used both for submission and
+  // for the "receive at least" display, so the UI shows exactly what the tx
+  // enforces (no drift between the displayed minimum and the on-chain floor).
+  const slippageMultiplier = new Dec(1).sub(zapSlippageConfig.slippage.toDec());
+  const swapExecution = (() => {
+    if (!quotedSwap?.needsSwap || !zapQuote.quote) return undefined;
+
+    // Each leg's tokenIn is the conservative LOWER BOUND of the projected
+    // withdrawn amount of the sold side (fixed at sign time; if it exceeds what
+    // the withdraw yields after spot drift, the tx reverts). Truncation is
+    // per-leg, so the actual total input is slightly below the full quote input.
+    const routes = zapQuote.quote.split.map((route) => ({
+      pools: route.pools.map((routePool, i: number) => ({
+        id: routePool.id,
+        tokenOutDenom: route.tokenOutDenoms[i],
+      })),
+      tokenInAmount: new Dec(route.initialAmount)
+        .mul(slippageMultiplier)
+        .truncate()
+        .toString(),
+    }));
+
+    // The min-out tracks the ACTUAL scaled input, not the full quote output:
+    // scale the expected output by the realised input ratio (sum of scaled leg
+    // inputs / full quote input), then apply slippage. Output scales ~linearly
+    // with input at the same rate, so a min-out tied to the larger full-quote
+    // output would make the swap revert even when the withdraw succeeds.
+    const fullInput = zapQuote.quote.split.reduce(
+      (sum, route) => sum.add(new Dec(route.initialAmount)),
+      new Dec(0)
+    );
+    const scaledInput = routes.reduce(
+      (sum, route) => sum.add(new Dec(route.tokenInAmount)),
+      new Dec(0)
+    );
+    const inputRatio = fullInput.isZero()
+      ? new Dec(0)
+      : scaledInput.quo(fullInput);
+    const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
+    const tokenOutMinAmount = new Dec(outMicro)
+      .mul(inputRatio)
+      .mul(slippageMultiplier)
+      .truncate();
+
+    return {
+      routes,
+      tokenOutMinAmount,
+      tokenInCoinMinimalDenom: quotedSwap.tokenInCurrency.coinMinimalDenom,
+      /** The enforced minimum output, as the target-side currency. */
+      swapMinOut: new CoinPretty(
+        quotedSwap.tokenOutCurrency,
+        tokenOutMinAmount
+      ),
+    };
+  })();
+
   const removeLiquidity = useCallback(
     () =>
       new Promise<void>(async (resolve, reject) => {
@@ -240,64 +301,24 @@ export function useRemoveConcentratedLiquidityConfig(
           if (!liquidity) return reject("Invalid liquidity");
           if (!account) return reject("No account");
           // Submit against the debounced swap the quote was computed for, not
-          // the live (possibly mid-drag) one.
-          if (!quotedSwap?.needsSwap || !zapQuote.quote)
+          // the live (possibly mid-drag) one. `swapExecution` is the shared
+          // scaled-routes + min-out plan, also used by the breakdown display.
+          if (!quotedSwap?.needsSwap || !swapExecution)
             return reject("Swap quote not ready");
 
-          const slippageMultiplier = new Dec(1).sub(
-            zapSlippageConfig.slippage.toDec()
-          );
+          const { routes, tokenOutMinAmount, tokenInCoinMinimalDenom } =
+            swapExecution;
 
-          // The swap leg's tokenIn must be the conservative LOWER BOUND of the
-          // projected withdrawn amount of the side being sold: it is fixed at
-          // sign time, and if it exceeds what the withdraw actually yields the
-          // swap (and whole tx) reverts. MsgWithdrawPosition carries no minima,
-          // so this lower bound plus the swap's tokenOutMinAmount are the only
-          // slippage guards.
+          // The swap leg's tokenIn is the conservative LOWER BOUND of the
+          // projected withdrawn amount of the sold side (fixed at sign time; if
+          // it exceeds what the withdraw yields, the whole tx reverts).
+          // MsgWithdrawPosition carries no minima, so this lower bound plus the
+          // swap's tokenOutMinAmount are the only slippage guards.
           const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
             .mul(slippageMultiplier)
             .truncate();
           if (swapInLowerBound.lte(new Int(0)))
             return reject("Swap input too small after slippage");
-
-          // Swap route(s) from the SQS quote, verbatim, but with each leg's
-          // tokenInAmount replaced by the conservative lower bound (so the swap
-          // can't try to spend more than the withdraw yields after spot drift).
-          // Truncation is per-leg, so the actual total input is slightly below
-          // the full quote input.
-          const routes = zapQuote.quote.split.map((route) => ({
-            pools: route.pools.map((routePool, i: number) => ({
-              id: routePool.id,
-              tokenOutDenom: route.tokenOutDenoms[i],
-            })),
-            tokenInAmount: new Dec(route.initialAmount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString(),
-          }));
-
-          // The min-out must track the ACTUAL scaled input, not the full quote
-          // output: scale the expected output by the realised input ratio
-          // (sum of scaled leg inputs / full quote input), then apply the user
-          // slippage. Output scales ~linearly with input at the same rate, so a
-          // min-out tied to the larger full-quote output would make the swap
-          // revert even when the withdraw succeeds.
-          const fullInput = zapQuote.quote.split.reduce(
-            (sum, route) => sum.add(new Dec(route.initialAmount)),
-            new Dec(0)
-          );
-          const scaledInput = routes.reduce(
-            (sum, route) => sum.add(new Dec(route.tokenInAmount)),
-            new Dec(0)
-          );
-          const inputRatio = fullInput.isZero()
-            ? new Dec(0)
-            : scaledInput.quo(fullInput);
-          const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
-          const tokenOutMinAmount = new Dec(outMicro)
-            .mul(inputRatio)
-            .mul(slippageMultiplier)
-            .truncate();
           if (tokenOutMinAmount.lte(new Int(0)))
             return reject("Swap output floor rounds to zero");
 
@@ -316,8 +337,7 @@ export function useRemoveConcentratedLiquidityConfig(
             liquidity.toString(),
             {
               routes,
-              tokenInCoinMinimalDenom:
-                quotedSwap.tokenInCurrency.coinMinimalDenom,
+              tokenInCoinMinimalDenom,
               tokenOutMinAmount: tokenOutMinAmount.toString(),
             },
             undefined,
@@ -350,8 +370,8 @@ export function useRemoveConcentratedLiquidityConfig(
       config.percentage,
       account,
       quotedSwap,
-      zapQuote.quote,
-      zapSlippageConfig,
+      swapExecution,
+      slippageMultiplier,
       logEvent,
       poolId,
       position.id,
@@ -368,5 +388,6 @@ export function useRemoveConcentratedLiquidityConfig(
     requiredSwap,
     currentBaseValueFraction,
     quoteInSync,
+    swapMinOut: swapExecution?.swapMinOut,
   };
 }
