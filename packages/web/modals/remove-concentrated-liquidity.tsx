@@ -243,6 +243,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // hasn't loaded yet (requiredSwap undefined). Block, so we don't fall
         // through to a plain two-asset withdrawal that ignores their choice.
         (singleAssetExitEnabled && userTouchedMix && !requiredSwap) ||
+        // Before the mix is established (seeded to the position's current ratio
+        // or touched by the user) the target sits at the store default 0.5,
+        // which is a submittable value the user never chose. Block until then.
+        (singleAssetExitEnabled && !hasSeededMix && !userTouchedMix) ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
