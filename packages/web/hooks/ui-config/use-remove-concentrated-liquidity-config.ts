@@ -50,6 +50,10 @@ export function useRemoveConcentratedLiquidityConfig(
    *  the tx submits, so the "receive at least" display can't overstate it.
    *  Undefined when no swap is needed or the quote isn't ready. */
   swapMinOut: CoinPretty | undefined;
+  /** Whether the pool query (source of the spot price the swap math needs) is
+   *  still loading. The consumer only blocks a chosen mix while this is true, so
+   *  a never-resolving query can't trap the user with no path to withdraw. */
+  isPoolLoading: boolean;
 } {
   const { accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -84,7 +88,8 @@ export function useRemoveConcentratedLiquidityConfig(
 
   // The pool's current sqrt price (micro basis) is what the swap executes
   // against, so the value-rebalance math uses it rather than fiat oracle prices.
-  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+  const { data: pool, isLoading: isPoolLoading } =
+    api.local.pools.getPool.useQuery({ poolId });
   const currentSqrtPrice =
     pool?.type === "concentrated"
       ? new BigDec((pool.raw as ConcentratedPoolRawResponse).current_sqrt_price)
@@ -389,5 +394,6 @@ export function useRemoveConcentratedLiquidityConfig(
     currentBaseValueFraction,
     quoteInSync,
     swapMinOut: swapExecution?.swapMinOut,
+    isPoolLoading,
   };
 }

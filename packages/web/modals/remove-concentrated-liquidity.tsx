@@ -72,6 +72,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     currentBaseValueFraction,
     quoteInSync,
     swapMinOut,
+    isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
@@ -242,12 +243,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // never execute a stale target mix.
         (needsSwap && (zapQuote.isLoading || !quote || !quoteInSync)) ||
         // The user chose a real target mix but the pool data needed to compute
-        // the swap hasn't loaded yet, so we can't tell if it needs a swap.
-        // Block, rather than fall through to a plain withdrawal that ignores
-        // their choice. (No target = the explicit no-swap state, which is fine.)
+        // the swap is still loading, so we can't tell if it needs a swap yet.
+        // Block only while that query is in flight (not once it has settled), so
+        // a never-resolving query can't trap the user with no path to withdraw;
+        // once settled with no computable swap, submit falls through to a plain
+        // withdrawal. (No target = the explicit no-swap state, which is fine.)
         (singleAssetExitEnabled &&
           config.targetBaseValueFraction !== undefined &&
-          !requiredSwap) ||
+          !requiredSwap &&
+          isPoolLoading) ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
