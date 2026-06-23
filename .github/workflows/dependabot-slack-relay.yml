@@ -76,9 +76,10 @@ jobs:
             LOOKBACK_MINUTES=75
           fi
 
-          # Window start (UTC ISO-8601). Open alerts updated at/after this are
-          # candidates to relay.
+          # Window start, both as a human-readable UTC ISO-8601 string (for the
+          # log line) and as epoch seconds (for a numeric comparison below).
           SINCE=$(date -u -d "-${LOOKBACK_MINUTES} minutes" +%Y-%m-%dT%H:%M:%SZ)
+          SINCE_EPOCH=$(date -u -d "-${LOOKBACK_MINUTES} minutes" +%s)
           echo "Scanning open Dependabot alerts updated since $SINCE"
 
           # Fetch all open alerts (Link-header paginated). gh uses $GH_TOKEN.
@@ -96,8 +97,15 @@ jobs:
           # them, then keep alerts updated within the window. A parse failure
           # (e.g. unexpected API response shape) warns and exits 0 rather than
           # failing the job under `set -e` — a scheduled relay should not fail CI.
-          if ! jq -s --arg since "$SINCE" -c \
-            'add | map(select(.updated_at >= $since)) | .[]' \
+          #
+          # Compare on epoch seconds, not lexicographically: GitHub timestamps
+          # may carry fractional seconds (e.g. "...:56.789Z"), and `SINCE` is
+          # second-precision, so a string `>=` could drop an alert right at the
+          # window boundary. Strip any fractional part, parse to epoch, and
+          # compare numerically. `try/catch` keeps one malformed timestamp from
+          # discarding the whole batch.
+          if ! jq -s --argjson sinceEpoch "$SINCE_EPOCH" -c \
+            'add | map(select((try (.updated_at | sub("\\.[0-9]+";"") | fromdateiso8601) catch 0) >= $sinceEpoch)) | .[]' \
             alerts_raw.json > alerts.ndjson 2> jq_err.txt; then
             echo "::warning::Failed to parse Dependabot alerts response: $(cat jq_err.txt)"
             exit 0

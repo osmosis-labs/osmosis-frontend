@@ -9,6 +9,7 @@ import type {
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
+import { type MultiLanguageT, useTranslation } from "~/hooks/language";
 import { formatPretty } from "~/utils/formatter";
 
 import {
@@ -551,6 +552,12 @@ export async function fetchGovernorDelay(
 
   const chain = operation.emitterChain;
   const emitter = operation.emitterAddress.hex;
+  // Normalize once (strip any `0x`/`0X` prefix + lowercase). The enqueued-list
+  // rows are normalized the same way, so a `0x`-prefixed or mixed-case
+  // emitter still matches and `releaseTime` populates. We also use this
+  // form for the `is_vaa_enqueued` request path to keep both sides
+  // consistent.
+  const emitterNormalized = emitter.replace(/^0x/i, "").toLowerCase();
   const sequence = operation.sequence;
   const usdAmount = Number(operation.data?.usdAmount);
   if (!Number.isFinite(usdAmount)) {
@@ -561,7 +568,7 @@ export async function fetchGovernorDelay(
   try {
     const res = await fetchWithTimeout(
       `${WORMHOLESCAN_LEGACY_API}/governor/is_vaa_enqueued/${chain}/${encodeURIComponent(
-        emitter
+        emitterNormalized
       )}/${encodeURIComponent(sequence)}`
     );
     if (res.ok) {
@@ -584,8 +591,8 @@ export async function fetchGovernorDelay(
           (v) =>
             String(v.sequence) === String(sequence) &&
             (!v.emitterAddress ||
-              v.emitterAddress.replace(/^0x/, "").toLowerCase() ===
-                emitter.toLowerCase())
+              v.emitterAddress.replace(/^0x/i, "").toLowerCase() ===
+                emitterNormalized)
         );
         if (row?.releaseTime && Number.isFinite(row.releaseTime)) {
           releaseTime = row.releaseTime;
@@ -624,25 +631,34 @@ export async function fetchGovernorDelay(
 /**
  * Format a Unix release timestamp as a short countdown for the delay badge.
  * Returns `"Releases shortly"` when ≤ 60 seconds remain so the copy doesn't
- * jitter against the 1-minute ticker.
+ * jitter against the 1-minute ticker. Takes `t` so the returned copy is
+ * localized.
  */
 export function formatGovernorReleaseCountdown(
+  t: MultiLanguageT,
   releaseTime: number | undefined,
   now: number = Date.now()
 ): string {
   if (!releaseTime) {
-    return `Up to ${GOVERNOR_DELAY_HOURS} hours`;
+    return t("transfer.wormholeRedeem.releaseCountdownUpToHours", {
+      hours: String(GOVERNOR_DELAY_HOURS),
+    });
   }
   const remainingSeconds = Math.max(0, releaseTime - Math.floor(now / 1000));
   if (remainingSeconds <= 60) {
-    return "Releases shortly";
+    return t("transfer.wormholeRedeem.releaseShortly");
   }
   const hours = Math.floor(remainingSeconds / 3600);
   const minutes = Math.floor((remainingSeconds % 3600) / 60);
   if (hours <= 0) {
-    return `Releases in ${minutes}m`;
+    return t("transfer.wormholeRedeem.releaseInMinutes", {
+      minutes: String(minutes),
+    });
   }
-  return `Releases in ${hours}h ${minutes}m`;
+  return t("transfer.wormholeRedeem.releaseInHoursMinutes", {
+    hours: String(hours),
+    minutes: String(minutes),
+  });
 }
 
 function getDestinationExplorerUrl(
@@ -671,6 +687,7 @@ const NonSolanaRedeemPanel: FunctionComponent<{
   onCopy: (value: string, hint: string) => void;
   copyHint: string | null;
 }> = ({ operation, wormholescanHash, onCopy, copyHint }) => {
+  const { t } = useTranslation();
   const toChainId = operation.content.payload.toChain;
   const chainLabel = getChainLabel(toChainId);
   const vaa = operation.vaa.raw;
@@ -682,20 +699,21 @@ const NonSolanaRedeemPanel: FunctionComponent<{
   return (
     <div className="space-y-3">
       <div className="rounded-lg border border-ammelia-600 bg-ammelia-600/10 p-3 text-sm text-ammelia-200">
-        VAA is signed and ready. To redeem on {chainLabel}, open this operation
-        on Wormholescan and connect a {chainLabel} wallet. Wormholescan&apos;s
-        redeem flow supports Sui Wallet, Suiet, Backpack, and other Wallet
-        Standard wallets.
+        {t("transfer.wormholeRedeem.nonSolanaVaaReady", { chain: chainLabel })}
       </div>
 
       <div className="rounded-lg bg-osmoverse-900 p-3 text-sm">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-osmoverse-400">Recipient ({chainLabel})</span>
+          <span className="text-osmoverse-400">
+            {t("transfer.wormholeRedeem.recipientChain", { chain: chainLabel })}
+          </span>
           <button
             onClick={() => onCopy(recipient, "recipient")}
             className="text-xs text-wosmongton-300 underline"
           >
-            {copyHint === "recipient" ? "Copied" : "Copy"}
+            {copyHint === "recipient"
+              ? t("transfer.wormholeRedeem.copied")
+              : t("transfer.wormholeRedeem.copy")}
           </button>
         </div>
         <div className="break-all font-mono text-xs text-white-full">
@@ -705,12 +723,16 @@ const NonSolanaRedeemPanel: FunctionComponent<{
 
       <div className="rounded-lg bg-osmoverse-900 p-3 text-sm">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-osmoverse-400">VAA (base64)</span>
+          <span className="text-osmoverse-400">
+            {t("transfer.wormholeRedeem.vaaBase64")}
+          </span>
           <button
             onClick={() => onCopy(vaa, "vaa")}
             className="text-xs text-wosmongton-300 underline"
           >
-            {copyHint === "vaa" ? "Copied" : "Copy"}
+            {copyHint === "vaa"
+              ? t("transfer.wormholeRedeem.copied")
+              : t("transfer.wormholeRedeem.copy")}
           </button>
         </div>
         <div className="max-h-24 overflow-y-auto break-all font-mono text-[10px] text-osmoverse-300">
@@ -724,7 +746,7 @@ const NonSolanaRedeemPanel: FunctionComponent<{
         rel="noopener noreferrer"
         className="block w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-center text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600"
       >
-        Open on Wormholescan to redeem
+        {t("transfer.wormholeRedeem.openOnWormholescanToRedeem")}
       </a>
     </div>
   );
@@ -760,6 +782,7 @@ const SuiRedeemPanel: FunctionComponent<{
   isLoading,
   status,
 }) => {
+  const { t } = useTranslation();
   const recipient = operation.content.standarizedProperties.toAddress;
   const tokenChain = operation.content.payload.tokenChain;
   const tokenAddress = operation.content.payload.tokenAddress;
@@ -786,18 +809,21 @@ const SuiRedeemPanel: FunctionComponent<{
   return (
     <div className="space-y-3">
       <div className="rounded-lg border border-ammelia-600 bg-ammelia-600/10 p-3 text-sm text-ammelia-200">
-        VAA is signed and ready. Connect a Sui wallet (Slush or Phantom) to
-        redeem natively on Sui.
+        {t("transfer.wormholeRedeem.suiVaaReadyConnect")}
       </div>
 
       <div className="rounded-lg bg-osmoverse-900 p-3 text-sm">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-osmoverse-400">Recipient (Sui)</span>
+          <span className="text-osmoverse-400">
+            {t("transfer.wormholeRedeem.recipientSui")}
+          </span>
           <button
             onClick={() => onCopy(recipient, "recipient")}
             className="text-xs text-wosmongton-300 underline"
           >
-            {copyHint === "recipient" ? "Copied" : "Copy"}
+            {copyHint === "recipient"
+              ? t("transfer.wormholeRedeem.copied")
+              : t("transfer.wormholeRedeem.copy")}
           </button>
         </div>
         <div className="break-all font-mono text-xs text-white-full">
@@ -809,7 +835,7 @@ const SuiRedeemPanel: FunctionComponent<{
         availableSuiWallets.length === 0 ? (
           <div className="rounded-lg border border-osmoverse-600 bg-osmoverse-900 p-3 text-sm text-osmoverse-200">
             <div className="mb-2">
-              No supported Sui wallet detected. Install one to redeem natively:
+              {t("transfer.wormholeRedeem.noSuiWalletInstallNatively")}
             </div>
             <div className="flex flex-col gap-1">
               {SUI_WALLET_REGISTRY.map((descriptor) => (
@@ -820,7 +846,9 @@ const SuiRedeemPanel: FunctionComponent<{
                   rel="noopener noreferrer"
                   className="text-wosmongton-300 underline"
                 >
-                  Install {descriptor.displayName}
+                  {t("transfer.wormholeRedeem.installNamed", {
+                    wallet: descriptor.displayName,
+                  })}
                 </a>
               ))}
             </div>
@@ -834,7 +862,9 @@ const SuiRedeemPanel: FunctionComponent<{
                 disabled={isLoading}
                 className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Connect {w.displayName}
+                {t("transfer.wormholeRedeem.connectNamed", {
+                  wallet: w.displayName,
+                })}
               </button>
             ))}
           </div>
@@ -843,7 +873,9 @@ const SuiRedeemPanel: FunctionComponent<{
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg bg-osmoverse-900 p-3 text-sm">
             <span className="text-osmoverse-400">
-              Connected {connection.displayName} account
+              {t("transfer.wormholeRedeem.connectedNamedAccount", {
+                wallet: connection.displayName,
+              })}
             </span>
             <span className="font-mono text-xs text-white-full">
               {shorten(connection.address)}
@@ -855,10 +887,12 @@ const SuiRedeemPanel: FunctionComponent<{
             className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {status === "signing"
-              ? `Confirm in ${connection.displayName}...`
+              ? t("transfer.wormholeRedeem.confirmInNamed", {
+                  wallet: connection.displayName,
+                })
               : status === "submitting"
-              ? "Submitting on Sui..."
-              : "Redeem on Sui"}
+              ? t("transfer.wormholeRedeem.submittingOnSui")
+              : t("transfer.wormholeRedeem.redeemOnSui")}
           </button>
         </div>
       )}
@@ -867,6 +901,7 @@ const SuiRedeemPanel: FunctionComponent<{
 };
 
 export const WormholeRedeem: FunctionComponent = () => {
+  const { t } = useTranslation();
   const [txHash, setTxHash] = useState("");
   const [status, setStatus] = useState<RedeemStatus>("idle");
   const [operation, setOperation] = useState<OperationData | null>(null);
@@ -965,9 +1000,7 @@ export const WormholeRedeem: FunctionComponent = () => {
           setStatus("governor_delayed");
           return;
         }
-        throw new Error(
-          "VAA not yet available. The Wormhole guardians may still be processing this transaction."
-        );
+        throw new Error(t("transfer.wormholeRedeem.vaaNotYetAvailable"));
       }
 
       setOperation(op);
@@ -997,11 +1030,13 @@ export const WormholeRedeem: FunctionComponent = () => {
       setError({
         type: "generic",
         message:
-          err instanceof Error ? err.message : "Failed to look up transaction",
+          err instanceof Error
+            ? err.message
+            : t("transfer.wormholeRedeem.failedToLookUp"),
       });
       setStatus("error");
     }
-  }, [txHash]);
+  }, [txHash, t]);
 
   const copyToClipboard = useCallback(async (value: string, hint: string) => {
     try {
@@ -1025,10 +1060,12 @@ export const WormholeRedeem: FunctionComponent = () => {
       setError({
         type: "generic",
         message:
-          err instanceof Error ? err.message : "Failed to connect wallet",
+          err instanceof Error
+            ? err.message
+            : t("transfer.wormholeRedeem.failedToConnectWallet"),
       });
     }
-  }, [phantom]);
+  }, [phantom, t]);
 
   useEffect(() => {
     if (!phantom) return;
@@ -1065,11 +1102,11 @@ export const WormholeRedeem: FunctionComponent = () => {
           message:
             err instanceof Error
               ? err.message
-              : "Failed to connect Sui wallet.",
+              : t("transfer.wormholeRedeem.failedToConnectSuiWallet"),
         });
       }
     },
-    [operation]
+    [operation, t]
   );
 
   const executeSuiRedeemFlow = useCallback(async () => {
@@ -1092,11 +1129,14 @@ export const WormholeRedeem: FunctionComponent = () => {
     } catch (err) {
       setError({
         type: "generic",
-        message: err instanceof Error ? err.message : "Sui redeem failed",
+        message:
+          err instanceof Error
+            ? err.message
+            : t("transfer.wormholeRedeem.suiRedeemFailed"),
       });
       setStatus("error");
     }
-  }, [operation, suiConnection]);
+  }, [operation, suiConnection, t]);
 
   const executeRedeem = useCallback(async () => {
     if (!operation || !solanaWallet || !phantom) return;
@@ -1193,7 +1233,9 @@ export const WormholeRedeem: FunctionComponent = () => {
           const s = value?.[0];
           if (s?.err) {
             throw new Error(
-              `Transaction failed on-chain: ${JSON.stringify(s.err)}`
+              t("transfer.wormholeRedeem.txFailedOnChain", {
+                error: JSON.stringify(s.err),
+              })
             );
           }
           if (
@@ -1206,8 +1248,7 @@ export const WormholeRedeem: FunctionComponent = () => {
         }
         if (!confirmed) {
           throw new Error(
-            "Transaction confirmation timed out after 120s. Check Solscan for status: " +
-              sig
+            t("transfer.wormholeRedeem.txConfirmationTimedOut", { sig })
           );
         }
         setRedeemTxHashes((prev) => [...prev, sig]);
@@ -1217,11 +1258,14 @@ export const WormholeRedeem: FunctionComponent = () => {
     } catch (err: unknown) {
       setError({
         type: "generic",
-        message: err instanceof Error ? err.message : "Redeem failed",
+        message:
+          err instanceof Error
+            ? err.message
+            : t("transfer.wormholeRedeem.redeemFailed"),
       });
       setStatus("error");
     }
-  }, [operation, solanaWallet, phantom]);
+  }, [operation, solanaWallet, phantom, t]);
 
   const isLoading = [
     "looking_up",
@@ -1234,12 +1278,10 @@ export const WormholeRedeem: FunctionComponent = () => {
     <div>
       <div className="rounded-3xl border border-osmoverse-700 bg-osmoverse-850 p-5">
         <h2 className="subtitle1 mb-1 text-white-full">
-          Redeem a stuck Wormhole transfer
+          {t("transfer.wormholeRedeem.title")}
         </h2>
         <p className="mb-4 text-sm text-osmoverse-300">
-          If you have a Wormhole bridge transfer from Osmosis that is stuck,
-          paste the Osmosis transaction hash below to look it up and complete
-          the redemption on Solana (Phantom) or Sui (Slush or Phantom).
+          {t("transfer.wormholeRedeem.description")}
         </p>
 
         {/* TX Hash Input */}
@@ -1248,7 +1290,7 @@ export const WormholeRedeem: FunctionComponent = () => {
             type="text"
             value={txHash}
             onChange={(e) => setTxHash(e.target.value)}
-            placeholder="Osmosis transaction hash..."
+            placeholder={t("transfer.wormholeRedeem.txHashPlaceholder")}
             className="flex-1 rounded-lg border border-osmoverse-600 bg-osmoverse-900 px-4 py-2 text-sm text-white-full placeholder:text-osmoverse-500 focus:border-wosmongton-300 focus:outline-none"
             disabled={isLoading}
           />
@@ -1260,7 +1302,7 @@ export const WormholeRedeem: FunctionComponent = () => {
             {status === "looking_up" ? (
               <Spinner className="h-4 w-4" />
             ) : (
-              "Lookup"
+              t("transfer.wormholeRedeem.lookup")
             )}
           </button>
         </div>
@@ -1270,20 +1312,20 @@ export const WormholeRedeem: FunctionComponent = () => {
           <div className="mt-4 rounded-lg border border-rust-600 bg-rust-800/20 p-3 text-sm text-rust-200">
             {error.type === "phantom_not_installed" ? (
               <>
-                Phantom wallet not detected.{" "}
+                {t("transfer.wormholeRedeem.phantomNotDetected")}{" "}
                 <a
                   href={PHANTOM_DOWNLOAD_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline"
                 >
-                  Install Phantom
+                  {t("transfer.wormholeRedeem.installPhantom")}
                 </a>{" "}
-                to redeem.
+                {t("transfer.wormholeRedeem.toRedeem")}
               </>
             ) : error.type === "sui_wallet_not_installed" ? (
               <>
-                No supported Sui wallet detected. Install{" "}
+                {t("transfer.wormholeRedeem.noSuiWalletDetectedInstall")}{" "}
                 {SUI_WALLET_REGISTRY.map((descriptor, idx) => (
                   <span key={descriptor.id}>
                     <a
@@ -1294,10 +1336,12 @@ export const WormholeRedeem: FunctionComponent = () => {
                     >
                       {descriptor.displayName}
                     </a>
-                    {idx < SUI_WALLET_REGISTRY.length - 1 ? " or " : ""}
+                    {idx < SUI_WALLET_REGISTRY.length - 1
+                      ? ` ${t("transfer.wormholeRedeem.or")} `
+                      : ""}
                   </span>
                 ))}{" "}
-                to redeem on Sui.
+                {t("transfer.wormholeRedeem.toRedeemOnSui")}
               </>
             ) : (
               error.message
@@ -1310,12 +1354,16 @@ export const WormholeRedeem: FunctionComponent = () => {
           <div className="mt-4 space-y-3">
             <div className="rounded-lg bg-osmoverse-900 p-4">
               <div className="grid grid-cols-2 gap-y-2 text-sm">
-                <span className="text-osmoverse-400">Token</span>
+                <span className="text-osmoverse-400">
+                  {t("transfer.wormholeRedeem.token")}
+                </span>
                 <span className="text-right text-white-full">
                   {operation.data.tokenAmount} {operation.data.symbol}
                 </span>
 
-                <span className="text-osmoverse-400">Value</span>
+                <span className="text-osmoverse-400">
+                  {t("transfer.wormholeRedeem.value")}
+                </span>
                 <span className="text-right text-white-full">
                   ~
                   {formatPretty(
@@ -1326,7 +1374,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                   )}
                 </span>
 
-                <span className="text-osmoverse-400">From</span>
+                <span className="text-osmoverse-400">
+                  {t("transfer.wormholeRedeem.from")}
+                </span>
                 <span className="text-right font-mono text-xs text-white-full">
                   {shorten(
                     operation.sourceChain.attribute?.value?.originAddress ||
@@ -1336,7 +1386,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                 </span>
 
                 <span className="text-osmoverse-400">
-                  To ({getChainLabel(operation.content.payload.toChain)})
+                  {t("transfer.wormholeRedeem.to", {
+                    chain: getChainLabel(operation.content.payload.toChain),
+                  })}
                 </span>
                 <span className="text-right font-mono text-xs text-white-full">
                   {shorten(operation.content.standarizedProperties.toAddress, {
@@ -1345,7 +1397,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                   })}
                 </span>
 
-                <span className="text-osmoverse-400">Date</span>
+                <span className="text-osmoverse-400">
+                  {t("transfer.wormholeRedeem.date")}
+                </span>
                 <span className="text-right text-white-full">
                   {new Date(
                     operation.sourceChain.timestamp
@@ -1355,7 +1409,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                 {derivedFromOsmosis && resolvedTxHash && (
                   <>
                     <span className="text-osmoverse-400">
-                      Wormchain receive
+                      {t("transfer.wormholeRedeem.wormchainReceive")}
                     </span>
                     <span className="text-right">
                       <a
@@ -1381,7 +1435,7 @@ export const WormholeRedeem: FunctionComponent = () => {
             {status === "checking_solana" && (
               <div className="flex items-center gap-2 text-sm text-osmoverse-300">
                 <Spinner className="h-4 w-4" />
-                Checking Solana for redemption status...
+                {t("transfer.wormholeRedeem.checkingSolana")}
               </div>
             )}
 
@@ -1389,36 +1443,49 @@ export const WormholeRedeem: FunctionComponent = () => {
               <div className="space-y-3">
                 <div className="rounded-lg border border-rust-600 bg-rust-600/10 p-3 text-sm text-rust-200">
                   <div className="mb-1 font-semibold text-rust-200">
-                    Daily limit exceeded
+                    {t("transfer.wormholeRedeem.dailyLimitExceeded")}
                   </div>
                   <p className="text-rust-200/90">
                     {governorDelay.kind === "enqueued"
-                      ? `This transfer will take up to ${GOVERNOR_DELAY_HOURS} hours to complete as Wormhole has reached the daily transfer limit for ${getChainLabel(
-                          operation.emitterChain
-                        )}. This is a normal and temporary security feature of the Wormhole network.`
-                      : `This transfer's value (~${formatPretty(
-                          new PricePretty(
-                            DEFAULT_VS_CURRENCY,
-                            new Dec(governorDelay.usdAmount.toString())
-                          )
-                        )}) exceeds the available headroom on ${getChainLabel(
-                          operation.emitterChain
-                        )} (~${formatPretty(
-                          new PricePretty(
-                            DEFAULT_VS_CURRENCY,
-                            new Dec(
-                              (governorDelay.availableNotional ?? 0).toString()
-                            )
-                          )
-                        )} remaining). The Wormhole guardians will likely queue it for up to ${GOVERNOR_DELAY_HOURS} hours.`}
+                      ? t("transfer.wormholeRedeem.governorBodyEnqueued", {
+                          hours: String(GOVERNOR_DELAY_HOURS),
+                          chain: getChainLabel(operation.emitterChain),
+                        })
+                      : t(
+                          "transfer.wormholeRedeem.governorBodyLikelyEnqueued",
+                          {
+                            amount: formatPretty(
+                              new PricePretty(
+                                DEFAULT_VS_CURRENCY,
+                                new Dec(governorDelay.usdAmount.toString())
+                              )
+                            ),
+                            chain: getChainLabel(operation.emitterChain),
+                            available: formatPretty(
+                              new PricePretty(
+                                DEFAULT_VS_CURRENCY,
+                                new Dec(
+                                  (
+                                    governorDelay.availableNotional ?? 0
+                                  ).toString()
+                                )
+                              )
+                            ),
+                            hours: String(GOVERNOR_DELAY_HOURS),
+                          }
+                        )}
                   </p>
                   <div className="mt-2 flex items-center justify-between">
                     <span className="font-mono text-xs text-rust-200">
                       {governorDelay.kind === "enqueued"
                         ? formatGovernorReleaseCountdown(
+                            t,
                             governorDelay.releaseTime
                           )
-                        : `Up to ${GOVERNOR_DELAY_HOURS} hours`}
+                        : t(
+                            "transfer.wormholeRedeem.releaseCountdownUpToHours",
+                            { hours: String(GOVERNOR_DELAY_HOURS) }
+                          )}
                     </span>
                     <a
                       href={GOVERNOR_LEARN_MORE_URL}
@@ -1426,7 +1493,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                       rel="noopener noreferrer"
                       className="text-xs text-rust-200 underline"
                     >
-                      Learn more
+                      {t("transfer.wormholeRedeem.learnMore")}
                     </a>
                   </div>
                 </div>
@@ -1435,7 +1502,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                   disabled={isLoading}
                   className="w-full rounded-lg border border-osmoverse-600 bg-osmoverse-900 px-4 py-2 text-sm font-medium text-white-full transition-colors hover:bg-osmoverse-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Check again
+                  {t("transfer.wormholeRedeem.checkAgain")}
                 </button>
               </div>
             )}
@@ -1453,8 +1520,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                   lookedUpTxHash;
                 return (
                   <div className="rounded-lg border border-bullish-600 bg-bullish-600/10 p-3 text-sm text-bullish-200">
-                    This transfer has already been redeemed on{" "}
-                    {getChainLabel(toChainId)}.
+                    {t("transfer.wormholeRedeem.alreadyRedeemedOn", {
+                      chain: getChainLabel(toChainId),
+                    })}
                     {destExplorerUrl ? (
                       <a
                         href={destExplorerUrl}
@@ -1462,8 +1530,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                         rel="noopener noreferrer"
                         className="ml-1 underline"
                       >
-                        View on{" "}
-                        {toChainId === CHAIN_ID.solana ? "Solscan" : "Suiscan"}
+                        {toChainId === CHAIN_ID.solana
+                          ? t("transfer.wormholeRedeem.viewOnSolscan")
+                          : t("transfer.wormholeRedeem.viewOnSuiscan")}
                       </a>
                     ) : (
                       <a
@@ -1474,7 +1543,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                         rel="noopener noreferrer"
                         className="ml-1 underline"
                       >
-                        View on Wormholescan
+                        {t("transfer.wormholeRedeem.viewOnWormholescan")}
                       </a>
                     )}
                   </div>
@@ -1487,16 +1556,15 @@ export const WormholeRedeem: FunctionComponent = () => {
                   {!solanaWallet && (
                     <div className="space-y-3">
                       <div className="rounded-lg border border-ammelia-600 bg-ammelia-600/10 p-3 text-sm text-ammelia-200">
-                        VAA is signed and ready. Connect your Solana wallet to
-                        redeem.
+                        {t("transfer.wormholeRedeem.vaaReadyConnectSolana")}
                       </div>
                       <button
                         onClick={connectWallet}
                         className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600"
                       >
                         {phantom
-                          ? "Connect Phantom Wallet"
-                          : "Install Phantom Wallet"}
+                          ? t("transfer.wormholeRedeem.connectPhantom")
+                          : t("transfer.wormholeRedeem.installPhantomWallet")}
                       </button>
                     </div>
                   )}
@@ -1505,7 +1573,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between rounded-lg bg-osmoverse-900 p-3 text-sm">
                         <span className="text-osmoverse-400">
-                          Connected Wallet
+                          {t("transfer.wormholeRedeem.connectedWallet")}
                         </span>
                         <span className="font-mono text-xs text-white-full">
                           {shorten(solanaWallet)}
@@ -1517,7 +1585,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                         disabled={isLoading}
                         className="w-full rounded-lg bg-wosmongton-700 px-4 py-3 text-sm font-medium text-white-full transition-colors hover:bg-wosmongton-600 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        Redeem on Solana
+                        {t("transfer.wormholeRedeem.redeemOnSolana")}
                       </button>
                     </div>
                   )}
@@ -1564,8 +1632,8 @@ export const WormholeRedeem: FunctionComponent = () => {
                 }`}
               >
                 {status === "success"
-                  ? "Transfer redeemed on Sui."
-                  : "Redeem submitted to Sui."}
+                  ? t("transfer.wormholeRedeem.transferRedeemedOnSui")
+                  : t("transfer.wormholeRedeem.redeemSubmittedToSui")}
                 <a
                   href={`https://suiscan.xyz/mainnet/tx/${encodeURIComponent(
                     suiRedeemTxDigest
@@ -1574,7 +1642,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                   rel="noopener noreferrer"
                   className="ml-1 underline"
                 >
-                  View on Suiscan
+                  {t("transfer.wormholeRedeem.viewOnSuiscan")}
                 </a>
               </div>
             )}
@@ -1588,14 +1656,21 @@ export const WormholeRedeem: FunctionComponent = () => {
                   if (status === "signing") {
                     if (isSui) {
                       return suiConnection
-                        ? `Waiting for ${suiConnection.displayName} signature...`
-                        : "Waiting for your Sui wallet signature...";
+                        ? t(
+                            "transfer.wormholeRedeem.waitingForWalletSignatureNamed",
+                            { wallet: suiConnection.displayName }
+                          )
+                        : t(
+                            "transfer.wormholeRedeem.waitingForSuiWalletSignature"
+                          );
                     }
-                    return "Waiting for wallet signature...";
+                    return t(
+                      "transfer.wormholeRedeem.waitingForWalletSignature"
+                    );
                   }
                   return isSui
-                    ? "Submitting transaction to Sui..."
-                    : "Submitting transaction to Solana...";
+                    ? t("transfer.wormholeRedeem.submittingToSui")
+                    : t("transfer.wormholeRedeem.submittingToSolana");
                 })()}
               </div>
             )}
@@ -1609,8 +1684,10 @@ export const WormholeRedeem: FunctionComponent = () => {
                 }`}
               >
                 {status === "success"
-                  ? "Transfer redeemed successfully!"
-                  : `${redeemTxHashes.length} of the redeem transactions confirmed before the error:`}
+                  ? t("transfer.wormholeRedeem.transferRedeemedSuccessfully")
+                  : t("transfer.wormholeRedeem.partialRedeemConfirmed", {
+                      count: String(redeemTxHashes.length),
+                    })}
                 {redeemTxHashes.map((hash, i) => (
                   <a
                     key={hash}
@@ -1620,8 +1697,10 @@ export const WormholeRedeem: FunctionComponent = () => {
                     className="ml-1 underline"
                   >
                     {redeemTxHashes.length > 1
-                      ? `View tx ${i + 1} on Solscan`
-                      : "View on Solscan"}
+                      ? t("transfer.wormholeRedeem.viewTxOnSolscan", {
+                          number: String(i + 1),
+                        })
+                      : t("transfer.wormholeRedeem.viewOnSolscan")}
                   </a>
                 ))}
               </div>
