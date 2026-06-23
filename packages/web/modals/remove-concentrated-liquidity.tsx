@@ -84,15 +84,28 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const quoteCurrency = positionQuoteAsset.currency;
 
   // Seed the output-mix slider at the position's current value split (the
-  // no-swap point) once it is known. Only seed once, so the user's drag isn't
-  // overwritten by later re-renders.
+  // no-swap point) once it is known. Seed only if the user hasn't already moved
+  // the slider / tapped an end icon, so an early choice made before pool data
+  // loads isn't overwritten when `currentBaseValueFraction` arrives.
   const [hasSeededMix, setHasSeededMix] = useState(false);
+  const [userTouchedMix, setUserTouchedMix] = useState(false);
   useEffect(() => {
-    if (!hasSeededMix && currentBaseValueFraction !== undefined) {
+    if (
+      !hasSeededMix &&
+      !userTouchedMix &&
+      currentBaseValueFraction !== undefined
+    ) {
       config.setTargetBaseValueFraction(currentBaseValueFraction);
       setHasSeededMix(true);
     }
-  }, [hasSeededMix, currentBaseValueFraction, config]);
+  }, [hasSeededMix, userTouchedMix, currentBaseValueFraction, config]);
+
+  // Mark the mix as user-chosen, so the seed above won't clobber it and the
+  // submit gate knows the user has made an explicit choice.
+  const setTargetMix = (fraction: number) => {
+    setUserTouchedMix(true);
+    config.setTargetBaseValueFraction(fraction);
+  };
 
   const { price: baseAssetPrice, isLoading: isLoadingBaseAssetPrice } =
     usePrice(baseAsset?.currency);
@@ -226,6 +239,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // quote (debounced) doesn't yet reflect the live slider target, so we
         // never execute a stale target mix.
         (needsSwap && (zapQuote.isLoading || !quote || !quoteInSync)) ||
+        // The user chose a mix but the pool data needed to compute the swap
+        // hasn't loaded yet (requiredSwap undefined). Block, so we don't fall
+        // through to a plain two-asset withdrawal that ignores their choice.
+        (singleAssetExitEnabled && userTouchedMix && !requiredSwap) ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
@@ -312,7 +329,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             <div className="flex w-full items-center gap-3">
               <AssetIconButton
                 currency={baseCurrency}
-                onClick={() => config.setTargetBaseValueFraction(1)}
+                onClick={() => setTargetMix(1)}
               />
               <Slider
                 className="flex-1"
@@ -323,9 +340,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 // icon it favours.
                 value={[Math.round((1 - config.targetBaseValueFraction) * 100)]}
                 onValueChange={(value: number[]) => {
-                  config.setTargetBaseValueFraction(
-                    Number((1 - value[0] / 100).toFixed(2))
-                  );
+                  setTargetMix(Number((1 - value[0] / 100).toFixed(2)));
                 }}
                 onValueCommit={(value: number[]) => {
                   // Snap back to the no-swap start point when released within 2%
@@ -335,7 +350,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     currentBaseValueFraction !== undefined &&
                     Math.abs(target - currentBaseValueFraction) <= 0.02
                   ) {
-                    config.setTargetBaseValueFraction(currentBaseValueFraction);
+                    setTargetMix(currentBaseValueFraction);
                   }
                 }}
                 min={0}
@@ -344,7 +359,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               />
               <AssetIconButton
                 currency={quoteCurrency}
-                onClick={() => config.setTargetBaseValueFraction(0)}
+                onClick={() => setTargetMix(0)}
               />
             </div>
 
