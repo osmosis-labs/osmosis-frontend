@@ -43,6 +43,9 @@ export function useRemoveConcentratedLiquidityConfig(
   /** Value split the position currently holds in base; the no-swap point the
    *  output-mix slider handle starts at. Undefined until prices/amounts load. */
   currentBaseValueFraction: number | undefined;
+  /** True when the (debounced) quote reflects the live slider target. Submission
+   *  must be blocked while false, or it would execute a stale target mix. */
+  quoteInSync: boolean;
 } {
   const { accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -148,6 +151,13 @@ export function useRemoveConcentratedLiquidityConfig(
     setDebouncedTargetFraction(config.targetBaseValueFraction);
   }, [config.targetBaseValueFraction, setDebouncedTargetFraction]);
   const quotedSwap = computeRequiredSwap(debouncedTargetFraction);
+
+  // Whether the quote (debounced) reflects the live slider target. While the
+  // user is mid-drag the debounced value lags, so the quote and the displayed
+  // mix differ; submitting then would execute a stale target. The consumer
+  // blocks submission until this is true.
+  const quoteInSync =
+    debouncedTargetFraction === config.targetBaseValueFraction;
 
   // Quote the (debounced) swap leg (exact-in). Disabled when no swap is needed
   // (handle at the no-swap point), so it never queries unnecessarily.
@@ -335,5 +345,6 @@ export function useRemoveConcentratedLiquidityConfig(
     zapSlippageConfig,
     requiredSwap,
     currentBaseValueFraction,
+    quoteInSync,
   };
 }

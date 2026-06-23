@@ -975,7 +975,10 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    if (swapIn.routes.length < 1 || swapIn.routes[0].pools.length < 1) {
+    if (
+      swapIn.routes.length < 1 ||
+      swapIn.routes.some((route) => route.pools.length < 1)
+    ) {
       throw new Error("Zap-out requires a non-empty swap route");
     }
 
