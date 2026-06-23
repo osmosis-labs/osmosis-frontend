@@ -12,6 +12,7 @@ import React, {
   FunctionComponent,
   ReactNode,
   useCallback,
+  useEffect,
   useState,
 } from "react";
 import AutosizeInput from "react-input-autosize";
@@ -214,6 +215,17 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const highCost = Boolean(
     needsSwap && quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
   );
+
+  // Reset the acknowledgement when the trade context changes, so a prior
+  // confirm can't carry over to a different high-impact swap. Keyed on the live
+  // swap amount (changes when the user moves the mix, not on the 5s refetch) and
+  // whether the warning is showing.
+  const costContextKey = `${
+    requiredSwap?.swapInAmount.toString() ?? ""
+  }:${highCost}`;
+  useEffect(() => {
+    setCostAcknowledged(false);
+  }, [costContextKey]);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
