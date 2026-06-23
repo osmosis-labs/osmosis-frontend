@@ -12,7 +12,6 @@ import React, {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useEffect,
   useState,
 } from "react";
 import AutosizeInput from "react-input-autosize";
@@ -83,29 +82,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const baseCurrency = positionBaseAsset.currency;
   const quoteCurrency = positionQuoteAsset.currency;
 
-  // Seed the output-mix slider at the position's current value split (the
-  // no-swap point) once it is known. Seed only if the user hasn't already moved
-  // the slider / tapped an end icon, so an early choice made before pool data
-  // loads isn't overwritten when `currentBaseValueFraction` arrives.
-  const [hasSeededMix, setHasSeededMix] = useState(false);
-  const [userTouchedMix, setUserTouchedMix] = useState(false);
-  useEffect(() => {
-    if (
-      !hasSeededMix &&
-      !userTouchedMix &&
-      currentBaseValueFraction !== undefined
-    ) {
-      config.setTargetBaseValueFraction(currentBaseValueFraction);
-      setHasSeededMix(true);
-    }
-  }, [hasSeededMix, userTouchedMix, currentBaseValueFraction, config]);
-
-  // Mark the mix as user-chosen, so the seed above won't clobber it and the
-  // submit gate knows the user has made an explicit choice.
-  const setTargetMix = (fraction: number) => {
-    setUserTouchedMix(true);
+  // The output-mix target is `undefined` until the user moves the slider (= the
+  // no-swap state). When undefined, the slider renders at the position's current
+  // value split (the no-swap point) so the handle still shows where "no swap"
+  // sits. No seeding effect and no lossy default: undefined is the no-swap
+  // signal end to end.
+  const displayMixFraction =
+    config.targetBaseValueFraction ?? currentBaseValueFraction;
+  const setTargetMix = (fraction: number | undefined) =>
     config.setTargetBaseValueFraction(fraction);
-  };
 
   const { price: baseAssetPrice, isLoading: isLoadingBaseAssetPrice } =
     usePrice(baseAsset?.currency);
@@ -239,14 +224,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // quote (debounced) doesn't yet reflect the live slider target, so we
         // never execute a stale target mix.
         (needsSwap && (zapQuote.isLoading || !quote || !quoteInSync)) ||
-        // The user chose a mix but the pool data needed to compute the swap
-        // hasn't loaded yet (requiredSwap undefined). Block, so we don't fall
-        // through to a plain two-asset withdrawal that ignores their choice.
-        (singleAssetExitEnabled && userTouchedMix && !requiredSwap) ||
-        // Before the mix is established (seeded to the position's current ratio
-        // or touched by the user) the target sits at the store default 0.5,
-        // which is a submittable value the user never chose. Block until then.
-        (singleAssetExitEnabled && !hasSeededMix && !userTouchedMix) ||
+        // The user chose a real target mix but the pool data needed to compute
+        // the swap hasn't loaded yet, so we can't tell if it needs a swap.
+        // Block, rather than fall through to a plain withdrawal that ignores
+        // their choice. (No target = the explicit no-swap state, which is fine.)
+        (singleAssetExitEnabled &&
+          config.targetBaseValueFraction !== undefined &&
+          !requiredSwap) ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
@@ -340,21 +324,24 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 variant="secondary"
                 // Left end = base (matches the left icon), right end = quote.
                 // The slider position is the quote-value fraction, the inverse of
-                // the stored base-value fraction, so the handle sits under the
-                // icon it favours.
-                value={[Math.round((1 - config.targetBaseValueFraction) * 100)]}
+                // the base-value fraction, so the handle sits under the icon it
+                // favours. When no target is chosen it renders at the current
+                // ratio (the no-swap point); falls back to center until that
+                // loads.
+                value={[Math.round((1 - (displayMixFraction ?? 0.5)) * 100)]}
                 onValueChange={(value: number[]) => {
                   setTargetMix(Number((1 - value[0] / 100).toFixed(2)));
                 }}
                 onValueCommit={(value: number[]) => {
-                  // Snap back to the no-swap start point when released within 2%
-                  // of it, so a near-miss doesn't trigger a tiny pointless swap.
+                  // Released within 2% of the current ratio: return to the
+                  // explicit no-swap state (undefined) rather than a near-equal
+                  // numeric target, so a near-miss never triggers a tiny swap.
                   const target = 1 - value[0] / 100;
                   if (
                     currentBaseValueFraction !== undefined &&
                     Math.abs(target - currentBaseValueFraction) <= 0.02
                   ) {
-                    setTargetMix(currentBaseValueFraction);
+                    setTargetMix(undefined);
                   }
                 }}
                 min={0}

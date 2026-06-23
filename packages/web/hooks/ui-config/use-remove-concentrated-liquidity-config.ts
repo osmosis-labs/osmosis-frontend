@@ -103,13 +103,14 @@ export function useRemoveConcentratedLiquidityConfig(
     return Number(baseValue.quo(total).toString());
   })();
 
-  // Compute the swap leg for a given target value-split. `calcZapOutSwapAmount`
-  // returns a zero swap when the target equals the current value split (the
-  // no-swap point the handle starts at), so `needsSwap` is the single-asset
-  // signal — no explicit toggle.
+  // Compute the swap leg for a given target value-split. An `undefined` target
+  // is the explicit no-swap state (withdraw at the current ratio), so no swap is
+  // computed and no float-equality is involved — `needsSwap` is driven purely by
+  // whether the user has chosen a real target, not by comparing fractions.
   const computeRequiredSwap = (
-    targetFraction: number
+    targetFraction: number | undefined
   ): ZapOutRequiredSwap | undefined => {
+    if (targetFraction === undefined) return undefined;
     if (!currentSqrtPrice || !withdrawn) return undefined;
 
     const baseWithdrawn = new Int(withdrawn.base.toCoin().amount);
