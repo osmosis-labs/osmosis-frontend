@@ -112,8 +112,8 @@
     "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte.",
     "noPositions": "Nenhuma posição encontrada",
     "noPositionsDescription": "Forneça liquidez concentrada a um pool para começar a ganhar recompensas de spread.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Receber como",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) serão trocados para {outDenom}."
   },
   "copied": "Copiado!",
   "app": {

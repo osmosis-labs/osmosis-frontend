@@ -112,8 +112,8 @@
     "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
     "noPositions": "Hiçbir pozisyon bulunamadı.",
     "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Olarak al",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) {outDenom} ile takas edilecektir."
   },
   "copied": "Kopyalandı!",
   "app": {

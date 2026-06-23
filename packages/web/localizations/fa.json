@@ -112,8 +112,8 @@
     "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید.",
     "noPositions": "هیچ موقعیتی یافت نشد",
     "noPositionsDescription": "نقدینگی متمرکز را برای یک استخر فراهم کنید تا بتوانید پاداش‌های اسپرد را دریافت کنید.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "دریافت به عنوان",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) به {outDenom} تبدیل خواهد شد."
   },
   "copied": "کپی شده!",
   "app": {

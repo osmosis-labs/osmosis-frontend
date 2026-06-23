@@ -112,8 +112,8 @@
     "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
     "noPositions": "Nie znaleziono stanowisk",
     "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Otrzymaj jako",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) zostanie zamienione na {outDenom}."
   },
   "copied": "Skopiowano!",
   "app": {
