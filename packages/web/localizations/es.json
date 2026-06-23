@@ -36,12 +36,12 @@
     "estimated": "Estimado",
     "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "De tu {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) se intercambiarán a {outDenom} para coincidir con la proporción de la posición.",
+      "noSwapNeeded": "Tu rango seleccionado solo necesita {inputDenom}, por lo que no se requiere intercambio.",
+      "valueIn": "Valor de entrada",
+      "valueOut": "Valor de salida",
+      "totalCost": "Costo total",
+      "quoteLoading": "Buscando el mejor intercambio…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia.",
     "noPositions": "No se encontraron puestos",
     "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Recibir como",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) se intercambiarán a {outDenom}."
   },
   "copied": "¡Copiado!",
   "app": {

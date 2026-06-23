@@ -36,12 +36,12 @@
     "estimated": "推定",
     "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "ご入金いただいた{inputAmount} {inputDenom}のうち、{swapAmount} {inputDenom}({swapPercent})をポジションレシオに合わせて{outDenom}にスワップします。",
+      "noSwapNeeded": "選択した範囲には{inputDenom}のみが必要なため、スワップは不要です。",
+      "valueIn": "入金額",
+      "valueOut": "出金額",
+      "totalCost": "総コスト",
+      "quoteLoading": "最適なスワップを検索中…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。",
     "noPositions": "求人情報は見つかりませんでした。",
     "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "受け取り通貨",
+    "swapBreakdown": "{swapAmount} {inDenom}({swapPercent})が{outDenom}にスワップされます。"
   },
   "copied": "コピーしました！",
   "app": {

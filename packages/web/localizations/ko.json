@@ -36,12 +36,12 @@
     "estimated": "추정된",
     "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "당신의 {inputAmount} {inputDenom} 중 {swapAmount} {inputDenom}({swapPercent})이 포지션 비율을 맞추기 위해 {outDenom}으로 스왑됩니다.",
+      "noSwapNeeded": "선택한 범위는 {inputDenom}만 필요하므로 스왑이 필요하지 않습니다.",
+      "valueIn": "입금액",
+      "valueOut": "출금액",
+      "totalCost": "총 비용",
+      "quoteLoading": "최적 스왑을 찾는 중…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "직책 세부 정보를 가져오지 못했습니다. 페이지를 새로 고침해 보세요. 문제가 지속되면 지원팀에 문의하세요.",
     "noPositions": "채용 공고를 찾을 수 없습니다.",
     "noPositionsDescription": "스프레드 보상을 받으려면 특정 풀에 집중된 유동성을 제공하세요.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "수령액",
+    "swapBreakdown": "{swapAmount} {inDenom}({swapPercent})이 {outDenom}으로 스왑됩니다."
   },
   "copied": "복사되었습니다!",
   "app": {

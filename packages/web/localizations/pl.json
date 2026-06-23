@@ -36,12 +36,12 @@
     "estimated": "Szacowany",
     "estimatedInfo": "Jest to szacunek oparty na aktualnie wybranych cenach. Rzeczywista RRSO może się różnić. Jeśli pozycja wyjdzie poza zakres, RRSO wyniesie 0%.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "Z Twojej kwoty {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) zostanie zamienione na {outDenom}, aby dopasować stosunek pozycji.",
+      "noSwapNeeded": "Wybrany zakres wymaga tylko {inputDenom}, zatem swap nie jest konieczny.",
+      "valueIn": "Wartość wejściowa",
+      "valueOut": "Wartość wyjściowa",
+      "totalCost": "Koszt całkowity",
+      "quoteLoading": "Szukanie najlepszej zamiany…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
     "noPositions": "Nie znaleziono stanowisk",
     "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie.",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "Otrzymaj jako",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) zostanie zamienione na {outDenom}."
   },
   "copied": "Skopiowano!",
   "app": {

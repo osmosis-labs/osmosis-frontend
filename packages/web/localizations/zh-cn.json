@@ -36,12 +36,12 @@
     "estimated": "估计的",
     "estimatedInfo": "这是基于当前选定价格的估计。实际年利率可能会有所不同。如果仓位超出范围，年利率将为 0%。",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "您的 {inputAmount} {inputDenom} 中，{swapAmount} {inputDenom}（{swapPercent}）将兑换为 {outDenom} 以匹配仓位比例。",
+      "noSwapNeeded": "您选择的范围仅需要 {inputDenom}，无需兑换。",
+      "valueIn": "输入价值",
+      "valueOut": "输出价值",
+      "totalCost": "总成本",
+      "quoteLoading": "正在寻找最优兑换…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,8 +99,8 @@
     "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。",
     "noPositions": "未找到职位",
     "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。",
-    "receiveAs": "Receive as",
-    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}."
+    "receiveAs": "接收资产",
+    "swapBreakdown": "{swapAmount} {inDenom}（{swapPercent}）将兑换为 {outDenom}。"
   },
   "copied": "已复制！",
   "app": {
