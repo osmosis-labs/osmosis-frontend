@@ -71,6 +71,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     requiredSwap,
     currentBaseValueFraction,
     quoteInSync,
+    swapMinOut,
   } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
@@ -189,11 +190,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // full single-asset exit leaves only the target). Covers both symbols, since
   // a mix exit returns both.
   const minReceivedCoins: CoinPretty[] = (() => {
-    if (!needsSwap || !requiredSwap || !quote || !baseAsset || !quoteAsset)
+    if (
+      !needsSwap ||
+      !requiredSwap ||
+      !quote ||
+      !swapMinOut ||
+      !baseAsset ||
+      !quoteAsset
+    )
       return [];
-    const swapMinOut = quote.amount.mul(
-      new Dec(1).sub(zapSlippageConfig.slippage.toDec())
-    );
     const swapSideWithdrawn =
       requiredSwap.swapSide === "base" ? baseAsset : quoteAsset;
     const targetSideWithdrawn =
