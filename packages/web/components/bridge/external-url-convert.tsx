@@ -113,14 +113,20 @@ export const ExternalUrlConvertOption: FunctionComponent<{
       isConnected && !isFetchingBalances && !isBalancesError;
 
     const offerDirectLink = !isConnected || (balancesResolved && !holdsAlloy);
-    const needsConvert = !offerDirectLink;
 
     return (
       <>
         {offerDirectLink
           ? children({ href: url.toString() })
           : children({ onClick: () => setIsConvertOpen(true) })}
-        {needsConvert && (
+        {/*
+         * Gate the modal on `isConvertOpen`, not the balance gate: once the user
+         * has opened the convert modal it must stay mounted until they close it
+         * or the swap succeeds. A background balance refetch can flip the gate to
+         * a direct link mid-interaction, and keying the modal on that would
+         * unmount it and drop in-progress SwapTool state.
+         */}
+        {isConvertOpen && (
           <ModalBase
             isOpen={isConvertOpen}
             onRequestClose={() => setIsConvertOpen(false)}
