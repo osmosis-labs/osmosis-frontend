@@ -395,7 +395,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   })}
                 </p>
 
-                {zapQuote.isLoading ? (
+                {zapQuote.isLoading || !quoteInSync ? (
+                  // Show loading while the quote is fetching OR while the
+                  // debounced target is still catching up to the live slider, so
+                  // we never render a stale breakdown (fees/min/route for the old
+                  // target) or a "value loss" error for an in-flight mix change.
                   <div className="flex items-center justify-center gap-2 py-2 text-osmoverse-300">
                     <Spinner className="!h-4 !w-4" />
                     <span className="caption">
@@ -416,7 +420,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   />
                 )}
 
-                {highCost && quote && (
+                {highCost && quote && quoteInSync && (
                   <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
                     <div className="flex items-center justify-center gap-2 text-rust-300">
                       <Icon
