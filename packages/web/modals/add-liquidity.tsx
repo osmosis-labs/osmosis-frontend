@@ -3,7 +3,6 @@ import {
   NotInitializedError,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
-import { Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
@@ -69,13 +68,8 @@ export const AddLiquidityModal: FunctionComponent<
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapHighCost,
   } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
-
-  // Same high-impact threshold the swap tool uses (price impact worse than -10%).
-  const zapHighCost = Boolean(
-    addConliqConfig.singleAssetMode &&
-      zapQuote.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
-  );
 
   // Reset the acknowledgement when the trade context changes, so a stale
   // "confirmed" can't carry over to a different high-impact trade. Keyed on the
