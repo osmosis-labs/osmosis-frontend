@@ -44,6 +44,11 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { EventName } from "~/config";
+import {
+  getTokenInFeeAmountFiatValue,
+  getTokenOutFiatValue,
+} from "~/hooks/fiat-getters";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { ClZapQuote, useClZapQuote } from "~/hooks/use-cl-zap-quote";
@@ -67,6 +72,12 @@ export function useAddConcentratedLiquidityConfig(
   zapInLiquidity: () => Promise<void>;
   zapQuote: ReturnType<typeof useClZapQuote>;
   zapSlippageConfig: ReturnType<typeof useSlippageConfig>;
+  /** Combined zap-in cost (price impact + swap fees) as a fraction of value in,
+   *  or undefined when there is no swap / quote yet. */
+  zapTotalCostPercent: RatePretty | undefined;
+  /** True when `zapTotalCostPercent` reaches the high-cost threshold (5%); the
+   *  breakdown styles the cost rust and the submit Confirm gate engages. */
+  zapHighCost: boolean;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -190,6 +201,53 @@ export function useAddConcentratedLiquidityConfig(
     tokenOutDenom: requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
     enabled: config.singleAssetMode && Boolean(requiredSwap?.needsSwap),
   });
+
+  // Total zap-in cost as a fraction of value in: the combined value lost to
+  // price impact AND swap fees on the swapped slice. This is the authoritative
+  // high-cost signal shared by the breakdown's rust styling and the submit
+  // Confirm gate, so the two never diverge. Priced off the single input-side
+  // price (same source the breakdown uses) so value out can't exceed value in.
+  const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
+  const zapTotalCostPercent: RatePretty | undefined = (() => {
+    const quote = zapQuote.quote;
+    if (!requiredSwap || !quote || !zapInputPrice) return undefined;
+    const valueIn = zapInputPrice.mul(
+      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
+    );
+    if (!valueIn.toDec().isPositive()) return undefined;
+    const swapInValue = zapInputPrice.mul(
+      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.swapInAmount)
+    );
+    const retainedValue = zapInputPrice.mul(
+      new CoinPretty(
+        requiredSwap.tokenInCurrency,
+        requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
+      )
+    );
+    const valueOut = retainedValue.add(
+      getTokenOutFiatValue(
+        quote.priceImpactTokenOut?.toDec(),
+        swapInValue.toDec()
+      ).sub(
+        getTokenInFeeAmountFiatValue(
+          requiredSwap.tokenInCurrency,
+          quote.tokenInFeeAmount,
+          zapInputPrice
+        )
+      )
+    );
+    const cost = valueIn.toDec().sub(valueOut.toDec());
+    return new RatePretty(cost.quo(valueIn.toDec()));
+  })();
+
+  // High-cost when the combined loss reaches 5% of value in. Lower and broader
+  // than a price-impact-only check, so a fee-heavy or thin-liquidity pool that
+  // quietly costs several percent is flagged.
+  const zapHighCost = Boolean(
+    config.singleAssetMode &&
+      zapTotalCostPercent &&
+      zapTotalCostPercent.toDec().gte(new Dec(0.05))
+  );
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
@@ -455,21 +513,28 @@ export function useAddConcentratedLiquidityConfig(
           if (tokenOutMinAmount.lte(new Int(0)))
             throw new Error("Swap output floor rounds to zero");
 
-          // Amounts the position is supplied with (micro). Both sides use their
-          // *expected* amount: the exact remaining provided side, and the swap's
-          // expected output. `MsgCreatePosition`'s `tokensProvided` is the max
-          // the chain pulls, so supplying the expected (not the floored minimum)
-          // output lets the full swap proceeds land in the position rather than
-          // stranding the positive-slippage remainder as wallet dust. Slippage
-          // protection lives on `tokenMinAmountN` below, applied once, mirroring
-          // the two-asset path (`sendCreateConcentratedLiquidityPositionMsg`).
+          // Amounts the position is supplied with (micro). `tokensProvided` is
+          // the MAX the chain pulls from the wallet, so each side must be an
+          // amount the wallet is GUARANTEED to hold after the swap leg, or
+          // create-position underflows and the whole tx reverts ("insufficient
+          // funds"):
+          //  - Provided (un-swapped) side: the exact leftover input. This stays
+          //    in the wallet untouched by the swap, so its full amount is safe.
+          //  - Swapped side: the swap only guarantees `tokenOutMinAmount`
+          //    (expected out x (1 - slip)); the actual fill is typically below
+          //    the expected `outMicro` on any non-trivial market. Supplying the
+          //    expected output would let create-position try to pull more than
+          //    the swap delivered. Use the guaranteed floor instead. Any
+          //    positive-slippage surplus stays as wallet dust rather than
+          //    reverting the position.
           const providedRemaining = requiredSwap.inputAmount.sub(
             requiredSwap.swapInAmount
           );
+          const swapFloor = tokenOutMinAmount;
           const baseMicro =
-            config.singleAssetSide === "base" ? providedRemaining : outMicro;
+            config.singleAssetSide === "base" ? providedRemaining : swapFloor;
           const quoteMicro =
-            config.singleAssetSide === "base" ? outMicro : providedRemaining;
+            config.singleAssetSide === "base" ? swapFloor : providedRemaining;
 
           const tokensProvided = [
             { denom: baseCurrency.coinMinimalDenom, amount: baseMicro },
@@ -478,13 +543,13 @@ export function useAddConcentratedLiquidityConfig(
             .sort((a, b) => a.denom.localeCompare(b.denom))
             .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
-          // token0/token1 minima: a single slippage buffer below the expected
-          // supplied amounts (token0 = base, token1 = quote; CL pools enforce
-          // base denom < quote). Applied once here, never compounded with the
-          // swap-leg floor. On the swapped side this floor equals the swap's
-          // own `tokenOutMinAmount` (both are expected-out x (1 - slip)), so a
-          // worst-case fill leaves no extra create-position margin by design;
-          // the two legs share one slippage and revert together atomically.
+          // token0/token1 minima: a slippage buffer below the provided amounts.
+          // `tokensProvided` is the MAX per side; the chain deposits per the
+          // pool ratio (which may consume slightly less of one side) and reverts
+          // only if a side falls below its minimum. The buffer gives that
+          // ratio-fitting room. It is NOT a second slippage hit on the swap (the
+          // swapped side's provided amount is already its guaranteed floor); it
+          // only absorbs the ratio rounding. Both legs revert together.
           const tokenMinAmount0 = new Dec(baseMicro)
             .mul(slippageMultiplier)
             .truncate()
@@ -534,6 +599,8 @@ export function useAddConcentratedLiquidityConfig(
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapTotalCostPercent,
+    zapHighCost,
   };
 }
 

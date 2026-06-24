@@ -582,9 +582,10 @@ const SingleAssetDeposit: FunctionComponent<{
       totalCost && valueIn && valueIn.toDec().isPositive()
         ? new RatePretty(totalCost.toDec().quo(valueIn.toDec()))
         : undefined;
-    const isCostHigh = Boolean(
-      quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
-    );
+    // The total-cost rust and the submit Confirm gate share one signal
+    // (`zapHighCost` from the config hook: combined price impact + swap fees at
+    // or above 5% of value in), so the styling and the gate never diverge.
+    const isCostHigh = zapHighCost;
 
     return (
       <div className="flex flex-col gap-3">
@@ -681,7 +682,10 @@ const SingleAssetDeposit: FunctionComponent<{
                       left={t("addConcentratedLiquidity.singleAsset.valueIn")}
                       right={
                         <span className="body2 text-osmoverse-200">
-                          {formatPretty(valueIn, { maxDecimals: 2 })}
+                          {formatPretty(
+                            valueIn,
+                            getPriceExtendedFormatOptions(valueIn.toDec())
+                          )}
                         </span>
                       }
                     />
@@ -691,7 +695,10 @@ const SingleAssetDeposit: FunctionComponent<{
                       left={t("addConcentratedLiquidity.singleAsset.valueOut")}
                       right={
                         <span className="body2 text-osmoverse-200">
-                          {formatPretty(valueOut, { maxDecimals: 2 })}
+                          {formatPretty(
+                            valueOut,
+                            getPriceExtendedFormatOptions(valueOut.toDec())
+                          )}
                         </span>
                       }
                     />
@@ -732,8 +739,12 @@ const SingleAssetDeposit: FunctionComponent<{
                             isCostHigh ? "text-rust-400" : "text-osmoverse-200"
                           )}
                         >
-                          -{formatPretty(totalCost, { maxDecimals: 2 })} (
-                          {formatPretty(totalCostPercent.maxDecimals(2))})
+                          -
+                          {formatPretty(
+                            totalCost,
+                            getPriceExtendedFormatOptions(totalCost.toDec())
+                          )}{" "}
+                          ({formatPretty(totalCostPercent.maxDecimals(2))})
                         </span>
                       }
                     />
