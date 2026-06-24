@@ -4,7 +4,6 @@ import type { Asset } from "@osmosis-labs/types";
  *  alloy the user holds. */
 export interface ExternalUrlConvertVariant {
   coinMinimalDenom: string;
-  decimals: number;
   symbol: string;
 }
 
@@ -55,7 +54,6 @@ export function resolveExternalUrlConvertVariant({
 
   return {
     coinMinimalDenom: variant.coinMinimalDenom,
-    decimals: variant.decimals,
     symbol: variant.symbol,
   };
 }

@@ -89,7 +89,6 @@ describe("resolveExternalUrlConvertVariant", () => {
       })
     ).toEqual({
       coinMinimalDenom: VARIANT_DENOM,
-      decimals: 6,
       symbol: "XRP.coreum",
     });
   });
@@ -133,22 +132,6 @@ describe("resolveExternalUrlConvertVariant", () => {
         assets: [alloyAsset],
       })
     ).toBeUndefined();
-  });
-
-  it("matches on the variant's own decimals, not the alloy's", () => {
-    const alloy9 = { ...alloyAsset, decimals: 9 };
-    const variant8 = { ...variantAsset, decimals: 8 };
-    expect(
-      resolveExternalUrlConvertVariant({
-        urlProviderName: SOLOGENIC,
-        alloy: alloy9,
-        assets: [alloy9, variant8],
-      })
-    ).toEqual({
-      coinMinimalDenom: VARIANT_DENOM,
-      decimals: 8,
-      symbol: "XRP.coreum",
-    });
   });
 
   it("ignores assets from a different variant group", () => {

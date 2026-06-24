@@ -17,7 +17,6 @@ type ExternalUrl = {
   logo: string;
   convertToVariant?: {
     coinMinimalDenom: string;
-    decimals: number;
     symbol: string;
   };
 };

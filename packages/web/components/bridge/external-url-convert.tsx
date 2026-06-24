@@ -15,7 +15,6 @@ import { api } from "~/utils/trpc";
  *  variantGroupKey family; see bridge-transfer.ts. */
 export interface ConvertToVariant {
   coinMinimalDenom: string;
-  decimals: number;
   symbol: string;
 }
 
