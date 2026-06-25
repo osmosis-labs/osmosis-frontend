@@ -763,7 +763,10 @@
     "noRoutes": "هیچ مسیری پیدا نشد",
     "route": "مسیر",
     "routes": "مسیرها",
-    "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش"
+    "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش",
+    "extremeDisparityAcknowledgement": "می‌دانم که ارزشی به‌مراتب کمتر از آنچه ارسال می‌کنم دریافت می‌کنم.",
+    "slippageAutoAdjustedTitle": "لغزش به‌طور خودکار تنظیم شد",
+    "slippageAutoAdjustedBody": "لغزش پیش‌فرض این معامله به دلیل تأثیر قیمتی بالا یا نقدینگی کم افزایش یافته است."
   },
   "walletSelect": {
     "gettingStarted": "شروع شدن",

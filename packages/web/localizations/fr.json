@@ -763,7 +763,10 @@
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
     "routes": "itinéraires",
-    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages"
+    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages",
+    "extremeDisparityAcknowledgement": "Je comprends que je reçois une valeur nettement inférieure à celle que j'envoie.",
+    "slippageAutoAdjustedTitle": "Slippage ajusté automatiquement",
+    "slippageAutoAdjustedBody": "Le slippage par défaut de cette transaction a été augmenté en raison d'un fort impact sur le prix ou d'une faible liquidité."
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

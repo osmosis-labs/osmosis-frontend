@@ -763,7 +763,10 @@
     "noRoutes": "경로를 찾을 수 없습니다.",
     "route": "노선",
     "routes": "노선",
-    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다"
+    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다",
+    "extremeDisparityAcknowledgement": "보내는 가치보다 상당히 적은 가치를 받는다는 것을 이해합니다.",
+    "slippageAutoAdjustedTitle": "슬리피지 자동 조정됨",
+    "slippageAutoAdjustedBody": "높은 가격 영향 또는 낮은 유동성으로 인해 이 거래의 기본 슬리피지가 상향되었습니다."
   },
   "walletSelect": {
     "gettingStarted": "시작하기",

@@ -763,7 +763,10 @@
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
     "routes": "trasy",
-    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu",
+    "extremeDisparityAcknowledgement": "Rozumiem, że otrzymuję znacznie mniejszą wartość niż wysyłam.",
+    "slippageAutoAdjustedTitle": "Poślizg dostosowany automatycznie",
+    "slippageAutoAdjustedBody": "Domyślny poślizg dla tej transakcji został podniesiony z powodu dużego wpływu na cenę lub niskiej płynności."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
