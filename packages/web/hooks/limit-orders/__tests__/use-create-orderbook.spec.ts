@@ -9,6 +9,7 @@ import { useCreateOrderbook } from "../use-create-orderbook";
 
 const mockInvalidateGetPools = jest.fn().mockResolvedValue(undefined);
 const mockInvalidateVerify = jest.fn().mockResolvedValue(undefined);
+const mockFetchVerify = jest.fn().mockResolvedValue(undefined);
 const mockSignAndBroadcast = jest.fn();
 
 let mockWalletAddress: string | undefined = "osmo1testaddress";
@@ -29,7 +30,10 @@ jest.mock("~/utils/trpc", () => ({
       edge: {
         orderbooks: {
           getPools: { invalidate: mockInvalidateGetPools },
-          verifyOrderbookCreation: { invalidate: mockInvalidateVerify },
+          verifyOrderbookCreation: {
+            invalidate: mockInvalidateVerify,
+            fetch: mockFetchVerify,
+          },
         },
       },
     }),
@@ -160,9 +164,10 @@ describe("useCreateOrderbook", () => {
       });
 
       expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
-      expect(mockInvalidateVerify).toHaveBeenCalledWith({
+      expect(mockFetchVerify).toHaveBeenCalledWith({
         baseDenom: BASE_DENOM,
         quoteDenom: QUOTE_DENOM,
+        fresh: true,
       });
     });
 
