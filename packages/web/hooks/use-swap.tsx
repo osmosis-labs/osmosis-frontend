@@ -29,7 +29,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -67,7 +67,6 @@ import { api, RouterInputs } from "~/utils/trpc";
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -288,7 +287,7 @@ export function useSwap(
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
     let error =
-      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
+      quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
@@ -740,16 +739,39 @@ export function useSwap(
     ]
   );
 
-  const positivePrevQuote = usePreviousWhen(
-    quote,
-    useCallback(
-      () =>
-        Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
-    )
-  );
+  const activeQuoteError =
+    quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
+  const activeInputEmpty =
+    quoteType === "in-given-out"
+      ? outAmountInput.isEmpty
+      : inAmountInput.isEmpty;
+
+  // Cache the last accepted quote, but segregated by quoteType so that a
+  // stale out-given-in quote is never shown while an in-given-out quote is
+  // loading (or vice-versa). The ref is explicitly cleared on mode switch.
+  const positivePrevQuoteRef = useRef<typeof quote>(undefined);
+  const prevQuoteTypeForCacheRef = useRef<typeof quoteType>(quoteType);
+  useEffect(() => {
+    if (prevQuoteTypeForCacheRef.current !== quoteType) {
+      prevQuoteTypeForCacheRef.current = quoteType;
+      positivePrevQuoteRef.current = undefined;
+      return;
+    }
+    if (
+      quote?.amount.toDec().isPositive() &&
+      !activeQuoteError &&
+      !activeInputEmpty
+    ) {
+      positivePrevQuoteRef.current = quote;
+    }
+  });
+  // Only serve the cached quote when it belongs to the current mode.
+  // The effect above clears the ref after render; this guard covers the
+  // one-render gap before that effect fires on a quoteType switch.
+  const positivePrevQuote =
+    prevQuoteTypeForCacheRef.current === quoteType
+      ? positivePrevQuoteRef.current
+      : undefined;
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
@@ -855,9 +877,12 @@ export function useSwap(
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
-      isQuoteLoading || inAmountInput.isTyping
+      isQuoteLoading ||
+      (quoteType === "in-given-out"
+        ? outAmountInput.isTyping
+        : inAmountInput.isTyping)
         ? positivePrevQuote
-        : !quoteErrorMsg
+        : !activeQuoteError
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
@@ -1646,7 +1671,8 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage > balance && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) &&
+        !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 
@@ -1686,6 +1712,46 @@ export function useAmountWithSlippage({
   };
 }
 
+// Single source of truth for all slippage tiers.
+// Values are used to populate selectableSlippages and to compute suggested slippage.
+export const DYNAMIC_SLIPPAGE_TIERS = [
+  {
+    slippage: "0.2",
+    minPriceImpact: new Dec(0.003),
+    maxLiquidityCap: new Dec(50000),
+  },
+  {
+    slippage: "0.3",
+    minPriceImpact: new Dec(0.006),
+    maxLiquidityCap: new Dec(25000),
+  },
+  {
+    slippage: "0.5",
+    minPriceImpact: new Dec(0.01),
+    maxLiquidityCap: new Dec(10000),
+  },
+  {
+    slippage: "1.0",
+    minPriceImpact: new Dec(0.03),
+    maxLiquidityCap: new Dec(3000),
+  },
+  {
+    slippage: "2.0",
+    minPriceImpact: new Dec(0.05),
+    maxLiquidityCap: new Dec(1000),
+  },
+  {
+    slippage: "3.0",
+    minPriceImpact: new Dec(0.1),
+    maxLiquidityCap: new Dec(300),
+  },
+  {
+    slippage: "5.0",
+    minPriceImpact: new Dec(0.2),
+    maxLiquidityCap: new Dec(100),
+  },
+];
+
 /** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
 export function useDynamicSlippageConfig({
   slippageConfig,
@@ -1696,6 +1762,17 @@ export function useDynamicSlippageConfig({
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
+  // Populate selectable slippage tiers so getSmallestSlippage works for any
+  // consumer of this hook (e.g. place-limit-tool that doesn't call
+  // useDynamicSlippageFromQuote).
+  useEffect(() => {
+    slippageConfig.setSelectableSlippages(
+      DYNAMIC_SLIPPAGE_TIERS.map(({ slippage }) =>
+        new Dec(slippage).quo(DecUtils.getTenExponentN(2))
+      )
+    );
+  }, [slippageConfig]);
+
   useEffect(() => {
     if (feeError) {
       if (
@@ -1728,12 +1805,107 @@ export function useDynamicSlippageConfig({
               )
             );
           }
-        } else {
-          console.log("No amounts found");
         }
       }
     }
   }, [feeError, slippageConfig, quoteType]);
+}
+
+/** Computes the suggested slippage tier from a quote (pure, no side effects). */
+function computeSuggestedSlippage(quote: SwapState["quote"]): string {
+  if (!quote) return DefaultSlippage;
+
+  const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
+  // SQS computes priceImpact as (effectiveOutOverIn / spotOutOverIn) - 1 for
+  // both quote directions. Adverse trades always yield a negative value:
+  //   out-given-in: user receives less out than spot → ratio < 1 → negative
+  //   in-given-out: buyer receives less out per in than spot → ratio < 1 → negative
+  // Clamp favorable (positive) values to zero so they don't inflate the tier.
+  const priceImpact = rawImpact.isNegative() ? rawImpact.abs() : new Dec(0);
+  const tokens = quote.tokens;
+  const lowestLiquidityCap =
+    tokens && tokens.length > 0
+      ? tokens.slice(1).reduce((min, t) => {
+          const cap = new Dec(t.liquidity_cap);
+          return cap.lt(min) ? cap : min;
+        }, new Dec(tokens[0].liquidity_cap))
+      : undefined;
+
+  for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
+    if (
+      priceImpact.gte(tier.minPriceImpact) ||
+      (lowestLiquidityCap !== undefined &&
+        lowestLiquidityCap.lte(tier.maxLiquidityCap))
+    ) {
+      return tier.slippage;
+    }
+  }
+
+  return DefaultSlippage;
+}
+
+/** Proactively adjusts slippage based on price impact and liquidity cap from the quote. */
+export function useDynamicSlippageFromQuote({
+  quote,
+  slippageConfig,
+  quoteType = "out-given-in",
+}: {
+  quote: SwapState["quote"];
+  slippageConfig: ObservableSlippageConfig;
+  quoteType?: QuoteDirection;
+}) {
+  // Synchronously compute the display value from the current quote so it updates
+  // in the same React render cycle as the quote/gas display, not one cycle later.
+  const autoAdjustedSlippage = useMemo(
+    () => computeSuggestedSlippage(quote),
+    [quote]
+  );
+
+  // Tracks the last value written by this hook — used only as an optimisation to
+  // skip redundant setManualSlippage calls when the suggestion hasn't changed.
+  // It is NOT used to detect user overrides; that is the job of userOverrodeSlippage.
+  const lastAutoSet = useRef<string | null>(null);
+
+  // Keep the config in sync (for the actual transaction slippage).
+  // Runs asynchronously after render — guarded against user overrides.
+  useEffect(() => {
+    if (!quote) return;
+
+    // If useDynamicSlippageConfig (error hook) has called select() — don't override
+    if (!slippageConfig.isManualSlippage) return;
+
+    // Explicit user override takes precedence — string equality is too fragile
+    // (e.g. user types "0.5" which matches the tier string) so we rely on the
+    // dedicated flag that review-order sets when the user edits the field.
+    if (slippageConfig.userOverrodeSlippage) return;
+
+    const suggested = computeSuggestedSlippage(quote);
+
+    // Skip the write if the suggestion is unchanged (avoids a MobX reaction cycle)
+    if (suggested === lastAutoSet.current) return;
+
+    lastAutoSet.current = suggested;
+    // setManualSlippage sets the actual slippage value (also sets isManualSlippage = true
+    // so the slippage getter uses this value rather than the preset buttons).
+    // Display is handled by autoAdjustedSlippage (computed synchronously via useMemo).
+    slippageConfig.setManualSlippage(suggested);
+  }, [
+    quote,
+    slippageConfig,
+    quoteType,
+    slippageConfig.isManualSlippage,
+    slippageConfig.userOverrodeSlippage,
+  ]);
+
+  // Call this when slippage is externally reset (e.g. resetSlippage in swap-tool)
+  // so the hook treats the next quote update as a fresh auto-adjust rather than
+  // a user override.
+  const resetAutoAdjust = useCallback(() => {
+    lastAutoSet.current = null;
+    slippageConfig.clearUserOverride();
+  }, [slippageConfig]);
+
+  return { autoAdjustedSlippage, resetAutoAdjust };
 }
 
 /** Extracts the numerical values from the swap required error

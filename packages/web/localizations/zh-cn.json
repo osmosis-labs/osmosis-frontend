@@ -763,7 +763,10 @@
     "noRoutes": "未找到任何路线",
     "route": "路线",
     "routes": "路线",
-    "slippageOverBalance": "资金不足以弥补滑点"
+    "slippageOverBalance": "资金不足以弥补滑点",
+    "extremeDisparityAcknowledgement": "我了解我收到的价值远低于我发送的价值。",
+    "slippageAutoAdjustedTitle": "滑点已自动调整",
+    "slippageAutoAdjustedBody": "由于价格影响较大或流动性较低，此交易的默认滑点已上调。"
   },
   "walletSelect": {
     "gettingStarted": "入门",

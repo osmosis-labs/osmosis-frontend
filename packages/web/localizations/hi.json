@@ -763,7 +763,10 @@
     "noRoutes": "कोई मार्ग नहीं मिला",
     "route": "मार्ग",
     "routes": "मार्ग",
-    "slippageOverBalance": "स्लिपेज को कवर करने के लिए अपर्याप्त धनराशि"
+    "slippageOverBalance": "स्लिपेज को कवर करने के लिए अपर्याप्त धनराशि",
+    "extremeDisparityAcknowledgement": "मैं समझता हूँ कि मैं जो भेज रहा हूँ उससे काफी कम मूल्य प्राप्त कर रहा हूँ।",
+    "slippageAutoAdjustedTitle": "स्लिपेज स्वतः समायोजित",
+    "slippageAutoAdjustedBody": "उच्च मूल्य प्रभाव या कम तरलता के कारण इस ट्रेड की डिफ़ॉल्ट स्लिपेज बढ़ा दी गई है।"
   },
   "walletSelect": {
     "gettingStarted": "शुरू करना",

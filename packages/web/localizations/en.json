@@ -763,7 +763,10 @@
     "noRoutes": "No routes found",
     "route": "route",
     "routes": "routes",
-    "slippageOverBalance": "Insufficient funds to cover slippage"
+    "slippageOverBalance": "Insufficient funds to cover slippage",
+    "extremeDisparityAcknowledgement": "I understand I am receiving significantly less value than I am sending.",
+    "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
+    "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

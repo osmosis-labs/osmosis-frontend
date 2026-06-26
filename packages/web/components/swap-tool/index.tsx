@@ -50,6 +50,7 @@ import {
 import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
+  useDynamicSlippageFromQuote,
   useSwap,
 } from "~/hooks/use-swap";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -119,9 +120,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
-      defaultSlippage:
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
-      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
+      defaultSlippage: DefaultSlippage,
+      selectedIndex: 0,
     });
 
     const swapState = useSwap({
@@ -140,6 +140,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
+    const { autoAdjustedSlippage, resetAutoAdjust } =
+      useDynamicSlippageFromQuote({
+        quote: swapState.quote,
+        slippageConfig,
+        quoteType,
+      });
+
     if (
       swapState.fromAsset?.coinMinimalDenom ===
       swapState.toAsset?.coinMinimalDenom
@@ -151,16 +158,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       }
     }
 
-    const outputDifference = useMemo(
-      () =>
-        new RatePretty(
-          swapState.inAmountInput?.fiatValue
-            ?.toDec()
-            .sub(swapState.tokenOutFiatValue?.toDec())
-            .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
-        ),
-      [swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue]
-    );
+    const outputDifference = useMemo(() => {
+      if (quoteType === "in-given-out") {
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1. Adverse
+        // trades are negative (buyer receives less out per in than spot).
+        // Negate so that adverse = positive, matching the out-given-in fiat
+        // branch convention used by the display logic below.
+        return new RatePretty(
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)).neg()
+        );
+      }
+      return new RatePretty(
+        swapState.inAmountInput?.fiatValue
+          ?.toDec()
+          .sub(swapState.tokenOutFiatValue?.toDec())
+          .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+      );
+    }, [
+      quoteType,
+      swapState.inAmountInput?.fiatValue,
+      swapState.tokenOutFiatValue,
+      swapState.quote?.priceImpactTokenOut,
+    ]);
 
     const showOutputDifferenceWarning = outputDifference
       .toDec()
@@ -202,17 +221,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [setBuyOpen, setSellOpen]);
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage =
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
+      // Always clear the override sentinel so auto-adjust re-engages, even if
+      // slippage already equals DefaultSlippage (e.g. user typed "0.3" manually).
+      resetAutoAdjust();
       if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+        slippageConfig.slippage
+          .toDec()
+          .equals(new Dec(DefaultSlippage).quo(DecUtils.getTenExponentN(2)))
       ) {
         return;
       }
-      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
-      slippageConfig.setDefaultSlippage(defaultSlippage);
-    }, [quoteType, slippageConfig]);
+      slippageConfig.setManualSlippage(DefaultSlippage);
+      slippageConfig.setDefaultSlippage(DefaultSlippage);
+    }, [slippageConfig, resetAutoAdjust]);
 
     const { amountWithSlippage, fiatAmountWithSlippage } =
       useAmountWithSlippage({
@@ -221,7 +242,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         quoteType,
       });
 
-    // reivew swap modal
+    // review swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
@@ -842,6 +863,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
+          autoAdjustedSlippage={autoAdjustedSlippage}
           onClose={() => setShowSwapReviewModal(false)}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}

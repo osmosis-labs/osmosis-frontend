@@ -763,7 +763,10 @@
     "noRoutes": "No se encontraron rutas",
     "route": "ruta",
     "routes": "rutas",
-    "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento"
+    "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento",
+    "extremeDisparityAcknowledgement": "Entiendo que estoy recibiendo un valor significativamente menor del que envío.",
+    "slippageAutoAdjustedTitle": "Deslizamiento ajustado automáticamente",
+    "slippageAutoAdjustedBody": "El deslizamiento predeterminado de esta operación se ha aumentado debido al alto impacto en el precio o la baja liquidez."
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

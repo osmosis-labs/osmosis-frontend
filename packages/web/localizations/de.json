@@ -763,7 +763,10 @@
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
     "routes": "Routen",
-    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage",
+    "extremeDisparityAcknowledgement": "Mir ist bewusst, dass ich deutlich weniger Wert erhalte, als ich sende.",
+    "slippageAutoAdjustedTitle": "Slippage automatisch angepasst",
+    "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

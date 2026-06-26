@@ -763,7 +763,10 @@
     "noRoutes": "Nu au fost găsite rute",
     "route": "traseu",
     "routes": "trasee",
-    "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul"
+    "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul",
+    "extremeDisparityAcknowledgement": "Înțeleg că primesc o valoare semnificativ mai mică decât cea pe care o trimit.",
+    "slippageAutoAdjustedTitle": "Slippage ajustat automat",
+    "slippageAutoAdjustedBody": "Slippage-ul implicit al acestei tranzacții a fost mărit din cauza impactului mare asupra prețului sau a lichidității scăzute."
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",
