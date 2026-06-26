@@ -205,4 +205,46 @@ describe("resolveExternalUrlConvertVariant", () => {
       })
     ).toBeUndefined();
   });
+
+  it("does not target a withdrawal-halted member (convert precedes a withdraw)", () => {
+    const haltedVariant = { ...variantAsset, haltWithdrawals: true };
+    expect(
+      resolveExternalUrlConvertVariant({
+        urlProviderName: SOLOGENIC,
+        alloy: alloyAsset,
+        assets: [alloyAsset, haltedVariant],
+        memberDenoms: allMembers([alloyAsset, haltedVariant]),
+      })
+    ).toBeUndefined();
+  });
+
+  it("skips an earlier halted member sharing the provider name and picks the live one", () => {
+    // The exact divergence case: a halted and a live member share the provider
+    // name; the convert target must be the live one, not the first-listed halted
+    // one (which the surfaced link would never have come from).
+    const haltedVariant = {
+      ...variantAsset,
+      coinMinimalDenom: "ibc/HALTED_XRP_VARIANT",
+      symbol: "XRP.halted",
+      haltWithdrawals: true,
+    };
+    const liveVariant = {
+      ...variantAsset,
+      coinMinimalDenom: "ibc/LIVE_XRP_VARIANT",
+      symbol: "XRP.live",
+      haltWithdrawals: false,
+    };
+    expect(
+      resolveExternalUrlConvertVariant({
+        urlProviderName: SOLOGENIC,
+        alloy: alloyAsset,
+        // halted listed first to prove order does not select it
+        assets: [alloyAsset, haltedVariant, liveVariant],
+        memberDenoms: allMembers([alloyAsset, haltedVariant, liveVariant]),
+      })
+    ).toEqual({
+      coinMinimalDenom: "ibc/LIVE_XRP_VARIANT",
+      symbol: "XRP.live",
+    });
+  });
 });

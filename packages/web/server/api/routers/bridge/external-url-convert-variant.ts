@@ -65,6 +65,13 @@ export function resolveExternalUrlConvertVariant({
       asset.coinMinimalDenom !== alloy.coinMinimalDenom &&
       !asset.isAlloyed &&
       memberDenoms.has(asset.coinMinimalDenom) &&
+      // The convert always precedes a withdrawal, so never target a variant
+      // whose withdrawals are kill-switched: converting into it would strand the
+      // user on a halted denom. Mirrors the halt skip in the constituent
+      // link aggregator (external-url-constituents.ts) so the surfaced link and
+      // the convert target can't diverge when a halted and a live member share a
+      // provider name.
+      !asset.haltWithdrawals &&
       asset.transferMethods.some(
         (method) =>
           method.type === "external_interface" &&
