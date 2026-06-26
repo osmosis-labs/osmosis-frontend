@@ -279,23 +279,36 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "usd-coin"
       );
 
+    const isXrpAsset = (asset: MinimalAsset) =>
+      asset.coinDenom?.toUpperCase().includes("XRP") ||
+      asset.coinGeckoId === "ripple";
+
+    // The XRPL EVM hoist below is a positional default. Only apply it while the
+    // XRPL EVM route is actually usable: if the xrplevm XRP variant is
+    // withdrawal-halted (kill switch) or unstable (e.g. bridge down), defaulting
+    // to it would land the user on a dead route. Detect that variant by its
+    // chain-qualified denom and skip the hoist when it is non-viable, falling
+    // through to the next route (Coreum / Int3face / XRPL).
+    const isXrplEvmVariantUnviable = Boolean(
+      assets?.some(
+        (asset) =>
+          isXrpAsset(asset) &&
+          asset.coinDenom?.toLowerCase().includes("xrplevm") &&
+          (asset.areWithdrawalsHalted || asset.isUnstable)
+      )
+    );
+
     // Check if this is a XRP withdrawal to prioritize XRPL EVM
     const isXrpWithdrawal =
       direction === "withdraw" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("XRP") ||
-          asset.coinGeckoId === "ripple"
-      );
+      !isXrplEvmVariantUnviable &&
+      assets?.some(isXrpAsset);
 
     // Check if this is a XRP deposit to prioritize XRPL EVM
     const isXrpDeposit =
       direction === "deposit" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("XRP") ||
-          asset.coinGeckoId === "ripple"
-      );
+      !isXrplEvmVariantUnviable &&
+      assets?.some(isXrpAsset);
 
     // Check if this is ATOM to prioritize Cosmos Hub
     const isAtom = assets?.some(
