@@ -285,29 +285,34 @@ export const useBridgesSupportedAssets = ({
 
     // The XRPL EVM hoist below is a positional default. Only apply it while the
     // XRPL EVM route is actually usable: if the xrplevm XRP variant is
-    // withdrawal-halted (kill switch) or unstable (e.g. bridge down), defaulting
-    // to it would land the user on a dead route. Detect that variant by its
-    // chain-qualified denom and skip the hoist when it is non-viable, falling
-    // through to the next route (Coreum / Int3face / XRPL).
-    const isXrplEvmVariantUnviable = Boolean(
+    // withdrawal-halted (the kill switch), defaulting to it would land the user
+    // on a dead route. Detect that variant by its chain-qualified denom and skip
+    // the hoist when it is halted, falling through to the next route (Coreum /
+    // Int3face / XRPL).
+    //
+    // Gate on `areWithdrawalsHalted` only, not `isUnstable`: the kill switch
+    // already suppresses routing elsewhere (e.g. the external link-out in
+    // amount-screen.tsx), whereas `isUnstable` is warning-only and does not gate
+    // the UI. Keeping the default-selection signal consistent with that policy.
+    const isXrplEvmVariantHalted = Boolean(
       assets?.some(
         (asset) =>
           isXrpAsset(asset) &&
           asset.coinDenom?.toLowerCase().includes("xrplevm") &&
-          (asset.areWithdrawalsHalted || asset.isUnstable)
+          asset.areWithdrawalsHalted
       )
     );
 
     // Check if this is a XRP withdrawal to prioritize XRPL EVM
     const isXrpWithdrawal =
       direction === "withdraw" &&
-      !isXrplEvmVariantUnviable &&
+      !isXrplEvmVariantHalted &&
       assets?.some(isXrpAsset);
 
     // Check if this is a XRP deposit to prioritize XRPL EVM
     const isXrpDeposit =
       direction === "deposit" &&
-      !isXrplEvmVariantUnviable &&
+      !isXrplEvmVariantHalted &&
       assets?.some(isXrpAsset);
 
     // Check if this is ATOM to prioritize Cosmos Hub
