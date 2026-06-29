@@ -8,16 +8,23 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
+import { DuplicatePoolCallout } from "~/components/complex/pool/create/duplicate-pool-callout";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { CL_POOL_CREATION_TICK_SPACING } from "~/config";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import {
+  useDuplicateGate,
+  useDuplicatePoolCheck,
+} from "~/hooks/use-duplicate-pool-check";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -27,22 +34,26 @@ import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
+  config: ObservableCreatePoolConfig;
   advanceStep?: () => void;
   selectedBase?: SelectionToken;
   selectedQuote: SelectionToken;
   setSelectedBase: (value: SelectionToken) => void;
   setSelectedQuote: (value: SelectionToken) => void;
   setPoolId: (value: string) => void;
+  onUseExistingPool?: (poolId: string) => void;
 }
 
 export const SetBaseInfos = observer(
   ({
+    config,
     advanceStep,
     selectedBase,
     selectedQuote,
     setSelectedBase,
     setSelectedQuote,
     setPoolId,
+    onUseExistingPool,
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
@@ -82,6 +93,29 @@ export const SetBaseInfos = observer(
 
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
+
+    const baseDenom = selectedBase?.token.coinMinimalDenom;
+    const quoteDenom = selectedQuote?.token.coinMinimalDenom;
+    const duplicateProposed = useMemo(() => {
+      if (!baseDenom || !quoteDenom) return null;
+      return {
+        kind: "concentrated" as const,
+        denom0: baseDenom,
+        denom1: quoteDenom,
+        spreadFactor: selectedSpread,
+        tickSpacing: CL_POOL_CREATION_TICK_SPACING,
+      };
+    }, [baseDenom, quoteDenom, selectedSpread]);
+    const duplicateCheck = useDuplicatePoolCheck({
+      proposed: duplicateProposed,
+      enabled: Boolean(baseDenom && quoteDenom),
+    });
+    useDuplicateGate({
+      config,
+      status: duplicateCheck.status,
+      exactMatches: duplicateCheck.exactMatches,
+      proposed: duplicateProposed,
+    });
 
     const is18DecimalBase =
       selectedBase?.token.coinDecimals === 18 &&
@@ -163,6 +197,20 @@ export const SetBaseInfos = observer(
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-6">
+          {selectedBase && (
+            <div className="w-full max-w-[641px]">
+              <DuplicatePoolCallout
+                status={duplicateCheck.status}
+                exactMatches={duplicateCheck.exactMatches}
+                similarMatches={duplicateCheck.similarMatches}
+                acknowledged={config.duplicateAcknowledged}
+                onToggleAcknowledged={() =>
+                  (config.duplicateAcknowledged = !config.duplicateAcknowledged)
+                }
+                onUseExistingPool={onUseExistingPool}
+              />
+            </div>
+          )}
           <Field className="flex items-center gap-3">
             <Checkbox
               className="group flex h-[26px] w-[26px] items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors data-[checked]:bg-osmoverse-400"
@@ -205,7 +253,10 @@ export const SetBaseInfos = observer(
           )}
           <Button
             disabled={
-              !isAgreementChecked || !selectedBase || is18DecimalMismatch
+              !isAgreementChecked ||
+              !selectedBase ||
+              is18DecimalMismatch ||
+              (config.duplicateBlocking && !config.duplicateAcknowledged)
             }
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
@@ -214,7 +265,7 @@ export const SetBaseInfos = observer(
                 .sendCreateConcentratedPoolMsg(
                   selectedBase?.token.coinMinimalDenom!,
                   selectedQuote?.token.coinMinimalDenom!,
-                  100,
+                  CL_POOL_CREATION_TICK_SPACING,
                   +selectedSpread,
                   undefined,
                   (res) => {

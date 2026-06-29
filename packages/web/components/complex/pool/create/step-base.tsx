@@ -26,7 +26,8 @@ export const StepBase = observer(
         !config.positiveBalanceError &&
         !config.assetCountError &&
         !config.scalingFactorError &&
-        !(config.assets.length <= 1)) ||
+        !(config.assets.length <= 1) &&
+        (!config.duplicateBlocking || config.duplicateAcknowledged)) ||
       (step === 2 && !config.amountError) ||
       (step === 3 &&
         config.acknowledgeFee &&

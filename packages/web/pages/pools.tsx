@@ -7,13 +7,14 @@ import { useCallback, useState } from "react";
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { PoolsOverview } from "~/components/overview/pools";
+import { PoolType } from "~/components/complex/pools-table";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
   useTranslation,
+  useWalletSelect,
 } from "~/hooks";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -27,9 +28,7 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(accountStore.osmosisChainId);
-
-  const [poolsOverviewRef, { height: poolsOverviewHeight }] =
-    useDimension<HTMLDivElement>();
+  const { onOpenWalletSelect } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
     useDimension<HTMLDivElement>();
@@ -39,6 +38,19 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
+  const openCreatePool = useCallback(() => {
+    if (!account?.address) {
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId }],
+        // Auto-open the create-pool modal once the wallet connects, so a
+        // disconnected user who clicks Create Pool doesn't have to click again.
+        onConnect: () => setIsCreatingPool(true),
+      });
+      return;
+    }
+    setIsCreatingPool(true);
+  }, [account?.address, chainId, onOpenWalletSelect]);
+  const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
@@ -48,13 +60,16 @@ const Pools: NextPage = observer(function () {
   );
 
   // pool quick action modals
-  const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
-    string | null
-  >(null);
+  const [addLiquidityModalPool, setAddLiquidityModalPool] = useState<{
+    id: string;
+    /** Known pool type, when available, to render the correct add-liquidity UI without waiting on a refetch. */
+    type?: PoolType;
+  } | null>(null);
 
   const quickActionProps = {
     quickAddLiquidity: useCallback(
-      (poolId: string) => setAddLiquidityModalPoolId(poolId),
+      (poolId: string, poolType: PoolType) =>
+        setAddLiquidityModalPool({ id: poolId, type: poolType }),
       []
     ),
   };
@@ -121,48 +136,50 @@ const Pools: NextPage = observer(function () {
   }, [createPoolConfig, account]);
 
   return (
-    <main className="m-auto max-w-container px-8 md:px-3">
+    <main className="m-auto max-w-container px-8 pt-8 md:px-3 md:pt-4">
       <NextSeo
         title={t("seo.pools.title")}
         description={t("seo.pools.description")}
       />
       <CreatePoolModal
         isOpen={isCreatingPool}
-        onRequestClose={useCallback(() => setIsCreatingPool(false), [])}
+        onRequestClose={closeCreatePool}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
         isSendingMsg={account?.txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
+        onUseExistingPool={useCallback((poolId: string) => {
+          setIsCreatingPool(false);
+          setAddLiquidityModalPool({ id: poolId });
+        }, [])}
       />
-      {addLiquidityModalPoolId && (
+      {addLiquidityModalPool && (
         <AddLiquidityModal
           title={t("addLiquidity.titleInPool", {
-            poolId: addLiquidityModalPoolId,
+            poolId: addLiquidityModalPool.id,
           })}
-          poolId={addLiquidityModalPoolId}
+          poolId={addLiquidityModalPool.id}
+          poolType={addLiquidityModalPool.type}
           isOpen={true}
-          onRequestClose={() => setAddLiquidityModalPoolId(null)}
+          onRequestClose={() => setAddLiquidityModalPool(null)}
         />
       )}
-      <section className="pb-10 pt-8 md:pb-5 md:pt-4" ref={poolsOverviewRef}>
-        <PoolsOverview
-          className="mx-auto"
-          setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
-        />
-      </section>
       {account?.address && (
-        <section className="pb-[3.75rem]" ref={myPositionsRef}>
-          <h5>{t("clPositions.yourPositions")}</h5>
-          <MyPositionsSection />
-        </section>
+        <>
+          <section className="pb-[3.75rem]" ref={myPositionsRef}>
+            <h5>{t("clPositions.yourPositions")}</h5>
+            <MyPositionsSection />
+          </section>
+          <section className="pb-[3.75rem]" ref={myPoolsRef}>
+            <h5 className="md:px-3">{t("pools.myPools")}</h5>
+            <MyPoolsCardsGrid />
+          </section>
+        </>
       )}
-      <section className="pb-[3.75rem]" ref={myPoolsRef}>
-        <h5 className="md:px-3">{t("pools.myPools")}</h5>
-        <MyPoolsCardsGrid />
-      </section>
       <section>
         <AllPoolsTable
-          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
+          topOffset={account?.address ? myPositionsHeight + myPoolsHeight : 0}
+          onCreatePool={openCreatePool}
           {...quickActionProps}
         />
       </section>

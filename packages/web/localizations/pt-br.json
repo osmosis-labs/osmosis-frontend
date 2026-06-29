@@ -88,7 +88,9 @@
     "numPositions": "indefinido",
     "onePosition": "1 posição",
     "goToPool": "Vá para a piscina #{poolId}",
-    "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte."
+    "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte.",
+    "noPositions": "Nenhuma posição encontrada",
+    "noPositionsDescription": "Forneça liquidez concentrada a um pool para começar a ganhar recompensas de spread."
   },
   "copied": "Copiado!",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "Comprar cripto",
       "swappedSubtitle": "Suporta OSMO, USDC",
       "moonpaySubtitle": "Suporta OSMO, USDC",
-      "transakSubtitle": "Suporta OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
       "moonpayCountrySupport": "Mais de 165 países"
-    },
-    "incentive": {
-      "title": "Tipos de incentivo"
     },
     "MAX": "MÁX",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "Transmutador",
       "orderbook": "Carteira de pedidos",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Sem incentivos"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Conectar carteira",
@@ -537,6 +534,9 @@
       },
       "title": "Todas as Piscinas"
     },
+    "noPoolsFound": "Nenhuma piscina encontrada",
+    "noPoolsFoundDescription": "Adicione liquidez a um pool para começar a ganhar recompensas.",
+    "errorFetchingPools": "Não foi possível carregar suas piscinas. Tente atualizar a página.",
     "APR": "APR",
     "bonded": "Travado",
     "createPool": {
@@ -545,6 +545,7 @@
       "buttonAddToken": "Adicionar novo token",
       "buttonCreate": "Criar Piscina",
       "buttonNext": "Próximo",
+      "removeToken": "Remover token",
       "infoCaption": "Transferido para a piscina comunitária da Osmosis",
       "infoMessage": "Criação da Taxa da Pool",
       "scalingFactorController": "Configurar controle de fator de escalonamento (opcional)",
@@ -561,7 +562,23 @@
       "title": "Criar Nova Piscina",
       "token": "Token",
       "undersandCost": "Eu entendo que criando uma nova piscina custará {POOL_CREATION_FEE}.",
-      "weightedPool": "Piscina ponderada"
+      "weightedPool": "Piscina ponderada",
+      "recommended": "Recomendado",
+      "duplicateCheck": {
+        "exactTitle": "Já existe um pool com esses parâmetros",
+        "exactCaption": "Criar uma duplicata divide a liquidez e fragmenta o volume. Pools não podem ser removidos após a criação, então considere adicionar liquidez ao pool existente.",
+        "similarTitle": "Já existem pools similares",
+        "similarCaption": "Esses pools compartilham os mesmos ativos, mas usam parâmetros diferentes. Revise-os antes de criar um novo.",
+        "poolRow": "Pool #{poolId}",
+        "poolRowWithSymbols": "Pool #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Taxa",
+        "viewPool": "Ver pool",
+        "useExistingPool": "Adicionar liquidez no lugar",
+        "acknowledge": "Entendo que já existe um pool com esses parâmetros e mesmo assim quero criar uma duplicata.",
+        "checking": "Procurando pools existentes…",
+        "errorCaption": "Não foi possível verificar pools duplicados existentes. Prossiga com cautela, um duplicado deste pool pode já existir."
+      }
     },
     "createSupercharged": {
       "createNew": "Criar nova piscina supercarregada",
@@ -580,8 +597,6 @@
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
-    "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em",
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
@@ -837,6 +852,7 @@
     "convertTo": "Converter para",
     "depositAs": "Depositar como",
     "withdrawAs": "Retirar como",
+    "withdrawViaRoute": "via {route}",
     "recommended": "Recomendado",
     "fee": "taxa",
     "fees": "tarifas",
@@ -966,7 +982,77 @@
     "createNewDepositAddress": "Criar novo endereço de depósito",
     "transactionDetails": "Detalhes da transação",
     "confirmAmount": "Confirmar valor",
-    "enterChainAddress": "Insira o endereço {chain}"
+    "enterChainAddress": "Insira o endereço {chain}",
+    "wormholeRedeem": {
+      "title": "Resgatar uma transferência Wormhole travada",
+      "description": "Se você tem uma transferência via ponte Wormhole a partir da Osmosis que está travada, cole abaixo o hash da transação da Osmosis para localizá-la e concluir o resgate na Solana (Phantom) ou Sui (Slush ou Phantom).",
+      "txHashPlaceholder": "Hash da transação da Osmosis...",
+      "lookup": "Buscar",
+      "phantomNotDetected": "Carteira Phantom não detectada.",
+      "installPhantom": "Instalar Phantom",
+      "toRedeem": "para resgatar.",
+      "noSuiWalletDetectedInstall": "Nenhuma carteira Sui compatível detectada. Instale",
+      "toRedeemOnSui": "para resgatar na Sui.",
+      "or": "ou",
+      "token": "Token",
+      "value": "Valor",
+      "from": "De",
+      "to": "Para ({chain})",
+      "date": "Data",
+      "wormchainReceive": "Recebimento na Wormchain",
+      "checkingSolana": "Verificando o status de resgate na Solana...",
+      "dailyLimitExceeded": "Limite diário excedido",
+      "governorBodyEnqueued": "Esta transferência levará até {hours} horas para ser concluída, pois a Wormhole atingiu o limite diário de transferências para {chain}. Este é um recurso de segurança normal e temporário da rede Wormhole.",
+      "governorBodyLikelyEnqueued": "O valor desta transferência (~{amount}) excede a margem disponível em {chain} (~{available} restantes). Os guardiões da Wormhole provavelmente a colocarão na fila por até {hours} horas.",
+      "releaseCountdownUpToHours": "Até {hours} horas",
+      "releaseShortly": "Será liberada em breve",
+      "releaseInHoursMinutes": "Liberação em {hours}h {minutes}min",
+      "releaseInMinutes": "Liberação em {minutes}min",
+      "learnMore": "Saiba mais",
+      "checkAgain": "Verificar novamente",
+      "alreadyRedeemedOn": "Esta transferência já foi resgatada na {chain}.",
+      "viewOnWormholescan": "Ver no Wormholescan",
+      "vaaReadyConnectSolana": "O VAA está assinado e pronto. Conecte sua carteira Solana para resgatar.",
+      "connectPhantom": "Conectar carteira Phantom",
+      "installPhantomWallet": "Instalar carteira Phantom",
+      "connectedWallet": "Carteira conectada",
+      "redeemOnSolana": "Resgatar na Solana",
+      "transferRedeemedOnSui": "Transferência resgatada na Sui.",
+      "redeemSubmittedToSui": "Resgate enviado para a Sui.",
+      "viewOnSuiscan": "Ver no Suiscan",
+      "viewOnSolscan": "Ver no Solscan",
+      "waitingForWalletSignatureNamed": "Aguardando a assinatura da {wallet}...",
+      "waitingForSuiWalletSignature": "Aguardando a assinatura da sua carteira Sui...",
+      "waitingForWalletSignature": "Aguardando a assinatura da carteira...",
+      "submittingToSui": "Enviando a transação para a Sui...",
+      "submittingToSolana": "Enviando a transação para a Solana...",
+      "transferRedeemedSuccessfully": "Transferência resgatada com sucesso!",
+      "partialRedeemConfirmed": "{count} das transações de resgate foram confirmadas antes do erro:",
+      "viewTxOnSolscan": "Ver tx {number} no Solscan",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "failedToLookUp": "Falha ao buscar a transação",
+      "failedToConnectWallet": "Falha ao conectar a carteira",
+      "failedToConnectSuiWallet": "Falha ao conectar a carteira Sui.",
+      "suiRedeemFailed": "Falha no resgate na Sui",
+      "redeemFailed": "Falha no resgate",
+      "vaaNotYetAvailable": "VAA ainda não disponível. Os guardiões da Wormhole podem ainda estar processando esta transação.",
+      "txFailedOnChain": "A transação falhou on-chain: {error}",
+      "txConfirmationTimedOut": "Tempo de confirmação da transação esgotado após 120s. Verifique o status no Solscan: {sig}",
+      "nonSolanaVaaReady": "O VAA está assinado e pronto. Para resgatar na {chain}, abra esta operação no Wormholescan e conecte uma carteira {chain}. O fluxo de resgate do Wormholescan oferece suporte a Sui Wallet, Suiet, Backpack e outras carteiras Wallet Standard.",
+      "recipientChain": "Destinatário ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "Abrir no Wormholescan para resgatar",
+      "suiVaaReadyConnect": "O VAA está assinado e pronto. Conecte uma carteira Sui (Slush ou Phantom) para resgatar nativamente na Sui.",
+      "recipientSui": "Destinatário (Sui)",
+      "noSuiWalletInstallNatively": "Nenhuma carteira Sui compatível detectada. Instale uma para resgatar nativamente:",
+      "installNamed": "Instalar {wallet}",
+      "connectNamed": "Conectar {wallet}",
+      "connectedNamedAccount": "Conta {wallet} conectada",
+      "confirmInNamed": "Confirme na {wallet}...",
+      "submittingOnSui": "Enviando na Sui...",
+      "redeemOnSui": "Resgatar na Sui"
+    }
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
@@ -1035,7 +1121,8 @@
       "price": "Preço",
       "volume": "Volume",
       "advanced": "Avançado",
-      "simple": "Simples"
+      "simple": "Simples",
+      "lastUpdate": "Última atualização: {time}"
     },
     "watchlist": "Lista de observação",
     "marketCapRank": "Classificação de capitalização de mercado",
@@ -1383,6 +1470,12 @@
   "taprootAddressNotSupported": "Endereços Taproot não são suportados para retiradas",
   "wormhole": {
     "deprecationTitle": "O suporte ao Wormhole está sendo descontinuado",
-    "deprecationSubtitle": "Não recomendamos transferir ativos adicionais para Osmosis via Wormhole. Esta página está disponível para ajudá-lo a retirar ativos existentes bridgeados pelo Wormhole de Osmosis."
+    "deprecationSubtitle": "Não recomendamos transferir ativos adicionais para Osmosis via Wormhole. Esta página está disponível para ajudá-lo a retirar ativos existentes bridgeados pelo Wormhole de Osmosis.",
+    "bridgeStepTitle": "Fazer a ponte via Wormhole",
+    "refreshBalance": "Atualizar saldo",
+    "convertAlloy": {
+      "stepTitle": "Converter {symbol} para {symbol}.wh",
+      "description": "Você tem {balance} {symbol} como ativo alloyed. A Wormhole faz a ponte da variante {symbol}.wh, então converta primeiro e depois faça a ponte abaixo."
+    }
   }
 }

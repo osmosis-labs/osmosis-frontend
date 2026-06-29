@@ -88,7 +88,9 @@
     "numPositions": "{numPositions} पद",
     "onePosition": "1 पद",
     "goToPool": "पूल # पर जाएँ #{poolId}",
-    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।"
+    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।",
+    "noPositions": "कोई पद नहीं मिला",
+    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।"
   },
   "copied": "कॉपी किया गया!",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "क्रिप्टो खरीदें",
       "swappedSubtitle": "OSMO, USDC का समर्थन करता है",
       "moonpaySubtitle": "OSMO, USDC का समर्थन करता है",
-      "transakSubtitle": "OSMO का समर्थन करता है",
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
       "moonpayCountrySupport": "165+ देश"
-    },
-    "incentive": {
-      "title": "प्रोत्साहन के प्रकार"
     },
     "MAX": "अधिकतम",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "ट्रांसमीटर",
       "orderbook": "ऑर्डरबुक",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "कोई प्रोत्साहन नहीं"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "वॉलेट कनेक्ट करें",
@@ -537,6 +534,9 @@
       },
       "title": "पूल खोजें"
     },
+    "noPoolsFound": "कोई पूल नहीं मिला",
+    "noPoolsFoundDescription": "रिवॉर्ड कमाना शुरू करने के लिए पूल में लिक्विडिटी जोड़ें।",
+    "errorFetchingPools": "आपके पूल लोड करने में विफल रहे। कृपया पृष्ठ को रीफ़्रेश करने का प्रयास करें।",
     "APR": "एपीआर",
     "bonded": "बंधुआ",
     "createPool": {
@@ -545,6 +545,7 @@
       "buttonAddToken": "नया टोकन जोड़ें",
       "buttonCreate": "पूल बनाएं",
       "buttonNext": "अगला",
+      "removeToken": "टोकन हटाएं",
       "infoCaption": "ऑस्मोसिस सामुदायिक पूल में स्थानांतरित किया गया",
       "infoMessage": "पूल निर्माण शुल्क",
       "scalingFactorController": "स्केलिंग फ़ैक्टर नियंत्रक सेट करें (वैकल्पिक)",
@@ -561,7 +562,23 @@
       "title": "नया पूल बनाएं",
       "token": "टोकन",
       "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {POOL_CREATION_FEE} खर्च आएगा।",
-      "weightedPool": "भारित पूल"
+      "weightedPool": "भारित पूल",
+      "recommended": "अनुशंसित",
+      "duplicateCheck": {
+        "exactTitle": "इन पैरामीटर वाला पूल पहले से मौजूद है",
+        "exactCaption": "डुप्लिकेट बनाने से तरलता विभाजित होती है और वॉल्यूम खंडित होता है। पूल बनाने के बाद हटाए नहीं जा सकते, इसलिए इसके बजाय मौजूदा पूल में तरलता जोड़ने पर विचार करें।",
+        "similarTitle": "समान पूल पहले से मौजूद हैं",
+        "similarCaption": "इन पूल में समान assets हैं लेकिन वे अलग पैरामीटर का उपयोग करते हैं। नया बनाने से पहले उनकी समीक्षा करें।",
+        "poolRow": "पूल #{poolId}",
+        "poolRowWithSymbols": "पूल #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "शुल्क",
+        "viewPool": "पूल देखें",
+        "useExistingPool": "इसके बजाय तरलता जोड़ें",
+        "acknowledge": "मैं समझता हूं कि इन पैरामीटर वाला पूल पहले से मौजूद है और फिर भी मैं डुप्लिकेट बनाना चाहता हूं।",
+        "checking": "मौजूदा पूल खोजे जा रहे हैं…",
+        "errorCaption": "हम मौजूदा डुप्लिकेट पूल की जांच नहीं कर सके। सावधानी से आगे बढ़ें, इस पूल का डुप्लिकेट पहले से मौजूद हो सकता है।"
+      }
     },
     "createSupercharged": {
       "createNew": "नया सुपरचार्ज्ड पूल बनाएं",
@@ -580,8 +597,6 @@
     "myLiquidity": "मेरी तरलता",
     "myPools": "आपके तालाब",
     "poolId": "पूल # {id}",
-    "priceOsmo": "ओस्मो कीमत",
-    "rewardDistribution": "में पुरस्कार वितरण",
     "aprBreakdown": {
       "swapFees": "स्वैप फीस",
       "boost": "बढ़ाना",
@@ -837,6 +852,7 @@
     "convertTo": "में बदलो",
     "depositAs": "इस प्रकार जमा करें",
     "withdrawAs": "इस प्रकार वापस लें",
+    "withdrawViaRoute": "{route} के माध्यम से",
     "recommended": "अनुशंसित",
     "fee": "शुल्क",
     "fees": "फीस",
@@ -966,7 +982,77 @@
     "createNewDepositAddress": "नया जमा पता बनाएं",
     "transactionDetails": "लेन-देन विवरण",
     "confirmAmount": "राशि की पुष्टि करें",
-    "enterChainAddress": "{chain} पता दर्ज करें"
+    "enterChainAddress": "{chain} पता दर्ज करें",
+    "wormholeRedeem": {
+      "title": "अटका हुआ Wormhole ट्रांसफ़र क्लेम करें",
+      "description": "यदि Osmosis से किया गया आपका Wormhole ब्रिज ट्रांसफ़र अटक गया है, तो उसे खोजने और Solana (Phantom) या Sui (Slush या Phantom) पर रिडेम्पशन पूरा करने के लिए नीचे Osmosis ट्रांज़ैक्शन हैश पेस्ट करें।",
+      "txHashPlaceholder": "Osmosis ट्रांज़ैक्शन हैश...",
+      "lookup": "खोजें",
+      "phantomNotDetected": "Phantom वॉलेट का पता नहीं चला।",
+      "installPhantom": "Phantom इंस्टॉल करें",
+      "toRedeem": "रिडीम करने के लिए।",
+      "noSuiWalletDetectedInstall": "कोई समर्थित Sui वॉलेट नहीं मिला। इंस्टॉल करें",
+      "toRedeemOnSui": "Sui पर रिडीम करने के लिए।",
+      "or": "या",
+      "token": "टोकन",
+      "value": "मूल्य",
+      "from": "से",
+      "to": "को ({chain})",
+      "date": "तारीख़",
+      "wormchainReceive": "Wormchain प्राप्ति",
+      "checkingSolana": "रिडेम्पशन स्थिति के लिए Solana की जाँच की जा रही है...",
+      "dailyLimitExceeded": "दैनिक सीमा पार हो गई",
+      "governorBodyEnqueued": "Wormhole ने {chain} के लिए दैनिक ट्रांसफ़र सीमा पूरी कर ली है, इसलिए इस ट्रांसफ़र को पूरा होने में {hours} घंटे तक लग सकते हैं। यह Wormhole नेटवर्क की एक सामान्य और अस्थायी सुरक्षा सुविधा है।",
+      "governorBodyLikelyEnqueued": "इस ट्रांसफ़र का मूल्य (~{amount}) {chain} पर उपलब्ध गुंजाइश (~{available} शेष) से अधिक है। Wormhole गार्डियन संभवतः इसे {hours} घंटे तक के लिए क़तार में रखेंगे।",
+      "releaseCountdownUpToHours": "{hours} घंटे तक",
+      "releaseShortly": "जल्द ही जारी होगा",
+      "releaseInHoursMinutes": "{hours} घं {minutes} मि में जारी होगा",
+      "releaseInMinutes": "{minutes} मि में जारी होगा",
+      "learnMore": "और जानें",
+      "checkAgain": "फिर से जाँचें",
+      "alreadyRedeemedOn": "यह ट्रांसफ़र पहले ही {chain} पर रिडीम किया जा चुका है।",
+      "viewOnWormholescan": "Wormholescan पर देखें",
+      "vaaReadyConnectSolana": "VAA हस्ताक्षरित और तैयार है। रिडीम करने के लिए अपना Solana वॉलेट कनेक्ट करें।",
+      "connectPhantom": "Phantom वॉलेट कनेक्ट करें",
+      "installPhantomWallet": "Phantom वॉलेट इंस्टॉल करें",
+      "connectedWallet": "कनेक्टेड वॉलेट",
+      "redeemOnSolana": "Solana पर रिडीम करें",
+      "transferRedeemedOnSui": "ट्रांसफ़र Sui पर रिडीम किया गया।",
+      "redeemSubmittedToSui": "रिडीम Sui को सबमिट किया गया।",
+      "viewOnSuiscan": "Suiscan पर देखें",
+      "viewOnSolscan": "Solscan पर देखें",
+      "waitingForWalletSignatureNamed": "{wallet} के हस्ताक्षर की प्रतीक्षा की जा रही है...",
+      "waitingForSuiWalletSignature": "आपके Sui वॉलेट के हस्ताक्षर की प्रतीक्षा की जा रही है...",
+      "waitingForWalletSignature": "वॉलेट हस्ताक्षर की प्रतीक्षा की जा रही है...",
+      "submittingToSui": "Sui को ट्रांज़ैक्शन सबमिट किया जा रहा है...",
+      "submittingToSolana": "Solana को ट्रांज़ैक्शन सबमिट किया जा रहा है...",
+      "transferRedeemedSuccessfully": "ट्रांसफ़र सफलतापूर्वक रिडीम हुआ!",
+      "partialRedeemConfirmed": "त्रुटि से पहले {count} रिडीम ट्रांज़ैक्शन की पुष्टि हुई:",
+      "viewTxOnSolscan": "Solscan पर tx {number} देखें",
+      "copied": "कॉपी किया गया",
+      "copy": "कॉपी करें",
+      "failedToLookUp": "ट्रांज़ैक्शन खोजने में विफल",
+      "failedToConnectWallet": "वॉलेट कनेक्ट करने में विफल",
+      "failedToConnectSuiWallet": "Sui वॉलेट कनेक्ट करने में विफल।",
+      "suiRedeemFailed": "Sui रिडीम विफल हुआ",
+      "redeemFailed": "रिडीम विफल हुआ",
+      "vaaNotYetAvailable": "VAA अभी उपलब्ध नहीं है। हो सकता है कि Wormhole गार्डियन अभी भी इस ट्रांज़ैक्शन को प्रोसेस कर रहे हों।",
+      "txFailedOnChain": "ट्रांज़ैक्शन ऑन-चेन विफल हुआ: {error}",
+      "txConfirmationTimedOut": "120 सेकंड के बाद ट्रांज़ैक्शन पुष्टि का समय समाप्त हो गया। Solscan पर स्थिति जाँचें: {sig}",
+      "nonSolanaVaaReady": "VAA हस्ताक्षरित और तैयार है। {chain} पर रिडीम करने के लिए, इस ऑपरेशन को Wormholescan पर खोलें और एक {chain} वॉलेट कनेक्ट करें। Wormholescan का रिडीम फ़्लो Sui Wallet, Suiet, Backpack और अन्य Wallet Standard वॉलेट का समर्थन करता है।",
+      "recipientChain": "प्राप्तकर्ता ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "रिडीम करने के लिए Wormholescan पर खोलें",
+      "suiVaaReadyConnect": "VAA हस्ताक्षरित और तैयार है। Sui पर मूल रूप से रिडीम करने के लिए एक Sui वॉलेट (Slush या Phantom) कनेक्ट करें।",
+      "recipientSui": "प्राप्तकर्ता (Sui)",
+      "noSuiWalletInstallNatively": "कोई समर्थित Sui वॉलेट नहीं मिला। मूल रूप से रिडीम करने के लिए एक इंस्टॉल करें:",
+      "installNamed": "{wallet} इंस्टॉल करें",
+      "connectNamed": "{wallet} कनेक्ट करें",
+      "connectedNamedAccount": "कनेक्टेड {wallet} खाता",
+      "confirmInNamed": "{wallet} में पुष्टि करें...",
+      "submittingOnSui": "Sui पर सबमिट किया जा रहा है...",
+      "redeemOnSui": "Sui पर रिडीम करें"
+    }
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",
@@ -1035,7 +1121,8 @@
       "price": "कीमत",
       "volume": "आयतन",
       "advanced": "विकसित",
-      "simple": "सरल"
+      "simple": "सरल",
+      "lastUpdate": "अंतिम अपडेट: {time}"
     },
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",
@@ -1383,6 +1470,12 @@
   "taprootAddressNotSupported": "निकासी के लिए टैपरूट पते समर्थित नहीं हैं",
   "wormhole": {
     "deprecationTitle": "Wormhole सहायता बंद की जा रही है",
-    "deprecationSubtitle": "हम Wormhole के माध्यम से Osmosis में अतिरिक्त संपत्ति ब्रिज करने की सिफारिश नहीं करते हैं। यह पृष्ठ आपको Osmosis से मौजूदा Wormhole-ब्रिज की गई संपत्ति निकालने में सहायता के लिए उपलब्ध है।"
+    "deprecationSubtitle": "हम Wormhole के माध्यम से Osmosis में अतिरिक्त संपत्ति ब्रिज करने की सिफारिश नहीं करते हैं। यह पृष्ठ आपको Osmosis से मौजूदा Wormhole-ब्रिज की गई संपत्ति निकालने में सहायता के लिए उपलब्ध है।",
+    "bridgeStepTitle": "Wormhole के माध्यम से ब्रिज करें",
+    "refreshBalance": "बैलेंस रिफ़्रेश करें",
+    "convertAlloy": {
+      "stepTitle": "{symbol} को {symbol}.wh में बदलें",
+      "description": "आपके पास एलॉयड एसेट के रूप में {balance} {symbol} है। Wormhole {symbol}.wh वैरिएंट को ब्रिज करता है, इसलिए पहले कन्वर्ट करें, फिर नीचे ब्रिज करें।"
+    }
   }
 }

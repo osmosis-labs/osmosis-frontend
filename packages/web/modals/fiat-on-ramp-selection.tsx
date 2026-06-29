@@ -28,11 +28,6 @@ const Options = (
     subtitle: t("components.fiatOnrampSelection.swappedSubtitle"),
   },
   {
-    ...FiatRampDisplayInfos.transak,
-    initialAsset: "OSMO",
-    subtitle: t("components.fiatOnrampSelection.transakSubtitle"),
-  },
-  {
     ...FiatRampDisplayInfos.onrampmoney,
     initialAsset: "OSMO",
     subtitle: t("components.fiatOnrampSelection.onrampMoneySubtitle"),
@@ -68,7 +63,6 @@ export const FiatOnrampSelectionModal: FunctionComponent<
               return null;
             if (rampKey === "moonpay" && !flags.moonpay) return null;
             if (rampKey === "swapped" && !flags.swapped) return null;
-            if (rampKey === "transak" && !flags.transak) return null;
             if (rampKey === "onrampmoney" && !flags.onrampmoney) return null;
 
             return (

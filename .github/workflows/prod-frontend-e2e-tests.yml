@@ -13,7 +13,7 @@ jobs:
       environment_url: ${{steps.vercel.outputs.environment_url}}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - id: vercel
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -35,14 +35,15 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
           ref: master
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
@@ -75,8 +76,10 @@ jobs:
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
@@ -94,9 +97,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Trigger automatic topup
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -106,9 +106,38 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-              if [ "$PENDING" -gt 0 ]; then
-                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              # Dedup guard (Phase A / MTN-97): skip if a topup is already in
+              # flight, OR a real (non-dry-run) successful topup was *created*
+              # (`createdAt`, i.e. dispatched/queued) within the ~45 min cooldown.
+              # The window is keyed off createdAt (≈ dispatch time), not the
+              # completion time, since the intent is to rate-limit how often we
+              # dispatch. 45 min is deliberately below the 60 min monitoring cron
+              # so a still-low account is still refilled on the next hourly tick;
+              # the window only collapses same-tick and cross-workflow bursts.
+              # Failed runs do NOT count (so a bad topup can be retried
+              # immediately); dry runs do NOT count (no funds move). Note this is
+              # a best-effort, non-atomic check — two dispatchers firing in the
+              # same instant can still both dispatch.
+              COOLDOWN_SECONDS=2700
+              RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
+                --json status,conclusion,displayTitle,createdAt \
+                --jq "[.[]
+                  | select((.displayTitle | startswith(\"Dry run\")) | not)
+                  | select(
+                      .status == \"queued\" or .status == \"in_progress\"
+                      or (.conclusion == \"success\" and ((now - (.createdAt | fromdateiso8601)) < $COOLDOWN_SECONDS))
+                    )] | length" || echo "")
+              # Fail open (MTN-110): if the gh/jq lookup errored, RECENT is
+              # empty/non-numeric — treat it as "nothing recent" and dispatch
+              # rather than silently skip. A duplicate topup is harmless (the
+              # script re-checks balances and only sends deficits); a skipped
+              # dispatch is the starvation bug this guard exists to prevent.
+              if ! [[ "$RECENT" =~ ^[0-9]+$ ]]; then
+                echo "Topup cooldown lookup failed (gh/jq) — proceeding to dispatch."
+                RECENT=0
+              fi
+              if [ "$RECENT" -gt 0 ]; then
+                echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
               else
                 gh workflow run "E2E: Topup Test Accounts" \
                   --ref stage \
@@ -146,22 +175,23 @@ jobs:
       name: prod_swap_test
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
           ref: master
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -179,15 +209,17 @@ jobs:
       - name: upload test results
         if: always()
         id: e2e-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: prod-e2e-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
       - name: Send Slack alert if test fails
         id: slack
         if: failure() && github.run_attempt == 1
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "🚨 FE E2E Tests Failure Alert 🚨",
@@ -215,9 +247,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   prod-pools-and-select-pair-tests:
     timeout-minutes: 10
@@ -225,21 +254,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -252,7 +282,7 @@ jobs:
       - name: upload pools test results
         if: failure()
         id: pools-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: prod-pools-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report

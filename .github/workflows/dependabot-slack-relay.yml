@@ -1,0 +1,147 @@
+name: Dependabot Alerts -> Slack
+
+# Polls the Dependabot alerts REST API on a schedule and relays newly
+# created / reopened / reintroduced alerts to #dependabot-alerts via the
+# pre-provisioned Slack incoming webhook (SLACK_WEBHOOK_DEPENDABOT_ALERTS).
+#
+# Why a poller (not `on: dependabot_alert`): GitHub Actions does NOT support
+# `dependabot_alert` as a workflow trigger — it exists only as a GitHub App
+# *webhook* event, so `on: dependabot_alert` fails the push-time workflow
+# validator on every branch. The previous relay (MTN-53, PR #4365) used that
+# invalid trigger and therefore never ran. See MTN-112. The supported
+# alternatives are a webhook->repository_dispatch bridge (needs a hosted app)
+# or this scheduled REST poller (no external infra) — we use the poller.
+#
+# Auth: the built-in GITHUB_TOKEN CANNOT read Dependabot alerts. This needs a
+# token with "Dependabot alerts: read" (fine-grained PAT) or `security_events`
+# / `repo` (classic PAT), stored as the repo secret DEPENDABOT_ALERTS_READ_TOKEN.
+# Until that secret is added the job no-ops with a warning (so it never fails
+# CI), mirroring the missing-webhook guard.
+#
+# Dedup: stateless time window. Each run posts open alerts whose `updated_at`
+# is within the lookback window. `updated_at` bumps on create, reopen and
+# reintroduce, so all three desired transitions are caught.
+#
+# The window (75m) is deliberately wider than the cron interval (60m), so
+# consecutive runs ALWAYS overlap by ~15m. This is intentional: it guarantees we
+# never miss an alert even if a scheduled run starts late (GitHub's scheduler is
+# best-effort and can lag several minutes). The cost is that an alert updated
+# inside the overlap is posted by both runs, so the occasional duplicate in
+# #dependabot-alerts is expected — we favour never-miss over never-duplicate.
+# (The relay is stateless by design; true cross-run dedup would need persisted
+# state, which isn't worth the complexity for low-volume security alerts.)
+
+on:
+  schedule:
+    # Hourly, offset off the top of the hour to dodge scheduler congestion.
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      lookback_minutes:
+        description: "How far back to scan for new/updated alerts (minutes)"
+        type: string
+        default: "75"
+
+# We authenticate with DEPENDABOT_ALERTS_READ_TOKEN (a PAT/App token), not the
+# Actions GITHUB_TOKEN, so no GITHUB_TOKEN permissions are needed.
+permissions: {}
+
+concurrency:
+  group: dependabot-slack-relay
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Poll Dependabot alerts and relay new ones to Slack
+        env:
+          GH_TOKEN: ${{ secrets.DEPENDABOT_ALERTS_READ_TOKEN }}
+          WEBHOOK: ${{ secrets.SLACK_WEBHOOK_DEPENDABOT_ALERTS }}
+          REPO: ${{ github.repository }}
+          LOOKBACK_MINUTES: ${{ github.event.inputs.lookback_minutes || '75' }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::DEPENDABOT_ALERTS_READ_TOKEN is not set; skipping (needs a token with 'Dependabot alerts: read')."
+            exit 0
+          fi
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::SLACK_WEBHOOK_DEPENDABOT_ALERTS is not set; skipping."
+            exit 0
+          fi
+
+          # Guard the lookback against bad manual input.
+          if ! [[ "$LOOKBACK_MINUTES" =~ ^[0-9]+$ ]]; then
+            echo "::warning::Invalid lookback_minutes '$LOOKBACK_MINUTES'; defaulting to 75."
+            LOOKBACK_MINUTES=75
+          fi
+
+          # Window start, both as a human-readable UTC ISO-8601 string (for the
+          # log line) and as epoch seconds (for a numeric comparison below).
+          SINCE=$(date -u -d "-${LOOKBACK_MINUTES} minutes" +%Y-%m-%dT%H:%M:%SZ)
+          SINCE_EPOCH=$(date -u -d "-${LOOKBACK_MINUTES} minutes" +%s)
+          echo "Scanning open Dependabot alerts updated since $SINCE"
+
+          # Fetch all open alerts (Link-header paginated). gh uses $GH_TOKEN.
+          # A failed fetch (auth/transient) warns and exits 0 — a scheduled
+          # relay should not fail CI noisily.
+          if ! gh api --paginate \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/$REPO/dependabot/alerts?state=open&per_page=100&sort=updated&direction=desc" \
+            > alerts_raw.json 2> gh_err.txt; then
+            echo "::warning::Failed to fetch Dependabot alerts: $(cat gh_err.txt)"
+            exit 0
+          fi
+
+          # --paginate concatenates one JSON array per page; slurp + add merges
+          # them, then keep alerts updated within the window. A parse failure
+          # (e.g. unexpected API response shape) warns and exits 0 rather than
+          # failing the job under `set -e` — a scheduled relay should not fail CI.
+          #
+          # Compare on epoch seconds, not lexicographically: GitHub timestamps
+          # may carry fractional seconds (e.g. "...:56.789Z"), and `SINCE` is
+          # second-precision, so a string `>=` could drop an alert right at the
+          # window boundary. Strip any fractional part, parse to epoch, and
+          # compare numerically. `try/catch` keeps one malformed timestamp from
+          # discarding the whole batch.
+          if ! jq -s --argjson sinceEpoch "$SINCE_EPOCH" -c \
+            'add | map(select((try (.updated_at | sub("\\.[0-9]+";"") | fromdateiso8601) catch 0) >= $sinceEpoch)) | .[]' \
+            alerts_raw.json > alerts.ndjson 2> jq_err.txt; then
+            echo "::warning::Failed to parse Dependabot alerts response: $(cat jq_err.txt)"
+            exit 0
+          fi
+
+          COUNT=$(wc -l < alerts.ndjson | tr -d ' ')
+          echo "Found ${COUNT} alert(s) in window."
+          if [ "$COUNT" = "0" ]; then
+            exit 0
+          fi
+
+          while IFS= read -r alert; do
+            [ -z "$alert" ] && continue
+            ACTION=$(echo "$alert" | jq -r 'if .created_at == .updated_at then "created" else "reopened/updated" end')
+            PKG=$(echo "$alert" | jq -r '.dependency.package.name // "unknown"')
+            ECO=$(echo "$alert" | jq -r '.dependency.package.ecosystem // "unknown"')
+            SEV=$(echo "$alert" | jq -r '.security_advisory.severity // "unknown"')
+            SUMMARY=$(echo "$alert" | jq -r '.security_advisory.summary // ""')
+            GHSA=$(echo "$alert" | jq -r '.security_advisory.ghsa_id // ""')
+            URL=$(echo "$alert" | jq -r '.html_url // ""')
+            payload=$(jq -nc \
+              --arg action "$ACTION" \
+              --arg pkg "$PKG" \
+              --arg eco "$ECO" \
+              --arg sev "$SEV" \
+              --arg summary "$SUMMARY" \
+              --arg ghsa "$GHSA" \
+              --arg url "$URL" \
+              '{text: ":warning: Dependabot alert *\($action)*\n*\($pkg)* (\($eco)) - *\($sev)*\n\($summary) \($ghsa)\n\($url)"}')
+            # Non-blocking: a Slack failure (non-2xx via --fail-with-body) only
+            # warns so the loop keeps relaying the remaining alerts and the job
+            # does not go red under `set -e`.
+            if ! curl -sS --fail-with-body -X POST \
+              -H 'Content-type: application/json' \
+              --data "$payload" \
+              "$WEBHOOK"; then
+              echo "::warning::Slack POST failed for alert: ${GHSA:-$URL}"
+            fi
+          done < alerts.ndjson

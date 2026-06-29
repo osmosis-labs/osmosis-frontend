@@ -35,7 +35,6 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   layerswapcoinbase: true,
   swapped: true,
   onrampmoney: true,
-  transak: true,
   polarisBanner: false,
 };
 

@@ -48,7 +48,7 @@
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.1.2",
-    "tsx": "^4.6.2"
+    "tsx": "^4.22.4"
   },
   "dependencies": {
     "@cosmjs/amino": "0.32.3",
@@ -57,6 +57,6 @@
     "@cosmjs/proto-signing": "0.32.3",
     "@cosmjs/stargate": "0.32.3",
     "@cosmjs/tendermint-rpc": "0.32.3",
-    "protobufjs": "^7.2.6"
+    "protobufjs": "^7.5.5"
   }
 }

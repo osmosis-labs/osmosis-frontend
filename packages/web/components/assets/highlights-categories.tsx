@@ -92,14 +92,13 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
     api.edge.assets.getTopNewAssets.useQuery({
       topN: isLargeTablet ? 3 : undefined,
     });
-  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({
-      topN: isLargeTablet ? 8 : undefined,
-    });
   const { data: topUpcomingAssets, isLoading: isTopUpcomingAssetsLoading } =
     api.edge.assets.getTopUpcomingAssets.useQuery({
       topN: isLargeTablet ? 3 : undefined,
     });
+
+  const hasNewAssets =
+    !isTopNewAssetsLoading && (topNewAssets ?? []).length > 0;
 
   // Filter upcoming assets to only include those with specific launch dates
   const qualifyingUpcomingAssets = (topUpcomingAssets ?? []).filter((asset) =>
@@ -108,35 +107,72 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   const hasQualifyingUpcomingAssets =
     !isTopUpcomingAssetsLoading && qualifyingUpcomingAssets.length > 0;
 
+  // Top Gainers always renders; New and Upcoming are conditional. Drive the
+  // grid layout off the count of visible tiles so the row reflows to fill the
+  // freed space instead of leaving a gap.
+  const visibleTileCount =
+    1 + (hasNewAssets ? 1 : 0) + (hasQualifyingUpcomingAssets ? 1 : 0);
+
+  const isGainersOnly = visibleTileCount === 1;
+
+  // Top Gainers row count by its own layout (New/Upcoming always fetch 3):
+  //  - gainers-only: full width, 6 rows across two columns (3 per column)
+  //  - large-tablet snap carousel: 6 in a single-column swipe card
+  //  - desktop multi-tile single-column card: 3
+  //
+  // Only switch the count once New/Upcoming have settled. While they load,
+  // `isGainersOnly` is transiently true (their `has*` flags are false), and
+  // letting that drive `topN` would change the query key mid-load, discarding
+  // the cache hit and forcing a redundant refetch when data arrives.
+  const isHighlightLayoutSettled =
+    !isTopNewAssetsLoading && !isTopUpcomingAssetsLoading;
+  const topGainerCount =
+    isLargeTablet || (isHighlightLayoutSettled && isGainersOnly) ? 6 : 3;
+  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
+    api.edge.assets.getTopGainerAssets.useQuery({
+      topN: topGainerCount,
+    });
+
   return (
     <div
       className={classNames(
         "lg:no-scrollbar grid gap-6 xl:gap-8 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-scroll",
         {
-          // When Upcoming is hidden, use 2-column grid with Top Gainers spanning 2 rows
-          "grid-cols-2 xl:grid-rows-2": !hasQualifyingUpcomingAssets,
-          // When Upcoming is shown, use 3-column grid
-          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2":
-            hasQualifyingUpcomingAssets,
+          // Gainers-only: single column, no row span.
+          "grid-cols-1": visibleTileCount === 1,
+          // Two tiles: 2 columns, Top Gainers spans 2 rows on xl.
+          "grid-cols-2 xl:grid-rows-2": visibleTileCount === 2,
+          // Three tiles: 3 columns collapsing to 2x2 on xl.
+          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2": visibleTileCount === 3,
         },
         className
       )}
     >
+      {hasNewAssets && (
+        <AssetHighlights
+          className="lg:w-[80%] lg:shrink-0 lg:snap-center"
+          title={t("assets.highlights.new")}
+          isLoading={isTopNewAssetsLoading}
+          assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
+          highlight="new"
+        />
+      )}
       <AssetHighlights
-        className="lg:w-[80%] lg:shrink-0 lg:snap-center"
-        title={t("assets.highlights.new")}
-        isLoading={isTopNewAssetsLoading}
-        assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-        highlight="new"
-      />
-      <AssetHighlights
-        className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
+        className={classNames({
+          // Multi-tile: 80% width snap card; span 2 rows on xl to share the
+          // second row with New / Upcoming.
+          "lg:w-[80%] lg:shrink-0 lg:snap-center": !isGainersOnly,
+          "xl:row-span-2 lg:row-auto": visibleTileCount > 1,
+          // Gainers-only: full width, rows flow into two columns.
+          "w-full": isGainersOnly,
+        })}
         title={t("assets.highlights.topGainers")}
         subtitle="24h"
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
         highlight="topGainers"
+        columns={isGainersOnly ? 2 : 1}
       />
       {hasQualifyingUpcomingAssets && (
         <AssetHighlights
@@ -237,6 +273,12 @@ export const AssetHighlights: FunctionComponent<
     disableLinking?: boolean;
     highlight: Highlight;
     onClickAsset?: (asset: HighlightAsset) => void;
+    /**
+     * Number of columns to flow the asset rows into. Defaults to 1. Use 2 when
+     * the tile occupies the full width on its own, so the rows fill the
+     * horizontal space instead of stretching into one long list.
+     */
+    columns?: 1 | 2;
   } & CustomClasses
 > = ({
   title,
@@ -247,8 +289,11 @@ export const AssetHighlights: FunctionComponent<
   className,
   highlight,
   onClickAsset,
+  columns = 1,
 }) => {
   const { t } = useTranslation();
+
+  const skeletonCount = columns === 2 ? 6 : 3;
 
   return (
     <div
@@ -270,10 +315,22 @@ export const AssetHighlights: FunctionComponent<
           </button>
         )}
       </div>
-      <div className={classNames("flex flex-col", { "gap-1": isLoading })}>
+      <div
+        className={classNames({
+          "flex flex-col": columns === 1,
+          // NOTE: this repo's Tailwind screens are max-width, so unprefixed is
+          // the desktop base and `md:` applies at narrow widths. Two columns on
+          // desktop (where the tile spans full width on its own), collapsing to
+          // one column on small screens so rows never cramp.
+          "grid grid-cols-2 gap-x-8 md:grid-cols-1": columns === 2,
+          // gap-y only: tighten vertical spacing during load without
+          // overriding the column gap (gap-1 shorthand would clobber gap-x-8).
+          "gap-y-1": isLoading,
+        })}
+      >
         {isLoading ? (
           <>
-            {new Array(3).fill(0).map((_, i) => (
+            {new Array(skeletonCount).fill(0).map((_, i) => (
               <SkeletonLoader className="h-12 w-full" key={i} />
             ))}
           </>

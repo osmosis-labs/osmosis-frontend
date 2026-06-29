@@ -9,14 +9,14 @@ import {
 import { useCallback } from "react";
 
 import {
-  incentiveTypes,
   marketIncentivePoolsSortKeys,
   poolFilterTypes,
-  PoolIncentiveFilter,
   PoolsTable,
+  PoolType,
   PoolTypeFilter,
 } from "~/components/complex/pools-table";
-import { useTranslation } from "~/hooks";
+import { Button } from "~/components/ui/button";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
 import { CheckboxSelect } from "../control";
 import { SearchBox } from "../input";
@@ -45,9 +45,10 @@ const useAllPoolsTable = () => {
       ).withDefault(
         poolFilterTypes.filter((type) => type !== "cosmwasm-transmuter")
       ),
-      poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
-        parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
-      ).withDefault([...incentiveTypes]),
+      // The incentive-type filter UI was removed in the pools page redesign.
+      // PoolsTable defaults poolIncentivesFilter to all incentive types (no
+      // filtering) when the prop is absent, so we no longer track it as URL
+      // state here.
     },
     {
       history: "push",
@@ -64,7 +65,8 @@ const useAllPoolsTable = () => {
 
 interface AllPoolsTableProps {
   topOffset: number;
-  quickAddLiquidity: (poolId: string) => void;
+  quickAddLiquidity: (poolId: string, poolType: PoolType) => void;
+  onCreatePool: () => void;
 }
 
 export const AllPoolsTable = (props: AllPoolsTableProps) => {
@@ -100,13 +102,16 @@ export const AllPoolsTable = (props: AllPoolsTableProps) => {
       setSortDirection={setSortDirection}
       setSortKey={setSortKey}
     >
-      <TableControls />
+      <TableControls onCreatePool={props.onCreatePool} />
     </PoolsTable>
   );
 };
 
-const TableControls = () => {
+const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
+  // width === 0 during SSR; default to the wide desktop layout to avoid a flash of the compact layout on hydration.
+  const isWide = width === 0 || width >= Breakpoint.xl;
 
   const { filters, setFilters } = useAllPoolsTable();
 
@@ -120,104 +125,94 @@ const TableControls = () => {
     [setFilters]
   );
 
-  return (
-    <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
-      <h5>{t("pools.allPools.title")}</h5>
+  const searchBox = (
+    <SearchBox
+      size="small"
+      placeholder={t("assets.table.search")}
+      debounce={500}
+      currentValue={filters.searchQuery ?? undefined}
+      onInput={onSearchInput}
+      className={isWide ? undefined : "!w-full"}
+    />
+  );
 
-      <div className="flex h-12 flex-wrap gap-3 xl:h-fit">
-        <CheckboxSelect
-          label={t("components.pool.title")}
-          selectedOptionIds={filters.poolTypesFilter}
-          atLeastOneSelected
-          options={[
-            {
-              id: "concentrated",
-              display: t("components.table.concentrated"),
-            },
-            {
-              id: "cosmwasm-orderbook",
-              display: t("components.table.orderbook"),
-            },
-            { id: "weighted", display: t("components.table.weighted") },
-            { id: "stable", display: t("components.table.stable") },
-            {
-              id: "cosmwasm-astroport-pcl",
-              display: t("components.table.astroport"),
-            },
-            {
-              id: "cosmwasm-whitewhale",
-              display: t("components.table.whitewhale"),
-            },
-            {
-              id: "cosmwasm-transmuter",
-              display: t("components.table.transmuter"),
-            },
-          ]}
-          onSelect={(poolType) => {
-            if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: state.poolTypesFilter.filter(
-                  (type) => type !== poolType
-                ),
-              }));
-            } else {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: [
-                  ...state.poolTypesFilter,
-                  poolType as PoolTypeFilter,
-                ],
-              }));
-            }
-          }}
-        />
-        <CheckboxSelect
-          label={t("components.incentive.title")}
-          selectedOptionIds={filters.poolIncentivesFilter}
-          atLeastOneSelected
-          options={[
-            { id: "osmosis", display: t("pools.aprBreakdown.boost") },
-            {
-              id: "boost",
-              display: t("pools.aprBreakdown.externalBoost"),
-            },
-            {
-              id: "none",
-              display: t("components.table.noIncentives"),
-            },
-          ]}
-          onSelect={(incentiveType) => {
-            if (
-              filters.poolIncentivesFilter.includes(
-                incentiveType as PoolIncentiveFilter
-              )
-            ) {
-              setFilters((state) => ({
-                ...state,
-                poolIncentivesFilter: filters.poolIncentivesFilter.filter(
-                  (type) => type !== (incentiveType as PoolIncentiveFilter)
-                ),
-              }));
-            } else {
-              setFilters((state) => ({
-                ...state,
-                poolIncentivesFilter: [
-                  ...state.poolIncentivesFilter,
-                  incentiveType as PoolIncentiveFilter,
-                ],
-              }));
-            }
-          }}
-        />
-        <SearchBox
-          size="small"
-          placeholder={t("assets.table.search")}
-          debounce={500}
-          currentValue={filters.searchQuery ?? undefined}
-          onInput={onSearchInput}
-        />
+  const filterAndCreate = (
+    <div className="flex flex-none items-center gap-3">
+      <CheckboxSelect
+        label={t("components.pool.title")}
+        selectedOptionIds={filters.poolTypesFilter}
+        buttonClassName="!h-9 md:!w-auto"
+        atLeastOneSelected
+        options={[
+          {
+            id: "concentrated",
+            display: t("components.table.concentrated"),
+          },
+          {
+            id: "cosmwasm-orderbook",
+            display: t("components.table.orderbook"),
+          },
+          { id: "weighted", display: t("components.table.weighted") },
+          { id: "stable", display: t("components.table.stable") },
+          {
+            id: "cosmwasm-astroport-pcl",
+            display: t("components.table.astroport"),
+          },
+          {
+            id: "cosmwasm-whitewhale",
+            display: t("components.table.whitewhale"),
+          },
+          {
+            id: "cosmwasm-transmuter",
+            display: t("components.table.transmuter"),
+          },
+        ]}
+        onSelect={(poolType) => {
+          if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
+            setFilters((state) => ({
+              ...state,
+              poolTypesFilter: state.poolTypesFilter.filter(
+                (type) => type !== poolType
+              ),
+            }));
+          } else {
+            setFilters((state) => ({
+              ...state,
+              poolTypesFilter: [
+                ...state.poolTypesFilter,
+                poolType as PoolTypeFilter,
+              ],
+            }));
+          }
+        }}
+      />
+      <Button
+        size="md"
+        onClick={onCreatePool}
+        className="!h-9 !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
+      >
+        {t("pools.createPool.title")}
+      </Button>
+    </div>
+  );
+
+  if (isWide) {
+    return (
+      <div className="flex w-full items-center gap-5">
+        <h5 className="mr-auto">{t("pools.allPools.title")}</h5>
+        {searchBox}
+        {filterAndCreate}
       </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex w-full items-center gap-5">
+        <h5 className="mr-auto">{t("pools.allPools.title")}</h5>
+        {filterAndCreate}
+      </div>
+      {searchBox}
     </div>
   );
 };

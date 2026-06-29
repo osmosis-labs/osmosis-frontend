@@ -88,7 +88,9 @@
     "numPositions": "不明确的",
     "onePosition": "1 个职位",
     "goToPool": "前往泳池#{poolId}",
-    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。"
+    "errorFetchingPositions": "无法获取职位详情。请尝试刷新页面。如果问题仍然存在，请联系支持人员。",
+    "noPositions": "未找到职位",
+    "noPositionsDescription": "向资金池提供集中流动性，即可开始赚取价差奖励。"
   },
   "copied": "已复制！",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "购买加密货币",
       "swappedSubtitle": "支持OSMO、USDC",
       "moonpaySubtitle": "支持OSMO、USDC",
-      "transakSubtitle": "支持OSMO",
       "onrampMoneySubtitle": "支持OSMO、USDC",
       "moonpayCountrySupport": "165+ 个国家"
-    },
-    "incentive": {
-      "title": "激励类型"
     },
     "MAX": "最大",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "转化器",
       "orderbook": "订单簿",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "无激励"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "连接钱包",
@@ -537,6 +534,9 @@
       },
       "title": "所有资金池"
     },
+    "noPoolsFound": "未找到游泳池",
+    "noPoolsFoundDescription": "向资金池注入流动性即可开始赚取奖励。",
+    "errorFetchingPools": "泳池加载失败。请尝试刷新页面。",
     "APR": "APR",
     "bonded": "已绑定",
     "createPool": {
@@ -545,6 +545,7 @@
       "buttonAddToken": "添加新的代币",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
+      "removeToken": "移除代币",
       "infoCaption": "已发送到 Osmosis 社区池",
       "infoMessage": "资金池创建费",
       "scalingFactorController": "设置比例因子控制器（可选）",
@@ -561,7 +562,23 @@
       "title": "创建新的资金池",
       "token": "代币",
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
-      "weightedPool": "加权池"
+      "weightedPool": "加权池",
+      "recommended": "推荐",
+      "duplicateCheck": {
+        "exactTitle": "已存在具有这些参数的池",
+        "exactCaption": "创建重复会分散流动性并分割交易量。池创建后无法移除，请考虑向现有池添加流动性。",
+        "similarTitle": "已存在类似的池",
+        "similarCaption": "这些池使用相同的资产但参数不同。请在创建新池之前查看。",
+        "poolRow": "池 #{poolId}",
+        "poolRowWithSymbols": "池 #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "费用",
+        "viewPool": "查看池",
+        "useExistingPool": "改为添加流动性",
+        "acknowledge": "我知道已存在具有这些参数的池，但仍希望创建重复。",
+        "checking": "正在检查现有池…",
+        "errorCaption": "我们无法检查现有的重复池。请谨慎操作,该池的副本可能已经存在。"
+      }
     },
     "createSupercharged": {
       "createNew": "创建新的增压池",
@@ -580,8 +597,6 @@
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
-    "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
     "aprBreakdown": {
       "swapFees": "掉期费用",
       "boost": "促进",
@@ -837,6 +852,7 @@
     "convertTo": "转换成",
     "depositAs": "存款为",
     "withdrawAs": "提款方式",
+    "withdrawViaRoute": "通过 {route}",
     "recommended": "受到推崇的",
     "fee": "费用",
     "fees": "费用",
@@ -966,7 +982,77 @@
     "createNewDepositAddress": "创建新的存款地址",
     "transactionDetails": "交易详情",
     "confirmAmount": "确认金额",
-    "enterChainAddress": "输入{chain}地址"
+    "enterChainAddress": "输入{chain}地址",
+    "wormholeRedeem": {
+      "title": "领取卡住的 Wormhole 转账",
+      "description": "如果您从 Osmosis 发起的 Wormhole 跨链转账卡住了，请在下方粘贴 Osmosis 交易哈希以进行查询，并在 Solana（Phantom）或 Sui（Slush 或 Phantom）上完成领取。",
+      "txHashPlaceholder": "Osmosis 交易哈希...",
+      "lookup": "查询",
+      "phantomNotDetected": "未检测到 Phantom 钱包。",
+      "installPhantom": "安装 Phantom",
+      "toRedeem": "以进行领取。",
+      "noSuiWalletDetectedInstall": "未检测到受支持的 Sui 钱包。请安装",
+      "toRedeemOnSui": "以在 Sui 上领取。",
+      "or": "或",
+      "token": "代币",
+      "value": "价值",
+      "from": "来自",
+      "to": "至（{chain}）",
+      "date": "日期",
+      "wormchainReceive": "Wormchain 接收",
+      "checkingSolana": "正在 Solana 上检查领取状态...",
+      "dailyLimitExceeded": "已超过每日限额",
+      "governorBodyEnqueued": "由于 Wormhole 已达到 {chain} 的每日转账限额，此转账最多需要 {hours} 小时才能完成。这是 Wormhole 网络正常且临时的安全机制。",
+      "governorBodyLikelyEnqueued": "此转账的价值（~{amount}）超出了 {chain} 上的可用额度（剩余 ~{available}）。Wormhole 守护者很可能会将其排队，最长可达 {hours} 小时。",
+      "releaseCountdownUpToHours": "最多 {hours} 小时",
+      "releaseShortly": "即将释放",
+      "releaseInHoursMinutes": "将在 {hours} 小时 {minutes} 分后释放",
+      "releaseInMinutes": "将在 {minutes} 分后释放",
+      "learnMore": "了解更多",
+      "checkAgain": "重新检查",
+      "alreadyRedeemedOn": "此转账已在 {chain} 上领取。",
+      "viewOnWormholescan": "在 Wormholescan 上查看",
+      "vaaReadyConnectSolana": "VAA 已签名并准备就绪。请连接您的 Solana 钱包以进行领取。",
+      "connectPhantom": "连接 Phantom 钱包",
+      "installPhantomWallet": "安装 Phantom 钱包",
+      "connectedWallet": "已连接的钱包",
+      "redeemOnSolana": "在 Solana 上领取",
+      "transferRedeemedOnSui": "已在 Sui 上领取转账。",
+      "redeemSubmittedToSui": "领取请求已提交至 Sui。",
+      "viewOnSuiscan": "在 Suiscan 上查看",
+      "viewOnSolscan": "在 Solscan 上查看",
+      "waitingForWalletSignatureNamed": "正在等待 {wallet} 签名...",
+      "waitingForSuiWalletSignature": "正在等待您的 Sui 钱包签名...",
+      "waitingForWalletSignature": "正在等待钱包签名...",
+      "submittingToSui": "正在向 Sui 提交交易...",
+      "submittingToSolana": "正在向 Solana 提交交易...",
+      "transferRedeemedSuccessfully": "转账领取成功！",
+      "partialRedeemConfirmed": "在出错前，{count} 笔领取交易已确认：",
+      "viewTxOnSolscan": "在 Solscan 上查看第 {number} 笔交易",
+      "copied": "已复制",
+      "copy": "复制",
+      "failedToLookUp": "查询交易失败",
+      "failedToConnectWallet": "连接钱包失败",
+      "failedToConnectSuiWallet": "连接 Sui 钱包失败。",
+      "suiRedeemFailed": "Sui 领取失败",
+      "redeemFailed": "领取失败",
+      "vaaNotYetAvailable": "VAA 尚不可用。Wormhole 守护者可能仍在处理此交易。",
+      "txFailedOnChain": "交易在链上失败：{error}",
+      "txConfirmationTimedOut": "交易确认在 120 秒后超时。请在 Solscan 上查看状态：{sig}",
+      "nonSolanaVaaReady": "VAA 已签名并准备就绪。要在 {chain} 上领取，请在 Wormholescan 上打开此操作并连接 {chain} 钱包。Wormholescan 的领取流程支持 Sui Wallet、Suiet、Backpack 以及其他 Wallet Standard 钱包。",
+      "recipientChain": "接收方（{chain}）",
+      "vaaBase64": "VAA（base64）",
+      "openOnWormholescanToRedeem": "在 Wormholescan 上打开以领取",
+      "suiVaaReadyConnect": "VAA 已签名并准备就绪。请连接 Sui 钱包（Slush 或 Phantom）以在 Sui 上原生领取。",
+      "recipientSui": "接收方（Sui）",
+      "noSuiWalletInstallNatively": "未检测到受支持的 Sui 钱包。请安装一个以进行原生领取：",
+      "installNamed": "安装 {wallet}",
+      "connectNamed": "连接 {wallet}",
+      "connectedNamedAccount": "已连接的 {wallet} 账户",
+      "confirmInNamed": "请在 {wallet} 中确认...",
+      "submittingOnSui": "正在 Sui 上提交...",
+      "redeemOnSui": "在 Sui 上领取"
+    }
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -1035,7 +1121,8 @@
       "price": "价格",
       "volume": "体积",
       "advanced": "先进的",
-      "simple": "简单的"
+      "simple": "简单的",
+      "lastUpdate": "最后更新: {time}"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",
@@ -1383,6 +1470,12 @@
   "taprootAddressNotSupported": "Taproot 地址不支持提现",
   "wormhole": {
     "deprecationTitle": "Wormhole 支持正在被弃用",
-    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。"
+    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。",
+    "bridgeStepTitle": "通过 Wormhole 跨链",
+    "refreshBalance": "刷新余额",
+    "convertAlloy": {
+      "stepTitle": "将 {symbol} 转换为 {symbol}.wh",
+      "description": "您持有 {balance} {symbol} 作为合金资产。Wormhole 跨链的是 {symbol}.wh 变体，请先转换，然后在下方跨链。"
+    }
   }
 }

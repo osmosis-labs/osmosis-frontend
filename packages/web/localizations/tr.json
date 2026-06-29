@@ -88,7 +88,9 @@
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}",
-    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin."
+    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
+    "noPositions": "Hiçbir pozisyon bulunamadı.",
+    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın."
   },
   "copied": "Kopyalandı!",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "Kripto satın al",
       "swappedSubtitle": "OSMO ve USDC'yi destekler",
       "moonpaySubtitle": "OSMO ve USDC'yi destekler",
-      "transakSubtitle": "OSMO'yu destekler",
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler",
       "moonpayCountrySupport": "165+ ülke"
-    },
-    "incentive": {
-      "title": "Teşvik türleri"
     },
     "MAX": "MAKS",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "Dönüştürücü",
       "orderbook": "Sipariş Defteri",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Teşvik yok"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Cüzdanı bağla",
@@ -537,6 +534,9 @@
       },
       "title": "Tüm Havuzlar"
     },
+    "noPoolsFound": "Havuz bulunamadı.",
+    "noPoolsFoundDescription": "Ödül kazanmaya başlamak için havuza likidite ekleyin.",
+    "errorFetchingPools": "Havuzlarınız yüklenemedi. Lütfen sayfayı yenilemeyi deneyin.",
     "APR": "APR",
     "bonded": "Bağlı",
     "createPool": {
@@ -545,6 +545,7 @@
       "buttonAddToken": "Yeni token ekle",
       "buttonCreate": "Havuz Oluştur",
       "buttonNext": "Sonraki",
+      "removeToken": "Tokeni kaldır",
       "infoCaption": "Osmosis topluluk havuzuna transfer edilir",
       "infoMessage": "Havuz Oluşturma Ücreti",
       "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
@@ -561,7 +562,23 @@
       "title": "Yeni Havuz Oluştur",
       "token": "Token",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
-      "weightedPool": "Ağırlıklı havuz"
+      "weightedPool": "Ağırlıklı havuz",
+      "recommended": "Önerilen",
+      "duplicateCheck": {
+        "exactTitle": "Bu parametrelere sahip bir havuz zaten var",
+        "exactCaption": "Bir kopya oluşturmak likiditeyi böler ve hacmi parçalar. Havuzlar oluşturulduktan sonra kaldırılamaz, bu yüzden mevcut havuza likidite eklemeyi düşünün.",
+        "similarTitle": "Benzer havuzlar zaten var",
+        "similarCaption": "Bu havuzlar aynı varlıkları paylaşır ancak farklı parametreler kullanır. Yeni bir tane oluşturmadan önce inceleyin.",
+        "poolRow": "Havuz #{poolId}",
+        "poolRowWithSymbols": "Havuz #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Ücret",
+        "viewPool": "Havuzu görüntüle",
+        "useExistingPool": "Onun yerine likidite ekle",
+        "acknowledge": "Bu parametrelere sahip bir havuzun zaten var olduğunu anlıyorum ve yine de bir kopya oluşturmak istiyorum.",
+        "checking": "Mevcut havuzlar kontrol ediliyor…",
+        "errorCaption": "Mevcut yinelenen havuzları kontrol edemedik. Dikkatli ilerleyin, bu havuzun bir kopyası zaten mevcut olabilir."
+      }
     },
     "createSupercharged": {
       "createNew": "Yeni Süper Şarjlı Havuz Oluşturun",
@@ -580,8 +597,6 @@
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
-    "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre",
     "aprBreakdown": {
       "swapFees": "Takas ücretleri",
       "boost": "Artırmak",
@@ -837,6 +852,7 @@
     "convertTo": "E dönüşmek",
     "depositAs": "Şu şekilde yatırın:",
     "withdrawAs": "Olarak geri çekil",
+    "withdrawViaRoute": "{route} ile",
     "recommended": "Tavsiye edilen",
     "fee": "ücret",
     "fees": "ücretler",
@@ -966,7 +982,77 @@
     "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
     "transactionDetails": "İşlem detayları",
     "confirmAmount": "Tutarı Onayla",
-    "enterChainAddress": "{chain} adresini girin"
+    "enterChainAddress": "{chain} adresini girin",
+    "wormholeRedeem": {
+      "title": "Takılı kalmış bir Wormhole transferini geri al",
+      "description": "Osmosis'ten yapılan bir Wormhole köprü transferi takıldıysa, onu aramak ve geri alımı Solana (Phantom) veya Sui (Slush ya da Phantom) üzerinde tamamlamak için Osmosis işlem hash'ini aşağıya yapıştırın.",
+      "txHashPlaceholder": "Osmosis işlem hash'i...",
+      "lookup": "Ara",
+      "phantomNotDetected": "Phantom cüzdanı algılanmadı.",
+      "installPhantom": "Phantom'u yükle",
+      "toRedeem": "geri almak için.",
+      "noSuiWalletDetectedInstall": "Desteklenen bir Sui cüzdanı algılanmadı. Yükleyin:",
+      "toRedeemOnSui": "Sui üzerinde geri almak için.",
+      "or": "veya",
+      "token": "Token",
+      "value": "Değer",
+      "from": "Gönderen",
+      "to": "Alıcı ({chain})",
+      "date": "Tarih",
+      "wormchainReceive": "Wormchain alımı",
+      "checkingSolana": "Geri alım durumu için Solana kontrol ediliyor...",
+      "dailyLimitExceeded": "Günlük limit aşıldı",
+      "governorBodyEnqueued": "Wormhole, {chain} için günlük transfer limitine ulaştığından bu transferin tamamlanması {hours} saate kadar sürecek. Bu, Wormhole ağının normal ve geçici bir güvenlik özelliğidir.",
+      "governorBodyLikelyEnqueued": "Bu transferin değeri (~{amount}), {chain} üzerindeki kullanılabilir alanı (~{available} kalan) aşıyor. Wormhole muhafızları büyük olasılıkla onu {hours} saate kadar kuyruğa alacak.",
+      "releaseCountdownUpToHours": "{hours} saate kadar",
+      "releaseShortly": "Kısa süre içinde serbest bırakılacak",
+      "releaseInHoursMinutes": "{hours}sa {minutes}dk içinde serbest bırakılacak",
+      "releaseInMinutes": "{minutes}dk içinde serbest bırakılacak",
+      "learnMore": "Daha fazla bilgi",
+      "checkAgain": "Tekrar kontrol et",
+      "alreadyRedeemedOn": "Bu transfer {chain} üzerinde zaten geri alındı.",
+      "viewOnWormholescan": "Wormholescan'de görüntüle",
+      "vaaReadyConnectSolana": "VAA imzalandı ve hazır. Geri almak için Solana cüzdanınızı bağlayın.",
+      "connectPhantom": "Phantom cüzdanını bağla",
+      "installPhantomWallet": "Phantom cüzdanını yükle",
+      "connectedWallet": "Bağlı cüzdan",
+      "redeemOnSolana": "Solana üzerinde geri al",
+      "transferRedeemedOnSui": "Transfer Sui üzerinde geri alındı.",
+      "redeemSubmittedToSui": "Geri alım Sui'ye gönderildi.",
+      "viewOnSuiscan": "Suiscan'de görüntüle",
+      "viewOnSolscan": "Solscan'de görüntüle",
+      "waitingForWalletSignatureNamed": "{wallet} imzası bekleniyor...",
+      "waitingForSuiWalletSignature": "Sui cüzdanınızın imzası bekleniyor...",
+      "waitingForWalletSignature": "Cüzdan imzası bekleniyor...",
+      "submittingToSui": "İşlem Sui'ye gönderiliyor...",
+      "submittingToSolana": "İşlem Solana'ya gönderiliyor...",
+      "transferRedeemedSuccessfully": "Transfer başarıyla geri alındı!",
+      "partialRedeemConfirmed": "Geri alım işlemlerinin {count} tanesi hatadan önce onaylandı:",
+      "viewTxOnSolscan": "Solscan'de {number}. işlemi görüntüle",
+      "copied": "Kopyalandı",
+      "copy": "Kopyala",
+      "failedToLookUp": "İşlem aranamadı",
+      "failedToConnectWallet": "Cüzdan bağlanamadı",
+      "failedToConnectSuiWallet": "Sui cüzdanı bağlanamadı.",
+      "suiRedeemFailed": "Sui geri alımı başarısız oldu",
+      "redeemFailed": "Geri alım başarısız oldu",
+      "vaaNotYetAvailable": "VAA henüz mevcut değil. Wormhole muhafızları bu işlemi hâlâ işliyor olabilir.",
+      "txFailedOnChain": "İşlem zincir üzerinde başarısız oldu: {error}",
+      "txConfirmationTimedOut": "İşlem onayı 120 sn sonra zaman aşımına uğradı. Durumu Solscan'de kontrol edin: {sig}",
+      "nonSolanaVaaReady": "VAA imzalandı ve hazır. {chain} üzerinde geri almak için bu işlemi Wormholescan'de açın ve bir {chain} cüzdanı bağlayın. Wormholescan'in geri alım akışı Sui Wallet, Suiet, Backpack ve diğer Wallet Standard cüzdanlarını destekler.",
+      "recipientChain": "Alıcı ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "Geri almak için Wormholescan'de aç",
+      "suiVaaReadyConnect": "VAA imzalandı ve hazır. Sui üzerinde yerel olarak geri almak için bir Sui cüzdanı (Slush veya Phantom) bağlayın.",
+      "recipientSui": "Alıcı (Sui)",
+      "noSuiWalletInstallNatively": "Desteklenen bir Sui cüzdanı algılanmadı. Yerel olarak geri almak için birini yükleyin:",
+      "installNamed": "{wallet} yükle",
+      "connectNamed": "{wallet} bağla",
+      "connectedNamedAccount": "Bağlı {wallet} hesabı",
+      "confirmInNamed": "{wallet} içinde onaylayın...",
+      "submittingOnSui": "Sui üzerinde gönderiliyor...",
+      "redeemOnSui": "Sui üzerinde geri al"
+    }
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
@@ -1035,7 +1121,8 @@
       "price": "Fiyat",
       "volume": "Hacim",
       "advanced": "Gelişmiş",
-      "simple": "Basit"
+      "simple": "Basit",
+      "lastUpdate": "Son güncelleme: {time}"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
@@ -1383,6 +1470,12 @@
   "taprootAddressNotSupported": "Taproot adresleri çekimler için desteklenmiyor",
   "wormhole": {
     "deprecationTitle": "Wormhole desteği kaldırılıyor",
-    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir."
+    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir.",
+    "bridgeStepTitle": "Wormhole ile köprüle",
+    "refreshBalance": "Bakiyeyi yenile",
+    "convertAlloy": {
+      "stepTitle": "{symbol} ı {symbol}.wh ye dönüştür",
+      "description": "Alaşımlı varlık olarak {balance} {symbol} tutuyorsunuz. Wormhole {symbol}.wh varyantını köprüler, bu yüzden önce dönüştürün, sonra aşağıda köprüleyin."
+    }
   }
 }
