@@ -872,11 +872,10 @@
       "titleWithdraw": "گزینه های برداشت بیشتر",
       "depositDescriptionUnknown": "برای واریز {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
       "withdrawDescriptionUnknown": "برای برداشتن {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
-      "chooseAnAlternativeProviderDeposit": "یک ارائه‌دهنده جایگزین برای واریز {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با",
       "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "ابتدا به {variant} تبدیل کنید",
         "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",

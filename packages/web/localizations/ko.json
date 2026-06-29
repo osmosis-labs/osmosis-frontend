@@ -872,11 +872,10 @@
       "titleWithdraw": "더 많은 인출 옵션",
       "depositDescriptionUnknown": "{denom} 을 입금하려면 대체 공급자를 이용하세요.",
       "withdrawDescriptionUnknown": "{denom} 철회하려면 대체 공급자를 이용하세요.",
-      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} 로 {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} \"asset\"}을(를 {toChain} 로 철회하려면 대체 공급자를 선택하세요. {toChain}",
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출",
       "noAlternativesFound": "이 경로에 대한 대체 공급자를 찾을 수 없습니다.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "먼저 {variant}(으)로 변환하세요",
         "description": "{provider}은(는) {variant}만 허용합니다. 아래에서 합금(alloyed) 잔액을 {variant}(으)로 변환한 다음, {provider}(으)로 이동하여 인출을 완료하세요.",

@@ -166,6 +166,12 @@ function ExternalProviderList({
           </ExternalUrlOption>
         );
       })}
+      {/* These open third-party sites; the links are tied to a specific
+          bridge/variant, not the route selected here, so the user confirms the
+          actual route on the provider's site. */}
+      <p className="caption pt-2 text-center text-osmoverse-400">
+        {t("transfer.moreBridgeOptions.externalSiteCaveat")}
+      </p>
     </>
   );
 }
@@ -279,24 +285,18 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       className="!max-w-[30rem]"
       {...modalProps}
     >
+      {/* Route-neutral copy: these external providers are third-party sites and
+          their links are tied to a specific bridge/variant, not to the from/to
+          chain the user selected here. Stating a "from {x} to {y}" route would
+          overpromise — the user picks the actual route on the provider's site.
+          (`fromChain`/`toChain` retained in props for the underlying query.) */}
       <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
-        {!fromChain || !toChain
-          ? t(
-              direction === "deposit"
-                ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
-                : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
-              { denom }
-            )
-          : t(
-              direction === "deposit"
-                ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
-                : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
-              {
-                asset: denom,
-                fromChain: fromChain.prettyName,
-                toChain: toChain.prettyName,
-              }
-            )}
+        {t(
+          direction === "deposit"
+            ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+            : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+          { denom }
+        )}
       </p>
       <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
         <ExternalProviderList

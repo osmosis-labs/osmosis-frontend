@@ -872,11 +872,10 @@
       "titleWithdraw": "Więcej opcji wypłat",
       "depositDescriptionUnknown": "Aby dokonać wpłaty {denom} , skorzystaj z alternatywnego dostawcy.",
       "withdrawDescriptionUnknown": "Aby wypłacić {denom} , skorzystaj z alternatywnego dostawcy.",
-      "chooseAnAlternativeProviderDeposit": "Wybierz alternatywnego dostawcę, aby wpłacić {asset} z {fromChain} do {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Wybierz alternatywnego dostawcę, aby wycofać {asset} z {fromChain} do {toChain}",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z",
       "noAlternativesFound": "Nie znaleziono alternatywnych dostawców dla tej trasy.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "Najpierw przekonwertuj na {variant}",
         "description": "{provider} akceptuje tylko {variant}. Przekonwertuj swoje saldo alloyed na {variant} poniżej, a następnie przejdź do {provider}, aby zakończyć wypłatę.",

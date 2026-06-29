@@ -872,11 +872,10 @@
       "titleWithdraw": "Mai multe opțiuni de retragere",
       "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
       "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
-      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu",
       "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "Convertiți mai întâi în {variant}",
         "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",

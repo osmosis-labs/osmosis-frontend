@@ -872,11 +872,10 @@
       "titleWithdraw": "Больше вариантов вывода",
       "depositDescriptionUnknown": "Чтобы внести {denom} , используйте альтернативного поставщика.",
       "withdrawDescriptionUnknown": "Чтобы вывести {denom} , используйте альтернативного поставщика.",
-      "chooseAnAlternativeProviderDeposit": "Выберите альтернативного поставщика для внесения {asset} из {fromChain} в {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Выберите альтернативного поставщика для вывода {asset} из {fromChain} в {toChain}",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью",
       "noAlternativesFound": "Альтернативные поставщики для этого маршрута не найдены.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "Сначала конвертируйте в {variant}",
         "description": "{provider} принимает только {variant}. Конвертируйте ваш сплавленный баланс в {variant} ниже, затем перейдите к {provider}, чтобы завершить вывод средств.",

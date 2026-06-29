@@ -872,11 +872,10 @@
       "titleWithdraw": "引き出しオプションの追加",
       "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
       "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
-      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
-      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する",
       "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "まず{variant}に変換してください",
         "description": "{provider}は{variant}のみを受け付けます。以下でアロイ残高を{variant}に変換してから、{provider}に進んで引き出しを完了してください。",

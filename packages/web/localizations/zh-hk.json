@@ -872,11 +872,10 @@
       "titleWithdraw": "更多提款選項",
       "depositDescriptionUnknown": "若要存入{denom} ，請使用替代提供者。",
       "withdrawDescriptionUnknown": "若要撤回{denom} ，請使用替代提供者。",
-      "chooseAnAlternativeProviderDeposit": "選擇一個替代提供者將{asset}從{fromChain}存入{toChain}",
-      "chooseAnAlternativeProviderWithdraw": "選擇替代提供者將{asset}從{fromChain}撤回到{toChain}",
       "depositWith": "存款於",
       "withdrawWith": "撤回與",
       "noAlternativesFound": "找不到此路線的替代提供者。",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "先轉換為 {variant}",
         "description": "{provider} 只接受 {variant}。請在下方將你的合金結餘轉換為 {variant}，然後繼續前往 {provider} 完成提款。",

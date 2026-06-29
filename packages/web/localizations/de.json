@@ -872,11 +872,10 @@
       "titleWithdraw": "Weitere Auszahlungsoptionen",
       "depositDescriptionUnknown": "Um {denom} einzuzahlen, verwenden Sie bitte einen alternativen Anbieter.",
       "withdrawDescriptionUnknown": "Um {denom} abzuheben, verwenden Sie bitte einen alternativen Anbieter.",
-      "chooseAnAlternativeProviderDeposit": "Wählen Sie einen alternativen Anbieter zum Einzahlen {asset} von {fromChain} nach {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Wählen Sie einen alternativen Anbieter zum Abheben {asset} von {fromChain} nach {toChain}",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit",
       "noAlternativesFound": "Keine alternativen Anbieter für diese Route gefunden.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "Zuerst in {variant} umwandeln",
         "description": "{provider} akzeptiert nur {variant}. Wandeln Sie Ihr Alloyed-Guthaben unten in {variant} um und fahren Sie dann mit {provider} fort, um Ihre Auszahlung abzuschließen.",

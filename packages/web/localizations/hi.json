@@ -872,11 +872,10 @@
       "titleWithdraw": "अधिक निकासी विकल्प",
       "depositDescriptionUnknown": "{denom} जमा करने के लिए कृपया वैकल्पिक प्रदाता का उपयोग करें।",
       "withdrawDescriptionUnknown": "{denom} वापस लेने के लिए, कृपया वैकल्पिक प्रदाता का उपयोग करें।",
-      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} से {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} से {toChain}",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें",
       "noAlternativesFound": "इस रूट के लिए कोई वैकल्पिक प्रदाता नहीं मिला।",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
       "convertBeforeWithdraw": {
         "title": "पहले {variant} में बदलें",
         "description": "{provider} केवल {variant} स्वीकार करता है। नीचे अपने अलॉयड बैलेंस को {variant} में बदलें, फिर अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।",
