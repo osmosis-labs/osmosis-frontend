@@ -875,7 +875,7 @@
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit",
       "noAlternativesFound": "Keine alternativen Anbieter für diese Route gefunden.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "Diese öffnen Bridge-Websites von Drittanbietern. Wählen Sie dort Ihre Route.",
       "convertBeforeWithdraw": {
         "title": "Zuerst in {variant} umwandeln",
         "description": "{provider} akzeptiert nur {variant}. Wandeln Sie Ihr Alloyed-Guthaben unten in {variant} um und fahren Sie dann mit {provider} fort, um Ihre Auszahlung abzuschließen.",

@@ -875,7 +875,7 @@
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با",
       "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "این‌ها سایت‌های پل شخص ثالث را باز می‌کنند. مسیر خود را همان‌جا انتخاب کنید.",
       "convertBeforeWithdraw": {
         "title": "ابتدا به {variant} تبدیل کنید",
         "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",

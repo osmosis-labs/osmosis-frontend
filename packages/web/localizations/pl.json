@@ -875,7 +875,7 @@
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z",
       "noAlternativesFound": "Nie znaleziono alternatywnych dostawców dla tej trasy.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "Otwierają one zewnętrzne strony mostów. Wybierz tam swoją trasę.",
       "convertBeforeWithdraw": {
         "title": "Najpierw przekonwertuj na {variant}",
         "description": "{provider} akceptuje tylko {variant}. Przekonwertuj swoje saldo alloyed na {variant} poniżej, a następnie przejdź do {provider}, aby zakończyć wypłatę.",

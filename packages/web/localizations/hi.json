@@ -875,7 +875,7 @@
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें",
       "noAlternativesFound": "इस रूट के लिए कोई वैकल्पिक प्रदाता नहीं मिला।",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "ये तृतीय-पक्ष ब्रिज साइट खोलते हैं। अपना रूट वहीं चुनें।",
       "convertBeforeWithdraw": {
         "title": "पहले {variant} में बदलें",
         "description": "{provider} केवल {variant} स्वीकार करता है। नीचे अपने अलॉयड बैलेंस को {variant} में बदलें, फिर अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।",

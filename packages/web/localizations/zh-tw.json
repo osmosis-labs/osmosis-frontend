@@ -875,7 +875,7 @@
       "depositWith": "存款於",
       "withdrawWith": "撤回與",
       "noAlternativesFound": "找不到此路線的替代提供者。",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "這些連結會開啟第三方跨鏈橋網站。請在該網站上選擇您的路線。",
       "convertBeforeWithdraw": {
         "title": "請先轉換為 {variant}",
         "description": "{provider} 僅接受 {variant}。請在下方將您的合金餘額轉換為 {variant}，然後繼續前往 {provider} 完成提款。",

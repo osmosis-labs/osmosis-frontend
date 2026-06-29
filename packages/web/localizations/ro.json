@@ -875,7 +875,7 @@
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu",
       "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "Acestea deschid site-uri de bridge terțe. Alege ruta acolo.",
       "convertBeforeWithdraw": {
         "title": "Convertiți mai întâi în {variant}",
         "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",

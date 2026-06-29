@@ -875,7 +875,7 @@
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con",
       "noAlternativesFound": "No se encontraron proveedores alternativos para esta ruta.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "Estos abren sitios de puentes de terceros. Selecciona tu ruta allí.",
       "convertBeforeWithdraw": {
         "title": "Convierte primero a {variant}",
         "description": "{provider} solo acepta {variant}. Convierte tu saldo aleado a {variant} a continuación y luego continúa con {provider} para completar tu retiro.",

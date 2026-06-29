@@ -875,7 +875,7 @@
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью",
       "noAlternativesFound": "Альтернативные поставщики для этого маршрута не найдены.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "Откроются сторонние сайты мостов. Выберите маршрут там.",
       "convertBeforeWithdraw": {
         "title": "Сначала конвертируйте в {variant}",
         "description": "{provider} принимает только {variant}. Конвертируйте ваш сплавленный баланс в {variant} ниже, затем перейдите к {provider}, чтобы завершить вывод средств.",

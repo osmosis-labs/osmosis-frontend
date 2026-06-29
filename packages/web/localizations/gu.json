@@ -875,7 +875,7 @@
       "depositWith": "સાથે જમા",
       "withdrawWith": "સાથે પાછી ખેંચો",
       "noAlternativesFound": "આ રૂટ માટે કોઈ વૈકલ્પિક પ્રદાતા મળ્યા નથી.",
-      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "externalSiteCaveat": "આ ત્રીજા-પક્ષની બ્રિજ સાઇટ્સ ખોલે છે. ત્યાં તમારો રૂટ પસંદ કરો.",
       "convertBeforeWithdraw": {
         "title": "પહેલા {variant} માં રૂપાંતરિત કરો",
         "description": "{provider} ફક્ત {variant} સ્વીકારે છે. તમારી alloyed બેલેન્સને નીચે {variant} માં રૂપાંતરિત કરો, પછી તમારી ઉપાડ પૂર્ણ કરવા માટે {provider} પર ચાલુ રાખો.",
