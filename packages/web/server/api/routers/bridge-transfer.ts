@@ -45,7 +45,10 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import { getAlloyConstituentExternalInterfaceMethods } from "~/server/api/routers/bridge/external-url-constituents";
+import {
+  getAlloyConstituentExternalInterfaceMethods,
+  getSuppressedAlloyExternalInterfaceNames,
+} from "~/server/api/routers/bridge/external-url-constituents";
 import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -688,14 +691,40 @@ export const bridgeTransferRouter = createTRPCRouter({
         }),
       ];
 
+      // An alloy can carry an `external_interface` of its own that is really a
+      // constituent connector by another name (e.g. allXRP's own Sologenic
+      // link). Those alloy-own methods have no halt flag or variant link, so the
+      // membership/halt gate above can't see them. Suppress an alloy-own method
+      // whose provider name belongs to a gated (non-member or halted) sibling
+      // and no reachable sibling — otherwise it would defeat the gate (and win
+      // the dedup over the dropped constituent copy).
+      const [fromSuppressedNames, toSuppressedNames] = [
+        getSuppressedAlloyExternalInterfaceNames({
+          alloy: assetListFromAsset,
+          assets: allAssetListAssets,
+          direction: "withdraw",
+          memberDenoms: fromAlloyMemberDenoms,
+        }),
+        getSuppressedAlloyExternalInterfaceNames({
+          alloy: assetListToAsset,
+          assets: allAssetListAssets,
+          direction: "deposit",
+          memberDenoms: toAlloyMemberDenoms,
+        }),
+      ];
+
       const externalTransferMethods = (
         (assetListFromAsset?.transferMethods.filter(
-          ({ type }) => type === "external_interface"
+          (method) =>
+            method.type === "external_interface" &&
+            !fromSuppressedNames.has(method.name)
         ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
       )
         .concat(
           (assetListToAsset?.transferMethods.filter(
-            ({ type }) => type === "external_interface"
+            (method) =>
+              method.type === "external_interface" &&
+              !toSuppressedNames.has(method.name)
           ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
         )
         .concat(constituentExternalMethods);

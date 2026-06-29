@@ -105,3 +105,83 @@ export function getAlloyConstituentExternalInterfaceMethods({
         ) as ExternalInterfaceBridgeTransferMethod[]
     );
 }
+
+/**
+ * The set of `external_interface` provider names that must NOT be surfaced for
+ * this alloy because the variant backing them is not actually reachable: the
+ * matching group sibling is either not a pool member (can't be obtained from the
+ * alloy 1:1) or is direction-halted (its bridge link is dead right now).
+ *
+ * Why this exists: an alloy can carry an `external_interface` of its OWN (e.g.
+ * allXRP carries a Sologenic link, allTON an Int3face link). Those alloy-own
+ * methods are just `{ name, url }` — they have no halt flag and no link to the
+ * variant they actually depend on, so the membership/halt gate on the
+ * constituent fallback can't see them. When the alloy-own connector is really a
+ * constituent connector by another name (the live case for every alloy that
+ * carries one), it would survive even though the route it points at is gated
+ * out, defeating the gate (and the dedup in `getExternalUrls` keeps the
+ * alloy-own copy over the dropped constituent copy).
+ *
+ * This returns the provider names to suppress so the caller can filter the
+ * alloy-own methods by name. A name is suppressed only if it appears on a gated
+ * (non-member or halted) sibling AND on no surfaced (member, non-halted)
+ * sibling — so a provider that is still reachable via a good sibling is kept.
+ *
+ * Correlation is by provider `name`; it only catches alloy-own connectors that
+ * share a name with a constituent (the case that matters). A genuinely
+ * alloy-native connector with a unique name is unaffected.
+ */
+export function getSuppressedAlloyExternalInterfaceNames({
+  alloy,
+  assets,
+  direction,
+  memberDenoms,
+}: {
+  alloy:
+    | Pick<Asset, "coinMinimalDenom" | "isAlloyed" | "variantGroupKey">
+    | null
+    | undefined;
+  assets: Asset[];
+  direction: "deposit" | "withdraw";
+  memberDenoms: Set<string>;
+}): Set<string> {
+  if (!alloy?.isAlloyed) return new Set();
+
+  const alloyDenom = alloy.coinMinimalDenom;
+
+  const isReachable = (asset: Asset) =>
+    memberDenoms.has(asset.coinMinimalDenom) &&
+    !(direction === "withdraw" && asset.haltWithdrawals) &&
+    !(direction === "deposit" && asset.haltDeposits);
+
+  const siblings = assets.filter(
+    (asset) =>
+      asset.variantGroupKey === alloyDenom &&
+      asset.coinMinimalDenom !== alloyDenom &&
+      !asset.isAlloyed
+  );
+
+  const externalNames = (asset: Asset): string[] =>
+    asset.transferMethods
+      .filter(
+        (method): method is ExternalInterfaceBridgeTransferMethod =>
+          method.type === "external_interface"
+      )
+      .map((method) => method.name);
+
+  // Names still reachable via at least one good sibling — never suppress these.
+  const reachableNames = new Set(
+    siblings.filter(isReachable).flatMap(externalNames)
+  );
+
+  // Names that appear on a gated sibling and nowhere reachable.
+  const suppressed = new Set<string>();
+  for (const sibling of siblings) {
+    if (isReachable(sibling)) continue;
+    for (const name of externalNames(sibling)) {
+      if (!reachableNames.has(name)) suppressed.add(name);
+    }
+  }
+
+  return suppressed;
+}

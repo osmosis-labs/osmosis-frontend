@@ -3,7 +3,10 @@ import type {
   ExternalInterfaceBridgeTransferMethod,
 } from "@osmosis-labs/types";
 
-import { getAlloyConstituentExternalInterfaceMethods } from "../external-url-constituents";
+import {
+  getAlloyConstituentExternalInterfaceMethods,
+  getSuppressedAlloyExternalInterfaceNames,
+} from "../external-url-constituents";
 
 /** Minimal Asset factory: only the fields the helper reads are meaningful. */
 function asset(
@@ -453,5 +456,112 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
 
       expect(result).toEqual([]);
     });
+  });
+});
+
+describe("getSuppressedAlloyExternalInterfaceNames", () => {
+  const alloy = asset({
+    coinMinimalDenom: ALL_XRP,
+    isAlloyed: true,
+    variantGroupKey: ALL_XRP,
+    // allXRP carries its OWN Sologenic link (a constituent connector by name).
+    transferMethods: [externalInterface("Sologenic TX Bridge")],
+  });
+
+  it("suppresses a name carried only by a non-member sibling", () => {
+    const coreum = asset({
+      coinMinimalDenom: "ibc/XRP_COREUM",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const assets = [alloy, coreum];
+
+    const suppressed = getSuppressedAlloyExternalInterfaceNames({
+      alloy,
+      assets,
+      direction: "withdraw",
+      // coreum NOT a member → its route is unreachable from the alloy
+      memberDenoms: new Set(),
+    });
+
+    expect(suppressed.has("Sologenic TX Bridge")).toBe(true);
+  });
+
+  it("suppresses a name carried only by a withdrawal-halted member sibling", () => {
+    const coreum = asset({
+      coinMinimalDenom: "ibc/XRP_COREUM",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      haltWithdrawals: true,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const assets = [alloy, coreum];
+
+    const suppressed = getSuppressedAlloyExternalInterfaceNames({
+      alloy,
+      assets,
+      direction: "withdraw",
+      memberDenoms: allMembers(assets),
+    });
+
+    expect(suppressed.has("Sologenic TX Bridge")).toBe(true);
+  });
+
+  it("does NOT suppress a name still reachable via a good (member, non-halted) sibling", () => {
+    // Two siblings share the provider name; one is halted, one is live.
+    const halted = asset({
+      coinMinimalDenom: "ibc/XRP_HALTED",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      haltWithdrawals: true,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const live = asset({
+      coinMinimalDenom: "ibc/XRP_LIVE",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const assets = [alloy, halted, live];
+
+    const suppressed = getSuppressedAlloyExternalInterfaceNames({
+      alloy,
+      assets,
+      direction: "withdraw",
+      memberDenoms: allMembers(assets),
+    });
+
+    expect(suppressed.has("Sologenic TX Bridge")).toBe(false);
+  });
+
+  it("does not suppress when the sibling route is reachable", () => {
+    const coreum = asset({
+      coinMinimalDenom: "ibc/XRP_COREUM",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const assets = [alloy, coreum];
+
+    const suppressed = getSuppressedAlloyExternalInterfaceNames({
+      alloy,
+      assets,
+      direction: "withdraw",
+      memberDenoms: allMembers(assets),
+    });
+
+    expect(suppressed.size).toBe(0);
+  });
+
+  it("returns an empty set for a non-alloy from-asset", () => {
+    expect(
+      getSuppressedAlloyExternalInterfaceNames({
+        alloy: { ...alloy, isAlloyed: false },
+        assets: [alloy],
+        direction: "withdraw",
+        memberDenoms: new Set(),
+      }).size
+    ).toBe(0);
   });
 });
