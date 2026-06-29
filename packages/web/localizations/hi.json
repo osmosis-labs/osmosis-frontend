@@ -876,7 +876,15 @@
       "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} से {toChain}",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें",
-      "noAlternativesFound": "इस रूट के लिए कोई वैकल्पिक प्रदाता नहीं मिला।"
+      "noAlternativesFound": "इस रूट के लिए कोई वैकल्पिक प्रदाता नहीं मिला।",
+      "convertBeforeWithdraw": {
+        "title": "पहले {variant} में बदलें",
+        "description": "{provider} केवल {variant} स्वीकार करता है। नीचे अपने अलॉयड बैलेंस को {variant} में बदलें, फिर अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।",
+        "currentVariantBalance": "वर्तमान {variant} शेष:",
+        "successTitle": "{variant} में परिवर्तित",
+        "successDescription": "आपका {variant} तैयार है। अपनी निकासी पूरी करने के लिए {provider} पर जारी रखें।",
+        "continueTo": "{provider} पर जारी रखें"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "जमा करने के लिए एक परिसंपत्ति का चयन करें",

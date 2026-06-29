@@ -876,7 +876,15 @@
       "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する",
-      "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。"
+      "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。",
+      "convertBeforeWithdraw": {
+        "title": "まず{variant}に変換してください",
+        "description": "{provider}は{variant}のみを受け付けます。以下でアロイ残高を{variant}に変換してから、{provider}に進んで引き出しを完了してください。",
+        "currentVariantBalance": "現在の{variant}残高：",
+        "successTitle": "{variant}に変換しました",
+        "successDescription": "{variant}の準備ができました。{provider}に進んで出金を完了してください。",
+        "continueTo": "{provider}に進む"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",

@@ -876,7 +876,15 @@
       "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با",
-      "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد."
+      "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد.",
+      "convertBeforeWithdraw": {
+        "title": "ابتدا به {variant} تبدیل کنید",
+        "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",
+        "currentVariantBalance": "موجودی فعلی {variant}:",
+        "successTitle": "به {variant} تبدیل شد",
+        "successDescription": "{variant} شما آماده است. برای تکمیل برداشت به {provider} ادامه دهید.",
+        "continueTo": "ادامه به {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",

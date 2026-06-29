@@ -876,7 +876,15 @@
       "chooseAnAlternativeProviderWithdraw": "Escolha um provedor alternativo para retirar {asset} de {fromChain} para {toChain}",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com",
-      "noAlternativesFound": "Nenhum provedor alternativo encontrado para esta rota."
+      "noAlternativesFound": "Nenhum provedor alternativo encontrado para esta rota.",
+      "convertBeforeWithdraw": {
+        "title": "Converta primeiro para {variant}",
+        "description": "{provider} aceita apenas {variant}. Converta seu saldo alloyed para {variant} abaixo e, em seguida, continue para {provider} para concluir sua retirada.",
+        "currentVariantBalance": "Saldo atual de {variant}:",
+        "successTitle": "Convertido para {variant}",
+        "successDescription": "Seu {variant} está pronto. Continue para {provider} para concluir seu saque.",
+        "continueTo": "Continuar para {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Selecione um ativo para depositar",

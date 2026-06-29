@@ -13,7 +13,8 @@ export type EventPage =
   | "Swap Page"
   | "Token Info Page"
   | "Pool Details Page"
-  | "Wormhole Page";
+  | "Wormhole Page"
+  | "Bridge Page";
 
 export type EventProperties = {
   fromToken: string;

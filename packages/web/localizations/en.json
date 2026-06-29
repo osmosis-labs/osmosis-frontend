@@ -876,7 +876,15 @@
       "chooseAnAlternativeProviderWithdraw": "Choose an alternative provider to withdraw {asset} from {fromChain} to {toChain}",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with",
-      "noAlternativesFound": "No alternative providers found for this route."
+      "noAlternativesFound": "No alternative providers found for this route.",
+      "convertBeforeWithdraw": {
+        "title": "Convert to {variant} first",
+        "description": "{provider} only accepts {variant}. Convert your alloyed balance to {variant} below, then continue to {provider} to complete your withdrawal.",
+        "currentVariantBalance": "Current {variant} balance:",
+        "successTitle": "Converted to {variant}",
+        "successDescription": "Your {variant} is ready. Continue to {provider} to complete your withdrawal.",
+        "continueTo": "Continue to {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",
