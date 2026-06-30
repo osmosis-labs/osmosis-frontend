@@ -8,6 +8,17 @@ describe("getExternalInterfaceLogo", () => {
     expect(getExternalInterfaceLogo("Squid")).toBe("/bridges/squid.svg");
   });
 
+  it("prefers an asset-list logoUri over the name map", () => {
+    // Data-provided logo is authoritative, even for a name that is also mapped.
+    expect(
+      getExternalInterfaceLogo("Osmosis Wormhole Connect", "/x/from-data.svg")
+    ).toBe("/x/from-data.svg");
+    // ...and for an unmapped name, logoUri still wins over Generic.
+    expect(getExternalInterfaceLogo("Omnity Bridge", "/x/omnity.svg")).toBe(
+      "/x/omnity.svg"
+    );
+  });
+
   it("falls back to the Generic placeholder for an unmapped connector", () => {
     // Connectors whose brand asset isn't sourced yet (MTN-196 follow-up).
     expect(getExternalInterfaceLogo("Omnity Bridge")).toBe(

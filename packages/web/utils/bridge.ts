@@ -44,8 +44,24 @@ const ExternalInterfaceLogoUrls: Record<string, string> = {
   Squid: "/bridges/squid.svg",
 };
 
-/** Logo for an `external_interface` connector by its asset-list `name`, falling
- *  back to the Generic placeholder when no correct brand asset exists yet. */
-export function getExternalInterfaceLogo(name: string): string {
-  return ExternalInterfaceLogoUrls[name] ?? ExternalBridgeLogoUrls["Generic"];
+/**
+ * Logo for an `external_interface` connector, resolved in priority order:
+ * 1. `logoUri` from the asset-list connector data (authoritative; the durable
+ *    home for connector logos),
+ * 2. the name-keyed {@link ExternalInterfaceLogoUrls} map (frontend fallback for
+ *    connectors whose data doesn't yet carry a logo),
+ * 3. the Generic placeholder.
+ *
+ * The name-map is the interim layer: as connectors gain a `logo_uri` in the
+ * assetlist it is superseded per-connector, and can be retired once all carry one.
+ */
+export function getExternalInterfaceLogo(
+  name: string,
+  logoUri?: string
+): string {
+  return (
+    logoUri ??
+    ExternalInterfaceLogoUrls[name] ??
+    ExternalBridgeLogoUrls["Generic"]
+  );
 }

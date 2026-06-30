@@ -644,7 +644,12 @@ export const bridgeTransferRouter = createTRPCRouter({
       ) as ExternalInterfaceBridgeTransferMethod[];
 
       externalTransferMethods.forEach(
-        ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
+        ({
+          name,
+          depositUrl: depositUrl_,
+          withdrawUrl: withdrawUrl_,
+          logoUri,
+        }) => {
           let depositUrl, withdrawUrl;
           try {
             depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
@@ -661,13 +666,13 @@ export const bridgeTransferRouter = createTRPCRouter({
             input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
-                  logo: getExternalInterfaceLogo(name),
+                  logo: getExternalInterfaceLogo(name, logoUri),
                   url: withdrawUrl,
                 }
               : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
-                  logo: getExternalInterfaceLogo(name),
+                  logo: getExternalInterfaceLogo(name, logoUri),
                   url: depositUrl,
                 }
               : undefined;
