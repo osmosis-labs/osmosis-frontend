@@ -475,17 +475,45 @@ describe("getSuppressedAlloyExternalInterfaceNames", () => {
       variantGroupKey: ALL_XRP,
       transferMethods: [externalInterface("Sologenic TX Bridge")],
     });
-    const assets = [alloy, coreum];
+    // A different sibling IS a member, so membership is known (non-empty set)
+    // but coreum (the Sologenic-bearer) is not in it.
+    const otherMember = asset({
+      coinMinimalDenom: "ibc/XRP_OTHER",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      transferMethods: [externalInterface("Some Other Bridge")],
+    });
+    const assets = [alloy, coreum, otherMember];
 
     const suppressed = getSuppressedAlloyExternalInterfaceNames({
       alloy,
       assets,
       direction: "withdraw",
-      // coreum NOT a member → its route is unreachable from the alloy
-      memberDenoms: new Set(),
+      // membership is resolved (otherMember is in), but coreum is NOT
+      memberDenoms: new Set(["ibc/XRP_OTHER"]),
     });
 
     expect(suppressed.has("Sologenic TX Bridge")).toBe(true);
+  });
+
+  it("suppresses NOTHING when membership is unresolved (empty set = failed read / no contract)", () => {
+    // An empty memberDenoms means membership is UNKNOWN, not "no members".
+    // Must NOT strip the alloy-own Sologenic link on a transient pool-read
+    // failure — stage would still show it. (Cursor: "Failed pool read hides links".)
+    const coreum = asset({
+      coinMinimalDenom: "ibc/XRP_COREUM",
+      isAlloyed: false,
+      variantGroupKey: ALL_XRP,
+      transferMethods: [externalInterface("Sologenic TX Bridge")],
+    });
+    const suppressed = getSuppressedAlloyExternalInterfaceNames({
+      alloy,
+      assets: [alloy, coreum],
+      direction: "withdraw",
+      memberDenoms: new Set(),
+    });
+
+    expect(suppressed.size).toBe(0);
   });
 
   it("suppresses a name carried only by a withdrawal-halted member sibling", () => {

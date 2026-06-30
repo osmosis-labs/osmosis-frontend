@@ -122,6 +122,11 @@ function ExternalProviderList({
             </a>
           )}
         </ExternalUrlOption>
+        {/* Same caveat as the multi-provider list: this opens a third-party
+            site where the user confirms the actual route. */}
+        <p className="caption text-center text-osmoverse-400">
+          {t("transfer.moreBridgeOptions.externalSiteCaveat")}
+        </p>
       </div>
     );
   }

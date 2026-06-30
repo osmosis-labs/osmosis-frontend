@@ -147,6 +147,14 @@ export function getSuppressedAlloyExternalInterfaceNames({
 }): Set<string> {
   if (!alloy?.isAlloyed) return new Set();
 
+  // An empty `memberDenoms` means membership is UNKNOWN (a failed transmuter
+  // pool read or a missing `contract`), not "no members". Suppressing on an
+  // unknown set would strip a known-good alloy-own connector (e.g. Sologenic on
+  // allXRP) on a transient pool-read failure, hiding a link the user can still
+  // use. Only suppress when we have a real member set to judge against; an
+  // empty set is a no-op (suppress nothing).
+  if (memberDenoms.size === 0) return new Set();
+
   const alloyDenom = alloy.coinMinimalDenom;
 
   const isReachable = (asset: Asset) =>
