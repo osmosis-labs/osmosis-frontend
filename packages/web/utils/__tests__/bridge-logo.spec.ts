@@ -5,12 +5,6 @@ describe("getExternalInterfaceLogo", () => {
     expect(getExternalInterfaceLogo("Osmosis Wormhole Connect")).toBe(
       "/bridges/wormhole.svg"
     );
-    expect(getExternalInterfaceLogo("Sandwichswap Wormhole Portal Bridge")).toBe(
-      "/external-bridges/portalbridge.svg"
-    );
-    expect(getExternalInterfaceLogo("Bskt.fi Wormhole Bridge")).toBe(
-      "/external-bridges/portalbridge.svg"
-    );
     expect(getExternalInterfaceLogo("Squid")).toBe("/bridges/squid.svg");
   });
 

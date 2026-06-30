@@ -38,11 +38,8 @@ export const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
  * a Dymension asset exists). Remaining unmapped names tracked in MTN-196.
  */
 const ExternalInterfaceLogoUrls: Record<string, string> = {
-  // Wormhole + Wormhole Portal family (the existing wormhole/portalbridge assets
-  // are the correct brand for these).
+  // Wormhole (the existing wormhole asset is the correct brand).
   "Osmosis Wormhole Connect": "/bridges/wormhole.svg",
-  "Sandwichswap Wormhole Portal Bridge": "/external-bridges/portalbridge.svg",
-  "Bskt.fi Wormhole Bridge": "/external-bridges/portalbridge.svg",
   // Squid as an external_interface (same brand as the Squid provider).
   Squid: "/bridges/squid.svg",
 };
