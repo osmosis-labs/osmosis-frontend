@@ -98,11 +98,11 @@ export function getAlloyConstituentExternalInterfaceMethods({
         !(direction === "withdraw" && asset.haltWithdrawals) &&
         !(direction === "deposit" && asset.haltDeposits)
     )
-    .flatMap(
-      (variant) =>
-        variant.transferMethods.filter(
-          (method) => method.type === "external_interface"
-        ) as ExternalInterfaceBridgeTransferMethod[]
+    .flatMap((variant) =>
+      variant.transferMethods.filter(
+        (method): method is ExternalInterfaceBridgeTransferMethod =>
+          method.type === "external_interface"
+      )
     );
 }
 
