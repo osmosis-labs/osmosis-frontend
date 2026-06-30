@@ -45,7 +45,11 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
-import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
+import {
+  BridgeLogoUrls,
+  ExternalBridgeLogoUrls,
+  getExternalInterfaceLogo,
+} from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 
 export type BridgeChainWithDisplayInfo = (
@@ -657,13 +661,13 @@ export const bridgeTransferRouter = createTRPCRouter({
             input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
-                  logo: ExternalBridgeLogoUrls["Generic"],
+                  logo: getExternalInterfaceLogo(name),
                   url: withdrawUrl,
                 }
               : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
-                  logo: ExternalBridgeLogoUrls["Generic"],
+                  logo: getExternalInterfaceLogo(name),
                   url: depositUrl,
                 }
               : undefined;
