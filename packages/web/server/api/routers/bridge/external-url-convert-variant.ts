@@ -59,12 +59,24 @@ export function resolveExternalUrlConvertVariant({
 }): ExternalUrlConvertVariant | undefined {
   if (!alloy?.isAlloyed || !alloy.variantGroupKey) return undefined;
 
+  // An empty `memberDenoms` means membership is UNKNOWN (a failed transmuter
+  // pool read or a missing `contract`), not "no members". In that case the
+  // constituent link aggregator and the alloy-own suppression also degrade to
+  // best-effort (they surface the link rather than strip it), so the convert
+  // must degrade the same way: resolve the target from the `variantGroupKey`
+  // family so the pre-convert still fires. Otherwise the link opens with no
+  // pre-convert and strands the alloy holder on a site that only accepts the
+  // variant — the exact case MTN-146 exists to prevent. When membership IS
+  // resolved, gate strictly on it (only a true member is a valid convert
+  // target). The halt + sibling + provider-name checks always apply.
+  const membershipResolved = memberDenoms.size > 0;
+
   const variant = assets.find(
     (asset) =>
       asset.variantGroupKey === alloy.variantGroupKey &&
       asset.coinMinimalDenom !== alloy.coinMinimalDenom &&
       !asset.isAlloyed &&
-      memberDenoms.has(asset.coinMinimalDenom) &&
+      (!membershipResolved || memberDenoms.has(asset.coinMinimalDenom)) &&
       // The convert always precedes a withdrawal, so never target a variant
       // whose withdrawals are kill-switched: converting into it would strand the
       // user on a halted denom. Mirrors the halt skip in the constituent

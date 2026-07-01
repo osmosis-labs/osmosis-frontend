@@ -170,15 +170,34 @@ describe("resolveExternalUrlConvertVariant", () => {
   it("returns undefined when the matching sibling is not a pool member", () => {
     // The variant carries the matching provider AND shares the group key, but
     // is NOT in the alloy's transmuter pool, so it is not a valid convert
-    // target (the alloy cannot be redeemed into it).
+    // target (the alloy cannot be redeemed into it). Membership is RESOLVED
+    // (non-empty set with a different member), so the strict gate applies.
     expect(
       resolveExternalUrlConvertVariant({
         urlProviderName: SOLOGENIC,
         alloy: alloyAsset,
         assets,
-        memberDenoms: new Set(), // variantAsset is not a member
+        memberDenoms: new Set(["ibc/SOME_OTHER_MEMBER"]), // variantAsset not in it
       })
     ).toBeUndefined();
+  });
+
+  it("resolves best-effort from the group family when membership is UNKNOWN (empty set)", () => {
+    // Empty memberDenoms = unresolved membership (failed pool read / no
+    // contract), NOT "no members". The link degrades to best-effort, so the
+    // convert must too — otherwise the user opens the third-party site with an
+    // un-converted alloy (the strand MTN-146 prevents).
+    expect(
+      resolveExternalUrlConvertVariant({
+        urlProviderName: SOLOGENIC,
+        alloy: alloyAsset,
+        assets,
+        memberDenoms: new Set(),
+      })
+    ).toEqual({
+      coinMinimalDenom: VARIANT_DENOM,
+      symbol: "XRP.coreum",
+    });
   });
 
   it("does not match a sibling that is itself an alloy", () => {
