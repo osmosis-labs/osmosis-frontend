@@ -22,18 +22,32 @@ export interface ExternalUrlConvertVariant {
  * sibling variant whose own `external_interface` carries the same provider name,
  * so the caller can convert alloy -> variant before opening the URL.
  *
- * Membership gating (REQUIRED): the matched variant MUST be a true constituent
- * of the alloy's transmuter pool — i.e. its `coinMinimalDenom` is in
- * `memberDenoms` (read from `get_total_pool_liquidity` on `alloy.contract`).
- * `variantGroupKey` alone is a display grouping, not pool membership: a grouped
- * sibling that is not pooled cannot be obtained by converting the alloy, so
- * pre-selecting it would instruct a transmuter swap the pool rejects. This
- * helper drives an action (the convert), so the gate is correctness-critical.
+ * Membership gating (when membership is RESOLVED): the matched variant must be
+ * a true constituent of the alloy's transmuter pool, i.e. its
+ * `coinMinimalDenom` is in `memberDenoms` (read from `get_total_pool_liquidity`
+ * on `alloy.contract`). `variantGroupKey` alone is a display grouping, not pool
+ * membership: a grouped sibling that is not pooled cannot be obtained by
+ * converting the alloy, so pre-selecting it would instruct a transmuter swap the
+ * pool rejects. This helper drives an action (the convert), so when membership
+ * is known the gate is correctness-critical.
+ *
+ * When membership is UNKNOWN (an empty `memberDenoms`, from a failed pool read
+ * or a missing `contract`) the gate is bypassed and the target is resolved from
+ * the `variantGroupKey` family instead (best-effort). This mirrors the alloy-own
+ * suppression, which also no-ops on an unknown set so the alloy's own connector
+ * link is kept rather than stripped; the pre-convert is what makes that kept
+ * link usable, so it must fire too. (The constituent aggregator surfaces nothing
+ * on an unknown set, but the alloy-own link path is exactly the one that still
+ * needs a convert.) See the inline note on `membershipResolved` below for why
+ * stripping the pre-convert here would strand the alloy holder (the MTN-146
+ * case). The halt + sibling + provider-name checks always apply.
  *
  * Returns `undefined` when:
  * - the from-asset is not an alloy, or
- * - no pooled member variant carries an `external_interface` with that provider
- *   name.
+ * - no eligible variant carries an `external_interface` with that provider name
+ *   (eligible = a pooled member when membership is resolved, else any pooled-or-
+ *   grouped sibling when membership is unknown; never the alloy itself, a nested
+ *   alloy, or a withdrawals-halted variant).
  *
  * Data-driven via the alloy's pool membership + variant group; no per-site
  * hardcoding. The matched variant must not be the alloy itself or a nested
