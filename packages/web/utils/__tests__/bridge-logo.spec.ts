@@ -19,6 +19,20 @@ describe("getExternalInterfaceLogo", () => {
     );
   });
 
+  it("treats a blank/whitespace logoUri as absent (falls through, not a broken image)", () => {
+    // A mapped name with an empty logoUri falls to the map, not "".
+    expect(getExternalInterfaceLogo("Osmosis Wormhole Connect", "")).toBe(
+      "/bridges/wormhole.svg"
+    );
+    expect(getExternalInterfaceLogo("Osmosis Wormhole Connect", "   ")).toBe(
+      "/bridges/wormhole.svg"
+    );
+    // An unmapped name with an empty logoUri falls all the way to Generic.
+    expect(getExternalInterfaceLogo("Omnity Bridge", "")).toBe(
+      "/external-bridges/generic.svg"
+    );
+  });
+
   it("falls back to the Generic placeholder for an unmapped connector", () => {
     // Connectors whose brand asset isn't sourced yet (MTN-196 follow-up).
     expect(getExternalInterfaceLogo("Omnity Bridge")).toBe(

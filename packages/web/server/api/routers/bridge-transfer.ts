@@ -677,16 +677,24 @@ export const bridgeTransferRouter = createTRPCRouter({
                 }
               : undefined;
 
-          // ensure is not already in provider URLs before adding
-          if (
-            urlToAdd &&
-            !externalUrls.some(
+          if (urlToAdd) {
+            const existing = externalUrls.find(
               ({ urlProviderName, url }) =>
-                urlProviderName === urlToAdd.urlProviderName ||
-                url.host === urlToAdd.url.host
-            )
-          ) {
-            externalUrls.push(urlToAdd);
+                urlProviderName === urlToAdd!.urlProviderName ||
+                url.host === urlToAdd!.url.host
+            );
+            if (!existing) {
+              externalUrls.push(urlToAdd);
+            } else if (
+              // Dedup keeps the first-added entry, but if a later duplicate
+              // (e.g. the deposit-side method) carries a real logo while the
+              // kept one only has the Generic placeholder, upgrade the logo so
+              // the authoritative connector logo isn't lost to ordering.
+              existing.logo === ExternalBridgeLogoUrls["Generic"] &&
+              urlToAdd.logo !== ExternalBridgeLogoUrls["Generic"]
+            ) {
+              existing.logo = urlToAdd.logo;
+            }
           }
         }
       );

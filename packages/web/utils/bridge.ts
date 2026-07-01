@@ -59,8 +59,12 @@ export function getExternalInterfaceLogo(
   name: string,
   logoUri?: string
 ): string {
+  // Treat a blank/whitespace `logoUri` as absent, not authoritative: asset data
+  // could carry a present-but-empty string, and `??` would return it verbatim
+  // (a broken image) instead of falling through to the name map / Generic.
+  const dataLogo = logoUri?.trim() || undefined;
   return (
-    logoUri ??
+    dataLogo ??
     ExternalInterfaceLogoUrls[name] ??
     ExternalBridgeLogoUrls["Generic"]
   );
