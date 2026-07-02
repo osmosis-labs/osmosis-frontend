@@ -20,8 +20,10 @@ const IS_ORDERBOOK_CREATION_SUPPORTED =
  * different component subtrees.
  */
 const justCreatedOrderbooks = new Set<string>();
+// Denoms themselves contain "/" (ibc/..., factory/...), so a joined string is
+// ambiguous across pairs; encode the tuple instead.
 const orderbookPairKey = (baseDenom: string, quoteDenom: string) =>
-  `${baseDenom}/${quoteDenom}`;
+  JSON.stringify([baseDenom, quoteDenom]);
 
 export function wasOrderbookJustCreated(baseDenom: string, quoteDenom: string) {
   return justCreatedOrderbooks.has(orderbookPairKey(baseDenom, quoteDenom));

@@ -29,7 +29,10 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
+import {
+  useCreateOrderbook,
+  wasOrderbookJustCreated,
+} from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
@@ -92,6 +95,8 @@ export const PriceSelector = memo(
     const { logEvent } = useAmplitudeAnalytics();
 
     const [tab, setTab] = useQueryState("tab");
+    // Order type: "market" | "limit". Distinct from `tab` (buy | sell | swap).
+    const [type] = useQueryState("type", parseAsString.withDefault("market"));
     const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault(initialQuoteDenom)
@@ -223,7 +228,8 @@ export const PriceSelector = memo(
 
       // In limit mode, push orderbook-available quotes to the top only after
       // the orderbook data has loaded; avoids reordering before data arrives.
-      if (tab !== "limit" || !selectableQuoteDenoms[base]) return filtered;
+      // Keyed on `type` (market | limit), not `tab` (buy | sell | swap).
+      if (type !== "limit" || !selectableQuoteDenoms[base]) return filtered;
 
       // Rank-based comparator: sort() must compare both elements, and the
       // stable sort then preserves the incoming order within each group.
@@ -234,7 +240,7 @@ export const PriceSelector = memo(
           ? 1
           : 0;
       return [...filtered].sort((a, b) => hasOrderbook(b) - hasOrderbook(a));
-    }, [base, selectableQuoteDenoms, tab, userQuotes]);
+    }, [base, selectableQuoteDenoms, type, userQuotes]);
 
     const selectableQuotes = useMemo(() => {
       return wallet?.isWalletConnected
@@ -586,7 +592,11 @@ const CreatableQuoteItem = observer(
       !is18DecimalMismatch &&
       orderbookVerification !== undefined &&
       !orderbookVerification.orderbookExists &&
-      orderbookVerification.endpointFunctional;
+      orderbookVerification.endpointFunctional &&
+      // A pair created this session counts as existing even while the
+      // verification data is still catching up, or the row would invite a
+      // duplicate pool-creation tx.
+      !wasOrderbookJustCreated(base, coinMinimalDenom);
 
     return (
       <button

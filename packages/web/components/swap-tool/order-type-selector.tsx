@@ -192,7 +192,11 @@ export const OrderTypeSelector = ({
     !is18DecimalMismatch &&
     orderbookVerification !== undefined &&
     !orderbookVerification.orderbookExists &&
-    orderbookVerification.endpointFunctional;
+    orderbookVerification.endpointFunctional &&
+    // A pair created this session counts as existing even while the
+    // verification data is still catching up, or the UI would invite a
+    // duplicate pool-creation tx.
+    !wasOrderbookJustCreated(base, quote);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [acknowledgeFee, setAcknowledgeFee] = useState(false);
