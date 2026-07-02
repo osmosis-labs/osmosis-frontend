@@ -67,15 +67,25 @@ export function useCreateOrderbook({
         undefined,
         async (tx) => {
           if (!tx.code) {
-            // Invalidate the canonical pools cache so the new orderbook is reflected
-            await apiUtils.edge.orderbooks.getPools.invalidate();
-            // Re-fetch with fresh: true to bypass the server-side LRU cache —
-            // ensures all users see the new orderbook immediately after creation.
+            // Order matters: the fresh verify bypasses AND repopulates the
+            // server-side orderbook-pools LRU (cachified forceFresh writes the
+            // fresh value back), so it must complete before any client
+            // refetches or they would re-cache the pre-creation pool list.
             await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
               baseDenom,
               quoteDenom,
               fresh: true,
             });
+            // Refetch client caches against the now-fresh server cache: the
+            // pools list, and every mounted verifyOrderbookCreation consumer.
+            // The consumers query without `fresh`, which is a different
+            // react-query key than the imperative fetch above populated, so
+            // they need the procedure-level invalidation to pick up the
+            // created orderbook.
+            await Promise.all([
+              apiUtils.edge.orderbooks.getPools.invalidate(),
+              apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
+            ]);
           }
         }
       );

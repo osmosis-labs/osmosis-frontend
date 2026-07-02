@@ -26,6 +26,7 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
@@ -143,6 +144,7 @@ export const PriceSelector = memo(
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const defaultQuotes = useMemo(
       () =>
@@ -223,13 +225,15 @@ export const PriceSelector = memo(
       // the orderbook data has loaded; avoids reordering before data arrives.
       if (tab !== "limit" || !selectableQuoteDenoms[base]) return filtered;
 
-      return [...filtered].sort((a) =>
+      // Rank-based comparator: sort() must compare both elements, and the
+      // stable sort then preserves the incoming order within each group.
+      const hasOrderbook = (quote: (typeof filtered)[number]) =>
         selectableQuoteDenoms[base]?.some(
-          (asset) => asset.coinMinimalDenom === a.coinMinimalDenom
+          (asset) => asset.coinMinimalDenom === quote.coinMinimalDenom
         )
-          ? -1
-          : 1
-      );
+          ? 1
+          : 0;
+      return [...filtered].sort((a, b) => hasOrderbook(b) - hasOrderbook(a));
     }, [base, selectableQuoteDenoms, tab, userQuotes]);
 
     const selectableQuotes = useMemo(() => {
@@ -280,7 +284,14 @@ export const PriceSelector = memo(
 
     const handleOrderbookConfirm = async () => {
       if (!wallet?.isWalletConnected) {
+        // Mirror the Limit-tab entry point: hand the user to the wallet
+        // selector rather than silently closing the modal.
         handleCloseOrderbookModal();
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+          ],
+        });
         return;
       }
       try {
