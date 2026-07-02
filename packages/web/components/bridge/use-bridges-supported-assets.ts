@@ -299,6 +299,8 @@ export const useBridgesSupportedAssets = ({
       matchesRouteVariant?: (asset: MinimalAsset) => boolean | undefined;
     };
 
+    // Asset matchers select which transfers a hoist applies to (broad: any
+    // family member). They are intentionally wide.
     const isUsdcAsset = (asset: MinimalAsset) =>
       asset.coinDenom?.toUpperCase().includes("USDC") ||
       asset.coinGeckoId === "usd-coin";
@@ -311,10 +313,16 @@ export const useBridgesSupportedAssets = ({
       asset.coinGeckoId === "cosmos";
 
     const hoistRules: HoistRule[] = [
-      // USDC -> Noble. The destination route is native Noble USDC, i.e. the
-      // canonical USDC entry itself, so the route-variant matcher is the asset
-      // matcher.
-      { chainId: "noble-1", matchesAsset: isUsdcAsset },
+      // USDC -> Noble. The destination route is *native Noble* USDC, i.e. the
+      // canonical `USDC` entry (bridged variants are chain-qualified: USDC.eth.grv,
+      // USDC.avax.axl, ...). The route-variant matcher must be narrow: reusing the
+      // broad `isUsdcAsset` would let a halted bridged sibling (e.g. USDC.eth.grv)
+      // wrongly suppress the Noble default even when native Noble USDC is fine.
+      {
+        chainId: "noble-1",
+        matchesAsset: isUsdcAsset,
+        matchesRouteVariant: (asset) => asset.coinDenom?.toUpperCase() === "USDC",
+      },
       // XRP -> XRPL EVM. The destination route is the chain-qualified xrplevm
       // variant (e.g. XRP.xrplevm), not the selected alloy, so it needs its own
       // route-variant matcher.
@@ -325,9 +333,15 @@ export const useBridgesSupportedAssets = ({
           isXrpAsset(asset) &&
           asset.coinDenom?.toLowerCase().includes("xrplevm"),
       },
-      // ATOM -> Cosmos Hub. The destination route is native ATOM, i.e. the
-      // canonical ATOM entry itself.
-      { chainId: "cosmoshub-4", matchesAsset: isAtomAsset },
+      // ATOM -> Cosmos Hub. The destination route is native ATOM. `isAtomAsset`
+      // is already narrow (exact native denom / `cosmos` CoinGecko id, which no
+      // bridged ATOM variant shares), so it is safe to reuse as the route-variant
+      // matcher.
+      {
+        chainId: "cosmoshub-4",
+        matchesAsset: isAtomAsset,
+        matchesRouteVariant: isAtomAsset,
+      },
     ];
 
     // A hoist is active when the current transfer involves the hoist's asset AND
