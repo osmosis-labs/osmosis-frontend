@@ -39,10 +39,20 @@ export type SupportedChain = ReturnType<
 
 export const useBridgesSupportedAssets = ({
   assets,
+  variantAssets,
   chain,
   direction,
 }: {
   assets: MinimalAsset[] | undefined;
+  /**
+   * The full variant family of the selected asset (alloy + every constituent /
+   * wrapped variant), used only to detect a halted route variant for the
+   * default-selection hoist. On withdraw, `assets` is scoped to the single
+   * selected variant (the alloy), so it cannot see a sibling variant's halt
+   * flag; this carries the whole family so the halt check is accurate. Falls
+   * back to `assets` when not provided.
+   */
+  variantAssets?: MinimalAsset[] | undefined;
   chain: BridgeChain;
   direction: "deposit" | "withdraw";
 }) => {
@@ -261,48 +271,101 @@ export const useBridgesSupportedAssets = ({
   }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
-    // Check if this is a USDC withdrawal to prioritize Noble
-    const isUsdcWithdrawal =
-      direction === "withdraw" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("USDC") ||
-          asset.coinGeckoId === "usd-coin"
-      );
+    // Positional default hoists: for certain assets we prefer a specific
+    // destination chain as the "Recommended" (index 0) route. Each hoist is only
+    // applied while its destination route is actually usable, otherwise the
+    // default would land the user on a dead route.
+    //
+    // A hoist is suppressed when the family variant that *represents its
+    // destination route* is kill-switch halted in the active direction. Details:
+    //
+    // - Scan the full variant family (`variantAssets`), not `assets`: on withdraw
+    //   `assets` is the single selected variant (e.g. the alloy), which never
+    //   carries the destination variant's halt flag, so the guard would miss it.
+    // - Halt is direction-specific: a withdraw-halted variant must not block the
+    //   deposit hoist and vice versa.
+    // - Gate on the kill-switch halt flags only, not `isUnstable`: the kill
+    //   switch already suppresses routing elsewhere (e.g. the external link-out
+    //   in amount-screen.tsx), whereas `isUnstable` is warning-only and does not
+    //   gate the UI.
+    //
+    // `matchesAsset` selects the assets this hoist applies to; `matchesRouteVariant`
+    // selects the single family member whose halt flags represent the hoisted
+    // destination route (undefined => the same predicate as `matchesAsset`, used
+    // when the asset and its destination route are the same entry).
+    type HoistRule = {
+      chainId: string;
+      matchesAsset: (asset: MinimalAsset) => boolean | undefined;
+      matchesRouteVariant?: (asset: MinimalAsset) => boolean | undefined;
+    };
 
-    // Check if this is a USDC deposit to prioritize Noble
-    const isUsdcDeposit =
-      direction === "deposit" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("USDC") ||
-          asset.coinGeckoId === "usd-coin"
-      );
+    // Asset matchers select which transfers a hoist applies to (broad: any
+    // family member). They are intentionally wide.
+    const isUsdcAsset = (asset: MinimalAsset) =>
+      asset.coinDenom?.toUpperCase().includes("USDC") ||
+      asset.coinGeckoId === "usd-coin";
+    const isXrpAsset = (asset: MinimalAsset) =>
+      asset.coinDenom?.toUpperCase().includes("XRP") ||
+      asset.coinGeckoId === "ripple";
+    const isAtomAsset = (asset: MinimalAsset) =>
+      asset.coinMinimalDenom ===
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
+      asset.coinGeckoId === "cosmos";
 
-    // Check if this is a XRP withdrawal to prioritize XRPL EVM
-    const isXrpWithdrawal =
-      direction === "withdraw" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("XRP") ||
-          asset.coinGeckoId === "ripple"
-      );
+    const hoistRules: HoistRule[] = [
+      // USDC -> Noble. The destination route is *native Noble* USDC, i.e. the
+      // canonical `USDC` entry (bridged variants are chain-qualified: USDC.eth.grv,
+      // USDC.avax.axl, ...). The route-variant matcher must be narrow: reusing the
+      // broad `isUsdcAsset` would let a halted bridged sibling (e.g. USDC.eth.grv)
+      // wrongly suppress the Noble default even when native Noble USDC is fine.
+      {
+        chainId: "noble-1",
+        matchesAsset: isUsdcAsset,
+        matchesRouteVariant: (asset) =>
+          asset.coinDenom?.toUpperCase() === "USDC",
+      },
+      // XRP -> XRPL EVM. The destination route is the chain-qualified xrplevm
+      // variant (e.g. XRP.xrplevm), not the selected alloy, so it needs its own
+      // route-variant matcher.
+      {
+        chainId: "xrplevm_1440000-1",
+        matchesAsset: isXrpAsset,
+        matchesRouteVariant: (asset) =>
+          isXrpAsset(asset) &&
+          asset.coinDenom?.toLowerCase().includes("xrplevm"),
+      },
+      // ATOM -> Cosmos Hub. The destination route is native ATOM. `isAtomAsset`
+      // is already narrow (exact native denom / `cosmos` CoinGecko id, which no
+      // bridged ATOM variant shares), so it is safe to reuse as the route-variant
+      // matcher.
+      {
+        chainId: "cosmoshub-4",
+        matchesAsset: isAtomAsset,
+        matchesRouteVariant: isAtomAsset,
+      },
+    ];
 
-    // Check if this is a XRP deposit to prioritize XRPL EVM
-    const isXrpDeposit =
-      direction === "deposit" &&
-      assets?.some(
-        (asset) =>
-          asset.coinDenom?.toUpperCase().includes("XRP") ||
-          asset.coinGeckoId === "ripple"
-      );
-
-    // Check if this is ATOM to prioritize Cosmos Hub
-    const isAtom = assets?.some(
-      (asset) =>
-        asset.coinMinimalDenom ===
-          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
-        asset.coinGeckoId === "cosmos"
+    // A hoist is active when the current transfer involves the hoist's asset AND
+    // the destination route variant is not halted in the active direction.
+    const activeHoistChainIds = new Set(
+      hoistRules
+        .filter((rule) => {
+          if (!assets?.some(rule.matchesAsset)) return false;
+          const matchesRouteVariant =
+            rule.matchesRouteVariant ?? rule.matchesAsset;
+          const routeVariants = (variantAssets ?? assets)?.filter(
+            matchesRouteVariant
+          );
+          const isHalted = Boolean(
+            routeVariants?.some((asset) =>
+              direction === "withdraw"
+                ? asset.areWithdrawalsHalted
+                : asset.areDepositsHalted
+            )
+          );
+          return !isHalted;
+        })
+        .map((rule) => rule.chainId)
     );
 
     return Array.from(
@@ -311,52 +374,11 @@ export const useBridgesSupportedAssets = ({
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
-            // For USDC withdrawals, prioritize Noble first
-            if (isUsdcWithdrawal) {
-              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
-              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
-            }
-
-            // For USDC deposits, prioritize Noble first
-            if (isUsdcDeposit) {
-              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
-              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
-            }
-
-            // For XRP withdrawals, prioritize XPRL EVM first
-            if (isXrpWithdrawal) {
-              if (
-                a.chainId === "xrplevm_1440000-1" &&
-                b.chainId !== "xrplevm_1440000-1"
-              )
-                return -1;
-              if (
-                a.chainId !== "xrplevm_1440000-1" &&
-                b.chainId === "xrplevm_1440000-1"
-              )
-                return 1;
-            }
-
-            // For XRP deposits, prioritize XPRL EVM first
-            if (isXrpDeposit) {
-              if (
-                a.chainId === "xrplevm_1440000-1" &&
-                b.chainId !== "xrplevm_1440000-1"
-              )
-                return -1;
-              if (
-                a.chainId !== "xrplevm_1440000-1" &&
-                b.chainId === "xrplevm_1440000-1"
-              )
-                return 1;
-            }
-
-            // For ATOM, prioritize Cosmos Hub first
-            if (isAtom) {
-              if (a.chainId === "cosmoshub-4" && b.chainId !== "cosmoshub-4")
-                return -1;
-              if (a.chainId !== "cosmoshub-4" && b.chainId === "cosmoshub-4")
-                return 1;
+            // Apply each active positional hoist: pin its destination chain
+            // first. Only hoists whose destination route is usable are present.
+            for (const chainId of activeHoistChainIds) {
+              if (a.chainId === chainId && b.chainId !== chainId) return -1;
+              if (a.chainId !== chainId && b.chainId === chainId) return 1;
             }
 
             // prioritize bitcoin and doge chains first, then evm
@@ -381,7 +403,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries, direction, assets]);
+  }, [successfulQueries, direction, assets, variantAssets]);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };
