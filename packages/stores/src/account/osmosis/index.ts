@@ -937,6 +937,111 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Single-asset "zap-out" of a concentrated liquidity position. Composes a
+   * withdraw and a swap into a single atomic transaction (one signature, one
+   * fee): the position is withdrawn (returning both sides at the current spot
+   * ratio), then one side is swapped into the other so the user ends with their
+   * chosen asset mix. Both messages revert together if either fails — there is
+   * no chain-side partial settlement.
+   *
+   * The caller (see `useRemoveConcentratedLiquidityConfig` / `use-zap-out-quote`)
+   * computes the swap split via SQS and the slippage floor. Note `MsgWithdrawPosition`
+   * carries NO token minima, so slippage protection lives entirely on the swap
+   * leg's `tokenOutMinAmount`. Critically, the swap leg's `tokenInAmount` must be
+   * the conservative LOWER BOUND of the projected withdrawn amount of the side
+   * being sold: it is fixed at sign time, and if it exceeds what the withdraw
+   * actually yields at execution the swap reverts the whole tx.
+   *
+   * @param positionId Position to withdraw from.
+   * @param liquidityAmount Liquidity to withdraw (chain-raw decimal string).
+   * @param swapIn SQS route(s), the token being swapped in (the unwanted side),
+   *   its conservative-lower-bound input amount, and the slippage-adjusted
+   *   minimum out amount (all micro amounts).
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendZapOutOfConcentratedPositionMsg(
+    positionId: string,
+    liquidityAmount: string,
+    swapIn: {
+      routes: {
+        pools: { id: string; tokenOutDenom: string }[];
+        tokenInAmount: string;
+      }[];
+      tokenInCoinMinimalDenom: string;
+      tokenOutMinAmount: string;
+    },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    if (
+      swapIn.routes.length < 1 ||
+      swapIn.routes.some((route) => route.pools.length < 1)
+    ) {
+      throw new Error("Zap-out requires a non-empty swap route");
+    }
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clZapOutPosition",
+      async () => {
+        const withdrawPositionMsg = await makeWithdrawPositionMsg({
+          liquidityAmount,
+          positionId: BigInt(positionId),
+          sender: this.address,
+        });
+
+        const swapMsg =
+          swapIn.routes.length === 1
+            ? await makeSwapExactAmountInMsg({
+                pools: swapIn.routes[0].pools,
+                tokenIn: {
+                  coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                  amount: swapIn.routes[0].tokenInAmount,
+                },
+                tokenOutMinAmount: swapIn.tokenOutMinAmount,
+                userOsmoAddress: this.address,
+              })
+            : await makeSplitRoutesSwapExactAmountInMsg({
+                routes: swapIn.routes,
+                tokenIn: {
+                  coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                },
+                tokenOutMinAmount: swapIn.tokenOutMinAmount,
+                userOsmoAddress: this.address,
+              });
+
+        return [withdrawPositionMsg, swapMsg];
+      },
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+
+          // refresh metrics of the same position; if fully withdrawn it closes,
+          // otherwise the ID persists with reduced liquidity
+          setTimeout(() => {
+            this.queriesExternalStore?.queryPositionsPerformaceMetrics
+              .get(positionId)
+              ?.waitFreshResponse();
+          }, 30_000);
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   async sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
     poolId: string,
     memo: string = "",

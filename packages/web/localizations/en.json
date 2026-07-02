@@ -76,6 +76,8 @@
     "collectAllRewards": "Collect All Rewards",
     "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}.",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",

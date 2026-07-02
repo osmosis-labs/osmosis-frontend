@@ -36,12 +36,12 @@
     "estimated": "Estimată",
     "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "Din {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) vor fi schimbați în {outDenom} pentru a se potrivi cu raportul poziției.",
+      "noSwapNeeded": "Gama selectată necesită doar {inputDenom}, deci nu este necesară vreo schimbare.",
+      "valueIn": "Valoare intrare",
+      "valueOut": "Valoare ieșire",
+      "totalCost": "Cost total",
+      "quoteLoading": "Se caută cea mai bună schimbare…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -98,7 +98,9 @@
     "goToPool": "Mergi la piscina #{poolId}",
     "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența.",
     "noPositions": "Nu s-au găsit poziții",
-    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread."
+    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread.",
+    "receiveAs": "Primești ca",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) vor fi schimbați în {outDenom}."
   },
   "copied": "Copiat!",
   "app": {

@@ -36,12 +36,12 @@
     "estimated": "अनुमानित",
     "estimatedInfo": "यह वर्तमान चयनित कीमतों पर आधारित एक अनुमान है। वास्तविक एपीआर भिन्न हो सकता है। यदि स्थिति सीमा से बाहर हो जाती है, तो एपीआर 0% होगा।",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "आपके {inputAmount} {inputDenom} में से {swapAmount} {inputDenom} ({swapPercent}) को पोजीशन अनुपात से मेल खाने के लिए {outDenom} में स्वैप किया जाएगा।",
+      "noSwapNeeded": "आपकी चुनी गई श्रेणी को केवल {inputDenom} की आवश्यकता है, इसलिए कोई स्वैप आवश्यक नहीं है।",
+      "valueIn": "मान इन",
+      "valueOut": "मान आउट",
+      "totalCost": "कुल लागत",
+      "quoteLoading": "सर्वश्रेष्ठ स्वैप खोज रहे हैं…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -98,7 +98,9 @@
     "goToPool": "पूल # पर जाएँ #{poolId}",
     "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।",
     "noPositions": "कोई पद नहीं मिला",
-    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।"
+    "noPositionsDescription": "स्प्रेड रिवॉर्ड अर्जित करना शुरू करने के लिए एक पूल को केंद्रित तरलता प्रदान करें।",
+    "receiveAs": "इस रूप में प्राप्त करें",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) को {outDenom} में स्वैप किया जाएगा।"
   },
   "copied": "कॉपी किया गया!",
   "app": {

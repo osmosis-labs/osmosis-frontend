@@ -36,12 +36,12 @@
     "estimated": "Geschätzt",
     "estimatedInfo": "Hierbei handelt es sich um eine Schätzung basierend auf den aktuell ausgewählten Preisen. Der tatsächliche effektive Jahreszins kann variieren. Wenn die Position außerhalb des Bereichs liegt, beträgt der effektive Jahreszins 0 %.",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "Von deinen {inputAmount} {inputDenom} werden {swapAmount} {inputDenom} ({swapPercent}) in {outDenom} getauscht, um das Positions-Verhältnis zu erreichen.",
+      "noSwapNeeded": "Dein gewählter Bereich benötigt nur {inputDenom}, daher ist kein Tausch erforderlich.",
+      "valueIn": "Eingabewert",
+      "valueOut": "Ausgabewert",
+      "totalCost": "Gesamtkosten",
+      "quoteLoading": "Besten Tausch wird gesucht…"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -98,7 +98,9 @@
     "goToPool": "Gehen Sie zu Pool #{poolId}",
     "errorFetchingPositions": "Positionsdetails konnten nicht abgerufen werden. Versuchen Sie, die Seite zu aktualisieren. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
     "noPositions": "Keine Positionen gefunden",
-    "noPositionsDescription": "Stelle einem Pool konzentrierte Liquidität zur Verfügung, um Spread-Prämien zu verdienen."
+    "noPositionsDescription": "Stelle einem Pool konzentrierte Liquidität zur Verfügung, um Spread-Prämien zu verdienen.",
+    "receiveAs": "Erhalten als",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) werden in {outDenom} getauscht."
   },
   "copied": "Kopiert!",
   "app": {
