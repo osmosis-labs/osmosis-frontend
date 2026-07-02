@@ -1546,7 +1546,9 @@ function useQueryRouterBestQuote(
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
+export function makeRouterErrorFromTrpcError(
+  errorMsg: string | null | undefined
+):
   | {
       error:
         | NoRouteError

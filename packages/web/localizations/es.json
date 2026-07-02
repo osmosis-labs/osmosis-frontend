@@ -34,7 +34,15 @@
     "low": "bajo",
     "buttonCreateAndStake": "Crear posición y apuesta",
     "estimated": "Estimado",
-    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%."
+    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
+      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
+      "valueIn": "Value in",
+      "valueOut": "Value out",
+      "totalCost": "Total cost",
+      "quoteLoading": "Finding the best swap…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "¿Qué es la liquidez sobrealimentada?",
