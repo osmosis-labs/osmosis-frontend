@@ -1408,7 +1408,12 @@
       "filled": "請求する注文を完了"
     },
     "priceReaches": "{denom}価格が{price}に達した場合",
-    "belowMinimumAmount": "{amount}最小"
+    "belowMinimumAmount": "{amount}最小",
+    "noOrderbookForPair": "{base}/{quote}のorderbookが存在しません。このペアのlimit ordersを有効にするために作成してください。",
+    "createOrderbook": "Orderbookを作成",
+    "noOrderbookExists": "{denom}のorderbookなし",
+    "clickToCreateOrderbook": "クリックしてこのペアのorderbookを作成します。",
+    "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。"
   },
   "tradeDetails": {
     "priceImpact": {

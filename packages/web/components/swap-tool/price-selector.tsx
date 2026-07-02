@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo } from "react";
+import React, { Fragment, memo, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import {
@@ -26,10 +26,16 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import {
+  useCreateOrderbook,
+  wasOrderbookJustCreated,
+} from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
+import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { useStore } from "~/stores";
 import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -89,6 +95,8 @@ export const PriceSelector = memo(
     const { logEvent } = useAmplitudeAnalytics();
 
     const [tab, setTab] = useQueryState("tab");
+    // Order type: "market" | "limit". Distinct from `tab` (buy | sell | swap).
+    const [type] = useQueryState("type", parseAsString.withDefault("market"));
     const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault(initialQuoteDenom)
@@ -118,6 +126,15 @@ export const PriceSelector = memo(
       [quote]
     );
 
+    const baseRawAsset = useMemo(
+      () =>
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          coinMinimalDenom: base,
+        })?.rawAsset as Asset | undefined,
+      [base]
+    );
+
     useEffect(() => {
       if (quote === base) {
         setBase(ATOM_BASE_DENOM);
@@ -132,6 +149,7 @@ export const PriceSelector = memo(
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const defaultQuotes = useMemo(
       () =>
@@ -177,12 +195,13 @@ export const PriceSelector = memo(
             })
             .filter(Boolean)
             .toSorted(sortByAmount)
-            .toSorted((assetA) => {
-              const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
-                (asset) => asset.coinMinimalDenom === assetA?.coinMinimalDenom
-              );
-
-              return isAssetAAvailable ? -1 : 1;
+            .toSorted((a, b) => {
+              const ai = UI_DEFAULT_QUOTES.indexOf(a!.coinMinimalDenom);
+              const bi = UI_DEFAULT_QUOTES.indexOf(b!.coinMinimalDenom);
+              if (ai === -1 && bi === -1) return 0;
+              if (ai === -1) return 1;
+              if (bi === -1) return -1;
+              return ai - bi;
             }) as AssetWithBalance[],
       }
     );
@@ -199,15 +218,29 @@ export const PriceSelector = memo(
      * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
      * Sell trades limited to canonical USDC and alloyed USDT.
      */
-    const defaultQuotesWithBalances = useMemo(
-      () =>
+    const defaultQuotesWithBalances = useMemo(() => {
+      const filtered =
         userQuotes?.filter(({ amount, symbol }) => {
           if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
             return true;
           return amount?.toDec().gt(new Dec(0)) ?? false;
-        }) ?? [],
-      [userQuotes]
-    );
+        }) ?? [];
+
+      // In limit mode, push orderbook-available quotes to the top only after
+      // the orderbook data has loaded; avoids reordering before data arrives.
+      // Keyed on `type` (market | limit), not `tab` (buy | sell | swap).
+      if (type !== "limit" || !selectableQuoteDenoms[base]) return filtered;
+
+      // Rank-based comparator: sort() must compare both elements, and the
+      // stable sort then preserves the incoming order within each group.
+      const hasOrderbook = (quote: (typeof filtered)[number]) =>
+        selectableQuoteDenoms[base]?.some(
+          (asset) => asset.coinMinimalDenom === quote.coinMinimalDenom
+        )
+          ? 1
+          : 0;
+      return [...filtered].sort((a, b) => hasOrderbook(b) - hasOrderbook(a));
+    }, [base, selectableQuoteDenoms, type, userQuotes]);
 
     const selectableQuotes = useMemo(() => {
       return wallet?.isWalletConnected
@@ -231,10 +264,56 @@ export const PriceSelector = memo(
 
     const { isMobile } = useWindowSize(Breakpoint.sm);
 
+    // Orderbook creation modal — lives here so it survives Menu close/unmount
+    const [pendingCreateQuote, setPendingCreateQuote] = useState<
+      AssetWithBalance | undefined
+    >();
+    const [isOrderbookModalOpen, setIsOrderbookModalOpen] = useState(false);
+    const [acknowledgeOrderbookFee, setAcknowledgeOrderbookFee] =
+      useState(false);
+
+    const { createOrderbook, isCreating: isCreatingOrderbook } =
+      useCreateOrderbook({
+        baseDenom: base,
+        quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
+      });
+
+    const handleOpenOrderbookModal = (asset: AssetWithBalance) => {
+      setPendingCreateQuote(asset);
+      setIsOrderbookModalOpen(true);
+    };
+
+    const handleCloseOrderbookModal = () => {
+      setIsOrderbookModalOpen(false);
+      setAcknowledgeOrderbookFee(false);
+    };
+
+    const handleOrderbookConfirm = async () => {
+      if (!wallet?.isWalletConnected) {
+        // Mirror the Limit-tab entry point: hand the user to the wallet
+        // selector rather than silently closing the modal.
+        handleCloseOrderbookModal();
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+          ],
+        });
+        return;
+      }
+      try {
+        await createOrderbook();
+        if (pendingCreateQuote) setQuote(pendingCreateQuote.coinMinimalDenom);
+        handleCloseOrderbookModal();
+        setPendingCreateQuote(undefined);
+      } catch {
+        // keep modal open on error
+      }
+    };
+
     return (
       <>
         <Menu as="div" className="relative inline-block">
-          {({ open }) => (
+          {({ open, close }) => (
             <>
               <Menu.Button className="flex items-center justify-between">
                 <div className="flex flex-1 items-center justify-between">
@@ -288,6 +367,10 @@ export const PriceSelector = memo(
                     <SelectableQuotes
                       selectableQuotes={selectableQuotes}
                       userQuotes={userQuotes}
+                      onOpenCreate={(asset) => {
+                        close();
+                        handleOpenOrderbookModal(asset);
+                      }}
                     />
                   </div>
                   <div className="flex flex-col px-5 py-2">
@@ -384,6 +467,25 @@ export const PriceSelector = memo(
           onRequestClose={closeAddFundsModal}
           from="buy"
         />
+        <CreateOrderbookModal
+          isOpen={isOrderbookModalOpen}
+          onRequestClose={handleCloseOrderbookModal}
+          baseDenom={base}
+          baseSymbol={baseRawAsset?.symbol ?? base}
+          quoteDenom={pendingCreateQuote?.coinMinimalDenom ?? ""}
+          quoteSymbol={pendingCreateQuote?.symbol ?? ""}
+          baseCoinImageUrl={
+            baseRawAsset?.logoURIs?.png ?? baseRawAsset?.logoURIs?.svg
+          }
+          quoteCoinImageUrl={
+            pendingCreateQuote?.logoURIs?.png ??
+            pendingCreateQuote?.logoURIs?.svg
+          }
+          isCreating={isCreatingOrderbook}
+          acknowledgeFee={acknowledgeOrderbookFee}
+          onAcknowledgeFee={setAcknowledgeOrderbookFee}
+          onConfirm={handleOrderbookConfirm}
+        />
       </>
     );
   }
@@ -426,13 +528,143 @@ function HighestBalanceAssetsIcons({
   );
 }
 
+/** Renders a single disabled quote row and exposes whether creation is possible. */
+const CreatableQuoteItem = observer(
+  ({
+    base,
+    baseSymbol,
+    coinMinimalDenom,
+    logoURIs,
+    name,
+    symbol,
+    isSelected,
+    onOpenCreate,
+  }: {
+    base: string;
+    baseSymbol?: string;
+    coinMinimalDenom: string;
+    logoURIs?: Asset["logoURIs"];
+    name: string;
+    symbol: string;
+    isSelected: boolean;
+    onOpenCreate: () => void;
+  }) => {
+    const { t } = useTranslation();
+
+    const { data: orderbookVerification, isLoading: isVerifying } =
+      api.edge.orderbooks.verifyOrderbookCreation.useQuery({
+        baseDenom: base,
+        quoteDenom: coinMinimalDenom,
+      });
+
+    const { data: baseAssetData } = api.edge.assets.getUserAsset.useQuery({
+      findMinDenomOrSymbol: base,
+    });
+    const { data: quoteAssetData } = api.edge.assets.getUserAsset.useQuery({
+      findMinDenomOrSymbol: coinMinimalDenom,
+    });
+
+    const is18DecimalBase =
+      baseAssetData?.coinDecimals === 18 && quoteAssetData?.coinDecimals === 6;
+
+    const { data: basePrice, isLoading: isBasePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom: base },
+        { enabled: is18DecimalBase }
+      );
+    const { data: quotePrice, isLoading: isQuotePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom },
+        { enabled: is18DecimalBase }
+      );
+
+    const is18DecimalMismatch =
+      is18DecimalBase &&
+      (isBasePriceLoading ||
+        isQuotePriceLoading ||
+        basePrice === undefined ||
+        quotePrice === undefined ||
+        quotePrice.toDec().isZero() ||
+        basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+
+    const canCreate =
+      !isVerifying &&
+      !is18DecimalMismatch &&
+      orderbookVerification !== undefined &&
+      !orderbookVerification.orderbookExists &&
+      orderbookVerification.endpointFunctional &&
+      // A pair created this session counts as existing even while the
+      // verification data is still catching up, or the row would invite a
+      // duplicate pool-creation tx.
+      !wasOrderbookJustCreated(base, coinMinimalDenom);
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          if (canCreate) onOpenCreate();
+        }}
+        className={classNames(
+          "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+          {
+            "opacity-50": !canCreate,
+            "pointer-events-none": !canCreate,
+            "cursor-pointer": canCreate,
+          }
+        )}
+        disabled={!canCreate}
+      >
+        <div className="flex items-center gap-3">
+          <EntityImage
+            width={40}
+            height={40}
+            logoURIs={logoURIs}
+            name={name}
+            symbol={symbol}
+            className="h-10 w-10"
+          />
+          <div className="flex flex-col gap-1 text-left">
+            <p>{name}</p>
+            <small className="text-sm leading-5 text-osmoverse-300">
+              {symbol}
+            </small>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex w-[80px] items-end gap-3">
+            <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+              <span className="body2 font-light">
+                {canCreate
+                  ? t("limitOrders.clickToCreateOrderbook")
+                  : t("limitOrders.unavailable", {
+                      denom: baseSymbol ?? base,
+                    })}
+              </span>
+            </p>
+          </div>
+          <Icon
+            id="check-mark"
+            width={16}
+            height={16}
+            className={classNames("text-white h-[16px] w-[16px] rounded-full", {
+              "opacity-0": !isSelected,
+            })}
+          />
+        </div>
+      </button>
+    );
+  }
+);
+
 const SelectableQuotes = observer(
   ({
     selectableQuotes = [],
     userQuotes = [],
+    onOpenCreate,
   }: {
     selectableQuotes?: AssetWithBalance[];
     userQuotes?: AssetWithBalance[];
+    onOpenCreate: (asset: AssetWithBalance) => void;
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
@@ -473,6 +705,28 @@ const SelectableQuotes = observer(
           !selectableQuoteDenoms[base]?.some(
             (asset) => asset.coinMinimalDenom === coinMinimalDenom
           );
+
+        if (isDisabled) {
+          return (
+            <CreatableQuoteItem
+              key={name}
+              base={base}
+              baseSymbol={baseAsset?.symbol}
+              coinMinimalDenom={coinMinimalDenom}
+              logoURIs={logoURIs}
+              name={name}
+              symbol={symbol}
+              isSelected={isSelected}
+              onOpenCreate={() => {
+                const asset = selectableQuotes.find(
+                  (q) => q.coinMinimalDenom === coinMinimalDenom
+                );
+                if (asset) onOpenCreate(asset);
+              }}
+            />
+          );
+        }
+
         return (
           <Menu.Item key={name}>
             {({ active }) => (
@@ -483,10 +737,8 @@ const SelectableQuotes = observer(
                   "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
                   {
                     "bg-osmoverse-700": active,
-                    "opacity-50": isDisabled,
                   }
                 )}
-                disabled={isDisabled}
               >
                 <div className="flex items-center gap-3">
                   <EntityImage
@@ -505,21 +757,9 @@ const SelectableQuotes = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  {isDisabled ? (
-                    <div className="flex w-[80px] items-end gap-3">
-                      <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-                        <span className="body2 font-light">
-                          {t("limitOrders.unavailable", {
-                            denom: baseAsset?.symbol ?? base,
-                          })}
-                        </span>
-                      </p>
-                    </div>
-                  ) : (
-                    wallet?.isWalletConnected &&
+                  {wallet?.isWalletConnected &&
                     availableBalance &&
-                    !availableBalance.isZero() &&
-                    !isDisabled && (
+                    !availableBalance.isZero() && (
                       <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
                         <span
                           className={classNames({
@@ -537,17 +777,14 @@ const SelectableQuotes = observer(
                           {t("pool.available").toLowerCase()}
                         </span>
                       </p>
-                    )
-                  )}
+                    )}
                   <Icon
                     id="check-mark"
                     width={16}
                     height={16}
                     className={classNames(
                       "text-white h-[16px] w-[16px] rounded-full",
-                      {
-                        "opacity-0": !isSelected,
-                      }
+                      { "opacity-0": !isSelected }
                     )}
                   />
                 </div>

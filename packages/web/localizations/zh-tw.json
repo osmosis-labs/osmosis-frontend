@@ -1408,7 +1408,12 @@
       "filled": "已填寫訂單以領取"
     },
     "priceReaches": "如果{denom}價格達到{price}",
-    "belowMinimumAmount": "{amount}最小值"
+    "belowMinimumAmount": "{amount}最小值",
+    "noOrderbookForPair": "{base}/{quote} 不存在 orderbook。建立一個以啟用此交易對的 limit orders。",
+    "createOrderbook": "建立 Orderbook",
+    "noOrderbookExists": "{denom} 沒有 orderbook",
+    "clickToCreateOrderbook": "點擊為此交易對建立 orderbook。",
+    "createOrderbookDescription": "建立 orderbook pool 可在 Osmosis 上為此交易對下 limit orders。"
   },
   "tradeDetails": {
     "priceImpact": {

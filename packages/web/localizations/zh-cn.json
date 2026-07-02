@@ -1408,7 +1408,12 @@
       "filled": "已填写订单并领取"
     },
     "priceReaches": "如果{denom}价格达到{price}",
-    "belowMinimumAmount": "{amount}最小值"
+    "belowMinimumAmount": "{amount}最小值",
+    "noOrderbookForPair": "{base}/{quote} 不存在 orderbook。创建一个以启用此交易对的 limit orders。",
+    "createOrderbook": "创建 Orderbook",
+    "noOrderbookExists": "{denom} 没有 orderbook",
+    "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
+    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
   },
   "tradeDetails": {
     "priceImpact": {

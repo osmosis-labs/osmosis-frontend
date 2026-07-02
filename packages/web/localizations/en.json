@@ -1408,7 +1408,12 @@
       "filled": "Filled orders to claim"
     },
     "priceReaches": "If {denom} price reaches {price}",
-    "belowMinimumAmount": "{amount} minimum"
+    "belowMinimumAmount": "{amount} minimum",
+    "noOrderbookForPair": "No orderbook exists for {base}/{quote}. Create one to enable limit orders for this pair.",
+    "createOrderbook": "Create Orderbook",
+    "noOrderbookExists": "No orderbook for {denom}",
+    "clickToCreateOrderbook": "Click to create an orderbook for this pair.",
+    "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

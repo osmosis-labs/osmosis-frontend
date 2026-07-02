@@ -1408,7 +1408,12 @@
       "filled": "दावा करने के लिए भरे गए ऑर्डर"
     },
     "priceReaches": "यदि {denom} मूल्य {price} तक पहुँच जाता है",
-    "belowMinimumAmount": "{amount} न्यूनतम"
+    "belowMinimumAmount": "{amount} न्यूनतम",
+    "noOrderbookForPair": "{base}/{quote} के लिए कोई orderbook मौजूद नहीं है। इस जोड़ी के लिए limit orders सक्षम करने हेतु एक बनाएं।",
+    "createOrderbook": "Orderbook बनाएं",
+    "noOrderbookExists": "{denom} के लिए कोई orderbook नहीं",
+    "clickToCreateOrderbook": "इस जोड़ी के लिए एक orderbook बनाने के लिए क्लिक करें।",
+    "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।"
   },
   "tradeDetails": {
     "priceImpact": {

@@ -1408,7 +1408,12 @@
       "filled": "주문이 채워져서 청구됩니다"
     },
     "priceReaches": "{denom} 가격 {price} 도달하면",
-    "belowMinimumAmount": "{amount} 최소"
+    "belowMinimumAmount": "{amount} 최소",
+    "noOrderbookForPair": "{base}/{quote}에 대한 orderbook이 없습니다. 이 쌍의 limit orders를 활성화하려면 하나를 만드세요.",
+    "createOrderbook": "Orderbook 만들기",
+    "noOrderbookExists": "{denom}에 대한 orderbook 없음",
+    "clickToCreateOrderbook": "클릭하여 이 쌍의 orderbook을 만드세요.",
+    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다."
   },
   "tradeDetails": {
     "priceImpact": {
