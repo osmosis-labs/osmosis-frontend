@@ -15,7 +15,8 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 /** Threshold above which the limit price triggers an extreme-deviation
- *  caution banner. Fixed at 20% per MTN-16. Tune here if product asks. */
+ *  caution banner. Fixed at 20% by product decision; tune here if that
+ *  changes. */
 const EXTREME_DEVIATION_THRESHOLD = new Dec("0.20");
 
 const percentAdjustmentOptions = [
