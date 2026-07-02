@@ -598,7 +598,7 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "cosmwasm-whitewhale" && (
                     <Image
                       alt="skeleton swap icon"
-                      src="/images/skeletonswap-icon.svg"
+                      src="/images/skeletonswap-icon.webp"
                       height={16}
                       width={16}
                     />
