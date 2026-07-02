@@ -543,21 +543,29 @@ export function useAddConcentratedLiquidityConfig(
             .sort((a, b) => a.denom.localeCompare(b.denom))
             .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
-          // token0/token1 minima: a slippage buffer below the provided amounts.
-          // `tokensProvided` is the MAX per side; the chain deposits per the
-          // pool ratio (which may consume slightly less of one side) and reverts
-          // only if a side falls below its minimum. The buffer gives that
-          // ratio-fitting room. It is NOT a second slippage hit on the swap (the
-          // swapped side's provided amount is already its guaranteed floor); it
-          // only absorbs the ratio rounding. Both legs revert together.
-          const tokenMinAmount0 = new Dec(baseMicro)
+          // token0/token1 minima: a slippage buffer below each side's EXPECTED
+          // deposit, not below its cap. The caps are deliberately skewed: the
+          // swapped side is capped at its guaranteed floor (expected out x
+          // (1 - slip)) while the provided side carries the full leftover, so
+          // with zero drift the ratio-fit consumes the full swapped-side cap
+          // but only ~(1 - slip) of the provided side. The provided side's
+          // minimum therefore buffers below that expected usage (a second
+          // (1 - slip) factor); buffering below its cap would leave zero
+          // headroom and revert on any adverse ratio drift. Each side keeps
+          // one slippage-width of room. Both legs revert together.
+          const providedSideMin = new Dec(providedRemaining)
             .mul(slippageMultiplier)
-            .truncate()
-            .toString();
-          const tokenMinAmount1 = new Dec(quoteMicro)
             .mul(slippageMultiplier)
-            .truncate()
-            .toString();
+            .truncate();
+          const swapSideMin = new Dec(swapFloor)
+            .mul(slippageMultiplier)
+            .truncate();
+          const tokenMinAmount0 = (
+            config.singleAssetSide === "base" ? providedSideMin : swapSideMin
+          ).toString();
+          const tokenMinAmount1 = (
+            config.singleAssetSide === "base" ? swapSideMin : providedSideMin
+          ).toString();
 
           await account?.osmosis.sendZapInToConcentratedPositionMsg(
             poolId,
