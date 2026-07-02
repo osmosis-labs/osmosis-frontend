@@ -109,29 +109,100 @@ export async function getKeplrPopupPage(
   return null;
 }
 
+// Per-step budgets for acting on a popup that has already been acquired.
+// Kept separate from the popup-acquisition timeout so a failure can name the
+// step that actually timed out (popup load vs Approve button).
+const APPROVE_LOAD_TIMEOUT_MS = 10_000;
+const APPROVE_BUTTON_TIMEOUT_MS = 10_000;
+
 /**
  * Waits for a Keplr approval popup and clicks "Approve".
  *
  * Delegates to `getKeplrPopupPage()` (which checks existing pages, waits
- * for event, then falls back to direct navigation).
+ * for event, then falls back to direct navigation) to acquire the popup.
+ *
+ * The popup frequently comes up blank or renders the Approve button late in
+ * headless CI, so a single `waitFor` is flaky. We retry the load + button
+ * steps with a reload in between: a reload makes the popup re-read the
+ * still-pending approval from the background service worker (the request is queued
+ * there, so it survives the reload). Each failed attempt logs which step timed
+ * out, so a hard failure points at the real cause instead of a generic
+ * "Approve not visible".
  *
  * Returns the popup Page, or null if no approval was needed (1CT / auto-approve).
- * Throws if the popup was found but the Approve button could not be clicked
- * (prevents silent failures that would surface as misleading timeouts later).
+ * Throws only if a popup was found but Approve never became actionable after
+ * all attempts (prevents silent failures that would surface as misleading
+ * timeouts later).
  */
 export async function waitForKeplrApproval(
   context: BrowserContext,
-  opts: { timeout?: number } = {}
+  opts: { timeout?: number; attempts?: number } = {}
 ): Promise<Page | null> {
-  const popupPage = await getKeplrPopupPage(context, opts);
+  const { timeout = 15_000, attempts = 3 } = opts;
 
-  if (popupPage) {
-    await popupPage.waitForLoadState("load", { timeout: 10_000 });
-    const approveBtn = popupPage.getByRole("button", { name: "Approve" });
-    await approveBtn.waitFor({ state: "visible", timeout: 10_000 });
-    console.log("Clicking Approve in Keplr popup.");
-    await approveBtn.click();
+  const isPopup = (p: Page) =>
+    p.url().includes("chrome-extension://") && p.url().includes("/popup.html");
+
+  // A null result here means no approval popup ever appeared (1CT /
+  // pre-approved) — a no-op success, not a failure.
+  let popupPage = await getKeplrPopupPage(context, { timeout });
+  if (!popupPage) {
+    console.log(
+      "No Keplr approval popup appeared; assuming 1-click trading or auto-approval."
+    );
+    return null;
   }
 
-  return popupPage;
+  let lastError = "unknown error";
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const loaded = await popupPage
+      .waitForLoadState("load", { timeout: APPROVE_LOAD_TIMEOUT_MS })
+      .then(() => true)
+      .catch(() => false);
+
+    if (loaded) {
+      const approveBtn = popupPage.getByRole("button", { name: "Approve" });
+      try {
+        await approveBtn.waitFor({
+          state: "visible",
+          timeout: APPROVE_BUTTON_TIMEOUT_MS,
+        });
+        await approveBtn.click({ timeout: APPROVE_BUTTON_TIMEOUT_MS });
+        console.log(
+          `Clicking Approve in Keplr popup${
+            attempt > 1 ? ` (attempt ${attempt}/${attempts})` : ""
+          }.`
+        );
+        return popupPage;
+      } catch (err) {
+        lastError = `"Approve" button not visible within ${
+          APPROVE_BUTTON_TIMEOUT_MS / 1_000
+        }s: ${err instanceof Error ? err.message : String(err)}`;
+      }
+    } else {
+      lastError = `popup did not reach "load" within ${
+        APPROVE_LOAD_TIMEOUT_MS / 1_000
+      }s`;
+    }
+
+    console.warn(
+      `waitForKeplrApproval attempt ${attempt}/${attempts} failed: ${lastError}`
+    );
+
+    if (attempt < attempts) {
+      // Reload to re-render a blank/stuck popup; the pending request persists
+      // in the service worker. If the popup was re-emitted as a new page,
+      // switch to the freshest open popup.
+      await popupPage.reload({ waitUntil: "domcontentloaded" }).catch(() => {});
+      await popupPage.waitForTimeout(1_500);
+      const popups = context.pages().filter(isPopup);
+      const fresh = popups[popups.length - 1];
+      if (fresh) popupPage = fresh;
+    }
+  }
+
+  throw new Error(
+    `waitForKeplrApproval: popup appeared but Approve was not actionable after ` +
+      `${attempts} attempts. Last error: ${lastError}`
+  );
 }

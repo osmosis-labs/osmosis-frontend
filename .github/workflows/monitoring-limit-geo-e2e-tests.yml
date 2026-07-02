@@ -18,13 +18,19 @@ jobs:
   # every swap/trade/limit job. They:
   #   - check the monitoring wallet's balance,
   #   - send AT MOST one Slack alert if low,
-  #   - dispatch AT MOST one topup workflow if low,
   #   - export `outcome` (pass | warn | fail | error) so the test jobs can
   #     skip themselves when the wallet is critically low.
   #
   # Before this refactor each of fe-swap-*, fe-trade-*, fe-limit-* ran the
   # same five balance steps independently, producing up to 9 Slack alerts
   # and up to 3 topup-workflow dispatches per cron tick.
+  #
+  # Topup dispatch is NOT done per-preflight anymore (Phase A / MTN-97). The
+  # three preflights run in parallel and each used to hit `gh run list` in the
+  # same second, so all three saw "nothing in flight" and dispatched — 3 full
+  # top-ups per tick for work that a single run already covers (one topup run
+  # refills US/EU/SG/preview). Dispatch is now centralised in the single
+  # `topup-dispatch` job below, which `needs` all three preflights.
   # -------------------------------------------------------------------------
 
   preflight-us:
@@ -37,13 +43,14 @@ jobs:
       outcome: ${{ steps.balance-details.outputs.outcome }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
@@ -73,8 +80,10 @@ jobs:
       - name: Send low-balance Slack alert
         if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
@@ -92,27 +101,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
-          else
-            gh workflow run "E2E: Topup Test Accounts" \
-              --ref stage \
-              -f dry_run=false \
-              -f topup_multiplier=3.0 \
-              -f reserve_osmo=5 \
-              -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
-          fi
 
   preflight-eu:
     name: preflight-eu-balance
@@ -124,13 +112,14 @@ jobs:
       outcome: ${{ steps.balance-details.outputs.outcome }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
@@ -160,8 +149,10 @@ jobs:
       - name: Send low-balance Slack alert
         if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
@@ -179,27 +170,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
-          else
-            gh workflow run "E2E: Topup Test Accounts" \
-              --ref stage \
-              -f dry_run=false \
-              -f topup_multiplier=3.0 \
-              -f reserve_osmo=5 \
-              -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
-          fi
 
   preflight-sg:
     name: preflight-sg-balance
@@ -211,13 +181,14 @@ jobs:
       outcome: ${{ steps.balance-details.outputs.outcome }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
@@ -247,8 +218,10 @@ jobs:
       - name: Send low-balance Slack alert
         if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
@@ -266,18 +239,79 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Trigger automatic topup
-        if: steps.balance-details.outputs.outcome == 'warn' || steps.balance-details.outputs.outcome == 'fail'
-        continue-on-error: true
+
+  # -------------------------------------------------------------------------
+  # Single, deduplicated topup dispatcher (Phase A / MTN-97).
+  #
+  # `needs` all three preflights and dispatches AT MOST ONE topup per cron tick
+  # if any region reports a low balance (warn/fail). One topup run refills every
+  # account (US/EU/SG/preview), so a single dispatch covers all regions.
+  #
+  # Dedup model:
+  #   - Consolidation (this single job) removes the same-tick 3x race: the three
+  #     preflights used to each dispatch in parallel.
+  #   - The cooldown guard below removes cross-tick / cross-workflow repeats
+  #     (this job + prod-frontend-e2e all check the same workflow's recent runs).
+  # The per-region Slack alerts stay in each preflight, so a persistently low
+  # account still pages every tick even while dispatch is on cooldown.
+  # -------------------------------------------------------------------------
+  topup-dispatch:
+    name: topup-dispatch
+    runs-on: ubuntu-latest
+    needs: [preflight-us, preflight-eu, preflight-sg]
+    if: >-
+      always() && (
+        needs.preflight-us.outputs.outcome == 'warn' || needs.preflight-us.outputs.outcome == 'fail' ||
+        needs.preflight-eu.outputs.outcome == 'warn' || needs.preflight-eu.outputs.outcome == 'fail' ||
+        needs.preflight-sg.outputs.outcome == 'warn' || needs.preflight-sg.outputs.outcome == 'fail'
+      )
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Trigger automatic topup (deduplicated)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # This job has no `actions/checkout`, so `gh` can't infer the repo
+          # from a local git remote (it would fail with "not a git repository").
+          # `GH_REPO` tells `gh` which repo to operate on for both the cooldown
+          # `gh run list` lookup and the `gh workflow run` dispatch below.
+          GH_REPO: ${{ github.repository }}
+          US_OUTCOME: ${{ needs.preflight-us.outputs.outcome }}
+          EU_OUTCOME: ${{ needs.preflight-eu.outputs.outcome }}
+          SG_OUTCOME: ${{ needs.preflight-sg.outputs.outcome }}
         run: |
-          PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
-          if [ "$PENDING" -gt 0 ]; then
-            echo "Topup workflow already queued/in-progress — skipping dispatch."
+          # Dedup guard (Phase A / MTN-97): skip if a topup is already in flight,
+          # OR a real (non-dry-run) successful topup was *created* (`createdAt`,
+          # i.e. dispatched/queued) within the ~45 min cooldown. The window is
+          # keyed off createdAt (≈ dispatch time), not completion time, since the
+          # intent is to rate-limit how often we dispatch. 45 min is deliberately
+          # below the 60 min cron so a still-low account is still refilled on the
+          # next hourly tick; the window only collapses same-tick and
+          # cross-workflow bursts. Failed runs do NOT count (so a bad topup can be
+          # retried immediately); dry runs do NOT count (they move no funds).
+          # Best-effort, non-atomic: two dispatchers firing at the same instant
+          # can still both dispatch.
+          COOLDOWN_SECONDS=2700
+          RECENT=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 \
+            --json status,conclusion,displayTitle,createdAt \
+            --jq "[.[]
+              | select((.displayTitle | startswith(\"Dry run\")) | not)
+              | select(
+                  .status == \"queued\" or .status == \"in_progress\"
+                  or (.conclusion == \"success\" and ((now - (.createdAt | fromdateiso8601)) < $COOLDOWN_SECONDS))
+                )] | length" || echo "")
+          # Fail open (MTN-110): if the gh/jq lookup errored, RECENT is
+          # empty/non-numeric — treat it as "nothing recent" and dispatch
+          # rather than silently skip. A duplicate topup is harmless (the
+          # script re-checks balances and only sends deficits); a skipped
+          # dispatch is the starvation bug this guard exists to prevent.
+          if ! [[ "$RECENT" =~ ^[0-9]+$ ]]; then
+            echo "Topup cooldown lookup failed (gh/jq) — proceeding to dispatch."
+            RECENT=0
+          fi
+          if [ "$RECENT" -gt 0 ]; then
+            echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
           else
             gh workflow run "E2E: Topup Test Accounts" \
               --ref stage \
@@ -285,7 +319,7 @@ jobs:
               -f topup_multiplier=3.0 \
               -f reserve_osmo=5 \
               -f reserve_usdc=100
-            echo "Topup workflow dispatched (balance outcome: ${{ steps.balance-details.outputs.outcome }})."
+            echo "Topup workflow dispatched (US=$US_OUTCOME EU=$EU_OUTCOME SG=$SG_OUTCOME)."
           fi
 
   # -------------------------------------------------------------------------
@@ -304,16 +338,17 @@ jobs:
     if: needs.preflight-us.outputs.outcome != 'fail'
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -336,7 +371,7 @@ jobs:
       - name: upload test results
         if: failure()
         id: e2e-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: us-swap-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
@@ -349,16 +384,17 @@ jobs:
     if: needs.preflight-eu.outputs.outcome != 'fail'
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -385,7 +421,7 @@ jobs:
       - name: upload test results
         if: failure()
         id: e2e-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: eu-swap-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
@@ -400,16 +436,17 @@ jobs:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -436,180 +473,9 @@ jobs:
       - name: upload test results
         if: failure()
         id: e2e-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sg-swap-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  fe-trade-eu:
-    timeout-minutes: 20
-    needs: [preflight-eu, fe-swap-eu]
-    if: always() && needs.preflight-eu.outputs.outcome != 'fail'
-    name: prod-fe-trade-eu
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Trade tests in EU
-        env:
-          BASE_URL: "https://app.osmosis.zone"
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
-          USE_TEST_PROXY: "use"
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
-          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
-          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
-          # HEADLESS: "true"
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.market --timeout 180000
-      - name: set-output
-        if: always()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload monitoring test results
-        if: failure() || cancelled()
-        id: monitoring-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: eu-trade-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  fe-limit-eu:
-    timeout-minutes: 15
-    needs: [preflight-eu, fe-trade-eu]
-    if: always() && needs.preflight-eu.outputs.outcome != 'fail'
-    name: prod-fe-limit-eu
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Cancel leftover open orders
-        continue-on-error: true
-        env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
-          ACCOUNT_LABEL: "Monitoring EU (pre-test cleanup)"
-        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
-      - name: Run Limit tests in EU
-        env:
-          BASE_URL: "https://app.osmosis.zone"
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
-          USE_TEST_PROXY: "use"
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
-          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
-          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
-          # HEADLESS: "true"
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.limit --timeout 180000
-      - name: set-output
-        if: always()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload monitoring test results
-        if: failure() || cancelled()
-        id: monitoring-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: eu-limit-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  fe-trade-sg:
-    timeout-minutes: 15
-    needs: [preflight-sg, fe-swap-sg]
-    if: always() && needs.preflight-sg.outputs.outcome != 'fail'
-    name: prod-fe-trade-sg
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Trade tests in SG
-        env:
-          BASE_URL: "https://app.osmosis.zone"
-          TEST_PROXY: "http://139.59.218.19:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
-          USE_TEST_PROXY: "use"
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
-          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
-          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
-          # HEADLESS: "true"
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.market --timeout 90000
-      - name: set-output
-        if: always()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload monitoring test results
-        if: failure() || cancelled()
-        id: monitoring-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: sg-trade-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
   fe-trade-us:
@@ -622,16 +488,17 @@ jobs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -659,7 +526,7 @@ jobs:
       - name: upload monitoring test results
         if: failure() || cancelled()
         id: monitoring-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: us-trade-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
@@ -674,16 +541,17 @@ jobs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -719,22 +587,15 @@ jobs:
       - name: upload monitoring test results
         if: failure() || cancelled()
         id: monitoring-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: us-limit-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
   fe-bot-alert:
     runs-on: ubuntu-latest
-    needs:
-      [
-        fe-trade-eu,
-        fe-trade-us,
-        fe-trade-sg,
-        fe-limit-us,
-        fe-limit-eu,
-      ]
-    if: failure() && github.run_attempt == 2 && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-trade-sg.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
+    needs: [fe-trade-us, fe-limit-us]
+    if: failure() && github.run_attempt == 2 && (needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
     # Send alert only if something failed and unexpected failures are more than 1
     steps:
       - name: Install Datadog CI
@@ -763,10 +624,7 @@ jobs:
 
           # Add tags for unexpected failure counts by region
           datadog-ci tag --level pipeline \
-            --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
             --tags "fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }}" \
-            --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
-            --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
             --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
 
           echo "✅ Metrics sent to Datadog successfully"
@@ -776,16 +634,16 @@ jobs:
     if: always()
     needs:
       [
-        fe-trade-eu,
+        fe-swap-us,
+        fe-swap-eu,
+        fe-swap-sg,
         fe-trade-us,
-        fe-trade-sg,
-        fe-bot-alert,
         fe-limit-us,
-        fe-limit-eu,
+        fe-bot-alert,
       ]
     steps:
       - name: Delete Previous deployments
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           debug: true
           script: |

@@ -88,7 +88,9 @@
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
     "goToPool": "Mergi la piscina #{poolId}",
-    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența."
+    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența.",
+    "noPositions": "Nu s-au găsit poziții",
+    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread."
   },
   "copied": "Copiat!",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "Cumpărați cripto",
       "swappedSubtitle": "Suportă OSMO, USDC",
       "moonpaySubtitle": "Suporta OSMO, USDC",
-      "transakSubtitle": "Acceptă OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
       "moonpayCountrySupport": "Peste 165 de țări"
-    },
-    "incentive": {
-      "title": "Tipuri de stimulente"
     },
     "MAX": "MAX",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "Transmutator",
       "orderbook": "Carnet de comandă",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Fără incentivi"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Conecteaza Portofel",
@@ -537,6 +534,9 @@
       },
       "title": "Toate pool-urile"
     },
+    "noPoolsFound": "Nu s-au găsit piscine",
+    "noPoolsFoundDescription": "Adaugă lichiditate la un fond de investiții pentru a începe să câștigi recompense.",
+    "errorFetchingPools": "Nu s-au putut încărca grupurile. Vă rugăm să încercați să actualizați pagina.",
     "APR": "APR",
     "bonded": "Blocate",
     "createPool": {
@@ -597,8 +597,6 @@
     "myLiquidity": "Lichiditatea mea",
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
-    "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
     "aprBreakdown": {
       "swapFees": "Taxe de schimb",
       "boost": "Boost",
@@ -854,6 +852,7 @@
     "convertTo": "Schimba in",
     "depositAs": "Depozit ca",
     "withdrawAs": "Retrage ca",
+    "withdrawViaRoute": "prin {route}",
     "recommended": "Recomandat",
     "fee": "taxa",
     "fees": "taxe",
@@ -873,11 +872,18 @@
       "titleWithdraw": "Mai multe opțiuni de retragere",
       "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
       "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
-      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu",
-      "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută."
+      "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută.",
+      "externalSiteCaveat": "Acestea deschid site-uri de bridge terțe. Alege ruta acolo.",
+      "convertBeforeWithdraw": {
+        "title": "Convertiți mai întâi în {variant}",
+        "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",
+        "currentVariantBalance": "Sold curent {variant}:",
+        "successTitle": "Convertit în {variant}",
+        "successDescription": "{variant} este gata. Continuați la {provider} pentru a finaliza retragerea.",
+        "continueTo": "Continuați la {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Selectați un activ de depus",
@@ -983,7 +989,77 @@
     "createNewDepositAddress": "Creați o nouă adresă de depozit",
     "transactionDetails": "Detalii tranzacție",
     "confirmAmount": "Confirmați suma",
-    "enterChainAddress": "Introduceți adresa {chain}"
+    "enterChainAddress": "Introduceți adresa {chain}",
+    "wormholeRedeem": {
+      "title": "Revendică un transfer Wormhole blocat",
+      "description": "Dacă ai un transfer prin puntea Wormhole din Osmosis care este blocat, lipește mai jos hash-ul tranzacției Osmosis pentru a-l căuta și a finaliza revendicarea pe Solana (Phantom) sau Sui (Slush sau Phantom).",
+      "txHashPlaceholder": "Hash-ul tranzacției Osmosis...",
+      "lookup": "Caută",
+      "phantomNotDetected": "Portofelul Phantom nu a fost detectat.",
+      "installPhantom": "Instalează Phantom",
+      "toRedeem": "pentru a revendica.",
+      "noSuiWalletDetectedInstall": "Nu a fost detectat niciun portofel Sui acceptat. Instalează",
+      "toRedeemOnSui": "pentru a revendica pe Sui.",
+      "or": "sau",
+      "token": "Token",
+      "value": "Valoare",
+      "from": "De la",
+      "to": "Către ({chain})",
+      "date": "Data",
+      "wormchainReceive": "Recepție Wormchain",
+      "checkingSolana": "Se verifică starea revendicării pe Solana...",
+      "dailyLimitExceeded": "Limita zilnică depășită",
+      "governorBodyEnqueued": "Acest transfer va dura până la {hours} ore, deoarece Wormhole a atins limita zilnică de transfer pentru {chain}. Aceasta este o funcție de securitate normală și temporară a rețelei Wormhole.",
+      "governorBodyLikelyEnqueued": "Valoarea acestui transfer (~{amount}) depășește marja disponibilă pe {chain} (~{available} rămase). Gardienii Wormhole îl vor pune probabil în coadă pentru până la {hours} ore.",
+      "releaseCountdownUpToHours": "Până la {hours} ore",
+      "releaseShortly": "Se eliberează în curând",
+      "releaseInHoursMinutes": "Se eliberează în {hours}h {minutes}m",
+      "releaseInMinutes": "Se eliberează în {minutes}m",
+      "learnMore": "Află mai multe",
+      "checkAgain": "Verifică din nou",
+      "alreadyRedeemedOn": "Acest transfer a fost deja revendicat pe {chain}.",
+      "viewOnWormholescan": "Vezi pe Wormholescan",
+      "vaaReadyConnectSolana": "VAA este semnat și pregătit. Conectează-ți portofelul Solana pentru a revendica.",
+      "connectPhantom": "Conectează portofelul Phantom",
+      "installPhantomWallet": "Instalează portofelul Phantom",
+      "connectedWallet": "Portofel conectat",
+      "redeemOnSolana": "Revendică pe Solana",
+      "transferRedeemedOnSui": "Transfer revendicat pe Sui.",
+      "redeemSubmittedToSui": "Revendicare trimisă către Sui.",
+      "viewOnSuiscan": "Vezi pe Suiscan",
+      "viewOnSolscan": "Vezi pe Solscan",
+      "waitingForWalletSignatureNamed": "Se așteaptă semnătura de la {wallet}...",
+      "waitingForSuiWalletSignature": "Se așteaptă semnătura portofelului tău Sui...",
+      "waitingForWalletSignature": "Se așteaptă semnătura portofelului...",
+      "submittingToSui": "Se trimite tranzacția către Sui...",
+      "submittingToSolana": "Se trimite tranzacția către Solana...",
+      "transferRedeemedSuccessfully": "Transfer revendicat cu succes!",
+      "partialRedeemConfirmed": "{count} dintre tranzacțiile de revendicare au fost confirmate înainte de eroare:",
+      "viewTxOnSolscan": "Vezi tx {number} pe Solscan",
+      "copied": "Copiat",
+      "copy": "Copiază",
+      "failedToLookUp": "Căutarea tranzacției a eșuat",
+      "failedToConnectWallet": "Conectarea portofelului a eșuat",
+      "failedToConnectSuiWallet": "Conectarea portofelului Sui a eșuat.",
+      "suiRedeemFailed": "Revendicarea pe Sui a eșuat",
+      "redeemFailed": "Revendicarea a eșuat",
+      "vaaNotYetAvailable": "VAA nu este încă disponibil. Gardienii Wormhole ar putea procesa în continuare această tranzacție.",
+      "txFailedOnChain": "Tranzacția a eșuat on-chain: {error}",
+      "txConfirmationTimedOut": "Confirmarea tranzacției a expirat după 120 s. Verifică starea pe Solscan: {sig}",
+      "nonSolanaVaaReady": "VAA este semnat și pregătit. Pentru a revendica pe {chain}, deschide această operațiune pe Wormholescan și conectează un portofel {chain}. Fluxul de revendicare Wormholescan acceptă Sui Wallet, Suiet, Backpack și alte portofele Wallet Standard.",
+      "recipientChain": "Destinatar ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "Deschide pe Wormholescan pentru a revendica",
+      "suiVaaReadyConnect": "VAA este semnat și pregătit. Conectează un portofel Sui (Slush sau Phantom) pentru a revendica nativ pe Sui.",
+      "recipientSui": "Destinatar (Sui)",
+      "noSuiWalletInstallNatively": "Nu a fost detectat niciun portofel Sui acceptat. Instalează unul pentru a revendica nativ:",
+      "installNamed": "Instalează {wallet}",
+      "connectNamed": "Conectează {wallet}",
+      "connectedNamedAccount": "Cont {wallet} conectat",
+      "confirmInNamed": "Confirmă în {wallet}...",
+      "submittingOnSui": "Se trimite pe Sui...",
+      "redeemOnSui": "Revendică pe Sui"
+    }
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
@@ -1052,7 +1128,8 @@
       "price": "Preț",
       "volume": "Volum",
       "advanced": "Avansat",
-      "simple": "Simplu"
+      "simple": "Simplu",
+      "lastUpdate": "Ultima actualizare: {time}"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",
@@ -1405,6 +1482,12 @@
   "taprootAddressNotSupported": "Adresele Taproot nu sunt acceptate pentru retrageri",
   "wormhole": {
     "deprecationTitle": "Suportul pentru Wormhole este în curs de retragere",
-    "deprecationSubtitle": "Nu recomandăm transferul de active suplimentare către Osmosis prin Wormhole. Această pagină este disponibilă pentru a vă ajuta să retrageți activele existente bridge-uite prin Wormhole din Osmosis."
+    "deprecationSubtitle": "Nu recomandăm transferul de active suplimentare către Osmosis prin Wormhole. Această pagină este disponibilă pentru a vă ajuta să retrageți activele existente bridge-uite prin Wormhole din Osmosis.",
+    "bridgeStepTitle": "Fă puntea prin Wormhole",
+    "refreshBalance": "Reîmprospătează soldul",
+    "convertAlloy": {
+      "stepTitle": "Convertește {symbol} în {symbol}.wh",
+      "description": "Deții {balance} {symbol} ca activ aliat. Wormhole face puntea variantei {symbol}.wh, așa că convertește mai întâi, apoi fă puntea mai jos."
+    }
   }
 }

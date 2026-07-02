@@ -65,6 +65,48 @@ describe("getAssets", () => {
       expect(assets.some((asset) => asset.coinDenom === "OSMO")).toBeTruthy();
       expect(assets.some((asset) => asset.coinDenom === "ION")).toBeFalsy();
     });
+
+    describe('"new" category 30-day window', () => {
+      // Anchor the clock so the 2024 fixture listing dates straddle the window:
+      // window start = 2024-01-26. WBTC (2024-01-29) is inside (new); sqTIA
+      // (2024-01-19) is outside (stale); OSMO has no listingDate.
+      beforeAll(() => {
+        jest
+          .useFakeTimers()
+          .setSystemTime(new Date("2024-02-25T00:00:00.000Z"));
+      });
+
+      afterAll(() => {
+        jest.useRealTimers();
+      });
+
+      it("should return an asset listed within the last 30 days", () => {
+        const assets = getAssets({
+          assetLists: MockAssetLists,
+          categories: ["new"],
+        });
+
+        expect(assets.some((asset) => asset.coinDenom === "WBTC")).toBeTruthy();
+      });
+
+      it("should not return an asset listed more than 30 days ago", () => {
+        const assets = getAssets({
+          assetLists: MockAssetLists,
+          categories: ["new"],
+        });
+
+        expect(assets.some((asset) => asset.coinDenom === "sqTIA")).toBeFalsy();
+      });
+
+      it("should not return an asset without a listing date", () => {
+        const assets = getAssets({
+          assetLists: MockAssetLists,
+          categories: ["new"],
+        });
+
+        expect(assets.some((asset) => asset.coinDenom === "OSMO")).toBeFalsy();
+      });
+    });
   });
 });
 

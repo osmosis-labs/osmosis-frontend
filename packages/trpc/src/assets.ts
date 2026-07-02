@@ -512,6 +512,46 @@ export const assetsRouter = createTRPCRouter({
         }).catch((e) => captureErrorAndReturn(e, []));
       }
     }),
+  /**
+   * Returns the single most recent historical price point at the finest
+   * available bucket that still has data. Used to render a timeframe-
+   * independent "last update" value (e.g. for a stale-data indicator)
+   * without re-keying off whichever range the chart happens to be
+   * displaying.
+   *
+   * Cascades fine -> coarse so assets that have gone quiet (no recent
+   * swaps) still return a point. The upstream historical-bar API only
+   * surfaces buckets it has data for; a 20-day-stale asset has no 5-min
+   * bar in the recent window but does have a 1-day bar covering the day
+   * of its last swap. Three queries in the worst case; one in the
+   * common case.
+   */
+  getAssetLatestPricePoint: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenom: z.string(),
+        realtime: z.boolean().optional(),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenom, realtime } }) => {
+      const tryAtTimeFrame = (timeFrame: 5 | 60 | 1440) =>
+        getAssetHistoricalPrice({
+          coinMinimalDenom,
+          timeFrame,
+          // realtime only meaningful for the 5-min bucket; on coarser
+          // buckets it would shrink the cache TTL from 3min to 3s for
+          // no benefit (the upstream day-bar isn't realtime anyway).
+          realtime: timeFrame === 5 ? realtime : false,
+        })
+          .then((points) => points[points.length - 1] ?? null)
+          .catch((e) => captureErrorAndReturn(e, null));
+
+      const fivemin = await tryAtTimeFrame(5);
+      if (fivemin) return fivemin;
+      const hourly = await tryAtTimeFrame(60);
+      if (hourly) return hourly;
+      return await tryAtTimeFrame(1440);
+    }),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

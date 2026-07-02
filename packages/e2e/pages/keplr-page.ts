@@ -119,48 +119,63 @@ export class WalletPage {
   }
 
   async selectChainsAndSave() {
-    console.log('Select all Native chains and save.')
-    const allChains = this.page.getByText('All Native Chains')
+    console.log('Select native chains and save.')
 
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        await allChains.waitFor({ state: 'visible', timeout: 20_000 })
-        await allChains.click({ timeout: 5_000 })
-        break
-      } catch (err) {
-        const screenshotPath = `test-results/keplr-chains-debug-attempt-${attempt}-${Date.now()}.png`
-        await this.page.screenshot({ path: screenshotPath, fullPage: true })
-        console.error(
-          `'All Native Chains' not visible or not clickable (attempt ${attempt + 1}/3). ` +
-          `Screenshot: ${screenshotPath} | URL: ${this.page.url()} | Error: ${err}`
-        )
-        if (attempt < 2) {
-          // Don't reload -- Keplr is a hash-routed SPA so reload resets to the
-          // welcome page, destroying all import progress. Just wait and retry.
-          await this.page.waitForTimeout(5_000)
-        } else {
-          throw new Error(
-            `'All Native Chains' never appeared/clickable after 3 attempts. ` +
-            `Last error: ${err}`,
-          )
-        }
-      }
+    // The "Select Chains" screen pre-selects the default native chains (incl.
+    // Osmosis + Cosmos Hub) and enables Save. We deliberately do NOT depend on
+    // the "All Native Chains" row: its text only toggles the accordion (it
+    // never actually changed the selection), and it renders late -- or not at
+    // all -- when the chain list fails to populate in CI, which was the
+    // dominant flake. Gate on the Save button instead: it's the primary CTA and
+    // the control we actually click.
+    //
+    // Crucially this is a SINGLE bounded wait, not a 3x20s loop. The old loop
+    // burned ~60s before failing, which starved the outer setupWallet
+    // relaunch-retry of the ~90s beforeAll budget so it could never finish.
+    // Failing fast here lets that fresh-context retry actually run.
+    const READY_TIMEOUT = 20_000
+
+    try {
+      await expect(this.saveBtn, 'Save CTA not enabled').toBeEnabled({ timeout: READY_TIMEOUT })
+    } catch (err) {
+      const screenshotPath = `test-results/keplr-chains-debug-${Date.now()}.png`
+      await this.page
+        .screenshot({ path: screenshotPath, fullPage: true })
+        .catch(() => {})
+      // Distinguish "screen never mounted" (blank register page) from "screen
+      // mounted but chain list empty" (Keplr remote registry not populating),
+      // so the failure points at the real cause rather than a dead locator.
+      const screenMounted = await this.page
+        .getByText('Select Chains')
+        .isVisible()
+        .catch(() => false)
+      const reason = screenMounted
+        ? 'the "Select Chains" screen mounted but no chains loaded (Keplr remote registry?)'
+        : 'the Keplr register page appears blank / never rendered the "Select Chains" screen'
+      throw new Error(
+        `Keplr chain selection unavailable: ${reason}. Save button not visible ` +
+        `within ${READY_TIMEOUT / 1000}s. URL: ${this.page.url()} | ` +
+        `Screenshot: ${screenshotPath} | Cause: ${err}`,
+      )
     }
 
+    // Save the default-selected chains and confirm the account was created.
+    // Some Keplr builds insert an intermediate Import/Save step, so click
+    // whichever CTA is present until the success screen appears.
     const accountCreated = this.page.getByText('Account Created!')
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
       if (await accountCreated.isVisible().catch(() => false)) break
 
-      if (await this.importBtn.isVisible().catch(() => false)) {
-        console.log('Import whatever is available.')
-        await this.importBtn.click({ timeout: 2000 })
-      } else if (await this.saveBtn.isVisible().catch(() => false)) {
+      if (await this.saveBtn.isVisible().catch(() => false)) {
         console.log('Save chain selection.')
-        await this.saveBtn.click({ timeout: 2000 })
+        await this.saveBtn.click({ timeout: 2_000 }).catch(() => {})
+      } else if (await this.importBtn.isVisible().catch(() => false)) {
+        console.log('Import available chains.')
+        await this.importBtn.click({ timeout: 2_000 }).catch(() => {})
       }
 
-      await this.page.waitForTimeout(1000)
+      await this.page.waitForTimeout(1_000)
     }
 
     await expect(

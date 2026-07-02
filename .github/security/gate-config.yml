@@ -1,0 +1,25 @@
+# Controls behavior of the dep-security-gate workflow.
+#
+# This file is the single source of truth for whether the gate blocks merges
+# and how loud it is on Slack. Changes require CODEOWNERS approval - see
+# .github/CODEOWNERS. The workflow itself is not yet wired up; see
+# MTN-56 (Phase 03) for the workflow PR that first consumes this file.
+#
+# mode:
+#   gate      -> aggregator exits non-zero on REJECTED verdicts (blocks merge).
+#   advisory  -> aggregator always exits zero; sticky comment + Slack still post.
+#
+# slack_verbosity:
+#   verbose  -> every verdict posts to #security-gate-alerts.
+#   alerts   -> REJECTED + override events post; APPROVED and
+#               NEEDS_HUMAN_REVIEW are suppressed.
+#   silent   -> normal verdicts and override events are suppressed; only
+#               always-on events post (see below).
+#
+# Always-on events (post regardless of verbosity; canonical list lives in
+# ./USER_GUIDE.md under "Changing the gate's config", incident-handling
+# rationale in ./RUNBOOK.md): REJECTED verdicts, override granted,
+# republish detected, Socket outage, workflow error.
+
+mode: gate
+slack_verbosity: verbose

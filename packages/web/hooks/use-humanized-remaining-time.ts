@@ -18,6 +18,14 @@ export const useHumanizedRemainingTime = ({
     if (!unix) return setHumanizedRemainingTime(undefined);
 
     const updateTime = () => {
+      // humanizeTime is now direction-agnostic (uses absolute diffs), so an
+      // expired target would render as a positive future-looking duration.
+      // Callers of this hook expect a countdown, so clear once the target
+      // has passed.
+      if (dayjs.unix(unix).isBefore(dayjs())) {
+        setHumanizedRemainingTime(undefined);
+        return;
+      }
       setHumanizedRemainingTime(humanizeTime(dayjs.unix(unix)));
     };
 

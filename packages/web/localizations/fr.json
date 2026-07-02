@@ -88,7 +88,9 @@
     "numPositions": "indéfini",
     "onePosition": "1 poste",
     "goToPool": "Aller à la piscine #{poolId}",
-    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support."
+    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support.",
+    "noPositions": "Aucune position trouvée",
+    "noPositionsDescription": "Apportez une liquidité concentrée à un pool pour commencer à percevoir des récompenses de spread."
   },
   "copied": "Copié!",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "Acheter des crypto-monnaies",
       "swappedSubtitle": "Prend en charge OSMO, USDC",
       "moonpaySubtitle": "Prend en charge OSMO, USDC",
-      "transakSubtitle": "Prend en charge OSMO",
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC",
       "moonpayCountrySupport": "Plus de 165 pays"
-    },
-    "incentive": {
-      "title": "Types d'incitations"
     },
     "MAX": "MAX",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "Transmutateur",
       "orderbook": "Carnet de commandes",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Pas d'incitations"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connecter le portefeuille",
@@ -537,6 +534,9 @@
       },
       "title": "Tous les Bassins"
     },
+    "noPoolsFound": "Aucune piscine trouvée",
+    "noPoolsFoundDescription": "Ajoutez des liquidités à un pool pour commencer à gagner des récompenses.",
+    "errorFetchingPools": "Impossible de charger vos piscines. Veuillez actualiser la page.",
     "APR": "TAP",
     "bonded": "Cautionné",
     "createPool": {
@@ -597,8 +597,6 @@
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
-    "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans",
     "aprBreakdown": {
       "swapFees": "Frais de swap",
       "boost": "Booster",
@@ -854,6 +852,7 @@
     "convertTo": "Convertir en",
     "depositAs": "Dépôt comme",
     "withdrawAs": "Se retirer comme",
+    "withdrawViaRoute": "via {route}",
     "recommended": "Recommandé",
     "fee": "frais",
     "fees": "frais",
@@ -873,11 +872,18 @@
       "titleWithdraw": "Plus d'options de retrait",
       "depositDescriptionUnknown": "Pour déposer {denom} , veuillez utiliser un autre fournisseur.",
       "withdrawDescriptionUnknown": "Pour retirer {denom} , veuillez utiliser un autre fournisseur.",
-      "chooseAnAlternativeProviderDeposit": "Choisissez un autre fournisseur pour déposer {asset} de {fromChain} à {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Choisissez un autre fournisseur pour retirer {asset} de {fromChain} à {toChain}",
       "depositWith": "Dépôt avec",
       "withdrawWith": "Retirer avec",
-      "noAlternativesFound": "Aucun fournisseur alternatif trouvé pour cette route."
+      "noAlternativesFound": "Aucun fournisseur alternatif trouvé pour cette route.",
+      "externalSiteCaveat": "Ces liens ouvrent des sites de bridge tiers. Choisissez votre route sur le site.",
+      "convertBeforeWithdraw": {
+        "title": "Convertissez d'abord en {variant}",
+        "description": "{provider} n'accepte que {variant}. Convertissez votre solde allié en {variant} ci-dessous, puis continuez avec {provider} pour finaliser votre retrait.",
+        "currentVariantBalance": "Solde actuel de {variant} :",
+        "successTitle": "Converti en {variant}",
+        "successDescription": "Votre {variant} est prêt. Continuez vers {provider} pour terminer votre retrait.",
+        "continueTo": "Continuer vers {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Sélectionnez un actif à déposer",
@@ -983,7 +989,77 @@
     "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
     "transactionDetails": "Détails de la transaction",
     "confirmAmount": "Confirmer le montant",
-    "enterChainAddress": "Entrez l'adresse {chain}"
+    "enterChainAddress": "Entrez l'adresse {chain}",
+    "wormholeRedeem": {
+      "title": "Récupérer un transfert Wormhole bloqué",
+      "description": "Si un transfert via le pont Wormhole depuis Osmosis est bloqué, collez ci-dessous le hash de la transaction Osmosis pour le rechercher et finaliser la récupération sur Solana (Phantom) ou Sui (Slush ou Phantom).",
+      "txHashPlaceholder": "Hash de transaction Osmosis...",
+      "lookup": "Rechercher",
+      "phantomNotDetected": "Portefeuille Phantom non détecté.",
+      "installPhantom": "Installer Phantom",
+      "toRedeem": "pour récupérer.",
+      "noSuiWalletDetectedInstall": "Aucun portefeuille Sui pris en charge détecté. Installez",
+      "toRedeemOnSui": "pour récupérer sur Sui.",
+      "or": "ou",
+      "token": "Jeton",
+      "value": "Valeur",
+      "from": "De",
+      "to": "Vers ({chain})",
+      "date": "Date",
+      "wormchainReceive": "Réception Wormchain",
+      "checkingSolana": "Vérification du statut de récupération sur Solana...",
+      "dailyLimitExceeded": "Limite quotidienne dépassée",
+      "governorBodyEnqueued": "Ce transfert prendra jusqu'à {hours} heures, car Wormhole a atteint la limite de transfert quotidienne pour {chain}. Il s'agit d'une fonction de sécurité normale et temporaire du réseau Wormhole.",
+      "governorBodyLikelyEnqueued": "La valeur de ce transfert (~{amount}) dépasse la marge disponible sur {chain} (~{available} restants). Les gardiens de Wormhole le mettront probablement en file d'attente pendant un maximum de {hours} heures.",
+      "releaseCountdownUpToHours": "Jusqu'à {hours} heures",
+      "releaseShortly": "Bientôt débloqué",
+      "releaseInHoursMinutes": "Débloqué dans {hours} h {minutes} min",
+      "releaseInMinutes": "Débloqué dans {minutes} min",
+      "learnMore": "En savoir plus",
+      "checkAgain": "Vérifier à nouveau",
+      "alreadyRedeemedOn": "Ce transfert a déjà été récupéré sur {chain}.",
+      "viewOnWormholescan": "Voir sur Wormholescan",
+      "vaaReadyConnectSolana": "Le VAA est signé et prêt. Connectez votre portefeuille Solana pour récupérer.",
+      "connectPhantom": "Connecter le portefeuille Phantom",
+      "installPhantomWallet": "Installer le portefeuille Phantom",
+      "connectedWallet": "Portefeuille connecté",
+      "redeemOnSolana": "Récupérer sur Solana",
+      "transferRedeemedOnSui": "Transfert récupéré sur Sui.",
+      "redeemSubmittedToSui": "Récupération envoyée à Sui.",
+      "viewOnSuiscan": "Voir sur Suiscan",
+      "viewOnSolscan": "Voir sur Solscan",
+      "waitingForWalletSignatureNamed": "En attente de la signature de {wallet}...",
+      "waitingForSuiWalletSignature": "En attente de la signature de votre portefeuille Sui...",
+      "waitingForWalletSignature": "En attente de la signature du portefeuille...",
+      "submittingToSui": "Envoi de la transaction à Sui...",
+      "submittingToSolana": "Envoi de la transaction à Solana...",
+      "transferRedeemedSuccessfully": "Transfert récupéré avec succès !",
+      "partialRedeemConfirmed": "{count} des transactions de récupération ont été confirmées avant l'erreur :",
+      "viewTxOnSolscan": "Voir la tx {number} sur Solscan",
+      "copied": "Copié",
+      "copy": "Copier",
+      "failedToLookUp": "Échec de la recherche de la transaction",
+      "failedToConnectWallet": "Échec de la connexion du portefeuille",
+      "failedToConnectSuiWallet": "Échec de la connexion du portefeuille Sui.",
+      "suiRedeemFailed": "Échec de la récupération sur Sui",
+      "redeemFailed": "Échec de la récupération",
+      "vaaNotYetAvailable": "VAA pas encore disponible. Les gardiens de Wormhole sont peut-être encore en train de traiter cette transaction.",
+      "txFailedOnChain": "La transaction a échoué on-chain : {error}",
+      "txConfirmationTimedOut": "Délai de confirmation de la transaction dépassé après 120 s. Vérifiez le statut sur Solscan : {sig}",
+      "nonSolanaVaaReady": "Le VAA est signé et prêt. Pour récupérer sur {chain}, ouvrez cette opération sur Wormholescan et connectez un portefeuille {chain}. Le flux de récupération de Wormholescan prend en charge Sui Wallet, Suiet, Backpack et d'autres portefeuilles Wallet Standard.",
+      "recipientChain": "Destinataire ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "Ouvrir sur Wormholescan pour récupérer",
+      "suiVaaReadyConnect": "Le VAA est signé et prêt. Connectez un portefeuille Sui (Slush ou Phantom) pour récupérer nativement sur Sui.",
+      "recipientSui": "Destinataire (Sui)",
+      "noSuiWalletInstallNatively": "Aucun portefeuille Sui pris en charge détecté. Installez-en un pour récupérer nativement :",
+      "installNamed": "Installer {wallet}",
+      "connectNamed": "Connecter {wallet}",
+      "connectedNamedAccount": "Compte {wallet} connecté",
+      "confirmInNamed": "Confirmez dans {wallet}...",
+      "submittingOnSui": "Envoi sur Sui...",
+      "redeemOnSui": "Récupérer sur Sui"
+    }
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
@@ -1052,7 +1128,8 @@
       "price": "Prix",
       "volume": "Volume",
       "advanced": "Avancé",
-      "simple": "Simple"
+      "simple": "Simple",
+      "lastUpdate": "Dernière mise à jour : {time}"
     },
     "watchlist": "Liste de surveillance",
     "marketCapRank": "Classement de la capitalisation boursière",
@@ -1405,6 +1482,12 @@
   "taprootAddressNotSupported": "Les adresses de racine pivotante ne sont pas prises en charge pour les retraits",
   "wormhole": {
     "deprecationTitle": "Le support de Wormhole est en cours de dépréciation",
-    "deprecationSubtitle": "Nous ne recommandons pas de transférer des actifs supplémentaires vers Osmosis via Wormhole. Cette page est disponible pour vous aider à retirer les actifs existants bridgés par Wormhole depuis Osmosis."
+    "deprecationSubtitle": "Nous ne recommandons pas de transférer des actifs supplémentaires vers Osmosis via Wormhole. Cette page est disponible pour vous aider à retirer les actifs existants bridgés par Wormhole depuis Osmosis.",
+    "bridgeStepTitle": "Faire le pont via Wormhole",
+    "refreshBalance": "Actualiser le solde",
+    "convertAlloy": {
+      "stepTitle": "Convertir {symbol} en {symbol}.wh",
+      "description": "Vous détenez {balance} {symbol} en tant qu actif allié. Wormhole fait le pont avec la variante {symbol}.wh, convertissez d abord puis faites le pont ci-dessous."
+    }
   }
 }

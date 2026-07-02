@@ -88,7 +88,9 @@
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
     "goToPool": "プール #{poolId}に移動します",
-    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。"
+    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。",
+    "noPositions": "求人情報は見つかりませんでした。",
+    "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。"
   },
   "copied": "コピーしました！",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "暗号通貨を購入する",
       "swappedSubtitle": "OSMO、USDCをサポート",
       "moonpaySubtitle": "OSMO、USDCをサポート",
-      "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート",
       "moonpayCountrySupport": "165か国以上"
-    },
-    "incentive": {
-      "title": "インセンティブの種類"
     },
     "MAX": "マックス",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "トランスミューター",
       "orderbook": "注文書",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "インセンティブなし"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "ウォレットを接続する",
@@ -537,6 +534,9 @@
       },
       "title": "プールを発見する"
     },
+    "noPoolsFound": "プールは見つかりませんでした",
+    "noPoolsFoundDescription": "プールに流動性を追加して、報酬を獲得しましょう。",
+    "errorFetchingPools": "プールの読み込みに失敗しました。ページを更新してみてください。",
     "APR": "4月",
     "bonded": "保税済み",
     "createPool": {
@@ -597,8 +597,6 @@
     "myLiquidity": "私の流動性",
     "myPools": "あなたのプール",
     "poolId": "プール番号{id}",
-    "priceOsmo": "OSMOの価格",
-    "rewardDistribution": "での報酬の分配",
     "aprBreakdown": {
       "swapFees": "スワップ手数料",
       "boost": "ブースト",
@@ -854,6 +852,7 @@
     "convertTo": "に変換",
     "depositAs": "入金",
     "withdrawAs": "撤退する",
+    "withdrawViaRoute": "{route}経由",
     "recommended": "推奨",
     "fee": "手数料",
     "fees": "手数料",
@@ -873,11 +872,18 @@
       "titleWithdraw": "引き出しオプションの追加",
       "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
       "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
-      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
-      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する",
-      "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。"
+      "noAlternativesFound": "このルートに対する代替プロバイダーが見つかりませんでした。",
+      "externalSiteCaveat": "これらはサードパーティのブリッジサイトを開きます。ルートはそちらで選択してください。",
+      "convertBeforeWithdraw": {
+        "title": "まず{variant}に変換してください",
+        "description": "{provider}は{variant}のみを受け付けます。以下でアロイ残高を{variant}に変換してから、{provider}に進んで引き出しを完了してください。",
+        "currentVariantBalance": "現在の{variant}残高：",
+        "successTitle": "{variant}に変換しました",
+        "successDescription": "{variant}の準備ができました。{provider}に進んで出金を完了してください。",
+        "continueTo": "{provider}に進む"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
@@ -983,7 +989,77 @@
     "createNewDepositAddress": "新しい入金アドレスを作成する",
     "transactionDetails": "取引の詳細",
     "confirmAmount": "金額を確認",
-    "enterChainAddress": "{chain}アドレスを入力してください"
+    "enterChainAddress": "{chain}アドレスを入力してください",
+    "wormholeRedeem": {
+      "title": "滞留した Wormhole 転送を請求する",
+      "description": "Osmosis からの Wormhole ブリッジ転送が滞留している場合は、下に Osmosis のトランザクションハッシュを貼り付けて検索し、Solana（Phantom）または Sui（Slush または Phantom）で請求を完了してください。",
+      "txHashPlaceholder": "Osmosis のトランザクションハッシュ...",
+      "lookup": "検索",
+      "phantomNotDetected": "Phantom ウォレットが検出されませんでした。",
+      "installPhantom": "Phantom をインストール",
+      "toRedeem": "して請求してください。",
+      "noSuiWalletDetectedInstall": "対応する Sui ウォレットが検出されませんでした。インストールしてください:",
+      "toRedeemOnSui": "して Sui で請求してください。",
+      "or": "または",
+      "token": "トークン",
+      "value": "価値",
+      "from": "送信元",
+      "to": "送信先（{chain}）",
+      "date": "日付",
+      "wormchainReceive": "Wormchain 受信",
+      "checkingSolana": "Solana で請求状況を確認しています...",
+      "dailyLimitExceeded": "1日の上限を超過しました",
+      "governorBodyEnqueued": "Wormhole が {chain} の1日の転送上限に達したため、この転送の完了には最大 {hours} 時間かかります。これは Wormhole ネットワークの通常かつ一時的なセキュリティ機能です。",
+      "governorBodyLikelyEnqueued": "この転送の価値（~{amount}）は {chain} の利用可能な余裕（残り ~{available}）を超えています。Wormhole のガーディアンはおそらく最大 {hours} 時間キューに入れます。",
+      "releaseCountdownUpToHours": "最大 {hours} 時間",
+      "releaseShortly": "まもなくリリースされます",
+      "releaseInHoursMinutes": "{hours}時間 {minutes}分でリリース",
+      "releaseInMinutes": "{minutes}分でリリース",
+      "learnMore": "詳細",
+      "checkAgain": "再確認",
+      "alreadyRedeemedOn": "この転送はすでに {chain} で請求済みです。",
+      "viewOnWormholescan": "Wormholescan で表示",
+      "vaaReadyConnectSolana": "VAA は署名済みで準備完了です。請求するには Solana ウォレットを接続してください。",
+      "connectPhantom": "Phantom ウォレットを接続",
+      "installPhantomWallet": "Phantom ウォレットをインストール",
+      "connectedWallet": "接続済みウォレット",
+      "redeemOnSolana": "Solana で請求",
+      "transferRedeemedOnSui": "Sui で転送を請求しました。",
+      "redeemSubmittedToSui": "請求を Sui に送信しました。",
+      "viewOnSuiscan": "Suiscan で表示",
+      "viewOnSolscan": "Solscan で表示",
+      "waitingForWalletSignatureNamed": "{wallet} の署名を待っています...",
+      "waitingForSuiWalletSignature": "Sui ウォレットの署名を待っています...",
+      "waitingForWalletSignature": "ウォレットの署名を待っています...",
+      "submittingToSui": "Sui にトランザクションを送信しています...",
+      "submittingToSolana": "Solana にトランザクションを送信しています...",
+      "transferRedeemedSuccessfully": "転送の請求に成功しました！",
+      "partialRedeemConfirmed": "エラー前に請求トランザクションのうち {count} 件が確認されました:",
+      "viewTxOnSolscan": "Solscan でトランザクション {number} を表示",
+      "copied": "コピーしました",
+      "copy": "コピー",
+      "failedToLookUp": "トランザクションの検索に失敗しました",
+      "failedToConnectWallet": "ウォレットの接続に失敗しました",
+      "failedToConnectSuiWallet": "Sui ウォレットの接続に失敗しました。",
+      "suiRedeemFailed": "Sui での請求に失敗しました",
+      "redeemFailed": "請求に失敗しました",
+      "vaaNotYetAvailable": "VAA はまだ利用できません。Wormhole のガーディアンがまだこのトランザクションを処理している可能性があります。",
+      "txFailedOnChain": "トランザクションがオンチェーンで失敗しました: {error}",
+      "txConfirmationTimedOut": "120秒後にトランザクションの確認がタイムアウトしました。Solscan でステータスを確認してください: {sig}",
+      "nonSolanaVaaReady": "VAA は署名済みで準備完了です。{chain} で請求するには、Wormholescan でこの操作を開き、{chain} ウォレットを接続してください。Wormholescan の請求フローは Sui Wallet、Suiet、Backpack およびその他の Wallet Standard ウォレットに対応しています。",
+      "recipientChain": "受取人（{chain}）",
+      "vaaBase64": "VAA（base64）",
+      "openOnWormholescanToRedeem": "請求するには Wormholescan で開く",
+      "suiVaaReadyConnect": "VAA は署名済みで準備完了です。Sui でネイティブに請求するには、Sui ウォレット（Slush または Phantom）を接続してください。",
+      "recipientSui": "受取人（Sui）",
+      "noSuiWalletInstallNatively": "対応する Sui ウォレットが検出されませんでした。ネイティブに請求するにはいずれかをインストールしてください:",
+      "installNamed": "{wallet} をインストール",
+      "connectNamed": "{wallet} を接続",
+      "connectedNamedAccount": "接続済みの {wallet} アカウント",
+      "confirmInNamed": "{wallet} で確認してください...",
+      "submittingOnSui": "Sui に送信しています...",
+      "redeemOnSui": "Sui で請求"
+    }
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -1052,7 +1128,8 @@
       "price": "価格",
       "volume": "音量",
       "advanced": "高度な",
-      "simple": "単純"
+      "simple": "単純",
+      "lastUpdate": "最終更新: {time}"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
@@ -1405,6 +1482,12 @@
   "taprootAddressNotSupported": "Taprootアドレスは出金には対応していません",
   "wormhole": {
     "deprecationTitle": "Wormholeサポートは廃止予定です",
-    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。"
+    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。",
+    "bridgeStepTitle": "Wormholeでブリッジ",
+    "refreshBalance": "残高を更新",
+    "convertAlloy": {
+      "stepTitle": "{symbol}を{symbol}.whに変換",
+      "description": "アロイド資産として {balance} {symbol} を保有しています。Wormholeは{symbol}.whバリアントをブリッジするため、先に変換してから下でブリッジしてください。"
+    }
   }
 }

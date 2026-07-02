@@ -88,7 +88,9 @@
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
     "goToPool": "前往泳池 #{poolId}",
-    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。"
+    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。",
+    "noPositions": "未找到職位",
+    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。"
   },
   "copied": "複製了！",
   "app": {
@@ -242,12 +244,8 @@
       "chooseOnramp": "購買加密貨幣",
       "swappedSubtitle": "支援OSMO、USDC",
       "moonpaySubtitle": "支援OSMO、USDC",
-      "transakSubtitle": "支援OSMO",
       "onrampMoneySubtitle": "支援OSMO、USDC",
       "moonpayCountrySupport": "超過 165 個國家"
-    },
-    "incentive": {
-      "title": "激勵類型"
     },
     "MAX": "全部",
     "pool": {
@@ -271,8 +269,7 @@
       "transmuter": "轉換器",
       "orderbook": "訂單簿",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "無激勵"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "連接錢包",
@@ -537,6 +534,9 @@
       },
       "title": "全部流動性池"
     },
+    "noPoolsFound": "未找到游泳池",
+    "noPoolsFoundDescription": "向資金池注入流動性即可開始賺取獎勵。",
+    "errorFetchingPools": "泳池加載失敗。請嘗試刷新頁面。",
     "APR": "年利率(APR)",
     "bonded": "已鎖住",
     "createPool": {
@@ -597,8 +597,6 @@
     "myLiquidity": "我嘅流動性",
     "myPools": "我嘅流動性池",
     "poolId": "流動性池 #{id}",
-    "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發仲有",
     "aprBreakdown": {
       "swapFees": "掉期費用",
       "boost": "促進",
@@ -854,6 +852,7 @@
     "convertTo": "轉換成",
     "depositAs": "存款為",
     "withdrawAs": "提款為",
+    "withdrawViaRoute": "經由 {route}",
     "recommended": "受到推崇的",
     "fee": "費用",
     "fees": "費用",
@@ -873,11 +872,18 @@
       "titleWithdraw": "更多提款選項",
       "depositDescriptionUnknown": "若要存入{denom} ，請使用替代提供者。",
       "withdrawDescriptionUnknown": "若要撤回{denom} ，請使用替代提供者。",
-      "chooseAnAlternativeProviderDeposit": "選擇一個替代提供者將{asset}從{fromChain}存入{toChain}",
-      "chooseAnAlternativeProviderWithdraw": "選擇替代提供者將{asset}從{fromChain}撤回到{toChain}",
       "depositWith": "存款於",
       "withdrawWith": "撤回與",
-      "noAlternativesFound": "找不到此路線的替代提供者。"
+      "noAlternativesFound": "找不到此路線的替代提供者。",
+      "externalSiteCaveat": "這些連結會開啟第三方跨鏈橋網站。請在該網站上選擇您的路線。",
+      "convertBeforeWithdraw": {
+        "title": "先轉換為 {variant}",
+        "description": "{provider} 只接受 {variant}。請在下方將你的合金結餘轉換為 {variant}，然後繼續前往 {provider} 完成提款。",
+        "currentVariantBalance": "目前 {variant} 餘額：",
+        "successTitle": "已轉換為 {variant}",
+        "successDescription": "您的 {variant} 已就緒。繼續前往 {provider} 完成提款。",
+        "continueTo": "繼續前往 {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "選擇要存入的資產",
@@ -983,7 +989,77 @@
     "createNewDepositAddress": "建立新的儲值地址",
     "transactionDetails": "交易詳情",
     "confirmAmount": "確認金額",
-    "enterChainAddress": "輸入{chain}地址"
+    "enterChainAddress": "輸入{chain}地址",
+    "wormholeRedeem": {
+      "title": "領取卡住的 Wormhole 轉賬",
+      "description": "如果您從 Osmosis 發起的 Wormhole 跨鏈轉賬卡住了，請在下方貼上 Osmosis 交易雜湊以進行查詢，並在 Solana（Phantom）或 Sui（Slush 或 Phantom）上完成領取。",
+      "txHashPlaceholder": "Osmosis 交易雜湊...",
+      "lookup": "查詢",
+      "phantomNotDetected": "未偵測到 Phantom 錢包。",
+      "installPhantom": "安裝 Phantom",
+      "toRedeem": "以進行領取。",
+      "noSuiWalletDetectedInstall": "未偵測到受支援的 Sui 錢包。請安裝",
+      "toRedeemOnSui": "以在 Sui 上領取。",
+      "or": "或",
+      "token": "代幣",
+      "value": "價值",
+      "from": "來自",
+      "to": "至（{chain}）",
+      "date": "日期",
+      "wormchainReceive": "Wormchain 接收",
+      "checkingSolana": "正在 Solana 上檢查領取狀態...",
+      "dailyLimitExceeded": "已超過每日限額",
+      "governorBodyEnqueued": "由於 Wormhole 已達到 {chain} 的每日轉賬限額，此轉賬最多需要 {hours} 小時才能完成。這是 Wormhole 網絡正常且暫時的安全機制。",
+      "governorBodyLikelyEnqueued": "此轉賬的價值（~{amount}）超出了 {chain} 上的可用額度（剩餘 ~{available}）。Wormhole 守護者很可能會將其排隊，最長可達 {hours} 小時。",
+      "releaseCountdownUpToHours": "最多 {hours} 小時",
+      "releaseShortly": "即將釋放",
+      "releaseInHoursMinutes": "將在 {hours} 小時 {minutes} 分鐘後釋放",
+      "releaseInMinutes": "將在 {minutes} 分鐘後釋放",
+      "learnMore": "了解更多",
+      "checkAgain": "重新檢查",
+      "alreadyRedeemedOn": "此轉賬已在 {chain} 上領取。",
+      "viewOnWormholescan": "在 Wormholescan 上查看",
+      "vaaReadyConnectSolana": "VAA 已簽名並準備就緒。請連接您的 Solana 錢包以進行領取。",
+      "connectPhantom": "連接 Phantom 錢包",
+      "installPhantomWallet": "安裝 Phantom 錢包",
+      "connectedWallet": "已連接的錢包",
+      "redeemOnSolana": "在 Solana 上領取",
+      "transferRedeemedOnSui": "已在 Sui 上領取轉賬。",
+      "redeemSubmittedToSui": "領取請求已提交至 Sui。",
+      "viewOnSuiscan": "在 Suiscan 上查看",
+      "viewOnSolscan": "在 Solscan 上查看",
+      "waitingForWalletSignatureNamed": "正在等待 {wallet} 簽名...",
+      "waitingForSuiWalletSignature": "正在等待您的 Sui 錢包簽名...",
+      "waitingForWalletSignature": "正在等待錢包簽名...",
+      "submittingToSui": "正在向 Sui 提交交易...",
+      "submittingToSolana": "正在向 Solana 提交交易...",
+      "transferRedeemedSuccessfully": "轉賬領取成功！",
+      "partialRedeemConfirmed": "在出錯前，{count} 筆領取交易已確認：",
+      "viewTxOnSolscan": "在 Solscan 上查看第 {number} 筆交易",
+      "copied": "已複製",
+      "copy": "複製",
+      "failedToLookUp": "查詢交易失敗",
+      "failedToConnectWallet": "連接錢包失敗",
+      "failedToConnectSuiWallet": "連接 Sui 錢包失敗。",
+      "suiRedeemFailed": "Sui 領取失敗",
+      "redeemFailed": "領取失敗",
+      "vaaNotYetAvailable": "VAA 尚不可用。Wormhole 守護者可能仍在處理此交易。",
+      "txFailedOnChain": "交易在鏈上失敗：{error}",
+      "txConfirmationTimedOut": "交易確認在 120 秒後逾時。請在 Solscan 上查看狀態：{sig}",
+      "nonSolanaVaaReady": "VAA 已簽名並準備就緒。要在 {chain} 上領取，請在 Wormholescan 上開啟此操作並連接 {chain} 錢包。Wormholescan 的領取流程支援 Sui Wallet、Suiet、Backpack 以及其他 Wallet Standard 錢包。",
+      "recipientChain": "接收方（{chain}）",
+      "vaaBase64": "VAA（base64）",
+      "openOnWormholescanToRedeem": "在 Wormholescan 上開啟以領取",
+      "suiVaaReadyConnect": "VAA 已簽名並準備就緒。請連接 Sui 錢包（Slush 或 Phantom）以在 Sui 上原生領取。",
+      "recipientSui": "接收方（Sui）",
+      "noSuiWalletInstallNatively": "未偵測到受支援的 Sui 錢包。請安裝一個以進行原生領取：",
+      "installNamed": "安裝 {wallet}",
+      "connectNamed": "連接 {wallet}",
+      "connectedNamedAccount": "已連接的 {wallet} 帳戶",
+      "confirmInNamed": "請在 {wallet} 中確認...",
+      "submittingOnSui": "正在 Sui 上提交...",
+      "redeemOnSui": "在 Sui 上領取"
+    }
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
@@ -1052,7 +1128,8 @@
       "price": "價格",
       "volume": "體積",
       "advanced": "先進的",
-      "simple": "簡單的"
+      "simple": "簡單的",
+      "lastUpdate": "最後更新: {time}"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
@@ -1405,6 +1482,12 @@
   "taprootAddressNotSupported": "Taproot 位址不支援提現",
   "wormhole": {
     "deprecationTitle": "Wormhole 支援正在被棄用",
-    "deprecationSubtitle": "我哋唔建議通過 Wormhole 向 Osmosis 橋接更多資產。呢個頁面可以幫助你從 Osmosis 提取現有嘅 Wormhole 橋接資產。"
+    "deprecationSubtitle": "我哋唔建議通過 Wormhole 向 Osmosis 橋接更多資產。呢個頁面可以幫助你從 Osmosis 提取現有嘅 Wormhole 橋接資產。",
+    "bridgeStepTitle": "透過 Wormhole 跨鏈",
+    "refreshBalance": "重新整理餘額",
+    "convertAlloy": {
+      "stepTitle": "將 {symbol} 轉換為 {symbol}.wh",
+      "description": "您持有 {balance} {symbol} 作為合金資產。Wormhole 跨鏈的是 {symbol}.wh 變體，請先轉換，然後在下方跨鏈。"
+    }
   }
 }
