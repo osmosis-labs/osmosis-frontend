@@ -187,7 +187,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                           : type === "cosmwasm-astroport-pcl"
                           ? "Astroport PCL"
                           : type === "cosmwasm-whitewhale"
-                          ? "White Whale"
+                          ? "Skeleton Swap"
                           : type === "cosmwasm"
                           ? "pool.custom"
                           : "pool.stableswapEnabled"

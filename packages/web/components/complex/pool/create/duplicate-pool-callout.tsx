@@ -208,8 +208,8 @@ const PoolTypeIcon: FunctionComponent<{
   if (type === "cosmwasm-whitewhale") {
     return (
       <Image
-        alt="white whale icon"
-        src="/images/whitewhale-icon.png"
+        alt="skeleton swap icon"
+        src="/images/skeletonswap-icon.webp"
         height={16}
         width={16}
       />
