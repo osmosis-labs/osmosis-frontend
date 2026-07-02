@@ -1323,6 +1323,11 @@
       "title": "सीमा मूल्य बाजार मूल्य से नीचे",
       "description": "यदि आप आगे बढ़ते हैं, तो आपके ऑर्डर को बाजार मूल्य पर बाजार ऑर्डर के रूप में संसाधित किया जाएगा।"
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "राशि दर्ज करें",
     "toSell": "बेचने के लिए",
     "toBuy": "खरीदने के लिए",

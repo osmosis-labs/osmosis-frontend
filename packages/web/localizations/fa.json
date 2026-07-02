@@ -1323,6 +1323,11 @@
       "title": "محدود کردن قیمت زیر قیمت بازار",
       "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "مقداری را وارد کنید",
     "toSell": "برای فروش",
     "toBuy": "برای خرید",

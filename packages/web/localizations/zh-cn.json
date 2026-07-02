@@ -1323,6 +1323,11 @@
       "title": "限制价格低于市场价格",
       "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
     },
+    "extremeDeviation": {
+      "aboveTitle": "Limit price is {percent}% above current price",
+      "belowTitle": "Limit price is {percent}% below current price",
+      "description": "Double-check the price before placing this order."
+    },
     "enterAnAmountTo": "输入金额",
     "toSell": "出售",
     "toBuy": "购买",

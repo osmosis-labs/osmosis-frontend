@@ -7,11 +7,17 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { ExtremeDeviationBanner } from "~/components/place-limit-tool/extreme-deviation-banner";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
+
+/** Threshold above which the limit price triggers an extreme-deviation
+ *  caution banner. Fixed at 20% by product decision; tune here if that
+ *  changes. */
+const EXTREME_DEVIATION_THRESHOLD = new Dec("0.20");
 
 const percentAdjustmentOptions = [
   { value: new Dec(0), label: "Market", defaultValue: true },
@@ -141,6 +147,29 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     const maxPercentage = new Dec(99.999);
     return priceState.percentAdjusted.abs().gt(maxPercentage);
   }, [priceState.percentAdjusted, tab]);
+
+  const isExtremeDeviation = useMemo(
+    () =>
+      priceState.percentAdjusted.abs().gt(EXTREME_DEVIATION_THRESHOLD) &&
+      !priceState.isBeyondOppositePrice &&
+      !priceState.priceError,
+    [
+      priceState.percentAdjusted,
+      priceState.isBeyondOppositePrice,
+      priceState.priceError,
+    ]
+  );
+  const deviationDirection: "above" | "below" =
+    priceState.percentAdjusted.isNegative() ? "below" : "above";
+
+  // Per-session dismiss state. Reset whenever the user edits the price so the
+  // banner reappears if they cross back over the threshold. Key on
+  // `orderPrice` rather than `percentAdjusted` because the latter ticks with
+  // spot-price updates the user did not initiate.
+  const [isDeviationDismissed, setDeviationDismissed] = useState(false);
+  useEffect(() => {
+    setDeviationDismissed(false);
+  }, [priceState.orderPrice]);
 
   return (
     <div
@@ -287,6 +316,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           </SkeletonLoader>
         </div>
       </label>
+      {isExtremeDeviation && !isDeviationDismissed && (
+        <ExtremeDeviationBanner
+          direction={deviationDirection}
+          deviationPercent={priceState.percentAdjusted.abs()}
+          onDismiss={() => setDeviationDismissed(true)}
+        />
+      )}
       <div className="flex w-full items-center justify-between gap-2 pt-3 pb-2">
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
