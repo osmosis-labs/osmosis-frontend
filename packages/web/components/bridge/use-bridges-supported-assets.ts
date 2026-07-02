@@ -321,7 +321,8 @@ export const useBridgesSupportedAssets = ({
       {
         chainId: "noble-1",
         matchesAsset: isUsdcAsset,
-        matchesRouteVariant: (asset) => asset.coinDenom?.toUpperCase() === "USDC",
+        matchesRouteVariant: (asset) =>
+          asset.coinDenom?.toUpperCase() === "USDC",
       },
       // XRP -> XRPL EVM. The destination route is the chain-qualified xrplevm
       // variant (e.g. XRP.xrplevm), not the selected alloy, so it needs its own
