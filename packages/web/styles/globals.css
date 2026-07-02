@@ -345,6 +345,58 @@
   white-space-collapse: break-spaces;
 }
 
+.cl-range-slider {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: block;
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 100%;
+  height: 20px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.cl-range-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: theme("colors.osmoverse.600");
+  border: none;
+}
+.cl-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  /* Center 14px thumb on 6px track: (6 - 14) / 2 = -4px */
+  margin-top: -4px;
+  border-radius: 9999px;
+  background: theme("colors.bullish.500");
+  border: 2px solid theme("colors.white.full");
+  cursor: pointer;
+}
+.cl-range-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: theme("colors.osmoverse.600");
+  border: none;
+}
+.cl-range-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: theme("colors.bullish.500");
+  border: 2px solid theme("colors.white.full");
+  cursor: pointer;
+}
+
 /*
  * Trim the embedded Wormhole Connect widget's content margin so it sits flush
  * inside our bridge step box. The widget is a third-party CDN bundle rendered
