@@ -39,10 +39,20 @@ export type SupportedChain = ReturnType<
 
 export const useBridgesSupportedAssets = ({
   assets,
+  variantAssets,
   chain,
   direction,
 }: {
   assets: MinimalAsset[] | undefined;
+  /**
+   * The full variant family of the selected asset (alloy + every constituent /
+   * wrapped variant), used only to detect a halted route variant for the
+   * default-selection hoist. On withdraw, `assets` is scoped to the single
+   * selected variant (the alloy), so it cannot see a sibling variant's halt
+   * flag; this carries the whole family so the halt check is accurate. Falls
+   * back to `assets` when not provided.
+   */
+  variantAssets?: MinimalAsset[] | undefined;
   chain: BridgeChain;
   direction: "deposit" | "withdraw";
 }) => {
@@ -290,29 +300,37 @@ export const useBridgesSupportedAssets = ({
     // the hoist when it is halted, falling through to the next route (Coreum /
     // Int3face / XRPL).
     //
-    // Gate on `areWithdrawalsHalted` only, not `isUnstable`: the kill switch
+    // Gate on the kill-switch halt flags only, not `isUnstable`: the kill switch
     // already suppresses routing elsewhere (e.g. the external link-out in
     // amount-screen.tsx), whereas `isUnstable` is warning-only and does not gate
     // the UI. Keeping the default-selection signal consistent with that policy.
-    const isXrplEvmVariantHalted = Boolean(
-      assets?.some(
-        (asset) =>
-          isXrpAsset(asset) &&
-          asset.coinDenom?.toLowerCase().includes("xrplevm") &&
-          asset.areWithdrawalsHalted
-      )
+    //
+    // Scan the full variant family (`variantAssets`), not `assets`: on withdraw
+    // `assets` is the single selected variant (the alloy), which never carries
+    // the xrplevm variant's halt flag, so the guard would miss it. Halt is
+    // direction-specific (a withdraw-halted variant must not block the deposit
+    // hoist and vice versa), so compute each direction separately.
+    const xrplEvmVariants = (variantAssets ?? assets)?.filter(
+      (asset) =>
+        isXrpAsset(asset) && asset.coinDenom?.toLowerCase().includes("xrplevm")
+    );
+    const isXrplEvmWithdrawalsHalted = Boolean(
+      xrplEvmVariants?.some((asset) => asset.areWithdrawalsHalted)
+    );
+    const isXrplEvmDepositsHalted = Boolean(
+      xrplEvmVariants?.some((asset) => asset.areDepositsHalted)
     );
 
     // Check if this is a XRP withdrawal to prioritize XRPL EVM
     const isXrpWithdrawal =
       direction === "withdraw" &&
-      !isXrplEvmVariantHalted &&
+      !isXrplEvmWithdrawalsHalted &&
       assets?.some(isXrpAsset);
 
     // Check if this is a XRP deposit to prioritize XRPL EVM
     const isXrpDeposit =
       direction === "deposit" &&
-      !isXrplEvmVariantHalted &&
+      !isXrplEvmDepositsHalted &&
       assets?.some(isXrpAsset);
 
     // Check if this is ATOM to prioritize Cosmos Hub
@@ -399,7 +417,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries, direction, assets]);
+  }, [successfulQueries, direction, assets, variantAssets]);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };

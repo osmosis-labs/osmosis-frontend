@@ -129,6 +129,10 @@ export const AmountAndReviewScreen = observer(
 
     const supportedAssets = useBridgesSupportedAssets({
       assets: withdrawAsset ? [withdrawAsset] : assetsInOsmosis,
+      // The full variant family, so the default-selection halt check can see a
+      // sibling variant's halt flag even when `assets` is scoped to the single
+      // selected variant on withdraw.
+      variantAssets: assetsInOsmosis,
       chain: {
         chainId: accountStore.osmosisChainId,
         chainType: "cosmos",
