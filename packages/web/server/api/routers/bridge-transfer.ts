@@ -11,6 +11,7 @@ import {
 import {
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
+  getCachedTransmuterTotalPoolLiquidity,
   getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
@@ -44,6 +45,10 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+import {
+  getAlloyConstituentExternalInterfaceMethods,
+  getSuppressedAlloyExternalInterfaceNames,
+} from "~/server/api/routers/bridge/external-url-constituents";
 import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -629,15 +634,100 @@ export const bridgeTransferRouter = createTRPCRouter({
         (asset) => asset.coinMinimalDenom === input.toAsset?.address
       );
 
+      // Resolve the TRUE pool-member denom set for whichever side is an alloy.
+      // `variantGroupKey` only groups variants for display; it is NOT pool
+      // membership, so a grouped sibling (e.g. BTC.int3 for allBTC) can fail to
+      // be a real constituent the user can obtain from the alloy. We read the
+      // alloy's transmuter pool composition (`get_total_pool_liquidity` on its
+      // `contract`, cached 30s) and gate the family by it. Only fired when the
+      // side is actually an alloyed asset with a contract, so this stays on the
+      // fallback / convert path rather than every bridge view.
+      const resolveAlloyMemberDenoms = async (
+        alloyAsset: typeof assetListFromAsset
+      ): Promise<Set<string>> => {
+        if (!alloyAsset?.isAlloyed || !alloyAsset.contract) return new Set();
+        try {
+          const liquidity = await getCachedTransmuterTotalPoolLiquidity(
+            alloyAsset.contract,
+            ctx.chainList,
+            ctx.assetLists
+          );
+          return new Set(liquidity.map(({ asset }) => asset.coinMinimalDenom));
+        } catch {
+          // On a failed membership read, surface nothing rather than risk
+          // offering a non-constituent (dead) route.
+          return new Set();
+        }
+      };
+
+      const [fromAlloyMemberDenoms, toAlloyMemberDenoms] = await Promise.all([
+        resolveAlloyMemberDenoms(assetListFromAsset),
+        resolveAlloyMemberDenoms(assetListToAsset),
+      ]);
+
+      // When the user transfers an alloy (the from-asset on a withdraw, the
+      // to-asset on a deposit), aggregate the `external_interface` methods of
+      // the alloy's constituent variants too, not just the alloy's own. An
+      // alloy such as allBTC carries no transfer methods of its own, so without
+      // this a down quote route leaves no external fallback even though the
+      // constituents carry usable bridge URLs. The helper is gated by true pool
+      // membership (above), so non-constituent group siblings are never
+      // surfaced, and direction-halted constituents are skipped inside it. Dedup
+      // by provider name / host is handled below, so constituent methods that
+      // collide with the alloy's own (e.g. Sologenic on both allXRP and
+      // XRP.coreum) are collapsed.
+      const constituentExternalMethods = [
+        ...getAlloyConstituentExternalInterfaceMethods({
+          alloy: assetListFromAsset,
+          assets: allAssetListAssets,
+          direction: "withdraw",
+          memberDenoms: fromAlloyMemberDenoms,
+        }),
+        ...getAlloyConstituentExternalInterfaceMethods({
+          alloy: assetListToAsset,
+          assets: allAssetListAssets,
+          direction: "deposit",
+          memberDenoms: toAlloyMemberDenoms,
+        }),
+      ];
+
+      // An alloy can carry an `external_interface` of its own that is really a
+      // constituent connector by another name (e.g. allXRP's own Sologenic
+      // link). Those alloy-own methods have no halt flag or variant link, so the
+      // membership/halt gate above can't see them. Suppress an alloy-own method
+      // whose provider name belongs to a gated (non-member or halted) sibling
+      // and no reachable sibling — otherwise it would defeat the gate (and win
+      // the dedup over the dropped constituent copy).
+      const [fromSuppressedNames, toSuppressedNames] = [
+        getSuppressedAlloyExternalInterfaceNames({
+          alloy: assetListFromAsset,
+          assets: allAssetListAssets,
+          direction: "withdraw",
+          memberDenoms: fromAlloyMemberDenoms,
+        }),
+        getSuppressedAlloyExternalInterfaceNames({
+          alloy: assetListToAsset,
+          assets: allAssetListAssets,
+          direction: "deposit",
+          memberDenoms: toAlloyMemberDenoms,
+        }),
+      ];
+
       const externalTransferMethods = (
-        assetListFromAsset?.transferMethods.filter(
-          ({ type }) => type === "external_interface"
-        ) ?? []
-      ).concat(
-        assetListToAsset?.transferMethods.filter(
-          ({ type }) => type === "external_interface"
-        ) ?? []
-      ) as ExternalInterfaceBridgeTransferMethod[];
+        (assetListFromAsset?.transferMethods.filter(
+          (method) =>
+            method.type === "external_interface" &&
+            !fromSuppressedNames.has(method.name)
+        ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
+      )
+        .concat(
+          (assetListToAsset?.transferMethods.filter(
+            (method) =>
+              method.type === "external_interface" &&
+              !toSuppressedNames.has(method.name)
+          ) ?? []) as ExternalInterfaceBridgeTransferMethod[]
+        )
+        .concat(constituentExternalMethods);
 
       externalTransferMethods.forEach(
         ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
@@ -700,6 +790,9 @@ export const bridgeTransferRouter = createTRPCRouter({
           urlProviderName: externalUrl.urlProviderName,
           alloy: withdrawAlloy,
           assets: allAssetListAssets,
+          // The convert target must be a true pool member of the withdrawn
+          // alloy; a grouped non-constituent cannot be obtained from it.
+          memberDenoms: fromAlloyMemberDenoms,
         }),
       }));
 

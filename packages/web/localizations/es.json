@@ -872,11 +872,10 @@
       "titleWithdraw": "Más opciones de retiro",
       "depositDescriptionUnknown": "Para depositar {denom} , utilice un proveedor alternativo.",
       "withdrawDescriptionUnknown": "Para retirar {denom} , utilice un proveedor alternativo.",
-      "chooseAnAlternativeProviderDeposit": "Elija un proveedor alternativo para depositar {asset} de {fromChain} a {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Elija un proveedor alternativo para retirar {asset} de {fromChain} a {toChain}",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con",
       "noAlternativesFound": "No se encontraron proveedores alternativos para esta ruta.",
+      "externalSiteCaveat": "Estos abren sitios de puentes de terceros. Selecciona tu ruta allí.",
       "convertBeforeWithdraw": {
         "title": "Convierte primero a {variant}",
         "description": "{provider} solo acepta {variant}. Convierte tu saldo aleado a {variant} a continuación y luego continúa con {provider} para completar tu retiro.",
