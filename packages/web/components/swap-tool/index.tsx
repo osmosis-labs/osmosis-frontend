@@ -30,6 +30,10 @@ import {
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
+import {
+  AmountPresetFraction,
+  AmountPresetRow,
+} from "~/components/swap-tool/amount-preset-row";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -334,6 +338,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !swapState.inAmountInput?.balance?.toDec().isZero() &&
       swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
+    const onSelectAmountPreset = useCallback(
+      (fraction: AmountPresetFraction) => {
+        if (quoteType !== "out-given-in") {
+          setQuoteType("out-given-in");
+        }
+        swapState.inAmountInput.setFraction(fraction);
+        fromAmountInputEl.current?.focus();
+      },
+      [quoteType, setQuoteType, swapState.inAmountInput]
+    );
+
     const isConfirmationDisabled =
       isSendingTx ||
       isWalletLoading ||
@@ -416,13 +431,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     </span>
                   </AssetFieldsetHeaderLabel>
                   <AssetFieldsetHeaderBalance
-                    onMax={() => {
-                      if (quoteType !== "out-given-in") {
-                        setQuoteType("out-given-in");
-                      }
-                      swapState.inAmountInput.toggleMax();
-                      fromAmountInputEl.current?.focus();
-                    }}
                     availableBalance={
                       swapState.inAmountInput.balance &&
                       formatPretty(
@@ -443,15 +451,23 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.balance.toDec().isZero())
                     }
                     openAddFundsModal={openAddFundsModal}
-                    isLoadingMaxButton={isLoadingMaxButton}
-                    isMaxButtonDisabled={
-                      !swapState.inAmountInput.balance ||
-                      swapState.inAmountInput.balance.toDec().isZero() ||
-                      swapState.inAmountInput.notEnoughBalanceForMax ||
-                      isLoadingMaxButton
-                    }
                   />
                 </AssetFieldsetHeader>
+                {account?.isWalletConnected &&
+                  swapState.inAmountInput.balance &&
+                  !swapState.inAmountInput.balance.toDec().isZero() && (
+                    <div className="flex justify-end">
+                      <AmountPresetRow
+                        onSelect={onSelectAmountPreset}
+                        activeFraction={swapState.inAmountInput.fraction}
+                        isDisabled={false}
+                        isMaxDisabled={
+                          swapState.inAmountInput.notEnoughBalanceForMax
+                        }
+                        isLoadingMax={isLoadingMaxButton}
+                      />
+                    </div>
+                  )}
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
                     ref={fromAmountInputEl}
