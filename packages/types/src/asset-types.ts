@@ -97,6 +97,10 @@ export type ExternalInterfaceBridgeTransferMethod = {
   type: "external_interface";
   depositUrl?: string;
   withdrawUrl?: string;
+  /** Optional connector logo, sourced from the asset list. When present it is
+   *  the authoritative logo for this external bridge; the frontend falls back to
+   *  a name-keyed map and then a generic placeholder when absent. */
+  logoUri?: string;
 };
 
 export interface CosmosCounterparty {

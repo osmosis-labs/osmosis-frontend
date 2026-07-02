@@ -50,7 +50,11 @@ import {
   getSuppressedAlloyExternalInterfaceNames,
 } from "~/server/api/routers/bridge/external-url-constituents";
 import { resolveExternalUrlConvertVariant } from "~/server/api/routers/bridge/external-url-convert-variant";
-import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
+import {
+  BridgeLogoUrls,
+  ExternalBridgeLogoUrls,
+  getExternalInterfaceLogo,
+} from "~/utils/bridge";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 
 export type BridgeChainWithDisplayInfo = (
@@ -730,7 +734,12 @@ export const bridgeTransferRouter = createTRPCRouter({
         .concat(constituentExternalMethods);
 
       externalTransferMethods.forEach(
-        ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
+        ({
+          name,
+          depositUrl: depositUrl_,
+          withdrawUrl: withdrawUrl_,
+          logoUri,
+        }) => {
           let depositUrl, withdrawUrl;
           try {
             depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
@@ -747,27 +756,35 @@ export const bridgeTransferRouter = createTRPCRouter({
             input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
-                  logo: ExternalBridgeLogoUrls["Generic"],
+                  logo: getExternalInterfaceLogo(name, logoUri),
                   url: withdrawUrl,
                 }
               : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
-                  logo: ExternalBridgeLogoUrls["Generic"],
+                  logo: getExternalInterfaceLogo(name, logoUri),
                   url: depositUrl,
                 }
               : undefined;
 
-          // ensure is not already in provider URLs before adding
-          if (
-            urlToAdd &&
-            !externalUrls.some(
+          if (urlToAdd) {
+            const existing = externalUrls.find(
               ({ urlProviderName, url }) =>
-                urlProviderName === urlToAdd.urlProviderName ||
-                url.host === urlToAdd.url.host
-            )
-          ) {
-            externalUrls.push(urlToAdd);
+                urlProviderName === urlToAdd!.urlProviderName ||
+                url.host === urlToAdd!.url.host
+            );
+            if (!existing) {
+              externalUrls.push(urlToAdd);
+            } else if (
+              // Dedup keeps the first-added entry, but if a later duplicate
+              // (e.g. the deposit-side method) carries a real logo while the
+              // kept one only has the Generic placeholder, upgrade the logo so
+              // the authoritative connector logo isn't lost to ordering.
+              existing.logo === ExternalBridgeLogoUrls["Generic"] &&
+              urlToAdd.logo !== ExternalBridgeLogoUrls["Generic"]
+            ) {
+              existing.logo = urlToAdd.logo;
+            }
           }
         }
       );
