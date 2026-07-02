@@ -14,7 +14,11 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
+import {
+  clearJustCreatedOrderbook,
+  useCreateOrderbook,
+  wasOrderbookJustCreated,
+} from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { useStore } from "~/stores";
@@ -73,17 +77,30 @@ export const OrderTypeSelector = ({
       // Cache has caught up — safe to allow the reset effect again.
       justCreatedRef.current = false;
     }
+    const quoteSelectable = selectableQuotes.some(
+      (asset) => asset.coinMinimalDenom === quote
+    );
+    if (quoteSelectable) {
+      // Canonical pools list reflects the pair — re-arm the quote reset.
+      clearJustCreatedOrderbook(base, quote);
+    }
     if (type === "limit" && !hasOrderbook && !isLoading) {
-      if (justCreatedRef.current) return;
+      if (justCreatedRef.current || wasOrderbookJustCreated(base, quote))
+        return;
       setType("market");
     } else if (
       type === "limit" &&
-      !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote) &&
-      selectableQuotes.length > 0
+      !quoteSelectable &&
+      selectableQuotes.length > 0 &&
+      // Suppress while a just-created orderbook (from either the Limit tab or
+      // the Pay With / Receive dropdown) is waiting for the canonical pools
+      // list to catch up, or the user's fresh selection would be undone.
+      !wasOrderbookJustCreated(base, quote)
     ) {
       setQuote(selectableQuotes[0].coinMinimalDenom);
     }
   }, [
+    base,
     hasOrderbook,
     setType,
     type,

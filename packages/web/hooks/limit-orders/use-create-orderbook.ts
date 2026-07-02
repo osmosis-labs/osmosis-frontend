@@ -11,6 +11,31 @@ const IS_ORDERBOOK_CREATION_SUPPORTED =
   OrderbookPoolCodeIds.length > 0 && OrderbookPoolCodeIds[0] !== "?";
 
 /**
+ * Pairs whose orderbook was created onchain this session but may not yet be
+ * reflected in the canonical pools list (the sidecar ingests per block, so the
+ * list can lag the delivered tx by a few seconds). Consumers that reset UI
+ * state when a pair looks orderbook-less must consult this so they don't undo
+ * the user's selection during that window. Module-level on purpose: the
+ * creation entry points (Limit tab, Pay With / Receive dropdown) live in
+ * different component subtrees.
+ */
+const justCreatedOrderbooks = new Set<string>();
+const orderbookPairKey = (baseDenom: string, quoteDenom: string) =>
+  `${baseDenom}/${quoteDenom}`;
+
+export function wasOrderbookJustCreated(baseDenom: string, quoteDenom: string) {
+  return justCreatedOrderbooks.has(orderbookPairKey(baseDenom, quoteDenom));
+}
+
+/** Call once the canonical pools list reflects the pair, to re-arm resets. */
+export function clearJustCreatedOrderbook(
+  baseDenom: string,
+  quoteDenom: string
+) {
+  justCreatedOrderbooks.delete(orderbookPairKey(baseDenom, quoteDenom));
+}
+
+/**
  * Hook to create a new orderbook pool for a given base/quote denom pair.
  * Sends a MsgCreateCosmWasmPool with the canonical orderbook code ID.
  * After success, invalidates the canonical orderbook pools cache so the
@@ -58,6 +83,8 @@ export function useCreateOrderbook({
         }),
       };
 
+      let deliveredCode: number | undefined;
+      let deliveredLog: string | undefined;
       await accountStore.signAndBroadcast(
         accountStore.osmosisChainId,
         "createOrderbook",
@@ -66,7 +93,10 @@ export function useCreateOrderbook({
         undefined,
         undefined,
         async (tx) => {
+          deliveredCode = tx.code;
+          deliveredLog = tx.rawLog;
           if (!tx.code) {
+            justCreatedOrderbooks.add(orderbookPairKey(baseDenom, quoteDenom));
             // Order matters: the fresh verify bypasses AND repopulates the
             // server-side orderbook-pools LRU (cachified forceFresh writes the
             // fresh value back), so it must complete before any client
@@ -89,6 +119,12 @@ export function useCreateOrderbook({
           }
         }
       );
+      // signAndBroadcast throws on broadcast (CheckTx) rejection but resolves
+      // on a delivered-but-failed tx (non-zero code), so surface that here or
+      // callers would treat the failed creation as success.
+      if (deliveredCode) {
+        throw new Error(deliveredLog || t("errors.uhOhSomethingWentWrong"));
+      }
     } catch (e) {
       console.error("Error creating orderbook pool", e);
       const message =
