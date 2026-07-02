@@ -209,7 +209,7 @@ const PoolTypeIcon: FunctionComponent<{
     return (
       <Image
         alt="skeleton swap icon"
-        src="/images/skeletonswap-icon.webp"
+        src="/images/skeletonswap-icon.svg"
         height={16}
         width={16}
       />
