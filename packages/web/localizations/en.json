@@ -98,7 +98,9 @@
     "numPositions": "{numPositions} positions",
     "onePosition": "1 position",
     "goToPool": "Go to pool #{poolId}",
-    "errorFetchingPositions": "Failed to fetch position details. Please try refreshing the page. If the problem persists, contact support."
+    "errorFetchingPositions": "Failed to fetch position details. Please try refreshing the page. If the problem persists, contact support.",
+    "noPositions": "No positions found",
+    "noPositionsDescription": "Provide concentrated liquidity to a pool to start earning spread rewards."
   },
   "copied": "Copied!",
   "app": {
@@ -252,12 +254,8 @@
       "chooseOnramp": "Buy crypto",
       "swappedSubtitle": "Supports OSMO, USDC",
       "moonpaySubtitle": "Supports OSMO, USDC",
-      "transakSubtitle": "Supports OSMO",
       "onrampMoneySubtitle": "Supports OSMO, USDC",
       "moonpayCountrySupport": "165+ countries"
-    },
-    "incentive": {
-      "title": "Incentive types"
     },
     "MAX": "MAX",
     "pool": {
@@ -281,8 +279,7 @@
       "transmuter": "Transmuter",
       "orderbook": "Orderbook",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "No incentives"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connect wallet",
@@ -547,6 +544,9 @@
       },
       "title": "Discover Pools"
     },
+    "noPoolsFound": "No pools found",
+    "noPoolsFoundDescription": "Add liquidity to a pool to start earning rewards.",
+    "errorFetchingPools": "Failed to load your pools. Please try refreshing the page.",
     "APR": "APR",
     "bonded": "Bonded",
     "createPool": {
@@ -607,8 +607,6 @@
     "myLiquidity": "My Liquidity",
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
-    "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in",
     "aprBreakdown": {
       "swapFees": "Swap fees",
       "boost": "Boost",
@@ -864,6 +862,7 @@
     "convertTo": "Convert to",
     "depositAs": "Deposit as",
     "withdrawAs": "Withdraw as",
+    "withdrawViaRoute": "via {route}",
     "recommended": "Recommended",
     "fee": "fee",
     "fees": "fees",
@@ -883,11 +882,18 @@
       "titleWithdraw": "More withdraw options",
       "depositDescriptionUnknown": "To deposit {denom}, please use an alternative provider.",
       "withdrawDescriptionUnknown": "To withdraw {denom}, please use an alternative provider.",
-      "chooseAnAlternativeProviderDeposit": "Choose an alternative provider to deposit {asset} from {fromChain} to {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Choose an alternative provider to withdraw {asset} from {fromChain} to {toChain}",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with",
-      "noAlternativesFound": "No alternative providers found for this route."
+      "noAlternativesFound": "No alternative providers found for this route.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "convertBeforeWithdraw": {
+        "title": "Convert to {variant} first",
+        "description": "{provider} only accepts {variant}. Convert your alloyed balance to {variant} below, then continue to {provider} to complete your withdrawal.",
+        "currentVariantBalance": "Current {variant} balance:",
+        "successTitle": "Converted to {variant}",
+        "successDescription": "Your {variant} is ready. Continue to {provider} to complete your withdrawal.",
+        "continueTo": "Continue to {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",
@@ -993,7 +999,77 @@
     "createNewDepositAddress": "Create new deposit address",
     "transactionDetails": "Transaction details",
     "confirmAmount": "Confirm Amount",
-    "enterChainAddress": "Enter {chain} address"
+    "enterChainAddress": "Enter {chain} address",
+    "wormholeRedeem": {
+      "title": "Redeem a stuck Wormhole transfer",
+      "description": "If you have a Wormhole bridge transfer from Osmosis that is stuck, paste the Osmosis transaction hash below to look it up and complete the redemption on Solana (Phantom) or Sui (Slush or Phantom).",
+      "txHashPlaceholder": "Osmosis transaction hash...",
+      "lookup": "Lookup",
+      "phantomNotDetected": "Phantom wallet not detected.",
+      "installPhantom": "Install Phantom",
+      "toRedeem": "to redeem.",
+      "noSuiWalletDetectedInstall": "No supported Sui wallet detected. Install",
+      "toRedeemOnSui": "to redeem on Sui.",
+      "or": "or",
+      "token": "Token",
+      "value": "Value",
+      "from": "From",
+      "to": "To ({chain})",
+      "date": "Date",
+      "wormchainReceive": "Wormchain receive",
+      "checkingSolana": "Checking Solana for redemption status...",
+      "dailyLimitExceeded": "Daily limit exceeded",
+      "governorBodyEnqueued": "This transfer will take up to {hours} hours to complete as Wormhole has reached the daily transfer limit for {chain}. This is a normal and temporary security feature of the Wormhole network.",
+      "governorBodyLikelyEnqueued": "This transfer's value (~{amount}) exceeds the available headroom on {chain} (~{available} remaining). The Wormhole guardians will likely queue it for up to {hours} hours.",
+      "releaseCountdownUpToHours": "Up to {hours} hours",
+      "releaseShortly": "Releases shortly",
+      "releaseInHoursMinutes": "Releases in {hours}h {minutes}m",
+      "releaseInMinutes": "Releases in {minutes}m",
+      "learnMore": "Learn more",
+      "checkAgain": "Check again",
+      "alreadyRedeemedOn": "This transfer has already been redeemed on {chain}.",
+      "viewOnWormholescan": "View on Wormholescan",
+      "vaaReadyConnectSolana": "VAA is signed and ready. Connect your Solana wallet to redeem.",
+      "connectPhantom": "Connect Phantom Wallet",
+      "installPhantomWallet": "Install Phantom Wallet",
+      "connectedWallet": "Connected Wallet",
+      "redeemOnSolana": "Redeem on Solana",
+      "transferRedeemedOnSui": "Transfer redeemed on Sui.",
+      "redeemSubmittedToSui": "Redeem submitted to Sui.",
+      "viewOnSuiscan": "View on Suiscan",
+      "viewOnSolscan": "View on Solscan",
+      "waitingForWalletSignatureNamed": "Waiting for {wallet} signature...",
+      "waitingForSuiWalletSignature": "Waiting for your Sui wallet signature...",
+      "waitingForWalletSignature": "Waiting for wallet signature...",
+      "submittingToSui": "Submitting transaction to Sui...",
+      "submittingToSolana": "Submitting transaction to Solana...",
+      "transferRedeemedSuccessfully": "Transfer redeemed successfully!",
+      "partialRedeemConfirmed": "{count} of the redeem transactions confirmed before the error:",
+      "viewTxOnSolscan": "View tx {number} on Solscan",
+      "copied": "Copied",
+      "copy": "Copy",
+      "failedToLookUp": "Failed to look up transaction",
+      "failedToConnectWallet": "Failed to connect wallet",
+      "failedToConnectSuiWallet": "Failed to connect Sui wallet.",
+      "suiRedeemFailed": "Sui redeem failed",
+      "redeemFailed": "Redeem failed",
+      "vaaNotYetAvailable": "VAA not yet available. The Wormhole guardians may still be processing this transaction.",
+      "txFailedOnChain": "Transaction failed on-chain: {error}",
+      "txConfirmationTimedOut": "Transaction confirmation timed out after 120s. Check Solscan for status: {sig}",
+      "nonSolanaVaaReady": "VAA is signed and ready. To redeem on {chain}, open this operation on Wormholescan and connect a {chain} wallet. Wormholescan's redeem flow supports Sui Wallet, Suiet, Backpack, and other Wallet Standard wallets.",
+      "recipientChain": "Recipient ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "Open on Wormholescan to redeem",
+      "suiVaaReadyConnect": "VAA is signed and ready. Connect a Sui wallet (Slush or Phantom) to redeem natively on Sui.",
+      "recipientSui": "Recipient (Sui)",
+      "noSuiWalletInstallNatively": "No supported Sui wallet detected. Install one to redeem natively:",
+      "installNamed": "Install {wallet}",
+      "connectNamed": "Connect {wallet}",
+      "connectedNamedAccount": "Connected {wallet} account",
+      "confirmInNamed": "Confirm in {wallet}...",
+      "submittingOnSui": "Submitting on Sui...",
+      "redeemOnSui": "Redeem on Sui"
+    }
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
@@ -1062,7 +1138,8 @@
       "price": "Price",
       "volume": "Volume",
       "advanced": "Advanced",
-      "simple": "Simple"
+      "simple": "Simple",
+      "lastUpdate": "Last update: {time}"
     },
     "watchlist": "Watchlist",
     "marketCapRank": "Market cap rank",
@@ -1410,6 +1487,12 @@
   "taprootAddressNotSupported": "Taproot addresses are not supported for withdrawals",
   "wormhole": {
     "deprecationTitle": "Wormhole support is being deprecated",
-    "deprecationSubtitle": "We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis."
+    "deprecationSubtitle": "We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis.",
+    "bridgeStepTitle": "Bridge via Wormhole",
+    "refreshBalance": "Refresh balance",
+    "convertAlloy": {
+      "stepTitle": "Convert {symbol} to {symbol}.wh",
+      "description": "You hold {balance} {symbol} as the alloyed asset. Wormhole bridges the {symbol}.wh variant, so convert first, then bridge below."
+    }
   }
 }

@@ -8,6 +8,13 @@ name: "E2E: Topup Test Accounts"
 #
 # Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
 
+# The run-name encodes dry-run vs real so the auto-dispatch dedup guards
+# (in frontend-e2e / prod-frontend-e2e / monitoring-limit-geo) can exclude
+# dry runs via `gh run list --json displayTitle`. Without this, the run's
+# displayTitle would just be the workflow name and dry runs couldn't be told
+# apart from real top-ups.
+run-name: "${{ (inputs.dry_run == true || inputs.dry_run == 'true') && 'Dry run' || 'Topup' }} — E2E accounts (x${{ inputs.topup_multiplier }})"
+
 on:
   workflow_dispatch:
     inputs:
@@ -43,18 +50,19 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}

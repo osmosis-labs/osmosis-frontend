@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import EventEmitter from "eventemitter3";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,7 +16,6 @@ import {
   PropsWithChildren,
   useEffect,
   useMemo,
-  useRef,
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -32,6 +30,8 @@ import { api, RouterOutputs } from "~/utils/trpc";
 import { Tooltip } from "../tooltip";
 
 type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
+/** Full pool type union (includes cosmwasm), as returned by the pools queries. */
+export type PoolType = Pool["type"];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 export type PoolIncentiveFilter = NonNullable<
@@ -70,7 +70,8 @@ export const incentiveTypes: PoolIncentiveFilter[] = [
 
 export interface PoolsTableFilters {
   searchQuery: string | null;
-  poolIncentivesFilter: PoolIncentiveFilter[];
+  /** Optional. When omitted, all incentive types are included (no filtering). */
+  poolIncentivesFilter?: PoolIncentiveFilter[];
   poolTypesFilter: PoolTypeFilter[];
   denoms?: string[];
 }
@@ -82,7 +83,7 @@ export interface PoolsTabelSortParams {
 
 interface PoolsTableProps {
   topOffset?: number;
-  quickAddLiquidity?: (poolId: string) => void;
+  quickAddLiquidity?: (poolId: string, poolType: PoolType) => void;
   limit?: number;
   disablePagination?: boolean;
   filters?: PoolsTableFilters;
@@ -161,7 +162,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
         "cosmwasm",
       ],
-      incentiveTypes: filters.poolIncentivesFilter,
+      incentiveTypes: filters.poolIncentivesFilter ?? incentiveTypes,
       sort: sortKey
         ? {
             keyPath: sortKey,
@@ -215,7 +216,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   }, [poolsData]);
 
   // Define columns
-  const cellGroupEventEmitter = useRef(new EventEmitter()).current;
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Pool>();
 
@@ -321,10 +321,9 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           cell: ({ row }) => (
             <PoolQuickActionCell
               poolId={row.original.id}
-              cellGroupEventEmitter={cellGroupEventEmitter}
               onAddLiquidity={
                 quickAddLiquidity
-                  ? () => quickAddLiquidity(row.original.id)
+                  ? () => quickAddLiquidity(row.original.id, row.original.type)
                   : undefined
               }
             />
@@ -343,7 +342,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     sortParams.allPoolsSortDir,
     setSortDirection,
     setSortKey,
-    cellGroupEventEmitter,
     quickAddLiquidity,
     shouldDisplayVolumeData,
     shouldDisplayFeesData,

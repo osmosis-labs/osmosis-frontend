@@ -11,6 +11,8 @@ import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
 import { AddInitialLiquidity } from "~/components/complex/pool/create/cl/add-initial-liquidity";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
+import type { PoolType } from "~/components/complex/pools-table";
+import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { useTranslation } from "~/hooks";
 import {
@@ -27,6 +29,13 @@ import { SuperfluidValidatorModal } from "./superfluid-validator";
 export const AddLiquidityModal: FunctionComponent<
   {
     poolId: string;
+    /**
+     * Known pool type, when the caller already has it (e.g. from the pools
+     * table row). Lets the modal render the correct add-liquidity UI
+     * immediately instead of briefly flashing the share-pool UI while the
+     * pool query resolves.
+     */
+    poolType?: PoolType;
     onAddLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps
 > = observer((props) => {
@@ -52,47 +61,83 @@ export const AddLiquidityModal: FunctionComponent<
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+  const { data: pool, isLoading: isPoolLoading } =
+    api.local.pools.getPool.useQuery({ poolId });
 
-  const config =
-    pool?.type === "concentrated" ? addConliqConfig : addLiquidityConfig;
+  // Prefer the caller-provided type so we can pick the correct UI synchronously;
+  // fall back to the fetched pool type for callers that only pass an id. Callers
+  // that omit poolType still render correctly (loading -> correct UI, never a
+  // weighted flash) via the guards below; passing it only skips the brief fetch.
+  // TODO(follow-up PR): the remaining id-only callers — pool-detail
+  // (components/pool-detail/share.tsx, pool-detail/concentrated.tsx) and the
+  // create-pool "use existing pool" flow (pages/pools.tsx -> CreatePoolModal
+  // onUseExistingPool, where the duplicate-pool callout already has the type) —
+  // could pass `poolType` to skip the refetch. Left out here to keep the
+  // footprint small (threading the type through several create-pool components).
+  const resolvedPoolType = props.poolType ?? pool?.type;
+  const isConcentrated = resolvedPoolType === "concentrated";
+
+  const config = isConcentrated ? addConliqConfig : addLiquidityConfig;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         // New CL position: move to next step if superfluid validator selection is needed
-        if (
-          pool?.type === "concentrated" &&
-          addConliqConfig.shouldBeSuperfluidStaked
-        ) {
+        if (isConcentrated && addConliqConfig.shouldBeSuperfluidStaked) {
           setShowSuperfluidValidatorModal(true);
           return;
         }
 
-        const addLiquidityPromise =
-          pool?.type === "concentrated" ? addConLiquidity() : addLiquidity();
+        const addLiquidityPromise = isConcentrated
+          ? addConLiquidity()
+          : addLiquidity();
         const addLiquidityResult = addLiquidityPromise.then(() =>
           props.onRequestClose()
         );
 
-        if (pool?.type !== "concentrated" && props.onAddLiquidity) {
+        if (!isConcentrated && props.onAddLiquidity) {
           props.onAddLiquidity(addLiquidityResult);
         }
       },
       isLoading: config.error && config.error instanceof NotInitializedError,
       children: config.error
         ? t(...tError(config.error))
-        : pool?.type === "concentrated" &&
-          addConliqConfig.shouldBeSuperfluidStaked
+        : isConcentrated && addConliqConfig.shouldBeSuperfluidStaked
         ? t("addConcentratedLiquidity.buttonCreateAndStake")
         : t("addLiquidity.title"),
     },
     props.onRequestClose
   );
 
+  const loadingModal = (
+    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+      <div className="flex items-center justify-center py-16">
+        <Spinner />
+      </div>
+    </ModalBase>
+  );
+
+  const errorModal = (
+    <ModalBase {...props} isOpen={props.isOpen && showModalBase}>
+      <div className="flex w-full flex-col items-center justify-center py-8">
+        <h6 className="mb-2">{t("addLiquidity.title")}</h6>
+        <p className="text-body1 font-body1 text-osmoverse-300">
+          {t("errors.fallbackText1")}
+        </p>
+      </div>
+    </ModalBase>
+  );
+
   // add concentrated liquidity
-  if (pool?.type === "concentrated") {
+  if (isConcentrated) {
+    // The concentrated UI needs the full fetched pool data (raw sqrt price,
+    // reserve coins). When the type came from the caller, the query may still
+    // be resolving, so wait for it without flashing the weighted UI. Once the
+    // query settles without a pool (error / not found), surface an error
+    // instead of spinning forever.
+    if (!pool) return isPoolLoading ? loadingModal : errorModal;
+
     // Pool state detection based on liquidity
     const poolRaw = pool.raw as ConcentratedPoolRawResponse;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
@@ -198,6 +243,16 @@ export const AddLiquidityModal: FunctionComponent<
         </ModalBase>
       </>
     );
+  }
+
+  // If we still don't know the pool type at all (no hint from the caller and
+  // the query hasn't produced a pool), don't fall through to the share-pool
+  // (weighted) UI below — otherwise a concentrated (supercharged) pool flashes
+  // the weighted modal before the query resolves. Show loading while the query
+  // is in flight, or an error once it has settled without a pool (error /
+  // offline / not found).
+  if (!resolvedPoolType) {
+    return isPoolLoading ? loadingModal : errorModal;
   }
 
   // add share pool liquidity

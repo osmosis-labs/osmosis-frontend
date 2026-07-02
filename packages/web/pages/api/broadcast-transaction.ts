@@ -1,4 +1,5 @@
 import { ChainList } from "~/config/generated/chain-list";
+import { findAllowedRestEndpoint } from "~/utils/url";
 
 /**
  * Broadcasts a transaction to the chain.
@@ -19,11 +20,17 @@ export default async function broadcastTransactionHandler(req: Request) {
   }
 
   const body = await req.json();
-  const isEndpointInChainConfig = ChainList.some(({ apis }) =>
-    apis?.rest?.some(({ address }) => address.startsWith(body.restEndpoint))
+
+  const allowedRestAddresses = ChainList.flatMap(
+    ({ apis }) => apis?.rest?.map(({ address }) => address) ?? []
   );
 
-  if (!isEndpointInChainConfig) {
+  const matchedRestEndpoint =
+    typeof body.restEndpoint === "string"
+      ? findAllowedRestEndpoint(body.restEndpoint, allowedRestAddresses)
+      : null;
+
+  if (!matchedRestEndpoint) {
     return new Response(JSON.stringify({ error: "Invalid rest endpoint" }), {
       status: 400,
       headers: {
@@ -47,16 +54,19 @@ export default async function broadcastTransactionHandler(req: Request) {
   }
 
   try {
-    const response = await fetch(`${body.restEndpoint}/cosmos/tx/v1beta1/txs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tx_bytes: body.tx_bytes,
-        mode: body.mode,
-      }),
-    });
+    const response = await fetch(
+      `${matchedRestEndpoint}/cosmos/tx/v1beta1/txs`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tx_bytes: body.tx_bytes,
+          mode: body.mode,
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Response is not ok");

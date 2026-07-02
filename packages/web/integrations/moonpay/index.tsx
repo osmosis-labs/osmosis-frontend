@@ -1,9 +1,14 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { apiClient } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useMedia } from "react-use";
 
+import {
+  MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
+  MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
+} from "~/integrations/moonpay/constants";
 import { MoonpaySignUrlResponse } from "~/integrations/moonpay/types";
 import { ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
@@ -12,20 +17,6 @@ const MoonPayBuyWidget = dynamic(
   () => import("@moonpay/moonpay-react").then((mod) => mod.MoonPayBuyWidget),
   { ssr: false }
 );
-
-async function generateMoonpayUrlSignature(url: string): Promise<string> {
-  return (
-    await apiClient<MoonpaySignUrlResponse>(
-      "/api/integrations/moonpay/sign-url",
-      {
-        method: "POST",
-        data: {
-          url,
-        },
-      }
-    )
-  ).signature;
-}
 
 export const Moonpay: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
@@ -36,13 +27,74 @@ export const Moonpay: FunctionComponent<
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
-  let walletAddress = account?.address;
+  const walletAddress = account?.address;
+
+  const generateMoonpayUrlSignature = useCallback(
+    async (url: string): Promise<string> => {
+      let parsed: URL;
+      try {
+        parsed = new URL(url);
+      } catch (error) {
+        console.error("Failed to parse MoonPay widget URL", { url, error });
+        throw new Error("Invalid MoonPay widget URL");
+      }
+
+      const urlWalletAddress = parsed.searchParams.get("walletAddress");
+      if (urlWalletAddress && urlWalletAddress !== walletAddress) {
+        throw new Error(
+          "Connected wallet address does not match MoonPay widget URL"
+        );
+      }
+
+      const addressToSign = urlWalletAddress ?? walletAddress;
+      if (!addressToSign) {
+        throw new Error("No wallet address available for MoonPay signing");
+      }
+
+      try {
+        return (
+          await apiClient<MoonpaySignUrlResponse>(
+            "/api/integrations/moonpay/sign-url",
+            {
+              method: "POST",
+              data: {
+                walletAddress: addressToSign,
+                currencyCode:
+                  parsed.searchParams.get("currencyCode") ?? undefined,
+                defaultCurrencyCode:
+                  parsed.searchParams.get("defaultCurrencyCode") ?? undefined,
+                baseCurrencyCode:
+                  parsed.searchParams.get("baseCurrencyCode") ??
+                  MOONPAY_DEFAULT_BASE_CURRENCY_CODE,
+                baseCurrencyAmount:
+                  parsed.searchParams.get("baseCurrencyAmount") ??
+                  MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT,
+              },
+            }
+          )
+        ).signature;
+      } catch (error) {
+        console.error("Failed to sign MoonPay URL", {
+          walletAddress: addressToSign,
+          url,
+          error,
+        });
+        throw new Error("Failed to sign MoonPay URL");
+      }
+    },
+    [walletAddress]
+  );
+
+  if (!(account?.walletStatus === WalletStatus.Connected) || !walletAddress) {
+    return null;
+  }
 
   return (
     <MoonPayBuyWidget
       className="!m-0 !border-[0px]"
       variant="embedded"
       baseCurrencyCode={assetKey}
+      baseCurrencyAmount={MOONPAY_DEFAULT_BASE_CURRENCY_AMOUNT}
       defaultCurrencyCode="OSMO"
       visible={isOpen}
       walletAddress={walletAddress}

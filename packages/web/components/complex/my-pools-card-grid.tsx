@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { PoolCard } from "~/components/cards";
+import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -29,41 +30,68 @@ export const MyPoolsCardsGrid = observer(() => {
   const account = accountStore.getWallet(chainId);
 
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
-  const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
-    api.edge.pools.getUserPools.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: Boolean(account?.address),
+  const {
+    data: allMyPoolDetails,
+    isLoading: isLoadingMyPoolDetails,
+    isError,
+  } = api.edge.pools.getUserPools.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+    },
+    {
+      enabled: Boolean(account?.address),
 
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-      }
-    );
-
-  const myPoolDetails = useMemo(
-    () =>
-      showMoreMyPools
-        ? allMyPoolDetails
-        : allMyPoolDetails?.slice(0, poolCountShowMoreThreshold),
-    [allMyPoolDetails, poolCountShowMoreThreshold, showMoreMyPools]
+      },
+    }
   );
 
+  // Apply the dust filter to the full user-pool list, then slice for display.
+  // Empty state and the Show More button key off this filtered length so the
+  // two stay consistent: a wallet holding only sub-penny LP (hide-dust on)
+  // shows the empty card (not an empty grid + orphan Show More), and a wallet
+  // with real pools never shows a false "no pools found".
   const dustFilteredPools = useHideDustUserSetting(
-    myPoolDetails ?? [],
+    allMyPoolDetails ?? [],
     useCallback((myPool) => myPool.userValue, [])
   );
 
-  if (
-    (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) ||
-    !account?.address
-  ) {
+  const visiblePools = useMemo(
+    () =>
+      showMoreMyPools
+        ? dustFilteredPools
+        : dustFilteredPools.slice(0, poolCountShowMoreThreshold),
+    [dustFilteredPools, poolCountShowMoreThreshold, showMoreMyPools]
+  );
+
+  if (!account?.address) {
     return null;
+  }
+
+  // Only surface the error card on a hard failure with no data to show. React
+  // Query keeps the last good result during a failed background refetch (e.g.
+  // on window refocus or a flaky network), so don't swap a populated list for
+  // an error in that case.
+  if (isError && !allMyPoolDetails) {
+    return (
+      <SectionPlaceholderCard
+        heading={t("errors.uhOhSomethingWentWrong")}
+        body={t("pools.errorFetchingPools")}
+      />
+    );
+  }
+
+  if (!isLoadingMyPoolDetails && dustFilteredPools.length === 0) {
+    return (
+      <SectionPlaceholderCard
+        heading={t("pools.noPoolsFound")}
+        body={t("pools.noPoolsFoundDescription")}
+      />
+    );
   }
 
   return (
@@ -80,7 +108,7 @@ export const MyPoolsCardsGrid = observer(() => {
           </>
         ) : (
           <>
-            {dustFilteredPools.map(
+            {visiblePools.map(
               ({
                 id,
                 type,
@@ -153,7 +181,7 @@ export const MyPoolsCardsGrid = observer(() => {
           </>
         )}
       </div>
-      {(allMyPoolDetails?.length ?? 0) > poolCountShowMoreThreshold && (
+      {dustFilteredPools.length > poolCountShowMoreThreshold && (
         <div className="mx-auto">
           <ShowMoreButton
             isOn={showMoreMyPools}

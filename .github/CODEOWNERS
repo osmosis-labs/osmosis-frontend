@@ -1,0 +1,23 @@
+# GitHub CODEOWNERS for osmosis-frontend
+#
+# Lines later in the file take precedence over earlier ones. See
+# https://docs.github.com/en/repositories/managing-your-repositories-settings-and-customization/customizing-your-repository/about-code-owners
+
+# Dependency Security Gate configuration, overrides, runbook, and (future)
+# detector scripts and workflow. Owned by security-reviewers so any change
+# to the gate's behavior, override list, or operational docs is reviewed by
+# a curated set of maintainers. See MTN-34 for the broader initiative.
+#
+# NOTE: security-reviewers (created 28 May 2026, per MTN-79) is intentionally
+# a narrow, curated team rather than the broader org-wide reviewer pool. The
+# scope is just override approvals, gate-config changes, and the operational
+# docs in .github/security/. Tight membership exists so override approvals
+# carry the right level of scrutiny and so this PR queue does not blur into
+# the general review queue. See MTN-79 for the team's origin and acceptance
+# criteria.
+/.github/security/  @osmosis-labs/security-reviewers
+
+# Self-protection: CODEOWNERS itself must be reviewed by the same team, so a
+# future PR cannot weaken or remove the rule above without security-reviewers
+# approval. Without this line, the lock can unlock itself.
+/.github/CODEOWNERS  @osmosis-labs/security-reviewers

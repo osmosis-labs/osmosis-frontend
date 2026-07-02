@@ -27,16 +27,17 @@ jobs:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             packages/e2e
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: 22.x
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "**/node_modules"
           key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
@@ -58,7 +59,7 @@ jobs:
       - name: upload test results
         if: failure()
         id: e2e-test-results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.env }}-quote-test-results
           path: packages/e2e/playwright-report
@@ -101,7 +102,7 @@ jobs:
     needs: [fe-quote-tests, fe-bot-alert]
     steps:
       - name: Delete Previous deployments
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           debug: true
           script: |

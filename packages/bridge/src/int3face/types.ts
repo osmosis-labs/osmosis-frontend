@@ -44,10 +44,11 @@ export const getInt3faceBridgeConfig = (
     chainType: "bitcoin",
     int3MinimalDenom: getInt3BTCMinimalDenom({ env }),
     int3TokenSymbol: "BTC.int3",
-    allTokenMinimalDenom:
-      env === "mainnet"
-        ? "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC"
-        : undefined,
+    // BTC.int3 was force-exited from the allBTC transmuter pool (2026-06-15), so
+    // an alloy holder can no longer redeem allBTC into BTC.int3. Advertising the
+    // alloy withdraw route would be a dead end. The standalone BTC.int3 variant
+    // route is unaffected.
+    allTokenMinimalDenom: undefined,
     denom: "BTC",
     address: "btc",
   };
@@ -86,10 +87,10 @@ export const getInt3faceBridgeConfig = (
     chainType: "xrpl",
     int3MinimalDenom: getInt3XRPMinimalDenom({ env }),
     int3TokenSymbol: "XRP.int3",
-    allTokenMinimalDenom:
-      env === "mainnet"
-        ? "factory/osmo1qnglc04tmhg32uc4kxlxh55a5cmhj88cpa3rmtly484xqu82t79sfv94w0/alloyed/allXRP"
-        : undefined,
+    // XRP.xrpl.int3 was force-exited from the allXRP transmuter pool (2026-06-15)
+    // (get_corrupted_denoms now empty). No alloy redemption path remains, so the
+    // alloy withdraw route is a dead end. Standalone XRP.int3 route unaffected.
+    allTokenMinimalDenom: undefined,
     denom: "XRP",
     address: "xrp",
   };
@@ -114,10 +115,10 @@ export const getInt3faceBridgeConfig = (
     chainType: "ton",
     int3MinimalDenom: getInt3TONMinimalDenom({ env }),
     int3TokenSymbol: "TON.int3",
-    allTokenMinimalDenom:
-      env === "mainnet"
-        ? "factory/osmo12lnwf54yd30p6amzaged2atln8k0l32n7ncxf04ctg7u7ymnsy7qkqgsw4/alloyed/allTON"
-        : undefined,
+    // TON.int3 was force-exited from the allTON transmuter pool (2026-06-15). No
+    // alloy redemption path remains, so the alloy withdraw route is a dead end.
+    // Standalone TON.int3 route unaffected.
+    allTokenMinimalDenom: undefined,
     denom: "TON",
     address: "ton",
   };
@@ -128,10 +129,10 @@ export const getInt3faceBridgeConfig = (
     chainType: "solana",
     int3MinimalDenom: getInt3SOLMinimalDenom({ env }),
     int3TokenSymbol: "SOL.int3",
-    allTokenMinimalDenom:
-      env === "mainnet"
-        ? "factory/osmo1n3n75av8awcnw4jl62n3l48e6e4sxqmaf97w5ua6ddu4s475q5qq9udvx4/alloyed/allSOL"
-        : undefined,
+    // SOL.int3 was force-exited from the allSOL transmuter pool (2026-06-15). No
+    // alloy redemption path remains, so the alloy withdraw route is a dead end.
+    // Standalone SOL.int3 route unaffected.
+    allTokenMinimalDenom: undefined,
     denom: "SOL",
     address: "solana",
   };

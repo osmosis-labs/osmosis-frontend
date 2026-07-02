@@ -9,7 +9,12 @@ export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
 
 export type AmountDefault = "half" | "max" | "input";
 
-export type EventPage = "Swap Page" | "Token Info Page" | "Pool Details Page";
+export type EventPage =
+  | "Swap Page"
+  | "Token Info Page"
+  | "Pool Details Page"
+  | "Wormhole Page"
+  | "Bridge Page";
 
 export type EventProperties = {
   fromToken: string;

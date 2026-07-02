@@ -86,8 +86,8 @@ export const useSelectableWallets = ({
             const mobileWebModeName = "mobile-web";
 
             /**
-             * If on mobile and `leap` is in `window`, it means that the user enters
-             * the frontend from Leap's app in app browser. So, there is no need
+             * If on mobile and `cdc_wallet` is in `window`, it means that the user enters
+             * the frontend from Crypto.com's app in app browser. So, there is no need
              * to use wallet connect, as it resembles the extension's usage.
              */
             if (
@@ -99,17 +99,6 @@ export const useSelectableWallets = ({
                   (wallet) =>
                     wallet.name === AvailableCosmosWallets.CryptocomWallet
                 )
-                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-            }
-
-            /**
-             * If on mobile and `leap` is in `window`, it means that the user enters
-             * the frontend from Leap's app in app browser. So, there is no need
-             * to use wallet connect, as it resembles the extension's usage.
-             */
-            if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
-              return array
-                .filter((wallet) => wallet.name === AvailableCosmosWallets.Leap)
                 .map((wallet) => ({ ...wallet, mobileDisabled: false }));
             }
 

@@ -29,6 +29,7 @@ const config = {
 };
 
 const esmModules = [
+  "@moonpay/moonpay-node",
   "superjson",
   "@cosmos-kit/core",
   "uuid",

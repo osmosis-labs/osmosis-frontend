@@ -98,7 +98,9 @@
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
     "goToPool": "رفتن به استخر #{poolId}",
-    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید."
+    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید.",
+    "noPositions": "هیچ موقعیتی یافت نشد",
+    "noPositionsDescription": "نقدینگی متمرکز را برای یک استخر فراهم کنید تا بتوانید پاداش‌های اسپرد را دریافت کنید."
   },
   "copied": "کپی شده!",
   "app": {
@@ -252,12 +254,8 @@
       "chooseOnramp": "کریپتو بخر",
       "swappedSubtitle": "پشتیبانی از OSMO و USDC",
       "moonpaySubtitle": "پشتیبانی از OSMO، USDC",
-      "transakSubtitle": "پشتیبانی OSMO",
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC",
       "moonpayCountrySupport": "165+ کشور"
-    },
-    "incentive": {
-      "title": "انواع مشوق"
     },
     "MAX": "حداکثر",
     "pool": {
@@ -281,8 +279,7 @@
       "transmuter": "تبدیل کننده",
       "orderbook": "دفترچه سفارش",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "بدون انگیزه"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "اتصال کیف پول",
@@ -547,6 +544,9 @@
       },
       "title": "جستجو در استخرها"
     },
+    "noPoolsFound": "هیچ استخری یافت نشد",
+    "noPoolsFoundDescription": "برای شروع کسب پاداش، نقدینگی را به استخر اضافه کنید.",
+    "errorFetchingPools": "بارگیری استخرهای شما ناموفق بود. لطفاً صفحه را رفرش کنید.",
     "APR": "نرخ بازدهی",
     "bonded": "قفل شده",
     "createPool": {
@@ -607,8 +607,6 @@
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
-    "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز",
     "aprBreakdown": {
       "swapFees": "کارمزد تعویض",
       "boost": "تقویت کنید",
@@ -864,6 +862,7 @@
     "convertTo": "تبدیل به",
     "depositAs": "سپرده گذاری به عنوان",
     "withdrawAs": "برداشت به عنوان",
+    "withdrawViaRoute": "از طریق {route}",
     "recommended": "توصیه شده",
     "fee": "هزینه",
     "fees": "هزینه ها",
@@ -883,11 +882,18 @@
       "titleWithdraw": "گزینه های برداشت بیشتر",
       "depositDescriptionUnknown": "برای واریز {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
       "withdrawDescriptionUnknown": "برای برداشتن {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
-      "chooseAnAlternativeProviderDeposit": "یک ارائه‌دهنده جایگزین برای واریز {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با",
-      "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد."
+      "noAlternativesFound": "هیچ ارائه‌دهنده جایگزینی برای این مسیر یافت نشد.",
+      "externalSiteCaveat": "این‌ها سایت‌های پل شخص ثالث را باز می‌کنند. مسیر خود را همان‌جا انتخاب کنید.",
+      "convertBeforeWithdraw": {
+        "title": "ابتدا به {variant} تبدیل کنید",
+        "description": "{provider} فقط {variant} را می‌پذیرد. موجودی آلوید خود را در زیر به {variant} تبدیل کنید، سپس برای تکمیل برداشت خود به {provider} ادامه دهید.",
+        "currentVariantBalance": "موجودی فعلی {variant}:",
+        "successTitle": "به {variant} تبدیل شد",
+        "successDescription": "{variant} شما آماده است. برای تکمیل برداشت به {provider} ادامه دهید.",
+        "continueTo": "ادامه به {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",
@@ -993,7 +999,77 @@
     "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
     "transactionDetails": "جزئیات معامله",
     "confirmAmount": "مبلغ را تأیید کنید",
-    "enterChainAddress": "آدرس {chain} وارد کنید"
+    "enterChainAddress": "آدرس {chain} وارد کنید",
+    "wormholeRedeem": {
+      "title": "بازخرید یک انتقال گیرکرده Wormhole",
+      "description": "اگر یک انتقال پل Wormhole از Osmosis گیر کرده است، هش تراکنش Osmosis را در زیر جای‌گذاری کنید تا آن را جستجو کرده و بازخرید را در Solana (Phantom) یا Sui (Slush یا Phantom) تکمیل کنید.",
+      "txHashPlaceholder": "هش تراکنش Osmosis...",
+      "lookup": "جستجو",
+      "phantomNotDetected": "کیف پول Phantom شناسایی نشد.",
+      "installPhantom": "نصب Phantom",
+      "toRedeem": "برای بازخرید.",
+      "noSuiWalletDetectedInstall": "هیچ کیف پول Sui پشتیبانی‌شده‌ای شناسایی نشد. نصب کنید",
+      "toRedeemOnSui": "برای بازخرید در Sui.",
+      "or": "یا",
+      "token": "توکن",
+      "value": "ارزش",
+      "from": "از",
+      "to": "به ({chain})",
+      "date": "تاریخ",
+      "wormchainReceive": "دریافت Wormchain",
+      "checkingSolana": "در حال بررسی وضعیت بازخرید در Solana...",
+      "dailyLimitExceeded": "محدودیت روزانه فراتر رفت",
+      "governorBodyEnqueued": "از آنجا که Wormhole به محدودیت انتقال روزانه برای {chain} رسیده است، تکمیل این انتقال تا {hours} ساعت طول می‌کشد. این یک ویژگی امنیتی عادی و موقت شبکه Wormhole است.",
+      "governorBodyLikelyEnqueued": "ارزش این انتقال (~{amount}) از ظرفیت موجود در {chain} (~{available} باقی‌مانده) فراتر است. نگهبانان Wormhole احتمالاً آن را تا {hours} ساعت در صف قرار می‌دهند.",
+      "releaseCountdownUpToHours": "تا {hours} ساعت",
+      "releaseShortly": "به‌زودی آزاد می‌شود",
+      "releaseInHoursMinutes": "آزادسازی در {hours} ساعت و {minutes} دقیقه",
+      "releaseInMinutes": "آزادسازی در {minutes} دقیقه",
+      "learnMore": "بیشتر بدانید",
+      "checkAgain": "بررسی مجدد",
+      "alreadyRedeemedOn": "این انتقال قبلاً در {chain} بازخرید شده است.",
+      "viewOnWormholescan": "مشاهده در Wormholescan",
+      "vaaReadyConnectSolana": "VAA امضا شده و آماده است. برای بازخرید، کیف پول Solana خود را متصل کنید.",
+      "connectPhantom": "اتصال کیف پول Phantom",
+      "installPhantomWallet": "نصب کیف پول Phantom",
+      "connectedWallet": "کیف پول متصل",
+      "redeemOnSolana": "بازخرید در Solana",
+      "transferRedeemedOnSui": "انتقال در Sui بازخرید شد.",
+      "redeemSubmittedToSui": "بازخرید به Sui ارسال شد.",
+      "viewOnSuiscan": "مشاهده در Suiscan",
+      "viewOnSolscan": "مشاهده در Solscan",
+      "waitingForWalletSignatureNamed": "در انتظار امضای {wallet}...",
+      "waitingForSuiWalletSignature": "در انتظار امضای کیف پول Sui شما...",
+      "waitingForWalletSignature": "در انتظار امضای کیف پول...",
+      "submittingToSui": "در حال ارسال تراکنش به Sui...",
+      "submittingToSolana": "در حال ارسال تراکنش به Solana...",
+      "transferRedeemedSuccessfully": "انتقال با موفقیت بازخرید شد!",
+      "partialRedeemConfirmed": "{count} مورد از تراکنش‌های بازخرید پیش از خطا تأیید شدند:",
+      "viewTxOnSolscan": "مشاهده تراکنش {number} در Solscan",
+      "copied": "کپی شد",
+      "copy": "کپی",
+      "failedToLookUp": "جستجوی تراکنش ناموفق بود",
+      "failedToConnectWallet": "اتصال کیف پول ناموفق بود",
+      "failedToConnectSuiWallet": "اتصال کیف پول Sui ناموفق بود.",
+      "suiRedeemFailed": "بازخرید در Sui ناموفق بود",
+      "redeemFailed": "بازخرید ناموفق بود",
+      "vaaNotYetAvailable": "VAA هنوز در دسترس نیست. ممکن است نگهبانان Wormhole هنوز در حال پردازش این تراکنش باشند.",
+      "txFailedOnChain": "تراکنش روی زنجیره ناموفق بود: {error}",
+      "txConfirmationTimedOut": "تأیید تراکنش پس از ۱۲۰ ثانیه منقضی شد. وضعیت را در Solscan بررسی کنید: {sig}",
+      "nonSolanaVaaReady": "VAA امضا شده و آماده است. برای بازخرید در {chain}، این عملیات را در Wormholescan باز کنید و یک کیف پول {chain} متصل کنید. روند بازخرید Wormholescan از Sui Wallet، Suiet، Backpack و سایر کیف‌پول‌های Wallet Standard پشتیبانی می‌کند.",
+      "recipientChain": "گیرنده ({chain})",
+      "vaaBase64": "VAA (base64)",
+      "openOnWormholescanToRedeem": "برای بازخرید در Wormholescan باز کنید",
+      "suiVaaReadyConnect": "VAA امضا شده و آماده است. برای بازخرید بومی در Sui، یک کیف پول Sui (Slush یا Phantom) متصل کنید.",
+      "recipientSui": "گیرنده (Sui)",
+      "noSuiWalletInstallNatively": "هیچ کیف پول Sui پشتیبانی‌شده‌ای شناسایی نشد. برای بازخرید بومی، یکی را نصب کنید:",
+      "installNamed": "نصب {wallet}",
+      "connectNamed": "اتصال {wallet}",
+      "connectedNamedAccount": "حساب {wallet} متصل",
+      "confirmInNamed": "در {wallet} تأیید کنید...",
+      "submittingOnSui": "در حال ارسال در Sui...",
+      "redeemOnSui": "بازخرید در Sui"
+    }
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
@@ -1062,7 +1138,8 @@
       "price": "قیمت",
       "volume": "جلد",
       "advanced": "پیشرفته",
-      "simple": "ساده"
+      "simple": "ساده",
+      "lastUpdate": "آخرین به‌روزرسانی: {time}"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",
@@ -1410,6 +1487,12 @@
   "taprootAddressNotSupported": "آدرس‌های Taproot برای برداشت وجه پشتیبانی نمی‌شوند.",
   "wormhole": {
     "deprecationTitle": "پشتیبانی Wormhole در حال منسوخ شدن است",
-    "deprecationSubtitle": "ما توصیه نمی‌کنیم دارایی‌های اضافی را از طریق Wormhole به Osmosis منتقل کنید. این صفحه برای کمک به شما در خروج دارایی‌های موجود Wormhole از Osmosis در دسترس است."
+    "deprecationSubtitle": "ما توصیه نمی‌کنیم دارایی‌های اضافی را از طریق Wormhole به Osmosis منتقل کنید. این صفحه برای کمک به شما در خروج دارایی‌های موجود Wormhole از Osmosis در دسترس است.",
+    "bridgeStepTitle": "پل زدن از طریق Wormhole",
+    "refreshBalance": "به‌روزرسانی موجودی",
+    "convertAlloy": {
+      "stepTitle": "تبدیل {symbol} به {symbol}.wh",
+      "description": "شما {balance} {symbol} به صورت دارایی آلویدشده دارید. Wormhole واریانت {symbol}.wh را پل می‌زند، پس ابتدا تبدیل کنید و سپس در پایین پل بزنید."
+    }
   }
 }

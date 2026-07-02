@@ -1,0 +1,23 @@
+# Permanent / recurring exemptions for the dep-security-gate.
+#
+# Adding an entry here exempts a specific (package, version, integrity) tuple
+# from the gate's REJECTED verdict. Edits to this file require CODEOWNERS
+# approval - see .github/CODEOWNERS - so every override has a reviewable
+# diff in git history.
+#
+# Rules enforced by the aggregator (MTN-55 / Phase 02):
+#   - integrity must match the entry in yarn.lock exactly.
+#   - expires_at must be in the future and at most 90 days out.
+#   - added_by must NOT equal the PR author (no self-overrides).
+#
+# Schema:
+# overrides:
+#   - package: "<name>"           # e.g. "lodash"
+#     version: "<exact-version>"  # no ranges
+#     integrity: "sha512-..."     # must match yarn.lock
+#     reason: "<why this is safe>"
+#     added_by: "<github-username>"
+#     added_at: "<ISO date, e.g. 2026-05-26>"
+#     expires_at: "<ISO date>"    # max 90 days from added_at
+
+overrides: []

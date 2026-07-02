@@ -1,4 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import type { Bridge } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -20,9 +21,49 @@ interface BridgeReceiveAssetDropdownProps {
   fromAsset: SupportedAssetWithAmount;
   toAsset: SupportedAsset;
   setToAsset: (asset: SupportedAsset) => void;
+  /**
+   * Records a deliberate user selection of a withdraw variant, distinctly from
+   * the parent's auto-seed/realign writes that also go through `setToAsset`.
+   * Withdraw branch only; falls back to `setToAsset` when not provided.
+   */
+  onUserSelectAsset?: (asset: SupportedAsset) => void;
   assetsInOsmosis: MinimalAsset[];
   counterpartySupportedAssetsByChainId: Record<string, SupportedAsset[]>;
 }
+
+/**
+ * Map a bridge provider id to a short, user-facing route name. Used to tell
+ * apart withdraw variants that share the same counterparty denom (e.g. the
+ * Nomic and Int3face routes both report `denom: "BTC"`, and the Wormhole and
+ * Int3face routes both report `denom: "SOL"`), where the only real
+ * differentiator is which bridge performs the transfer. Includes the named
+ * custom bridges; generic routers (Skip/Squid/IBC) stay unlabeled.
+ */
+const bridgeRouteName: Partial<Record<Bridge, string>> = {
+  Nomic: "Nomic",
+  Int3face: "Int3face",
+  Wormhole: "Wormhole",
+};
+
+/**
+ * Resolve a short, user-facing route name for a withdraw row, given the
+ * currently-selected Osmosis variant. Returns the first named bridge from the
+ * row's `supportedVariants[fromAddress]` map, or undefined for generic routes.
+ *
+ * Each row is one destination address, and rows are keyed/deduped per address,
+ * so a row carries at most one named bridge — picking the first match is
+ * unambiguous. (A destination denom can have several named bridges, e.g. SOL
+ * via Wormhole and via Int3face, but those are separate rows.)
+ */
+const getWithdrawRouteLabel = (
+  asset: SupportedAsset,
+  fromAddress: string
+): string | undefined => {
+  const bridge = Object.keys(asset.supportedVariants[fromAddress] ?? {}).find(
+    (bridge) => bridgeRouteName[bridge as Bridge]
+  );
+  return bridge ? bridgeRouteName[bridge as Bridge] : undefined;
+};
 
 export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDropdownProps> =
   observer(
@@ -31,6 +72,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
       fromAsset,
       toAsset,
       setToAsset,
+      onUserSelectAsset,
       assetsInOsmosis,
       counterpartySupportedAssetsByChainId,
     }) => {
@@ -171,9 +213,9 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                 ) : (
                   <>
                     {counterpartySupportedAssetsByChainId[toAsset.chainId].map(
-                      (asset, index, assets) => {
+                      (asset, index) => {
                         const onClick = () => {
-                          setToAsset(asset);
+                          (onUserSelectAsset ?? setToAsset)(asset);
                         };
 
                         const isSelected = toAsset?.address === asset.address;
@@ -186,10 +228,13 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               asset.denom === a.coinDenom
                           ) ?? assetsInOsmosis[0];
 
-                        const revealAddress = assets[0].denom === asset.denom;
+                        const routeLabel = getWithdrawRouteLabel(
+                          asset,
+                          fromAsset.address
+                        );
 
                         return (
-                          <MenuItem key={asset.denom}>
+                          <MenuItem key={asset.address}>
                             <button
                               className={classNames(
                                 "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
@@ -211,16 +256,17 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               <div className="flex flex-col">
                                 <p className="body1 md:body2">
                                   {t("transfer.withdrawAs")} {asset.denom}
+                                  {routeLabel
+                                    ? ` ${t("transfer.withdrawViaRoute", {
+                                        route: routeLabel,
+                                      })}`
+                                    : ""}
                                 </p>
-                                {isCanonicalAsset ? (
+                                {isCanonicalAsset && (
                                   <p className="body2 text-osmoverse-300">
                                     {t("transfer.recommended")}
                                   </p>
-                                ) : revealAddress ? (
-                                  <p className="body2 text-osmoverse-300">
-                                    {asset.address}
-                                  </p>
-                                ) : null}
+                                )}
                               </div>
                             </button>
                           </MenuItem>
