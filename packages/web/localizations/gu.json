@@ -872,11 +872,18 @@
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
       "depositDescriptionUnknown": "{denom} જમા કરાવવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
       "withdrawDescriptionUnknown": "{denom} પાછી ખેંચવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
-      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} થી {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} થી {toChain}",
       "depositWith": "સાથે જમા",
       "withdrawWith": "સાથે પાછી ખેંચો",
-      "noAlternativesFound": "આ રૂટ માટે કોઈ વૈકલ્પિક પ્રદાતા મળ્યા નથી."
+      "noAlternativesFound": "આ રૂટ માટે કોઈ વૈકલ્પિક પ્રદાતા મળ્યા નથી.",
+      "externalSiteCaveat": "આ ત્રીજા-પક્ષની બ્રિજ સાઇટ્સ ખોલે છે. ત્યાં તમારો રૂટ પસંદ કરો.",
+      "convertBeforeWithdraw": {
+        "title": "પહેલા {variant} માં રૂપાંતરિત કરો",
+        "description": "{provider} ફક્ત {variant} સ્વીકારે છે. તમારી alloyed બેલેન્સને નીચે {variant} માં રૂપાંતરિત કરો, પછી તમારી ઉપાડ પૂર્ણ કરવા માટે {provider} પર ચાલુ રાખો.",
+        "currentVariantBalance": "વર્તમાન {variant} બેલેન્સ:",
+        "successTitle": "{variant} માં રૂપાંતરિત",
+        "successDescription": "તમારું {variant} તૈયાર છે. તમારી ઉપાડ પૂર્ણ કરવા {provider} પર ચાલુ રાખો.",
+        "continueTo": "{provider} પર ચાલુ રાખો"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "જમા કરવા માટે સંપત્તિ પસંદ કરો",

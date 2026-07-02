@@ -872,11 +872,18 @@
       "titleWithdraw": "Daha fazla para çekme seçeneği",
       "depositDescriptionUnknown": "{denom} yatırmak için lütfen alternatif bir sağlayıcı kullanın.",
       "withdrawDescriptionUnknown": "{denom} öğesini geri çekmek için lütfen alternatif bir sağlayıcı kullanın.",
-      "chooseAnAlternativeProviderDeposit": "{asset} yi {fromChain} den {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "{asset} yi {fromChain} den {toChain}",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:",
-      "noAlternativesFound": "Bu rota için alternatif sağlayıcı bulunamadı."
+      "noAlternativesFound": "Bu rota için alternatif sağlayıcı bulunamadı.",
+      "externalSiteCaveat": "Bunlar üçüncü taraf köprü sitelerini açar. Rotanızı orada seçin.",
+      "convertBeforeWithdraw": {
+        "title": "Önce {variant} öğesine dönüştürün",
+        "description": "{provider} yalnızca {variant} kabul eder. Alaşımlı bakiyenizi aşağıda {variant} öğesine dönüştürün, ardından çekme işleminizi tamamlamak için {provider} ile devam edin.",
+        "currentVariantBalance": "Mevcut {variant} bakiyesi:",
+        "successTitle": "{variant} olarak dönüştürüldü",
+        "successDescription": "{variant} hazır. Çekiminizi tamamlamak için {provider} ile devam edin.",
+        "continueTo": "{provider} ile devam et"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Yatırılacak bir varlık seçin",

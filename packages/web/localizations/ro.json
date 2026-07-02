@@ -872,11 +872,18 @@
       "titleWithdraw": "Mai multe opțiuni de retragere",
       "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
       "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
-      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu",
-      "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută."
+      "noAlternativesFound": "Niciun furnizor alternativ găsit pentru această rută.",
+      "externalSiteCaveat": "Acestea deschid site-uri de bridge terțe. Alege ruta acolo.",
+      "convertBeforeWithdraw": {
+        "title": "Convertiți mai întâi în {variant}",
+        "description": "{provider} acceptă doar {variant}. Convertiți soldul dvs. aliat în {variant} mai jos, apoi continuați către {provider} pentru a finaliza retragerea.",
+        "currentVariantBalance": "Sold curent {variant}:",
+        "successTitle": "Convertit în {variant}",
+        "successDescription": "{variant} este gata. Continuați la {provider} pentru a finaliza retragerea.",
+        "continueTo": "Continuați la {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Selectați un activ de depus",
