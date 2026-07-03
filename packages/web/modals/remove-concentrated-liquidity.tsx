@@ -20,7 +20,6 @@ import AutosizeInput from "react-input-autosize";
 import { Icon } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { Spinner } from "~/components/loaders/spinner";
 import { tError } from "~/components/localization";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -396,16 +395,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 </p>
 
                 {zapQuote.isLoading || !quoteInSync ? (
-                  // Show loading while the quote is fetching OR while the
-                  // debounced target is still catching up to the live slider, so
-                  // we never render a stale breakdown (fees/min/route for the old
-                  // target) or a "value loss" error for an in-flight mix change.
-                  <div className="flex items-center justify-center gap-2 py-2 text-osmoverse-300">
-                    <Spinner className="!h-4 !w-4" />
-                    <span className="caption">
-                      {t("addConcentratedLiquidity.singleAsset.quoteLoading")}
-                    </span>
-                  </div>
+                  // While the quote is fetching OR the debounced target is
+                  // still catching up to the live slider, hold the card at its
+                  // populated size (same rows, skeleton values) so the modal
+                  // doesn't jump in height when the quote lands, and a stale
+                  // breakdown (fees/min/route for the old target) is never
+                  // rendered.
+                  <ZapOutBreakdownSkeleton
+                    zapSlippageConfig={zapSlippageConfig}
+                  />
                 ) : !quote ? (
                   <p className="caption py-2 text-center text-rust-300">
                     {t("transfer.transferAmountTooLowValueLoss")}
@@ -579,6 +577,45 @@ const ZapOutBreakdown: FunctionComponent<{
           )}
         </Disclosure>
       )}
+    </div>
+  );
+});
+
+/** Same rows as `ZapOutBreakdown` with skeleton values, so the breakdown card
+ *  reserves its populated height while the quote fetches instead of jumping
+ *  from a one-line spinner to the full card. The slippage input is
+ *  quote-independent, so the live control renders even while loading. */
+const ZapOutBreakdownSkeleton: FunctionComponent<{
+  zapSlippageConfig: ReturnType<
+    typeof useRemoveConcentratedLiquidityConfig
+  >["zapSlippageConfig"];
+}> = observer(({ zapSlippageConfig }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="mx-auto flex w-full max-w-lg flex-col">
+      <RecapRow
+        left={t("receiveAtLeast")}
+        right={<SkeletonLoader className="h-4 w-40" />}
+      />
+      <RecapRow
+        left={t("addConcentratedLiquidity.singleAsset.valueOut")}
+        right={<SkeletonLoader className="h-4 w-20" />}
+      />
+      <RecapRow
+        left={t("pools.aprBreakdown.swapFees")}
+        right={<SkeletonLoader className="h-4 w-28" />}
+      />
+      <RecapRow
+        left={t("swap.settings.slippage")}
+        right={<SlippageInput slippageConfig={zapSlippageConfig} />}
+      />
+      <div className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
+        <span className="sm:caption text-osmoverse-300">
+          {t("swap.autoRouter")}
+        </span>
+        <SkeletonLoader className="h-4 w-16" />
+      </div>
     </div>
   );
 });
