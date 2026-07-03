@@ -1,3 +1,7 @@
+import {
+  calcCapitalEfficiency,
+  calcPositionValueVsHold,
+} from "@osmosis-labs/math";
 import type { Pool } from "@osmosis-labs/server";
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -38,6 +42,10 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { useStore } from "~/stores";
+import {
+  calcStatPresetRange,
+  STAT_RANGE_PRESETS,
+} from "~/utils/cl-stat-range-presets";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -116,7 +124,6 @@ const AddConcLiqView: FunctionComponent<
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
   const hasInitializedInactivePool = useRef(false);
-
 
   const [persistedAdvanced, setPersistedAdvanced] = useLocalStorageState<{
     enabled?: boolean;
@@ -708,8 +715,13 @@ const AdvancedRangeControls: FunctionComponent<{
     setMaxRange,
     baseDepositAmountIn,
     quoteDepositAmountIn,
+    rangeWithCurrencyDecimals,
+    currentPriceWithDecimals,
+    fullRange,
+    allHistoricalPricesInDisplayUnits,
   } = props.addLiquidityConfig;
   const { logEvent } = useAmplitudeAnalytics();
+  const [activeStatPreset, setActiveStatPreset] = useState<string | null>(null);
 
   // Slider defaults (25% buffer, 7d lookback) are set when the config is
   // first constructed. Within a single modal session, user tweaks survive
@@ -778,6 +790,7 @@ const AdvancedRangeControls: FunctionComponent<{
 
   const onLookbackChange = useCallback(
     (days: number) => {
+      setActiveStatPreset(null);
       setLookbackDays(days);
       logEvent([
         EventName.ConcentratedLiquidity.strategyPicked,
@@ -789,11 +802,59 @@ const AdvancedRangeControls: FunctionComponent<{
 
   const onBufferChange = useCallback(
     (pct: number) => {
+      setActiveStatPreset(null);
       const clamped = Math.max(0, Math.min(BUFFER_SLIDER_MAX, pct));
       setBufferFraction(clamped / 100);
     },
     [setBufferFraction]
   );
+
+  // Statistical presets: ranges from simple statistics over the fetched
+  // series (mean ± kσ) or from spot (± a fraction). Applied through the same
+  // config path as the sliders; undefined = not computable, chip disabled.
+  const statPresetRanges = useMemo(
+    () =>
+      STAT_RANGE_PRESETS.map((preset) => ({
+        preset,
+        range: calcStatPresetRange({
+          preset,
+          prices: allHistoricalPricesInDisplayUnits,
+          spotPrice: currentPriceWithDecimals,
+          nowMs: Date.now(),
+        }),
+      })),
+    [allHistoricalPricesInDisplayUnits, currentPriceWithDecimals]
+  );
+
+  const onStatPresetClick = useCallback(
+    (label: string, range: [Dec, Dec]) => {
+      setFullRange(false);
+      setMinRange(range[0].mul(multiplicationQuoteOverBase).toString());
+      setMaxRange(range[1].mul(multiplicationQuoteOverBase).toString());
+      setActiveStatPreset(label);
+      logEvent([
+        EventName.ConcentratedLiquidity.strategyPicked,
+        { strategy: `stat-preset-${label}` },
+      ]);
+    },
+    [
+      setFullRange,
+      setMinRange,
+      setMaxRange,
+      multiplicationQuoteOverBase,
+      logEvent,
+    ]
+  );
+
+  // How concentrated the chosen range is versus full range, at current spot.
+  const capitalEfficiency = useMemo(() => {
+    if (fullRange) return new Dec(1);
+    return calcCapitalEfficiency({
+      lowerPrice: rangeWithCurrencyDecimals[0],
+      upperPrice: rangeWithCurrencyDecimals[1],
+      spotPrice: currentPriceWithDecimals,
+    });
+  }, [fullRange, rangeWithCurrencyDecimals, currentPriceWithDecimals]);
 
   const bufferPct = Math.round(bufferFraction * 100);
   const lookbackIdx = lookbackToIndex(lookbackDays);
@@ -846,6 +907,42 @@ const AdvancedRangeControls: FunctionComponent<{
             />
           </SliderRow>
         </div>
+        <div className="mt-4 flex items-center gap-2">
+          <span className="caption text-osmoverse-300">
+            {t("addConcentratedLiquidity.statPresetsLabel")}
+          </span>
+          {statPresetRanges.map(({ preset, range }) => (
+            <button
+              key={preset.label}
+              type="button"
+              disabled={!range}
+              onClick={() => range && onStatPresetClick(preset.label, range)}
+              className={classNames(
+                "caption rounded-5xl border px-2 py-1 transition-colors disabled:pointer-events-none disabled:opacity-40",
+                activeStatPreset === preset.label
+                  ? "border-wosmongton-100 bg-wosmongton-100 text-osmoverse-900"
+                  : "border-osmoverse-600 text-wosmongton-300 hover:bg-osmoverse-700"
+              )}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+        {capitalEfficiency && (
+          <div className="mt-3 flex items-center justify-between">
+            <span className="caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.capitalEfficiency")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {t("addConcentratedLiquidity.capitalEfficiencyValue", {
+                multiplier: Number(capitalEfficiency.toString()).toLocaleString(
+                  "en-US",
+                  { maximumFractionDigits: 1 }
+                ),
+              })}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1132,6 +1229,7 @@ const BacktestPanel: FunctionComponent<{
     allHistoricalPricesInDisplayUnits,
     rangeWithCurrencyDecimals,
     fullRange,
+    currentPriceWithDecimals,
   } = addLiquidityConfig;
 
   // The backtest's timescale is independent of the Advanced lookback slider.
@@ -1207,6 +1305,45 @@ const BacktestPanel: FunctionComponent<{
     return new RatePretty(rangeApr.toDec().mul(fractionDec));
   }, [rangeApr, timeInRangeFraction]);
 
+  // Divergence (impermanent loss) versus holding the deposited tokens, for a
+  // deposit at current spot evaluated at a few representative exit prices.
+  // Fees and incentives excluded: this isolates the cost side the backtest
+  // APR does not capture.
+  const ilScenarios = useMemo(() => {
+    const spot = currentPriceWithDecimals;
+    const [lowerPrice, upperPrice] = rangeWithCurrencyDecimals;
+    if (fullRange || !spot.isPositive()) return [];
+    const scenario = (
+      labelKey: string,
+      labelParams: Record<string, string>,
+      exitPrice: Dec
+    ) => {
+      const result = calcPositionValueVsHold({
+        lowerPrice,
+        upperPrice,
+        entryPrice: spot,
+        exitPrice,
+      });
+      return result
+        ? { labelKey, labelParams, delta: result.deltaVsHold }
+        : undefined;
+    };
+    return [
+      scenario("addConcentratedLiquidity.ilAtRangeFloor", {}, lowerPrice),
+      scenario(
+        "addConcentratedLiquidity.ilSpotMove",
+        { percent: "-10%" },
+        spot.mul(new Dec("0.9"))
+      ),
+      scenario(
+        "addConcentratedLiquidity.ilSpotMove",
+        { percent: "+10%" },
+        spot.mul(new Dec("1.1"))
+      ),
+      scenario("addConcentratedLiquidity.ilAtRangeCeiling", {}, upperPrice),
+    ].filter((row): row is NonNullable<typeof row> => Boolean(row));
+  }, [currentPriceWithDecimals, rangeWithCurrencyDecimals, fullRange]);
+
   const lookbackIdx = lookbackToIndex(backtestLookbackDays);
   const windowLabel = formatLookback(backtestLookbackDays);
 
@@ -1250,6 +1387,38 @@ const BacktestPanel: FunctionComponent<{
           }
         />
       </div>
+      {ilScenarios.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <span className="caption text-osmoverse-300">
+            {t("addConcentratedLiquidity.ilTitle")}
+          </span>
+          <div className="grid grid-cols-2 gap-x-4">
+            {ilScenarios.map(({ labelKey, labelParams, delta }) => (
+              <div
+                key={labelKey + (labelParams.percent ?? "")}
+                className="flex items-center justify-between"
+              >
+                <span className="caption text-osmoverse-400">
+                  {t(labelKey, labelParams)}
+                </span>
+                <span
+                  className={classNames(
+                    "caption",
+                    delta.lt(new Dec("-0.0005"))
+                      ? "text-rust-300"
+                      : "text-osmoverse-200"
+                  )}
+                >
+                  {formatPretty(new RatePretty(delta), { maxDecimals: 2 })}
+                </span>
+              </div>
+            ))}
+          </div>
+          <span className="caption text-osmoverse-400">
+            {t("addConcentratedLiquidity.ilDisclaimer")}
+          </span>
+        </div>
+      )}
       <span className="caption text-osmoverse-400">
         {t("addConcentratedLiquidity.backtestDisclaimer")}
       </span>
