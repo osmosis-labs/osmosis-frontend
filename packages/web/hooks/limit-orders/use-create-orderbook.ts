@@ -282,8 +282,12 @@ export function useCreateOrderbook({
     } catch (e) {
       // The creation did not land (sign rejection, CheckTx failure, or a
       // delivered tx with a non-zero code): roll back the in-flight mark so
-      // the pair can be retried.
-      clearJustCreatedOrderbook(baseDenom, quoteDenom);
+      // the pair can be retried. Only a still-pending mark is rolled back; a
+      // "created" entry proves some attempt (possibly another tab's) already
+      // delivered a pool and must keep its duplicate-creation protection.
+      if (getJustCreatedStatus(baseDenom, quoteDenom) === "pending") {
+        clearJustCreatedOrderbook(baseDenom, quoteDenom);
+      }
       console.error("Error creating orderbook pool", e);
       const message =
         e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
