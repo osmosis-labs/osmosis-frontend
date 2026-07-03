@@ -34,7 +34,6 @@ import {
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -53,8 +52,6 @@ export function useAddConcentratedLiquidityConfig(
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
-  const featureFlags = useFeatureFlags();
-  const advancedCLPositionsEnabled = featureFlags.advancedCLPositions;
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -125,11 +122,9 @@ export function useAddConcentratedLiquidityConfig(
       historicalPriceData.max
     );
 
-  // 1-year fetch — drives the advanced sliders + backtest. Gated on the
-  // `advancedCLPositions` feature flag so the non-advanced flow is
-  // byte-identical (no extra network, no extra payload) when advanced is off.
-  // The lookback slider filters this dataset client-side so the user can
-  // pick an arbitrary window without triggering new fetches.
+  // 1-year fetch — drives the advanced sliders + backtest. The lookback
+  // slider filters this dataset client-side so the user can pick an
+  // arbitrary window without triggering new fetches.
   const { data: longHistoricalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
       {
@@ -140,7 +135,7 @@ export function useAddConcentratedLiquidityConfig(
           pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
         timeDuration: "1y",
       },
-      { enabled: isPoolFetched && advancedCLPositionsEnabled }
+      { enabled: isPoolFetched }
     );
   useEffect(() => {
     if (longHistoricalPriceData)
