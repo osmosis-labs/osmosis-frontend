@@ -167,14 +167,21 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   const deviationDirection: "above" | "below" =
     orderDirection === "bid" ? "below" : "above";
 
-  // Per-session dismiss state. Reset whenever the user edits the price so the
-  // banner reappears if they cross back over the threshold. Key on
-  // `orderPrice` rather than `percentAdjusted` because the latter ticks with
-  // spot-price updates the user did not initiate.
+  // Per-session dismiss state. Reset whenever the user edits their input so
+  // the banner reappears if they cross back over the threshold. The key must
+  // be the user-driven value for the ACTIVE input mode: in percentage mode
+  // `orderPrice` is recomputed from spot on every refetch (so keying on it
+  // would resurface a dismissed banner without any user edit), while
+  // `manualPercentAdjusted` only changes on user input; in price mode the
+  // inverse holds.
+  const dismissResetKey =
+    inputMode === InputMode.Percentage
+      ? priceState.manualPercentAdjusted
+      : priceState.orderPrice;
   const [isDeviationDismissed, setDeviationDismissed] = useState(false);
   useEffect(() => {
     setDeviationDismissed(false);
-  }, [priceState.orderPrice]);
+  }, [dismissResetKey]);
 
   return (
     <div
