@@ -136,14 +136,23 @@ export function useCreateOrderbook({
   }, [apiUtils, baseDenom, quoteDenom]);
 
   const createOrderbook = useCallback(async () => {
-    if (!account?.address) return;
-    if (!baseDenom || !quoteDenom) return;
-    if (!IS_ORDERBOOK_CREATION_SUPPORTED) return;
+    // Precondition violations throw rather than silently resolving: callers
+    // treat a resolved createOrderbook as success (close the modal, activate
+    // the limit tab), which must never happen when nothing was broadcast.
+    if (!account?.address)
+      throw new Error("Cannot create an orderbook without a connected wallet");
+    if (!baseDenom || !quoteDenom)
+      throw new Error("Cannot create an orderbook without a base/quote pair");
+    if (!IS_ORDERBOOK_CREATION_SUPPORTED)
+      throw new Error(
+        "Orderbook creation is not supported in this environment (no code id configured)"
+      );
 
     // The pair was already created onchain (this session or within the server
-    // cache TTL, persisted across reloads). Broadcasting again would create a
-    // duplicate pool and charge another creation fee, so a re-confirm becomes
-    // a cache-refresh retry instead.
+    // cache TTL, persisted across reloads, or marked in-flight by another
+    // confirm/tab). Broadcasting again would create a duplicate pool and
+    // charge another creation fee, so a re-confirm becomes a cache-refresh
+    // retry instead.
     if (wasOrderbookJustCreated(baseDenom, quoteDenom)) {
       setIsCreating(true);
       setError(undefined);
@@ -157,6 +166,12 @@ export function useCreateOrderbook({
 
     setIsCreating(true);
     setError(undefined);
+
+    // Mark the pair before broadcasting so an overlapping confirm (double
+    // click, second tab) hits the just-created gate instead of broadcasting a
+    // second paid creation while this one is in flight. Rolled back on any
+    // failure below; kept on success.
+    markOrderbookJustCreated(baseDenom, quoteDenom);
 
     try {
       const osmosis = await getOsmosisCodec();
@@ -190,9 +205,6 @@ export function useCreateOrderbook({
           deliveredCode = tx.code;
           deliveredLog = tx.rawLog;
           if (!tx.code) {
-            // Mark BEFORE the refresh: from this point the pool exists
-            // onchain, so no path may broadcast the pair again.
-            markOrderbookJustCreated(baseDenom, quoteDenom);
             // The refresh is best-effort: the creation itself succeeded, so a
             // refetch failure must not reject the flow (callers would show an
             // error and leave the confirm re-armed for a duplicate paid tx).
@@ -214,6 +226,10 @@ export function useCreateOrderbook({
         throw new Error(deliveredLog || t("errors.uhOhSomethingWentWrong"));
       }
     } catch (e) {
+      // The creation did not land (sign rejection, CheckTx failure, or a
+      // delivered tx with a non-zero code): roll back the in-flight mark so
+      // the pair can be retried.
+      clearJustCreatedOrderbook(baseDenom, quoteDenom);
       console.error("Error creating orderbook pool", e);
       const message =
         e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");

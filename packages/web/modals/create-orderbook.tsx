@@ -16,6 +16,9 @@ interface CreateOrderbookModalProps extends ModalBaseProps {
   baseCoinImageUrl?: string;
   quoteCoinImageUrl?: string;
   isCreating: boolean;
+  /** Creation failure to surface; the confirm handlers keep the modal open on
+   *  error expecting the user to see why. */
+  error?: string;
   acknowledgeFee: boolean;
   onAcknowledgeFee: (value: boolean) => void;
   onConfirm: () => void;
@@ -31,6 +34,7 @@ export const CreateOrderbookModal: FunctionComponent<
   baseCoinImageUrl,
   quoteCoinImageUrl,
   isCreating,
+  error,
   acknowledgeFee,
   onAcknowledgeFee,
   onConfirm,
@@ -90,6 +94,9 @@ export const CreateOrderbookModal: FunctionComponent<
             </label>
           </div>
         </div>
+        {error && (
+          <p className="body2 break-words text-center text-rust-400">{error}</p>
+        )}
         <div className="flex flex-col gap-3">
           <Button
             isLoading={isCreating}

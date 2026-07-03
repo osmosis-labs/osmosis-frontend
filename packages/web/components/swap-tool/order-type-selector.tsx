@@ -204,7 +204,11 @@ export const OrderTypeSelector = ({
   // creation while the getPools cache is still catching up.
   const justCreatedRef = useRef(false);
 
-  const { createOrderbook, isCreating } = useCreateOrderbook({
+  const {
+    createOrderbook,
+    isCreating,
+    error: createError,
+  } = useCreateOrderbook({
     baseDenom: base,
     quoteDenom: quote,
   });
@@ -318,6 +322,7 @@ export const OrderTypeSelector = ({
         baseCoinImageUrl={baseAsset?.coinImageUrl}
         quoteCoinImageUrl={quoteAsset?.coinImageUrl}
         isCreating={isCreating}
+        error={createError}
         acknowledgeFee={acknowledgeFee}
         onAcknowledgeFee={setAcknowledgeFee}
         onConfirm={handleConfirmCreate}

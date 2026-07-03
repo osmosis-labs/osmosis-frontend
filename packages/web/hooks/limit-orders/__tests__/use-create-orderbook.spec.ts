@@ -9,7 +9,13 @@ import { useCreateOrderbook } from "../use-create-orderbook";
 
 const mockInvalidateGetPools = jest.fn().mockResolvedValue(undefined);
 const mockInvalidateVerify = jest.fn().mockResolvedValue(undefined);
-const mockFetchVerify = jest.fn().mockResolvedValue(undefined);
+// Matches the real verifyOrderbookCreation response shape; orderbookExists
+// true so the post-create refresh's sidecar-catch-up retry loop exits on the
+// first attempt.
+const mockFetchVerify = jest.fn().mockResolvedValue({
+  orderbookExists: true,
+  endpointFunctional: true,
+});
 const mockSignAndBroadcast = jest.fn();
 
 let mockWalletAddress: string | undefined = "osmo1testaddress";
@@ -95,6 +101,10 @@ function mockBroadcastFailure(error: Error) {
 describe("useCreateOrderbook", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // The just-created registry persists to localStorage (so a page reload
+    // can't re-offer a paid creation); clear it or the duplicate-broadcast
+    // gate short-circuits every test after the first success.
+    window.localStorage.clear();
   });
 
   describe("createOrderbook — instantiate message", () => {
@@ -246,9 +256,48 @@ describe("useCreateOrderbook", () => {
     });
   });
 
-  describe("early-exit guards", () => {
-    it("does not broadcast when address is missing", async () => {
-      mockWalletAddress = undefined;
+  describe("createOrderbook — delivered tx failure", () => {
+    it("rejects with the raw log when the delivered tx has a non-zero code", async () => {
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onFulfill: (tx: { code: number; rawLog?: string }) => Promise<void>
+        ) => {
+          await onFulfill({ code: 5, rawLog: "out of gas" });
+        }
+      );
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      // Capture the rejection inside act: letting the act promise itself
+      // reject poisons the shared test renderer for subsequent renderHooks.
+      let thrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+      expect(thrown).toBeInstanceOf(Error);
+      expect((thrown as Error).message).toContain("out of gas");
+
+      // A failed delivery must not arm the duplicate-broadcast gate.
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => {});
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("createOrderbook — duplicate-broadcast gate", () => {
+    it("does not broadcast a second creation for a just-created pair", async () => {
+      mockBroadcastSuccess();
 
       const { result } = renderHook(() =>
         useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
@@ -257,7 +306,55 @@ describe("useCreateOrderbook", () => {
       await act(async () => {
         await result.current.createOrderbook();
       });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
 
+      // A re-confirm becomes a cache-refresh retry, not another paid tx.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+      expect(mockFetchVerify).toHaveBeenCalledTimes(2);
+    });
+
+    it("resolves the flow even when the post-create cache refresh fails", async () => {
+      mockBroadcastSuccess();
+      mockFetchVerify.mockRejectedValueOnce(new Error("network down"));
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      // The creation succeeded onchain; a refetch failure must not reject.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(result.current.error).toBeUndefined();
+      // The gate is armed even though the refresh failed.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("early-exit guards", () => {
+    it("throws without broadcasting when address is missing", async () => {
+      mockWalletAddress = undefined;
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      // Precondition violations reject (callers treat a resolved
+      // createOrderbook as success), captured inside act.
+      let thrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+
+      expect(thrown).toBeInstanceOf(Error);
       expect(mockSignAndBroadcast).not.toHaveBeenCalled();
       mockWalletAddress = "osmo1testaddress";
     });

@@ -272,11 +272,14 @@ export const PriceSelector = memo(
     const [acknowledgeOrderbookFee, setAcknowledgeOrderbookFee] =
       useState(false);
 
-    const { createOrderbook, isCreating: isCreatingOrderbook } =
-      useCreateOrderbook({
-        baseDenom: base,
-        quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
-      });
+    const {
+      createOrderbook,
+      isCreating: isCreatingOrderbook,
+      error: createOrderbookError,
+    } = useCreateOrderbook({
+      baseDenom: base,
+      quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
+    });
 
     const handleOpenOrderbookModal = (asset: AssetWithBalance) => {
       setPendingCreateQuote(asset);
@@ -482,6 +485,7 @@ export const PriceSelector = memo(
             pendingCreateQuote?.logoURIs?.svg
           }
           isCreating={isCreatingOrderbook}
+          error={createOrderbookError}
           acknowledgeFee={acknowledgeOrderbookFee}
           onAcknowledgeFee={setAcknowledgeOrderbookFee}
           onConfirm={handleOrderbookConfirm}
