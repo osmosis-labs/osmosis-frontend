@@ -401,6 +401,43 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
+    // Applies a fraction of the base balance being spent in market mode and
+    // limit-sell, honoring the active input focus. Token focus drives the
+    // input's own fraction (which routes Max through the gas reserve); fiat
+    // focus mirrors the previous Max button, scaled: base balance x price via
+    // `setAmountSafe`, so the visible fiat amount, market amounts, and quote
+    // type stay in sync instead of the display going stale while the
+    // underlying order amount changes.
+    const setSellBalanceFraction = useCallback(
+      (fraction: AmountPresetFraction) => {
+        const presetInput =
+          type === "market"
+            ? swapState.marketState.inAmountInput
+            : swapState.inAmountInput;
+        if (focused === "token") {
+          presetInput.setFraction(fraction);
+          return;
+        }
+        const baseBalance = swapState.baseTokenBalance?.toDec();
+        const price = swapState.priceState.price;
+        if (!baseBalance || !price || price.isZero()) return;
+        setAmountSafe(
+          "fiat",
+          baseBalance.mul(new Dec(fraction)).mul(price).toString(),
+          10
+        );
+      },
+      [
+        focused,
+        setAmountSafe,
+        type,
+        swapState.marketState.inAmountInput,
+        swapState.inAmountInput,
+        swapState.baseTokenBalance,
+        swapState.priceState.price,
+      ]
+    );
+
     // Adjusts the token value when the user updates the fiat value
     useEffect(() => {
       if (
@@ -792,7 +829,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   return (
                     <AmountPresetRow
                       onSelect={(fraction: AmountPresetFraction) => {
-                        presetInput.setFraction(fraction);
+                        setSellBalanceFraction(fraction);
                         inputRef.current?.focus();
                       }}
                       activeFraction={presetInput.fraction}
