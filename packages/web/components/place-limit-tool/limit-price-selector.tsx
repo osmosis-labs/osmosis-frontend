@@ -148,16 +148,24 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     return priceState.percentAdjusted.abs().gt(maxPercentage);
   }, [priceState.percentAdjusted, tab]);
 
+  // Deviation computed LIVE from the effective price vs spot, not from
+  // `priceState.percentAdjusted`: typing a price also stores a percent in
+  // `manualPercentAdjusted`, freezing `percentAdjusted` at its typing-time
+  // magnitude while spot keeps refetching, so the stored value understates or
+  // overstates the real distance from market as spot drifts.
+  const liveDeviation = useMemo(() => {
+    if (!priceState.spotPrice || priceState.spotPrice.isZero())
+      return undefined;
+    return priceState.price.quo(priceState.spotPrice).sub(new Dec(1)).abs();
+  }, [priceState.price, priceState.spotPrice]);
+
   const isExtremeDeviation = useMemo(
     () =>
-      priceState.percentAdjusted.abs().gt(EXTREME_DEVIATION_THRESHOLD) &&
+      !!liveDeviation &&
+      liveDeviation.gt(EXTREME_DEVIATION_THRESHOLD) &&
       !priceState.isBeyondOppositePrice &&
       !priceState.priceError,
-    [
-      priceState.percentAdjusted,
-      priceState.isBeyondOppositePrice,
-      priceState.priceError,
-    ]
+    [liveDeviation, priceState.isBeyondOppositePrice, priceState.priceError]
   );
   // The banner only renders when the price is on the correct side of spot
   // (`isBeyondOppositePrice` gates it), so the deviation direction follows
@@ -328,10 +336,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           </SkeletonLoader>
         </div>
       </label>
-      {isExtremeDeviation && !isDeviationDismissed && (
+      {isExtremeDeviation && !isDeviationDismissed && liveDeviation && (
         <ExtremeDeviationBanner
           direction={deviationDirection}
-          deviationPercent={priceState.percentAdjusted.abs()}
+          deviationPercent={liveDeviation}
           onDismiss={() => setDeviationDismissed(true)}
         />
       )}
