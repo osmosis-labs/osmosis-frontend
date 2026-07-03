@@ -597,8 +597,8 @@ const PoolCompositionCell: PoolCellComponent = ({
                   )}
                   {type === "cosmwasm-whitewhale" && (
                     <Image
-                      alt="astroport icon"
-                      src="/images/whitewhale-icon.png"
+                      alt="skeleton swap icon"
+                      src="/images/skeletonswap-icon.webp"
                       height={16}
                       width={16}
                     />
@@ -653,7 +653,7 @@ function getPoolLink(pool: Pool): string {
     return `https://osmosis.astroport.fi/pools/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-whitewhale") {
-    return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+    return `https://skeletonswap.backbonelabs.io/osmosis/pools/${pool.id}`;
   }
   if (pool.type === "cosmwasm-orderbook") {
     return `/pool/${pool.id}`;
