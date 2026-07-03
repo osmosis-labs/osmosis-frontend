@@ -316,6 +316,28 @@ describe("useCreateOrderbook", () => {
       expect(mockFetchVerify).toHaveBeenCalledTimes(2);
     });
 
+    it("gates the reversed orientation of a just-created pair", async () => {
+      mockBroadcastSuccess();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+
+      // One orderbook serves both orientations (the verify endpoint matches
+      // base and quote swapped), so the reversed pair must not broadcast.
+      const reversed = renderHook(() =>
+        useCreateOrderbook({ baseDenom: QUOTE_DENOM, quoteDenom: BASE_DENOM })
+      );
+      await act(async () => {
+        await reversed.result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
     it("rejects a refresh-only confirm while a pending pair has not landed", async () => {
       // Arm an in-flight ("pending") mark: a broadcast that never settles.
       mockSignAndBroadcast.mockReturnValue(new Promise(() => {}));

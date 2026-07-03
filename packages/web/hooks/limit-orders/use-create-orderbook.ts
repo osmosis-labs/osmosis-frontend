@@ -38,9 +38,12 @@ type JustCreatedStatus = "pending" | "created";
 type JustCreatedEntry = { t: number; s: JustCreatedStatus };
 
 // Denoms themselves contain "/" (ibc/..., factory/...), so a joined string is
-// ambiguous across pairs; encode the tuple instead.
+// ambiguous across pairs; encode the tuple instead. Sorted, because a single
+// orderbook serves both orientations of a pair (verifyOrderbookCreation
+// matches base and quote swapped), so the reversed orientation must hit the
+// same registry entry.
 const orderbookPairKey = (baseDenom: string, quoteDenom: string) =>
-  JSON.stringify([baseDenom, quoteDenom]);
+  JSON.stringify([baseDenom, quoteDenom].sort());
 
 function readJustCreatedOrderbooks(): Record<string, JustCreatedEntry> {
   if (typeof window === "undefined") return {};
