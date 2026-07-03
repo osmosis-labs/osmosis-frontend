@@ -829,21 +829,19 @@ const AdvancedRangeControls: FunctionComponent<{
   const onStatPresetClick = useCallback(
     (label: string, range: [Dec, Dec]) => {
       setFullRange(false);
-      setMinRange(range[0].mul(multiplicationQuoteOverBase).toString());
-      setMaxRange(range[1].mul(multiplicationQuoteOverBase).toString());
+      // Stat-preset ranges are computed in display units (display-unit
+      // series and spot), which is what setMin/MaxRange expect — unlike the
+      // sliders path, whose strategy space is raw and multiplies through
+      // `multiplicationQuoteOverBase` on apply.
+      setMinRange(range[0].toString());
+      setMaxRange(range[1].toString());
       setActiveStatPreset(label);
       logEvent([
         EventName.ConcentratedLiquidity.strategyPicked,
         { strategy: `stat-preset-${label}` },
       ]);
     },
-    [
-      setFullRange,
-      setMinRange,
-      setMaxRange,
-      multiplicationQuoteOverBase,
-      logEvent,
-    ]
+    [setFullRange, setMinRange, setMaxRange, logEvent]
   );
 
   // How concentrated the chosen range is versus full range, at current spot.

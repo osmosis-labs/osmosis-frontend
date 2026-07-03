@@ -607,15 +607,19 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._allHistoricalPrices;
   }
 
-  /** Same series, with each close converted into display units so it can be
-   *  compared against `rangeWithCurrencyDecimals` (also display units).
-   *  The raw API value is in pool-currency raw units and must not be
-   *  compared directly against the range. */
+  /** Same series as Dec closes, in DISPLAY units, directly comparable
+   *  against `rangeWithCurrencyDecimals` and `currentPriceWithDecimals`.
+   *  The data service already returns display prices (see the 7d min/max
+   *  handling above: those are converted with `removeCurrencyDecimals`
+   *  because the preset/tick strategy space is RAW). Converting here too
+   *  double-shifted the series by 10^(baseDecimals - quoteDecimals) on
+   *  pairs with unequal exponents (100x on an 8/6 pair like BTC/USDC),
+   *  which pinned the backtest's time-in-range at 0%. */
   @computed
   get allHistoricalPricesInDisplayUnits(): { time: number; close: Dec }[] {
     return this._allHistoricalPrices.map((p) => ({
       time: p.time,
-      close: this._priceRangeInput[0].removeCurrencyDecimals(p.close),
+      close: new Dec(p.close),
     }));
   }
 
