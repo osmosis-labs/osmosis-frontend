@@ -159,8 +159,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       priceState.priceError,
     ]
   );
+  // The banner only renders when the price is on the correct side of spot
+  // (`isBeyondOppositePrice` gates it), so the deviation direction follows
+  // the order direction: asks deviate above spot, bids below. The sign of
+  // `percentAdjusted` cannot be used here: in percentage-input mode the hook
+  // stores the manual percent as a positive magnitude for both directions.
   const deviationDirection: "above" | "below" =
-    priceState.percentAdjusted.isNegative() ? "below" : "above";
+    orderDirection === "bid" ? "below" : "above";
 
   // Per-session dismiss state. Reset whenever the user edits the price so the
   // banner reappears if they cross back over the threshold. Key on
