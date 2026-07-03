@@ -418,6 +418,21 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           presetInput.setFraction(fraction);
           return;
         }
+        // Fiat focused: mirror the removed Max button's per-tab balance math,
+        // scaled by the fraction, routed through `setAmountSafe` so the
+        // visible fiat amount, market amounts, and quote type stay in sync.
+        if (tab === "buy") {
+          // Market buy spends the quote asset; its fiat value is the quote
+          // balance as-is (matching the removed Max button's buy branch).
+          const quoteBalance = swapState.quoteTokenBalance?.toDec();
+          if (!quoteBalance) return;
+          setAmountSafe(
+            "fiat",
+            quoteBalance.mul(new Dec(fraction)).toString(),
+            10
+          );
+          return;
+        }
         const baseBalance = swapState.baseTokenBalance?.toDec();
         const price = swapState.priceState.price;
         if (!baseBalance || !price || price.isZero()) return;
@@ -430,10 +445,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [
         focused,
         setAmountSafe,
+        tab,
         type,
         swapState.marketState.inAmountInput,
         swapState.inAmountInput,
         swapState.baseTokenBalance,
+        swapState.quoteTokenBalance,
         swapState.priceState.price,
       ]
     );
