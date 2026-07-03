@@ -25,14 +25,24 @@ const IS_ORDERBOOK_CREATION_SUPPORTED =
  */
 const JUST_CREATED_STORAGE_KEY = "just-created-orderbooks";
 /** Matches the server orderbook-pools LRU TTL. */
-const JUST_CREATED_TTL_MS = 1000 * 60 * 60;
+const CREATED_TTL_MS = 1000 * 60 * 60;
+/**
+ * A pending (pre-broadcast) mark older than this cannot belong to a live
+ * broadcast (sign + broadcast + delivery completes in well under this), so it
+ * is a leftover from an interrupted attempt (e.g. tab closed mid-signing) and
+ * expires quickly rather than blocking the pair for the full created TTL.
+ */
+const PENDING_TTL_MS = 1000 * 60 * 2;
+
+type JustCreatedStatus = "pending" | "created";
+type JustCreatedEntry = { t: number; s: JustCreatedStatus };
 
 // Denoms themselves contain "/" (ibc/..., factory/...), so a joined string is
 // ambiguous across pairs; encode the tuple instead.
 const orderbookPairKey = (baseDenom: string, quoteDenom: string) =>
   JSON.stringify([baseDenom, quoteDenom]);
 
-function readJustCreatedOrderbooks(): Record<string, number> {
+function readJustCreatedOrderbooks(): Record<string, JustCreatedEntry> {
   if (typeof window === "undefined") return {};
   try {
     const raw = window.localStorage.getItem(JUST_CREATED_STORAGE_KEY);
@@ -41,8 +51,17 @@ function readJustCreatedOrderbooks(): Record<string, number> {
     const now = Date.now();
     return Object.fromEntries(
       Object.entries(entries as Record<string, unknown>).filter(
-        (entry): entry is [string, number] =>
-          typeof entry[1] === "number" && now - entry[1] < JUST_CREATED_TTL_MS
+        (entry): entry is [string, JustCreatedEntry] => {
+          const value = entry[1] as Partial<JustCreatedEntry> | null;
+          if (
+            !value ||
+            typeof value.t !== "number" ||
+            (value.s !== "pending" && value.s !== "created")
+          )
+            return false;
+          const ttl = value.s === "pending" ? PENDING_TTL_MS : CREATED_TTL_MS;
+          return now - value.t < ttl;
+        }
       )
     );
   } catch {
@@ -50,7 +69,7 @@ function readJustCreatedOrderbooks(): Record<string, number> {
   }
 }
 
-function writeJustCreatedOrderbooks(entries: Record<string, number>) {
+function writeJustCreatedOrderbooks(entries: Record<string, JustCreatedEntry>) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(
@@ -66,9 +85,24 @@ export function wasOrderbookJustCreated(baseDenom: string, quoteDenom: string) {
   return orderbookPairKey(baseDenom, quoteDenom) in readJustCreatedOrderbooks();
 }
 
-function markOrderbookJustCreated(baseDenom: string, quoteDenom: string) {
+function getJustCreatedStatus(
+  baseDenom: string,
+  quoteDenom: string
+): JustCreatedStatus | undefined {
+  return readJustCreatedOrderbooks()[orderbookPairKey(baseDenom, quoteDenom)]
+    ?.s;
+}
+
+function markOrderbookJustCreated(
+  baseDenom: string,
+  quoteDenom: string,
+  status: JustCreatedStatus
+) {
   const entries = readJustCreatedOrderbooks();
-  entries[orderbookPairKey(baseDenom, quoteDenom)] = Date.now();
+  entries[orderbookPairKey(baseDenom, quoteDenom)] = {
+    t: Date.now(),
+    s: status,
+  };
   writeJustCreatedOrderbooks(entries);
 }
 
@@ -114,6 +148,7 @@ export function useCreateOrderbook({
     // fresh read can itself still see the pre-creation list; retry briefly
     // until the pair is reflected rather than re-caching a stale list for
     // another TTL window.
+    let orderbookExists = false;
     for (let attempt = 0; attempt < 3; attempt++) {
       const verification =
         await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
@@ -121,7 +156,8 @@ export function useCreateOrderbook({
           quoteDenom,
           fresh: true,
         });
-      if (verification.orderbookExists) break;
+      orderbookExists = verification.orderbookExists;
+      if (orderbookExists) break;
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
     // Refetch client caches against the now-fresh server cache: the pools
@@ -133,6 +169,7 @@ export function useCreateOrderbook({
       apiUtils.edge.orderbooks.getPools.invalidate(),
       apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
     ]);
+    return orderbookExists;
   }, [apiUtils, baseDenom, quoteDenom]);
 
   const createOrderbook = useCallback(async () => {
@@ -148,16 +185,30 @@ export function useCreateOrderbook({
         "Orderbook creation is not supported in this environment (no code id configured)"
       );
 
-    // The pair was already created onchain (this session or within the server
-    // cache TTL, persisted across reloads, or marked in-flight by another
-    // confirm/tab). Broadcasting again would create a duplicate pool and
-    // charge another creation fee, so a re-confirm becomes a cache-refresh
-    // retry instead.
-    if (wasOrderbookJustCreated(baseDenom, quoteDenom)) {
+    // The registry holds the pair: either a delivered creation whose caches
+    // are still catching up, or an in-flight broadcast (this tab or another).
+    // Broadcasting again would create a duplicate pool and charge another
+    // creation fee, so a re-confirm becomes a cache-refresh retry instead.
+    const justCreatedStatus = getJustCreatedStatus(baseDenom, quoteDenom);
+    if (justCreatedStatus) {
       setIsCreating(true);
       setError(undefined);
       try {
-        await refreshOrderbookCaches();
+        const exists = await refreshOrderbookCaches();
+        // A delivered ("created") mark proves the pool exists onchain, so the
+        // refresh-only confirm is a success even if the sidecar still lags.
+        // A "pending" mark proves nothing was delivered yet: reporting
+        // success would close the modal on a pool that may never exist (e.g.
+        // the marking tab closed mid-signing). Reject instead; the pending
+        // mark self-expires quickly, after which a re-confirm broadcasts.
+        if (justCreatedStatus === "pending" && !exists) {
+          throw new Error(t("errors.uhOhSomethingWentWrong"));
+        }
+      } catch (e) {
+        const message =
+          e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
+        setError(message);
+        throw e;
       } finally {
         setIsCreating(false);
       }
@@ -169,9 +220,9 @@ export function useCreateOrderbook({
 
     // Mark the pair before broadcasting so an overlapping confirm (double
     // click, second tab) hits the just-created gate instead of broadcasting a
-    // second paid creation while this one is in flight. Rolled back on any
-    // failure below; kept on success.
-    markOrderbookJustCreated(baseDenom, quoteDenom);
+    // second paid creation while this one is in flight. Upgraded to "created"
+    // on delivery; rolled back on any failure below.
+    markOrderbookJustCreated(baseDenom, quoteDenom, "pending");
 
     try {
       const osmosis = await getOsmosisCodec();
@@ -205,6 +256,9 @@ export function useCreateOrderbook({
           deliveredCode = tx.code;
           deliveredLog = tx.rawLog;
           if (!tx.code) {
+            // Delivery is final: upgrade the in-flight mark so re-confirms
+            // and reloads treat the pair as provably created.
+            markOrderbookJustCreated(baseDenom, quoteDenom, "created");
             // The refresh is best-effort: the creation itself succeeded, so a
             // refetch failure must not reject the flow (callers would show an
             // error and leave the confirm re-armed for a duplicate paid tx).

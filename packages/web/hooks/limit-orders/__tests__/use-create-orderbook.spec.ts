@@ -316,6 +316,43 @@ describe("useCreateOrderbook", () => {
       expect(mockFetchVerify).toHaveBeenCalledTimes(2);
     });
 
+    it("rejects a refresh-only confirm while a pending pair has not landed", async () => {
+      // Arm an in-flight ("pending") mark: a broadcast that never settles.
+      mockSignAndBroadcast.mockReturnValue(new Promise(() => {}));
+      const first = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      act(() => {
+        void first.result.current.createOrderbook();
+      });
+
+      // A concurrent confirm sees the pending mark; the pool never appears,
+      // so the refresh-only path must reject rather than report success.
+      mockFetchVerify.mockResolvedValue({
+        orderbookExists: false,
+        endpointFunctional: true,
+      });
+      const second = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      let thrown: unknown;
+      await act(async () => {
+        await second.result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+
+      expect(thrown).toBeInstanceOf(Error);
+      // Only the first (hanging) broadcast was ever sent.
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+
+      // Restore the default for subsequent tests.
+      mockFetchVerify.mockResolvedValue({
+        orderbookExists: true,
+        endpointFunctional: true,
+      });
+    }, 15_000); // the not-found refresh path sleeps between its retry attempts
+
     it("resolves the flow even when the post-create cache refresh fails", async () => {
       mockBroadcastSuccess();
       mockFetchVerify.mockRejectedValueOnce(new Error("network down"));
