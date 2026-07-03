@@ -28,7 +28,6 @@ import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
   ObservableAddConcentratedLiquidityConfig,
-  useFeatureFlags,
   useTranslation,
 } from "~/hooks";
 import {
@@ -116,22 +115,14 @@ const AddConcLiqView: FunctionComponent<
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
   const hasInitializedInactivePool = useRef(false);
 
-  const featureFlags = useFeatureFlags();
-  const advancedCLPositionsEnabled = featureFlags.advancedCLPositions;
 
   const [persistedAdvanced, setPersistedAdvanced] = useLocalStorageState<{
     enabled?: boolean;
   } | null>(ADV_LP_STORAGE_KEY, null);
   const [advancedEnabled, setAdvancedEnabledState] = useState(false);
-  // Hydrate the toggle from localStorage on mount, but only if the feature
-  // flag is on. Without the flag, the advanced surface is never accessible
-  // even if the user had it on in a previous session.
+  // Hydrate the toggle from localStorage on mount.
   useEffect(() => {
-    if (
-      advancedCLPositionsEnabled &&
-      persistedAdvanced &&
-      typeof persistedAdvanced.enabled === "boolean"
-    ) {
+    if (persistedAdvanced && typeof persistedAdvanced.enabled === "boolean") {
       setAdvancedEnabledState(persistedAdvanced.enabled);
     }
     // Only run on mount; subsequent persistence is handled by setAdvancedEnabled.
@@ -341,9 +332,8 @@ const AddConcLiqView: FunctionComponent<
         isInactivePool={isInactivePool}
         advancedEnabled={advancedEnabled}
         onAdvancedToggle={setAdvancedEnabled}
-        advancedCLPositionsEnabled={advancedCLPositionsEnabled}
       />
-      {advancedCLPositionsEnabled && (
+      {advancedEnabled && (
         <BacktestPanel
           addLiquidityConfig={addLiquidityConfig}
           rangeApr={queryCurrentRangeApr.apr}
@@ -545,7 +535,6 @@ const StrategySelectorGroup: FunctionComponent<
     isInactivePool?: boolean;
     advancedEnabled: boolean;
     onAdvancedToggle: (next: boolean) => void;
-    advancedCLPositionsEnabled: boolean;
   } & CustomClasses
 > = observer((props) => {
   const { t } = useTranslation();
@@ -634,19 +623,17 @@ const StrategySelectorGroup: FunctionComponent<
               onBeforeClick={exitAdvanced}
               forceUnselected={props.advancedEnabled}
             />
-            {props.advancedCLPositionsEnabled && (
-              <AdvancedStrategyCard
-                isSelected={props.advancedEnabled}
-                disabled={Boolean(props.isInactivePool)}
-                onClick={() => props.onAdvancedToggle(true)}
-                className="sm:flex-1"
-              />
-            )}
+            <AdvancedStrategyCard
+              isSelected={props.advancedEnabled}
+              disabled={Boolean(props.isInactivePool)}
+              onClick={() => props.onAdvancedToggle(true)}
+              className="sm:flex-1"
+            />
           </div>
         </div>
       </div>
 
-      {props.advancedCLPositionsEnabled && props.advancedEnabled && (
+      {props.advancedEnabled && (
         <AdvancedRangeControls addLiquidityConfig={props.addLiquidityConfig} />
       )}
     </section>
@@ -683,7 +670,7 @@ const AdvancedStrategyCard: FunctionComponent<
         >
           <Image
             alt="advanced"
-            src="/images/advanced-vial.svg"
+            src="/images/advanced-vial.png"
             width={60}
             height={60}
             className="h-[60px]"
