@@ -45,7 +45,7 @@ Affected files (each has the English placeholder under
 Once translated, delete the relevant entries from this file. When this file
 is empty, remove it.
 
-## addConcentratedLiquidity.* (stat presets + capital efficiency + IL, 2026-07-03)
+## addConcentratedLiquidity.\* (stat presets + capital efficiency + IL, 2026-07-03)
 
 English placed verbatim in all 16 non-English locales; needs real translations:
 
