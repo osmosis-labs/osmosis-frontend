@@ -30,6 +30,7 @@ import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { DetentSlider } from "~/components/ui/detent-slider";
 import { EventName } from "~/config/analytics-events";
 import {
   ObservableAddConcentratedLiquidityConfig,
@@ -864,48 +865,18 @@ const AdvancedRangeControls: FunctionComponent<{
           <SliderRow
             label={t("addConcentratedLiquidity.lookbackLabel")}
             valueLabel={formatLookback(lookbackDays)}
-            tickCount={LOOKBACK_DAYS_STOPS.length}
           >
-            <input
-              aria-label={t("addConcentratedLiquidity.lookbackLabel")}
-              type="range"
+            <DetentSlider
+              ariaLabel={t("addConcentratedLiquidity.lookbackLabel")}
               min={0}
               max={LOOKBACK_DAYS_STOPS.length - 1}
-              step={1}
               value={lookbackIdx}
-              onChange={(e) =>
-                onLookbackChange(LOOKBACK_DAYS_STOPS[Number(e.target.value)])
-              }
-              className="cl-range-slider"
+              detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
+              onChange={(idx) => onLookbackChange(LOOKBACK_DAYS_STOPS[idx])}
             />
           </SliderRow>
         </div>
-        <div className="block w-full">
-          <SliderRow
-            label={t("addConcentratedLiquidity.bufferLabel")}
-            valueLabel={
-              <BufferValueInput
-                bufferPct={bufferPct}
-                onChange={onBufferChange}
-                fullRangeLabel={t("addConcentratedLiquidity.bufferFullRange")}
-              />
-            }
-            help={t("addConcentratedLiquidity.bufferHelp")}
-            tickCount={11}
-          >
-            <input
-              aria-label={t("addConcentratedLiquidity.bufferLabel")}
-              type="range"
-              min={0}
-              max={BUFFER_SLIDER_MAX}
-              step={1}
-              value={bufferPct}
-              onChange={(e) => onBufferChange(Number(e.target.value))}
-              className="cl-range-slider"
-            />
-          </SliderRow>
-        </div>
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mb-4 flex items-center gap-2">
           <span className="caption text-osmoverse-300">
             {t("addConcentratedLiquidity.statPresetsLabel")}
           </span>
@@ -925,6 +896,28 @@ const AdvancedRangeControls: FunctionComponent<{
               {preset.label}
             </button>
           ))}
+        </div>
+        <div className="block w-full">
+          <SliderRow
+            label={t("addConcentratedLiquidity.bufferLabel")}
+            valueLabel={
+              <BufferValueInput
+                bufferPct={bufferPct}
+                onChange={onBufferChange}
+                fullRangeLabel={t("addConcentratedLiquidity.bufferFullRange")}
+              />
+            }
+            help={t("addConcentratedLiquidity.bufferHelp")}
+          >
+            <DetentSlider
+              ariaLabel={t("addConcentratedLiquidity.bufferLabel")}
+              min={0}
+              max={BUFFER_SLIDER_MAX}
+              value={bufferPct}
+              detents={Array.from({ length: 11 }, (_, i) => i * 10)}
+              onChange={onBufferChange}
+            />
+          </SliderRow>
         </div>
         {capitalEfficiency && (
           <div className="mt-3 flex items-center justify-between">
@@ -1346,48 +1339,54 @@ const BacktestPanel: FunctionComponent<{
   const windowLabel = formatLookback(backtestLookbackDays);
 
   return (
-    <section className="flex w-full flex-col gap-3 rounded-2xl bg-osmoverse-800 p-4">
-      <div className="flex items-center justify-between">
-        <span className="subtitle1">
-          {t("addConcentratedLiquidity.backtestTitle", { window: windowLabel })}
-        </span>
-        {isFallback && (
-          <span className="caption text-osmoverse-400">
-            (using latest available bars — window shorter than data resolution)
+    <>
+      <section className="flex w-full flex-col gap-3 rounded-2xl bg-osmoverse-800 p-4">
+        <div className="flex items-center justify-between">
+          <span className="subtitle1">
+            {t("addConcentratedLiquidity.backtestTitle", {
+              window: windowLabel,
+            })}
           </span>
-        )}
-      </div>
-      <SliderRow tickCount={LOOKBACK_DAYS_STOPS.length}>
-        <input
-          aria-label={t("addConcentratedLiquidity.lookbackLabel")}
-          type="range"
-          min={0}
-          max={LOOKBACK_DAYS_STOPS.length - 1}
-          step={1}
-          value={lookbackIdx}
-          onChange={(e) =>
-            setBacktestLookbackDays(LOOKBACK_DAYS_STOPS[Number(e.target.value)])
-          }
-          className="cl-range-slider"
-        />
-      </SliderRow>
-      <div className="grid grid-cols-2 gap-4">
-        <BacktestStat
-          label={t("addConcentratedLiquidity.backtestTimeInRange")}
-          value={hasData ? `${(timeInRangeFraction * 100).toFixed(0)}%` : "—"}
-        />
-        <BacktestStat
-          label={t("addConcentratedLiquidity.backtestApr")}
-          value={
-            backtestedApr === null
-              ? "—"
-              : backtestedApr.maxDecimals(1).toString()
-          }
-        />
-      </div>
+          {isFallback && (
+            <span className="caption text-osmoverse-400">
+              (using latest available bars — window shorter than data
+              resolution)
+            </span>
+          )}
+        </div>
+        <SliderRow>
+          <DetentSlider
+            ariaLabel={t("addConcentratedLiquidity.lookbackLabel")}
+            min={0}
+            max={LOOKBACK_DAYS_STOPS.length - 1}
+            value={lookbackIdx}
+            detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
+            onChange={(idx) =>
+              setBacktestLookbackDays(LOOKBACK_DAYS_STOPS[idx])
+            }
+          />
+        </SliderRow>
+        <div className="grid grid-cols-2 gap-4">
+          <BacktestStat
+            label={t("addConcentratedLiquidity.backtestTimeInRange")}
+            value={hasData ? `${(timeInRangeFraction * 100).toFixed(0)}%` : "—"}
+          />
+          <BacktestStat
+            label={t("addConcentratedLiquidity.backtestApr")}
+            value={
+              backtestedApr === null
+                ? "—"
+                : backtestedApr.maxDecimals(1).toString()
+            }
+          />
+        </div>
+        <span className="caption text-osmoverse-400">
+          {t("addConcentratedLiquidity.backtestDisclaimer")}
+        </span>
+      </section>
       {ilScenarios.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <span className="caption text-osmoverse-300">
+        <section className="flex w-full flex-col gap-3 rounded-2xl bg-osmoverse-800 p-4">
+          <span className="subtitle1">
             {t("addConcentratedLiquidity.ilTitle")}
           </span>
           <div className="grid grid-cols-2 gap-x-4">
@@ -1415,12 +1414,9 @@ const BacktestPanel: FunctionComponent<{
           <span className="caption text-osmoverse-400">
             {t("addConcentratedLiquidity.ilDisclaimer")}
           </span>
-        </div>
+        </section>
       )}
-      <span className="caption text-osmoverse-400">
-        {t("addConcentratedLiquidity.backtestDisclaimer")}
-      </span>
-    </section>
+    </>
   );
 });
 
