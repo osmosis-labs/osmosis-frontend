@@ -30,4 +30,19 @@ export class ObservableQueryConcentratedLiquidityParams extends ObservableChainQ
 
     return new Dec(this.response.data.balancer_shares_reward_discount);
   }
+
+  /** Uptimes (in seconds) an external concentrated-liquidity gauge may
+   *  require of positions before they qualify for its incentives. Includes
+   *  the effectively-none 1ns option. */
+  @computed
+  get authorizedUptimes(): number[] | undefined {
+    if (!this.response) {
+      return;
+    }
+
+    // Duration strings like "0.000000001s", "60s", "3600s", "86400s".
+    return this.response.data.authorized_uptimes
+      .map((uptime) => Number(uptime.replace(/s$/, "")))
+      .filter((seconds) => Number.isFinite(seconds));
+  }
 }

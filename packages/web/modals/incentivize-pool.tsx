@@ -1,5 +1,6 @@
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
@@ -91,6 +92,29 @@ export const IncentivizePoolModal: FunctionComponent<
     [lockableDurationsRaw]
   );
 
+  // Minimum position uptime for concentrated gauges: how long a position
+  // must be in range before it qualifies (anti just-in-time liquidity).
+  // Options come from the CL module's authorized-uptimes param; 1 hour is
+  // the promoted default, 24 hours suits stable pairs.
+  const authorizedUptimes =
+    queriesStore.get(chainId).osmosis?.queryConcentratedLiquidityParams
+      .authorizedUptimes;
+  const [uptimeSeconds, setUptimeSeconds] = useState(3600);
+  useEffect(() => {
+    // Snap to an authorized value if the param set doesn't include ours.
+    if (
+      authorizedUptimes &&
+      authorizedUptimes.length > 0 &&
+      !authorizedUptimes.includes(uptimeSeconds)
+    ) {
+      setUptimeSeconds(
+        authorizedUptimes.includes(3600)
+          ? 3600
+          : authorizedUptimes[authorizedUptimes.length - 1]
+      );
+    }
+  }, [authorizedUptimes, uptimeSeconds]);
+
   const [epochsInput, setEpochsInput] = useState(DEFAULT_NUM_EPOCHS);
   const numEpochs = Number(epochsInput);
   const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
@@ -153,7 +177,7 @@ export const IncentivizePoolModal: FunctionComponent<
           ? addToGauge(topUpGaugeId)
           : createGauge({
               distributeTo: isConcentrated
-                ? { type: "noLock", poolId }
+                ? { type: "noLock", poolId, uptimeSeconds }
                 : {
                     type: "byDuration",
                     denom: `gamm/pool/${poolId}`,
@@ -245,6 +269,37 @@ export const IncentivizePoolModal: FunctionComponent<
                     })}
               </span>
             </div>
+            {isConcentrated && (
+              <div className="flex flex-col gap-2">
+                <div className="flex place-content-between items-center gap-2">
+                  <span className="subtitle1">
+                    {t("incentivizePool.uptimeLabel")}
+                  </span>
+                  <div className="flex flex-wrap justify-end gap-1">
+                    {(authorizedUptimes ?? [3600]).map((seconds) => (
+                      <button
+                        key={seconds}
+                        type="button"
+                        className={classNames(
+                          "caption rounded-full px-3 py-1 transition-colors",
+                          uptimeSeconds === seconds
+                            ? "bg-wosmongton-500 text-white-full"
+                            : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+                        )}
+                        onClick={() => setUptimeSeconds(seconds)}
+                      >
+                        {seconds < 1
+                          ? t("incentivizePool.uptimeNone")
+                          : dayjs.duration(seconds, "seconds").humanize()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <span className="caption text-osmoverse-400">
+                  {t("incentivizePool.uptimeHelp")}
+                </span>
+              </div>
+            )}
             <div className="flex flex-col gap-2">
               <div className="flex place-content-between items-center">
                 <span className="subtitle1">

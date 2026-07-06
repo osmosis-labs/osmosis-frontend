@@ -15,7 +15,7 @@ export function useIncentivizePoolConfig(): {
   createGauge: (params: {
     distributeTo:
       | { type: "byDuration"; denom: string; durationSeconds: number }
-      | { type: "noLock"; poolId: string };
+      | { type: "noLock"; poolId: string; uptimeSeconds: number };
     numEpochs: number;
     startTime?: Date;
     isPerpetual?: boolean;
@@ -33,7 +33,7 @@ export function useIncentivizePoolConfig(): {
     (params: {
       distributeTo:
         | { type: "byDuration"; denom: string; durationSeconds: number }
-        | { type: "noLock"; poolId: string };
+        | { type: "noLock"; poolId: string; uptimeSeconds: number };
       numEpochs: number;
       startTime?: Date;
       isPerpetual?: boolean;

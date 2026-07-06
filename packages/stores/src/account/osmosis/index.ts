@@ -1544,21 +1544,16 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * Lock tokens for some duration into a lock. Useful for allowing the user to capture bonding incentives.
-   *
-   * @param duration Duration, in seconds, to lock up the tokens.
-   * @param tokens Base token amount to lock.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment given raw response.
-   */
-  /**
    * Creates an external incentive gauge on a pool via
    * osmosis.incentives.MsgCreateGauge.
    *
    * @param distributeTo Gauge target: `byDuration` for share (lockup) pools
    *   — denom is the pool share denom and duration one of the pool's
    *   lockable durations — or `noLock` for concentrated pools, where the
-   *   chain derives the internal no-lock denom from the pool id.
+   *   chain derives the internal no-lock denom from the pool id and
+   *   `uptimeSeconds` is the minimum time in range a position needs before
+   *   it qualifies (anti just-in-time liquidity; must be one of the CL
+   *   module's authorized uptimes or creation is rejected).
    * @param coins Reward coins funding the gauge, in minimal (chain) units.
    * @param startTime When distribution may begin; emissions start at the
    *   first epoch after this time.
@@ -1572,7 +1567,7 @@ export class OsmosisAccountImpl {
   async sendCreateGaugeMsg(
     distributeTo:
       | { type: "byDuration"; denom: string; durationSeconds: number }
-      | { type: "noLock"; poolId: string },
+      | { type: "noLock"; poolId: string; uptimeSeconds: number },
     coins: { currency: Currency; amount: string }[],
     startTime: Date,
     numEpochsPaidOver: number,
@@ -1608,10 +1603,14 @@ export class OsmosisAccountImpl {
             }
           : {
               // The chain derives the no-lock denom from poolId; the
-              // condition's denom must be left empty.
+              // condition's denom must be left empty. Its duration carries
+              // the required position uptime.
               lockQueryType: LockQueryType.NoLock,
               denom: "",
-              duration: Duration.fromPartial({ seconds: BigInt(0), nanos: 0 }),
+              duration: Duration.fromPartial({
+                seconds: BigInt(Math.floor(distributeTo.uptimeSeconds)),
+                nanos: Math.round((distributeTo.uptimeSeconds % 1) * 1e9),
+              }),
               timestamp: new Date(0),
             },
       coins: primitiveCoins,
@@ -1691,6 +1690,14 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Lock tokens for some duration into a lock. Useful for allowing the user to capture bonding incentives.
+   *
+   * @param duration Duration, in seconds, to lock up the tokens.
+   * @param tokens Base token amount to lock.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
   async sendLockTokensMsg(
     duration: number,
     tokens: {
