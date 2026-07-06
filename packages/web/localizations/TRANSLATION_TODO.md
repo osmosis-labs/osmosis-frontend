@@ -15,6 +15,7 @@ Path within each locale JSON: `addConcentratedLiquidity.*`
 - `advancedToggle`
 - `lookbackLabel`
 - `centerLabel`
+- `centerRange`
 - `centerMean`
 - `centerSpot`
 - `stdDevLabel`

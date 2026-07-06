@@ -746,27 +746,32 @@ const AdvancedRangeControls: FunctionComponent<{
 
   // Within a single modal session, user tweaks survive toggling Advanced
   // off and back on — only a fresh modal mount returns to the defaults
-  // (7d lookback, 2σ around the mean).
+  // (7d lookback, 2σ beyond the observed range).
 
-  // The range is a width applied around an explicit center: the lookback
-  // window's mean, or spot. Width comes from whichever of the two sliders
-  // was touched last (the inactive one dims): standard deviations of the
-  // window, or a ratio-symmetric % buffer.
-  const [center, setCenter] = useState<"mean" | "spot">("mean");
+  // The range is a width applied beyond an explicit center: the lookback
+  // window's observed [min, max] (an interval), its mean, or spot (points).
+  // Width comes from whichever of the two sliders was touched last (the
+  // inactive one dims): standard deviations of the window, or a
+  // ratio-symmetric % buffer.
+  const [center, setCenter] = useState<"range" | "mean" | "spot">("range");
   const [widthMode, setWidthMode] = useState<"sigma" | "percent">("sigma");
   const [sigmaIdx, setSigmaIdx] = useState(DEFAULT_SIGMA_IDX);
   const [percentIdx, setPercentIdx] = useState(DEFAULT_PERCENT_IDX);
 
-  /** The lookback window's mean in display units, when computable. */
-  const meanValue = useMemo(() => {
+  /** The lookback window's mean and observed extremes in display units,
+   *  when computable. */
+  const windowInfo = useMemo(() => {
     const stats = calcWindowStats({
       prices: allHistoricalPricesInDisplayUnits,
       windowDays: lookbackDays,
       nowMs: Date.now(),
     });
-    return stats.count >= 10 && stats.mean > 0
-      ? new Dec(stats.mean.toFixed(12))
-      : undefined;
+    if (stats.count < 10 || stats.mean <= 0 || stats.min <= 0) return undefined;
+    return {
+      mean: new Dec(stats.mean.toFixed(12)),
+      min: new Dec(stats.min.toFixed(12)),
+      max: new Dec(stats.max.toFixed(12)),
+    };
   }, [allHistoricalPricesInDisplayUnits, lookbackDays]);
 
   const applyAdvancedRange = useCallback(() => {
@@ -774,20 +779,23 @@ const AdvancedRangeControls: FunctionComponent<{
       setFullRange(true);
       return;
     }
-    // Effective center: the window mean when selected and computable,
-    // otherwise spot (also the quiet stand-in while the series loads).
-    const centerPrice =
-      center === "mean" && meanValue !== undefined
-        ? meanValue
-        : currentPriceWithDecimals;
-    if (!centerPrice.isPositive()) return;
+    // Effective anchor: the selected center when computable, otherwise spot
+    // (the quiet stand-in while the series loads). Range and mean are
+    // window statistics; spot needs no history.
+    const anchor: [Dec, Dec] =
+      center === "range" && windowInfo !== undefined
+        ? [windowInfo.min, windowInfo.max]
+        : center === "mean" && windowInfo !== undefined
+        ? [windowInfo.mean, windowInfo.mean]
+        : [currentPriceWithDecimals, currentPriceWithDecimals];
+    if (!anchor[0].isPositive()) return;
     setFullRange(false);
 
     // All paths produce display units, which is what setMin/MaxRange expect.
-    const applyPercentAround = (percent: number) => {
+    const applyPercentBeyond = (percent: number) => {
       const factor = new Dec((1 + percent / 100).toFixed(12));
-      setMinRange(centerPrice.quo(factor).toString());
-      setMaxRange(centerPrice.mul(factor).toString());
+      setMinRange(anchor[0].quo(factor).toString());
+      setMaxRange(anchor[1].mul(factor).toString());
     };
 
     if (widthMode === "sigma") {
@@ -796,26 +804,26 @@ const AdvancedRangeControls: FunctionComponent<{
         windowDays: lookbackDays,
         sigmas: sigmaIdx / 10,
         nowMs: Date.now(),
-        center: centerPrice,
+        anchor,
       });
       if (!range) {
         // Window can't support the statistic (thin data / flat series, or a
         // band so wide its floor goes non-positive): fall back to a moderate
-        // ±25%-equivalent buffer around the center.
-        applyPercentAround(25);
+        // ±25%-equivalent buffer beyond the anchor.
+        applyPercentBeyond(25);
         return;
       }
       setMinRange(range[0].toString());
       setMaxRange(range[1].toString());
       return;
     }
-    applyPercentAround(PERCENT_STOPS[percentIdx]);
+    applyPercentBeyond(PERCENT_STOPS[percentIdx]);
   }, [
     widthMode,
     sigmaIdx,
     percentIdx,
     center,
-    meanValue,
+    windowInfo,
     currentPriceWithDecimals,
     lookbackDays,
     allHistoricalPricesInDisplayUnits,
@@ -870,7 +878,7 @@ const AdvancedRangeControls: FunctionComponent<{
   );
 
   const onCenterChange = useCallback(
-    (next: "mean" | "spot") => {
+    (next: "range" | "mean" | "spot") => {
       setCenter(next);
       logStrategy(`sliders-center-${next}`);
     },
@@ -929,19 +937,30 @@ const AdvancedRangeControls: FunctionComponent<{
             />
           </SliderRow>
         </div>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-2 xs:flex-wrap">
           <span className="caption text-osmoverse-200">
             {t("addConcentratedLiquidity.centerLabel")}
           </span>
-          <div className="flex h-6 gap-1">
-            <ChartButton
+          <div className="flex flex-wrap justify-end gap-1">
+            <CenterChip
+              label={`${t("addConcentratedLiquidity.centerRange")} ${
+                windowInfo !== undefined
+                  ? `${formatCenterPrice(windowInfo.min)}–${formatCenterPrice(
+                      windowInfo.max
+                    )}`
+                  : "–"
+              }`}
+              selected={center === "range"}
+              onClick={() => onCenterChange("range")}
+            />
+            <CenterChip
               label={`${t(
                 "addConcentratedLiquidity.centerMean"
-              )} ${formatCenterPrice(meanValue)}`}
+              )} ${formatCenterPrice(windowInfo?.mean)}`}
               selected={center === "mean"}
               onClick={() => onCenterChange("mean")}
             />
-            <ChartButton
+            <CenterChip
               label={`${t(
                 "addConcentratedLiquidity.centerSpot"
               )} ${formatCenterPrice(currentPriceWithDecimals)}`}
@@ -1164,6 +1183,28 @@ const PresetStrategyCard: FunctionComponent<
       </div>
     );
   }
+);
+
+/** Pill option for the range-center toggle. The selected state uses the
+ *  same accent as the sliders' fill so the active choice reads at a glance
+ *  against the panel background. */
+const CenterChip: FunctionComponent<{
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}> = ({ label, selected, onClick }) => (
+  <button
+    type="button"
+    className={classNames(
+      "caption rounded-full px-3 py-1 transition-colors",
+      selected
+        ? "bg-wosmongton-500 text-white-full"
+        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+    )}
+    onClick={onClick}
+  >
+    {label}
+  </button>
 );
 
 const SliderRow: FunctionComponent<{
