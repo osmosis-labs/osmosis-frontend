@@ -26,13 +26,31 @@ function windowStats(
 }
 
 /**
- * Range of mean ± k standard deviations over the lookback window, in the same
- * display units as the input series. These are the statistical stops of the
- * advanced width slider; parameterised by simple statistics on purpose, so
- * ranges don't overfit any one pool's history.
+ * Mean, population standard deviation, and sample count of the closes inside
+ * the lookback window — for callers that need the statistics themselves
+ * (e.g. to display the window mean or center a band on it).
+ */
+export function calcWindowStats({
+  prices,
+  windowDays,
+  nowMs,
+}: {
+  prices: { time: number; close: Dec }[];
+  windowDays: number;
+  nowMs: number;
+}): { mean: number; stdDev: number; count: number } {
+  return windowStats(prices, windowDays, nowMs);
+}
+
+/**
+ * Range of ±k standard deviations over the lookback window, in the same
+ * display units as the input series. The band centers on `center` when
+ * given (e.g. the spot price), otherwise on the window mean; σ always comes
+ * from the window. Parameterised by simple statistics on purpose, so ranges
+ * don't overfit any one pool's history.
  *
- * `sigmas === 0` yields a deliberately tight scalp band (±0.25% of the mean)
- * rather than the degenerate zero-width range.
+ * `sigmas === 0` yields a deliberately tight scalp band (±0.25% of the
+ * center) rather than the degenerate zero-width range.
  *
  * Returns undefined when the window can't support the statistic (not enough
  * bars, flat series, non-positive bounds), so callers can fall back rather
@@ -43,19 +61,24 @@ export function calcSigmaRange({
   windowDays,
   sigmas,
   nowMs,
+  center,
 }: {
   prices: { time: number; close: Dec }[];
   windowDays: number;
   sigmas: number;
   nowMs: number;
+  center?: Dec;
 }): [Dec, Dec] | undefined {
   const { mean, stdDev, count } = windowStats(prices, windowDays, nowMs);
   // Require a minimally meaningful sample; an hourly series has 24 bars/day.
   if (count < 10 || mean <= 0 || stdDev <= 0) return undefined;
 
-  const halfWidth = sigmas === 0 ? mean * 0.0025 : sigmas * stdDev;
-  const lower = mean - halfWidth;
-  const upper = mean + halfWidth;
+  const centerValue = center !== undefined ? Number(center.toString()) : mean;
+  if (!Number.isFinite(centerValue) || centerValue <= 0) return undefined;
+
+  const halfWidth = sigmas === 0 ? centerValue * 0.0025 : sigmas * stdDev;
+  const lower = centerValue - halfWidth;
+  const upper = centerValue + halfWidth;
   if (lower <= 0 || upper <= lower) return undefined;
   // Round through a fixed exponent so float noise can't break Dec's strict
   // constructor.

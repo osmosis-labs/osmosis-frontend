@@ -23,6 +23,9 @@ export const DetentSlider: FunctionComponent<{
   /** Values (in the slider's own scale) at which to render dots. */
   detents: number[];
   onChange: (value: number) => void;
+  /** Fires once when a drag or keyboard interaction settles, rather than on
+   *  every step crossed — e.g. for analytics. */
+  onCommit?: (value: number) => void;
   ariaLabel: string;
   disabled?: boolean;
 }> = ({
@@ -32,6 +35,7 @@ export const DetentSlider: FunctionComponent<{
   step = 1,
   detents,
   onChange,
+  onCommit,
   ariaLabel,
   disabled,
 }) => {
@@ -61,6 +65,9 @@ export const DetentSlider: FunctionComponent<{
         disabled={disabled}
         aria-label={ariaLabel}
         onValueChange={([next]) => onChange(next)}
+        onValueCommit={
+          onCommit ? ([next]: number[]) => onCommit(next) : undefined
+        }
       />
     </div>
   );

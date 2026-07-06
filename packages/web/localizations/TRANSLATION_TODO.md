@@ -14,13 +14,24 @@ Path within each locale JSON: `addConcentratedLiquidity.*`
 - `volatilitySlidersDescription`
 - `advancedToggle`
 - `lookbackLabel`
-- `bufferLabel`
-- `bufferHelp`
-- `bufferFullRange`
+- `centerLabel`
+- `centerMean`
+- `centerSpot`
+- `stdDevLabel`
+- `stdDevHelp`
+- `aroundCenterLabel`
+- `aroundCenterHelp`
 - `backtestTitle`
 - `backtestApr`
 - `backtestTimeInRange`
 - `backtestDisclaimer`
+- `capitalEfficiency`
+- `capitalEfficiencyValue`
+- `ilTitle`
+- `ilAtRangeFloor`
+- `ilAtRangeCeiling`
+- `ilSpotMove`
+- `ilDisclaimer`
 
 Affected files (each has the English placeholder under
 `addConcentratedLiquidity`):
@@ -44,18 +55,3 @@ Affected files (each has the English placeholder under
 
 Once translated, delete the relevant entries from this file. When this file
 is empty, remove it.
-
-## addConcentratedLiquidity.\* (stat presets + capital efficiency + IL, 2026-07-03)
-
-English placed verbatim in all 16 non-English locales; needs real translations:
-
-- `statPresetsLabel`
-- `capitalEfficiency`
-- `capitalEfficiencyValue`
-- `ilTitle`
-- `ilAtRangeFloor`
-- `ilAtRangeCeiling`
-- `ilSpotMove`
-- `ilDisclaimer`
-- `widthLabel`
-- `widthHelp`
