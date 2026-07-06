@@ -36,12 +36,15 @@ export class ObservableQueryConcentratedLiquidityParams extends ObservableChainQ
    *  the effectively-none 1ns option. */
   @computed
   get authorizedUptimes(): number[] | undefined {
-    if (!this.response) {
+    // Guard the full path: error responses and older nodes can produce a
+    // response object without the expected params shape.
+    const uptimes = this.response?.data?.authorized_uptimes;
+    if (!Array.isArray(uptimes)) {
       return;
     }
 
     // Duration strings like "0.000000001s", "60s", "3600s", "86400s".
-    return this.response.data.authorized_uptimes
+    return uptimes
       .map((uptime) => Number(uptime.replace(/s$/, "")))
       .filter((seconds) => Number.isFinite(seconds));
   }
