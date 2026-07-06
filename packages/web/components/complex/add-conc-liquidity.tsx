@@ -183,18 +183,26 @@ const AddConcLiqView: FunctionComponent<
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
   }, [chartConfig, rangeWithCurrencyDecimals]);
 
-  // Ratchet the price chart's timeframe up so it always encloses the
-  // advanced lookback window (a 7d chart can't show a 30d lookback). Up
-  // only, per design: shrinking the lookback never narrows the chart back.
+  // Moving the lookback always retunes the price chart to the smallest
+  // preset that encloses the window (exact at the 1h/1d/7d/1mo stops).
+  // One-directional by design: the chart's own timeframe buttons never
+  // write back to the lookback, and they stick until the lookback next
+  // moves (historicalRange is deliberately not a dependency).
   const advancedLookbackDays = addLiquidityConfig.lookbackDays;
   useEffect(() => {
     if (!advancedEnabled) return;
-    const current = chartConfig.historicalRange;
-    if (advancedLookbackDays > 30) {
-      if (current !== "1y") chartConfig.setHistoricalRange("1y");
-    } else if (advancedLookbackDays > 7 && current === "7d") {
-      chartConfig.setHistoricalRange("1mo");
-    }
+    const target =
+      advancedLookbackDays <= 1 / 24
+        ? "1h"
+        : advancedLookbackDays <= 1
+        ? "1d"
+        : advancedLookbackDays <= 7
+        ? "7d"
+        : advancedLookbackDays <= 30
+        ? "1mo"
+        : "1y";
+    if (chartConfig.historicalRange !== target)
+      chartConfig.setHistoricalRange(target);
   }, [advancedEnabled, advancedLookbackDays, chartConfig]);
 
   return (
@@ -580,14 +588,52 @@ const sigmaDetentLabel = (perMille: number): string | undefined => {
  *  upper = center × (1 + x), lower = center ÷ (1 + x) — which is ≈ ±x% for
  *  small x but stays meaningful past 100% (a plain ±x% lower bound goes
  *  non-positive there) and is symmetric in price ratio, matching how CL
- *  ranges are geometric in tick space. Denser at the low end, where a step
- *  matters most. */
-const PERCENT_STOPS = [
-  0.5, 1, 2.5, 5, 10, 15, 25, 50, 75, 100, 150, 200, 300, 400, 500,
-];
+ *  ranges are geometric in tick space. The slider is continuous on a log
+ *  scale across three decades (0.5% → 500%); dots are landmarks at familiar
+ *  stops, not snap points. */
+const PERCENT_MIN = 0.5;
+const PERCENT_MAX = 500;
+/** Slider positions per decade; 3 decades → positions 0..300. */
+const PERCENT_POSITIONS_PER_DECADE = 100;
+const PERCENT_POS_MAX = Math.round(
+  Math.log10(PERCENT_MAX / PERCENT_MIN) * PERCENT_POSITIONS_PER_DECADE
+);
+const percentFromPos = (pos: number): number =>
+  PERCENT_MIN * Math.pow(10, pos / PERCENT_POSITIONS_PER_DECADE);
+const posFromPercent = (percent: number): number =>
+  Math.round(
+    Math.log10(
+      Math.min(Math.max(percent, PERCENT_MIN), PERCENT_MAX) / PERCENT_MIN
+    ) * PERCENT_POSITIONS_PER_DECADE
+  );
+/** Landmark dots along the log scale. */
+const PERCENT_DOT_STOPS = [0.5, 1, 2.5, 5, 10, 25, 50, 100, 150, 250, 500];
+const formatPercentStop = (percent: number): string =>
+  percent < 1
+    ? percent.toFixed(1)
+    : percent < 10
+    ? (Math.round(percent * 10) / 10).toString()
+    : Math.round(percent).toString();
+/** Decade marks get text; the rest are unlabeled landmarks. */
+const percentDetentLabel = (pos: number): string | undefined => {
+  const percent = percentFromPos(pos);
+  for (const decade of [0.5, 5, 50, 500]) {
+    if (Math.abs(percent - decade) / decade < 0.02)
+      return `${formatPercentStop(decade)}%`;
+  }
+  return undefined;
+};
+
+/** Lookback stops that carry text under their dots; the rest stay plain. */
+const LOOKBACK_LABELED_DAYS = [1 / 24, 1, 7, 30, 90, 365];
+const lookbackDetentLabel = (idx: number): string | undefined =>
+  LOOKBACK_LABELED_DAYS.includes(LOOKBACK_DAYS_STOPS[idx])
+    ? formatLookback(LOOKBACK_DAYS_STOPS[idx])
+    : undefined;
+
 /** 95% coverage (2σ): a moderate band over the default 7d lookback. */
 const DEFAULT_SIGMA_COVERAGE = 950;
-const DEFAULT_PERCENT_IDX = PERCENT_STOPS.indexOf(25);
+const DEFAULT_PERCENT = 25;
 
 /** Persists only whether the user is in advanced mode — slider values
  *  themselves reset to their canonical defaults each time advanced opens. */
@@ -784,7 +830,7 @@ const AdvancedRangeControls: FunctionComponent<{
   const [center, setCenter] = useState<"range" | "mean" | "spot">("range");
   const [widthMode, setWidthMode] = useState<"sigma" | "percent">("sigma");
   const [sigmaCoverage, setSigmaCoverage] = useState(DEFAULT_SIGMA_COVERAGE);
-  const [percentIdx, setPercentIdx] = useState(DEFAULT_PERCENT_IDX);
+  const [percent, setPercent] = useState(DEFAULT_PERCENT);
 
   /** The lookback window's mean and observed extremes in display units,
    *  when computable. */
@@ -841,11 +887,11 @@ const AdvancedRangeControls: FunctionComponent<{
       setMaxRange(range[1].toString());
       return;
     }
-    applyPercentBeyond(PERCENT_STOPS[percentIdx]);
+    applyPercentBeyond(percent);
   }, [
     widthMode,
     sigmaCoverage,
-    percentIdx,
+    percent,
     center,
     windowInfo,
     currentPriceWithDecimals,
@@ -889,7 +935,7 @@ const AdvancedRangeControls: FunctionComponent<{
     lookbackDays,
     widthMode,
     sigmaCoverage,
-    percentIdx,
+    percent,
     center,
     historicalPrices.length,
   ]);
@@ -916,10 +962,31 @@ const AdvancedRangeControls: FunctionComponent<{
     setSigmaCoverage(perMille);
   }, []);
 
-  const onPercentChange = useCallback((idx: number) => {
+  const onPercentChange = useCallback((pos: number) => {
     setWidthMode("percent");
-    setPercentIdx(idx);
+    setPercent(percentFromPos(pos));
   }, []);
+
+  /** Deliberate keyboard entry beside each width slider; also makes the
+   *  edited slider the active width control. */
+  const onSigmaEntry = useCallback(
+    (value: number) => {
+      setWidthMode("sigma");
+      const perMille = Math.min(999, Math.max(0, Math.round(value * 10)));
+      setSigmaCoverage(perMille);
+      logStrategy(`sliders-sigma-cov-${(perMille / 10).toFixed(1)}`);
+    },
+    [logStrategy]
+  );
+  const onPercentEntry = useCallback(
+    (value: number) => {
+      setWidthMode("percent");
+      const clamped = Math.min(PERCENT_MAX, Math.max(PERCENT_MIN, value));
+      setPercent(clamped);
+      logStrategy(`sliders-percent-${formatPercentStop(clamped)}`);
+    },
+    [logStrategy]
+  );
 
   // How concentrated the chosen range is versus full range, at current spot.
   const capitalEfficiency = useMemo(() => {
@@ -952,6 +1019,7 @@ const AdvancedRangeControls: FunctionComponent<{
               max={LOOKBACK_DAYS_STOPS.length - 1}
               value={lookbackIdx}
               detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
+              detentLabel={lookbackDetentLabel}
               onChange={(idx) => setLookbackDays(LOOKBACK_DAYS_STOPS[idx])}
               onCommit={(idx) =>
                 logStrategy(
@@ -1001,7 +1069,13 @@ const AdvancedRangeControls: FunctionComponent<{
         >
           <SliderRow
             label={t("addConcentratedLiquidity.stdDevLabel")}
-            valueLabel={`${(sigmaCoverage / 10).toFixed(1)}%`}
+            valueLabel={
+              <PercentEntry
+                value={(sigmaCoverage / 10).toFixed(1)}
+                onCommit={onSigmaEntry}
+                ariaLabel={t("addConcentratedLiquidity.stdDevLabel")}
+              />
+            }
             help={t("addConcentratedLiquidity.stdDevHelp")}
           >
             <DetentSlider
@@ -1026,18 +1100,27 @@ const AdvancedRangeControls: FunctionComponent<{
         >
           <SliderRow
             label={t("addConcentratedLiquidity.aroundCenterLabel")}
-            valueLabel={`${PERCENT_STOPS[percentIdx]}%`}
+            valueLabel={
+              <PercentEntry
+                value={formatPercentStop(percent)}
+                onCommit={onPercentEntry}
+                ariaLabel={t("addConcentratedLiquidity.aroundCenterLabel")}
+              />
+            }
             help={t("addConcentratedLiquidity.aroundCenterHelp")}
           >
             <DetentSlider
               ariaLabel={t("addConcentratedLiquidity.aroundCenterLabel")}
               min={0}
-              max={PERCENT_STOPS.length - 1}
-              value={percentIdx}
-              detents={PERCENT_STOPS.map((_, i) => i)}
+              max={PERCENT_POS_MAX}
+              value={posFromPercent(percent)}
+              detents={PERCENT_DOT_STOPS.map(posFromPercent)}
+              detentLabel={percentDetentLabel}
               onChange={onPercentChange}
-              onCommit={(idx) =>
-                logStrategy(`sliders-percent-${PERCENT_STOPS[idx]}`)
+              onCommit={(pos) =>
+                logStrategy(
+                  `sliders-percent-${formatPercentStop(percentFromPos(pos))}`
+                )
               }
             />
           </SliderRow>
@@ -1210,6 +1293,43 @@ const PresetStrategyCard: FunctionComponent<
   }
 );
 
+/** Compact right-aligned percent entry that mirrors a slider's value and
+ *  commits deliberate keyboard entries on blur or Enter. While focused it
+ *  holds a local draft so the slider's live value doesn't fight the user's
+ *  typing. */
+const PercentEntry: FunctionComponent<{
+  /** Formatted display value while not editing (without the % sign). */
+  value: string;
+  onCommit: (parsed: number) => void;
+  ariaLabel: string;
+}> = ({ value, onCommit, ariaLabel }) => {
+  const [draft, setDraft] = useState<string | null>(null);
+  return (
+    <div className="flex items-center gap-0.5 text-sm text-osmoverse-100">
+      <input
+        type="text"
+        inputMode="decimal"
+        aria-label={ariaLabel}
+        className="w-14 rounded-lg bg-osmoverse-900 px-2 py-0.5 text-right outline-none transition-colors focus:bg-osmoverse-1000"
+        value={draft ?? value}
+        onChange={(e) => setDraft(e.target.value)}
+        onFocus={() => setDraft(value)}
+        onBlur={() => {
+          if (draft !== null) {
+            const parsed = Number(draft);
+            if (Number.isFinite(parsed)) onCommit(parsed);
+          }
+          setDraft(null);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+        }}
+      />
+      <span>%</span>
+    </div>
+  );
+};
+
 /** Pill option for the range-center toggle. The selected state uses the
  *  same accent as the sliders' fill so the active choice reads at a glance
  *  against the panel background. */
@@ -1381,8 +1501,8 @@ const BacktestPanel: FunctionComponent<{
   // Divergence (impermanent loss) versus holding the deposited tokens, for a
   // deposit at current spot evaluated at a few representative exit prices.
   // Fees and incentives excluded: this isolates the cost side the backtest
-  // APR does not capture.
-  const ilScenarios = useMemo(() => {
+  // APR does not capture. Grouped in columns: range edges, ±10%, ±20%.
+  const ilColumns = useMemo(() => {
     const spot = currentPriceWithDecimals;
     const [lowerPrice, upperPrice] = rangeWithCurrencyDecimals;
     if (fullRange || !spot.isPositive()) return [];
@@ -1401,20 +1521,24 @@ const BacktestPanel: FunctionComponent<{
         ? { labelKey, labelParams, delta: result.deltaVsHold }
         : undefined;
     };
+    const spotMove = (percentLabel: string, factor: string) =>
+      scenario(
+        "addConcentratedLiquidity.ilSpotMove",
+        { percent: percentLabel },
+        spot.mul(new Dec(factor))
+      );
     return [
-      scenario("addConcentratedLiquidity.ilAtRangeFloor", {}, lowerPrice),
-      scenario(
-        "addConcentratedLiquidity.ilSpotMove",
-        { percent: "-10%" },
-        spot.mul(new Dec("0.9"))
-      ),
-      scenario(
-        "addConcentratedLiquidity.ilSpotMove",
-        { percent: "+10%" },
-        spot.mul(new Dec("1.1"))
-      ),
-      scenario("addConcentratedLiquidity.ilAtRangeCeiling", {}, upperPrice),
-    ].filter((row): row is NonNullable<typeof row> => Boolean(row));
+      [
+        scenario("addConcentratedLiquidity.ilAtRangeFloor", {}, lowerPrice),
+        scenario("addConcentratedLiquidity.ilAtRangeCeiling", {}, upperPrice),
+      ],
+      [spotMove("-10%", "0.9"), spotMove("+10%", "1.1")],
+      [spotMove("-20%", "0.8"), spotMove("+20%", "1.2")],
+    ]
+      .map((column) =>
+        column.filter((row): row is NonNullable<typeof row> => Boolean(row))
+      )
+      .filter((column) => column.length > 0);
   }, [currentPriceWithDecimals, rangeWithCurrencyDecimals, fullRange]);
 
   const lookbackIdx = lookbackToIndex(backtestLookbackDays);
@@ -1443,6 +1567,7 @@ const BacktestPanel: FunctionComponent<{
             max={LOOKBACK_DAYS_STOPS.length - 1}
             value={lookbackIdx}
             detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
+            detentLabel={lookbackDetentLabel}
             onChange={(idx) =>
               setBacktestLookbackDays(LOOKBACK_DAYS_STOPS[idx])
             }
@@ -1466,30 +1591,34 @@ const BacktestPanel: FunctionComponent<{
           {t("addConcentratedLiquidity.backtestDisclaimer")}
         </span>
       </section>
-      {ilScenarios.length > 0 && (
+      {ilColumns.length > 0 && (
         <section className="flex w-full flex-col gap-3 rounded-2xl bg-osmoverse-800 p-4">
           <span className="subtitle1">
             {t("addConcentratedLiquidity.ilTitle")}
           </span>
-          <div className="grid grid-cols-2 gap-x-4">
-            {ilScenarios.map(({ labelKey, labelParams, delta }) => (
-              <div
-                key={labelKey + (labelParams.percent ?? "")}
-                className="flex items-center justify-between"
-              >
-                <span className="caption text-osmoverse-400">
-                  {t(labelKey, labelParams)}
-                </span>
-                <span
-                  className={classNames(
-                    "caption",
-                    delta.lt(new Dec("-0.0005"))
-                      ? "text-rust-300"
-                      : "text-osmoverse-200"
-                  )}
-                >
-                  {formatPretty(new RatePretty(delta), { maxDecimals: 2 })}
-                </span>
+          <div className="grid grid-cols-3 gap-x-6 sm:grid-cols-1 sm:gap-y-1">
+            {ilColumns.map((column, columnIdx) => (
+              <div key={columnIdx} className="flex flex-col gap-1">
+                {column.map(({ labelKey, labelParams, delta }) => (
+                  <div
+                    key={labelKey + (labelParams.percent ?? "")}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="caption text-osmoverse-400">
+                      {t(labelKey, labelParams)}
+                    </span>
+                    <span
+                      className={classNames(
+                        "caption",
+                        delta.lt(new Dec("-0.0005"))
+                          ? "text-rust-300"
+                          : "text-osmoverse-200"
+                      )}
+                    >
+                      {formatPretty(new RatePretty(delta), { maxDecimals: 2 })}
+                    </span>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
