@@ -6,6 +6,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
@@ -42,16 +43,14 @@ export const IncentivizePoolModal: FunctionComponent<
     addToGauge,
   } = useIncentivizePoolConfig();
 
-  // Reward token choices: the connected wallet's positive balances (you can
-  // only fund a gauge with coins you hold).
+  // Reward token choices: the full registered asset list with the wallet's
+  // balances attached, holdings sorted first. The amount input errors on
+  // insufficient balance, so unheld assets stay selectable but unusable.
   const balances = queriesStore
     .get(chainId)
     .queryBalances.getQueryBech32Address(address).balances;
   const selectableTokens = useMemo(
-    () =>
-      balances
-        .map((balance) => balance.balance)
-        .filter((coin) => coin.toDec().isPositive()),
+    () => balances.map((balance) => balance.balance),
     [balances]
   );
   // Default the reward token to OSMO when available.
@@ -72,22 +71,35 @@ export const IncentivizePoolModal: FunctionComponent<
   // chain's no-lock gauge instead.
   const lockableDurationsRaw =
     queriesStore.get(chainId).osmosis?.queryLockableDurations.lockableDurations;
-  const lockableDurations = useMemo(
-    () => lockableDurationsRaw ?? [],
+  // Only the longest lockup (14 days) is promoted for external incentives —
+  // shorter gauges fragment rewards across durations for no benefit.
+  const fixedDuration = useMemo(
+    () =>
+      lockableDurationsRaw && lockableDurationsRaw.length > 0
+        ? lockableDurationsRaw[lockableDurationsRaw.length - 1]
+        : undefined,
     [lockableDurationsRaw]
   );
-  const [durationSeconds, setDurationSeconds] = useState<number | null>(null);
-  useEffect(() => {
-    // External incentives conventionally target the longest lockup.
-    if (durationSeconds === null && lockableDurations.length > 0)
-      setDurationSeconds(
-        lockableDurations[lockableDurations.length - 1].asSeconds()
-      );
-  }, [durationSeconds, lockableDurations]);
 
   const [epochsInput, setEpochsInput] = useState(DEFAULT_NUM_EPOCHS);
-  const numEpochs = Number(epochsInput);
+  const [isPerpetual, setIsPerpetual] = useState(false);
+  // Perpetual gauges distribute their full balance every epoch; the chain
+  // requires them to be created with a single epoch.
+  const numEpochs = isPerpetual ? 1 : Number(epochsInput);
   const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
+
+  // Start: next epoch by default, or a deliberate future time.
+  const [customStartEnabled, setCustomStartEnabled] = useState(false);
+  const [customStartInput, setCustomStartInput] = useState("");
+  const customStartDate = useMemo(
+    () => (customStartInput ? new Date(customStartInput) : undefined),
+    [customStartInput]
+  );
+  const customStartValid =
+    !customStartEnabled ||
+    (customStartDate !== undefined &&
+      !isNaN(customStartDate.getTime()) &&
+      customStartDate.getTime() > Date.now());
 
   const epochCountdown = useDailyEpochCountdown();
 
@@ -109,7 +121,8 @@ export const IncentivizePoolModal: FunctionComponent<
         Boolean(config.error) ||
         !config.amount ||
         (!isTopUp && !epochsValid) ||
-        (needsDuration && durationSeconds === null) ||
+        (!isTopUp && !customStartValid) ||
+        (needsDuration && fixedDuration === undefined) ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         const send = isTopUp
@@ -120,9 +133,14 @@ export const IncentivizePoolModal: FunctionComponent<
                 : {
                     type: "byDuration",
                     denom: `gamm/pool/${poolId}`,
-                    durationSeconds: durationSeconds!,
+                    durationSeconds: fixedDuration!.asSeconds(),
                   },
               numEpochs,
+              startTime:
+                customStartEnabled && customStartDate
+                  ? customStartDate
+                  : undefined,
+              isPerpetual,
             });
         send
           .then(() => {
@@ -133,7 +151,9 @@ export const IncentivizePoolModal: FunctionComponent<
       },
       children:
         (config.error ? t(...tError(config.error)) : false) ||
-        (isTopUp
+        (!isTopUp && !customStartValid
+          ? t("incentivizePool.startInPast")
+          : isTopUp
           ? t("incentivizePool.ctaTopUp", { gaugeId: topUpGaugeId ?? "" })
           : t("incentivizePool.ctaCreate")),
     },
@@ -186,33 +206,81 @@ export const IncentivizePoolModal: FunctionComponent<
                 {t("incentivizePool.noLockNote")}
               </span>
             ) : (
-              <div className="flex flex-col gap-2">
-                <span className="subtitle1">
-                  {t("incentivizePool.selectDuration")}
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {lockableDurations.map((duration) => (
-                    <button
-                      key={duration.asSeconds()}
-                      type="button"
-                      className={classNames(
-                        "caption rounded-full px-3 py-1 transition-colors",
-                        durationSeconds === duration.asSeconds()
-                          ? "bg-wosmongton-500 text-white-full"
-                          : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
-                      )}
-                      onClick={() => setDurationSeconds(duration.asSeconds())}
-                    >
-                      {duration.humanize()}
-                    </button>
-                  ))}
-                </div>
-                <span className="caption text-osmoverse-400">
-                  {t("incentivizePool.durationHelp")}
-                </span>
-              </div>
+              <span className="caption text-osmoverse-300">
+                {t("incentivizePool.durationFixed", {
+                  duration: fixedDuration?.humanize() ?? "",
+                })}
+              </span>
             )}
             <div className="flex flex-col gap-2">
+              <div className="flex place-content-between items-center">
+                <span className="subtitle1">
+                  {t("incentivizePool.startLabel")}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    className={classNames(
+                      "caption rounded-full px-3 py-1 transition-colors",
+                      !customStartEnabled
+                        ? "bg-wosmongton-500 text-white-full"
+                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+                    )}
+                    onClick={() => setCustomStartEnabled(false)}
+                  >
+                    {t("incentivizePool.startNextEpoch")}
+                  </button>
+                  <button
+                    type="button"
+                    className={classNames(
+                      "caption rounded-full px-3 py-1 transition-colors",
+                      customStartEnabled
+                        ? "bg-wosmongton-500 text-white-full"
+                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+                    )}
+                    onClick={() => setCustomStartEnabled(true)}
+                  >
+                    {t("incentivizePool.startCustom")}
+                  </button>
+                </div>
+              </div>
+              {customStartEnabled && (
+                <input
+                  type="datetime-local"
+                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
+                  value={customStartInput}
+                  onChange={(e) => setCustomStartInput(e.target.value)}
+                />
+              )}
+              <span className="caption text-osmoverse-400">
+                {customStartEnabled
+                  ? t("incentivizePool.startCustomCaption")
+                  : epochCountdown
+                  ? t("incentivizePool.epochsCaption", {
+                      countdown: epochCountdown,
+                    })
+                  : t("incentivizePool.epochsCaptionNoCountdown")}
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="perpetual-gauge-checkbox"
+                checked={isPerpetual}
+                onClick={() => setIsPerpetual(!isPerpetual)}
+              />
+              <label
+                htmlFor="perpetual-gauge-checkbox"
+                className="flex cursor-pointer flex-col gap-1"
+              >
+                <span className="subtitle1">
+                  {t("incentivizePool.perpetualLabel")}
+                </span>
+                <span className="caption text-osmoverse-400">
+                  {t("incentivizePool.perpetualHelp")}
+                </span>
+              </label>
+            </div>
+            {!isPerpetual && (
               <div className="flex place-content-between items-center">
                 <span className="subtitle1">
                   {t("incentivizePool.epochsLabel")}
@@ -226,14 +294,7 @@ export const IncentivizePoolModal: FunctionComponent<
                   rightEntry
                 />
               </div>
-              <span className="caption text-osmoverse-400">
-                {epochCountdown
-                  ? t("incentivizePool.epochsCaption", {
-                      countdown: epochCountdown,
-                    })
-                  : t("incentivizePool.epochsCaptionNoCountdown")}
-              </span>
-            </div>
+            )}
           </>
         )}
         <div className="flex flex-col gap-2">

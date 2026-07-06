@@ -575,17 +575,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         </section>
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
-            <div className="flex items-center justify-between gap-2">
-              <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-fit shrink-0"
-                onClick={() => setShowIncentivizeModal(true)}
-              >
-                {t("incentivizePool.entry")}
-              </Button>
-            </div>
+            <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
             <span className="body2 text-osmoverse-300">
               {t("pool.putAssetsToWorkCaption")}{" "}
               <a
@@ -748,6 +738,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       {isSuperfluid &&
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-fit"
+                      onClick={() => setShowIncentivizeModal(true)}
+                    >
+                      {t("incentivizePool.entry")}
+                    </Button>
                   </div>
                   {Boolean(account) &&
                   (isLoadingBondDurations || isLoadingUserSharePool) ? (

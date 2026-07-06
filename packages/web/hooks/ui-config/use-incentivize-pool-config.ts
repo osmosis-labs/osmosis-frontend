@@ -17,6 +17,8 @@ export function useIncentivizePoolConfig(): {
       | { type: "byDuration"; denom: string; durationSeconds: number }
       | { type: "noLock"; poolId: string };
     numEpochs: number;
+    startTime?: Date;
+    isPerpetual?: boolean;
   }) => Promise<void>;
   addToGauge: (gaugeId: string) => Promise<void>;
 } {
@@ -33,6 +35,8 @@ export function useIncentivizePoolConfig(): {
         | { type: "byDuration"; denom: string; durationSeconds: number }
         | { type: "noLock"; poolId: string };
       numEpochs: number;
+      startTime?: Date;
+      isPerpetual?: boolean;
     }) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
@@ -48,9 +52,9 @@ export function useIncentivizePoolConfig(): {
               },
             ],
             // Emissions begin at the first epoch after this time.
-            new Date(),
+            params.startTime ?? new Date(),
             params.numEpochs,
-            false,
+            params.isPerpetual ?? false,
             undefined,
             (tx) => {
               if (tx.code) reject(tx.rawLog);
