@@ -563,7 +563,10 @@ const SIGMA_COVERAGE_ANCHORS: [perMille: number, sigmas: number][] = [
   [999, 3.09],
 ];
 const SIGMA_SLIDER_MAX = 999;
-const SIGMA_DETENTS = SIGMA_COVERAGE_ANCHORS.map(([perMille]) => perMille);
+/** Dots skip the 3σ anchor: it sits ~1px from the max, so a dot and label
+ *  there would just read as a doubled endpoint. The coverage → σ mapping
+ *  still passes through it. */
+const SIGMA_DETENTS = [0, 680, 950, SIGMA_SLIDER_MAX];
 /** Piecewise-linear coverage → σ through the anchors above. */
 const sigmaFromCoverage = (perMille: number): number => {
   for (let i = 1; i < SIGMA_COVERAGE_ANCHORS.length; i++) {
@@ -575,9 +578,8 @@ const sigmaFromCoverage = (perMille: number): number => {
   }
   return SIGMA_COVERAGE_ANCHORS[SIGMA_COVERAGE_ANCHORS.length - 1][1];
 };
-/** Dot labels in σ; the two top anchors sit ~1px apart, so only the max
- *  carries text there. */
 const sigmaDetentLabel = (perMille: number): string | undefined => {
+  if (perMille === 0) return "0σ";
   if (perMille === 680) return "1σ";
   if (perMille === 950) return "2σ";
   if (perMille === SIGMA_SLIDER_MAX) return "3.09σ";
@@ -588,48 +590,60 @@ const sigmaDetentLabel = (perMille: number): string | undefined => {
  *  upper = center × (1 + x), lower = center ÷ (1 + x) — which is ≈ ±x% for
  *  small x but stays meaningful past 100% (a plain ±x% lower bound goes
  *  non-positive there) and is symmetric in price ratio, matching how CL
- *  ranges are geometric in tick space. The slider is continuous on a log
- *  scale across three decades (0.5% → 500%); dots are landmarks at familiar
- *  stops, not snap points. */
+ *  ranges are geometric in tick space. The slider bottoms out at a true 0%
+ *  (exactly the anchor: the observed range on the Range center, a tight
+ *  scalp band on point centers), ramps linearly to the first landmark at
+ *  0.5%, and is logarithmic from there to 500%. Dots are landmarks on a
+ *  1-2-5 series, not snap points. */
 const PERCENT_MIN = 0.5;
 const PERCENT_MAX = 500;
-/** Slider positions per decade; 3 decades → positions 0..300. */
 const PERCENT_POSITIONS_PER_DECADE = 100;
-const PERCENT_POS_MAX = Math.round(
-  Math.log10(PERCENT_MAX / PERCENT_MIN) * PERCENT_POSITIONS_PER_DECADE
-);
-const percentFromPos = (pos: number): number =>
-  PERCENT_MIN * Math.pow(10, pos / PERCENT_POSITIONS_PER_DECADE);
-const posFromPercent = (percent: number): number =>
+/** Positions below this ramp linearly 0% → PERCENT_MIN; the log scale
+ *  starts above it. */
+const PERCENT_ZERO_SEGMENT = 30;
+const PERCENT_POS_MAX =
+  PERCENT_ZERO_SEGMENT +
   Math.round(
-    Math.log10(
-      Math.min(Math.max(percent, PERCENT_MIN), PERCENT_MAX) / PERCENT_MIN
-    ) * PERCENT_POSITIONS_PER_DECADE
+    Math.log10(PERCENT_MAX / PERCENT_MIN) * PERCENT_POSITIONS_PER_DECADE
   );
-/** Landmark dots along the log scale. */
-const PERCENT_DOT_STOPS = [0.5, 1, 2.5, 5, 10, 25, 50, 100, 150, 250, 500];
+const percentFromPos = (pos: number): number =>
+  pos <= 0
+    ? 0
+    : pos < PERCENT_ZERO_SEGMENT
+    ? (pos / PERCENT_ZERO_SEGMENT) * PERCENT_MIN
+    : PERCENT_MIN *
+      Math.pow(10, (pos - PERCENT_ZERO_SEGMENT) / PERCENT_POSITIONS_PER_DECADE);
+const posFromPercent = (percent: number): number =>
+  percent <= 0
+    ? 0
+    : percent < PERCENT_MIN
+    ? Math.round((percent / PERCENT_MIN) * PERCENT_ZERO_SEGMENT)
+    : PERCENT_ZERO_SEGMENT +
+      Math.round(
+        Math.log10(Math.min(percent, PERCENT_MAX) / PERCENT_MIN) *
+          PERCENT_POSITIONS_PER_DECADE
+      );
+/** Landmark dots: 0 plus a 1-2-5 series. */
+const PERCENT_DOT_STOPS = [0, 0.5, 1, 5, 10, 20, 50, 100, 200, 500];
 const formatPercentStop = (percent: number): string =>
-  percent < 1
+  percent > 0 && percent < 1
     ? percent.toFixed(1)
     : percent < 10
     ? (Math.round(percent * 10) / 10).toString()
     : Math.round(percent).toString();
-/** Decade marks get text; the rest are unlabeled landmarks. */
 const percentDetentLabel = (pos: number): string | undefined => {
+  if (pos === 0) return "0%";
   const percent = percentFromPos(pos);
-  for (const decade of [0.5, 5, 50, 500]) {
-    if (Math.abs(percent - decade) / decade < 0.02)
-      return `${formatPercentStop(decade)}%`;
+  for (const stop of PERCENT_DOT_STOPS) {
+    if (stop > 0 && Math.abs(percent - stop) / stop < 0.02)
+      return `${formatPercentStop(stop)}%`;
   }
   return undefined;
 };
 
-/** Lookback stops that carry text under their dots; the rest stay plain. */
-const LOOKBACK_LABELED_DAYS = [1 / 24, 1, 7, 30, 90, 365];
+/** Every lookback stop carries its label under the dot. */
 const lookbackDetentLabel = (idx: number): string | undefined =>
-  LOOKBACK_LABELED_DAYS.includes(LOOKBACK_DAYS_STOPS[idx])
-    ? formatLookback(LOOKBACK_DAYS_STOPS[idx])
-    : undefined;
+  formatLookback(LOOKBACK_DAYS_STOPS[idx]);
 
 /** 95% coverage (2σ): a moderate band over the default 7d lookback. */
 const DEFAULT_SIGMA_COVERAGE = 950;
@@ -863,7 +877,14 @@ const AdvancedRangeControls: FunctionComponent<{
 
     // All paths produce display units, which is what setMin/MaxRange expect.
     const applyPercentBeyond = (percent: number) => {
-      const factor = new Dec((1 + percent / 100).toFixed(12));
+      // 0% on a point center would be a zero-width range; fall back to the
+      // same tight scalp band as 0 coverage. On the Range center, 0% is
+      // exactly the observed range.
+      const isPointAnchor = anchor[0].equals(anchor[1]);
+      const effectivePercent = isPointAnchor
+        ? Math.max(percent, 0.25)
+        : percent;
+      const factor = new Dec((1 + effectivePercent / 100).toFixed(12));
       setMinRange(anchor[0].quo(factor).toString());
       setMaxRange(anchor[1].mul(factor).toString());
     };
@@ -981,7 +1002,7 @@ const AdvancedRangeControls: FunctionComponent<{
   const onPercentEntry = useCallback(
     (value: number) => {
       setWidthMode("percent");
-      const clamped = Math.min(PERCENT_MAX, Math.max(PERCENT_MIN, value));
+      const clamped = Math.min(PERCENT_MAX, Math.max(0, value));
       setPercent(clamped);
       logStrategy(`sliders-percent-${formatPercentStop(clamped)}`);
     },
