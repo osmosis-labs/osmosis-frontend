@@ -77,21 +77,14 @@ export const DetentSlider: FunctionComponent<{
           {detents.map((detent) => {
             const label = detentLabel!(detent);
             if (label === undefined) return null;
-            const percent = toPercent(detent);
+            // Centered under the dot, including at the ends — edge labels
+            // may overhang slightly into the surrounding padding, which
+            // beats visibly misaligning them with their dots.
             return (
               <span
                 key={detent}
-                className={classNames(
-                  "caption absolute text-xs text-osmoverse-400",
-                  // Clamp edge labels inside the track instead of letting
-                  // them hang half outside the container.
-                  percent <= 2
-                    ? "translate-x-0"
-                    : percent >= 98
-                    ? "-translate-x-full"
-                    : "-translate-x-1/2"
-                )}
-                style={{ left: thumbAlignedLeft(percent) }}
+                className="caption absolute -translate-x-1/2 text-xs text-osmoverse-400"
+                style={{ left: thumbAlignedLeft(toPercent(detent)) }}
               >
                 {label}
               </span>
