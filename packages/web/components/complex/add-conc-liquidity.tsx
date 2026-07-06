@@ -43,7 +43,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { useStore } from "~/stores";
-import { calcSigmaRange } from "~/utils/cl-sigma-range";
+import { calcSigmaRange, calcWindowStats } from "~/utils/cl-sigma-range";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -539,35 +539,27 @@ const lookbackToIndex = (days: number): number => {
   return bestIdx;
 };
 
-/** Stops of the unified width slider, tightest to widest: statistical bands
- *  (mean ± kσ over the lookback window, with 0σ a tight scalp band), then
- *  buffers beyond the window's observed min/max (fractions of its span),
- *  then full range. There is no 0% buffer stop: 3σ covers ~99.7% of
- *  observations, so it already approximates the observed range and the
- *  ladder continues from small buffers. The seam is still approximate — σ
- *  bands center on the mean while buffers span the observed extremes, so on
- *  trending windows 3σ can be wider than a small buffer. Buffer increments
- *  are denser at the low end, where a step matters most. */
-type WidthStop =
-  | { kind: "sigma"; sigmas: number; label: string }
-  | { kind: "buffer"; bufferFraction: number; label: string }
-  | { kind: "max"; label: string };
-const BUFFER_PERCENT_STOPS = [5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
-const WIDTH_STOPS: WidthStop[] = [
-  ...[0, 1, 2, 3].map((k) => ({
-    kind: "sigma" as const,
-    sigmas: k,
-    label: `${k}σ`,
-  })),
-  ...BUFFER_PERCENT_STOPS.map((pct) => ({
-    kind: "buffer" as const,
-    bufferFraction: pct / 100,
-    label: `${pct}%`,
-  })),
-  { kind: "max" as const, label: "Max" },
+/** σ width slider: 0→3 standard deviations of the lookback window in 0.1
+ *  steps (detent dots at whole σ), plus a final stop past 3σ for full range.
+ *  The band centers on the selected center (window mean or spot); σ always
+ *  comes from the lookback window. 0σ is a tight scalp band, not zero width. */
+const SIGMA_MAX_IDX = 31; // indices 0..30 → 0.0σ..3.0σ; 31 → full range
+const SIGMA_DETENTS = [0, 10, 20, 30, SIGMA_MAX_IDX];
+const formatSigmaStop = (idx: number) =>
+  idx >= SIGMA_MAX_IDX ? "Max" : `${(idx / 10).toFixed(1)}σ`;
+
+/** % width slider: ratio-symmetric buffer around the selected center —
+ *  upper = center × (1 + x), lower = center ÷ (1 + x) — which is ≈ ±x% for
+ *  small x but stays meaningful past 100% (a plain ±x% lower bound goes
+ *  non-positive there) and is symmetric in price ratio, matching how CL
+ *  ranges are geometric in tick space. Denser at the low end, where a step
+ *  matters most. */
+const PERCENT_STOPS = [
+  0.5, 1, 2.5, 5, 10, 15, 25, 50, 75, 100, 150, 200, 300, 400, 500,
 ];
-/** 2σ: a moderate statistical band over the default 7d lookback. */
-const DEFAULT_WIDTH_IDX = 2;
+/** 2σ around the mean: a moderate band over the default 7d lookback. */
+const DEFAULT_SIGMA_IDX = 20;
+const DEFAULT_PERCENT_IDX = PERCENT_STOPS.indexOf(25);
 
 /** Persists only whether the user is in advanced mode — slider values
  *  themselves reset to their canonical defaults each time advanced opens. */
@@ -586,9 +578,8 @@ const StrategySelectorGroup: FunctionComponent<
   const { currentStrategy } = props.addLiquidityConfig;
 
   // In advanced mode the description is binary (passive vs. sliders) so it
-  // doesn't flicker during slider drags — the tickRange transiently lags
-  // slidersTickRange while the apply is debounced, which would otherwise
-  // make currentStrategy oscillate between "sliders" and null.
+  // doesn't flicker during slider drags — the applied tickRange transiently
+  // lags the controls while the apply is debounced.
   let descriptionText: string;
   if (props.advancedEnabled) {
     descriptionText =
@@ -740,16 +731,12 @@ const AdvancedRangeControls: FunctionComponent<{
   const {
     setFullRange,
     setLookbackDays,
-    setBufferFraction,
     lookbackDays,
-    slidersPriceRange,
     historicalPrices,
     minHistoricalPrice,
     maxHistoricalPrice,
     setMinRange,
     setMaxRange,
-    baseDepositAmountIn,
-    quoteDepositAmountIn,
     rangeWithCurrencyDecimals,
     currentPriceWithDecimals,
     fullRange,
@@ -759,75 +746,82 @@ const AdvancedRangeControls: FunctionComponent<{
 
   // Within a single modal session, user tweaks survive toggling Advanced
   // off and back on — only a fresh modal mount returns to the defaults
-  // (7d lookback, 2σ width).
+  // (7d lookback, 2σ around the mean).
 
-  const multiplicationQuoteOverBase = useMemo(
-    () =>
-      DecUtils.getTenExponentN(
-        (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
-          (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
-      ),
-    [baseDepositAmountIn.sendCurrency, quoteDepositAmountIn.sendCurrency]
-  );
+  // The range is a width applied around an explicit center: the lookback
+  // window's mean, or spot. Width comes from whichever of the two sliders
+  // was touched last (the inactive one dims): standard deviations of the
+  // window, or a ratio-symmetric % buffer.
+  const [center, setCenter] = useState<"mean" | "spot">("mean");
+  const [widthMode, setWidthMode] = useState<"sigma" | "percent">("sigma");
+  const [sigmaIdx, setSigmaIdx] = useState(DEFAULT_SIGMA_IDX);
+  const [percentIdx, setPercentIdx] = useState(DEFAULT_PERCENT_IDX);
 
-  const applySlidersRange = useCallback(() => {
-    const [lo, hi] = slidersPriceRange;
-    setFullRange(false);
-    setMinRange(lo.mul(multiplicationQuoteOverBase).toString());
-    setMaxRange(hi.mul(multiplicationQuoteOverBase).toString());
-  }, [
-    slidersPriceRange,
-    setFullRange,
-    setMinRange,
-    setMaxRange,
-    multiplicationQuoteOverBase,
-  ]);
+  /** The lookback window's mean in display units, when computable. */
+  const meanValue = useMemo(() => {
+    const stats = calcWindowStats({
+      prices: allHistoricalPricesInDisplayUnits,
+      windowDays: lookbackDays,
+      nowMs: Date.now(),
+    });
+    return stats.count >= 10 && stats.mean > 0
+      ? new Dec(stats.mean.toFixed(12))
+      : undefined;
+  }, [allHistoricalPricesInDisplayUnits, lookbackDays]);
 
-  // Unified width slider: sweeps from tight statistical bands (mean ± kσ over
-  // the lookback window) through buffers beyond the window's observed range
-  // (5%..500% of its span, denser steps at the low end) out to full range.
-  // One control instead of separate σ presets and a buffer slider.
-  const [widthIdx, setWidthIdx] = useState(DEFAULT_WIDTH_IDX);
-
-  const applyWidthStop = useCallback(() => {
-    const stop = WIDTH_STOPS[widthIdx];
-    if (stop.kind === "max") {
+  const applyAdvancedRange = useCallback(() => {
+    if (widthMode === "sigma" && sigmaIdx >= SIGMA_MAX_IDX) {
       setFullRange(true);
       return;
     }
-    if (stop.kind === "sigma") {
+    // Effective center: the window mean when selected and computable,
+    // otherwise spot (also the quiet stand-in while the series loads).
+    const centerPrice =
+      center === "mean" && meanValue !== undefined
+        ? meanValue
+        : currentPriceWithDecimals;
+    if (!centerPrice.isPositive()) return;
+    setFullRange(false);
+
+    // All paths produce display units, which is what setMin/MaxRange expect.
+    const applyPercentAround = (percent: number) => {
+      const factor = new Dec((1 + percent / 100).toFixed(12));
+      setMinRange(centerPrice.quo(factor).toString());
+      setMaxRange(centerPrice.mul(factor).toString());
+    };
+
+    if (widthMode === "sigma") {
       const range = calcSigmaRange({
         prices: allHistoricalPricesInDisplayUnits,
         windowDays: lookbackDays,
-        sigmas: stop.sigmas,
+        sigmas: sigmaIdx / 10,
         nowMs: Date.now(),
+        center: centerPrice,
       });
-      setFullRange(false);
       if (!range) {
-        // Window can't support the statistic (thin data / flat series):
-        // fall back to the window's observed range (a plain 0% buffer).
-        setBufferFraction(0);
-        applySlidersRange();
+        // Window can't support the statistic (thin data / flat series, or a
+        // band so wide its floor goes non-positive): fall back to a moderate
+        // ±25%-equivalent buffer around the center.
+        applyPercentAround(25);
         return;
       }
-      // σ ranges are computed in display units, which is what
-      // setMin/MaxRange expect; the buffer path multiplies out of the raw
-      // strategy space instead (see applySlidersRange).
       setMinRange(range[0].toString());
       setMaxRange(range[1].toString());
       return;
     }
-    setBufferFraction(stop.bufferFraction);
-    applySlidersRange();
+    applyPercentAround(PERCENT_STOPS[percentIdx]);
   }, [
-    widthIdx,
+    widthMode,
+    sigmaIdx,
+    percentIdx,
+    center,
+    meanValue,
+    currentPriceWithDecimals,
     lookbackDays,
     allHistoricalPricesInDisplayUnits,
     setFullRange,
-    setBufferFraction,
     setMinRange,
     setMaxRange,
-    applySlidersRange,
   ]);
 
   // On first render of advanced controls, apply the sliders range so the
@@ -840,48 +834,60 @@ const AdvancedRangeControls: FunctionComponent<{
       historicalPrices.length > 0 ||
       (minHistoricalPrice !== null && maxHistoricalPrice !== null);
     if (!hasData) return;
-    applyWidthStop();
+    applyAdvancedRange();
     hasAppliedInitial.current = true;
   }, [
     historicalPrices,
     minHistoricalPrice,
     maxHistoricalPrice,
-    applyWidthStop,
+    applyAdvancedRange,
   ]);
 
-  // Re-apply when slider inputs OR the underlying data change. Debounced so
+  // Re-apply when control inputs OR the underlying data change. Debounced so
   // that dragging doesn't run the full deposit-recalc chain on every pixel.
   useEffect(() => {
     if (!hasAppliedInitial.current) return;
     const t = setTimeout(() => {
-      applyWidthStop();
+      applyAdvancedRange();
     }, 80);
     return () => clearTimeout(t);
-    // applyWidthStop already captures the current observable state.
+    // applyAdvancedRange already captures the current observable state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lookbackDays, widthIdx, historicalPrices.length]);
+  }, [
+    lookbackDays,
+    widthMode,
+    sigmaIdx,
+    percentIdx,
+    center,
+    historicalPrices.length,
+  ]);
 
-  const onLookbackChange = useCallback(
-    (days: number) => {
-      setLookbackDays(days);
-      logEvent([
-        EventName.ConcentratedLiquidity.strategyPicked,
-        { strategy: `sliders-lookback-${formatLookback(days)}` },
-      ]);
-    },
-    [setLookbackDays, logEvent]
-  );
-
-  const onWidthChange = useCallback(
-    (idx: number) => {
-      setWidthIdx(idx);
-      logEvent([
-        EventName.ConcentratedLiquidity.strategyPicked,
-        { strategy: `sliders-width-${WIDTH_STOPS[idx].label}` },
-      ]);
+  const logStrategy = useCallback(
+    (strategy: string) => {
+      logEvent([EventName.ConcentratedLiquidity.strategyPicked, { strategy }]);
     },
     [logEvent]
   );
+
+  const onCenterChange = useCallback(
+    (next: "mean" | "spot") => {
+      setCenter(next);
+      logStrategy(`sliders-center-${next}`);
+    },
+    [logStrategy]
+  );
+
+  // Touching a width slider makes it the active width control ("last
+  // touched wins"); the other stays at its position but dims.
+  const onSigmaChange = useCallback((idx: number) => {
+    setWidthMode("sigma");
+    setSigmaIdx(idx);
+  }, []);
+
+  const onPercentChange = useCallback((idx: number) => {
+    setWidthMode("percent");
+    setPercentIdx(idx);
+  }, []);
 
   // How concentrated the chosen range is versus full range, at current spot.
   const capitalEfficiency = useMemo(() => {
@@ -894,6 +900,11 @@ const AdvancedRangeControls: FunctionComponent<{
   }, [fullRange, rangeWithCurrencyDecimals, currentPriceWithDecimals]);
 
   const lookbackIdx = lookbackToIndex(lookbackDays);
+
+  const formatCenterPrice = (price: Dec | undefined) =>
+    price !== undefined && price.isPositive()
+      ? formatPretty(price, getPriceExtendedFormatOptions(price))
+      : "–";
 
   return (
     <div className="block w-full rounded-2xl bg-osmoverse-800 p-4">
@@ -909,23 +920,81 @@ const AdvancedRangeControls: FunctionComponent<{
               max={LOOKBACK_DAYS_STOPS.length - 1}
               value={lookbackIdx}
               detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
-              onChange={(idx) => onLookbackChange(LOOKBACK_DAYS_STOPS[idx])}
+              onChange={(idx) => setLookbackDays(LOOKBACK_DAYS_STOPS[idx])}
+              onCommit={(idx) =>
+                logStrategy(
+                  `sliders-lookback-${formatLookback(LOOKBACK_DAYS_STOPS[idx])}`
+                )
+              }
             />
           </SliderRow>
         </div>
-        <div className="block w-full">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="caption text-osmoverse-200">
+            {t("addConcentratedLiquidity.centerLabel")}
+          </span>
+          <div className="flex h-6 gap-1">
+            <ChartButton
+              label={`${t(
+                "addConcentratedLiquidity.centerMean"
+              )} ${formatCenterPrice(meanValue)}`}
+              selected={center === "mean"}
+              onClick={() => onCenterChange("mean")}
+            />
+            <ChartButton
+              label={`${t(
+                "addConcentratedLiquidity.centerSpot"
+              )} ${formatCenterPrice(currentPriceWithDecimals)}`}
+              selected={center === "spot"}
+              onClick={() => onCenterChange("spot")}
+            />
+          </div>
+        </div>
+        <div
+          className={classNames(
+            "mb-4 block w-full transition-opacity",
+            widthMode !== "sigma" && "opacity-40"
+          )}
+        >
           <SliderRow
-            label={t("addConcentratedLiquidity.widthLabel")}
-            valueLabel={WIDTH_STOPS[widthIdx].label}
-            help={t("addConcentratedLiquidity.widthHelp")}
+            label={t("addConcentratedLiquidity.stdDevLabel")}
+            valueLabel={formatSigmaStop(sigmaIdx)}
+            help={t("addConcentratedLiquidity.stdDevHelp")}
           >
             <DetentSlider
-              ariaLabel={t("addConcentratedLiquidity.widthLabel")}
+              ariaLabel={t("addConcentratedLiquidity.stdDevLabel")}
               min={0}
-              max={WIDTH_STOPS.length - 1}
-              value={widthIdx}
-              detents={WIDTH_STOPS.map((_, i) => i)}
-              onChange={onWidthChange}
+              max={SIGMA_MAX_IDX}
+              value={sigmaIdx}
+              detents={SIGMA_DETENTS}
+              onChange={onSigmaChange}
+              onCommit={(idx) =>
+                logStrategy(`sliders-sigma-${formatSigmaStop(idx)}`)
+              }
+            />
+          </SliderRow>
+        </div>
+        <div
+          className={classNames(
+            "block w-full transition-opacity",
+            widthMode !== "percent" && "opacity-40"
+          )}
+        >
+          <SliderRow
+            label={t("addConcentratedLiquidity.aroundCenterLabel")}
+            valueLabel={`${PERCENT_STOPS[percentIdx]}%`}
+            help={t("addConcentratedLiquidity.aroundCenterHelp")}
+          >
+            <DetentSlider
+              ariaLabel={t("addConcentratedLiquidity.aroundCenterLabel")}
+              min={0}
+              max={PERCENT_STOPS.length - 1}
+              value={percentIdx}
+              detents={PERCENT_STOPS.map((_, i) => i)}
+              onChange={onPercentChange}
+              onCommit={(idx) =>
+                logStrategy(`sliders-percent-${PERCENT_STOPS[idx]}`)
+              }
             />
           </SliderRow>
         </div>

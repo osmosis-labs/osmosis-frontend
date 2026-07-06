@@ -1,6 +1,6 @@
 import { Dec } from "@osmosis-labs/unit";
 
-import { calcSigmaRange } from "../cl-sigma-range";
+import { calcSigmaRange, calcWindowStats } from "../cl-sigma-range";
 
 const NOW = 1_750_000_000_000; // fixed ms epoch for determinism
 
@@ -113,6 +113,59 @@ describe("calcSigmaRange", () => {
     ).toBeDefined();
   });
 
+  it("supports fractional sigmas", () => {
+    // Alternating 0.9 / 1.1: mean 1, population σ = 0.1 → 1.5σ = [0.85, 1.15].
+    const bars = makeBars(7, [0.9, 1.1]);
+    const range = calcSigmaRange({
+      prices: bars,
+      windowDays: 7,
+      sigmas: 1.5,
+      nowMs: NOW,
+    });
+    expect(range).toBeDefined();
+    expect(Number(range![0].toString())).toBeCloseTo(0.85, 6);
+    expect(Number(range![1].toString())).toBeCloseTo(1.15, 6);
+  });
+
+  it("centers the band on `center` when given, keeping the window's σ", () => {
+    // mean 1, σ = 0.1; center on 1.05 (a spot above the mean).
+    const bars = makeBars(7, [0.9, 1.1]);
+    const range = calcSigmaRange({
+      prices: bars,
+      windowDays: 7,
+      sigmas: 1,
+      nowMs: NOW,
+      center: new Dec("1.05"),
+    });
+    expect(range).toBeDefined();
+    expect(Number(range![0].toString())).toBeCloseTo(0.95, 6);
+    expect(Number(range![1].toString())).toBeCloseTo(1.15, 6);
+
+    // 0σ scalps around the center, not the mean.
+    const scalp = calcSigmaRange({
+      prices: bars,
+      windowDays: 7,
+      sigmas: 0,
+      nowMs: NOW,
+      center: new Dec("1.05"),
+    });
+    expect(Number(scalp![0].toString())).toBeCloseTo(1.05 * (1 - 0.0025), 6);
+    expect(Number(scalp![1].toString())).toBeCloseTo(1.05 * (1 + 0.0025), 6);
+  });
+
+  it("returns undefined for a non-positive center", () => {
+    const bars = makeBars(7, [0.9, 1.1]);
+    expect(
+      calcSigmaRange({
+        prices: bars,
+        windowDays: 7,
+        sigmas: 1,
+        nowMs: NOW,
+        center: new Dec(0),
+      })
+    ).toBeUndefined();
+  });
+
   it("returns undefined without enough data or with flat prices", () => {
     expect(
       calcSigmaRange({
@@ -131,5 +184,20 @@ describe("calcSigmaRange", () => {
         nowMs: NOW,
       })
     ).toBeUndefined();
+  });
+});
+
+describe("calcWindowStats", () => {
+  it("returns the window's mean, σ, and sample count", () => {
+    const bars = makeBars(7, [0.9, 1.1]);
+    const stats = calcWindowStats({ prices: bars, windowDays: 7, nowMs: NOW });
+    expect(stats.count).toBe(7 * 24);
+    expect(stats.mean).toBeCloseTo(1, 6);
+    expect(stats.stdDev).toBeCloseTo(0.1, 6);
+  });
+
+  it("returns a zero count on an empty window", () => {
+    const stats = calcWindowStats({ prices: [], windowDays: 7, nowMs: NOW });
+    expect(stats.count).toBe(0);
   });
 });
