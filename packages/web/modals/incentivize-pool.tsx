@@ -1,4 +1,4 @@
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -6,7 +6,6 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
-import { Checkbox } from "~/components/ui/checkbox";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
@@ -17,6 +16,12 @@ import { api } from "~/utils/trpc";
 
 const DEFAULT_NUM_EPOCHS = "30";
 
+/** The chain's x/incentives `min_value_for_distribution` param: per-recipient
+ *  payouts worth less than this per epoch are silently skipped (spam/dust
+ *  defense), and a reward denom with no OSMO pool route is never valued, so
+ *  it never distributes. Surfaced as copy; update if governance changes it. */
+const MIN_DISTR_VALUE_LABEL = "0.01 OSMO";
+
 /** Guided flow for funding external incentives on a pool: create a new
  *  gauge (MsgCreateGauge) or top up an existing one (MsgAddToGauge).
  *  Share pools target a lockable duration; concentrated pools target the
@@ -26,8 +31,13 @@ export const IncentivizePoolModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore, queriesStore, queriesExternalStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    queriesExternalStore,
+    priceStore,
+  } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
@@ -82,10 +92,7 @@ export const IncentivizePoolModal: FunctionComponent<
   );
 
   const [epochsInput, setEpochsInput] = useState(DEFAULT_NUM_EPOCHS);
-  const [isPerpetual, setIsPerpetual] = useState(false);
-  // Perpetual gauges distribute their full balance every epoch; the chain
-  // requires them to be created with a single epoch.
-  const numEpochs = isPerpetual ? 1 : Number(epochsInput);
+  const numEpochs = Number(epochsInput);
   const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
 
   // Start: next epoch by default, or a deliberate future time.
@@ -111,6 +118,23 @@ export const IncentivizePoolModal: FunctionComponent<
       return undefined;
     }
   }, [config.amount, epochsValid, numEpochs]);
+
+  // Fiat stats for the configured emission: total value, value per day
+  // (one epoch per day), and an annualized APR against the pool's current
+  // liquidity. All best-effort — undefined when the asset can't be priced.
+  const totalValue = config.amount
+    ? priceStore.calculatePrice(config.amount)
+    : undefined;
+  const perDayValue =
+    totalValue && epochsValid ? totalValue.quo(new Dec(numEpochs)) : undefined;
+  const poolTvl = pool?.totalFiatValueLocked;
+  const estApr = useMemo(() => {
+    if (!perDayValue || !poolTvl || !poolTvl.toDec().isPositive())
+      return undefined;
+    return new RatePretty(
+      perDayValue.toDec().mul(new Dec(365)).quo(poolTvl.toDec())
+    );
+  }, [perDayValue, poolTvl]);
 
   const isTopUp = topUpGaugeId !== null;
   const needsDuration = !isConcentrated && !isTopUp;
@@ -140,7 +164,6 @@ export const IncentivizePoolModal: FunctionComponent<
                 customStartEnabled && customStartDate
                   ? customStartDate
                   : undefined,
-              isPerpetual,
             });
         send
           .then(() => {
@@ -201,17 +224,27 @@ export const IncentivizePoolModal: FunctionComponent<
         )}
         {!isTopUp && (
           <>
-            {isConcentrated ? (
-              <span className="caption text-osmoverse-300">
-                {t("incentivizePool.noLockNote")}
+            <div className="flex flex-col gap-2">
+              <div className="flex place-content-between items-center">
+                <span className="subtitle1">
+                  {t("incentivizePool.distributesToLabel")}
+                </span>
+                <span className="body2 text-osmoverse-200">
+                  {isConcentrated
+                    ? t("incentivizePool.distributesToNoLock")
+                    : t("incentivizePool.distributesToLocked", {
+                        duration: fixedDuration?.humanize() ?? "",
+                      })}
+                </span>
+              </div>
+              <span className="caption text-osmoverse-400">
+                {isConcentrated
+                  ? t("incentivizePool.noLockNote")
+                  : t("incentivizePool.durationFixed", {
+                      duration: fixedDuration?.humanize() ?? "",
+                    })}
               </span>
-            ) : (
-              <span className="caption text-osmoverse-300">
-                {t("incentivizePool.durationFixed", {
-                  duration: fixedDuration?.humanize() ?? "",
-                })}
-              </span>
-            )}
+            </div>
             <div className="flex flex-col gap-2">
               <div className="flex place-content-between items-center">
                 <span className="subtitle1">
@@ -262,39 +295,19 @@ export const IncentivizePoolModal: FunctionComponent<
                   : t("incentivizePool.epochsCaptionNoCountdown")}
               </span>
             </div>
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="perpetual-gauge-checkbox"
-                checked={isPerpetual}
-                onClick={() => setIsPerpetual(!isPerpetual)}
+            <div className="flex place-content-between items-center">
+              <span className="subtitle1">
+                {t("incentivizePool.epochsLabel")}
+              </span>
+              <InputBox
+                className="w-24"
+                type="number"
+                currentValue={epochsInput}
+                onInput={(value) => setEpochsInput(value)}
+                placeholder=""
+                rightEntry
               />
-              <label
-                htmlFor="perpetual-gauge-checkbox"
-                className="flex cursor-pointer flex-col gap-1"
-              >
-                <span className="subtitle1">
-                  {t("incentivizePool.perpetualLabel")}
-                </span>
-                <span className="caption text-osmoverse-400">
-                  {t("incentivizePool.perpetualHelp")}
-                </span>
-              </label>
             </div>
-            {!isPerpetual && (
-              <div className="flex place-content-between items-center">
-                <span className="subtitle1">
-                  {t("incentivizePool.epochsLabel")}
-                </span>
-                <InputBox
-                  className="w-24"
-                  type="number"
-                  currentValue={epochsInput}
-                  onInput={(value) => setEpochsInput(value)}
-                  placeholder=""
-                  rightEntry
-                />
-              </div>
-            )}
           </>
         )}
         <div className="flex flex-col gap-2">
@@ -336,15 +349,61 @@ export const IncentivizePoolModal: FunctionComponent<
             />
           </div>
         </div>
-        {!isTopUp && perEpochEmission && (
-          <span className="caption text-osmoverse-300">
-            {t("incentivizePool.perEpoch", {
-              amount: formatPretty(perEpochEmission),
+        {!isTopUp && (
+          <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-900 p-3">
+            <div className="flex place-content-between items-center">
+              <span className="caption text-osmoverse-400">
+                {t("incentivizePool.statsTotalValue")}
+              </span>
+              <span className="caption text-osmoverse-200">
+                {totalValue ? formatPretty(totalValue) : "–"}
+              </span>
+            </div>
+            <div className="flex place-content-between items-center">
+              <span className="caption text-osmoverse-400">
+                {t("incentivizePool.statsPerDay")}
+              </span>
+              <span className="caption text-osmoverse-200">
+                {perDayValue
+                  ? `${formatPretty(perDayValue)}${
+                      perEpochEmission
+                        ? ` · ${formatPretty(perEpochEmission)}`
+                        : ""
+                    }`
+                  : "–"}
+              </span>
+            </div>
+            <div className="flex place-content-between items-center">
+              <span className="caption text-osmoverse-400">
+                {t("incentivizePool.statsEstApr")}
+              </span>
+              <span className="caption text-osmoverse-200">
+                {estApr ? formatPretty(estApr, { maxDecimals: 1 }) : "–"}
+              </span>
+            </div>
+            <span className="caption text-osmoverse-500">
+              {t("incentivizePool.statsAprCaption")}
+            </span>
+          </div>
+        )}
+        {!isTopUp && config.amount && totalValue === undefined && (
+          <span className="caption text-rust-300">
+            {t("incentivizePool.dustUnpriceable")}
+          </span>
+        )}
+        {!isTopUp && perDayValue && perDayValue.toDec().lt(new Dec(1)) && (
+          <span className="caption text-rust-300">
+            {t("incentivizePool.dustBelowMin", {
+              minValue: MIN_DISTR_VALUE_LABEL,
             })}
           </span>
         )}
         <span className="caption text-osmoverse-400">
-          {t("incentivizePool.visibilityWarning")}
+          {!isTopUp
+            ? `${t("incentivizePool.dustRule", {
+                minValue: MIN_DISTR_VALUE_LABEL,
+              })} ${t("incentivizePool.visibilityWarning")}`
+            : t("incentivizePool.visibilityWarning")}
         </span>
         {accountActionButton}
       </div>
