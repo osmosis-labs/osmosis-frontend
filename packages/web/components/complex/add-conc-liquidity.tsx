@@ -539,14 +539,42 @@ const lookbackToIndex = (days: number): number => {
   return bestIdx;
 };
 
-/** σ width slider: 0→3 standard deviations of the lookback window in 0.1
- *  steps (detent dots at whole σ), plus a final stop past 3σ for full range.
- *  The band centers on the selected center (window mean or spot); σ always
- *  comes from the lookback window. 0σ is a tight scalp band, not zero width. */
-const SIGMA_MAX_IDX = 31; // indices 0..30 → 0.0σ..3.0σ; 31 → full range
-const SIGMA_DETENTS = [0, 10, 20, 30, SIGMA_MAX_IDX];
-const formatSigmaStop = (idx: number) =>
-  idx >= SIGMA_MAX_IDX ? "Max" : `${(idx / 10).toFixed(1)}σ`;
+/** σ width slider moves in volatility-coverage space: the value is the share
+ *  of the window's volatility the band covers (per-mille, 0 → 99.9%), mapped
+ *  to standard deviations through the normal-coverage anchors 1σ = 68%,
+ *  2σ = 95%, 3σ = 99.7%, and 3.09σ = 99.9% — the slider's max. Detent dots
+ *  sit at those anchors, proportional to coverage rather than evenly spaced
+ *  in σ, so they bunch toward the top the way the distribution does. The
+ *  band widens beyond the selected center; σ always comes from the lookback
+ *  window. 0 coverage on a point center is a tight scalp band. */
+const SIGMA_COVERAGE_ANCHORS: [perMille: number, sigmas: number][] = [
+  [0, 0],
+  [680, 1],
+  [950, 2],
+  [997, 3],
+  [999, 3.09],
+];
+const SIGMA_SLIDER_MAX = 999;
+const SIGMA_DETENTS = SIGMA_COVERAGE_ANCHORS.map(([perMille]) => perMille);
+/** Piecewise-linear coverage → σ through the anchors above. */
+const sigmaFromCoverage = (perMille: number): number => {
+  for (let i = 1; i < SIGMA_COVERAGE_ANCHORS.length; i++) {
+    const [hiCov, hiSig] = SIGMA_COVERAGE_ANCHORS[i];
+    if (perMille <= hiCov) {
+      const [loCov, loSig] = SIGMA_COVERAGE_ANCHORS[i - 1];
+      return loSig + ((perMille - loCov) / (hiCov - loCov)) * (hiSig - loSig);
+    }
+  }
+  return SIGMA_COVERAGE_ANCHORS[SIGMA_COVERAGE_ANCHORS.length - 1][1];
+};
+/** Dot labels in σ; the two top anchors sit ~1px apart, so only the max
+ *  carries text there. */
+const sigmaDetentLabel = (perMille: number): string | undefined => {
+  if (perMille === 680) return "1σ";
+  if (perMille === 950) return "2σ";
+  if (perMille === SIGMA_SLIDER_MAX) return "3.09σ";
+  return undefined;
+};
 
 /** % width slider: ratio-symmetric buffer around the selected center —
  *  upper = center × (1 + x), lower = center ÷ (1 + x) — which is ≈ ±x% for
@@ -557,8 +585,8 @@ const formatSigmaStop = (idx: number) =>
 const PERCENT_STOPS = [
   0.5, 1, 2.5, 5, 10, 15, 25, 50, 75, 100, 150, 200, 300, 400, 500,
 ];
-/** 2σ around the mean: a moderate band over the default 7d lookback. */
-const DEFAULT_SIGMA_IDX = 20;
+/** 95% coverage (2σ): a moderate band over the default 7d lookback. */
+const DEFAULT_SIGMA_COVERAGE = 950;
 const DEFAULT_PERCENT_IDX = PERCENT_STOPS.indexOf(25);
 
 /** Persists only whether the user is in advanced mode — slider values
@@ -751,11 +779,11 @@ const AdvancedRangeControls: FunctionComponent<{
   // The range is a width applied beyond an explicit center: the lookback
   // window's observed [min, max] (an interval), its mean, or spot (points).
   // Width comes from whichever of the two sliders was touched last (the
-  // inactive one dims): standard deviations of the window, or a
-  // ratio-symmetric % buffer.
+  // inactive one dims): volatility coverage (mapped to standard deviations
+  // of the window), or a ratio-symmetric % buffer.
   const [center, setCenter] = useState<"range" | "mean" | "spot">("range");
   const [widthMode, setWidthMode] = useState<"sigma" | "percent">("sigma");
-  const [sigmaIdx, setSigmaIdx] = useState(DEFAULT_SIGMA_IDX);
+  const [sigmaCoverage, setSigmaCoverage] = useState(DEFAULT_SIGMA_COVERAGE);
   const [percentIdx, setPercentIdx] = useState(DEFAULT_PERCENT_IDX);
 
   /** The lookback window's mean and observed extremes in display units,
@@ -775,10 +803,6 @@ const AdvancedRangeControls: FunctionComponent<{
   }, [allHistoricalPricesInDisplayUnits, lookbackDays]);
 
   const applyAdvancedRange = useCallback(() => {
-    if (widthMode === "sigma" && sigmaIdx >= SIGMA_MAX_IDX) {
-      setFullRange(true);
-      return;
-    }
     // Effective anchor: the selected center when computable, otherwise spot
     // (the quiet stand-in while the series loads). Range and mean are
     // window statistics; spot needs no history.
@@ -802,7 +826,7 @@ const AdvancedRangeControls: FunctionComponent<{
       const range = calcSigmaRange({
         prices: allHistoricalPricesInDisplayUnits,
         windowDays: lookbackDays,
-        sigmas: sigmaIdx / 10,
+        sigmas: sigmaFromCoverage(sigmaCoverage),
         nowMs: Date.now(),
         anchor,
       });
@@ -820,7 +844,7 @@ const AdvancedRangeControls: FunctionComponent<{
     applyPercentBeyond(PERCENT_STOPS[percentIdx]);
   }, [
     widthMode,
-    sigmaIdx,
+    sigmaCoverage,
     percentIdx,
     center,
     windowInfo,
@@ -864,7 +888,7 @@ const AdvancedRangeControls: FunctionComponent<{
   }, [
     lookbackDays,
     widthMode,
-    sigmaIdx,
+    sigmaCoverage,
     percentIdx,
     center,
     historicalPrices.length,
@@ -887,9 +911,9 @@ const AdvancedRangeControls: FunctionComponent<{
 
   // Touching a width slider makes it the active width control ("last
   // touched wins"); the other stays at its position but dims.
-  const onSigmaChange = useCallback((idx: number) => {
+  const onSigmaChange = useCallback((perMille: number) => {
     setWidthMode("sigma");
-    setSigmaIdx(idx);
+    setSigmaCoverage(perMille);
   }, []);
 
   const onPercentChange = useCallback((idx: number) => {
@@ -977,18 +1001,19 @@ const AdvancedRangeControls: FunctionComponent<{
         >
           <SliderRow
             label={t("addConcentratedLiquidity.stdDevLabel")}
-            valueLabel={formatSigmaStop(sigmaIdx)}
+            valueLabel={`${(sigmaCoverage / 10).toFixed(1)}%`}
             help={t("addConcentratedLiquidity.stdDevHelp")}
           >
             <DetentSlider
               ariaLabel={t("addConcentratedLiquidity.stdDevLabel")}
               min={0}
-              max={SIGMA_MAX_IDX}
-              value={sigmaIdx}
+              max={SIGMA_SLIDER_MAX}
+              value={sigmaCoverage}
               detents={SIGMA_DETENTS}
+              detentLabel={sigmaDetentLabel}
               onChange={onSigmaChange}
-              onCommit={(idx) =>
-                logStrategy(`sliders-sigma-${formatSigmaStop(idx)}`)
+              onCommit={(perMille) =>
+                logStrategy(`sliders-sigma-cov-${(perMille / 10).toFixed(1)}`)
               }
             />
           </SliderRow>

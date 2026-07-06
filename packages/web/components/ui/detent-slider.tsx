@@ -22,6 +22,9 @@ export const DetentSlider: FunctionComponent<{
   step?: number;
   /** Values (in the slider's own scale) at which to render dots. */
   detents: number[];
+  /** Optional per-detent text rendered under the track (e.g. "1σ"); return
+   *  undefined to leave a detent unlabeled. */
+  detentLabel?: (detent: number) => string | undefined;
   onChange: (value: number) => void;
   /** Fires once when a drag or keyboard interaction settles, rather than on
    *  every step crossed — e.g. for analytics. */
@@ -34,6 +37,7 @@ export const DetentSlider: FunctionComponent<{
   max,
   step = 1,
   detents,
+  detentLabel,
   onChange,
   onCommit,
   ariaLabel,
@@ -42,8 +46,17 @@ export const DetentSlider: FunctionComponent<{
   const toPercent = (v: number) =>
     max === min ? 0 : ((v - min) / (max - min)) * 100;
 
+  const hasLabels =
+    detentLabel !== undefined &&
+    detents.some((detent) => detentLabel(detent) !== undefined);
+
   return (
-    <div className="relative flex w-full items-center py-1">
+    <div
+      className={classNames(
+        "relative flex w-full items-center py-1",
+        hasLabels && "mb-4"
+      )}
+    >
       <div className="pointer-events-none absolute inset-x-0 z-[1] flex h-full items-center">
         {detents.map((detent) => (
           <div
@@ -56,6 +69,26 @@ export const DetentSlider: FunctionComponent<{
           />
         ))}
       </div>
+      {hasLabels && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-full"
+        >
+          {detents.map((detent) => {
+            const label = detentLabel!(detent);
+            if (label === undefined) return null;
+            return (
+              <span
+                key={detent}
+                className="caption absolute -translate-x-1/2 text-xs text-osmoverse-400"
+                style={{ left: thumbAlignedLeft(toPercent(detent)) }}
+              >
+                {label}
+              </span>
+            );
+          })}
+        </div>
+      )}
       <Slider
         variant="solid"
         value={[value]}
