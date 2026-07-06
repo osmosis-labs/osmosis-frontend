@@ -350,6 +350,24 @@
     "manual": "Inestable, tenga precaución.",
     "unknown": "Inestable, tenga precaución."
   },
+  "incentivizePool": {
+    "title": "Incentivar el pool #{poolId}",
+    "entry": "Incentivar",
+    "existingGauges": "Gauges externos existentes",
+    "newGauge": "Crear un nuevo gauge",
+    "epochsLeft": "{epochs} épocas restantes",
+    "selectDuration": "Duración del bloqueo",
+    "durationHelp": "Las recompensas van a posiciones bloqueadas al menos por esta duración.",
+    "noLockNote": "Las recompensas se distribuyen cada época a la liquidez concentrada dentro del rango. No se requiere bloqueo.",
+    "epochsLabel": "Número de épocas",
+    "epochsCaption": "Una época por día. Las emisiones comienzan en la próxima época (en {countdown}).",
+    "epochsCaptionNoCountdown": "Una época por día. Las emisiones comienzan en la próxima época.",
+    "rewardAmount": "Cantidad de recompensa",
+    "perEpoch": "≈ {amount} distribuido por época",
+    "visibilityWarning": "Los nuevos gauges pueden no aparecer en las estadísticas del pool hasta que pase una época.",
+    "ctaCreate": "Crear gauge",
+    "ctaTopUp": "Recargar gauge #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "Monto a abonar",
     "availableToken": "Disponible",

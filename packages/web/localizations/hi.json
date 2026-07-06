@@ -350,6 +350,24 @@
     "manual": "अस्थिर, सावधानी बरतें।",
     "unknown": "अस्थिर, सावधानी बरतें।"
   },
+  "incentivizePool": {
+    "title": "पूल #{poolId} को प्रोत्साहित करें",
+    "entry": "प्रोत्साहित करें",
+    "existingGauges": "मौजूदा बाहरी गेज",
+    "newGauge": "नया गेज बनाएं",
+    "epochsLeft": "{epochs} युग शेष",
+    "selectDuration": "लॉक अवधि",
+    "durationHelp": "पुरस्कार उन पोज़िशनों को मिलते हैं जो कम से कम इस अवधि के लिए लॉक हैं।",
+    "noLockNote": "पुरस्कार हर युग में रेंज के भीतर केंद्रित लिक्विडिटी को वितरित किए जाते हैं। लॉक आवश्यक नहीं है।",
+    "epochsLabel": "युगों की संख्या",
+    "epochsCaption": "प्रतिदिन एक युग। उत्सर्जन अगले युग से शुरू होता है ({countdown} में)।",
+    "epochsCaptionNoCountdown": "प्रतिदिन एक युग। उत्सर्जन अगले युग से शुरू होता है।",
+    "rewardAmount": "पुरस्कार राशि",
+    "perEpoch": "≈ {amount} प्रति युग",
+    "visibilityWarning": "नए गेज एक युग बीतने तक पूल के आंकड़ों में दिखाई नहीं दे सकते।",
+    "ctaCreate": "गेज बनाएं",
+    "ctaTopUp": "गेज #{gaugeId} टॉप अप करें"
+  },
   "lockToken": {
     "amountToBond": "बंधपत्र की राशि",
     "availableToken": "उपलब्ध",

@@ -40,6 +40,7 @@ import {
 } from "~/hooks";
 import {
   AddLiquidityModal,
+  IncentivizePoolModal,
   LockShares,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
@@ -155,6 +156,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     } = useLockTokenConfig(sharePool?.currency);
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
       useState(false);
+    const [showIncentivizeModal, setShowIncentivizeModal] = useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
 
     /**
@@ -318,6 +320,13 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             poolId={pool.id}
             onRequestClose={setShowModal(setShowAddLiquidityModal, false)}
             onAddLiquidity={onAddLiquidity}
+          />
+        )}
+        {pool && showIncentivizeModal && (
+          <IncentivizePoolModal
+            isOpen={true}
+            poolId={pool.id}
+            onRequestClose={setShowModal(setShowIncentivizeModal, false)}
           />
         )}
         {pool &&
@@ -566,7 +575,17 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         </section>
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
-            <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
+            <div className="flex items-center justify-between gap-2">
+              <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-fit shrink-0"
+                onClick={() => setShowIncentivizeModal(true)}
+              >
+                {t("incentivizePool.entry")}
+              </Button>
+            </div>
             <span className="body2 text-osmoverse-300">
               {t("pool.putAssetsToWorkCaption")}{" "}
               <a

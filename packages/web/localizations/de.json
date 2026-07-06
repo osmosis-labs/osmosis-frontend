@@ -350,6 +350,24 @@
     "manual": "Instabil, Vorsicht ist geboten.",
     "unknown": "Instabil, Vorsicht ist geboten."
   },
+  "incentivizePool": {
+    "title": "Pool #{poolId} incentivieren",
+    "entry": "Incentivieren",
+    "existingGauges": "Bestehende externe Gauges",
+    "newGauge": "Neuen Gauge erstellen",
+    "epochsLeft": "{epochs} Epochen verbleibend",
+    "selectDuration": "Sperrdauer",
+    "durationHelp": "Belohnungen gehen an Positionen, die mindestens für diese Dauer gesperrt sind.",
+    "noLockNote": "Belohnungen werden jede Epoche an konzentrierte Liquidität im Preisbereich verteilt. Keine Sperre erforderlich.",
+    "epochsLabel": "Anzahl der Epochen",
+    "epochsCaption": "Eine Epoche pro Tag. Die Ausschüttung beginnt mit der nächsten Epoche (in {countdown}).",
+    "epochsCaptionNoCountdown": "Eine Epoche pro Tag. Die Ausschüttung beginnt mit der nächsten Epoche.",
+    "rewardAmount": "Belohnungsbetrag",
+    "perEpoch": "≈ {amount} pro Epoche",
+    "visibilityWarning": "Neue Gauges erscheinen möglicherweise erst nach einer Epoche in der Pool-Statistik.",
+    "ctaCreate": "Gauge erstellen",
+    "ctaTopUp": "Gauge #{gaugeId} auffüllen"
+  },
   "lockToken": {
     "amountToBond": "Zu verpfändender Betrag",
     "availableToken": "Verfügbar",

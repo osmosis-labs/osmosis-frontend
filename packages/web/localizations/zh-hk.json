@@ -350,6 +350,24 @@
     "manual": "不穩定，請謹慎行事。",
     "unknown": "不穩定，請謹慎行事。"
   },
+  "incentivizePool": {
+    "title": "為池 #{poolId} 添加激勵",
+    "entry": "添加激勵",
+    "existingGauges": "現有外部 Gauge",
+    "newGauge": "建立新 Gauge",
+    "epochsLeft": "剩餘 {epochs} 個週期",
+    "selectDuration": "鎖定期限",
+    "durationHelp": "獎勵發放給至少鎖定此期限的倉位。",
+    "noLockNote": "獎勵在每個週期分配給範圍內的集中流動性。無需鎖定。",
+    "epochsLabel": "週期數量",
+    "epochsCaption": "每天一個週期。發放將從下一個週期開始（{countdown} 後）。",
+    "epochsCaptionNoCountdown": "每天一個週期。發放將從下一個週期開始。",
+    "rewardAmount": "獎勵數量",
+    "perEpoch": "每週期約 {amount}",
+    "visibilityWarning": "新 Gauge 可能要等一個週期後才會顯示在池統計中。",
+    "ctaCreate": "建立 Gauge",
+    "ctaTopUp": "為 Gauge #{gaugeId} 充值"
+  },
   "lockToken": {
     "amountToBond": "要鎖定嘅數量",
     "availableToken": "可用",

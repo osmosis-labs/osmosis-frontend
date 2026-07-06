@@ -350,6 +350,24 @@
     "manual": "Instabil, fiți precauți.",
     "unknown": "Instabil, fiți precauți."
   },
+  "incentivizePool": {
+    "title": "Stimulează pool-ul #{poolId}",
+    "entry": "Stimulează",
+    "existingGauges": "Gauge-uri externe existente",
+    "newGauge": "Creează un gauge nou",
+    "epochsLeft": "{epochs} epoci rămase",
+    "selectDuration": "Durata de blocare",
+    "durationHelp": "Recompensele merg către pozițiile blocate cel puțin pentru această durată.",
+    "noLockNote": "Recompensele sunt distribuite în fiecare epocă lichidității concentrate aflate în interval. Nu este necesară blocarea.",
+    "epochsLabel": "Numărul de epoci",
+    "epochsCaption": "O epocă pe zi. Emisiile încep de la următoarea epocă (în {countdown}).",
+    "epochsCaptionNoCountdown": "O epocă pe zi. Emisiile încep de la următoarea epocă.",
+    "rewardAmount": "Suma recompensei",
+    "perEpoch": "≈ {amount} pe epocă",
+    "visibilityWarning": "Gauge-urile noi pot să nu apară în statisticile pool-ului până la trecerea unei epoci.",
+    "ctaCreate": "Creează gauge",
+    "ctaTopUp": "Alimentează gauge #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "Suma blocata",
     "availableToken": "Disponibil",

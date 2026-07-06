@@ -28,7 +28,7 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { AddLiquidityModal } from "~/modals";
+import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
@@ -66,7 +66,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const [activeModal, setActiveModal] = useState<
-      "add-liquidity" | "learn-more" | null
+      "add-liquidity" | "learn-more" | "incentivize" | null
     >(null);
 
     // Query pool data for state detection
@@ -186,6 +186,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
         {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
+            isOpen={true}
+            poolId={pool.id}
+            onRequestClose={() => setActiveModal(null)}
+          />
+        )}
+        {pool && activeModal === "incentivize" && (
+          <IncentivizePoolModal
             isOpen={true}
             poolId={pool.id}
             onRequestClose={() => setActiveModal(null)}
@@ -409,6 +416,16 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     }}
                   >
                     {t("clPositions.createAPosition")}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="subtitle1 w-fit"
+                    onClick={() => {
+                      setActiveModal("incentivize");
+                    }}
+                  >
+                    {t("incentivizePool.entry")}
                   </Button>
                 </div>
               </div>

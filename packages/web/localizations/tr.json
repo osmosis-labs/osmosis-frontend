@@ -350,6 +350,24 @@
     "manual": "Dengesiz, dikkatli olun.",
     "unknown": "Dengesiz, dikkatli olun."
   },
+  "incentivizePool": {
+    "title": "#{poolId} havuzunu teşvik et",
+    "entry": "Teşvik et",
+    "existingGauges": "Mevcut harici gauge'lar",
+    "newGauge": "Yeni gauge oluştur",
+    "epochsLeft": "{epochs} epok kaldı",
+    "selectDuration": "Kilit süresi",
+    "durationHelp": "Ödüller en az bu süre boyunca kilitlenmiş pozisyonlara gider.",
+    "noLockNote": "Ödüller her epokta aralık içindeki yoğunlaştırılmış likiditeye dağıtılır. Kilit gerekmez.",
+    "epochsLabel": "Epok sayısı",
+    "epochsCaption": "Günde bir epok. Dağıtım bir sonraki epokta başlar ({countdown} içinde).",
+    "epochsCaptionNoCountdown": "Günde bir epok. Dağıtım bir sonraki epokta başlar.",
+    "rewardAmount": "Ödül miktarı",
+    "perEpoch": "Epok başına ≈ {amount}",
+    "visibilityWarning": "Yeni gauge'lar bir epok geçene kadar havuz istatistiklerinde görünmeyebilir.",
+    "ctaCreate": "Gauge oluştur",
+    "ctaTopUp": "#{gaugeId} gauge'ına ekle"
+  },
   "lockToken": {
     "amountToBond": "Bağlanacak miktar",
     "availableToken": "Kullanılabilir",

@@ -350,6 +350,24 @@
     "manual": "ناپایدار، احتیاط کنید.",
     "unknown": "ناپایدار، احتیاط کنید."
   },
+  "incentivizePool": {
+    "title": "تشویق استخر #{poolId}",
+    "entry": "تشویق",
+    "existingGauges": "گیج‌های خارجی موجود",
+    "newGauge": "ایجاد گیج جدید",
+    "epochsLeft": "{epochs} دوره باقی‌مانده",
+    "selectDuration": "مدت قفل",
+    "durationHelp": "پاداش‌ها به موقعیت‌هایی تعلق می‌گیرد که حداقل برای این مدت قفل شده باشند.",
+    "noLockNote": "پاداش‌ها در هر دوره به نقدینگی متمرکز در محدوده توزیع می‌شود. قفل لازم نیست.",
+    "epochsLabel": "تعداد دوره‌ها",
+    "epochsCaption": "یک دوره در روز. توزیع از دوره بعدی آغاز می‌شود (تا {countdown}).",
+    "epochsCaptionNoCountdown": "یک دوره در روز. توزیع از دوره بعدی آغاز می‌شود.",
+    "rewardAmount": "مقدار پاداش",
+    "perEpoch": "≈ {amount} در هر دوره",
+    "visibilityWarning": "گیج‌های جدید ممکن است تا گذشت یک دوره در آمار استخر نمایش داده نشوند.",
+    "ctaCreate": "ایجاد گیج",
+    "ctaTopUp": "افزایش گیج #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "مقدار قفل شده",
     "availableToken": "مقدار قابل برداشت",

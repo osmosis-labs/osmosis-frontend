@@ -350,6 +350,24 @@
     "manual": "不安定な状態ですので、ご注意ください。",
     "unknown": "不安定な状態ですので、ご注意ください。"
   },
+  "incentivizePool": {
+    "title": "プール #{poolId} にインセンティブを追加",
+    "entry": "インセンティブ",
+    "existingGauges": "既存の外部ゲージ",
+    "newGauge": "新しいゲージを作成",
+    "epochsLeft": "残り{epochs}エポック",
+    "selectDuration": "ロック期間",
+    "durationHelp": "報酬は少なくともこの期間ロックされたポジションに分配されます。",
+    "noLockNote": "報酬はエポックごとにレンジ内の集中流動性へ分配されます。ロックは不要です。",
+    "epochsLabel": "エポック数",
+    "epochsCaption": "1日1エポック。分配は次のエポック（{countdown}後）から始まります。",
+    "epochsCaptionNoCountdown": "1日1エポック。分配は次のエポックから始まります。",
+    "rewardAmount": "報酬額",
+    "perEpoch": "1エポックあたり約 {amount}",
+    "visibilityWarning": "新しいゲージは1エポック経過するまでプール統計に表示されない場合があります。",
+    "ctaCreate": "ゲージを作成",
+    "ctaTopUp": "ゲージ #{gaugeId} に追加"
+  },
   "lockToken": {
     "amountToBond": "保証金額",
     "availableToken": "利用可能",

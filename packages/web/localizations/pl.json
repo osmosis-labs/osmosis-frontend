@@ -350,6 +350,24 @@
     "manual": "Niestabilny, zachowaj ostrożność.",
     "unknown": "Niestabilny, zachowaj ostrożność."
   },
+  "incentivizePool": {
+    "title": "Zachęty dla puli #{poolId}",
+    "entry": "Dodaj zachęty",
+    "existingGauges": "Istniejące zewnętrzne gauge",
+    "newGauge": "Utwórz nowy gauge",
+    "epochsLeft": "Pozostało epok: {epochs}",
+    "selectDuration": "Okres blokady",
+    "durationHelp": "Nagrody trafiają do pozycji zablokowanych co najmniej na ten okres.",
+    "noLockNote": "Nagrody są rozdzielane co epokę pomiędzy skoncentrowaną płynność w zakresie. Blokada nie jest wymagana.",
+    "epochsLabel": "Liczba epok",
+    "epochsCaption": "Jedna epoka dziennie. Emisje rozpoczynają się od następnej epoki (za {countdown}).",
+    "epochsCaptionNoCountdown": "Jedna epoka dziennie. Emisje rozpoczynają się od następnej epoki.",
+    "rewardAmount": "Kwota nagrody",
+    "perEpoch": "≈ {amount} na epokę",
+    "visibilityWarning": "Nowe gauge mogą nie pojawić się w statystykach puli, dopóki nie minie jedna epoka.",
+    "ctaCreate": "Utwórz gauge",
+    "ctaTopUp": "Doładuj gauge #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "Ilość do związania",
     "availableToken": "Dostępne",

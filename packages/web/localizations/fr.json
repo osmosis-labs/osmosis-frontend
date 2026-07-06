@@ -350,6 +350,24 @@
     "manual": "Instable, soyez prudent.",
     "unknown": "Instable, soyez prudent."
   },
+  "incentivizePool": {
+    "title": "Incitations pour la pool #{poolId}",
+    "entry": "Inciter",
+    "existingGauges": "Gauges externes existantes",
+    "newGauge": "Créer une nouvelle gauge",
+    "epochsLeft": "{epochs} époques restantes",
+    "selectDuration": "Durée de verrouillage",
+    "durationHelp": "Les récompenses vont aux positions verrouillées au moins pour cette durée.",
+    "noLockNote": "Les récompenses sont distribuées à chaque époque à la liquidité concentrée dans la plage. Aucun verrouillage requis.",
+    "epochsLabel": "Nombre d'époques",
+    "epochsCaption": "Une époque par jour. Les émissions commencent à la prochaine époque (dans {countdown}).",
+    "epochsCaptionNoCountdown": "Une époque par jour. Les émissions commencent à la prochaine époque.",
+    "rewardAmount": "Montant de la récompense",
+    "perEpoch": "≈ {amount} distribué par époque",
+    "visibilityWarning": "Les nouvelles gauges peuvent ne pas apparaître dans les statistiques de la pool avant une époque.",
+    "ctaCreate": "Créer la gauge",
+    "ctaTopUp": "Recharger la gauge #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "Montant à bloquer",
     "availableToken": "Disponible",

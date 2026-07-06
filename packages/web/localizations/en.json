@@ -350,6 +350,24 @@
     "manual": "Unstable, exercise caution.",
     "unknown": "Unstable, exercise caution."
   },
+  "incentivizePool": {
+    "title": "Incentivize Pool #{poolId}",
+    "entry": "Incentivize",
+    "existingGauges": "Existing external gauges",
+    "newGauge": "Create a new gauge",
+    "epochsLeft": "{epochs} epochs left",
+    "selectDuration": "Lock duration",
+    "durationHelp": "Rewards go to positions locked for at least this duration.",
+    "noLockNote": "Rewards are distributed each epoch to in-range concentrated liquidity. No lock is required.",
+    "epochsLabel": "Number of epochs",
+    "epochsCaption": "One epoch per day. Emissions begin at the next epoch (in {countdown}).",
+    "epochsCaptionNoCountdown": "One epoch per day. Emissions begin at the next epoch.",
+    "rewardAmount": "Reward amount",
+    "perEpoch": "≈ {amount} distributed per epoch",
+    "visibilityWarning": "New gauges may not appear in pool stats until one epoch has passed.",
+    "ctaCreate": "Create gauge",
+    "ctaTopUp": "Top up gauge #{gaugeId}"
+  },
   "lockToken": {
     "amountToBond": "Amount to bond",
     "availableToken": "Available",
