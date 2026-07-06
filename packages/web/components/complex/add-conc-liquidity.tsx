@@ -542,23 +542,27 @@ const lookbackToIndex = (days: number): number => {
 /** Stops of the unified width slider, tightest to widest: statistical bands
  *  (mean ± kσ over the lookback window, with 0σ a tight scalp band), then
  *  buffers beyond the window's observed min/max (fractions of its span),
- *  then full range. The σ→buffer seam is intentionally approximate: on most
- *  windows 3σ is comparable to or wider than the observed range, and σ bands
- *  center on the mean while buffers span the observed extremes. */
+ *  then full range. There is no 0% buffer stop: 3σ covers ~99.7% of
+ *  observations, so it already approximates the observed range and the
+ *  ladder continues from small buffers. The seam is still approximate — σ
+ *  bands center on the mean while buffers span the observed extremes, so on
+ *  trending windows 3σ can be wider than a small buffer. Buffer increments
+ *  are denser at the low end, where a step matters most. */
 type WidthStop =
   | { kind: "sigma"; sigmas: number; label: string }
   | { kind: "buffer"; bufferFraction: number; label: string }
   | { kind: "max"; label: string };
+const BUFFER_PERCENT_STOPS = [5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 const WIDTH_STOPS: WidthStop[] = [
   ...[0, 1, 2, 3].map((k) => ({
     kind: "sigma" as const,
     sigmas: k,
     label: `${k}σ`,
   })),
-  ...Array.from({ length: 11 }, (_, i) => ({
+  ...BUFFER_PERCENT_STOPS.map((pct) => ({
     kind: "buffer" as const,
-    bufferFraction: (i * 50) / 100,
-    label: `${i * 50}%`,
+    bufferFraction: pct / 100,
+    label: `${pct}%`,
   })),
   { kind: "max" as const, label: "Max" },
 ];
@@ -781,8 +785,8 @@ const AdvancedRangeControls: FunctionComponent<{
 
   // Unified width slider: sweeps from tight statistical bands (mean ± kσ over
   // the lookback window) through buffers beyond the window's observed range
-  // (0%..500% of its span, 50% steps) out to full range. One control instead
-  // of separate σ presets and a buffer slider.
+  // (5%..500% of its span, denser steps at the low end) out to full range.
+  // One control instead of separate σ presets and a buffer slider.
   const [widthIdx, setWidthIdx] = useState(DEFAULT_WIDTH_IDX);
 
   const applyWidthStop = useCallback(() => {
@@ -801,7 +805,7 @@ const AdvancedRangeControls: FunctionComponent<{
       setFullRange(false);
       if (!range) {
         // Window can't support the statistic (thin data / flat series):
-        // fall back to the window's observed range, the nearest wider stop.
+        // fall back to the window's observed range (a plain 0% buffer).
         setBufferFraction(0);
         applySlidersRange();
         return;
