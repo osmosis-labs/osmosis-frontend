@@ -1324,9 +1324,9 @@
       "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "Der Limitpreis liegt {percent}% über dem aktuellen Preis",
+      "belowTitle": "Der Limitpreis liegt {percent}% unter dem aktuellen Preis",
+      "description": "Überprüfen Sie den Preis noch einmal, bevor Sie diese Bestellung aufgeben."
     },
     "enterAnAmountTo": "Geben Sie einen Betrag ein, um",
     "toSell": "Verkaufen",

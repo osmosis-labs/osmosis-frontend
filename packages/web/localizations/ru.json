@@ -1324,9 +1324,9 @@
       "description": "Если вы продолжите, ваш заказ будет обработан как рыночный ордер по рыночной цене."
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "Лимитная цена на {percent}% выше текущей цены",
+      "belowTitle": "Лимитная цена на {percent}% ниже текущей цены",
+      "description": "Перед размещением этого ордера ещё раз проверьте цену."
     },
     "enterAnAmountTo": "Введите сумму для",
     "toSell": "продать",

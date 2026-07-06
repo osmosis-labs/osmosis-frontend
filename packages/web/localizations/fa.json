@@ -1324,9 +1324,9 @@
       "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "قیمت محدود {percent}% بالاتر از قیمت فعلی است",
+      "belowTitle": "قیمت محدود {percent}% پایین‌تر از قیمت فعلی است",
+      "description": "قبل از ثبت این سفارش، قیمت را دوباره بررسی کنید."
     },
     "enterAnAmountTo": "مقداری را وارد کنید",
     "toSell": "برای فروش",

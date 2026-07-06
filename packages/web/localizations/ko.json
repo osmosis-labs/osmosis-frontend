@@ -1324,9 +1324,9 @@
       "description": "계속 진행하시면 귀하의 주문은 시장가로 시장가 주문으로 처리됩니다."
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "지정가가 현재 가격보다 {percent}% 높습니다",
+      "belowTitle": "지정가가 현재 가격보다 {percent}% 낮습니다",
+      "description": "주문하기 전에 가격을 다시 확인하세요."
     },
     "enterAnAmountTo": "금액을 입력하세요.",
     "toSell": "판매하다",

@@ -1324,9 +1324,9 @@
       "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "Le prix limite est {percent} % au-dessus du prix actuel",
+      "belowTitle": "Le prix limite est {percent} % en dessous du prix actuel",
+      "description": "Vérifiez bien le prix avant de passer cet ordre."
     },
     "enterAnAmountTo": "Entrez un montant à",
     "toSell": "à vendre",

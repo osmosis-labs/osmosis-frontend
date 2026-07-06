@@ -1324,9 +1324,9 @@
       "description": "続行すると、注文は市場価格での成行注文として処理されます。"
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "指値価格が現在価格より{percent}%高くなっています",
+      "belowTitle": "指値価格が現在価格より{percent}%低くなっています",
+      "description": "注文を出す前に価格をもう一度ご確認ください。"
     },
     "enterAnAmountTo": "金額を入力してください",
     "toSell": "売る",

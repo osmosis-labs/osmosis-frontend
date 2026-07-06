@@ -1324,9 +1324,9 @@
       "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
     },
     "extremeDeviation": {
-      "aboveTitle": "Limit price is {percent}% above current price",
-      "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order."
+      "aboveTitle": "限價高於目前價格 {percent}%",
+      "belowTitle": "限價低於目前價格 {percent}%",
+      "description": "下單前請再次確認價格。"
     },
     "enterAnAmountTo": "輸入金額至",
     "toSell": "出售",
