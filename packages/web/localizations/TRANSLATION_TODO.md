@@ -57,3 +57,5 @@ English placed verbatim in all 16 non-English locales; needs real translations:
 - `ilAtRangeCeiling`
 - `ilSpotMove`
 - `ilDisclaimer`
+- `widthLabel`
+- `widthHelp`

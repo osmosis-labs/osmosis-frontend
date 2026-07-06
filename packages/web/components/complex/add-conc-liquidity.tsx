@@ -43,10 +43,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { useStore } from "~/stores";
-import {
-  calcStatPresetRange,
-  STAT_RANGE_PRESETS,
-} from "~/utils/cl-stat-range-presets";
+import { calcSigmaRange } from "~/utils/cl-sigma-range";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -185,6 +182,20 @@ const AddConcLiqView: FunctionComponent<
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
   }, [chartConfig, rangeWithCurrencyDecimals]);
+
+  // Ratchet the price chart's timeframe up so it always encloses the
+  // advanced lookback window (a 7d chart can't show a 30d lookback). Up
+  // only, per design: shrinking the lookback never narrows the chart back.
+  const advancedLookbackDays = addLiquidityConfig.lookbackDays;
+  useEffect(() => {
+    if (!advancedEnabled) return;
+    const current = chartConfig.historicalRange;
+    if (advancedLookbackDays > 30) {
+      if (current !== "1y") chartConfig.setHistoricalRange("1y");
+    } else if (advancedLookbackDays > 7 && current === "7d") {
+      chartConfig.setHistoricalRange("1mo");
+    }
+  }, [advancedEnabled, advancedLookbackDays, chartConfig]);
 
   return (
     <>
@@ -528,11 +539,31 @@ const lookbackToIndex = (days: number): number => {
   return bestIdx;
 };
 
-/** Buffer slider runs from 0 (range = historical min/max) to 100 (full
- *  range / passive — `applySlidersRange` short-circuits to
- *  `setFullRange(true)` at this end). 25 reproduces the legacy "moderate"
- *  preset's padding. */
-const BUFFER_SLIDER_MAX = 100;
+/** Stops of the unified width slider, tightest to widest: statistical bands
+ *  (mean ± kσ over the lookback window, with 0σ a tight scalp band), then
+ *  buffers beyond the window's observed min/max (fractions of its span),
+ *  then full range. The σ→buffer seam is intentionally approximate: on most
+ *  windows 3σ is comparable to or wider than the observed range, and σ bands
+ *  center on the mean while buffers span the observed extremes. */
+type WidthStop =
+  | { kind: "sigma"; sigmas: number; label: string }
+  | { kind: "buffer"; bufferFraction: number; label: string }
+  | { kind: "max"; label: string };
+const WIDTH_STOPS: WidthStop[] = [
+  ...[0, 1, 2, 3].map((k) => ({
+    kind: "sigma" as const,
+    sigmas: k,
+    label: `${k}σ`,
+  })),
+  ...Array.from({ length: 11 }, (_, i) => ({
+    kind: "buffer" as const,
+    bufferFraction: (i * 50) / 100,
+    label: `${i * 50}%`,
+  })),
+  { kind: "max" as const, label: "Max" },
+];
+/** 2σ: a moderate statistical band over the default 7d lookback. */
+const DEFAULT_WIDTH_IDX = 2;
 
 /** Persists only whether the user is in advanced mode — slider values
  *  themselves reset to their canonical defaults each time advanced opens. */
@@ -707,7 +738,6 @@ const AdvancedRangeControls: FunctionComponent<{
     setLookbackDays,
     setBufferFraction,
     lookbackDays,
-    bufferFraction,
     slidersPriceRange,
     historicalPrices,
     minHistoricalPrice,
@@ -722,12 +752,10 @@ const AdvancedRangeControls: FunctionComponent<{
     allHistoricalPricesInDisplayUnits,
   } = props.addLiquidityConfig;
   const { logEvent } = useAmplitudeAnalytics();
-  const [activeStatPreset, setActiveStatPreset] = useState<string | null>(null);
 
-  // Slider defaults (25% buffer, 7d lookback) are set when the config is
-  // first constructed. Within a single modal session, user tweaks survive
-  // toggling Advanced off and back on — only a fresh modal mount returns
-  // to the defaults.
+  // Within a single modal session, user tweaks survive toggling Advanced
+  // off and back on — only a fresh modal mount returns to the defaults
+  // (7d lookback, 2σ width).
 
   const multiplicationQuoteOverBase = useMemo(
     () =>
@@ -739,23 +767,63 @@ const AdvancedRangeControls: FunctionComponent<{
   );
 
   const applySlidersRange = useCallback(() => {
-    // At max buffer, the user has dragged "all the way out" — that's the
-    // passive / full-range strategy.
-    if (bufferFraction >= 1) {
-      setFullRange(true);
-      return;
-    }
     const [lo, hi] = slidersPriceRange;
     setFullRange(false);
     setMinRange(lo.mul(multiplicationQuoteOverBase).toString());
     setMaxRange(hi.mul(multiplicationQuoteOverBase).toString());
   }, [
-    bufferFraction,
     slidersPriceRange,
     setFullRange,
     setMinRange,
     setMaxRange,
     multiplicationQuoteOverBase,
+  ]);
+
+  // Unified width slider: sweeps from tight statistical bands (mean ± kσ over
+  // the lookback window) through buffers beyond the window's observed range
+  // (0%..500% of its span, 50% steps) out to full range. One control instead
+  // of separate σ presets and a buffer slider.
+  const [widthIdx, setWidthIdx] = useState(DEFAULT_WIDTH_IDX);
+
+  const applyWidthStop = useCallback(() => {
+    const stop = WIDTH_STOPS[widthIdx];
+    if (stop.kind === "max") {
+      setFullRange(true);
+      return;
+    }
+    if (stop.kind === "sigma") {
+      const range = calcSigmaRange({
+        prices: allHistoricalPricesInDisplayUnits,
+        windowDays: lookbackDays,
+        sigmas: stop.sigmas,
+        nowMs: Date.now(),
+      });
+      setFullRange(false);
+      if (!range) {
+        // Window can't support the statistic (thin data / flat series):
+        // fall back to the window's observed range, the nearest wider stop.
+        setBufferFraction(0);
+        applySlidersRange();
+        return;
+      }
+      // σ ranges are computed in display units, which is what
+      // setMin/MaxRange expect; the buffer path multiplies out of the raw
+      // strategy space instead (see applySlidersRange).
+      setMinRange(range[0].toString());
+      setMaxRange(range[1].toString());
+      return;
+    }
+    setBufferFraction(stop.bufferFraction);
+    applySlidersRange();
+  }, [
+    widthIdx,
+    lookbackDays,
+    allHistoricalPricesInDisplayUnits,
+    setFullRange,
+    setBufferFraction,
+    setMinRange,
+    setMaxRange,
+    applySlidersRange,
   ]);
 
   // On first render of advanced controls, apply the sliders range so the
@@ -768,13 +836,13 @@ const AdvancedRangeControls: FunctionComponent<{
       historicalPrices.length > 0 ||
       (minHistoricalPrice !== null && maxHistoricalPrice !== null);
     if (!hasData) return;
-    applySlidersRange();
+    applyWidthStop();
     hasAppliedInitial.current = true;
   }, [
     historicalPrices,
     minHistoricalPrice,
     maxHistoricalPrice,
-    applySlidersRange,
+    applyWidthStop,
   ]);
 
   // Re-apply when slider inputs OR the underlying data change. Debounced so
@@ -782,16 +850,15 @@ const AdvancedRangeControls: FunctionComponent<{
   useEffect(() => {
     if (!hasAppliedInitial.current) return;
     const t = setTimeout(() => {
-      applySlidersRange();
+      applyWidthStop();
     }, 80);
     return () => clearTimeout(t);
-    // applySlidersRange already captures the current observable range.
+    // applyWidthStop already captures the current observable state.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lookbackDays, bufferFraction, historicalPrices.length]);
+  }, [lookbackDays, widthIdx, historicalPrices.length]);
 
   const onLookbackChange = useCallback(
     (days: number) => {
-      setActiveStatPreset(null);
       setLookbackDays(days);
       logEvent([
         EventName.ConcentratedLiquidity.strategyPicked,
@@ -801,48 +868,15 @@ const AdvancedRangeControls: FunctionComponent<{
     [setLookbackDays, logEvent]
   );
 
-  const onBufferChange = useCallback(
-    (pct: number) => {
-      setActiveStatPreset(null);
-      const clamped = Math.max(0, Math.min(BUFFER_SLIDER_MAX, pct));
-      setBufferFraction(clamped / 100);
-    },
-    [setBufferFraction]
-  );
-
-  // Statistical presets: ranges from simple statistics over the fetched
-  // series (mean ± kσ) or from spot (± a fraction). Applied through the same
-  // config path as the sliders; undefined = not computable, chip disabled.
-  const statPresetRanges = useMemo(
-    () =>
-      STAT_RANGE_PRESETS.map((preset) => ({
-        preset,
-        range: calcStatPresetRange({
-          preset,
-          prices: allHistoricalPricesInDisplayUnits,
-          spotPrice: currentPriceWithDecimals,
-          nowMs: Date.now(),
-        }),
-      })),
-    [allHistoricalPricesInDisplayUnits, currentPriceWithDecimals]
-  );
-
-  const onStatPresetClick = useCallback(
-    (label: string, range: [Dec, Dec]) => {
-      setFullRange(false);
-      // Stat-preset ranges are computed in display units (display-unit
-      // series and spot), which is what setMin/MaxRange expect — unlike the
-      // sliders path, whose strategy space is raw and multiplies through
-      // `multiplicationQuoteOverBase` on apply.
-      setMinRange(range[0].toString());
-      setMaxRange(range[1].toString());
-      setActiveStatPreset(label);
+  const onWidthChange = useCallback(
+    (idx: number) => {
+      setWidthIdx(idx);
       logEvent([
         EventName.ConcentratedLiquidity.strategyPicked,
-        { strategy: `stat-preset-${label}` },
+        { strategy: `sliders-width-${WIDTH_STOPS[idx].label}` },
       ]);
     },
-    [setFullRange, setMinRange, setMaxRange, logEvent]
+    [logEvent]
   );
 
   // How concentrated the chosen range is versus full range, at current spot.
@@ -855,7 +889,6 @@ const AdvancedRangeControls: FunctionComponent<{
     });
   }, [fullRange, rangeWithCurrencyDecimals, currentPriceWithDecimals]);
 
-  const bufferPct = Math.round(bufferFraction * 100);
   const lookbackIdx = lookbackToIndex(lookbackDays);
 
   return (
@@ -876,46 +909,19 @@ const AdvancedRangeControls: FunctionComponent<{
             />
           </SliderRow>
         </div>
-        <div className="mb-4 flex items-center gap-2">
-          <span className="caption text-osmoverse-300">
-            {t("addConcentratedLiquidity.statPresetsLabel")}
-          </span>
-          {statPresetRanges.map(({ preset, range }) => (
-            <button
-              key={preset.label}
-              type="button"
-              disabled={!range}
-              onClick={() => range && onStatPresetClick(preset.label, range)}
-              className={classNames(
-                "caption rounded-5xl border px-2 py-1 transition-colors disabled:pointer-events-none disabled:opacity-40",
-                activeStatPreset === preset.label
-                  ? "border-wosmongton-100 bg-wosmongton-100 text-osmoverse-900"
-                  : "border-osmoverse-600 text-wosmongton-300 hover:bg-osmoverse-700"
-              )}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
         <div className="block w-full">
           <SliderRow
-            label={t("addConcentratedLiquidity.bufferLabel")}
-            valueLabel={
-              <BufferValueInput
-                bufferPct={bufferPct}
-                onChange={onBufferChange}
-                fullRangeLabel={t("addConcentratedLiquidity.bufferFullRange")}
-              />
-            }
-            help={t("addConcentratedLiquidity.bufferHelp")}
+            label={t("addConcentratedLiquidity.widthLabel")}
+            valueLabel={WIDTH_STOPS[widthIdx].label}
+            help={t("addConcentratedLiquidity.widthHelp")}
           >
             <DetentSlider
-              ariaLabel={t("addConcentratedLiquidity.bufferLabel")}
+              ariaLabel={t("addConcentratedLiquidity.widthLabel")}
               min={0}
-              max={BUFFER_SLIDER_MAX}
-              value={bufferPct}
-              detents={Array.from({ length: 11 }, (_, i) => i * 10)}
-              onChange={onBufferChange}
+              max={WIDTH_STOPS.length - 1}
+              value={widthIdx}
+              detents={WIDTH_STOPS.map((_, i) => i)}
+              onChange={onWidthChange}
             />
           </SliderRow>
         </div>
@@ -1086,69 +1092,6 @@ const PresetStrategyCard: FunctionComponent<
     );
   }
 );
-
-const BufferValueInput: FunctionComponent<{
-  bufferPct: number;
-  onChange: (pct: number) => void;
-  fullRangeLabel: string;
-}> = ({ bufferPct, onChange, fullRangeLabel }) => {
-  const [draft, setDraft] = useState(String(bufferPct));
-  const [focused, setFocused] = useState(false);
-
-  // While unfocused, mirror the slider's value into the draft so external
-  // changes (e.g., dragging the slider) stay in sync with the input.
-  useEffect(() => {
-    if (!focused) setDraft(String(bufferPct));
-  }, [bufferPct, focused]);
-
-  // When the slider hits 100 and the user isn't actively editing, swap the
-  // numeric input out for a "Full range" label so we don't show "100%" in
-  // the same spot the slider's value box previously read as a percentage.
-  const showFullRangeLabel = !focused && bufferPct >= 100;
-
-  if (showFullRangeLabel) {
-    return (
-      <button
-        type="button"
-        onClick={() => {
-          setFocused(true);
-          setDraft(String(bufferPct));
-        }}
-        className="rounded-lg bg-osmoverse-900 px-2 py-1 text-right text-sm text-osmoverse-100 focus:outline-none focus:ring-1 focus:ring-bullish-500"
-      >
-        {fullRangeLabel}
-      </button>
-    );
-  }
-
-  // Typed input is assumed to be a percentage — strip non-digits, clamp
-  // 0–100, and render a static "%" suffix so the user never has to type it.
-  return (
-    <div className="flex items-center rounded-lg bg-osmoverse-900 px-2 py-1 text-sm text-osmoverse-100 focus-within:ring-1 focus-within:ring-bullish-500">
-      <input
-        type="text"
-        inputMode="numeric"
-        value={focused ? draft : String(bufferPct)}
-        onFocus={() => {
-          setFocused(true);
-          setDraft(String(bufferPct));
-        }}
-        onBlur={() => setFocused(false)}
-        onChange={(e) => {
-          const raw = e.target.value.replace(/[^0-9]/g, "");
-          setDraft(raw);
-          if (raw === "") return;
-          const n = Number(raw);
-          if (!Number.isFinite(n)) return;
-          onChange(Math.max(0, Math.min(100, n)));
-        }}
-        aria-label="Buffer value (percent)"
-        className="w-9 bg-transparent text-right focus:outline-none"
-      />
-      <span aria-hidden="true">%</span>
-    </div>
-  );
-};
 
 const SliderRow: FunctionComponent<{
   /** Optional left-aligned label. Omit to drop the entire label row when
