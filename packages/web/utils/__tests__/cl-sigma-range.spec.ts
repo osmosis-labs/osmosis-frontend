@@ -127,33 +127,59 @@ describe("calcSigmaRange", () => {
     expect(Number(range![1].toString())).toBeCloseTo(1.15, 6);
   });
 
-  it("centers the band on `center` when given, keeping the window's σ", () => {
-    // mean 1, σ = 0.1; center on 1.05 (a spot above the mean).
+  it("anchors the band on a point when given, keeping the window's σ", () => {
+    // mean 1, σ = 0.1; anchor on 1.05 (a spot above the mean).
     const bars = makeBars(7, [0.9, 1.1]);
     const range = calcSigmaRange({
       prices: bars,
       windowDays: 7,
       sigmas: 1,
       nowMs: NOW,
-      center: new Dec("1.05"),
+      anchor: new Dec("1.05"),
     });
     expect(range).toBeDefined();
     expect(Number(range![0].toString())).toBeCloseTo(0.95, 6);
     expect(Number(range![1].toString())).toBeCloseTo(1.15, 6);
 
-    // 0σ scalps around the center, not the mean.
+    // 0σ scalps around the anchor, not the mean.
     const scalp = calcSigmaRange({
       prices: bars,
       windowDays: 7,
       sigmas: 0,
       nowMs: NOW,
-      center: new Dec("1.05"),
+      anchor: new Dec("1.05"),
     });
     expect(Number(scalp![0].toString())).toBeCloseTo(1.05 * (1 - 0.0025), 6);
     expect(Number(scalp![1].toString())).toBeCloseTo(1.05 * (1 + 0.0025), 6);
   });
 
-  it("returns undefined for a non-positive center", () => {
+  it("widens beyond an interval anchor instead of a point", () => {
+    // mean 1, σ = 0.1; anchor on the observed [0.9, 1.1].
+    const bars = makeBars(7, [0.9, 1.1]);
+    const range = calcSigmaRange({
+      prices: bars,
+      windowDays: 7,
+      sigmas: 1,
+      nowMs: NOW,
+      anchor: [new Dec("0.9"), new Dec("1.1")],
+    });
+    expect(range).toBeDefined();
+    expect(Number(range![0].toString())).toBeCloseTo(0.8, 6);
+    expect(Number(range![1].toString())).toBeCloseTo(1.2, 6);
+
+    // 0σ on an interval anchor is exactly the interval, not a scalp band.
+    const exact = calcSigmaRange({
+      prices: bars,
+      windowDays: 7,
+      sigmas: 0,
+      nowMs: NOW,
+      anchor: [new Dec("0.9"), new Dec("1.1")],
+    });
+    expect(Number(exact![0].toString())).toBeCloseTo(0.9, 6);
+    expect(Number(exact![1].toString())).toBeCloseTo(1.1, 6);
+  });
+
+  it("returns undefined for a non-positive or inverted anchor", () => {
     const bars = makeBars(7, [0.9, 1.1]);
     expect(
       calcSigmaRange({
@@ -161,7 +187,16 @@ describe("calcSigmaRange", () => {
         windowDays: 7,
         sigmas: 1,
         nowMs: NOW,
-        center: new Dec(0),
+        anchor: new Dec(0),
+      })
+    ).toBeUndefined();
+    expect(
+      calcSigmaRange({
+        prices: bars,
+        windowDays: 7,
+        sigmas: 1,
+        nowMs: NOW,
+        anchor: [new Dec("1.1"), new Dec("0.9")],
       })
     ).toBeUndefined();
   });
@@ -188,12 +223,14 @@ describe("calcSigmaRange", () => {
 });
 
 describe("calcWindowStats", () => {
-  it("returns the window's mean, σ, and sample count", () => {
+  it("returns the window's mean, σ, extremes, and sample count", () => {
     const bars = makeBars(7, [0.9, 1.1]);
     const stats = calcWindowStats({ prices: bars, windowDays: 7, nowMs: NOW });
     expect(stats.count).toBe(7 * 24);
     expect(stats.mean).toBeCloseTo(1, 6);
     expect(stats.stdDev).toBeCloseTo(0.1, 6);
+    expect(stats.min).toBeCloseTo(0.9, 6);
+    expect(stats.max).toBeCloseTo(1.1, 6);
   });
 
   it("returns a zero count on an empty window", () => {
