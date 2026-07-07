@@ -353,7 +353,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             )}
           </div>
           {!isInactivePool && !isUninitializedPool && (
-            <UserAssetsAndExternalIncentives poolId={poolId} />
+            <UserAssetsAndExternalIncentives
+              poolId={poolId}
+              onIncentivize={() => setActiveModal("incentivize")}
+            />
           )}
           {isUninitializedPool || isInactivePool ? (
             <div className="flex flex-col items-center gap-4 pt-8">
@@ -416,16 +419,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     }}
                   >
                     {t("clPositions.createAPosition")}
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="subtitle1 w-fit"
-                    onClick={() => {
-                      setActiveModal("incentivize");
-                    }}
-                  >
-                    {t("incentivizePool.entry")}
                   </Button>
                 </div>
               </div>
@@ -535,8 +528,10 @@ const Chart: FunctionComponent<{
   );
 });
 
-const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
-  observer(({ poolId }) => {
+const UserAssetsAndExternalIncentives: FunctionComponent<{
+  poolId: string;
+  onIncentivize: () => void;
+}> = observer(({ poolId, onIncentivize }) => {
     const { derivedDataStore } = useStore();
     const { t } = useTranslation();
     const featureFlags = useFeatureFlags();
@@ -611,13 +606,23 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
         </div>
         {featureFlags.aprBreakdown && (
-          <SkeletonLoader isLoaded={!isLoadingIncentives}>
-            <AprBreakdown
-              className="shrink-0 rounded-3xl"
-              showDisclaimerTooltip
-              {...incentives?.aprBreakdown}
-            />
-          </SkeletonLoader>
+          <div className="flex shrink-0 flex-col gap-2">
+            <SkeletonLoader isLoaded={!isLoadingIncentives}>
+              <AprBreakdown
+                className="shrink-0 rounded-3xl"
+                showDisclaimerTooltip
+                {...incentives?.aprBreakdown}
+              />
+            </SkeletonLoader>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={onIncentivize}
+            >
+              {t("incentivizePool.entry")}
+            </Button>
+          </div>
         )}
 
         {hasIncentives && (

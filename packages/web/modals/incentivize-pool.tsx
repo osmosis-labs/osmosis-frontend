@@ -256,17 +256,6 @@ export const IncentivizePoolModal: FunctionComponent<
       isOpen={props.isOpen && showModalBase}
     >
       <div className="flex flex-col gap-6 pt-4 md:gap-4">
-        <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
-          <Icon
-            id="alert-triangle"
-            width={16}
-            height={16}
-            className="mt-0.5 shrink-0 text-rust-300"
-          />
-          <span className="caption text-rust-200">
-            {t("incentivizePool.advancedWarning")}
-          </span>
-        </div>
         {externalGauges.length > 0 && (
           <div className="flex flex-col gap-2">
             <span className="subtitle1">
@@ -488,6 +477,17 @@ export const IncentivizePoolModal: FunctionComponent<
         <span className="caption text-osmoverse-400">
           {t("incentivizePool.visibilityWarning")}
         </span>
+        <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
+          <Icon
+            id="alert-triangle"
+            width={16}
+            height={16}
+            className="mt-0.5 shrink-0 text-rust-300"
+          />
+          <span className="caption text-rust-200">
+            {t("incentivizePool.advancedWarning")}
+          </span>
+        </div>
         {accountActionButton}
       </div>
     </ModalBase>

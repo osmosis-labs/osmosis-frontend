@@ -378,7 +378,7 @@
     "dustUnpriceable": "此資產無法在此定價，因此隱藏價值和 APR 估算。只要它在鏈上有 OSMO 池路由，建立仍然有效。",
     "dustBelowMin": "每日價值過低：每個接收者低於 {minValue} 的份額將被鏈的粉塵防禦跳過。",
     "visibilityWarning": "新 Gauge 可能要等一天後才會顯示在池統計中。",
-    "ctaCreate": "建立 Gauge",
+    "ctaCreate": "新增激勵",
     "ctaTopUp": "為 Gauge #{gaugeId} 充值"
   },
   "lockToken": {

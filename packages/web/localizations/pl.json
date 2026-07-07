@@ -378,7 +378,7 @@
     "dustUnpriceable": "Tego aktywa nie można tu wycenić, więc szacunki wartości i APR są ukryte. Tworzenie działa, o ile ma ono trasę puli z OSMO onchain.",
     "dustBelowMin": "Bardzo niska dzienna wartość: udziały poniżej {minValue} na odbiorcę zostaną pominięte przez ochronę antypyłową łańcucha.",
     "visibilityWarning": "Nowe gauge mogą nie pojawić się w statystykach puli, dopóki nie minie jeden dzień.",
-    "ctaCreate": "Utwórz gauge",
+    "ctaCreate": "Dodaj zachęty",
     "ctaTopUp": "Doładuj gauge #{gaugeId}"
   },
   "lockToken": {

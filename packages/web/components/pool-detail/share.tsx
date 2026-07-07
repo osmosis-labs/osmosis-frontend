@@ -738,22 +738,24 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       {isSuperfluid &&
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-fit"
-                      onClick={() => setShowIncentivizeModal(true)}
-                    >
-                      {t("incentivizePool.entry")}
-                    </Button>
                   </div>
                   {Boolean(account) &&
                   (isLoadingBondDurations || isLoadingUserSharePool) ? (
                     <Spinner />
                   ) : level2Disabled ? (
-                    <h6 className="text-osmoverse-100">
-                      {t("pool.checkBackForBondingRewards")}
-                    </h6>
+                    <div className="flex flex-col items-end gap-2 lg:items-start">
+                      <h6 className="text-osmoverse-100">
+                        {t("pool.checkBackForBondingRewards")}
+                      </h6>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-fit"
+                        onClick={() => setShowIncentivizeModal(true)}
+                      >
+                        {t("incentivizePool.entry")}
+                      </Button>
+                    </div>
                   ) : (
                     <Button
                       className={classNames("w-64 border-none md:w-full", {

@@ -378,7 +378,7 @@
     "dustUnpriceable": "Bu varlık burada fiyatlandırılamıyor, bu yüzden değer ve APR tahminleri gizlenir. Zincirde OSMO havuz rotası olduğu sürece oluşturma çalışır.",
     "dustBelowMin": "Çok düşük günlük değer: alıcı başına {minValue} altındaki paylar zincirin toz savunması tarafından atlanacaktır.",
     "visibilityWarning": "Yeni gauge'lar bir gün geçene kadar havuz istatistiklerinde görünmeyebilir.",
-    "ctaCreate": "Gauge oluştur",
+    "ctaCreate": "Teşvik ekle",
     "ctaTopUp": "#{gaugeId} gauge'ına ekle"
   },
   "lockToken": {
