@@ -1,16 +1,25 @@
 name: Preview frontend E2E tests
 
+# Run on non-draft PR pushes (and when a draft is marked ready for review),
+# plus direct pushes to stage for post-merge validation. Draft PRs skip the
+# suite entirely — the preview E2E tests spend real funds on every run.
 on:
   push:
-    branches-ignore:
-      - master
+    branches:
+      - stage
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
+# Every other job needs one of these two root jobs, so gating them on
+# non-draft skips the whole suite for draft PRs. The fork guard keeps
+# secret-less fork PRs from starting runs that can only fail.
 jobs:
   wait-for-deployment:
+    if: github.event_name == 'push' || (github.event.pull_request.draft == false && github.event.pull_request.head.repo.fork == false)
     runs-on: ubuntu-latest
     outputs:
       environment_url: ${{steps.vercel.outputs.environment_url}}
@@ -31,6 +40,7 @@ jobs:
         run: echo "$environment_url"
 
   check-balances:
+    if: github.event_name == 'push' || (github.event.pull_request.draft == false && github.event.pull_request.head.repo.fork == false)
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -154,7 +164,7 @@ jobs:
                   -f dry_run=false \
                   -f topup_multiplier=1.5 \
                   -f reserve_osmo=5 \
-                  -f reserve_usdc=500
+                  -f reserve_usdc=250
                 echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
               fi
             else
