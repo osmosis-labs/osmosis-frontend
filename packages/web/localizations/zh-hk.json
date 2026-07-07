@@ -374,7 +374,7 @@
     "statsPerDay": "每日分配",
     "statsEstApr": "按目前流動性估算的 APR",
     "dustRule": "鏈會跳過每個接收者每天低於 {minValue} 的支付；分散到大量倉位的小額每日總量可能無法分配。",
-    "dustUnpriceable": "無法確定該資產的價值。沒有 OSMO 池路由的資產將無法建立 Gauge。",
+    "dustUnpriceable": "此資產無法在此定價，因此隱藏價值和 APR 估算。只要它在鏈上有 OSMO 池路由，建立仍然有效。",
     "dustBelowMin": "每日價值過低：每個接收者低於 {minValue} 的份額將被鏈的粉塵防禦跳過。",
     "visibilityWarning": "新 Gauge 可能要等一天後才會顯示在池統計中。",
     "ctaCreate": "建立 Gauge",

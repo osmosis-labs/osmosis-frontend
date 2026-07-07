@@ -374,7 +374,7 @@
     "statsPerDay": "Dystrybucja dziennie",
     "statsEstApr": "Szac. APR przy obecnej płynności",
     "dustRule": "Łańcuch pomija wypłaty poniżej {minValue} na odbiorcę dziennie; małe dzienne kwoty rozdzielone na wiele pozycji mogą nie zostać rozdystrybuowane.",
-    "dustUnpriceable": "Nie można określić wartości tego aktywa. Tworzenie gauge nie powiedzie się dla aktywów bez trasy puli z OSMO.",
+    "dustUnpriceable": "Tego aktywa nie można tu wycenić, więc szacunki wartości i APR są ukryte. Tworzenie działa, o ile ma ono trasę puli z OSMO onchain.",
     "dustBelowMin": "Bardzo niska dzienna wartość: udziały poniżej {minValue} na odbiorcę zostaną pominięte przez ochronę antypyłową łańcucha.",
     "visibilityWarning": "Nowe gauge mogą nie pojawić się w statystykach puli, dopóki nie minie jeden dzień.",
     "ctaCreate": "Utwórz gauge",

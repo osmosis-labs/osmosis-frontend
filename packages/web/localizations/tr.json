@@ -374,7 +374,7 @@
     "statsPerDay": "Günlük dağıtım",
     "statsEstApr": "Mevcut likiditede tahmini APR",
     "dustRule": "Zincir, gün başına alıcı başına {minValue} altındaki ödemeleri atlar; çok sayıda pozisyona bölünen küçük günlük tutarlar dağıtılmayabilir.",
-    "dustUnpriceable": "Bu varlığın değeri belirlenemiyor. OSMO havuz rotası olmayan varlıklar için gauge oluşturma başarısız olur.",
+    "dustUnpriceable": "Bu varlık burada fiyatlandırılamıyor, bu yüzden değer ve APR tahminleri gizlenir. Zincirde OSMO havuz rotası olduğu sürece oluşturma çalışır.",
     "dustBelowMin": "Çok düşük günlük değer: alıcı başına {minValue} altındaki paylar zincirin toz savunması tarafından atlanacaktır.",
     "visibilityWarning": "Yeni gauge'lar bir gün geçene kadar havuz istatistiklerinde görünmeyebilir.",
     "ctaCreate": "Gauge oluştur",

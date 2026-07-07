@@ -374,7 +374,7 @@
     "statsPerDay": "Ausschüttung pro Tag",
     "statsEstApr": "Gesch. APR bei aktueller Liquidität",
     "dustRule": "Die Chain überspringt Auszahlungen unter {minValue} pro Empfänger und Tag; kleine Tagesbeträge, verteilt auf viele Positionen, werden womöglich nicht ausgeschüttet.",
-    "dustUnpriceable": "Der Wert dieses Assets lässt sich nicht bestimmen. Die Gauge-Erstellung schlägt für Assets ohne OSMO-Pool-Route fehl.",
+    "dustUnpriceable": "Dieses Asset kann hier nicht bepreist werden, daher werden Wert- und APR-Schätzungen ausgeblendet. Die Erstellung funktioniert weiterhin, solange onchain eine OSMO-Pool-Route besteht.",
     "dustBelowMin": "Sehr geringer Tageswert: Anteile unter {minValue} pro Empfänger werden von der Dust-Abwehr der Chain übersprungen.",
     "visibilityWarning": "Neue Gauges erscheinen möglicherweise erst nach einem Tag in der Pool-Statistik.",
     "ctaCreate": "Gauge erstellen",

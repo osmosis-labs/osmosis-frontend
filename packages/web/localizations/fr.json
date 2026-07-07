@@ -374,7 +374,7 @@
     "statsPerDay": "Distribué par jour",
     "statsEstApr": "APR est. à la liquidité actuelle",
     "dustRule": "La chaîne ignore les paiements inférieurs à {minValue} par destinataire et par jour ; de petits totaux quotidiens répartis sur de nombreuses positions peuvent ne pas être distribués.",
-    "dustUnpriceable": "La valeur de cet actif ne peut pas être déterminée. La création de la gauge échoue pour les actifs sans route de pool avec OSMO.",
+    "dustUnpriceable": "Cet actif ne peut pas être valorisé ici, les estimations de valeur et d'APR sont donc masquées. La création fonctionne tant qu'il dispose d'une route de pool avec OSMO onchain.",
     "dustBelowMin": "Valeur quotidienne très faible : les parts inférieures à {minValue} par destinataire seront ignorées par la défense anti-poussière de la chaîne.",
     "visibilityWarning": "Les nouvelles gauges peuvent ne pas apparaître dans les statistiques de la pool avant un jour.",
     "ctaCreate": "Créer la gauge",

@@ -200,11 +200,11 @@ export const IncentivizePoolModal: FunctionComponent<
       disabled:
         Boolean(config.error) ||
         !config.amount ||
-        // An unpriceable reward asset is rejected at creation (the chain
-        // requires an OSMO pool route to value it). The frontend price
-        // lookup is an imperfect proxy for that protorev check, but
-        // blocking beats letting the user sign a doomed tx.
-        (Boolean(config.amount) && totalValue === undefined) ||
+        // Note: a missing frontend price is NOT a block. The chain only
+        // rejects a reward denom with no protorev OSMO route, which is a
+        // different (and narrower) condition than "the price store can't
+        // value it" — a newly listed but routable asset is fine. We surface
+        // an unpriced-asset caution below instead of gating on it.
         (!isTopUp && !epochsValid) ||
         (!isTopUp && startDate === undefined) ||
         (needsDuration && fixedDuration === undefined) ||
@@ -453,7 +453,7 @@ export const IncentivizePoolModal: FunctionComponent<
           </div>
         )}
         {!isTopUp && config.amount && totalValue === undefined && (
-          <span className="caption text-rust-300">
+          <span className="caption text-osmoverse-400">
             {t("incentivizePool.dustUnpriceable")}
           </span>
         )}
