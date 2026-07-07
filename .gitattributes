@@ -1,0 +1,24 @@
+# Keep the repository and every working tree on LF, regardless of platform
+# or core.autocrlf. Without this, Windows clones check source files out with
+# CRLF, and Prettier (endOfLine: "lf") then fails the pre-commit hook until
+# the endings are manually normalized.
+* text=auto eol=lf
+
+# Binary assets: never subject to text normalization or diffing.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp3 binary
+*.mp4 binary
+*.webm binary
+*.zip binary
+*.wasm binary
