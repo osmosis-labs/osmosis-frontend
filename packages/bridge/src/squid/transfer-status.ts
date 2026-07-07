@@ -140,7 +140,16 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
         (chain) => chain.chain_id === fromChainId
       );
 
-      if (!chain) throw new Error("Chain not found: " + fromChainId);
+      // Chain may no longer be in the registry (e.g. a delisted chain in an
+      // old saved snapshot). The explorer link is cosmetic, so degrade to no
+      // link rather than throwing into the transaction history render path,
+      // but keep a breadcrumb so an unexpected missing chain is still visible.
+      if (!chain) {
+        console.warn(
+          `[SquidTransferStatus] Cannot build explorer URL, chain not found: ${fromChainId}`
+        );
+        return "";
+      }
 
       if (chain.explorers.length === 0) {
         // attempt to link to mintscan since this is an IBC transfer
