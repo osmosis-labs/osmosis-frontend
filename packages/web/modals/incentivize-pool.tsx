@@ -64,15 +64,15 @@ export const IncentivizePoolModal: FunctionComponent<
     addToGauge,
   } = useIncentivizePoolConfig();
 
-  // Reward token choices: the full registered asset list with the wallet's
-  // balances attached, holdings sorted first. The amount input errors on
-  // insufficient balance, so unheld assets stay selectable but unusable.
-  const balances = queriesStore
+  // Reward token choices: only assets the connected wallet actually holds —
+  // you can't fund a gauge with what you don't have. `.balances` is every
+  // registered currency (zero-balance included), so use `.positiveBalances`.
+  const positiveBalances = queriesStore
     .get(chainId)
-    .queryBalances.getQueryBech32Address(address).balances;
+    .queryBalances.getQueryBech32Address(address).positiveBalances;
   const selectableTokens = useMemo(
-    () => balances.map((balance) => balance.balance),
-    [balances]
+    () => positiveBalances.map((balance) => balance.balance),
+    [positiveBalances]
   );
   // Default the reward token to OSMO when available.
   useEffect(() => {
@@ -132,27 +132,37 @@ export const IncentivizePoolModal: FunctionComponent<
   const numEpochs = Number(epochsInput);
   const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
 
-  // Start: next daily epoch by default, or a chosen date. The date input is
-  // date-only; the time of day is pinned to the epoch hour. A past date is
-  // fine — the chain simply activates the gauge at the next epoch — so there
-  // is no validity gate here. Defaults to today.
-  const [customStartEnabled, setCustomStartEnabled] = useState(false);
-  const todayIso = useMemo(() => {
-    const now = new Date();
-    return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(
+  // Start: an editable date, defaulting to the next daily epoch. The picker
+  // is date-only; the time of day is pinned to the epoch hour (UTC). Dates
+  // before the next epoch are unselectable (a `min` on the input) — an
+  // earlier date can never take effect, since the earliest a gauge can go
+  // active is the next epoch.
+  const toUtcDateIso = (date: Date) =>
+    `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(
       2,
       "0"
-    )}-${String(now.getUTCDate()).padStart(2, "0")}`;
+    )}-${String(date.getUTCDate()).padStart(2, "0")}`;
+  // The calendar day of the next epoch: today if it's still before 17:00 UTC,
+  // otherwise tomorrow.
+  const nextEpochDateIso = useMemo(() => {
+    const now = new Date();
+    const next = new Date(now);
+    if (now.getUTCHours() >= EPOCH_HOUR_UTC)
+      next.setUTCDate(next.getUTCDate() + 1);
+    return toUtcDateIso(next);
   }, []);
-  const [customStartInput, setCustomStartInput] = useState(todayIso);
-  const customStartDate = useMemo(() => {
-    if (!customStartInput) return undefined;
+  const [startInput, setStartInput] = useState(nextEpochDateIso);
+  const startDate = useMemo(() => {
+    if (!startInput) return undefined;
     // Pin the chosen calendar day to the daily epoch hour (UTC).
-    const date = new Date(`${customStartInput}T00:00:00Z`);
+    const date = new Date(`${startInput}T00:00:00Z`);
     if (isNaN(date.getTime())) return undefined;
     date.setUTCHours(EPOCH_HOUR_UTC, 0, 0, 0);
     return date;
-  }, [customStartInput]);
+  }, [startInput]);
+  // The default (next epoch) needs no explicit start time — omitting it lets
+  // the chain begin at the next epoch. Only pass a start when it's later.
+  const isDefaultStart = startInput === nextEpochDateIso;
 
   const epochCountdown = useDailyEpochCountdown();
 
@@ -196,6 +206,7 @@ export const IncentivizePoolModal: FunctionComponent<
         // blocking beats letting the user sign a doomed tx.
         (Boolean(config.amount) && totalValue === undefined) ||
         (!isTopUp && !epochsValid) ||
+        (!isTopUp && startDate === undefined) ||
         (needsDuration && fixedDuration === undefined) ||
         // Concentrated gauges must carry an authorized uptime; the offered
         // options are always an authorized set (chain param or the mainnet
@@ -216,10 +227,9 @@ export const IncentivizePoolModal: FunctionComponent<
                     durationSeconds: fixedDuration!.asSeconds(),
                   },
               numEpochs,
-              startTime:
-                customStartEnabled && customStartDate
-                  ? customStartDate
-                  : undefined,
+              // Omit for the default (next epoch); otherwise pin to the
+              // chosen date's epoch time.
+              startTime: isDefaultStart ? undefined : startDate,
             });
         send
           .then(() => {
@@ -336,64 +346,35 @@ export const IncentivizePoolModal: FunctionComponent<
                 <span className="subtitle1">
                   {t("incentivizePool.startLabel")}
                 </span>
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    className={classNames(
-                      "caption rounded-full px-3 py-1 transition-colors",
-                      !customStartEnabled
-                        ? "bg-wosmongton-500 text-white-full"
-                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
-                    )}
-                    onClick={() => setCustomStartEnabled(false)}
-                  >
-                    {t("incentivizePool.startNextEpoch")}
-                  </button>
-                  <button
-                    type="button"
-                    className={classNames(
-                      "caption rounded-full px-3 py-1 transition-colors",
-                      customStartEnabled
-                        ? "bg-wosmongton-500 text-white-full"
-                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
-                    )}
-                    onClick={() => setCustomStartEnabled(true)}
-                  >
-                    {t("incentivizePool.startCustom")}
-                  </button>
-                </div>
-                {customStartEnabled && (
-                  <input
-                    type="date"
-                    className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
-                    value={customStartInput}
-                    onChange={(e) => setCustomStartInput(e.target.value)}
-                  />
-                )}
+                <input
+                  type="date"
+                  min={nextEpochDateIso}
+                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
+                  value={startInput}
+                  onChange={(e) => setStartInput(e.target.value)}
+                />
                 <span className="caption text-osmoverse-400">
-                  {customStartEnabled
-                    ? t("incentivizePool.startCustomCaption")
-                    : epochCountdown
+                  {isDefaultStart && epochCountdown
                     ? t("incentivizePool.epochsCaption", {
                         countdown: epochCountdown,
                       })
-                    : t("incentivizePool.epochsCaptionNoCountdown")}
+                    : isDefaultStart
+                    ? t("incentivizePool.epochsCaptionNoCountdown")
+                    : t("incentivizePool.startCustomCaption")}
                 </span>
               </div>
-              <div className="flex flex-col gap-2">
-                <span className="subtitle1">
+              <div className="flex flex-col items-end gap-2">
+                <span className="subtitle1 text-right">
                   {t("incentivizePool.epochsLabel")}
                 </span>
                 <InputBox
+                  className="w-2/3"
                   type="number"
                   currentValue={epochsInput}
                   onInput={(value) => setEpochsInput(value)}
                   placeholder=""
                   rightEntry
                 />
-                <span className="caption text-osmoverse-400">
-                  {t("incentivizePool.epochsHelp")}
-                </span>
               </div>
             </div>
           </>
