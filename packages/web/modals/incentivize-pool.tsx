@@ -8,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
@@ -95,6 +96,8 @@ export const IncentivizePoolModal: FunctionComponent<
   const externalGauges =
     queriesExternalStore.queryActiveGauges.getExternalGaugesForPool(poolId);
   const [topUpGaugeId, setTopUpGaugeId] = useState<string | null>(null);
+  // Fee acknowledgement, mirroring the pool-creation confirm step.
+  const [acknowledgeFee, setAcknowledgeFee] = useState(false);
 
   // Lock-duration choices for share pools; concentrated pools use the
   // chain's no-lock gauge instead.
@@ -222,6 +225,7 @@ export const IncentivizePoolModal: FunctionComponent<
         (isConcentrated &&
           !isTopUp &&
           !uptimeOptions.includes(uptimeSeconds)) ||
+        !acknowledgeFee ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         const send = isTopUp
@@ -486,14 +490,6 @@ export const IncentivizePoolModal: FunctionComponent<
         <span className="caption text-osmoverse-400">
           {t("incentivizePool.visibilityWarning")}
         </span>
-        <div className="flex place-content-between items-center">
-          <span className="caption text-osmoverse-300">
-            {t("incentivizePool.gaugeFeeLabel")}
-          </span>
-          <span className="caption text-osmoverse-200">
-            {isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL}
-          </span>
-        </div>
         <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
           <Icon
             id="alert-triangle"
@@ -504,6 +500,20 @@ export const IncentivizePoolModal: FunctionComponent<
           <span className="caption text-rust-200">
             {t("incentivizePool.advancedWarning")}
           </span>
+        </div>
+        <div className="rounded-xl bg-gradient-negative p-[2px]">
+          <label className="rounded-xlinset flex cursor-pointer items-center gap-3 bg-osmoverse-800 p-3.5">
+            <Checkbox
+              variant="destructive"
+              checked={acknowledgeFee}
+              onClick={() => setAcknowledgeFee(!acknowledgeFee)}
+            />
+            <span className="caption text-osmoverse-100">
+              {t("incentivizePool.acknowledgeFee", {
+                fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
+              })}
+            </span>
+          </label>
         </div>
         {accountActionButton}
       </div>

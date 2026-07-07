@@ -378,7 +378,7 @@
     "dustUnpriceable": "此資產在此沒有價格。Gauge 只能分配在鏈上有 OSMO 池路由的資產，因此如果此資產無法路由到 OSMO，交易將失敗。",
     "dustBelowMin": "每日價值過低：每個接收者低於 {minValue} 的份額將被鏈的粉塵防禦跳過。",
     "visibilityWarning": "新 Gauge 可能要等一天後才會顯示在池統計中。",
-    "gaugeFeeLabel": "Gauge 費用（進入社區池）",
+    "acknowledgeFee": "我了解這需要支付一筆進入社區池的不可退還的 {fee} 費用。",
     "ctaCreate": "新增激勵",
     "ctaTopUp": "為 Gauge #{gaugeId} 儲值"
   },
