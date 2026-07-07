@@ -168,9 +168,20 @@ export const IncentivizePoolModal: FunctionComponent<
       disabled:
         Boolean(config.error) ||
         !config.amount ||
+        // An unpriceable reward asset is rejected at creation (the chain
+        // requires an OSMO pool route to value it). The frontend price
+        // lookup is an imperfect proxy for that protorev check, but
+        // blocking beats letting the user sign a doomed tx.
+        (Boolean(config.amount) && totalValue === undefined) ||
         (!isTopUp && !epochsValid) ||
         (!isTopUp && !customStartValid) ||
         (needsDuration && fixedDuration === undefined) ||
+        // Concentrated gauges must carry an authorized uptime: hold the
+        // button until the param set has loaded and contains the selection,
+        // else the chain rejects the create.
+        (isConcentrated &&
+          !isTopUp &&
+          (!authorizedUptimes || !authorizedUptimes.includes(uptimeSeconds))) ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         const send = isTopUp
