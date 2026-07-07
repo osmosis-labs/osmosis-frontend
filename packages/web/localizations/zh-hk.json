@@ -375,7 +375,7 @@
     "statsPerDay": "每日分配",
     "statsEstApr": "按目前流動性估算的 APR",
     "dustRule": "鏈會跳過每個接收者每天低於 {minValue} 的支付；分散到大量倉位的小額每日總量可能無法分配。",
-    "dustUnpriceable": "此資產無法在此定價，因此隱藏價值和 APR 估算。只要它在鏈上有 OSMO 池路由，建立仍然有效。",
+    "dustUnpriceable": "此資產在此沒有價格。Gauge 只能分配在鏈上有 OSMO 池路由的資產，因此如果此資產無法路由到 OSMO，交易將失敗。",
     "dustBelowMin": "每日價值過低：每個接收者低於 {minValue} 的份額將被鏈的粉塵防禦跳過。",
     "visibilityWarning": "新 Gauge 可能要等一天後才會顯示在池統計中。",
     "gaugeFeeLabel": "Gauge 費用（進入社區池）",

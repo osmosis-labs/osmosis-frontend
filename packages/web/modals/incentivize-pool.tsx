@@ -462,11 +462,13 @@ export const IncentivizePoolModal: FunctionComponent<
             </div>
           </div>
         )}
-        {!isTopUp && config.amount && totalValue === undefined && (
-          <span className="caption text-osmoverse-400">
-            {t("incentivizePool.dustUnpriceable")}
-          </span>
-        )}
+        {config.amount &&
+          selectedCurrency?.coinMinimalDenom !== "uosmo" &&
+          totalValue === undefined && (
+            <span className="caption text-rust-300">
+              {t("incentivizePool.dustUnpriceable")}
+            </span>
+          )}
         {!isTopUp && perDayValue && perDayValue.toDec().lt(new Dec(1)) && (
           <span className="caption text-rust-300">
             {t("incentivizePool.dustBelowMin", {

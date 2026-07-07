@@ -375,7 +375,7 @@
     "statsPerDay": "Distribuit pe zi",
     "statsEstApr": "APR est. la lichiditatea actuală",
     "dustRule": "Lanțul omite plățile sub {minValue} per destinatar pe zi; totalurile zilnice mici împărțite între multe poziții pot să nu fie distribuite.",
-    "dustUnpriceable": "Acest activ nu poate fi evaluat aici, așa că estimările de valoare și APR sunt ascunse. Crearea funcționează atât timp cât are o rută de pool cu OSMO onchain.",
+    "dustUnpriceable": "Acest activ nu are preț aici. Gauge-urile pot distribui doar active cu o rută de pool către OSMO onchain, așa că tranzacția va eșua dacă acest activ nu poate fi rutat către OSMO.",
     "dustBelowMin": "Valoare zilnică foarte mică: părțile sub {minValue} per destinatar vor fi omise de apărarea anti-praf a lanțului.",
     "visibilityWarning": "Gauge-urile noi pot să nu apară în statisticile pool-ului până la trecerea unei zile.",
     "gaugeFeeLabel": "Taxă gauge (către fondul comunitar)",

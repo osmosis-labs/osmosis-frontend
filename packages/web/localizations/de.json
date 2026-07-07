@@ -375,7 +375,7 @@
     "statsPerDay": "Ausschüttung pro Tag",
     "statsEstApr": "Gesch. APR bei aktueller Liquidität",
     "dustRule": "Die Chain überspringt Auszahlungen unter {minValue} pro Empfänger und Tag; kleine Tagesbeträge, verteilt auf viele Positionen, werden womöglich nicht ausgeschüttet.",
-    "dustUnpriceable": "Dieses Asset kann hier nicht bepreist werden, daher werden Wert- und APR-Schätzungen ausgeblendet. Die Erstellung funktioniert weiterhin, solange onchain eine OSMO-Pool-Route besteht.",
+    "dustUnpriceable": "Für dieses Asset gibt es hier keinen Preis. Gauges können nur Assets mit einer OSMO-Pool-Route onchain verteilen; die Transaktion schlägt fehl, wenn dieses Asset nicht zu OSMO routbar ist.",
     "dustBelowMin": "Sehr geringer Tageswert: Anteile unter {minValue} pro Empfänger werden von der Dust-Abwehr der Chain übersprungen.",
     "visibilityWarning": "Neue Gauges erscheinen möglicherweise erst nach einem Tag in der Pool-Statistik.",
     "gaugeFeeLabel": "Gauge-Gebühr (an den Community-Pool)",
