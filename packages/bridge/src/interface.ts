@@ -480,6 +480,13 @@ export interface BridgeQuote {
   expectedOutput: BridgeCoin & {
     /** Percentage represented as string. E.g. 10.0, 95.0 */
     priceImpact: string;
+    /**
+     * True when the quote bundles an Osmosis swap (e.g. alloy → variant
+     * conversion) whose price impact could not be determined, so `priceImpact`
+     * is a fallback "0" rather than a real figure. Consumers must treat the
+     * loss as unknown rather than zero.
+     */
+    priceImpactUnknown?: boolean;
   };
   fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;

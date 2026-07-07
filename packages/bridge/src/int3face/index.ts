@@ -275,6 +275,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         ...int3faceBridgeAsset,
         denom: tokenConfig.denom,
         priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
+        priceImpactUnknown: !!swapRoute && !swapRoute.priceImpactTokenOut,
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
