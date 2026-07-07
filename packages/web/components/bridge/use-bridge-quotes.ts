@@ -985,15 +985,13 @@ export const useBridgeQuotes = ({
     };
   } else if (warnUserOfSlippage) {
     errorBoxMessage = {
-      heading: "Slippage is too high",
-      description:
-        "The slippage for this transfer is too high. Try a smaller amount or check to confirm you are happy to proceed.",
+      heading: t("transfer.slippageTooHighTitle"),
+      description: t("transfer.slippageTooHighDescription"),
     };
   } else if (warnUserOfPriceImpact) {
     errorBoxMessage = {
-      heading: "Price impact is too high",
-      description:
-        "The price impact for this transfer is too high. Check to confirm you are happy to proceed.",
+      heading: t("transfer.priceImpactTooHighTitle"),
+      description: t("transfer.priceImpactTooHighDescription"),
     };
   } else if (warnUserOfUnknownSwapImpact) {
     errorBoxMessage = {
