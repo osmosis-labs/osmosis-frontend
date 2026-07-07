@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
@@ -255,6 +256,17 @@ export const IncentivizePoolModal: FunctionComponent<
       isOpen={props.isOpen && showModalBase}
     >
       <div className="flex flex-col gap-6 pt-4 md:gap-4">
+        <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
+          <Icon
+            id="alert-triangle"
+            width={16}
+            height={16}
+            className="mt-0.5 shrink-0 text-rust-300"
+          />
+          <span className="caption text-rust-200">
+            {t("incentivizePool.advancedWarning")}
+          </span>
+        </div>
         {externalGauges.length > 0 && (
           <div className="flex flex-col gap-2">
             <span className="subtitle1">
@@ -349,7 +361,9 @@ export const IncentivizePoolModal: FunctionComponent<
                 <input
                   type="date"
                   min={nextEpochDateIso}
-                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
+                  // color-scheme:dark renders the native calendar-picker
+                  // glyph light so it stands out against the dark field.
+                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none [color-scheme:dark]"
                   value={startInput}
                   onChange={(e) => setStartInput(e.target.value)}
                 />
