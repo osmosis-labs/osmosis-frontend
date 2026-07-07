@@ -23,6 +23,16 @@ const DEFAULT_NUM_EPOCHS = "30";
  *  it never distributes. Surfaced as copy; update if governance changes it. */
 const MIN_DISTR_VALUE_LABEL = "0.01 OSMO";
 
+/** Mainnet CL `authorized_uptimes` (1ns / 1min / 1h / 24h), used when the
+ *  chain param can't be fetched so the uptime selector still offers the full
+ *  set instead of a lone fallback button. */
+const FALLBACK_UPTIMES_SECONDS = [0.000000001, 60, 3600, 86400];
+
+/** The daily distribution epoch fires at ~17:00 UTC. A custom start is a
+ *  date-only choice; we pin the time of day to the epoch so the gauge goes
+ *  active on the intended day rather than a day late. */
+const EPOCH_HOUR_UTC = 17;
+
 /** Guided flow for funding external incentives on a pool: create a new
  *  gauge (MsgCreateGauge) or top up an existing one (MsgAddToGauge).
  *  Share pools target a lockable duration; concentrated pools target the
@@ -93,12 +103,15 @@ export const IncentivizePoolModal: FunctionComponent<
   );
 
   // Minimum position uptime for concentrated gauges: how long a position
-  // must be in range before it qualifies (anti just-in-time liquidity).
-  // Options come from the CL module's authorized-uptimes param; 1 hour is
-  // the promoted default, 24 hours suits stable pairs.
+  // must be in range before it qualifies, encouraging broader and more
+  // reliable liquidity. Options come from the CL module's authorized-uptimes
+  // param; 1 hour is the promoted default, 24 hours suits stable pairs. When
+  // the param can't be fetched, fall back to the mainnet-standard set so all
+  // options still render rather than collapsing to a single button.
   const authorizedUptimes =
     queriesStore.get(chainId).osmosis?.queryConcentratedLiquidityParams
       .authorizedUptimes;
+  const uptimeOptions = authorizedUptimes ?? FALLBACK_UPTIMES_SECONDS;
   const [uptimeSeconds, setUptimeSeconds] = useState(3600);
   useEffect(() => {
     // Snap to an authorized value if the param set doesn't include ours.
@@ -119,18 +132,27 @@ export const IncentivizePoolModal: FunctionComponent<
   const numEpochs = Number(epochsInput);
   const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
 
-  // Start: next epoch by default, or a deliberate future time.
+  // Start: next daily epoch by default, or a chosen date. The date input is
+  // date-only; the time of day is pinned to the epoch hour. A past date is
+  // fine — the chain simply activates the gauge at the next epoch — so there
+  // is no validity gate here. Defaults to today.
   const [customStartEnabled, setCustomStartEnabled] = useState(false);
-  const [customStartInput, setCustomStartInput] = useState("");
-  const customStartDate = useMemo(
-    () => (customStartInput ? new Date(customStartInput) : undefined),
-    [customStartInput]
-  );
-  const customStartValid =
-    !customStartEnabled ||
-    (customStartDate !== undefined &&
-      !isNaN(customStartDate.getTime()) &&
-      customStartDate.getTime() > Date.now());
+  const todayIso = useMemo(() => {
+    const now = new Date();
+    return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getUTCDate()).padStart(2, "0")}`;
+  }, []);
+  const [customStartInput, setCustomStartInput] = useState(todayIso);
+  const customStartDate = useMemo(() => {
+    if (!customStartInput) return undefined;
+    // Pin the chosen calendar day to the daily epoch hour (UTC).
+    const date = new Date(`${customStartInput}T00:00:00Z`);
+    if (isNaN(date.getTime())) return undefined;
+    date.setUTCHours(EPOCH_HOUR_UTC, 0, 0, 0);
+    return date;
+  }, [customStartInput]);
 
   const epochCountdown = useDailyEpochCountdown();
 
@@ -174,14 +196,13 @@ export const IncentivizePoolModal: FunctionComponent<
         // blocking beats letting the user sign a doomed tx.
         (Boolean(config.amount) && totalValue === undefined) ||
         (!isTopUp && !epochsValid) ||
-        (!isTopUp && !customStartValid) ||
         (needsDuration && fixedDuration === undefined) ||
-        // Concentrated gauges must carry an authorized uptime: hold the
-        // button until the param set has loaded and contains the selection,
-        // else the chain rejects the create.
+        // Concentrated gauges must carry an authorized uptime; the offered
+        // options are always an authorized set (chain param or the mainnet
+        // fallback), so guard against a stale selection outside them.
         (isConcentrated &&
           !isTopUp &&
-          (!authorizedUptimes || !authorizedUptimes.includes(uptimeSeconds))) ||
+          !uptimeOptions.includes(uptimeSeconds)) ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         const send = isTopUp
@@ -209,9 +230,7 @@ export const IncentivizePoolModal: FunctionComponent<
       },
       children:
         (config.error ? t(...tError(config.error)) : false) ||
-        (!isTopUp && !customStartValid
-          ? t("incentivizePool.startInPast")
-          : isTopUp
+        (isTopUp
           ? t("incentivizePool.ctaTopUp", { gaugeId: topUpGaugeId ?? "" })
           : t("incentivizePool.ctaCreate")),
     },
@@ -221,6 +240,7 @@ export const IncentivizePoolModal: FunctionComponent<
   return (
     <ModalBase
       title={t("incentivizePool.title", { poolId })}
+      className="!max-w-[31.5rem]"
       {...props}
       isOpen={props.isOpen && showModalBase}
     >
@@ -287,7 +307,7 @@ export const IncentivizePoolModal: FunctionComponent<
                     {t("incentivizePool.uptimeLabel")}
                   </span>
                   <div className="flex flex-wrap justify-end gap-1">
-                    {(authorizedUptimes ?? [3600]).map((seconds) => (
+                    {uptimeOptions.map((seconds) => (
                       <button
                         key={seconds}
                         type="button"
@@ -311,8 +331,8 @@ export const IncentivizePoolModal: FunctionComponent<
                 </span>
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <div className="flex place-content-between items-center">
+            <div className="grid grid-cols-2 gap-4 xs:grid-cols-1">
+              <div className="flex flex-col gap-2">
                 <span className="subtitle1">
                   {t("incentivizePool.startLabel")}
                 </span>
@@ -342,37 +362,39 @@ export const IncentivizePoolModal: FunctionComponent<
                     {t("incentivizePool.startCustom")}
                   </button>
                 </div>
+                {customStartEnabled && (
+                  <input
+                    type="date"
+                    className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
+                    value={customStartInput}
+                    onChange={(e) => setCustomStartInput(e.target.value)}
+                  />
+                )}
+                <span className="caption text-osmoverse-400">
+                  {customStartEnabled
+                    ? t("incentivizePool.startCustomCaption")
+                    : epochCountdown
+                    ? t("incentivizePool.epochsCaption", {
+                        countdown: epochCountdown,
+                      })
+                    : t("incentivizePool.epochsCaptionNoCountdown")}
+                </span>
               </div>
-              {customStartEnabled && (
-                <input
-                  type="datetime-local"
-                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none"
-                  value={customStartInput}
-                  onChange={(e) => setCustomStartInput(e.target.value)}
+              <div className="flex flex-col gap-2">
+                <span className="subtitle1">
+                  {t("incentivizePool.epochsLabel")}
+                </span>
+                <InputBox
+                  type="number"
+                  currentValue={epochsInput}
+                  onInput={(value) => setEpochsInput(value)}
+                  placeholder=""
+                  rightEntry
                 />
-              )}
-              <span className="caption text-osmoverse-400">
-                {customStartEnabled
-                  ? t("incentivizePool.startCustomCaption")
-                  : epochCountdown
-                  ? t("incentivizePool.epochsCaption", {
-                      countdown: epochCountdown,
-                    })
-                  : t("incentivizePool.epochsCaptionNoCountdown")}
-              </span>
-            </div>
-            <div className="flex place-content-between items-center">
-              <span className="subtitle1">
-                {t("incentivizePool.epochsLabel")}
-              </span>
-              <InputBox
-                className="w-24"
-                type="number"
-                currentValue={epochsInput}
-                onInput={(value) => setEpochsInput(value)}
-                placeholder=""
-                rightEntry
-              />
+                <span className="caption text-osmoverse-400">
+                  {t("incentivizePool.epochsHelp")}
+                </span>
+              </div>
             </div>
           </>
         )}
@@ -447,9 +469,6 @@ export const IncentivizePoolModal: FunctionComponent<
                 {estApr ? formatPretty(estApr, { maxDecimals: 1 }) : "–"}
               </span>
             </div>
-            <span className="caption text-osmoverse-500">
-              {t("incentivizePool.statsAprCaption")}
-            </span>
           </div>
         )}
         {!isTopUp && config.amount && totalValue === undefined && (
@@ -464,12 +483,15 @@ export const IncentivizePoolModal: FunctionComponent<
             })}
           </span>
         )}
+        {!isTopUp && (
+          <span className="caption text-osmoverse-400">
+            {t("incentivizePool.dustRule", {
+              minValue: MIN_DISTR_VALUE_LABEL,
+            })}
+          </span>
+        )}
         <span className="caption text-osmoverse-400">
-          {!isTopUp
-            ? `${t("incentivizePool.dustRule", {
-                minValue: MIN_DISTR_VALUE_LABEL,
-              })} ${t("incentivizePool.visibilityWarning")}`
-            : t("incentivizePool.visibilityWarning")}
+          {t("incentivizePool.visibilityWarning")}
         </span>
         {accountActionButton}
       </div>
