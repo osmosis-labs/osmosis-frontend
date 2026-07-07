@@ -378,6 +378,7 @@
     "dustUnpriceable": "Acest activ nu poate fi evaluat aici, așa că estimările de valoare și APR sunt ascunse. Crearea funcționează atât timp cât are o rută de pool cu OSMO onchain.",
     "dustBelowMin": "Valoare zilnică foarte mică: părțile sub {minValue} per destinatar vor fi omise de apărarea anti-praf a lanțului.",
     "visibilityWarning": "Gauge-urile noi pot să nu apară în statisticile pool-ului până la trecerea unei zile.",
+    "gaugeFeeLabel": "Taxă gauge (către fondul comunitar)",
     "ctaCreate": "Adaugă stimulente",
     "ctaTopUp": "Alimentează gauge #{gaugeId}"
   },

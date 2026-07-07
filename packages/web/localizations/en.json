@@ -378,6 +378,7 @@
     "dustUnpriceable": "This asset can't be priced here, so value and APR estimates are hidden. Creation still works as long as it has an OSMO pool route on chain.",
     "dustBelowMin": "Very low daily value: shares under {minValue} per recipient will be skipped by the chain's dust defense.",
     "visibilityWarning": "New gauges may not appear in pool stats until one day has passed.",
+    "gaugeFeeLabel": "Gauge fee (to community pool)",
     "ctaCreate": "Add incentives",
     "ctaTopUp": "Top up gauge #{gaugeId}"
   },

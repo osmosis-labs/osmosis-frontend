@@ -29,6 +29,13 @@ const MIN_DISTR_VALUE_LABEL = "0.01 OSMO";
  *  set instead of a lone fallback button. */
 const FALLBACK_UPTIMES_SECONDS = [0.000000001, 60, 3600, 86400];
 
+/** x/incentives hardcoded fees (CreateGaugeFee / AddToGaugeFee, sent to the
+ *  community pool). These are constants in the chain, not gov params. If the
+ *  gauge is funded with OSMO, this fee is charged on top of the reward
+ *  amount, so the sender needs reward + fee in OSMO. */
+const CREATE_GAUGE_FEE_LABEL = "50 OSMO";
+const ADD_TO_GAUGE_FEE_LABEL = "25 OSMO";
+
 /** The daily distribution epoch fires at ~17:00 UTC. A custom start is a
  *  date-only choice; we pin the time of day to the epoch so the gauge goes
  *  active on the intended day rather than a day late. */
@@ -477,6 +484,14 @@ export const IncentivizePoolModal: FunctionComponent<
         <span className="caption text-osmoverse-400">
           {t("incentivizePool.visibilityWarning")}
         </span>
+        <div className="flex place-content-between items-center">
+          <span className="caption text-osmoverse-300">
+            {t("incentivizePool.gaugeFeeLabel")}
+          </span>
+          <span className="caption text-osmoverse-200">
+            {isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL}
+          </span>
+        </div>
         <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
           <Icon
             id="alert-triangle"

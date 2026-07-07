@@ -378,6 +378,7 @@
     "dustUnpriceable": "此资产无法在此定价，因此隐藏价值和 APR 估算。只要它在链上有 OSMO 池路由，创建仍然有效。",
     "dustBelowMin": "每日价值过低：每个接收者低于 {minValue} 的份额将被链的粉尘防御跳过。",
     "visibilityWarning": "新 Gauge 可能要等一天后才会显示在池统计中。",
+    "gaugeFeeLabel": "Gauge 费用（进入社区池）",
     "ctaCreate": "添加激励",
     "ctaTopUp": "为 Gauge #{gaugeId} 充值"
   },

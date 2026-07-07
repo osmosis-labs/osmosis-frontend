@@ -378,6 +378,7 @@
     "dustUnpriceable": "Este ativo não pode ser precificado aqui, então as estimativas de valor e APR ficam ocultas. A criação funciona desde que ele tenha uma rota de pool com OSMO onchain.",
     "dustBelowMin": "Valor diário muito baixo: cotas abaixo de {minValue} por destinatário serão ignoradas pela defesa antipoeira da chain.",
     "visibilityWarning": "Novos gauges podem não aparecer nas estatísticas da pool até que um dia tenha passado.",
+    "gaugeFeeLabel": "Taxa do gauge (para o fundo da comunidade)",
     "ctaCreate": "Adicionar incentivos",
     "ctaTopUp": "Recarregar gauge #{gaugeId}"
   },

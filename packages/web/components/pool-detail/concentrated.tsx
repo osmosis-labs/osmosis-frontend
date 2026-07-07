@@ -532,145 +532,145 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
 }> = observer(({ poolId, onIncentivize }) => {
-    const { derivedDataStore } = useStore();
-    const { t } = useTranslation();
-    const featureFlags = useFeatureFlags();
+  const { derivedDataStore } = useStore();
+  const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
-    const concentratedPoolDetail =
-      derivedDataStore.concentratedPoolDetails.get(poolId);
+  const concentratedPoolDetail =
+    derivedDataStore.concentratedPoolDetails.get(poolId);
 
-    const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+  const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
-    const { data: incentives, isLoading: isLoadingIncentives } =
-      api.edge.pools.getPoolIncentives.useQuery(
-        {
-          poolId,
-        },
-        {
-          enabled: featureFlags.aprBreakdown,
-        }
-      );
+  const { data: incentives, isLoading: isLoadingIncentives } =
+    api.edge.pools.getPoolIncentives.useQuery(
+      {
+        poolId,
+      },
+      {
+        enabled: featureFlags.aprBreakdown,
+      }
+    );
 
-    return (
-      <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7">
-          <div className="flex h-full flex-col place-content-between">
-            <span className="body2 text-osmoverse-300">
-              {t("clPositions.totalBalance")}
+  return (
+    <div className="flex flex-wrap gap-4">
+      <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7">
+        <div className="flex h-full flex-col place-content-between">
+          <span className="body2 text-osmoverse-300">
+            {t("clPositions.totalBalance")}
+          </span>
+          <div>
+            <h4 className="text-osmoverse-100">
+              {concentratedPoolDetail.userPoolValue.toString()}
+            </h4>
+            <span className="subtitle1 text-osmoverse-300">
+              {concentratedPoolDetail.userPositions.length === 1
+                ? t("clPositions.onePosition")
+                : t("clPositions.numPositions", {
+                    numPositions:
+                      concentratedPoolDetail.userPositions.length.toString(),
+                  })}
             </span>
-            <div>
-              <h4 className="text-osmoverse-100">
-                {concentratedPoolDetail.userPoolValue.toString()}
-              </h4>
-              <span className="subtitle1 text-osmoverse-300">
-                {concentratedPoolDetail.userPositions.length === 1
-                  ? t("clPositions.onePosition")
-                  : t("clPositions.numPositions", {
-                      numPositions:
-                        concentratedPoolDetail.userPositions.length.toString(),
-                    })}
+          </div>
+        </div>
+        <div className="flex flex-col gap-5">
+          {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+            <div
+              className="subtitle1 flex gap-2"
+              key={asset.currency.coinMinimalDenom}
+            >
+              {asset.currency.coinImageUrl && (
+                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={{
+                      svg: asset.currency.coinImageUrl?.replace(
+                        /\.png$/,
+                        ".svg"
+                      ),
+                      png: asset.currency.coinImageUrl,
+                    }}
+                    width={20}
+                    height={20}
+                    name={asset.currency.coinDenom}
+                    symbol={asset.currency.coinDenom}
+                  />
+                </div>
+              )}
+              <span className="text-osmoverse-300">
+                {asset.currency.coinDenom}
+              </span>
+              <span className="text-osmoverse-100">
+                {formatPretty(asset, { maxDecimals: 2 })}
               </span>
             </div>
-          </div>
-          <div className="flex flex-col gap-5">
-            {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
-              <div
-                className="subtitle1 flex gap-2"
-                key={asset.currency.coinMinimalDenom}
+          ))}
+        </div>
+      </div>
+      {featureFlags.aprBreakdown && (
+        <SkeletonLoader isLoaded={!isLoadingIncentives}>
+          <AprBreakdown
+            className="shrink-0 rounded-3xl"
+            showDisclaimerTooltip
+            {...incentives?.aprBreakdown}
+            footer={
+              <Button
+                variant="outline"
+                size="sm"
+                className="!px-1"
+                onClick={onIncentivize}
               >
-                {asset.currency.coinImageUrl && (
+                {t("incentivizePool.entry")}
+              </Button>
+            }
+          />
+        </SkeletonLoader>
+      )}
+
+      {hasIncentives && (
+        <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
+          <span className="body2 mr-auto text-osmoverse-300">
+            {t("pool.incentives")}
+          </span>
+          <div className="flex w-full items-center">
+            {concentratedPoolDetail.incentiveGauges.map((incentive) => (
+              <div
+                className="flex items-center gap-3"
+                key={incentive.coinPerDay.denom}
+              >
+                <div className="flex items-center gap-1">
+                  {incentive.apr && (
+                    <span className="subtitle1 text-osmoverse-100">
+                      +{incentive.apr.maxDecimals(0).toString()}
+                    </span>
+                  )}
                   <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                     <EntityImage
                       logoURIs={{
-                        svg: asset.currency.coinImageUrl?.replace(
-                          /\.png$/,
-                          ".svg"
-                        ),
-                        png: asset.currency.coinImageUrl,
+                        png: incentive.coinPerDay.currency.coinImageUrl,
                       }}
+                      name={incentive.coinPerDay.currency.coinDenom}
+                      symbol={incentive.coinPerDay.currency.coinDenom}
                       width={20}
                       height={20}
-                      name={asset.currency.coinDenom}
-                      symbol={asset.currency.coinDenom}
                     />
                   </div>
-                )}
-                <span className="text-osmoverse-300">
-                  {asset.currency.coinDenom}
-                </span>
-                <span className="text-osmoverse-100">
-                  {formatPretty(asset, { maxDecimals: 2 })}
-                </span>
+                </div>
+                <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
+                  <span>
+                    {t("pool.dailyEarnAmount", {
+                      amount: formatPretty(incentive.coinPerDay, {
+                        maxDecimals: 2,
+                      }),
+                    })}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
+          <span className="caption mr-auto text-osmoverse-500">
+            *{t("pool.onlyInRangePositions")}
+          </span>
         </div>
-        {featureFlags.aprBreakdown && (
-          <div className="flex shrink-0 flex-col gap-2">
-            <SkeletonLoader isLoaded={!isLoadingIncentives}>
-              <AprBreakdown
-                className="shrink-0 rounded-3xl"
-                showDisclaimerTooltip
-                {...incentives?.aprBreakdown}
-              />
-            </SkeletonLoader>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={onIncentivize}
-            >
-              {t("incentivizePool.entry")}
-            </Button>
-          </div>
-        )}
-
-        {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
-            <span className="body2 mr-auto text-osmoverse-300">
-              {t("pool.incentives")}
-            </span>
-            <div className="flex w-full items-center">
-              {concentratedPoolDetail.incentiveGauges.map((incentive) => (
-                <div
-                  className="flex items-center gap-3"
-                  key={incentive.coinPerDay.denom}
-                >
-                  <div className="flex items-center gap-1">
-                    {incentive.apr && (
-                      <span className="subtitle1 text-osmoverse-100">
-                        +{incentive.apr.maxDecimals(0).toString()}
-                      </span>
-                    )}
-                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
-                      <EntityImage
-                        logoURIs={{
-                          png: incentive.coinPerDay.currency.coinImageUrl,
-                        }}
-                        name={incentive.coinPerDay.currency.coinDenom}
-                        symbol={incentive.coinPerDay.currency.coinDenom}
-                        width={20}
-                        height={20}
-                      />
-                    </div>
-                  </div>
-                  <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
-                    <span>
-                      {t("pool.dailyEarnAmount", {
-                        amount: formatPretty(incentive.coinPerDay, {
-                          maxDecimals: 2,
-                        }),
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <span className="caption mr-auto text-osmoverse-500">
-              *{t("pool.onlyInRangePositions")}
-            </span>
-          </div>
-        )}
-      </div>
-    );
-  });
+      )}
+    </div>
+  );
+});

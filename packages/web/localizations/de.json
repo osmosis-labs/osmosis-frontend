@@ -378,6 +378,7 @@
     "dustUnpriceable": "Dieses Asset kann hier nicht bepreist werden, daher werden Wert- und APR-Schätzungen ausgeblendet. Die Erstellung funktioniert weiterhin, solange onchain eine OSMO-Pool-Route besteht.",
     "dustBelowMin": "Sehr geringer Tageswert: Anteile unter {minValue} pro Empfänger werden von der Dust-Abwehr der Chain übersprungen.",
     "visibilityWarning": "Neue Gauges erscheinen möglicherweise erst nach einem Tag in der Pool-Statistik.",
+    "gaugeFeeLabel": "Gauge-Gebühr (an den Community-Pool)",
     "ctaCreate": "Anreize hinzufügen",
     "ctaTopUp": "Gauge #{gaugeId} auffüllen"
   },

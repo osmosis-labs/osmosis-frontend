@@ -378,6 +378,7 @@
     "dustUnpriceable": "이 자산은 여기서 가격을 산정할 수 없어 가치 및 APR 추정치가 숨겨집니다. 온체인에 OSMO 풀 경로가 있으면 생성은 정상 작동합니다.",
     "dustBelowMin": "일일 가치가 매우 낮습니다. 수령인당 {minValue} 미만의 몫은 체인의 더스트 방어에 의해 건너뛰어집니다.",
     "visibilityWarning": "새 게이지는 하루가 지나기 전까지 풀 통계에 표시되지 않을 수 있습니다.",
+    "gaugeFeeLabel": "게이지 수수료(커뮤니티 풀로)",
     "ctaCreate": "인센티브 추가",
     "ctaTopUp": "게이지 #{gaugeId} 충전"
   },

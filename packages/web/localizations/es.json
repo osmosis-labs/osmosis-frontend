@@ -378,6 +378,7 @@
     "dustUnpriceable": "Este activo no se puede valorar aquí, por lo que se ocultan las estimaciones de valor y APR. La creación funciona igualmente si tiene una ruta de pool con OSMO en la cadena.",
     "dustBelowMin": "Valor diario muy bajo: las partes inferiores a {minValue} por destinatario serán omitidas por la defensa antipolvo de la cadena.",
     "visibilityWarning": "Los nuevos gauges pueden no aparecer en las estadísticas del pool hasta que pase un día.",
+    "gaugeFeeLabel": "Comisión del gauge (al fondo comunitario)",
     "ctaCreate": "Añadir incentivos",
     "ctaTopUp": "Recargar gauge #{gaugeId}"
   },
