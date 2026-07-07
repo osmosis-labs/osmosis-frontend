@@ -22,7 +22,14 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import {
+  hasActiveWarning,
+  LossFigures,
+  shouldResetAcknowledgement,
+} from "~/components/bridge/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
+import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
@@ -281,8 +288,14 @@ export const useBridgeQuotes = ({
               fromChain,
               toChain,
               totalFeeFiatValue,
-              isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
-              isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
+              transferSlippage,
+              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate), // warn if expected output is less than 6% of input amount
+              isPriceImpactTooHigh: priceImpact
+                .toDec()
+                .gte(HighPriceImpactGate), // warn if price impact is greater than 10%.
+              // the quote bundles an Osmosis swap whose price impact could not
+              // be determined — the loss is unknown, which must warn, not pass
+              isSwapImpactUnknown: expectedOutput.priceImpactUnknown === true,
             };
           },
 
@@ -320,6 +333,41 @@ export const useBridgeQuotes = ({
   const selectedQuote = useMemo(() => {
     return selectedQuoteQuery?.data;
   }, [selectedQuoteQuery]);
+
+  /**
+   * Live loss figures for the selected quote — the input to the frozen-basis
+   * acknowledgement model. See `loss-acknowledgement.ts`.
+   */
+  const currentLossFigures: LossFigures | undefined = useMemo(() => {
+    if (!selectedQuote) return undefined;
+    return {
+      providerId: selectedQuote.provider.id,
+      fromChainId: fromChain?.chainId,
+      toChainId: toChain?.chainId,
+      fromAssetAddress: fromAsset?.address,
+      toAssetAddress: toAsset?.address,
+      inputAmount: inputAmount.toString(),
+      slippage: selectedQuote.transferSlippage,
+      priceImpact: selectedQuote.priceImpact.toDec(),
+      warnSlippage: selectedQuote.isSlippageTooHigh,
+      warnPriceImpact: selectedQuote.isPriceImpactTooHigh,
+      swapImpactUnknown: selectedQuote.isSwapImpactUnknown,
+    };
+  }, [
+    selectedQuote,
+    fromChain?.chainId,
+    toChain?.chainId,
+    fromAsset?.address,
+    toAsset?.address,
+    inputAmount,
+  ]);
+
+  const {
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
+  } = useLossAcknowledgement(currentLossFigures);
 
   const numSucceeded = successfulQuotes.length;
   const isOneSuccessful = Boolean(numSucceeded);
@@ -812,6 +860,28 @@ export const useBridgeQuotes = ({
   };
 
   const onTransfer = async () => {
+    // Last-line guard: a warned transfer must hold a fresh acknowledgement at
+    // the moment of signing. The disabled state of the confirm button is
+    // advisory rendering — a 30s refetch or provider auto-switch can land
+    // between the last render and the click, so the acknowledgement is
+    // re-validated synchronously here against the figures that will be signed.
+    if (
+      currentLossFigures &&
+      hasActiveWarning(currentLossFigures) &&
+      (!acknowledgedBasis ||
+        shouldResetAcknowledgement(acknowledgedBasis, currentLossFigures))
+    ) {
+      setLossAcknowledged(false);
+      displayToast(
+        {
+          titleTranslationKey: "transfer.quoteUpdatedTitle",
+          captionTranslationKey: "transfer.quoteUpdatedCaption",
+        },
+        ToastType.ERROR
+      );
+      return;
+    }
+
     const transactionRequest =
       selectedQuote?.transactionRequest ??
       bridgeTransaction.data?.transactionRequest;
@@ -841,6 +911,7 @@ export const useBridgeQuotes = ({
   );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
+  const warnUserOfUnknownSwapImpact = selectedQuote?.isSwapImpactUnknown;
   const isCorrectEvmChainSelected =
     fromChain?.chainType === "evm"
       ? currentEvmChainId === fromChain?.chainId
@@ -924,6 +995,11 @@ export const useBridgeQuotes = ({
       description:
         "The price impact for this transfer is too high. Check to confirm you are happy to proceed.",
     };
+  } else if (warnUserOfUnknownSwapImpact) {
+    errorBoxMessage = {
+      heading: t("transfer.unknownSwapImpactTitle"),
+      description: t("transfer.unknownSwapImpactDescription"),
+    };
   }
 
   let warningBoxMessage: { heading: string; description: string } | undefined;
@@ -965,7 +1041,9 @@ export const useBridgeQuotes = ({
 
   let buttonText: string;
   if (
-    (warnUserOfSlippage || warnUserOfPriceImpact) &&
+    (warnUserOfSlippage ||
+      warnUserOfPriceImpact ||
+      warnUserOfUnknownSwapImpact) &&
     !isInsufficientFee &&
     !isValueLossTooHigh
   ) {
@@ -1008,6 +1086,12 @@ export const useBridgeQuotes = ({
     isInsufficientBal,
     warnUserOfSlippage,
     warnUserOfPriceImpact,
+    warnUserOfUnknownSwapImpact,
+
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
 
     successfulQuotes,
     isAllQuotesSuccessful: isAllSuccessful,

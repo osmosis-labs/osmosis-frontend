@@ -21,6 +21,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
+import { LossAcknowledgementCheckbox } from "./loss-acknowledgement-checkbox";
 import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
@@ -81,6 +82,15 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   isManualAddress,
 }) => {
   const { t } = useTranslation();
+
+  // Warnings intentionally *enable* the confirm button (warn-and-accept, no
+  // hard block) — but only once the acknowledgement checkbox below is ticked
+  // and its basis is still fresh (`warningNeedsAcknowledgement`).
+  const hasLossWarning = Boolean(
+    quote.warnUserOfPriceImpact ||
+      quote.warnUserOfSlippage ||
+      quote.warnUserOfUnknownSwapImpact
+  );
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -155,6 +165,25 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           {t("transfer.learnMore")}
         </Link>
       </div>
+      {hasLossWarning && (
+        <div className="flex flex-col gap-3 pt-3">
+          {quote.errorBoxMessage && (
+            <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+              <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
+              <div className="flex flex-col">
+                <h1 className="body2">{quote.errorBoxMessage.heading}</h1>
+                <p className="body2 text-osmoverse-300">
+                  {quote.errorBoxMessage.description}
+                </p>
+              </div>
+            </div>
+          )}
+          <LossAcknowledgementCheckbox
+            checked={quote.hasAcknowledgedLoss}
+            onCheckedChange={quote.setLossAcknowledged}
+          />
+        </div>
+      )}
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
         {!quote.isTxPending && (
           <Button
@@ -170,11 +199,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         )}
         <Button
           className="w-full md:h-12"
+          variant={hasLossWarning ? "destructive" : "default"}
           onClick={onConfirm}
           disabled={
-            (!quote.userCanAdvance &&
-              !quote.warnUserOfPriceImpact &&
-              !quote.warnUserOfSlippage) ||
+            (!quote.userCanAdvance && !hasLossWarning) ||
+            quote.warningNeedsAcknowledgement ||
             quote.isTxPending ||
             quote.isApprovingToken
           }
