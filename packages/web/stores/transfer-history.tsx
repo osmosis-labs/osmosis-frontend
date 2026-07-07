@@ -82,12 +82,24 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         snapshot.provider.startsWith(source.providerId)
       );
       if (statusSource && snapshot.osmoBech32Address === accountAddress) {
+        // makeExplorerUrl already returns "" when it can't resolve a link
+        // (e.g. the tx's chain is no longer in the registry). This try/catch
+        // is a render-safety backstop: an explorer URL is cosmetic, so any
+        // unexpected throw from a status provider must not escape this computed
+        // and crash the transaction history / portfolio page. Fall back to an
+        // empty URL, which the UI renders as "no explorer link".
+        let explorerUrl = "";
+        try {
+          explorerUrl = statusSource.makeExplorerUrl(snapshot);
+        } catch (e) {
+          console.error("Failed to build transfer explorer URL", e);
+        }
         histories.push({
           ...snapshot,
           sendTxHash: snapshot.sendTxHash,
           createdAt: new Date(snapshot.createdAtUnix * 1000),
           providerName: statusSource.sourceDisplayName,
-          explorerUrl: statusSource.makeExplorerUrl(snapshot),
+          explorerUrl,
         });
       }
     });

@@ -605,6 +605,10 @@ export interface TransferStatusProvider {
    */
   trackTxStatus(snapshot: TxSnapshot): void;
 
-  /** Make url to this tx explorer. */
+  /**
+   * Make url to this tx explorer. Returns "" when no explorer link can be
+   * resolved (e.g. the snapshot's from-chain is no longer in the registry),
+   * so callers should treat an empty string as "no link available".
+   */
   makeExplorerUrl(snapshot: TxSnapshot): string;
 }
