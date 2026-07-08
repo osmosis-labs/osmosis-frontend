@@ -48,8 +48,11 @@ function mapChainInfo<Chain>({
 }
 
 export const EthereumChainInfo = [
-  // Override viem's default mainnet RPC (eth.merkle.io, 25 req/s free-tier cap)
-  // with more reliable public endpoints. Order matters: first URL is primary.
+  // Override viem's default mainnet RPC (eth.merkle.io) with more reliable
+  // public endpoints. Order matters: first URL is primary. Every URL must
+  // support eth_estimateGas with state overrides (the bridge quote flow
+  // relies on it) and answer that method promptly — merkle was dropped
+  // because its eth_estimateGas hangs ~15s while other methods stay fast.
   mapChainInfo({
     chain: {
       ...mainnet,
@@ -60,7 +63,7 @@ export const EthereumChainInfo = [
           http: [
             "https://ethereum-rpc.publicnode.com",
             "https://evm-1.keplr.app",
-            "https://eth.merkle.io",
+            "https://eth.drpc.org",
           ],
         },
       },
@@ -176,11 +179,22 @@ export const EthereumChainInfo = [
 /**
  * Builds a viem fallback transport from a chain's default RPC URLs.
  * Falls through each URL in order on failure.
+ *
+ * Each attempt is bounded (short timeout, no retries) so a degraded RPC
+ * can't stall the chain: server-side bridge quotes run under a 12s tRPC
+ * procedure timeout, and viem's defaults (10s timeout, 3 retries per
+ * transport plus fallback-level retries) let one hanging endpoint consume
+ * the entire budget before the remaining URLs are tried.
  */
 export function getEvmRpcTransport(chain: {
   rpcUrls: { default: { http: readonly string[] } };
 }) {
-  return fallback(chain.rpcUrls.default.http.map((url) => http(url)));
+  return fallback(
+    chain.rpcUrls.default.http.map((url) =>
+      http(url, { timeout: 3_000, retryCount: 0 })
+    ),
+    { retryCount: 0 }
+  );
 }
 
 export function getEvmExplorerUrl({
