@@ -21,7 +21,13 @@ import { replaceAt } from "~/utils/array";
 import { isSameCoinDenom } from "~/utils/denom";
 import { trimPlaceholderZeros } from "~/utils/number";
 
-const mulGasSlippage = new Dec("1.1");
+// Head-room multiplier on the quoted gas cost when clamping a max-amount
+// input. Must absorb base-fee drift between quote time and signing time
+// plus wallet-side padding: the EIP-1559 base fee moves up to ±12.5% per
+// block and wallets budget their own worst-case fee when the user signs,
+// so a thin margin fails the signature with "insufficient funds".
+// Over-reserving only leaves ~one gas fee of dust in the wallet.
+const mulGasSlippage = new Dec("2");
 
 /** Safely converts a raw input string to a Dec value.
  * Returns "0" for empty strings or lone decimals that can't be parsed.

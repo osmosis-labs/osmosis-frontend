@@ -25,7 +25,7 @@ function makeGasCost(amount: string) {
   return new CoinPretty(ATOM_CURRENCY, amount);
 }
 
-const MUL_GAS_SLIPPAGE = new Dec("1.1");
+const MUL_GAS_SLIPPAGE = new Dec("2");
 
 function expectedMaxAfterGas(balanceRaw: string, gasRaw: string) {
   const balance = new CoinPretty(ATOM_CURRENCY, balanceRaw);
