@@ -131,12 +131,32 @@ export function useAmountInput({
     }
   }, [currency, inputAmount, fraction, rawCurrencyBalance, maxAmountWithGas]);
 
+  const isQuarterValue = useMemo(
+    () =>
+      fraction === 0.25 ||
+      (rawCurrencyBalance && amount
+        ? new Dec(amount.toCoin().amount).equals(
+            new Dec(rawCurrencyBalance).mul(new Dec(0.25))
+          )
+        : false),
+    [amount, fraction, rawCurrencyBalance]
+  );
   const isHalfValue = useMemo(
     () =>
       fraction === 0.5 ||
       (rawCurrencyBalance && amount
         ? new Dec(amount.toCoin().amount).equals(
             new Dec(rawCurrencyBalance).mul(new Dec(0.5))
+          )
+        : false),
+    [amount, fraction, rawCurrencyBalance]
+  );
+  const isThreeQuartersValue = useMemo(
+    () =>
+      fraction === 0.75 ||
+      (rawCurrencyBalance && amount
+        ? new Dec(amount.toCoin().amount).equals(
+            new Dec(rawCurrencyBalance).mul(new Dec(0.75))
           )
         : false),
     [amount, fraction, rawCurrencyBalance]
@@ -211,7 +231,9 @@ export function useAmountInput({
     fraction,
     isEmpty: inputAmountWithFraction === "",
     error,
+    isQuarterValue,
     isHalfValue,
+    isThreeQuartersValue,
     isMaxValue,
     setAmount,
     reset,
