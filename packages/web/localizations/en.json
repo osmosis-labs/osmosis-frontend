@@ -1326,8 +1326,7 @@
     "extremeDeviation": {
       "aboveTitle": "Limit price is {percent}% above current price",
       "belowTitle": "Limit price is {percent}% below current price",
-      "description": "Double-check the price before placing this order.",
-      "dismiss": "Dismiss"
+      "description": "Double-check the price before placing this order."
     },
     "enterAnAmountTo": "Enter an amount",
     "toSell": "to sell",
