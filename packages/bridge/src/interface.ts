@@ -480,10 +480,13 @@ export interface BridgeQuote {
   expectedOutput: BridgeCoin & {
     /**
      * Price impact of any swap bundled into the quote, as a stringified
-     * fraction (e.g. "0.1" = 10%). Sign convention varies by provider:
-     * bundled Osmosis swaps (int3face, Nomic) report negative fractions,
-     * Squid reports positive — consumers must compare magnitudes, not raw
-     * values. "0" when the quote involves no swap.
+     * fraction (e.g. "0.1" = 10%), NOT a percentage. Sign convention varies
+     * by provider: bundled Osmosis swaps (int3face, Nomic) report negative
+     * fractions, Squid reports positive (its API's percentage is divided by
+     * 100 at the provider) — consumers must compare magnitudes, not raw
+     * values. "0" when the quote involves no swap — except Skip, which
+     * reports "0" even when its route swaps internally (known gap; the
+     * fiat-loss check is its only defense).
      */
     priceImpact: string;
     /**
