@@ -3,6 +3,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
+import { createPublicClient } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
@@ -267,6 +268,7 @@ describe("SkipBridgeProvider", () => {
         coinGeckoId: undefined,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
+        isAdditive: false,
       },
       estimatedTime: 30,
       transactionRequest: {
@@ -286,6 +288,60 @@ describe("SkipBridgeProvider", () => {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       },
     });
+  });
+
+  it("flags the transfer fee as additive when Skip reports FEE_BEHAVIOR_ADDITIONAL", async () => {
+    server.use(
+      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...ETH_EthereumToOsmosis_Route,
+            estimated_fees: [
+              {
+                fee_type: "BRIDGE",
+                bridge_id: "AXELAR",
+                // matches the axelar_transfer op's fee_amount in the route mock
+                amount: "73924361079993",
+                usd_amount: "0.26",
+                origin_asset: null,
+                chain_id: "1",
+                tx_index: 0,
+                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+              },
+            ],
+          })
+        )
+      ),
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      )
+    );
+
+    const quote = await provider.getQuote({
+      fromAmount: "10000000000000000000",
+      toAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      fromAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      slippage: 0.01,
+    });
+
+    expect(quote.transferFee.isAdditive).toBe(true);
   });
 
   it("should handle unsupported asset error", async () => {
@@ -386,6 +442,20 @@ describe("SkipBridgeProvider", () => {
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBeDefined();
     expect(gasCost?.denom).toBe("ETH");
+
+    // The sender's balance is overridden so estimation succeeds even when
+    // the wallet can't currently fund value + fee (max-amount inputs).
+    const client = (createPublicClient as jest.Mock).mock.results.at(-1)?.value;
+    expect(client.estimateGas).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stateOverride: [
+          {
+            address: "0xabc",
+            balance: BigInt("0x3e8") + BigInt("1000000000000000000"),
+          },
+        ],
+      })
+    );
   });
 
   it("should estimate gas cost - Cosmos transactions", async () => {

@@ -81,7 +81,22 @@ export type SkipRouteResponse = {
   usd_amount_out?: string;
   swap_price_impact_percent?: string;
 
+  estimated_fees?: SkipEstimatedFee[];
+
   estimated_route_duration_seconds: number;
+};
+
+export type SkipEstimatedFee = {
+  fee_type: string;
+  bridge_id: string;
+  amount: string;
+  usd_amount: string;
+  origin_asset: SkipAsset | null;
+  chain_id: string;
+  tx_index: number;
+  /** `FEE_BEHAVIOR_ADDITIONAL`: charged on top of `amount_in` (EVM-source transfers).
+   *  `FEE_BEHAVIOR_DEDUCTED`: taken out of the transferred amount (Cosmos-source transfers). */
+  fee_behavior?: "FEE_BEHAVIOR_ADDITIONAL" | "FEE_BEHAVIOR_DEDUCTED";
 };
 
 export type SkipOperation =

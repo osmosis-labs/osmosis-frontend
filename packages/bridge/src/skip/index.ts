@@ -27,7 +27,6 @@ import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
-  BridgeCoin,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -163,7 +162,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain
         );
 
-        let transferFee: BridgeCoin & { chainId: number | string } = {
+        let transferFee: BridgeQuote["transferFee"] = {
           ...fromAsset,
           coinGeckoId: sourceAsset.coingecko_id,
           amount: "0",
@@ -186,6 +185,14 @@ export class SkipBridgeProvider implements BridgeProvider {
                   : feeAsset.token_contract!,
               decimals: feeAsset.decimals ?? 6,
               coinGeckoId: feeAsset.coingecko_id,
+              // For EVM-source transfers Skip charges the bridge fee on top of
+              // amount_in (the built tx's value is amount + fee), so max-amount
+              // inputs must leave room for it. Cosmos-source fees are deducted.
+              isAdditive: route.estimated_fees?.some(
+                (fee) =>
+                  fee.fee_behavior === "FEE_BEHAVIOR_ADDITIONAL" &&
+                  fee.amount === operation.axelar_transfer.fee_amount
+              ),
             };
           }
         }
@@ -910,6 +917,20 @@ export class SkipBridgeProvider implements BridgeProvider {
     txData: EvmBridgeTransactionRequest
   ) {
     try {
+      // Override the sender's balance to cover the tx value plus gas so the
+      // estimate prices the tx even when the wallet can't currently fund it.
+      // Skip charges additive bridge fees inside the tx value, so a max-amount
+      // input always exceeds the balance and the node would otherwise reject
+      // the estimate with "insufficient funds". Affordability is checked
+      // client-side against this estimate, not here.
+      const balanceOverride = {
+        address: params.fromAddress as Address,
+        balance:
+          (!isNil(txData.value) ? BigInt(txData.value) : BigInt(0)) +
+          // 1 native token (18 decimals) of headroom for the gas cost itself
+          BigInt("1000000000000000000"),
+      };
+
       if (!txData.approvalTransactionRequest) {
         return await provider
           .estimateGas({
@@ -917,6 +938,7 @@ export class SkipBridgeProvider implements BridgeProvider {
             to: txData.to,
             data: txData.data,
             value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+            stateOverride: [balanceOverride],
           })
           .then((gas) => BigInt(gas));
       }
@@ -947,6 +969,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           data: txData.data,
           value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
           stateOverride: [
+            balanceOverride,
             {
               address: txData.approvalTransactionRequest.to as Address,
               stateDiff: [

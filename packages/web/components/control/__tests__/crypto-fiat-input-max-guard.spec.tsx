@@ -42,6 +42,7 @@ interface Props {
   onChangeCryptoInput: jest.Mock;
   canSetMax?: boolean;
   address?: string;
+  additiveTransferFee?: CoinPretty;
 }
 
 function renderInput({
@@ -52,6 +53,7 @@ function renderInput({
   onChangeCryptoInput,
   canSetMax = true,
   address = "uatom",
+  additiveTransferFee,
 }: Props) {
   const balance = makeBalance(balanceRaw);
   return render(
@@ -62,6 +64,7 @@ function renderInput({
       setIsMax={jest.fn()}
       canSetMax={canSetMax}
       transferGasCost={transferGasCost}
+      additiveTransferFee={additiveTransferFee}
       transferGasChain={{ prettyName: "Cosmos Hub" }}
       assetPrice={undefined}
       assetWithBalance={{
@@ -228,6 +231,60 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     const expected2 = expectedMaxAfterGas(balanceRaw, gasRaw2);
     await waitFor(() => {
       expect(onChangeCryptoInput).toHaveBeenCalledWith(expected2);
+    });
+  });
+
+  it("subtracts an additive transfer fee in addition to gas on max", async () => {
+    const balanceRaw = "2000000";
+    const gasRaw = "5000";
+    const feeRaw = "30000";
+    const onChangeCryptoInput = jest.fn();
+
+    renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: makeGasCost(gasRaw),
+      additiveTransferFee: new CoinPretty(ATOM_CURRENCY, feeRaw),
+      balanceRaw,
+      onChangeCryptoInput,
+    });
+
+    const expected = trimPlaceholderZeros(
+      makeBalance(balanceRaw)
+        .toDec()
+        .sub(makeGasCost(gasRaw).toDec().mul(MUL_GAS_SLIPPAGE))
+        .sub(new CoinPretty(ATOM_CURRENCY, feeRaw).toDec())
+        .toString()
+    );
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected);
+    });
+  });
+
+  it("subtracts an additive transfer fee even when gas is unknown", async () => {
+    const balanceRaw = "2000000";
+    const feeRaw = "30000";
+    const onChangeCryptoInput = jest.fn();
+
+    renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: undefined,
+      additiveTransferFee: new CoinPretty(ATOM_CURRENCY, feeRaw),
+      balanceRaw,
+      onChangeCryptoInput,
+    });
+
+    const expected = trimPlaceholderZeros(
+      makeBalance(balanceRaw)
+        .toDec()
+        .sub(new CoinPretty(ATOM_CURRENCY, feeRaw).toDec())
+        .toString()
+    );
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected);
     });
   });
 

@@ -263,6 +263,9 @@ export const useBridgeQuotes = ({
             return {
               gasCost: estimatedGasFee?.amount.maxDecimals(8),
               transferFee: transferFee.amount.maxDecimals(8),
+              // fee charged on top of the input amount, so max-amount
+              // inputs must leave room for it in the user's balance
+              isAdditiveFee: transferFee.isAdditive === true,
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,

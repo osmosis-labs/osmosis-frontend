@@ -40,6 +40,10 @@ export const CryptoFiatInput: FunctionComponent<{
   setIsMax?: (nextValue: boolean) => void;
   canSetMax?: boolean;
   transferGasCost: CoinPretty | undefined;
+  /** Bridge/transfer fee charged on top of the input amount (e.g. Axelar fees
+   *  on EVM-source transfers). Like gas, it must be subtracted from the
+   *  balance when selecting max. Omit for fees deducted from the amount. */
+  additiveTransferFee?: CoinPretty;
   transferGasChain: { prettyName: string } | undefined;
 
   assetPrice: PricePretty | undefined;
@@ -69,6 +73,7 @@ export const CryptoFiatInput: FunctionComponent<{
   setIsMax: setIsMaxProp,
   canSetMax = true,
   transferGasCost,
+  additiveTransferFee,
   transferGasChain,
 
   assetPrice,
@@ -248,10 +253,11 @@ export const CryptoFiatInput: FunctionComponent<{
     pendingRatioUpdate,
   ]);
 
-  // Subtract gas cost and adjust input when selecting max amount.
-  // Uses gasAppliedToMax ref to prevent a feedback loop: without it,
-  // each quote response returns a slightly different gas estimate which
-  // re-triggers this effect, adjusts the input, fires a new quote, etc.
+  // Subtract gas cost and any additive bridge fee from the input when
+  // selecting max amount. Uses gasAppliedToMax ref to prevent a feedback
+  // loop: without it, each quote response returns a slightly different gas
+  // estimate which re-triggers this effect, adjusts the input, fires a new
+  // quote, etc.
   useEffect(() => {
     if (!isMax) {
       gasAppliedToMax.current = false;
@@ -264,23 +270,27 @@ export const CryptoFiatInput: FunctionComponent<{
       gasAppliedToMax.current = false;
     }
 
-    if (transferGasCost) {
+    const additiveFeeMatchesInputDenom = Boolean(
+      additiveTransferFee &&
+        isSameCoinDenom(additiveTransferFee, assetWithBalance.amount)
+    );
+
+    if (transferGasCost || additiveFeeMatchesInputDenom) {
       if (gasAppliedToMax.current) return;
 
-      let maxTransferAmount = new Dec(0);
+      let deduction = new Dec(0);
 
-      const gasFeeMatchesInputDenom = isSameCoinDenom(
-        transferGasCost,
-        assetWithBalance.amount
-      );
-
-      if (gasFeeMatchesInputDenom) {
-        maxTransferAmount = assetWithBalance.amount
-          .toDec()
-          .sub(transferGasCost.toDec().mul(mulGasSlippage));
-      } else {
-        maxTransferAmount = assetWithBalance.amount.toDec();
+      if (
+        transferGasCost &&
+        isSameCoinDenom(transferGasCost, assetWithBalance.amount)
+      ) {
+        deduction = deduction.add(transferGasCost.toDec().mul(mulGasSlippage));
       }
+      if (additiveFeeMatchesInputDenom) {
+        deduction = deduction.add(additiveTransferFee!.toDec());
+      }
+
+      const maxTransferAmount = assetWithBalance.amount.toDec().sub(deduction);
 
       if (
         maxTransferAmount.isPositive() &&
@@ -289,8 +299,12 @@ export const CryptoFiatInput: FunctionComponent<{
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
 
-      gasAppliedToMax.current = true;
-      gasAppliedForAsset.current = assetWithBalance.address;
+      // Only latch the guard once gas is known; a fee-only application
+      // should re-run when a later quote delivers the gas estimate.
+      if (transferGasCost) {
+        gasAppliedToMax.current = true;
+        gasAppliedForAsset.current = assetWithBalance.address;
+      }
     } else {
       // Reset the guard so gas deduction runs when transferGasCost arrives.
       // This covers both the initial render (ref starts false) and the case
@@ -301,6 +315,7 @@ export const CryptoFiatInput: FunctionComponent<{
       );
     }
   }, [
+    additiveTransferFee,
     assetWithBalance?.address,
     assetWithBalance?.amount,
     canSetMax,
