@@ -154,8 +154,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   // magnitude while spot keeps refetching, so the stored value understates or
   // overstates the real distance from market as spot drifts.
   const liveDeviation = useMemo(() => {
-    if (!priceState.spotPrice || priceState.spotPrice.isZero())
-      return undefined;
+    if (priceState.spotPrice.isZero()) return undefined;
     return priceState.price.quo(priceState.spotPrice).sub(new Dec(1)).abs();
   }, [priceState.price, priceState.spotPrice]);
 

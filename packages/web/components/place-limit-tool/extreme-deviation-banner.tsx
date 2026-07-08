@@ -39,7 +39,7 @@ export const ExtremeDeviationBanner: FC<Props> = ({
       <button
         type="button"
         onClick={onDismiss}
-        aria-label="Dismiss"
+        aria-label={t("limitOrders.extremeDeviation.dismiss")}
         className="text-ammelia-200/70 hover:text-ammelia-200"
       >
         <Icon id="close" width={16} height={16} />
