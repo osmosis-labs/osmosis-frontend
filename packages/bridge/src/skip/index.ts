@@ -837,7 +837,14 @@ export class SkipBridgeProvider implements BridgeProvider {
         return;
       }
 
-      const gasPrice = await provider.getGasPrice();
+      // Price gas at the wallet's worst case: wallets sign EIP-1559 txs
+      // budgeting maxFeePerGas (~2x base fee + tip), so a max-amount input
+      // clamped by a legacy eth_gasPrice estimate (~base + tip) still
+      // overshoots the sender's balance at signing time.
+      const gasPrice = await provider
+        .estimateFeesPerGas()
+        .then((fees) => fees.maxFeePerGas)
+        .catch(() => provider.getGasPrice());
 
       if (!gasPrice) {
         throw new Error("Failed to get gas price");

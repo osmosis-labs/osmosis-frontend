@@ -31,6 +31,10 @@ jest.mock("viem", () => ({
     estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
     request: jest.fn().mockResolvedValue("0x4a817c800"),
     getGasPrice: jest.fn().mockResolvedValue(BigInt("20000000000")),
+    estimateFeesPerGas: jest.fn().mockResolvedValue({
+      maxFeePerGas: BigInt("40000000000"),
+      maxPriorityFeePerGas: BigInt("1000000000"),
+    }),
     readContract: jest.fn().mockResolvedValue(BigInt("100")),
   })),
   encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
@@ -282,7 +286,9 @@ describe("SkipBridgeProvider", () => {
         },
       },
       estimatedGasFee: {
-        amount: "420000000000000",
+        // 21000 gas * 40 gwei maxFeePerGas — the wallet's worst-case
+        // (EIP-1559) price, not the legacy 20 gwei gasPrice
+        amount: "840000000000000",
         denom: "ETH",
         decimals: 18,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
