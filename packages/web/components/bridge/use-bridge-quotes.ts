@@ -1009,6 +1009,11 @@ export const useBridgeQuotes = ({
       description: t("transfer.unknownSwapImpactDescription"),
     };
   }
+  // Insufficient balance is not part of the errorBox chain (it renders its
+  // own inline error), so exclude it here explicitly: quote queries disable
+  // while the balance is insufficient, and a stale warned quote must not let
+  // the acknowledgement checkbox unlock a transfer the user cannot fund.
+  if (isInsufficientBal) highLossWarningActive = false;
 
   let warningBoxMessage: { heading: string; description: string } | undefined;
   if (toAsset?.isUnstable) {

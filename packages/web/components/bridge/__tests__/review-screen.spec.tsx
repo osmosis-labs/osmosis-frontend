@@ -172,9 +172,10 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
   });
 
   it("hides the checkbox and keeps confirm disabled when a non-acknowledgeable error owns the warning slot", () => {
-    // e.g. insufficient fee coexisting with a warn flag: highLossWarningActive
-    // is false (the errorBox belongs to the fee error), so the loss checkbox
-    // must not render and cannot unlock the button.
+    // e.g. insufficient fee or insufficient balance coexisting with a warn
+    // flag: highLossWarningActive is false (the errorBox belongs to the fee
+    // error / the balance check zeroes the flag), so the loss checkbox must
+    // not render and cannot unlock the button.
     renderScreen(
       makeQuote({
         userCanAdvance: false,
