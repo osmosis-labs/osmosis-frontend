@@ -4,24 +4,9 @@ import { act, renderHook } from "@testing-library/react";
 
 import { LossFigures } from "~/components/bridge/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
-import { AckReArmTolerance, HighSlippageGate } from "~/config/trade-warnings";
+import { AckReArmTolerance } from "~/config/trade-warnings";
 
-const warnedSlippage = HighSlippageGate.add(new Dec(0.01));
-
-const figures = (overrides?: Partial<LossFigures>): LossFigures => ({
-  providerId: "Nomic",
-  fromChainId: "osmosis-1",
-  toChainId: "bitcoin",
-  fromAssetAddress: "factory/osmo1z.../alloyed/allBTC",
-  toAssetAddress: "sat",
-  inputAmount: "100000000",
-  slippage: warnedSlippage,
-  priceImpact: new Dec(0),
-  warnSlippage: true,
-  warnPriceImpact: false,
-  swapImpactUnknown: false,
-  ...overrides,
-});
+import { baseFigures as figures, warnedSlippage } from "./loss-figures.fixture";
 
 describe("useLossAcknowledgement", () => {
   it("requires acknowledgement while a warning is active and unticked", () => {

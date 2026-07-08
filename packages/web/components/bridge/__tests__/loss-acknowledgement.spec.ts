@@ -2,32 +2,12 @@ import { Dec } from "@osmosis-labs/unit";
 
 import {
   hasActiveWarning,
-  LossFigures,
+  needsAcknowledgement,
   shouldResetAcknowledgement,
 } from "~/components/bridge/loss-acknowledgement";
-import { AckReArmTolerance, HighSlippageGate } from "~/config/trade-warnings";
+import { AckReArmTolerance } from "~/config/trade-warnings";
 
-/**
- * Figures are built relative to the shared gate constants rather than
- * hard-coded percentages, so tuning `~/config/trade-warnings` does not
- * spuriously break these tests — the single-knob contract is test-enforced.
- */
-const warnedSlippage = HighSlippageGate.add(new Dec(0.01));
-
-const baseFigures = (overrides?: Partial<LossFigures>): LossFigures => ({
-  providerId: "Nomic",
-  fromChainId: "osmosis-1",
-  toChainId: "bitcoin",
-  fromAssetAddress: "factory/osmo1z.../alloyed/allBTC",
-  toAssetAddress: "sat",
-  inputAmount: "100000000",
-  slippage: warnedSlippage,
-  priceImpact: new Dec(0),
-  warnSlippage: true,
-  warnPriceImpact: false,
-  swapImpactUnknown: false,
-  ...overrides,
-});
+import { baseFigures, warnedSlippage } from "./loss-figures.fixture";
 
 describe("hasActiveWarning", () => {
   it("is false when no warning is active", () => {
@@ -153,5 +133,33 @@ describe("shouldResetAcknowledgement", () => {
       });
       expect(shouldResetAcknowledgement(baseFigures(), current)).toBe(false);
     });
+  });
+});
+
+describe("needsAcknowledgement", () => {
+  it("is false with no current figures", () => {
+    expect(needsAcknowledgement(null, undefined)).toBe(false);
+    expect(needsAcknowledgement(baseFigures(), undefined)).toBe(false);
+  });
+
+  it("is false when no warning is active, regardless of basis", () => {
+    const calm = baseFigures({ warnSlippage: false, slippage: new Dec(0) });
+    expect(needsAcknowledgement(null, calm)).toBe(false);
+    expect(needsAcknowledgement(baseFigures(), calm)).toBe(false);
+  });
+
+  it("is true when warned and unacknowledged", () => {
+    expect(needsAcknowledgement(null, baseFigures())).toBe(true);
+  });
+
+  it("is false when the basis matches the warned figures", () => {
+    expect(needsAcknowledgement(baseFigures(), baseFigures())).toBe(false);
+  });
+
+  it("is true when the basis is stale (worse beyond tolerance)", () => {
+    const worse = baseFigures({
+      slippage: warnedSlippage.add(AckReArmTolerance).add(new Dec(0.0001)),
+    });
+    expect(needsAcknowledgement(baseFigures(), worse)).toBe(true);
   });
 });
