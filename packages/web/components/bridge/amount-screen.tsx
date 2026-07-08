@@ -174,9 +174,7 @@ export const AmountScreen = observer(
       isLoadingBridgeQuote,
       isInsufficientBal,
       isInsufficientFee,
-      warnUserOfPriceImpact,
-      warnUserOfSlippage,
-      warnUserOfUnknownSwapImpact,
+      highLossWarningActive,
       errorBoxMessage,
       warningBoxMessage,
     } = quote;
@@ -845,18 +843,9 @@ export const AmountScreen = observer(
       return (
         cryptoAmount === "" ||
         cryptoAmount === "0" ||
-        (!quote.userCanAdvance &&
-          !warnUserOfPriceImpact &&
-          !warnUserOfSlippage &&
-          !warnUserOfUnknownSwapImpact)
+        (!quote.userCanAdvance && !highLossWarningActive)
       );
-    }, [
-      cryptoAmount,
-      quote.userCanAdvance,
-      warnUserOfPriceImpact,
-      warnUserOfSlippage,
-      warnUserOfUnknownSwapImpact,
-    ]);
+    }, [cryptoAmount, quote.userCanAdvance, highLossWarningActive]);
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
@@ -1573,13 +1562,7 @@ export const AmountScreen = observer(
                 <Button
                   disabled={isTransferButtonDisabled}
                   className="w-full md:h-12"
-                  variant={
-                    warnUserOfSlippage ||
-                    warnUserOfPriceImpact ||
-                    warnUserOfUnknownSwapImpact
-                      ? "destructive"
-                      : "default"
-                  }
+                  variant={highLossWarningActive ? "destructive" : "default"}
                   onClick={onConfirm}
                 >
                   <div className="md:subtitle1 text-h6 font-h6">
@@ -1751,7 +1734,7 @@ const TransferDetails: FunctionComponent<{
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const successfulQuotes = quote?.successfulQuotes ?? [];
-  const isOpen = quote?.warnUserOfPriceImpact || quote?.warnUserOfSlippage;
+  const isOpen = quote?.highLossWarningActive;
 
   if (!isLoading && successfulQuotes.length === 0) {
     return null;
@@ -1800,6 +1783,9 @@ const TransferDetails: FunctionComponent<{
                 <ExpandDetailsControlContent
                   warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
                   warnUserOfSlippage={quote.warnUserOfSlippage}
+                  warnUserOfUnknownSwapImpact={
+                    quote.warnUserOfUnknownSwapImpact
+                  }
                   selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
                   refetchInterval={quote.refetchInterval}
                   selectedQuote={quote.selectedQuote}

@@ -23,9 +23,8 @@ import { BaseError } from "wagmi";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import {
-  hasActiveWarning,
   LossFigures,
-  shouldResetAcknowledgement,
+  needsAcknowledgement,
 } from "~/components/bridge/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
@@ -293,10 +292,10 @@ export const useBridgeQuotes = ({
               toChain,
               totalFeeFiatValue,
               transferSlippage,
-              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate), // warn if value loss between input and expected output exceeds the gate (>6%)
+              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate),
               isPriceImpactTooHigh: priceImpact
                 .toDec()
-                .gte(HighPriceImpactGate), // warn if price impact is greater than 10%.
+                .gte(HighPriceImpactGate),
               // the quote bundles an Osmosis swap whose price impact could not
               // be determined — the loss is unknown, which must warn, not pass
               isSwapImpactUnknown: expectedOutput.priceImpactUnknown === true,
@@ -869,12 +868,7 @@ export const useBridgeQuotes = ({
     // advisory rendering — a 30s refetch or provider auto-switch can land
     // between the last render and the click, so the acknowledgement is
     // re-validated synchronously here against the figures that will be signed.
-    if (
-      currentLossFigures &&
-      hasActiveWarning(currentLossFigures) &&
-      (!acknowledgedBasis ||
-        shouldResetAcknowledgement(acknowledgedBasis, currentLossFigures))
-    ) {
+    if (needsAcknowledgement(acknowledgedBasis, currentLossFigures)) {
       setLossAcknowledged(false);
       displayToast(
         {
@@ -925,6 +919,15 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
+  /**
+   * True only when a high-loss warning owns `errorBoxMessage` — i.e. no
+   * higher-precedence error (insufficient fee, value loss, invalid address,
+   * transaction-request failure, …) is active. This is the flag surfaces use
+   * to decide whether to render the acknowledgement checkbox and unlock the
+   * confirm button through it; using the raw warn flags instead would pair
+   * the checkbox with the wrong copy and unlock past blocking errors.
+   */
+  let highLossWarningActive = false;
   if (hasInsufficientFeeTokensForOsmosis) {
     // Surface this case via the dedicated warning component rendered by the
     // consumer (amount-screen). We still set a fallback text-only errorBox to
@@ -988,16 +991,19 @@ export const useBridgeQuotes = ({
       description: t("transfer.sorryForTheInconvenience"),
     };
   } else if (warnUserOfSlippage) {
+    highLossWarningActive = true;
     errorBoxMessage = {
       heading: t("transfer.slippageTooHighTitle"),
       description: t("transfer.slippageTooHighDescription"),
     };
   } else if (warnUserOfPriceImpact) {
+    highLossWarningActive = true;
     errorBoxMessage = {
       heading: t("transfer.priceImpactTooHighTitle"),
       description: t("transfer.priceImpactTooHighDescription"),
     };
   } else if (warnUserOfUnknownSwapImpact) {
+    highLossWarningActive = true;
     errorBoxMessage = {
       heading: t("transfer.unknownSwapImpactTitle"),
       description: t("transfer.unknownSwapImpactDescription"),
@@ -1042,13 +1048,7 @@ export const useBridgeQuotes = ({
     Boolean(selectedQuote);
 
   let buttonText: string;
-  if (
-    (warnUserOfSlippage ||
-      warnUserOfPriceImpact ||
-      warnUserOfUnknownSwapImpact) &&
-    !isInsufficientFee &&
-    !isValueLossTooHigh
-  ) {
+  if (highLossWarningActive) {
     buttonText = t("assets.transfer.transferAnyway");
   } else {
     buttonText =
@@ -1089,6 +1089,7 @@ export const useBridgeQuotes = ({
     warnUserOfSlippage,
     warnUserOfPriceImpact,
     warnUserOfUnknownSwapImpact,
+    highLossWarningActive,
 
     acknowledgedBasis,
     hasAcknowledgedLoss,

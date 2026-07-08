@@ -49,6 +49,21 @@ export function hasActiveWarning(figures: LossFigures): boolean {
 }
 
 /**
+ * Whether the current figures demand a (fresh) acknowledgement that the given
+ * basis does not provide. This is THE gate predicate: the rendered
+ * `warningNeedsAcknowledgement` flag and the synchronous sign-time guard in
+ * `onTransfer` both call it, so the UI and the signing path cannot disagree
+ * about when an acknowledgement is required.
+ */
+export function needsAcknowledgement(
+  basis: LossFigures | null,
+  current: LossFigures | undefined
+): boolean {
+  if (!current || !hasActiveWarning(current)) return false;
+  return basis === null || shouldResetAcknowledgement(basis, current);
+}
+
+/**
  * Whether a previously acknowledged basis is stale for the current figures
  * and the acknowledgement must be reset. Pure; exhaustively unit-tested.
  *

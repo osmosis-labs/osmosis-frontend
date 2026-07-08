@@ -83,17 +83,14 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  // Warnings intentionally *enable* the confirm button (warn-and-accept, no
-  // hard block) — but only once the acknowledgement checkbox below is ticked
-  // and its basis is still fresh (`warningNeedsAcknowledgement`). An
-  // insufficient-fee error is not acknowledgeable, so it must not unlock the
-  // button through this path.
-  const hasLossWarning =
-    Boolean(
-      quote.warnUserOfPriceImpact ||
-        quote.warnUserOfSlippage ||
-        quote.warnUserOfUnknownSwapImpact
-    ) && !quote.isInsufficientFee;
+  // A high-loss warning intentionally *enables* the confirm button
+  // (warn-and-accept, no hard block) — but only once the acknowledgement
+  // checkbox below is ticked and its basis is still fresh
+  // (`warningNeedsAcknowledgement`). `highLossWarningActive` is true only
+  // when the warning owns `errorBoxMessage` (no higher-precedence error is
+  // active), so unacknowledgeable errors can never be unlocked through the
+  // checkbox.
+  const hasLossWarning = quote.highLossWarningActive;
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -206,7 +203,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           onClick={onConfirm}
           disabled={
             (!quote.userCanAdvance && !hasLossWarning) ||
-            quote.warningNeedsAcknowledgement ||
+            (hasLossWarning && quote.warningNeedsAcknowledgement) ||
             quote.isTxPending ||
             quote.isApprovingToken
           }
@@ -409,9 +406,7 @@ const TransferDetails: FunctionComponent<
   const expandedPadding = isMobile ? 10 : 0;
 
   return (
-    <Disclosure
-      defaultOpen={quote.warnUserOfPriceImpact || quote.warnUserOfSlippage}
-    >
+    <Disclosure defaultOpen={quote.highLossWarningActive}>
       {({ open }) => (
         <div
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
@@ -448,6 +443,7 @@ const TransferDetails: FunctionComponent<
             <ExpandDetailsControlContent
               warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
               warnUserOfSlippage={quote.warnUserOfSlippage}
+              warnUserOfUnknownSwapImpact={quote.warnUserOfUnknownSwapImpact}
               selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
               refetchInterval={quote.refetchInterval}
               selectedQuote={selectedQuote}

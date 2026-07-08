@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   hasActiveWarning,
   LossFigures,
+  needsAcknowledgement,
   shouldResetAcknowledgement,
 } from "~/components/bridge/loss-acknowledgement";
 
@@ -17,8 +18,6 @@ import {
 export function useLossAcknowledgement(current: LossFigures | undefined) {
   const [acknowledgedBasis, setAcknowledgedBasis] =
     useState<LossFigures | null>(null);
-
-  const anyWarningActive = current ? hasActiveWarning(current) : false;
 
   useEffect(() => {
     if (!acknowledgedBasis) return;
@@ -43,7 +42,15 @@ export function useLossAcknowledgement(current: LossFigures | undefined) {
     acknowledgedBasis,
     hasAcknowledgedLoss: acknowledgedBasis !== null,
     setLossAcknowledged,
-    /** True when an active warning has not been (validly) acknowledged — gates confirm buttons. */
-    warningNeedsAcknowledgement: anyWarningActive && acknowledgedBasis === null,
+    /**
+     * True when an active warning has not been (validly) acknowledged — gates
+     * confirm buttons. Evaluates staleness synchronously via the same
+     * predicate as the sign-time guard, so a drifted quote disables the
+     * button in the same render (the effect above clears the basis after).
+     */
+    warningNeedsAcknowledgement: needsAcknowledgement(
+      acknowledgedBasis,
+      current
+    ),
   };
 }

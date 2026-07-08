@@ -478,7 +478,13 @@ export type BridgeCoin = {
 export interface BridgeQuote {
   input: BridgeCoin;
   expectedOutput: BridgeCoin & {
-    /** Percentage represented as string. E.g. 10.0, 95.0 */
+    /**
+     * Price impact of any swap bundled into the quote, as a stringified
+     * fraction (e.g. "0.1" = 10%). Sign convention varies by provider:
+     * bundled Osmosis swaps (int3face, Nomic) report negative fractions,
+     * Squid reports positive — consumers must compare magnitudes, not raw
+     * values. "0" when the quote involves no swap.
+     */
     priceImpact: string;
     /**
      * True when the quote bundles an Osmosis swap (e.g. alloy → variant
