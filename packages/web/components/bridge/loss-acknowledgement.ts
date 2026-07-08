@@ -28,7 +28,11 @@ export interface LossFigures {
 
   /** Total value loss as a fraction (0..1). */
   slippage: Dec;
-  /** Bundled-swap price impact as a fraction (0..1). */
+  /**
+   * Bundled-swap price impact as a positive magnitude fraction (0..1).
+   * Callers must normalize provider sign conventions before snapshotting —
+   * the worsening comparison assumes larger = worse.
+   */
   priceImpact: Dec;
 
   warnSlippage: boolean;

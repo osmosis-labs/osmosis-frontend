@@ -230,8 +230,12 @@ export const useBridgeQuotes = ({
               totalFeeFiatValue,
             } = quote;
 
+            // Providers whose quotes bundle an Osmosis swap (int3face, Nomic)
+            // report price impact as a negative fraction, Squid as positive.
+            // Normalize to magnitude so the gate comparison and the re-arm
+            // math work regardless of the provider's sign convention.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact)
+              new Dec(expectedOutput.priceImpact).abs()
             );
 
             // Handle cases where fiat values might be undefined
@@ -289,7 +293,7 @@ export const useBridgeQuotes = ({
               toChain,
               totalFeeFiatValue,
               transferSlippage,
-              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate), // warn if expected output is less than 6% of input amount
+              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate), // warn if value loss between input and expected output exceeds the gate (>6%)
               isPriceImpactTooHigh: priceImpact
                 .toDec()
                 .gte(HighPriceImpactGate), // warn if price impact is greater than 10%.

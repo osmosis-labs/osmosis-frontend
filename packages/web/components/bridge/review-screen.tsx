@@ -85,12 +85,15 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 
   // Warnings intentionally *enable* the confirm button (warn-and-accept, no
   // hard block) — but only once the acknowledgement checkbox below is ticked
-  // and its basis is still fresh (`warningNeedsAcknowledgement`).
-  const hasLossWarning = Boolean(
-    quote.warnUserOfPriceImpact ||
-      quote.warnUserOfSlippage ||
-      quote.warnUserOfUnknownSwapImpact
-  );
+  // and its basis is still fresh (`warningNeedsAcknowledgement`). An
+  // insufficient-fee error is not acknowledgeable, so it must not unlock the
+  // button through this path.
+  const hasLossWarning =
+    Boolean(
+      quote.warnUserOfPriceImpact ||
+        quote.warnUserOfSlippage ||
+        quote.warnUserOfUnknownSwapImpact
+    ) && !quote.isInsufficientFee;
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
