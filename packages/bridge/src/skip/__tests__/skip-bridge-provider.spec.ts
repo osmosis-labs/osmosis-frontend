@@ -3,6 +3,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
+import { createPublicClient } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
@@ -30,6 +31,10 @@ jest.mock("viem", () => ({
     estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
     request: jest.fn().mockResolvedValue("0x4a817c800"),
     getGasPrice: jest.fn().mockResolvedValue(BigInt("20000000000")),
+    estimateFeesPerGas: jest.fn().mockResolvedValue({
+      maxFeePerGas: BigInt("40000000000"),
+      maxPriorityFeePerGas: BigInt("1000000000"),
+    }),
     readContract: jest.fn().mockResolvedValue(BigInt("100")),
   })),
   encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
@@ -158,6 +163,9 @@ describe("SkipBridgeProvider", () => {
         chainId: 1,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
+        // Cosmos-source: no explicit fee_behavior and not EVM-source,
+        // so the fee is treated as deducted from the transferred amount
+        isAdditive: false,
       },
       estimatedTime: 30,
       transactionRequest: {
@@ -267,6 +275,9 @@ describe("SkipBridgeProvider", () => {
         coinGeckoId: undefined,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
+        // EVM-source with no explicit fee_behavior in the route's
+        // estimated_fees: assumed additive per Skip's documented fee model
+        isAdditive: true,
       },
       estimatedTime: 30,
       transactionRequest: {
@@ -280,12 +291,176 @@ describe("SkipBridgeProvider", () => {
         },
       },
       estimatedGasFee: {
-        amount: "420000000000000",
+        // 21000 gas * 40 gwei maxFeePerGas — the wallet's worst-case
+        // (EIP-1559) price, not the legacy 20 gwei gasPrice
+        amount: "840000000000000",
         denom: "ETH",
         decimals: 18,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       },
     });
+  });
+
+  // the Axelar BRIDGE fee entry Skip returns for the
+  // ETH_EthereumToOsmosis_Route mock (fee_behavior varies per test)
+  const axelarBridgeFee = {
+    fee_type: "BRIDGE",
+    bridge_id: "AXELAR",
+    // matches the axelar_transfer op's fee_amount in the route mock
+    amount: "73924361079993",
+    usd_amount: "0.26",
+    origin_asset: {
+      denom: "ethereum-native",
+      chain_id: "1",
+      origin_denom: "ethereum-native",
+      origin_chain_id: "1",
+      trace: "",
+      is_cw20: false,
+      is_evm: true,
+      is_svm: false,
+      symbol: "ETH",
+      name: "Ethereum",
+      decimals: 18,
+      coingecko_id: "ethereum",
+    },
+    chain_id: "1",
+    tx_index: 0,
+  };
+
+  const ethereumToOsmosisQuoteParams: GetBridgeQuoteParams = {
+    fromAmount: "10000000000000000000",
+    toAsset: {
+      denom: "ETH",
+      address:
+        "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+      decimals: 18,
+    },
+    toChain: {
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      chainType: "cosmos",
+    },
+    fromAsset: {
+      denom: "WETH",
+      address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      decimals: 18,
+    },
+    fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+    toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    slippage: 0.01,
+  };
+
+  const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
+    server.use(
+      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...ETH_EthereumToOsmosis_Route,
+            estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
+          })
+        )
+      ),
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      )
+    );
+
+  it("flags the transfer fee as additive when Skip reports FEE_BEHAVIOR_ADDITIONAL", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_ADDITIONAL");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
+
+    expect(quote.transferFee.isAdditive).toBe(true);
+  });
+
+  it("trusts an explicit FEE_BEHAVIOR_DEDUCTED over the EVM additive default", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_DEDUCTED");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
+
+    expect(quote.transferFee.isAdditive).toBe(false);
+  });
+
+  it("falls back to additive on EVM sources when fee_behavior is FEE_BEHAVIOR_UNSPECIFIED", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_UNSPECIFIED");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
+
+    expect(quote.transferFee.isAdditive).toBe(true);
+  });
+
+  it("ignores non-bridge fee_behavior entries when flagging the transfer fee", async () => {
+    server.use(
+      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...ETH_OsmosisToEthereum_Route,
+            estimated_fees: [
+              {
+                // an additive relay fee must not mark the (deducted)
+                // Cosmos-source bridge fee as additive
+                fee_type: "SMART_RELAY",
+                bridge_id: "IBC",
+                amount: "100",
+                usd_amount: "0.01",
+                origin_asset: {
+                  denom: "uosmo",
+                  chain_id: "osmosis-1",
+                  origin_denom: "uosmo",
+                  origin_chain_id: "osmosis-1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "OSMO",
+                  name: "Osmosis",
+                  decimals: 6,
+                  coingecko_id: "osmosis",
+                },
+                chain_id: "osmosis-1",
+                tx_index: 0,
+                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+              },
+            ],
+          })
+        )
+      ),
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      )
+    );
+
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "420000",
+      amount: [{ denom: "uosmo", amount: "1232" }],
+    });
+
+    const quote = await provider.getQuote({
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      slippage: 0.01,
+    });
+
+    expect(quote.transferFee.isAdditive).toBe(false);
   });
 
   it("should handle unsupported asset error", async () => {
@@ -386,6 +561,20 @@ describe("SkipBridgeProvider", () => {
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBeDefined();
     expect(gasCost?.denom).toBe("ETH");
+
+    // The sender's balance is overridden so estimation succeeds even when
+    // the wallet can't currently fund value + fee (max-amount inputs).
+    const client = (createPublicClient as jest.Mock).mock.results.at(-1)?.value;
+    expect(client.estimateGas).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stateOverride: [
+          {
+            address: "0xabc",
+            balance: BigInt("0x3e8") + BigInt("1000000000000000000"),
+          },
+        ],
+      })
+    );
   });
 
   it("should estimate gas cost - Cosmos transactions", async () => {

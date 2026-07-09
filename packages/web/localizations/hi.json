@@ -238,7 +238,8 @@
   "buyTokens": "टोकन खरीदें",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "अपर्याप्त कोष"
+      "insufficientFunds": "अपर्याप्त कोष",
+      "feesExceedBalance": "ट्रांसफ़र शुल्क को कवर करने के लिए बैलेंस बहुत कम है"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "क्रिप्टो खरीदें",

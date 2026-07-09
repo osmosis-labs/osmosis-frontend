@@ -238,7 +238,8 @@
   "buyTokens": "Купить токены",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Недостаточно средств"
+      "insufficientFunds": "Недостаточно средств",
+      "feesExceedBalance": "Недостаточно средств для покрытия комиссии за перевод"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Купить криптовалюту",

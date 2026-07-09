@@ -238,7 +238,8 @@
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "અપૂરતું ભંડોળ"
+      "insufficientFunds": "અપૂરતું ભંડોળ",
+      "feesExceedBalance": "ટ્રાન્સફર ફી આવરી લેવા માટે બેલેન્સ ખૂબ ઓછું છે"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "ક્રિપ્ટો ખરીદો",

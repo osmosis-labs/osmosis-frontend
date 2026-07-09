@@ -238,7 +238,8 @@
   "buyTokens": "Kup tokeny",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Niewystarczające środki"
+      "insufficientFunds": "Niewystarczające środki",
+      "feesExceedBalance": "Saldo zbyt niskie, aby pokryć opłatę za transfer"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kup kryptowalutę",

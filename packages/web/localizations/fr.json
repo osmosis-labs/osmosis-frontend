@@ -238,7 +238,8 @@
   "buyTokens": "Acheter jetons",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Fonds insuffisants"
+      "insufficientFunds": "Fonds insuffisants",
+      "feesExceedBalance": "Solde trop faible pour couvrir les frais de transfert"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Acheter des crypto-monnaies",

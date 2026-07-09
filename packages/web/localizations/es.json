@@ -238,7 +238,8 @@
   "buyTokens": "Comprar fichas",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Fondos insuficientes"
+      "insufficientFunds": "Fondos insuficientes",
+      "feesExceedBalance": "Saldo insuficiente para cubrir la comisión de transferencia"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Comprar criptomonedas",

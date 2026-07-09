@@ -238,7 +238,8 @@
   "buyTokens": "Cumpărați jetoane",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Fonduri insuficiente"
+      "insufficientFunds": "Fonduri insuficiente",
+      "feesExceedBalance": "Sold prea mic pentru a acoperi taxa de transfer"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Cumpărați cripto",

@@ -486,7 +486,13 @@ export interface BridgeQuote {
   /**
    * The fee for the transfer.
    */
-  transferFee: BridgeCoin & { chainId: number | string };
+  transferFee: BridgeCoin & {
+    chainId: number | string;
+    /** When true, the fee is charged on top of the input amount — the sent
+     *  transaction requires `amount + fee` from the user's balance — rather
+     *  than being deducted from the transferred amount in transit. */
+    isAdditive?: boolean;
+  };
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */

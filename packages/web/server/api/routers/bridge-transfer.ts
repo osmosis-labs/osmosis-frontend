@@ -152,11 +152,11 @@ export const bridgeTransferRouter = createTRPCRouter({
       }
 
       /**
-       * Since transfer fee is deducted from input amount,
-       * we overwrite the transfer fee asset to be the input
-       * asset if it's the same variant.
-       * This allows us to easily deduct fees from input amount
-       * and find prices on Osmosis.
+       * When the transfer fee is the same variant as the input asset,
+       * we overwrite the fee asset to be the input asset so we can find
+       * prices on Osmosis. Note the fee is not necessarily deducted from
+       * the input amount: additive fees (`transferFee.isAdditive`, e.g.
+       * Axelar fees on EVM-source Skip transfers) are charged on top of it.
        */
       const feeCoin = isSameVariant(
         ctx.assetLists,
@@ -300,6 +300,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         fiatValue: feeAssetPrice
           ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
           : undefined,
+        isAdditive: quote.transferFee.isAdditive === true,
       };
 
       const estimatedGasFee = quote.estimatedGasFee

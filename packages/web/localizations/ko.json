@@ -238,7 +238,8 @@
   "buyTokens": "토큰 구매",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "자금 부족"
+      "insufficientFunds": "자금 부족",
+      "feesExceedBalance": "잔액이 부족하여 전송 수수료를 충당할 수 없습니다"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "암호화폐를 구매하세요",

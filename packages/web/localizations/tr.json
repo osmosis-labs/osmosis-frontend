@@ -238,7 +238,8 @@
   "buyTokens": "jeton satın al",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Yetersiz bakiye"
+      "insufficientFunds": "Yetersiz bakiye",
+      "feesExceedBalance": "Bakiye, transfer ücretini karşılamak için çok düşük"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kripto satın al",
