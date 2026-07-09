@@ -479,7 +479,10 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain),
+        transport: getEvmRpcTransport(evmChain, {
+          timeout: 3_000,
+          retryCount: 0,
+        }),
       });
 
       approvalTx = await this.getApprovalTx({

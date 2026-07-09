@@ -565,7 +565,10 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const provider = createPublicClient({
       chain: evmChain,
-      transport: getEvmRpcTransport(evmChain),
+      transport: getEvmRpcTransport(evmChain, {
+        timeout: 3_000,
+        retryCount: 0,
+      }),
     });
 
     return provider;
@@ -812,7 +815,10 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       const provider = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain),
+        transport: getEvmRpcTransport(evmChain, {
+          timeout: 3_000,
+          retryCount: 0,
+        }),
       });
 
       const estimatedGas = await this.estimateEvmGasWithStateOverrides(
