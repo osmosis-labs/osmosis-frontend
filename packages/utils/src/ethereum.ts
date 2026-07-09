@@ -180,20 +180,24 @@ export const EthereumChainInfo = [
  * Builds a viem fallback transport from a chain's default RPC URLs.
  * Falls through each URL in order on failure.
  *
- * Each attempt is bounded (short timeout, no retries) so a degraded RPC
- * can't stall the chain: server-side bridge quotes run under a 12s tRPC
- * procedure timeout, and viem's defaults (10s timeout, 3 retries per
- * transport plus fallback-level retries) let one hanging endpoint consume
- * the entire budget before the remaining URLs are tried.
+ * By default each attempt uses viem's timeout/retry behavior, which suits
+ * long-lived client-side calls like waiting for a transaction receipt —
+ * failing fast there mislabels an in-flight transaction as failed. Server-side
+ * bridge quotes run under a 12s tRPC procedure timeout, where those same
+ * defaults (10s timeout, 3 retries per transport plus fallback-level retries)
+ * let one hanging endpoint consume the entire budget before the remaining
+ * URLs are tried — those call sites should pass a short timeout and zero
+ * retries.
  */
-export function getEvmRpcTransport(chain: {
-  rpcUrls: { default: { http: readonly string[] } };
-}) {
+export function getEvmRpcTransport(
+  chain: {
+    rpcUrls: { default: { http: readonly string[] } };
+  },
+  opts?: { timeout?: number; retryCount?: number }
+) {
   return fallback(
-    chain.rpcUrls.default.http.map((url) =>
-      http(url, { timeout: 3_000, retryCount: 0 })
-    ),
-    { retryCount: 0 }
+    chain.rpcUrls.default.http.map((url) => http(url, opts)),
+    { retryCount: opts?.retryCount }
   );
 }
 
