@@ -118,6 +118,10 @@ export const CryptoFiatInput: FunctionComponent<{
   });
 
   const gasAppliedToMax = useRef(false);
+  // Whether the latched max adjustment included the additive transfer fee.
+  // A gas-only application must re-run if the selected quote later reports
+  // an additive fee (e.g. the best provider switches to Skip).
+  const feeAppliedToMax = useRef(false);
   const gasAppliedForAsset = useRef<string | undefined>(undefined);
 
   // Check if price is available for fiat input
@@ -267,6 +271,7 @@ export const CryptoFiatInput: FunctionComponent<{
   useEffect(() => {
     if (!isMax) {
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
       return;
     }
 
@@ -274,6 +279,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
     if (assetWithBalance.address !== gasAppliedForAsset.current) {
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
     }
 
     const additiveFeeMatchesInputDenom = Boolean(
@@ -282,7 +288,15 @@ export const CryptoFiatInput: FunctionComponent<{
     );
 
     if (transferGasCost || additiveFeeMatchesInputDenom) {
-      if (gasAppliedToMax.current) return;
+      // Skip only if the latched application already covered everything
+      // currently known: a gas-only application must re-run when an
+      // additive fee shows up later so the fee also gets reserved.
+      if (
+        gasAppliedToMax.current &&
+        (feeAppliedToMax.current || !additiveFeeMatchesInputDenom)
+      ) {
+        return;
+      }
 
       let deduction = new Dec(0);
 
@@ -311,11 +325,13 @@ export const CryptoFiatInput: FunctionComponent<{
         gasAppliedToMax.current = true;
         gasAppliedForAsset.current = assetWithBalance.address;
       }
+      feeAppliedToMax.current = additiveFeeMatchesInputDenom;
     } else {
       // Reset the guard so gas deduction runs when transferGasCost arrives.
       // This covers both the initial render (ref starts false) and the case
       // where quotes temporarily fail after gas was previously applied.
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
       onInput("crypto")(
         trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
       );

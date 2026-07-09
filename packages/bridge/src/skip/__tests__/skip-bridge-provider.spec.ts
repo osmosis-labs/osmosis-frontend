@@ -163,6 +163,9 @@ describe("SkipBridgeProvider", () => {
         chainId: 1,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
+        // Cosmos-source: no explicit fee_behavior and not EVM-source,
+        // so the fee is treated as deducted from the transferred amount
+        isAdditive: false,
       },
       estimatedTime: 30,
       transactionRequest: {
@@ -272,7 +275,9 @@ describe("SkipBridgeProvider", () => {
         coinGeckoId: undefined,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
-        isAdditive: false,
+        // EVM-source with no explicit fee_behavior in the route's
+        // estimated_fees: assumed additive per Skip's documented fee model
+        isAdditive: true,
       },
       estimatedTime: 30,
       transactionRequest: {

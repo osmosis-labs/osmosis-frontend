@@ -169,6 +169,20 @@ export class SkipBridgeProvider implements BridgeProvider {
           chainId: fromChain.chainId,
         };
 
+        // Per Skip's fee docs, EVM-source bridge fees are charged on top of
+        // amount_in (the built tx's value is amount + fee) while Cosmos-source
+        // fees are deducted in transit. Prefer the API's explicit fee_behavior
+        // when present; otherwise assume additive for EVM sources so
+        // max-amount inputs reserve the fee (over-reserving strands fee-sized
+        // dust, under-reserving fails the wallet signature).
+        const feeBehaviors =
+          route.estimated_fees
+            ?.map((fee) => fee.fee_behavior)
+            .filter(Boolean) ?? [];
+        const isAdditiveFee = feeBehaviors.length
+          ? feeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL")
+          : fromChain.chainType === "evm";
+
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
             const feeAsset = operation.axelar_transfer.fee_asset;
@@ -185,14 +199,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                   : feeAsset.token_contract!,
               decimals: feeAsset.decimals ?? 6,
               coinGeckoId: feeAsset.coingecko_id,
-              // For EVM-source transfers Skip charges the bridge fee on top of
-              // amount_in (the built tx's value is amount + fee), so max-amount
-              // inputs must leave room for it. Cosmos-source fees are deducted.
-              isAdditive: route.estimated_fees?.some(
-                (fee) =>
-                  fee.fee_behavior === "FEE_BEHAVIOR_ADDITIONAL" &&
-                  fee.amount === operation.axelar_transfer.fee_amount
-              ),
+              isAdditive: isAdditiveFee,
             };
           }
         }

@@ -288,6 +288,70 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     });
   });
 
+  it("re-applies when an additive fee arrives after a gas-only application", async () => {
+    const balanceRaw = "2000000";
+    const gasRaw = "5000";
+    const feeRaw = "30000";
+    const onChangeCryptoInput = jest.fn();
+
+    // 1) gas-only quote applies and latches the guard
+    const { rerender } = renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: makeGasCost(gasRaw),
+      balanceRaw,
+      onChangeCryptoInput,
+    });
+
+    const gasOnlyExpected = expectedMaxAfterGas(balanceRaw, gasRaw);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(gasOnlyExpected);
+    });
+
+    onChangeCryptoInput.mockClear();
+
+    // 2) the selected quote switches to one with an additive fee
+    //    (e.g. best provider becomes Skip) — the fee must also be reserved
+    const balance = makeBalance(balanceRaw);
+    rerender(
+      <CryptoFiatInput
+        currentUnit="crypto"
+        setCurrentUnit={jest.fn()}
+        isMax={true}
+        setIsMax={jest.fn()}
+        canSetMax={true}
+        transferGasCost={makeGasCost(gasRaw)}
+        additiveTransferFee={new CoinPretty(ATOM_CURRENCY, feeRaw)}
+        transferGasChain={{ prettyName: "Cosmos Hub" }}
+        assetPrice={undefined}
+        assetWithBalance={{
+          denom: "ATOM",
+          address: "uatom",
+          decimals: 6,
+          amount: balance,
+        }}
+        cryptoInput={gasOnlyExpected}
+        onChangeCryptoInput={onChangeCryptoInput}
+        fiatInput=""
+        onChangeFiatInput={jest.fn()}
+        isInsufficientBal={false}
+        isInsufficientFee={false}
+      />
+    );
+
+    const withFeeExpected = trimPlaceholderZeros(
+      balance
+        .toDec()
+        .sub(makeGasCost(gasRaw).toDec().mul(MUL_GAS_SLIPPAGE))
+        .sub(new CoinPretty(ATOM_CURRENCY, feeRaw).toDec())
+        .toString()
+    );
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(withFeeExpected);
+    });
+  });
+
   it("sets full balance when transferGasCost is undefined", async () => {
     const balanceRaw = "2000000";
     const onChangeCryptoInput = jest.fn();
