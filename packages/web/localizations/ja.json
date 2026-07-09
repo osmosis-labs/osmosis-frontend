@@ -238,7 +238,8 @@
   "buyTokens": "トークンを購入する",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "残高不足"
+      "insufficientFunds": "残高不足",
+      "feesExceedBalance": "残高が不足しており、送金手数料を賄えません"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "暗号通貨を購入する",

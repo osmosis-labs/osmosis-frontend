@@ -238,7 +238,8 @@
   "buyTokens": "購買代幣",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "不充足的資金"
+      "insufficientFunds": "不充足的資金",
+      "feesExceedBalance": "餘額不足以支付轉賬手續費"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "購買加密貨幣",

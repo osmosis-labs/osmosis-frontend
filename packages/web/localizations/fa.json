@@ -238,7 +238,8 @@
   "buyTokens": "خرید توکن",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "بودجه ناکافی"
+      "insufficientFunds": "بودجه ناکافی",
+      "feesExceedBalance": "موجودی برای پوشش کارمزد انتقال بسیار کم است"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "کریپتو بخر",
