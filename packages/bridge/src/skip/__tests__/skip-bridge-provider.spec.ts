@@ -355,6 +355,66 @@ describe("SkipBridgeProvider", () => {
     expect(quote.transferFee.isAdditive).toBe(true);
   });
 
+  it("ignores non-bridge fee_behavior entries when flagging the transfer fee", async () => {
+    server.use(
+      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...ETH_OsmosisToEthereum_Route,
+            estimated_fees: [
+              {
+                // an additive relay fee must not mark the (deducted)
+                // Cosmos-source bridge fee as additive
+                fee_type: "SMART_RELAY",
+                bridge_id: "IBC",
+                amount: "100",
+                usd_amount: "0.01",
+                origin_asset: null,
+                chain_id: "osmosis-1",
+                tx_index: 0,
+                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+              },
+            ],
+          })
+        )
+      ),
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      )
+    );
+
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "420000",
+      amount: [{ denom: "uosmo", amount: "1232" }],
+    });
+
+    const quote = await provider.getQuote({
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      slippage: 0.01,
+    });
+
+    expect(quote.transferFee.isAdditive).toBe(false);
+  });
+
   it("should handle unsupported asset error", async () => {
     server.use(
       rest.get(

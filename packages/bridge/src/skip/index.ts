@@ -172,15 +172,18 @@ export class SkipBridgeProvider implements BridgeProvider {
         // Per Skip's fee docs, EVM-source bridge fees are charged on top of
         // amount_in (the built tx's value is amount + fee) while Cosmos-source
         // fees are deducted in transit. Prefer the API's explicit fee_behavior
-        // when present; otherwise assume additive for EVM sources so
-        // max-amount inputs reserve the fee (over-reserving strands fee-sized
-        // dust, under-reserving fails the wallet signature).
-        const feeBehaviors =
+        // on the BRIDGE fee entries (the ones transferFee represents — other
+        // fee types like SMART_RELAY say nothing about the bridge fee);
+        // otherwise assume additive for EVM sources so max-amount inputs
+        // reserve the fee (over-reserving strands fee-sized dust,
+        // under-reserving fails the wallet signature).
+        const bridgeFeeBehaviors =
           route.estimated_fees
-            ?.map((fee) => fee.fee_behavior)
+            ?.filter((fee) => fee.fee_type === "BRIDGE")
+            .map((fee) => fee.fee_behavior)
             .filter(Boolean) ?? [];
-        const isAdditiveFee = feeBehaviors.length
-          ? feeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL")
+        const isAdditiveFee = bridgeFeeBehaviors.length
+          ? bridgeFeeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL")
           : fromChain.chainType === "evm";
 
         for (const operation of route.operations) {
