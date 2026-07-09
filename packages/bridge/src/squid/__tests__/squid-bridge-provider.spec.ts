@@ -181,6 +181,7 @@ describe("SquidBridgeProvider", () => {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
         coinGeckoId: "ethereum",
+        isAdditive: true,
       },
       estimatedTime: 960,
       estimatedGasFee: {
@@ -293,6 +294,7 @@ describe("SquidBridgeProvider", () => {
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
         coinGeckoId: "weth",
+        isAdditive: false,
       },
       estimatedTime: 60,
       estimatedGasFee: {
