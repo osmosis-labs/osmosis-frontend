@@ -43,6 +43,8 @@ interface Props {
   canSetMax?: boolean;
   address?: string;
   additiveTransferFee?: CoinPretty;
+  isInsufficientBal?: boolean;
+  isInsufficientFee?: boolean;
 }
 
 function renderInput({
@@ -54,6 +56,8 @@ function renderInput({
   canSetMax = true,
   address = "uatom",
   additiveTransferFee,
+  isInsufficientBal = false,
+  isInsufficientFee = false,
 }: Props) {
   const balance = makeBalance(balanceRaw);
   return render(
@@ -77,8 +81,8 @@ function renderInput({
       onChangeCryptoInput={onChangeCryptoInput}
       fiatInput=""
       onChangeFiatInput={jest.fn()}
-      isInsufficientBal={false}
-      isInsufficientFee={false}
+      isInsufficientBal={isInsufficientBal}
+      isInsufficientFee={isInsufficientFee}
     />
   );
 }
@@ -352,132 +356,65 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     });
   });
 
-  it("clamps max to zero when gas plus the additive fee exceed the balance", async () => {
-    // Reproduces the dust-balance Skip deposit that failed on-chain: the
-    // additive bridge fee plus gas head-room cost more than the whole balance,
-    // so there is no fundable amount. The input must clamp to zero instead of
-    // leaving the full balance (which builds a tx whose value exceeds the
-    // balance and fails at signing).
-    const balanceRaw = "82750538726230";
-    const gasRaw = "16746229134611";
-    const feeRaw = "63381527751084";
+  it("leaves the input at the full balance when fees exceed it (quote stays visible)", async () => {
+    // Dust-balance Skip deposit: the additive bridge fee plus gas head-room
+    // cost more than the whole balance, so there is no fundable max. The input
+    // must NOT be clamped to zero — keeping it non-zero lets the quote and its
+    // fee breakdown render; useBridgeQuotes flags the shortfall and blocks the
+    // transfer.
+    const balanceRaw = "30000";
+    const gasRaw = "16000"; // *2 slippage = 32000, already over balance
+    const feeRaw = "20000";
     const onChangeCryptoInput = jest.fn();
 
-    const ETH_CURRENCY = {
-      coinDecimals: 18,
-      coinDenom: "ETH",
-      coinMinimalDenom: "wei",
-    };
-    const balance = new CoinPretty(ETH_CURRENCY, balanceRaw);
-
-    const { queryByText } = render(
-      <CryptoFiatInput
-        currentUnit="crypto"
-        setCurrentUnit={jest.fn()}
-        isMax={true}
-        setIsMax={jest.fn()}
-        canSetMax={true}
-        transferGasCost={new CoinPretty(ETH_CURRENCY, gasRaw)}
-        additiveTransferFee={new CoinPretty(ETH_CURRENCY, feeRaw)}
-        transferGasChain={{ prettyName: "Ethereum" }}
-        assetPrice={undefined}
-        assetWithBalance={{
-          denom: "ETH",
-          address: "wei",
-          decimals: 18,
-          amount: balance,
-        }}
-        cryptoInput={balance.toDec().toString()}
-        onChangeCryptoInput={onChangeCryptoInput}
-        fiatInput=""
-        onChangeFiatInput={jest.fn()}
-        isInsufficientBal={false}
-        isInsufficientFee={false}
-      />
-    );
-
-    await waitFor(() => {
-      expect(onChangeCryptoInput).toHaveBeenCalledWith("0");
+    renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: makeGasCost(gasRaw),
+      additiveTransferFee: new CoinPretty(ATOM_CURRENCY, feeRaw),
+      balanceRaw,
+      onChangeCryptoInput,
     });
 
-    // the user is told why max resolved to zero
-    await waitFor(() => {
-      expect(
-        queryByText("components.cryptoFiatInput.feesExceedBalance")
-      ).toBeInTheDocument();
-    });
+    await new Promise((r) => setTimeout(r, 100));
+    expect(onChangeCryptoInput).not.toHaveBeenCalledWith("0");
   });
 
-  it("keeps max at zero when quoting drops out after a fees-exceed-balance clamp", async () => {
-    // After clamping to zero the input stops quoting, so gas/fee go undefined.
-    // The no-quote branch must NOT restore the full balance — doing so would
-    // re-enable the unfundable transfer and oscillate the input.
-    const balanceRaw = "82750538726230";
-    const gasRaw = "16746229134611";
-    const feeRaw = "63381527751084";
-    const onChangeCryptoInput = jest.fn();
-
-    const ETH_CURRENCY = {
-      coinDecimals: 18,
-      coinDenom: "ETH",
-      coinMinimalDenom: "wei",
-    };
-    const balance = new CoinPretty(ETH_CURRENCY, balanceRaw);
-
-    const baseProps = {
-      currentUnit: "crypto" as const,
-      setCurrentUnit: jest.fn(),
-      setIsMax: jest.fn(),
-      canSetMax: true,
-      transferGasChain: { prettyName: "Ethereum" },
-      assetPrice: undefined,
-      assetWithBalance: {
-        denom: "ETH",
-        address: "wei",
-        decimals: 18,
-        amount: balance,
-      },
-      fiatInput: "",
-      onChangeFiatInput: jest.fn(),
-      isInsufficientBal: false,
-      isInsufficientFee: false,
-    };
-
-    // 1) Quote present, fees exceed balance -> clamp to zero
-    const { rerender } = render(
-      <CryptoFiatInput
-        {...baseProps}
-        isMax={true}
-        transferGasCost={new CoinPretty(ETH_CURRENCY, gasRaw)}
-        additiveTransferFee={new CoinPretty(ETH_CURRENCY, feeRaw)}
-        cryptoInput={balance.toDec().toString()}
-        onChangeCryptoInput={onChangeCryptoInput}
-      />
-    );
-
-    await waitFor(() => {
-      expect(onChangeCryptoInput).toHaveBeenCalledWith("0");
+  it("shows the fee-specific message when an additive fee makes the balance insufficient", () => {
+    const { queryByText } = renderInput({
+      isMax: false,
+      cryptoInput: "1",
+      transferGasCost: makeGasCost("5000"),
+      additiveTransferFee: new CoinPretty(ATOM_CURRENCY, "30000"),
+      balanceRaw: "2000000",
+      onChangeCryptoInput: jest.fn(),
+      isInsufficientFee: true,
     });
 
-    onChangeCryptoInput.mockClear();
+    expect(
+      queryByText("components.cryptoFiatInput.feesExceedBalance")
+    ).toBeInTheDocument();
+    expect(
+      queryByText("components.cryptoFiatInput.insufficientFunds")
+    ).not.toBeInTheDocument();
+  });
 
-    // 2) Input is now zero so quoting stops: gas and fee go undefined
-    rerender(
-      <CryptoFiatInput
-        {...baseProps}
-        isMax={true}
-        transferGasCost={undefined}
-        additiveTransferFee={undefined}
-        cryptoInput="0"
-        onChangeCryptoInput={onChangeCryptoInput}
-      />
-    );
+  it("shows the generic insufficient-funds message when there is no additive fee", () => {
+    const { queryByText } = renderInput({
+      isMax: false,
+      cryptoInput: "1",
+      transferGasCost: makeGasCost("5000"),
+      balanceRaw: "2000000",
+      onChangeCryptoInput: jest.fn(),
+      isInsufficientBal: true,
+    });
 
-    // The full balance must NOT be restored.
-    await new Promise((r) => setTimeout(r, 100));
-    expect(onChangeCryptoInput).not.toHaveBeenCalledWith(
-      trimPlaceholderZeros(balance.toDec().toString())
-    );
+    expect(
+      queryByText("components.cryptoFiatInput.insufficientFunds")
+    ).toBeInTheDocument();
+    expect(
+      queryByText("components.cryptoFiatInput.feesExceedBalance")
+    ).not.toBeInTheDocument();
   });
 
   it("leaves the full balance usable when the additive fee denom differs from the input", async () => {

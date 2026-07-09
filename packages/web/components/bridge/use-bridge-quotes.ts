@@ -448,6 +448,23 @@ export const useBridgeQuotes = ({
     );
     const inputAmount = inputCoin.toDec();
 
+    // Additive fees (e.g. Skip EVM bridge fees) are charged on top of the input,
+    // so the wallet must fund input + fee + gas. Compare that against the
+    // balance rather than deducting from the input — otherwise a manual amount
+    // (or a max on a dust balance) passes validation but fails at signing.
+    // Cross-denom coverage (native fee/gas vs a token input) is tracked in
+    // MTN-216.
+    if (selectedQuote.isAdditiveFee && availableBalance) {
+      let requiredAmount = inputAmount;
+      if (isFeeSameAsset) {
+        requiredAmount = requiredAmount.add(selectedQuote.transferFee.toDec());
+      }
+      if (isGasSameAsset) {
+        requiredAmount = requiredAmount.add(selectedQuote.gasCost.toDec());
+      }
+      return requiredAmount.gt(availableBalance.toDec());
+    }
+
     let totalFeeCoinAmount = new Dec(0);
     if (isGasSameAsset) {
       totalFeeCoinAmount = totalFeeCoinAmount.add(
@@ -467,7 +484,7 @@ export const useBridgeQuotes = ({
     }
 
     return false;
-  }, [someError, inputCoin, selectedQuote]);
+  }, [someError, inputCoin, selectedQuote, availableBalance]);
 
   // Extract fee details from error message if available (for bridge amount errors)
   const insufficientFeeDetails = useMemo(() => {
