@@ -123,6 +123,15 @@ export const CryptoFiatInput: FunctionComponent<{
   // an additive fee (e.g. the best provider switches to Skip).
   const feeAppliedToMax = useRef(false);
   const gasAppliedForAsset = useRef<string | undefined>(undefined);
+  // Set when gas plus the additive fee cost more than the entire balance, so
+  // there is no fundable max and the input is clamped to zero. It stops the
+  // no-quote branch below from restoring the full (unfundable) balance, which
+  // would otherwise let the user submit a transfer that fails at signing and
+  // oscillate the input as quoting switches off at zero.
+  const feesExceedBalance = useRef(false);
+  // Render mirror of feesExceedBalance (a ref, to keep it out of the effect's
+  // dependencies) so the "balance too low" message can react to it.
+  const [showFeesExceedBalance, setShowFeesExceedBalance] = useState(false);
 
   // Check if price is available for fiat input
   const isPriceAvailable = Boolean(assetPrice?.fiatCurrency);
@@ -272,6 +281,8 @@ export const CryptoFiatInput: FunctionComponent<{
     if (!isMax) {
       gasAppliedToMax.current = false;
       feeAppliedToMax.current = false;
+      feesExceedBalance.current = false;
+      setShowFeesExceedBalance(false);
       return;
     }
 
@@ -280,6 +291,8 @@ export const CryptoFiatInput: FunctionComponent<{
     if (assetWithBalance.address !== gasAppliedForAsset.current) {
       gasAppliedToMax.current = false;
       feeAppliedToMax.current = false;
+      feesExceedBalance.current = false;
+      setShowFeesExceedBalance(false);
     }
 
     const additiveFeeMatchesInputDenom = Boolean(
@@ -312,11 +325,23 @@ export const CryptoFiatInput: FunctionComponent<{
 
       const maxTransferAmount = assetWithBalance.amount.toDec().sub(deduction);
 
-      if (
-        maxTransferAmount.isPositive() &&
-        inputCoin.toDec().gt(maxTransferAmount)
-      ) {
-        onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+      if (maxTransferAmount.isPositive()) {
+        feesExceedBalance.current = false;
+        setShowFeesExceedBalance(false);
+        if (inputCoin.toDec().gt(maxTransferAmount)) {
+          onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+        }
+      } else {
+        // Gas plus the additive fee cost more than the whole balance, so there
+        // is no fundable amount to bridge. Clamp to zero (blocking a transfer
+        // that would fail at signing), surface the reason to the user, and
+        // latch so the no-quote branch keeps it there instead of restoring the
+        // full balance.
+        feesExceedBalance.current = true;
+        setShowFeesExceedBalance(true);
+        if (!inputCoin.toDec().isZero()) {
+          onInput("crypto")("0");
+        }
       }
 
       // Only latch the guard once gas is known; a fee-only application
@@ -327,6 +352,11 @@ export const CryptoFiatInput: FunctionComponent<{
       }
       feeAppliedToMax.current = additiveFeeMatchesInputDenom;
     } else {
+      // No quote yet, or quoting is disabled because the input was clamped to
+      // zero. If we already determined fees exceed the balance, keep the input
+      // at zero — restoring the full balance here would reintroduce the
+      // unfundable transfer and oscillate with the clamp above.
+      if (feesExceedBalance.current) return;
       // Reset the guard so gas deduction runs when transferGasCost arrives.
       // This covers both the initial render (ref starts false) and the case
       // where quotes temporarily fail after gas was previously applied.
@@ -359,9 +389,11 @@ export const CryptoFiatInput: FunctionComponent<{
             inputRef.current?.focus();
           }}
         >
-          {insufficientFunds && (
+          {(insufficientFunds || showFeesExceedBalance) && (
             <p className="body1 animate-[fadeIn_0.25s] text-rust-400">
-              {t("components.cryptoFiatInput.insufficientFunds")}
+              {showFeesExceedBalance
+                ? t("components.cryptoFiatInput.feesExceedBalance")
+                : t("components.cryptoFiatInput.insufficientFunds")}
             </p>
           )}
 

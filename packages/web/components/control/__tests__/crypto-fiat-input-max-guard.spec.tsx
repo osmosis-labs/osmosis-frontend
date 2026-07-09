@@ -352,6 +352,134 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     });
   });
 
+  it("clamps max to zero when gas plus the additive fee exceed the balance", async () => {
+    // Reproduces the dust-balance Skip deposit that failed on-chain: the
+    // additive bridge fee plus gas head-room cost more than the whole balance,
+    // so there is no fundable amount. The input must clamp to zero instead of
+    // leaving the full balance (which builds a tx whose value exceeds the
+    // balance and fails at signing).
+    const balanceRaw = "82750538726230";
+    const gasRaw = "16746229134611";
+    const feeRaw = "63381527751084";
+    const onChangeCryptoInput = jest.fn();
+
+    const ETH_CURRENCY = {
+      coinDecimals: 18,
+      coinDenom: "ETH",
+      coinMinimalDenom: "wei",
+    };
+    const balance = new CoinPretty(ETH_CURRENCY, balanceRaw);
+
+    const { queryByText } = render(
+      <CryptoFiatInput
+        currentUnit="crypto"
+        setCurrentUnit={jest.fn()}
+        isMax={true}
+        setIsMax={jest.fn()}
+        canSetMax={true}
+        transferGasCost={new CoinPretty(ETH_CURRENCY, gasRaw)}
+        additiveTransferFee={new CoinPretty(ETH_CURRENCY, feeRaw)}
+        transferGasChain={{ prettyName: "Ethereum" }}
+        assetPrice={undefined}
+        assetWithBalance={{
+          denom: "ETH",
+          address: "wei",
+          decimals: 18,
+          amount: balance,
+        }}
+        cryptoInput={balance.toDec().toString()}
+        onChangeCryptoInput={onChangeCryptoInput}
+        fiatInput=""
+        onChangeFiatInput={jest.fn()}
+        isInsufficientBal={false}
+        isInsufficientFee={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith("0");
+    });
+
+    // the user is told why max resolved to zero
+    await waitFor(() => {
+      expect(
+        queryByText("components.cryptoFiatInput.feesExceedBalance")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("keeps max at zero when quoting drops out after a fees-exceed-balance clamp", async () => {
+    // After clamping to zero the input stops quoting, so gas/fee go undefined.
+    // The no-quote branch must NOT restore the full balance — doing so would
+    // re-enable the unfundable transfer and oscillate the input.
+    const balanceRaw = "82750538726230";
+    const gasRaw = "16746229134611";
+    const feeRaw = "63381527751084";
+    const onChangeCryptoInput = jest.fn();
+
+    const ETH_CURRENCY = {
+      coinDecimals: 18,
+      coinDenom: "ETH",
+      coinMinimalDenom: "wei",
+    };
+    const balance = new CoinPretty(ETH_CURRENCY, balanceRaw);
+
+    const baseProps = {
+      currentUnit: "crypto" as const,
+      setCurrentUnit: jest.fn(),
+      setIsMax: jest.fn(),
+      canSetMax: true,
+      transferGasChain: { prettyName: "Ethereum" },
+      assetPrice: undefined,
+      assetWithBalance: {
+        denom: "ETH",
+        address: "wei",
+        decimals: 18,
+        amount: balance,
+      },
+      fiatInput: "",
+      onChangeFiatInput: jest.fn(),
+      isInsufficientBal: false,
+      isInsufficientFee: false,
+    };
+
+    // 1) Quote present, fees exceed balance -> clamp to zero
+    const { rerender } = render(
+      <CryptoFiatInput
+        {...baseProps}
+        isMax={true}
+        transferGasCost={new CoinPretty(ETH_CURRENCY, gasRaw)}
+        additiveTransferFee={new CoinPretty(ETH_CURRENCY, feeRaw)}
+        cryptoInput={balance.toDec().toString()}
+        onChangeCryptoInput={onChangeCryptoInput}
+      />
+    );
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith("0");
+    });
+
+    onChangeCryptoInput.mockClear();
+
+    // 2) Input is now zero so quoting stops: gas and fee go undefined
+    rerender(
+      <CryptoFiatInput
+        {...baseProps}
+        isMax={true}
+        transferGasCost={undefined}
+        additiveTransferFee={undefined}
+        cryptoInput="0"
+        onChangeCryptoInput={onChangeCryptoInput}
+      />
+    );
+
+    // The full balance must NOT be restored.
+    await new Promise((r) => setTimeout(r, 100));
+    expect(onChangeCryptoInput).not.toHaveBeenCalledWith(
+      trimPlaceholderZeros(balance.toDec().toString())
+    );
+  });
+
   it("leaves the full balance usable when the additive fee denom differs from the input", async () => {
     // the common ERC-20 deposit path: input in the token (here ATOM stands in
     // for WETH/USDC), while gas and the additive bridge fee are native ETH
