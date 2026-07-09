@@ -182,9 +182,12 @@ export class SkipBridgeProvider implements BridgeProvider {
             ?.filter((fee) => fee.fee_type === "BRIDGE")
             .map((fee) => fee.fee_behavior)
             .filter(Boolean) ?? [];
-        const isAdditiveFee = bridgeFeeBehaviors.length
-          ? bridgeFeeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL")
-          : fromChain.chainType === "evm";
+        // Unknown/unspecified behaviors fall through to the EVM default so
+        // they fail toward over-reserving; only an explicit DEDUCTED opts out.
+        const isAdditiveFee =
+          bridgeFeeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL") ||
+          (!bridgeFeeBehaviors.includes("FEE_BEHAVIOR_DEDUCTED") &&
+            fromChain.chainType === "evm");
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {

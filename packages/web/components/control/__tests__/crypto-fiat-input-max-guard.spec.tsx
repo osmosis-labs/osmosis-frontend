@@ -352,6 +352,33 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     });
   });
 
+  it("leaves the full balance usable when the additive fee denom differs from the input", async () => {
+    // the common ERC-20 deposit path: input in the token (here ATOM stands in
+    // for WETH/USDC), while gas and the additive bridge fee are native ETH
+    const balanceRaw = "2000000";
+    const onChangeCryptoInput = jest.fn();
+
+    const ETH_CURRENCY = {
+      coinDecimals: 18,
+      coinDenom: "ETH",
+      coinMinimalDenom: "wei",
+    };
+
+    renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: new CoinPretty(ETH_CURRENCY, "840000000000000"),
+      additiveTransferFee: new CoinPretty(ETH_CURRENCY, "73924361079993"),
+      balanceRaw,
+      onChangeCryptoInput,
+    });
+
+    // Neither the gas nor the fee is payable in the input denom, so the
+    // max input must remain the full balance (no deduction fires).
+    await new Promise((r) => setTimeout(r, 100));
+    expect(onChangeCryptoInput).not.toHaveBeenCalled();
+  });
+
   it("sets full balance when transferGasCost is undefined", async () => {
     const balanceRaw = "2000000";
     const onChangeCryptoInput = jest.fn();

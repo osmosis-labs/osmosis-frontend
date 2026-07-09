@@ -95,8 +95,12 @@ export type SkipEstimatedFee = {
   chain_id: string;
   tx_index: number;
   /** `FEE_BEHAVIOR_ADDITIONAL`: charged on top of `amount_in` (EVM-source transfers).
-   *  `FEE_BEHAVIOR_DEDUCTED`: taken out of the transferred amount (Cosmos-source transfers). */
-  fee_behavior?: "FEE_BEHAVIOR_ADDITIONAL" | "FEE_BEHAVIOR_DEDUCTED";
+   *  `FEE_BEHAVIOR_DEDUCTED`: taken out of the transferred amount (Cosmos-source transfers).
+   *  `FEE_BEHAVIOR_UNSPECIFIED`: proto3 zero-value; treated as unknown. */
+  fee_behavior?:
+    | "FEE_BEHAVIOR_ADDITIONAL"
+    | "FEE_BEHAVIOR_DEDUCTED"
+    | "FEE_BEHAVIOR_UNSPECIFIED";
 };
 
 export type SkipOperation =

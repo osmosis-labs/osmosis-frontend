@@ -301,25 +301,63 @@ describe("SkipBridgeProvider", () => {
     });
   });
 
-  it("flags the transfer fee as additive when Skip reports FEE_BEHAVIOR_ADDITIONAL", async () => {
+  // the Axelar BRIDGE fee entry Skip returns for the
+  // ETH_EthereumToOsmosis_Route mock (fee_behavior varies per test)
+  const axelarBridgeFee = {
+    fee_type: "BRIDGE",
+    bridge_id: "AXELAR",
+    // matches the axelar_transfer op's fee_amount in the route mock
+    amount: "73924361079993",
+    usd_amount: "0.26",
+    origin_asset: {
+      denom: "ethereum-native",
+      chain_id: "1",
+      origin_denom: "ethereum-native",
+      origin_chain_id: "1",
+      trace: "",
+      is_cw20: false,
+      is_evm: true,
+      is_svm: false,
+      symbol: "ETH",
+      name: "Ethereum",
+      decimals: 18,
+      coingecko_id: "ethereum",
+    },
+    chain_id: "1",
+    tx_index: 0,
+  };
+
+  const ethereumToOsmosisQuoteParams: GetBridgeQuoteParams = {
+    fromAmount: "10000000000000000000",
+    toAsset: {
+      denom: "ETH",
+      address:
+        "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+      decimals: 18,
+    },
+    toChain: {
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      chainType: "cosmos",
+    },
+    fromAsset: {
+      denom: "WETH",
+      address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      decimals: 18,
+    },
+    fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+    toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    slippage: 0.01,
+  };
+
+  const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
     server.use(
       rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
         res(
           ctx.json({
             ...ETH_EthereumToOsmosis_Route,
-            estimated_fees: [
-              {
-                fee_type: "BRIDGE",
-                bridge_id: "AXELAR",
-                // matches the axelar_transfer op's fee_amount in the route mock
-                amount: "73924361079993",
-                usd_amount: "0.26",
-                origin_asset: null,
-                chain_id: "1",
-                tx_index: 0,
-                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
-              },
-            ],
+            estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
           })
         )
       ),
@@ -328,29 +366,26 @@ describe("SkipBridgeProvider", () => {
       )
     );
 
-    const quote = await provider.getQuote({
-      fromAmount: "10000000000000000000",
-      toAsset: {
-        denom: "ETH",
-        address:
-          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
-        decimals: 18,
-      },
-      toChain: {
-        chainId: "osmosis-1",
-        chainName: "osmosis",
-        chainType: "cosmos",
-      },
-      fromAsset: {
-        denom: "WETH",
-        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        decimals: 18,
-      },
-      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
-      toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
-      fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
-    });
+  it("flags the transfer fee as additive when Skip reports FEE_BEHAVIOR_ADDITIONAL", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_ADDITIONAL");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
+
+    expect(quote.transferFee.isAdditive).toBe(true);
+  });
+
+  it("trusts an explicit FEE_BEHAVIOR_DEDUCTED over the EVM additive default", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_DEDUCTED");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
+
+    expect(quote.transferFee.isAdditive).toBe(false);
+  });
+
+  it("falls back to additive on EVM sources when fee_behavior is FEE_BEHAVIOR_UNSPECIFIED", async () => {
+    useEthereumToOsmosisRouteWithFeeBehavior("FEE_BEHAVIOR_UNSPECIFIED");
+
+    const quote = await provider.getQuote(ethereumToOsmosisQuoteParams);
 
     expect(quote.transferFee.isAdditive).toBe(true);
   });
@@ -369,7 +404,20 @@ describe("SkipBridgeProvider", () => {
                 bridge_id: "IBC",
                 amount: "100",
                 usd_amount: "0.01",
-                origin_asset: null,
+                origin_asset: {
+                  denom: "uosmo",
+                  chain_id: "osmosis-1",
+                  origin_denom: "uosmo",
+                  origin_chain_id: "osmosis-1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "OSMO",
+                  name: "Osmosis",
+                  decimals: 6,
+                  coingecko_id: "osmosis",
+                },
                 chain_id: "osmosis-1",
                 tx_index: 0,
                 fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
