@@ -1,4 +1,4 @@
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -24,6 +24,16 @@ const DEFAULT_NUM_EPOCHS = "30";
  *  defense), and a reward denom with no OSMO pool route is never valued, so
  *  it never distributes. Surfaced as copy; update if governance changes it. */
 const MIN_DISTR_VALUE_LABEL = "0.01 OSMO";
+/** The chain's `min_value_for_distribution`, in OSMO. Kept in sync with
+ *  MIN_DISTR_VALUE_LABEL above. */
+const MIN_DISTR_VALUE_OSMO = "0.01";
+
+/** The dust floor is per recipient and the recipient count is unknowable
+ *  ahead of an epoch, so an exact sub-floor check is impossible client-side.
+ *  Heuristic: warn when the whole daily emission couldn't clear the floor
+ *  for even this many positions — in any realistically busy pool, most
+ *  recipients would then be skipped. */
+const DUST_WARN_POSITIONS = 500;
 
 /** Mainnet CL `authorized_uptimes` (1ns / 1min / 1h / 24h), used when the
  *  chain param can't be fetched so the uptime selector still offers the full
@@ -194,6 +204,18 @@ export const IncentivizePoolModal: FunctionComponent<
     : undefined;
   const perDayValue =
     totalValue && epochsValid ? totalValue.quo(new Dec(numEpochs)) : undefined;
+  // Fiat value of the chain's 0.01 OSMO per-recipient dust floor, tracking
+  // the live OSMO price rather than a fixed dollar figure. Undefined while
+  // the OSMO price hasn't loaded, in which case the dust warning is skipped.
+  const osmoCurrency = chainStore.osmosis.stakeCurrency;
+  const minDistrFiat = priceStore.calculatePrice(
+    new CoinPretty(
+      osmoCurrency,
+      DecUtils.getTenExponentN(osmoCurrency.coinDecimals).mul(
+        new Dec(MIN_DISTR_VALUE_OSMO)
+      )
+    )
+  );
   const poolTvl = pool?.totalFiatValueLocked;
   const estApr = useMemo(() => {
     if (!perDayValue || !poolTvl || !poolTvl.toDec().isPositive())
@@ -473,13 +495,18 @@ export const IncentivizePoolModal: FunctionComponent<
               {t("incentivizePool.dustUnpriceable")}
             </span>
           )}
-        {!isTopUp && perDayValue && perDayValue.toDec().lt(new Dec(1)) && (
-          <span className="caption text-rust-300">
-            {t("incentivizePool.dustBelowMin", {
-              minValue: MIN_DISTR_VALUE_LABEL,
-            })}
-          </span>
-        )}
+        {!isTopUp &&
+          perDayValue &&
+          minDistrFiat &&
+          perDayValue
+            .toDec()
+            .lt(minDistrFiat.toDec().mul(new Dec(DUST_WARN_POSITIONS))) && (
+            <span className="caption text-rust-300">
+              {t("incentivizePool.dustBelowMin", {
+                minValue: MIN_DISTR_VALUE_LABEL,
+              })}
+            </span>
+          )}
         {!isTopUp && (
           <span className="caption text-osmoverse-400">
             {t("incentivizePool.dustRule", {

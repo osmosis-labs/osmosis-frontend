@@ -42,8 +42,11 @@ export function useIncentivizePoolConfig(): {
         try {
           if (!selectedCurrency || !config.amount)
             return reject("Invalid reward currency or input amount");
+          // Without this guard `await account?...` resolves to undefined and
+          // the promise never settles, hanging the caller.
+          if (!account) return reject("No connected account");
 
-          await account?.osmosis.sendCreateGaugeMsg(
+          await account.osmosis.sendCreateGaugeMsg(
             params.distributeTo,
             [
               {
@@ -76,8 +79,11 @@ export function useIncentivizePoolConfig(): {
         try {
           if (!selectedCurrency || !config.amount)
             return reject("Invalid reward currency or input amount");
+          // Without this guard `await account?...` resolves to undefined and
+          // the promise never settles, hanging the caller.
+          if (!account) return reject("No connected account");
 
-          await account?.osmosis.sendAddToGaugeMsg(
+          await account.osmosis.sendAddToGaugeMsg(
             gaugeId,
             [
               {

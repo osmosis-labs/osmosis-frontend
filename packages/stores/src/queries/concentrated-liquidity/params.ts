@@ -45,6 +45,7 @@ export class ObservableQueryConcentratedLiquidityParams extends ObservableChainQ
 
     // Duration strings like "0.000000001s", "60s", "3600s", "86400s".
     return uptimes
+      .filter((uptime): uptime is string => typeof uptime === "string")
       .map((uptime) => Number(uptime.replace(/s$/, "")))
       .filter((seconds) => Number.isFinite(seconds));
   }
