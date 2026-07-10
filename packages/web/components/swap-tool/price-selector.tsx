@@ -609,9 +609,11 @@ const CreatableQuoteItem = observer(
           if (canCreate) onOpenCreate();
         }}
         className={classNames(
-          "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+          // Greyed in both states, matching the Limit tab's create
+          // affordance: dimmed like an unavailable row, clickable only when
+          // creation is possible.
+          "flex items-center justify-between rounded-lg py-2 px-3 opacity-50 transition-colors",
           {
-            "opacity-50": !canCreate,
             "pointer-events-none": !canCreate,
             "cursor-pointer": canCreate,
           }
