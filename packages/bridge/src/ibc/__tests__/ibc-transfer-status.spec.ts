@@ -441,4 +441,26 @@ describe("IbcTransferStatusProvider", () => {
 
     expect(url).toBe(`https://www.mintscan.io/osmosis/txs/ABC123`);
   });
+
+  it("returns an empty explorer url (does not throw) when the from-chain is not in the registry", () => {
+    // A saved snapshot may reference a chain that has since been delisted from
+    // the registry. The explorer link is cosmetic and must degrade to no link
+    // rather than throwing into the transaction history render path, but should
+    // still log a breadcrumb so an unexpected missing chain stays visible.
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const snapshot: TxSnapshot = createTxSnapshot({
+      sendTxHash: "ABC123",
+      fromChain: {
+        chainId: "stargaze-1",
+        prettyName: "Stargaze",
+        chainType: "cosmos",
+      },
+    });
+
+    expect(() => provider.makeExplorerUrl(snapshot)).not.toThrow();
+    expect(provider.makeExplorerUrl(snapshot)).toBe("");
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("chain not found: stargaze-1")
+    );
+  });
 });

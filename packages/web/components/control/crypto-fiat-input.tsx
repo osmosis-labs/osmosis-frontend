@@ -21,7 +21,13 @@ import { replaceAt } from "~/utils/array";
 import { isSameCoinDenom } from "~/utils/denom";
 import { trimPlaceholderZeros } from "~/utils/number";
 
-const mulGasSlippage = new Dec("1.1");
+// Head-room multiplier on the quoted gas cost when clamping a max-amount
+// input. Must absorb base-fee drift between quote time and signing time
+// plus wallet-side padding: the EIP-1559 base fee moves up to ±12.5% per
+// block and wallets budget their own worst-case fee when the user signs,
+// so a thin margin fails the signature with "insufficient funds".
+// Over-reserving only leaves ~one gas fee of dust in the wallet.
+const mulGasSlippage = new Dec("2");
 
 /** Safely converts a raw input string to a Dec value.
  * Returns "0" for empty strings or lone decimals that can't be parsed.
@@ -40,6 +46,10 @@ export const CryptoFiatInput: FunctionComponent<{
   setIsMax?: (nextValue: boolean) => void;
   canSetMax?: boolean;
   transferGasCost: CoinPretty | undefined;
+  /** Bridge/transfer fee charged on top of the input amount (e.g. Axelar fees
+   *  on EVM-source transfers). Like gas, it must be subtracted from the
+   *  balance when selecting max. Omit for fees deducted from the amount. */
+  additiveTransferFee?: CoinPretty;
   transferGasChain: { prettyName: string } | undefined;
 
   assetPrice: PricePretty | undefined;
@@ -69,6 +79,7 @@ export const CryptoFiatInput: FunctionComponent<{
   setIsMax: setIsMaxProp,
   canSetMax = true,
   transferGasCost,
+  additiveTransferFee,
   transferGasChain,
 
   assetPrice,
@@ -107,6 +118,10 @@ export const CryptoFiatInput: FunctionComponent<{
   });
 
   const gasAppliedToMax = useRef(false);
+  // Whether the latched max adjustment included the additive transfer fee.
+  // A gas-only application must re-run if the selected quote later reports
+  // an additive fee (e.g. the best provider switches to Skip).
+  const feeAppliedToMax = useRef(false);
   const gasAppliedForAsset = useRef<string | undefined>(undefined);
 
   // Check if price is available for fiat input
@@ -248,13 +263,15 @@ export const CryptoFiatInput: FunctionComponent<{
     pendingRatioUpdate,
   ]);
 
-  // Subtract gas cost and adjust input when selecting max amount.
-  // Uses gasAppliedToMax ref to prevent a feedback loop: without it,
-  // each quote response returns a slightly different gas estimate which
-  // re-triggers this effect, adjusts the input, fires a new quote, etc.
+  // Subtract gas cost and any additive bridge fee from the input when
+  // selecting max amount. Uses gasAppliedToMax ref to prevent a feedback
+  // loop: without it, each quote response returns a slightly different gas
+  // estimate which re-triggers this effect, adjusts the input, fires a new
+  // quote, etc.
   useEffect(() => {
     if (!isMax) {
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
       return;
     }
 
@@ -262,26 +279,43 @@ export const CryptoFiatInput: FunctionComponent<{
 
     if (assetWithBalance.address !== gasAppliedForAsset.current) {
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
     }
 
-    if (transferGasCost) {
-      if (gasAppliedToMax.current) return;
+    const additiveFeeMatchesInputDenom = Boolean(
+      additiveTransferFee &&
+        isSameCoinDenom(additiveTransferFee, assetWithBalance.amount)
+    );
 
-      let maxTransferAmount = new Dec(0);
-
-      const gasFeeMatchesInputDenom = isSameCoinDenom(
-        transferGasCost,
-        assetWithBalance.amount
-      );
-
-      if (gasFeeMatchesInputDenom) {
-        maxTransferAmount = assetWithBalance.amount
-          .toDec()
-          .sub(transferGasCost.toDec().mul(mulGasSlippage));
-      } else {
-        maxTransferAmount = assetWithBalance.amount.toDec();
+    if (transferGasCost || additiveFeeMatchesInputDenom) {
+      // Skip only if the latched application already covered everything
+      // currently known: a gas-only application must re-run when an
+      // additive fee shows up later so the fee also gets reserved.
+      if (
+        gasAppliedToMax.current &&
+        (feeAppliedToMax.current || !additiveFeeMatchesInputDenom)
+      ) {
+        return;
       }
 
+      let deduction = new Dec(0);
+
+      if (
+        transferGasCost &&
+        isSameCoinDenom(transferGasCost, assetWithBalance.amount)
+      ) {
+        deduction = deduction.add(transferGasCost.toDec().mul(mulGasSlippage));
+      }
+      if (additiveFeeMatchesInputDenom) {
+        deduction = deduction.add(additiveTransferFee!.toDec());
+      }
+
+      const maxTransferAmount = assetWithBalance.amount.toDec().sub(deduction);
+
+      // When gas plus the additive fee cost more than the whole balance the max
+      // is non-positive; leave the input at the full balance so the quote (and
+      // its fee breakdown) still renders. useBridgeQuotes flags this as
+      // insufficient and blocks the transfer.
       if (
         maxTransferAmount.isPositive() &&
         inputCoin.toDec().gt(maxTransferAmount)
@@ -289,18 +323,25 @@ export const CryptoFiatInput: FunctionComponent<{
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
 
-      gasAppliedToMax.current = true;
-      gasAppliedForAsset.current = assetWithBalance.address;
+      // Only latch the guard once gas is known; a fee-only application
+      // should re-run when a later quote delivers the gas estimate.
+      if (transferGasCost) {
+        gasAppliedToMax.current = true;
+        gasAppliedForAsset.current = assetWithBalance.address;
+      }
+      feeAppliedToMax.current = additiveFeeMatchesInputDenom;
     } else {
       // Reset the guard so gas deduction runs when transferGasCost arrives.
       // This covers both the initial render (ref starts false) and the case
       // where quotes temporarily fail after gas was previously applied.
       gasAppliedToMax.current = false;
+      feeAppliedToMax.current = false;
       onInput("crypto")(
         trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
       );
     }
   }, [
+    additiveTransferFee,
     assetWithBalance?.address,
     assetWithBalance?.amount,
     canSetMax,
@@ -311,6 +352,9 @@ export const CryptoFiatInput: FunctionComponent<{
   ]);
 
   const insufficientFunds = isInsufficientBal || isInsufficientFee;
+  // On additive-fee routes the shortfall is the fee charged on top of the
+  // input, so name it explicitly rather than the generic "insufficient funds".
+  const showFeeShortfall = Boolean(isInsufficientFee && additiveTransferFee);
 
   return (
     <div className="relative flex flex-col items-center">
@@ -324,7 +368,9 @@ export const CryptoFiatInput: FunctionComponent<{
         >
           {insufficientFunds && (
             <p className="body1 animate-[fadeIn_0.25s] text-rust-400">
-              {t("components.cryptoFiatInput.insufficientFunds")}
+              {showFeeShortfall
+                ? t("components.cryptoFiatInput.feesExceedBalance")
+                : t("components.cryptoFiatInput.insufficientFunds")}
             </p>
           )}
 

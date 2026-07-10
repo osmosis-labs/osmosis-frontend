@@ -238,7 +238,8 @@
   "buyTokens": "Buy tokens",
   "components": {
     "cryptoFiatInput": {
-      "insufficientFunds": "Insufficient funds"
+      "insufficientFunds": "Insufficient funds",
+      "feesExceedBalance": "Balance too low to cover the transfer fee"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Buy crypto",
@@ -269,7 +270,7 @@
       "transmuter": "Transmuter",
       "orderbook": "Orderbook",
       "astroport": "Astroport",
-      "whitewhale": "White Whale"
+      "whitewhale": "Skeleton Swap"
     }
   },
   "connectWallet": "Connect wallet",
@@ -872,11 +873,18 @@
       "titleWithdraw": "More withdraw options",
       "depositDescriptionUnknown": "To deposit {denom}, please use an alternative provider.",
       "withdrawDescriptionUnknown": "To withdraw {denom}, please use an alternative provider.",
-      "chooseAnAlternativeProviderDeposit": "Choose an alternative provider to deposit {asset} from {fromChain} to {toChain}",
-      "chooseAnAlternativeProviderWithdraw": "Choose an alternative provider to withdraw {asset} from {fromChain} to {toChain}",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with",
-      "noAlternativesFound": "No alternative providers found for this route."
+      "noAlternativesFound": "No alternative providers found for this route.",
+      "externalSiteCaveat": "These open third-party bridge sites. Select your route there.",
+      "convertBeforeWithdraw": {
+        "title": "Convert to {variant} first",
+        "description": "{provider} only accepts {variant}. Convert your alloyed balance to {variant} below, then continue to {provider} to complete your withdrawal.",
+        "currentVariantBalance": "Current {variant} balance:",
+        "successTitle": "Converted to {variant}",
+        "successDescription": "Your {variant} is ready. Continue to {provider} to complete your withdrawal.",
+        "continueTo": "Continue to {provider}"
+      }
     },
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",

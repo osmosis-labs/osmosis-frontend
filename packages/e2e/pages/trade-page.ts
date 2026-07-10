@@ -56,7 +56,9 @@ export class TradePage extends BasePage {
       '//div[@class]/button[.="Sell"]/p[@class]/..'
     );
     this.confirmSwapBtn = page.locator('//div[@class]/button[.="Confirm"]');
-    this.swapMaxBtn = page.locator('//span[.="Max"]');
+    // The Max preset pill renders its label as direct button text (it moved
+    // into the 25/50/75/Max preset row), so locate by role rather than span.
+    this.swapMaxBtn = page.getByRole("button", { name: "Max", exact: true });
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );

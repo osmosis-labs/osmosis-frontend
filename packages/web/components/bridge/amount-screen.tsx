@@ -1266,6 +1266,11 @@ export const AmountScreen = observer(
             isInsufficientBal={Boolean(isInsufficientBal)}
             isInsufficientFee={Boolean(isInsufficientFee)}
             transferGasCost={selectedQuote?.gasCost}
+            additiveTransferFee={
+              selectedQuote?.isAdditiveFee
+                ? selectedQuote.transferFee
+                : undefined
+            }
             /** Wait for all quotes to resolve before modifying input amount.
              *  This helps reduce thrash while the best quote is being determined.
              *  Only once we get the best quote, we can modify the input amount

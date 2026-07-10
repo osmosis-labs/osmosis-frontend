@@ -486,7 +486,13 @@ export interface BridgeQuote {
   /**
    * The fee for the transfer.
    */
-  transferFee: BridgeCoin & { chainId: number | string };
+  transferFee: BridgeCoin & {
+    chainId: number | string;
+    /** When true, the fee is charged on top of the input amount — the sent
+     *  transaction requires `amount + fee` from the user's balance — rather
+     *  than being deducted from the transferred amount in transit. */
+    isAdditive?: boolean;
+  };
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */
@@ -605,6 +611,10 @@ export interface TransferStatusProvider {
    */
   trackTxStatus(snapshot: TxSnapshot): void;
 
-  /** Make url to this tx explorer. */
+  /**
+   * Make url to this tx explorer. Returns "" when no explorer link can be
+   * resolved (e.g. the snapshot's from-chain is no longer in the registry),
+   * so callers should treat an empty string as "no link available".
+   */
   makeExplorerUrl(snapshot: TxSnapshot): string;
 }
