@@ -235,6 +235,18 @@ export const ReviewOrder = observer(function ReviewOrder({
       setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
       setManualSlippage("");
       setHasAcknowledgedDisparity(false);
+      // An override typed during a previous review must not outlive it:
+      // with the local draft cleared, the display falls back to the auto
+      // tier while the config would still submit the stale override. Hand
+      // control back to the auto-adjust hook, mirroring the clear path in
+      // handleManualSlippageChange. Scoped to userOverrodeSlippage so an
+      // error-hook preset selection is left untouched.
+      if (slippageConfig?.userOverrodeSlippage) {
+        slippageConfig.clearUserOverride();
+        slippageConfig.setManualSlippage(
+          autoAdjustedSlippage ?? DefaultSlippage
+        );
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
