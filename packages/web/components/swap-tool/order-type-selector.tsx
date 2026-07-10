@@ -73,9 +73,9 @@ export const OrderTypeSelector = ({
   }, [base, selectableQuoteDenoms]);
 
   useEffect(() => {
-    if (hasOrderbook) {
+    if (hasOrderbook && justCreatedPairRef.current === `${base}:${quote}`) {
       // Cache has caught up — safe to allow the reset effect again.
-      justCreatedRef.current = false;
+      justCreatedPairRef.current = null;
     }
     const quoteSelectable = selectableQuotes.some(
       (asset) => asset.coinMinimalDenom === quote
@@ -85,7 +85,10 @@ export const OrderTypeSelector = ({
       clearJustCreatedOrderbook(base, quote);
     }
     if (type === "limit" && !hasOrderbook && !isLoading) {
-      if (justCreatedRef.current || wasOrderbookJustCreated(base, quote))
+      if (
+        justCreatedPairRef.current === `${base}:${quote}` ||
+        wasOrderbookJustCreated(base, quote)
+      )
         return;
       setType("market");
     } else if (
@@ -201,8 +204,10 @@ export const OrderTypeSelector = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [acknowledgeFee, setAcknowledgeFee] = useState(false);
   // Prevents the !hasOrderbook reset effect from firing immediately after
-  // creation while the getPools cache is still catching up.
-  const justCreatedRef = useRef(false);
+  // creation while the getPools cache is still catching up. Holds the pair
+  // it was created for — a plain boolean would leak the suppression onto
+  // other bases if the user switches tokens before the cache refreshes.
+  const justCreatedPairRef = useRef<string | null>(null);
 
   const {
     createOrderbook,
@@ -230,7 +235,7 @@ export const OrderTypeSelector = ({
       // Optimistically activate limit tab — orderbook exists on-chain even if
       // SQS / server cache hasn't caught up yet. The ref suppresses the
       // !hasOrderbook reset effect until the cache refreshes.
-      justCreatedRef.current = true;
+      justCreatedPairRef.current = `${base}:${quote}`;
       setType("limit");
     } catch {
       // createOrderbook sets error state internally; keep modal open so user sees it
