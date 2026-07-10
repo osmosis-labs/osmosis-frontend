@@ -378,7 +378,8 @@
     "dustUnpriceable": "Este activo no tiene precio aquí. Los gauges solo pueden distribuir activos con una ruta de pool con OSMO en la cadena, por lo que la transacción fallará si este activo no es enrutable a OSMO.",
     "dustBelowMin": "Valor diario muy bajo: las partes inferiores a {minValue} por destinatario serán omitidas por la defensa antipolvo de la cadena.",
     "visibilityWarning": "Los nuevos gauges pueden no aparecer en las estadísticas del pool hasta que pase un día.",
-    "acknowledgeRisks": "Entiendo que estos incentivos no se pueden recuperar una vez añadidos y que esto tiene una comisión no reembolsable de {fee}, enviada al fondo comunitario.",
+    "acknowledgeNoRecovery": "Entiendo que estos incentivos no se pueden recuperar una vez añadidos.",
+    "acknowledgeFee": "Entiendo que esto tiene una comisión no reembolsable de {fee}, enviada al fondo comunitario.",
     "ctaCreate": "Añadir incentivos",
     "ctaTopUp": "Recargar gauge #{gaugeId}"
   },

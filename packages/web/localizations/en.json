@@ -378,7 +378,8 @@
     "dustUnpriceable": "This asset has no price here. Gauges can only distribute assets with an OSMO pool route on chain, so the transaction will fail if this asset isn't routable to OSMO.",
     "dustBelowMin": "Very low daily value: shares under {minValue} per recipient will be skipped by the chain's dust defense.",
     "visibilityWarning": "New gauges may not appear in pool stats until one day has passed.",
-    "acknowledgeRisks": "I understand these incentives cannot be recovered once added, and that this costs a non-refundable {fee} fee, sent to the community pool.",
+    "acknowledgeNoRecovery": "I understand these incentives cannot be recovered once added.",
+    "acknowledgeFee": "I understand this costs a non-refundable {fee} fee, sent to the community pool.",
     "ctaCreate": "Add incentives",
     "ctaTopUp": "Top up gauge #{gaugeId}"
   },

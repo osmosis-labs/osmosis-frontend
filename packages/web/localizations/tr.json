@@ -378,7 +378,8 @@
     "dustUnpriceable": "Bu varlığın burada fiyatı yok. Gauge'lar yalnızca zincirde OSMO havuz rotası olan varlıkları dağıtabilir, bu nedenle bu varlık OSMO'ya yönlendirilemiyorsa işlem başarısız olur.",
     "dustBelowMin": "Çok düşük günlük değer: alıcı başına {minValue} altındaki paylar zincirin toz savunması tarafından atlanacaktır.",
     "visibilityWarning": "Yeni gauge'lar bir gün geçene kadar havuz istatistiklerinde görünmeyebilir.",
-    "acknowledgeRisks": "Eklenen teşviklerin geri alınamayacağını ve bunun, topluluk havuzuna gönderilen iade edilemez {fee} ücreti olduğunu anlıyorum.",
+    "acknowledgeNoRecovery": "Eklenen teşviklerin geri alınamayacağını anlıyorum.",
+    "acknowledgeFee": "Bunun, topluluk havuzuna gönderilen iade edilemez {fee} ücreti olduğunu anlıyorum.",
     "ctaCreate": "Teşvik ekle",
     "ctaTopUp": "#{gaugeId} gauge'ına ekle"
   },
