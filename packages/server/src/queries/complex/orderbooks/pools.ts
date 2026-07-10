@@ -19,7 +19,14 @@ function fetchOrderbookPools(forceFresh = false) {
   return cachified({
     cache: orderbookPoolsCache,
     key: `orderbookPools`,
-    ttl: 1000 * 60 * 60, // 1 hour
+    // A forced-fresh read exists to catch a just-created orderbook that the
+    // cached list predates, and cachified writes its result back to the
+    // shared cache. Write it with a short TTL: if the sidecar hasn't ingested
+    // the new pool yet, the pre-creation list re-caches for seconds instead
+    // of re-poisoning every client on this instance for a full hour; if it
+    // has, the next regular read re-caches the caught-up list at the normal
+    // TTL once this entry expires.
+    ttl: forceFresh ? 1000 * 15 : 1000 * 60 * 60, // 15 seconds / 1 hour
     forceFresh,
     getFreshValue: () =>
       queryCanonicalOrderbooks().then(async (data) => {
