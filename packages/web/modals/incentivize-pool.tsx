@@ -106,8 +106,10 @@ export const IncentivizePoolModal: FunctionComponent<
   const externalGauges =
     queriesExternalStore.queryActiveGauges.getExternalGaugesForPool(poolId);
   const [topUpGaugeId, setTopUpGaugeId] = useState<string | null>(null);
-  // Fee acknowledgement, mirroring the pool-creation confirm step.
-  const [acknowledgeFee, setAcknowledgeFee] = useState(false);
+  // Gating acknowledgement inside the advanced-users warning box: the user
+  // must confirm the incentives are unrecoverable and that the OSMO fee is
+  // spent before the confirm button unlocks.
+  const [acknowledgeRisks, setAcknowledgeRisks] = useState(false);
 
   // Lock-duration choices for share pools; concentrated pools use the
   // chain's no-lock gauge instead.
@@ -247,7 +249,7 @@ export const IncentivizePoolModal: FunctionComponent<
         (isConcentrated &&
           !isTopUp &&
           !uptimeOptions.includes(uptimeSeconds)) ||
-        !acknowledgeFee ||
+        !acknowledgeRisks ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         const send = isTopUp
@@ -517,26 +519,26 @@ export const IncentivizePoolModal: FunctionComponent<
         <span className="caption text-osmoverse-400">
           {t("incentivizePool.visibilityWarning")}
         </span>
-        <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
-          <Icon
-            id="alert-triangle"
-            width={16}
-            height={16}
-            className="mt-0.5 shrink-0 text-rust-300"
-          />
-          <span className="caption text-rust-200">
-            {t("incentivizePool.advancedWarning")}
-          </span>
-        </div>
-        <div className="rounded-xl bg-gradient-negative p-[2px]">
-          <label className="rounded-xlinset flex cursor-pointer items-center gap-3 bg-osmoverse-800 p-3.5">
+        <div className="flex flex-col gap-3 rounded-xl bg-rust-800/40 p-3">
+          <div className="flex items-start gap-2">
+            <Icon
+              id="alert-triangle"
+              width={16}
+              height={16}
+              className="mt-0.5 shrink-0 text-rust-300"
+            />
+            <span className="caption text-rust-200">
+              {t("incentivizePool.advancedWarning")}
+            </span>
+          </div>
+          <label className="flex cursor-pointer items-center gap-3">
             <Checkbox
               variant="destructive"
-              checked={acknowledgeFee}
-              onClick={() => setAcknowledgeFee(!acknowledgeFee)}
+              checked={acknowledgeRisks}
+              onClick={() => setAcknowledgeRisks(!acknowledgeRisks)}
             />
-            <span className="caption text-osmoverse-100">
-              {t("incentivizePool.acknowledgeFee", {
+            <span className="caption text-rust-200">
+              {t("incentivizePool.acknowledgeRisks", {
                 fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
               })}
             </span>

@@ -378,7 +378,7 @@
     "dustUnpriceable": "Cet actif n'a pas de prix ici. Les gauges ne peuvent distribuer que des actifs disposant d'une route de pool avec OSMO onchain ; la transaction échouera si cet actif n'est pas routable vers OSMO.",
     "dustBelowMin": "Valeur quotidienne très faible : les parts inférieures à {minValue} par destinataire seront ignorées par la défense anti-poussière de la chaîne.",
     "visibilityWarning": "Les nouvelles gauges peuvent ne pas apparaître dans les statistiques de la pool avant un jour.",
-    "acknowledgeFee": "Je comprends que cela coûte des frais non remboursables de {fee}, envoyés au fonds communautaire.",
+    "acknowledgeRisks": "Je comprends que ces incitations ne peuvent pas être récupérées une fois ajoutées et que cela coûte des frais non remboursables de {fee}, envoyés au fonds communautaire.",
     "ctaCreate": "Ajouter des incitations",
     "ctaTopUp": "Recharger la gauge #{gaugeId}"
   },

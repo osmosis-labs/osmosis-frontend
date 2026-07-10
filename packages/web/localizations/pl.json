@@ -378,7 +378,7 @@
     "dustUnpriceable": "Ten aktyw nie ma tu ceny. Gauge mogą dystrybuować tylko aktywa z trasą puli do OSMO onchain, więc transakcja się nie powiedzie, jeśli tego aktywa nie da się przekierować do OSMO.",
     "dustBelowMin": "Bardzo niska dzienna wartość: udziały poniżej {minValue} na odbiorcę zostaną pominięte przez ochronę antypyłową łańcucha.",
     "visibilityWarning": "Nowe gauge mogą nie pojawić się w statystykach puli, dopóki nie minie jeden dzień.",
-    "acknowledgeFee": "Rozumiem, że wiąże się to z bezzwrotną opłatą {fee}, przekazywaną do puli społeczności.",
+    "acknowledgeRisks": "Rozumiem, że dodanych zachęt nie można odzyskać oraz że wiąże się to z bezzwrotną opłatą {fee}, przekazywaną do puli społeczności.",
     "ctaCreate": "Dodaj zachęty",
     "ctaTopUp": "Doładuj gauge #{gaugeId}"
   },
