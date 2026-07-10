@@ -259,6 +259,12 @@ export class SquidBridgeProvider implements BridgeProvider {
                   decimals: feeCosts[0].token.decimals,
                   address: feeCosts[0].token.address,
                   coinGeckoId: feeCosts[0].token.coingeckoId,
+                  // Squid (Axelar) charges its cross-chain fee on top of the
+                  // input on EVM-source deposits: the tx value is amount + fee.
+                  // Flag it additive so a max-amount input reserves it and the
+                  // affordability check funds input + fee instead of deducting
+                  // it from the input (which fails the wallet signature).
+                  isAdditive: isEvmTransaction,
                 }
               : {
                   ...fromAsset,
