@@ -453,11 +453,13 @@ is capped, so all funds are utilized.
 rule**: top up only when `current < warnAmount`, and when topping up, refill
 all the way to `warnAmount × topup_multiplier` (the "target", default
 `3 × warnAmount`). When `warnAmount ≤ current < target`, the script reports
-`✓ ok (above warn, below target — no topup)` and skips the token. With the
-default multiplier and the observed monitoring-wallet drain rate (~5 USDC/hr
-on US, less on EU/SG), an auto-cron topup fires roughly every ~3.4 hours and
-refills the account back to ~5 hours of headroom — striking a balance between
-alert frequency and the size of stranded reserves.
+`✓ ok (above warn, below target — no topup)` and skips the token. Measured
+on-chain (Mar–Jul 2026), the US monitoring wallet drained ~0.4 USDC/hr
+(~10/day) with the market + limit suites running hourly — a ~17 USDC topup
+every ~2 days — while EU/SG (stablecoin swaps only) drain almost nothing.
+Since the market + limit suites moved to a 12-hourly cadence (Jul 2026), the
+expected US drain is ~34 USDC/month, so an auto-cron topup fires roughly
+every two weeks.
 
 The hysteresis matters because the monitoring tests are cyclic (each cron tick
 runs Buy then Sell pairs that *should* net to ~0 USDC). Mid-cycle, between a
