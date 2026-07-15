@@ -165,23 +165,27 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           {t("transfer.learnMore")}
         </Link>
       </div>
-      {hasLossWarning && (
+      {/* Renders for any active error, not just loss warnings — when the
+          quote errors out (e.g. every provider fails a refetch), the details
+          above unrender and this box is the only thing telling the user why
+          the screen is empty and Confirm is disabled. */}
+      {quote.errorBoxMessage && (
         <div className="flex flex-col gap-3 pt-3">
-          {quote.errorBoxMessage && (
-            <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
-              <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
-              <div className="flex flex-col">
-                <h1 className="body2">{quote.errorBoxMessage.heading}</h1>
-                <p className="body2 text-osmoverse-300">
-                  {quote.errorBoxMessage.description}
-                </p>
-              </div>
+          <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+            <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
+            <div className="flex flex-col">
+              <h1 className="body2">{quote.errorBoxMessage.heading}</h1>
+              <p className="body2 text-osmoverse-300">
+                {quote.errorBoxMessage.description}
+              </p>
             </div>
+          </div>
+          {hasLossWarning && (
+            <LossAcknowledgementCheckbox
+              checked={quote.hasAcknowledgedLoss}
+              onCheckedChange={quote.setLossAcknowledged}
+            />
           )}
-          <LossAcknowledgementCheckbox
-            checked={quote.hasAcknowledgedLoss}
-            onCheckedChange={quote.setLossAcknowledged}
-          />
         </div>
       )}
       <div className="flex w-full items-center gap-3 py-3 md:py-2">

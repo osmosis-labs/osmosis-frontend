@@ -189,6 +189,27 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
       })
     );
 
+    expect(screen.getByText("Insufficient funds for fees")).toBeInTheDocument();
+    expect(acknowledgementCheckbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  it("surfaces the error copy when the quote itself errors", () => {
+    // e.g. all providers fail a 30s refetch on the review screen: the
+    // details/amount boxes unrender, so the error box is the only signal —
+    // it must render even with no loss warning active.
+    renderScreen(
+      makeQuote({
+        userCanAdvance: false,
+        errorBoxMessage: {
+          heading: "Something isn't working",
+          description: "Sorry for the inconvenience, try again later.",
+        },
+        highLossWarningActive: false,
+      })
+    );
+
+    expect(screen.getByText("Something isn't working")).toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });
