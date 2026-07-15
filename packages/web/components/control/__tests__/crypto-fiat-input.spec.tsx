@@ -103,7 +103,7 @@ describe.each(testCases)(
 
       const expectedMax = balanceCoin
         .toDec()
-        .sub(transferGasCost.toDec().mul(new Dec("2")));
+        .sub(transferGasCost.toDec().mul(new Dec("3")));
       const expectedValue = trimPlaceholderZeros(expectedMax.toString());
 
       const onChangeCryptoInput = jest.fn();
