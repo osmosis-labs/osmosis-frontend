@@ -1,0 +1,80 @@
+name: "E2E: Sweep Account Surplus"
+
+# Sweeps surplus tokens from the E2E test accounts back to the topup holding
+# account (the inverse of "E2E: Topup Test Accounts").
+#
+# The monitoring tests slowly convert USDC into other tokens (buy/sell
+# asymmetry, failed sell legs), so test wallets accumulate balances well above
+# what the tests need. For each account/token requirement, when the balance
+# exceeds warnAmount x sweep_multiplier the excess above the auto-topup refill
+# target (warnAmount x 3) is sent back to the topup account, where it can be
+# swapped back to USDC manually (hot wallet). Sweeping never goes below the
+# topup target, so it cannot trigger an auto-topup (no ping-pong).
+#
+# Manual dispatches default to dry run. Scheduled (weekly) runs are live.
+
+run-name: "${{ github.event_name == 'schedule' && 'Sweep' || (inputs.dry_run == true || inputs.dry_run == 'true') && 'Dry run' || 'Sweep' }} — account surplus (x${{ github.event_name == 'schedule' && '4' || inputs.sweep_multiplier }})"
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no transactions sent)"
+        type: boolean
+        default: true
+      sweep_multiplier:
+        description: "Sweep when balance > warnAmount x this (min 3.5)"
+        type: string
+        default: "4"
+  schedule:
+    - cron: "0 8 * * 1" # weekly, Monday 08:00 UTC — live run
+
+concurrency:
+  group: e2e-sweep
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: "Sweep surplus — all accounts"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 22.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Sweep surplus
+        env:
+          # Scheduled runs are live; manual dispatches honor the dry_run input.
+          DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || (inputs.dry_run == true || inputs.dry_run == 'true') }}
+          SWEEP_MULTIPLIER: ${{ github.event_name == 'schedule' && '4' || inputs.sweep_multiplier }}
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+        run: npx tsx packages/e2e/scripts/sweep-surplus.ts
