@@ -52,7 +52,9 @@ const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 /** Matches the auto-topup refill target (topup_multiplier 3.0 dispatched by
  * the monitoring workflow's topup-dispatch job). */
 const TOPUP_TARGET_MULTIPLIER = 3.0;
-const MIN_SWEEP_MULTIPLIER = 3.5;
+/** Derived from the topup target so the floor stays above it even if the
+ * target changes — sweeping below it would trigger auto-topup ping-pong. */
+const MIN_SWEEP_MULTIPLIER = TOPUP_TARGET_MULTIPLIER + 0.5;
 
 const SOURCE_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
@@ -245,11 +247,26 @@ async function main(): Promise<void> {
     const coins: Coin[] = [];
     for (const req of resolvedReqs) {
       const bal = balances.find((b) => b.symbol === req.token);
-      const current = bal?.amount ?? 0;
       const threshold = req.warnAmount * multiplier;
       const target = req.warnAmount * TOPUP_TARGET_MULTIPLIER;
 
-      if (!bal || current <= threshold) {
+      if (!bal) {
+        console.log(
+          `      ${req.token}: 0.0000 <= ${threshold.toFixed(4)}  ✓ no surplus`
+        );
+        continue;
+      }
+      const current = bal.amount;
+
+      // Compare in raw units (like the sweep math below) — float comparison
+      // on `bal.amount` could misclassify near-threshold balances for
+      // high-decimal tokens. Ceil so a balance exactly at the threshold
+      // never counts as surplus.
+      const scale = new BigNumber(10).pow(bal.decimals);
+      const rawThreshold = new BigNumber(threshold)
+        .times(scale)
+        .integerValue(BigNumber.ROUND_CEIL);
+      if (new BigNumber(bal.rawAmount).lte(rawThreshold)) {
         console.log(
           `      ${req.token}: ${current.toFixed(4)} <= ${threshold.toFixed(4)}  ✓ no surplus`
         );
@@ -258,14 +275,14 @@ async function main(): Promise<void> {
 
       // Ceil the raw target so rounding can never sweep below it.
       const rawTarget = new BigNumber(target)
-        .times(new BigNumber(10).pow(bal.decimals))
+        .times(scale)
         .integerValue(BigNumber.ROUND_CEIL);
       const rawSweep = new BigNumber(bal.rawAmount).minus(rawTarget);
       if (rawSweep.lte(0)) continue;
 
       console.log(
         `      ${req.token}: ${current.toFixed(4)} > ${threshold.toFixed(4)}  → sweep ${rawSweep
-          .div(new BigNumber(10).pow(bal.decimals))
+          .div(scale)
           .toFixed(Math.min(bal.decimals, 4))} (keep ${target.toFixed(4)})`
       );
       coins.push({ denom: bal.denom, amount: rawSweep.toFixed(0) });
