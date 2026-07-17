@@ -22,7 +22,11 @@
  *                               (default 4, floored at 3.5 to stay above the
  *                               topup target of 3).
  * - `DRY_RUN`                 — anything but "false" reports without sending.
- * - `SLACK_WEBHOOK_URL`       — optional summary webhook.
+ * - `SLACK_WEBHOOK_URL`       — optional summary webhook (same channel as the
+ *                               topup script). Dry runs always post the plan;
+ *                               live runs post only when something was swept
+ *                               or failed, with the topup account's resulting
+ *                               balances for planning the manual swap-back.
  */
 
 import * as dotenv from "dotenv";
@@ -34,6 +38,7 @@ import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
 import { TOKEN_DENOMS } from "../utils/balance-checker";
 import { deriveAddress, createSigningClient, OSMOSIS_RPC } from "../utils/order-utils";
 import {
+  type TokenBalance,
   fetchAllKnownBalances,
   printBalanceTable,
   resolveRequirementsToTokenUnits,
@@ -84,24 +89,29 @@ async function sendSlackSummary(
   results: SweepResult[],
   skippedLabels: string[],
   topupAddress: string,
+  topupBalances: TokenBalance[],
   multiplier: number,
-  hasFailures: boolean
+  hasFailures: boolean,
+  isDryRun: boolean
 ): Promise<void> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
   if (!webhookUrl) return;
 
-  const headerText = hasFailures
-    ? "⚠️ E2E Surplus Sweep Complete (Partial Failure)"
-    : "🧹 E2E Surplus Sweep Complete";
+  const headerText = isDryRun
+    ? "🧪 E2E Surplus Sweep — Dry Run (no transactions sent)"
+    : hasFailures
+      ? "⚠️ E2E Surplus Sweep Complete (Partial Failure)"
+      : "🧹 E2E Surplus Sweep Complete";
 
   const lines: string[] = [
     `*Sweep threshold:* warnAmount x ${multiplier}; swept down to warnAmount x ${TOPUP_TARGET_MULTIPLIER}`,
     `*Destination:* \`${topupAddress}\` — swap surplus back to USDC manually there.\n`,
   ];
 
+  const sweepVerb = isDryRun ? "Would sweep" : "Swept";
   for (const r of results) {
     lines.push(`*${r.label}* (\`${r.address}\`):`);
-    lines.push(`  ${coinSummary(r.coins)}`);
+    lines.push(`  ${sweepVerb}: ${coinSummary(r.coins)}`);
     if (r.txHash) {
       lines.push(`  <${MINTSCAN_TX_URL}/${r.txHash}|View TX on Mintscan>`);
     } else if (r.error) {
@@ -110,8 +120,30 @@ async function sendSlackSummary(
     lines.push("");
   }
 
+  if (results.length === 0) {
+    lines.push("_No surplus found on any account._\n");
+  }
+
   for (const label of skippedLabels) {
     lines.push(`*${label}:* No surplus — skipped\n`);
+  }
+
+  // Topup account balances so the manual swap-back can be planned at a glance.
+  if (topupBalances.length > 0) {
+    const maxSym = Math.max(...topupBalances.map((b) => b.symbol.length), 6);
+    lines.push(
+      `*Topup account balances (${isDryRun ? "current" : "post-sweep"}):*`
+    );
+    lines.push("```");
+    lines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}`);
+    lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}`);
+    for (const b of topupBalances) {
+      const d = Math.min(b.decimals, 8);
+      lines.push(
+        `${b.symbol.padEnd(maxSym)}  ${b.amount.toFixed(d).padStart(16)}`
+      );
+    }
+    lines.push("```");
   }
 
   const serverUrl = process.env.GITHUB_SERVER_URL;
@@ -288,18 +320,36 @@ async function main(): Promise<void> {
     }
   }
 
+  // Slack: dry runs always post (they're manual — someone wants the plan);
+  // live runs post only when something was swept or failed, so the weekly
+  // cron stays silent when there is no surplus.
+  if (isDryRun || results.length > 0 || hasFailures) {
+    let topupBalances: TokenBalance[] = [];
+    try {
+      topupBalances = await fetchAllKnownBalances(topupAddress);
+    } catch (err) {
+      console.warn(
+        "  ⚠ Could not fetch topup balances for the summary:",
+        err instanceof Error ? err.message : err
+      );
+    }
+    await sendSlackSummary(
+      results,
+      skippedLabels,
+      topupAddress,
+      topupBalances,
+      multiplier,
+      hasFailures,
+      isDryRun
+    );
+  } else {
+    console.log("  Nothing swept — skipping Slack summary.");
+  }
+
   if (isDryRun) {
     console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
-
-  await sendSlackSummary(
-    results,
-    skippedLabels,
-    topupAddress,
-    multiplier,
-    hasFailures
-  );
 
   if (hasFailures) process.exit(1);
 }

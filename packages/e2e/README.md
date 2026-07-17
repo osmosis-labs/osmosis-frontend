@@ -418,6 +418,13 @@ to the topup account whenever the balance exceeds `warnAmount × sweep_multiplie
 (default 4). Surplus arriving at the topup account is swapped back to USDC
 manually — it's a hot wallet.
 
+The sweep posts to the same Slack channel as the topup script
+(`E2E_SLACK_WEBHOOK_BALANCE_ALERTS`): dry runs always post the sweep plan;
+live runs post only when something was swept or failed (the weekly cron stays
+silent when there's no surplus). The summary lists per-account swept coins
+with Mintscan links plus the topup account's resulting balances, so the
+manual swap-back can be planned straight from the message.
+
 **Required secrets:**
 
 | Secret | Used by |
