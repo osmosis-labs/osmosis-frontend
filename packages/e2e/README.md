@@ -405,10 +405,12 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 | **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
 | **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
 | **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml` | Weekly (+ manual) sweep of surplus tokens back to the topup account |
+| **E2E: Fleet Balance Report** | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across all 5 accounts |
 
-All workflows default to **dry run** on manual dispatch (the sweep's weekly
-cron runs live). The `RESERVE_OSMO` / `RESERVE_USDC` inputs control how much
-to keep in the **topup account** during distribute and topup phases.
+All fund-moving workflows default to **dry run** on manual dispatch (the
+sweep's weekly cron runs live; the balance report is read-only). The
+`RESERVE_OSMO` / `RESERVE_USDC` inputs control how much to keep in the
+**topup account** during distribute and topup phases.
 
 The sweep is the topup's inverse: the monitoring tests slowly convert USDC
 into other tokens (buy/sell asymmetry, failed sell legs), so wallets
@@ -424,6 +426,18 @@ live runs post only when something was swept or failed (the weekly cron stays
 silent when there's no surplus). The summary lists per-account swept coins
 with Mintscan links plus the topup account's resulting balances, so the
 manual swap-back can be planned straight from the message.
+
+The fleet balance report (`scripts/report-fleet-balances.ts`) is the
+usage-visibility layer: every Monday it posts a compact per-account USD
+summary, and on the 1st a full per-token breakdown, covering all five
+accounts including topup/holding. Each scheduled run saves its numbers as a
+`fleet-balance-state` artifact; the next run picks the prior artifact
+*closest to its target window* (7 days weekly / 30 days monthly) and scales
+the burn rate by the actual elapsed days — so extra manual runs neither
+shrink the trend window nor pollute the baseline history (manual dispatches
+don't save state unless `save_state` is checked). The trend section shows the
+total USD delta alongside the USDC-only delta (the cleanest burn signal,
+since the total conflates burn with price moves) plus estimated USDC runway.
 
 **Required secrets:**
 
