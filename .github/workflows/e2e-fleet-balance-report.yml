@@ -1,0 +1,161 @@
+name: "E2E: Fleet Balance Report"
+
+# Posts a periodic Slack report of total assets across all five E2E accounts
+# (US/EU/SG monitoring, preview, topup/holding), valued in USD at SQS prices.
+# Read-only — no transactions.
+#
+# Cadence: weekly compact report (Mondays 09:00 UTC, an hour after the sweep
+# so it reflects post-sweep state) and a monthly full report (1st, 09:30 UTC).
+# When the 1st lands on a Monday, the weekly is skipped in favor of the
+# monthly.
+#
+# Trend/burn-rate math never assumes a fixed interval: each scheduled run
+# uploads its numbers as a `fleet-balance-state` artifact, and the next run
+# picks the prior artifact *closest to its target window* (7 days for weekly,
+# 30 for monthly) — so extra manual runs neither skew the window nor pollute
+# the baseline history (manual dispatches don't upload state unless
+# `save_state` is checked).
+
+run-name: "Fleet balance report — ${{ github.event_name == 'schedule' && (github.event.schedule == '30 9 1 * *' && 'monthly' || 'weekly') || format('manual ({0})', inputs.mode) }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Report detail level"
+        type: choice
+        options:
+          - full
+          - compact
+        default: full
+      save_state:
+        description: "Save this run's numbers as a trend baseline (scheduled runs always do)"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 9 * * 1" # weekly compact, Monday 09:00 UTC (post-sweep)
+    - cron: "30 9 1 * *" # monthly full, 1st of month 09:30 UTC
+
+concurrency:
+  group: e2e-fleet-report
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read # list/download prior state artifacts
+
+jobs:
+  report:
+    name: "Fleet balance report"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Plan run (mode, window, state saving)
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_MODE: ${{ inputs.mode }}
+          INPUT_SAVE: ${{ inputs.save_state }}
+        run: |
+          SKIP=false
+          if [ "$EVENT" = "schedule" ]; then
+            SAVE=true
+            if [ "$SCHEDULE" = "30 9 1 * *" ]; then
+              MODE=full; LABEL=monthly; WINDOW_DAYS=30
+            else
+              MODE=compact; LABEL=weekly; WINDOW_DAYS=7
+              # Skip the weekly when the monthly fires the same morning.
+              if [ "$(date -u +%d)" = "01" ]; then
+                echo "1st of the month — monthly report supersedes the weekly."
+                SKIP=true
+              fi
+            fi
+          else
+            MODE="${INPUT_MODE:-full}"; LABEL=manual
+            SAVE="${INPUT_SAVE:-false}"
+            if [ "$MODE" = "full" ]; then WINDOW_DAYS=30; else WINDOW_DAYS=7; fi
+          fi
+          {
+            echo "skip=$SKIP"
+            echo "mode=$MODE"
+            echo "label=$LABEL"
+            echo "save=$SAVE"
+            echo "window_days=$WINDOW_DAYS"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check out repository
+        if: steps.plan.outputs.skip != 'true'
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        if: steps.plan.outputs.skip != 'true'
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 22.x
+
+      - name: Cache dependencies
+        if: steps.plan.outputs.skip != 'true'
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        if: steps.plan.outputs.skip != 'true'
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Download baseline state (closest to target window)
+        if: steps.plan.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          WINDOW_DAYS: ${{ steps.plan.outputs.window_days }}
+        run: |
+          TARGET=$(date -u -d "-${WINDOW_DAYS} days" +%s)
+          # Pick the non-expired fleet-balance-state artifact whose creation
+          # time is closest to the target window, so extra runs in between
+          # never shrink the trend window.
+          ARTIFACT_ID=$(gh api "repos/$GH_REPO/actions/artifacts?name=fleet-balance-state&per_page=100" |
+            jq -r --argjson target "$TARGET" '
+              [.artifacts[] | select(.expired | not)]
+              | map(. + {diff: (((.created_at | fromdateiso8601) - $target) | if . < 0 then -. else . end)})
+              | sort_by(.diff)
+              | .[0].id // empty')
+          if [ -n "$ARTIFACT_ID" ]; then
+            echo "Using baseline artifact $ARTIFACT_ID (target: $WINDOW_DAYS days ago)."
+            gh api "repos/$GH_REPO/actions/artifacts/$ARTIFACT_ID/zip" > baseline.zip
+            mkdir -p baseline && unzip -o baseline.zip -d baseline
+            echo "BASELINE_STATE_PATH=$PWD/baseline/fleet-state.json" >> "$GITHUB_ENV"
+          else
+            echo "No prior state artifact — snapshot-only report."
+          fi
+
+      - name: Generate and post report
+        if: steps.plan.outputs.skip != 'true'
+        env:
+          MODE: ${{ steps.plan.outputs.mode }}
+          REPORT_LABEL: ${{ steps.plan.outputs.label }}
+          OUTPUT_STATE_PATH: ${{ github.workspace }}/fleet-state.json
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+        run: npx tsx packages/e2e/scripts/report-fleet-balances.ts
+
+      - name: Upload state artifact (trend baseline)
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.save == 'true'
+        uses: actions/upload-artifact@v6
+        with:
+          name: fleet-balance-state
+          path: ${{ github.workspace }}/fleet-state.json
+          retention-days: 90
