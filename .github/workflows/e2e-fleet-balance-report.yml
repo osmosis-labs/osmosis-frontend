@@ -35,6 +35,11 @@ on:
   schedule:
     - cron: "0 9 * * 1" # weekly compact, Monday 09:00 UTC (post-sweep)
     - cron: "30 9 1 * *" # monthly full, 1st of month 09:30 UTC
+  # TEMP registration/test trigger (this throwaway branch only, NEVER merge):
+  # a push-triggered run registers the workflow so it becomes dispatchable
+  # pre-merge. Push runs are read-only reports (full mode, no state saved).
+  push:
+    branches: [jason/e2e-fleet-report-test-reg]
 
 concurrency:
   group: e2e-fleet-report
