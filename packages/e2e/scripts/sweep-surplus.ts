@@ -106,8 +106,8 @@ async function sendSlackSummary(
       : "🧹 E2E Surplus Sweep Complete";
 
   const lines: string[] = [
-    `*Sweep threshold:* warnAmount x ${multiplier}; swept down to warnAmount x ${TOPUP_TARGET_MULTIPLIER}`,
-    `*Destination:* \`${topupAddress}\` — swap surplus back to USDC manually there.\n`,
+    `*Sweep threshold:* low-balance warn amount x ${multiplier}; swept down to low-balance warn amount x ${TOPUP_TARGET_MULTIPLIER} (the auto-topup refill target)`,
+    `*Destination:* Topup / holding wallet (\`${topupAddress}\`) — swap surplus back to USDC manually there.\n`,
   ];
 
   const sweepVerb = isDryRun ? "Would sweep" : "Swept";
@@ -134,7 +134,7 @@ async function sendSlackSummary(
   if (topupBalances.length > 0) {
     const maxSym = Math.max(...topupBalances.map((b) => b.symbol.length), 6);
     lines.push(
-      `*Topup account balances (${isDryRun ? "current" : "post-sweep"}):*`
+      `*Topup / holding wallet balances (${isDryRun ? "current" : "post-sweep"}):*`
     );
     lines.push("```");
     lines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}`);
