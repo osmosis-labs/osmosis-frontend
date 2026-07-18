@@ -166,12 +166,19 @@ function trendLines(
   return lines;
 }
 
-async function postSlack(text: string, headerText: string): Promise<void> {
+async function postSlack(
+  sections: string[],
+  headerText: string
+): Promise<void> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
   if (!webhookUrl) {
     console.log("  SLACK_WEBHOOK_URL not set — skipping Slack post.");
     return;
   }
+  // Slack caps section text at 3000 chars, so the full report (5 accounts x
+  // token tables) must be split into one section block per account rather
+  // than a single body. Truncate defensively in case a single section ever
+  // outgrows the cap.
   const payload = {
     text: headerText,
     blocks: [
@@ -179,7 +186,15 @@ async function postSlack(text: string, headerText: string): Promise<void> {
         type: "header",
         text: { type: "plain_text", text: headerText, emoji: true },
       },
-      { type: "section", text: { type: "mrkdwn", text } },
+      ...sections
+        .filter((s) => s.trim().length > 0)
+        .map((s) => ({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: s.length > 2900 ? `${s.slice(0, 2900)}\n_…truncated_` : s,
+          },
+        })),
     ],
   };
   const resp = await fetch(webhookUrl, {
@@ -241,36 +256,38 @@ async function main(): Promise<void> {
     (baseline?.accounts ?? []).map((a) => [a.label, a])
   );
 
-  // Console + Slack body
-  const lines: string[] = [];
-  lines.push(
+  // Console + Slack body. One section per account — Slack caps each section
+  // block at 3000 chars, and the 5 token tables together exceed that.
+  const sections: string[] = [];
+  sections.push(
     `*Grand total: ${fmtUsd(grandTotalUsd)}*  (USDC across all accounts: ${grandUsdc.toFixed(2)})`
   );
-  lines.push("");
 
   for (const r of reports) {
+    const acctLines: string[] = [];
     const base = baselineByLabel.get(r.label);
     const delta = base ? `  (Δ ${fmtDelta(r.totalUsd - base.totalUsd)})` : "";
-    lines.push(`*${r.label}*: ${fmtUsd(r.totalUsd)}${delta} — \`${r.address}\``);
+    acctLines.push(`*${r.label}*: ${fmtUsd(r.totalUsd)}${delta} — \`${r.address}\``);
     if (mode === "full" && r.rows.length > 0) {
       const maxSym = Math.max(...r.rows.map((t) => t.symbol.length), 6);
-      lines.push("```");
-      lines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  ${"USD".padStart(12)}`);
-      lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(12)}`);
+      acctLines.push("```");
+      acctLines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  ${"USD".padStart(12)}`);
+      acctLines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(12)}`);
       for (const t of r.rows) {
         const d = t.amount >= 1000 ? 2 : 4;
-        lines.push(
+        acctLines.push(
           `${t.symbol.padEnd(maxSym)}  ${t.amount.toFixed(d).padStart(16)}  ${(t.usd === null ? "n/a" : fmtUsd(t.usd)).padStart(12)}`
         );
       }
-      lines.push("```");
+      acctLines.push("```");
     }
+    sections.push(acctLines.join("\n"));
   }
 
-  lines.push("");
-  lines.push(...trendLines(baseline, grandTotalUsd, grandUsdc));
+  const tailLines: string[] = [];
+  tailLines.push(...trendLines(baseline, grandTotalUsd, grandUsdc));
   if (allUnpriced.length > 0) {
-    lines.push(
+    tailLines.push(
       `_No price for: ${allUnpriced.join(", ")} — excluded from USD totals._`
     );
   }
@@ -279,10 +296,11 @@ async function main(): Promise<void> {
   const repo = process.env.GITHUB_REPOSITORY;
   const runId = process.env.GITHUB_RUN_ID;
   if (serverUrl && repo && runId) {
-    lines.push(`*Details:* <${serverUrl}/${repo}/actions/runs/${runId}|View run logs>`);
+    tailLines.push(`*Details:* <${serverUrl}/${repo}/actions/runs/${runId}|View run logs>`);
   }
+  sections.push(tailLines.join("\n"));
 
-  const body = lines.join("\n");
+  const body = sections.join("\n\n");
   console.log("\n" + body.replace(/[*_`]/g, "") + "\n");
 
   // Persist this run's state for future baselines (workflow decides whether
@@ -301,7 +319,7 @@ async function main(): Promise<void> {
   console.log(`  State written to ${outputStatePath}`);
 
   const label = process.env.REPORT_LABEL || mode;
-  await postSlack(body, `📊 E2E Fleet Balance Report (${label})`);
+  await postSlack(sections, `📊 E2E Fleet Balance Report (${label})`);
 }
 
 main().catch((err) => {
