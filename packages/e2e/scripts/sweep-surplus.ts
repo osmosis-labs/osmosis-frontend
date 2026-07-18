@@ -110,10 +110,13 @@ async function sendSlackSummary(
     `*Destination:* Topup / holding wallet (\`${topupAddress}\`) — swap surplus back to USDC manually there.\n`,
   ];
 
-  const sweepVerb = isDryRun ? "Would sweep" : "Swept";
   for (const r of results) {
     lines.push(`*${r.label}* (\`${r.address}\`):`);
-    lines.push(`  ${sweepVerb}: ${coinSummary(r.coins)}`);
+    if (r.coins.length > 0) {
+      // Never label a failed transfer "Swept" — funds did not move.
+      const verb = r.error ? "Attempted" : isDryRun ? "Would sweep" : "Swept";
+      lines.push(`  ${verb}: ${coinSummary(r.coins)}`);
+    }
     if (r.txHash) {
       lines.push(`  <${MINTSCAN_TX_URL}/${r.txHash}|View TX on Mintscan>`);
     } else if (r.error) {
@@ -238,72 +241,75 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const balances = await fetchAllKnownBalances(address);
-    const resolvedReqs = await resolveRequirementsToTokenUnits(reqs);
-
-    console.log(`\n  ${acct.label}: ${address}`);
-    printBalanceTable("Current balances", balances);
-
+    // One transient balance/price/send failure must not abort the whole run:
+    // record it, flag the run, and continue with the remaining accounts so
+    // the Slack summary still posts.
     const coins: Coin[] = [];
-    for (const req of resolvedReqs) {
-      const bal = balances.find((b) => b.symbol === req.token);
-      const threshold = req.warnAmount * multiplier;
-      const target = req.warnAmount * TOPUP_TARGET_MULTIPLIER;
-
-      if (!bal) {
-        console.log(
-          `      ${req.token}: 0.0000 <= ${threshold.toFixed(4)}  ✓ no surplus`
-        );
-        continue;
-      }
-      const current = bal.amount;
-
-      // Compare in raw units (like the sweep math below) — float comparison
-      // on `bal.amount` could misclassify near-threshold balances for
-      // high-decimal tokens. Ceil so a balance exactly at the threshold
-      // never counts as surplus.
-      const scale = new BigNumber(10).pow(bal.decimals);
-      const rawThreshold = new BigNumber(threshold)
-        .times(scale)
-        .integerValue(BigNumber.ROUND_CEIL);
-      if (new BigNumber(bal.rawAmount).lte(rawThreshold)) {
-        console.log(
-          `      ${req.token}: ${current.toFixed(4)} <= ${threshold.toFixed(4)}  ✓ no surplus`
-        );
-        continue;
-      }
-
-      // Ceil the raw target so rounding can never sweep below it.
-      const rawTarget = new BigNumber(target)
-        .times(scale)
-        .integerValue(BigNumber.ROUND_CEIL);
-      const rawSweep = new BigNumber(bal.rawAmount).minus(rawTarget);
-      if (rawSweep.lte(0)) continue;
-
-      console.log(
-        `      ${req.token}: ${current.toFixed(4)} > ${threshold.toFixed(4)}  → sweep ${rawSweep
-          .div(scale)
-          .toFixed(Math.min(bal.decimals, 4))} (keep ${target.toFixed(4)})`
-      );
-      coins.push({ denom: bal.denom, amount: rawSweep.toFixed(0) });
-    }
-
-    if (coins.length === 0) {
-      console.log("    Nothing to sweep.");
-      skippedLabels.push(acct.label);
-      continue;
-    }
-
-    // MsgSend requires coins sorted by denom.
-    coins.sort((a, b) => a.denom.localeCompare(b.denom));
-
-    if (isDryRun) {
-      console.log(`    Would sweep: ${coinSummary(coins)}`);
-      results.push({ label: acct.label, address, coins });
-      continue;
-    }
-
     try {
+      const balances = await fetchAllKnownBalances(address);
+      const resolvedReqs = await resolveRequirementsToTokenUnits(reqs);
+
+      console.log(`\n  ${acct.label}: ${address}`);
+      printBalanceTable("Current balances", balances);
+
+      for (const req of resolvedReqs) {
+        const bal = balances.find((b) => b.symbol === req.token);
+        const threshold = req.warnAmount * multiplier;
+        const target = req.warnAmount * TOPUP_TARGET_MULTIPLIER;
+
+        if (!bal) {
+          console.log(
+            `      ${req.token}: 0.0000 <= ${threshold.toFixed(4)}  ✓ no surplus`
+          );
+          continue;
+        }
+        const current = bal.amount;
+
+        // Compare in raw units (like the sweep math below) — float comparison
+        // on `bal.amount` could misclassify near-threshold balances for
+        // high-decimal tokens. Ceil so a balance exactly at the threshold
+        // never counts as surplus.
+        const scale = new BigNumber(10).pow(bal.decimals);
+        const rawThreshold = new BigNumber(threshold)
+          .times(scale)
+          .integerValue(BigNumber.ROUND_CEIL);
+        if (new BigNumber(bal.rawAmount).lte(rawThreshold)) {
+          console.log(
+            `      ${req.token}: ${current.toFixed(4)} <= ${threshold.toFixed(4)}  ✓ no surplus`
+          );
+          continue;
+        }
+
+        // Ceil the raw target so rounding can never sweep below it.
+        const rawTarget = new BigNumber(target)
+          .times(scale)
+          .integerValue(BigNumber.ROUND_CEIL);
+        const rawSweep = new BigNumber(bal.rawAmount).minus(rawTarget);
+        if (rawSweep.lte(0)) continue;
+
+        console.log(
+          `      ${req.token}: ${current.toFixed(4)} > ${threshold.toFixed(4)}  → sweep ${rawSweep
+            .div(scale)
+            .toFixed(Math.min(bal.decimals, 4))} (keep ${target.toFixed(4)})`
+        );
+        coins.push({ denom: bal.denom, amount: rawSweep.toFixed(0) });
+      }
+
+      if (coins.length === 0) {
+        console.log("    Nothing to sweep.");
+        skippedLabels.push(acct.label);
+        continue;
+      }
+
+      // MsgSend requires coins sorted by denom.
+      coins.sort((a, b) => a.denom.localeCompare(b.denom));
+
+      if (isDryRun) {
+        console.log(`    Would sweep: ${coinSummary(coins)}`);
+        results.push({ label: acct.label, address, coins });
+        continue;
+      }
+
       const client = await createSigningClient(wallet);
       const result = await client.sendTokens(
         address,
@@ -321,7 +327,7 @@ async function main(): Promise<void> {
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error(`    ❌ Sweep failed: ${message}`);
+      console.error(`    ❌ ${acct.label} sweep failed: ${message}`);
       hasFailures = true;
       results.push({ label: acct.label, address, coins, error: message });
     }
@@ -333,7 +339,9 @@ async function main(): Promise<void> {
   } else {
     for (const r of results) {
       const status = r.error ? "❌" : isDryRun ? "(dry run)" : "✅";
-      console.log(`  ${r.label}: ${coinSummary(r.coins)} ${status}`);
+      const summary =
+        r.coins.length > 0 ? coinSummary(r.coins) : "(failed before send)";
+      console.log(`  ${r.label}: ${summary} ${status}`);
     }
   }
 
