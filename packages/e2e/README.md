@@ -281,15 +281,16 @@ fix.
 
 ### Monitoring Accounts (`TEST_PRIVATE_KEY_SG` / `_EU` / `_US`)
 
-All three monitoring accounts (SG, EU, US) share the same thresholds:
+US runs all three suites (swap + market + limit); EU/SG run only the swap
+suite, so their USDC floor is lower:
 
-| Token | Min | Warn | Unit | Used By |
-|-------|-----|------|------|---------|
-| USDC | 7 | 8.4 | token | market buy + limit buy + swap stables |
-| OSMO | $2 | $5 | USD | market sell + limit sell OSMO |
-| BTC | $1.60 | $5 | USD | market sell BTC |
-| USDC.eth.axl | 1 | 2 | token | swap stables |
-| USDT | 1 | 1.2 | token | swap stables |
+| Token | Min (US) | Warn (US) | Min (EU/SG) | Warn (EU/SG) | Unit | Used By |
+|-------|----------|-----------|-------------|--------------|------|---------|
+| USDC | 2.9 | 5.5 | 1.2 | 2.3 | token | market buys ($0.55 x2) + limit buy ($0.52) + swap stables (1.10) |
+| OSMO | $1.20 | $2.40 | $1.20 | $2.40 | USD | market sell + limit sell OSMO ($0.54 each) + gas |
+| BTC | $0.60 | $1.50 | $0.60 | $1.50 | USD | market sell BTC (~$0.54) |
+| USDC.eth.axl | 1 | 2 | 1 | 2 | token | swap stables |
+| USDT | 1 | 1.2 | 1 | 1.2 | token | swap stables |
 
 ---
 
@@ -403,19 +404,36 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 |---|---|---|
 | **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
 | **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
+| **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml` | Weekly (+ manual) sweep of surplus tokens back to the topup account |
 
-Both workflows default to **dry run**. The `RESERVE_OSMO` / `RESERVE_USDC` inputs
-control how much to keep in the **topup account** during distribute and topup phases.
+All workflows default to **dry run** on manual dispatch (the sweep's weekly
+cron runs live). The `RESERVE_OSMO` / `RESERVE_USDC` inputs control how much
+to keep in the **topup account** during distribute and topup phases.
+
+The sweep is the topup's inverse: the monitoring tests slowly convert USDC
+into other tokens (buy/sell asymmetry, failed sell legs), so wallets
+accumulate balances far above their targets. `scripts/sweep-surplus.ts` sends
+each token's excess above `warnAmount × 3` (the auto-topup refill target) back
+to the topup account whenever the balance exceeds `warnAmount × sweep_multiplier`
+(default 4). Surplus arriving at the topup account is swapped back to USDC
+manually — it's a hot wallet.
+
+The sweep posts to the same Slack channel as the topup script
+(`E2E_SLACK_WEBHOOK_BALANCE_ALERTS`): dry runs always post the sweep plan;
+live runs post only when something was swept or failed (the weekly cron stays
+silent when there's no surplus). The summary lists per-account swept coins
+with Mintscan links plus the topup account's resulting balances, so the
+manual swap-back can be planned straight from the message.
 
 **Required secrets:**
 
 | Secret | Used by |
 |---|---|
-| `E2E_PRIVATE_KEY_TOPUP` | Both workflows (topup/funding account) |
-| `E2E_PRIVATE_KEY_PREVIEW` | Both workflows (new E2E Test Account) |
-| `TEST_PRIVATE_KEY_SG` | Both workflows (new Monitoring SG) |
-| `TEST_PRIVATE_KEY_EU` | Both workflows (new Monitoring EU) |
-| `TEST_PRIVATE_KEY_US` | Both workflows (new Monitoring US) |
+| `E2E_PRIVATE_KEY_TOPUP` | All three workflows (topup/funding account) |
+| `E2E_PRIVATE_KEY_PREVIEW` | All three workflows (new E2E Test Account) |
+| `TEST_PRIVATE_KEY_SG` | All three workflows (new Monitoring SG) |
+| `TEST_PRIVATE_KEY_EU` | All three workflows (new Monitoring EU) |
+| `TEST_PRIVATE_KEY_US` | All three workflows (new Monitoring US) |
 | `TEST_PRIVATE_KEY` | Migrate only (old E2E Test Account) |
 | `TEST_PRIVATE_KEY_1` | Migrate only (old Monitoring SG) |
 | `TEST_PRIVATE_KEY_2` | Migrate only (old Monitoring EU) |
@@ -429,6 +447,7 @@ control how much to keep in the **topup account** during distribute and topup ph
 | `reserve_osmo` | `5` | OSMO to keep in topup account (distribute/topup phases) |
 | `reserve_usdc` | `100` | USDC to keep in topup account (distribute/topup phases) |
 | `topup_multiplier` | `3.0` | Target = warnAmount x this (topup workflow only) |
+| `sweep_multiplier` | `4` | Sweep when balance > warnAmount x this (sweep workflow only, min 3.5) |
 
 ### Migration flow (one-time)
 
@@ -457,9 +476,9 @@ all the way to `warnAmount × topup_multiplier` (the "target", default
 on-chain (Mar–Jul 2026), the US monitoring wallet drained ~0.4 USDC/hr
 (~10/day) with the market + limit suites running hourly — a ~17 USDC topup
 every ~2 days — while EU/SG (stablecoin swaps only) drain almost nothing.
-Since the market + limit suites moved to a 12-hourly cadence (Jul 2026), the
-expected US drain is ~34 USDC/month, so an auto-cron topup fires roughly
-every two weeks.
+Since the market + limit suites moved to a 12-hourly cadence and trade legs
+were cut from ~$1.55 to ~$0.55 (Jul 2026), the expected US drain is roughly
+~12 USDC/month, so an auto-cron topup fires only every few weeks.
 
 The hysteresis matters because the monitoring tests are cyclic (each cron tick
 runs Buy then Sell pairs that *should* net to ~0 USDC). Mid-cycle, between a
