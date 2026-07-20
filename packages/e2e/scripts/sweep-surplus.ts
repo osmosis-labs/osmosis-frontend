@@ -317,6 +317,13 @@ async function main(): Promise<void> {
         coins,
         "auto"
       );
+      // sendTokens resolves even when the tx is included with a non-zero code
+      // (e.g. out of gas): only code 0 means the transfer actually succeeded.
+      if (result.code !== 0) {
+        throw new Error(
+          `tx ${result.transactionHash} failed with code ${result.code}`
+        );
+      }
       console.log(`    ✅ Swept: ${coinSummary(coins)}`);
       console.log(`    TX: ${result.transactionHash}`);
       results.push({
@@ -371,12 +378,14 @@ async function main(): Promise<void> {
     console.log("  Nothing swept — skipping Slack summary.");
   }
 
+  // Set the exit code before the dry-run early return so a partial dry run
+  // (some accounts hit balance/pricing failures) still exits non-zero.
+  if (hasFailures) process.exitCode = 1;
+
   if (isDryRun) {
     console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
-
-  if (hasFailures) process.exit(1);
 }
 
 main().catch((err) => {
