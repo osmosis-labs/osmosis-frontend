@@ -34,7 +34,7 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
 
-import { deriveAddress } from "../utils/order-utils";
+import { deriveAddress } from "../utils/wallet-utils";
 import { fetchTokenPrices } from "../utils/price-utils";
 import {
   type TokenBalance,
@@ -100,7 +100,9 @@ async function buildAccountReport(
     } else {
       totalUsd += usd;
     }
-    if (bal.symbol === "USDC") usdc = bal.amount;
+    // Sum every USDC variant (USDC, USDC.eth.axl, …) so the stable-balance
+    // burn signal isn't under-reported or clobbered by whichever appears last.
+    if (bal.symbol.startsWith("USDC")) usdc += bal.amount;
     rows.push({ symbol: bal.symbol, amount: bal.amount, usd });
   }
 
@@ -114,7 +116,16 @@ function loadBaseline(): FleetState | null {
   try {
     const raw = fs.readFileSync(p, "utf8").replace(/^\uFEFF/, "");
     const state = JSON.parse(raw) as FleetState;
-    if (!state.timestamp || typeof state.grandTotalUsd !== "number") {
+    // Validate every field the trend/delta math relies on: an unparsable
+    // timestamp, missing grandUsdc, or non-array accounts would otherwise
+    // surface as NaN totals or throw when building baselineByLabel.
+    if (
+      typeof state.timestamp !== "string" ||
+      Number.isNaN(new Date(state.timestamp).getTime()) ||
+      typeof state.grandTotalUsd !== "number" ||
+      typeof state.grandUsdc !== "number" ||
+      !Array.isArray(state.accounts)
+    ) {
       console.warn("  ⚠ Baseline state file is malformed — ignoring.");
       return null;
     }
