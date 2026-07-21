@@ -159,7 +159,7 @@ export const HistoricalPriceChart: FunctionComponent<{
               const datum = tooltipData.datum as any;
               const close = datum.close;
 
-              if (close && onPointerHover) {
+              if (close != null && onPointerHover) {
                 onPointerHover(close);
               }
             }}
@@ -280,7 +280,7 @@ export const HistoricalPriceChart: FunctionComponent<{
                 const close = tooltipData?.nearestDatum?.datum?.close;
                 const time = tooltipData?.nearestDatum?.datum?.time;
 
-                if (showTooltip && time && close) {
+                if (showTooltip && time != null && close != null) {
                   const date = dayjs(time).format("MMM Do, hh:mma");
                   const minimumDecimals = 2;
                   const maxDecimals = Math.max(
