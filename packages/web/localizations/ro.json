@@ -377,6 +377,7 @@
     "dustRule": "Lanțul omite plățile sub {minValue} per destinatar pe zi; totalurile zilnice mici împărțite între multe poziții pot să nu fie distribuite.",
     "dustUnpriceable": "Acest activ nu are preț aici. Gauge-urile pot distribui doar active cu o rută de pool către OSMO onchain, așa că tranzacția va eșua dacă acest activ nu poate fi rutat către OSMO.",
     "dustBelowMin": "Valoare zilnică foarte mică: părțile sub {minValue} per destinatar vor fi omise de apărarea anti-praf a lanțului.",
+    "insufficientOsmoForFee": "OSMO insuficient pentru a acoperi recompensa plus taxa de gauge nerambursabilă de {fee}.",
     "visibilityWarning": "Gauge-urile noi pot să nu apară în statisticile pool-ului până la trecerea unei zile.",
     "acknowledgeNoRecovery": "Înțeleg că aceste stimulente nu pot fi recuperate după adăugare.",
     "acknowledgeFee": "Înțeleg că acest lucru implică o taxă nerambursabilă de {fee}, trimisă către fondul comunitar.",

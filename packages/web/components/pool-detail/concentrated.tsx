@@ -605,7 +605,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
           ))}
         </div>
       </div>
-      {featureFlags.aprBreakdown && (
+      {featureFlags.aprBreakdown ? (
         <SkeletonLoader isLoaded={!isLoadingIncentives}>
           <AprBreakdown
             className="shrink-0 rounded-3xl"
@@ -623,6 +623,18 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             }
           />
         </SkeletonLoader>
+      ) : (
+        // The incentivize entry lives in the AprBreakdown footer, so when that
+        // flag is off it would vanish. Render it standalone so the feature is
+        // reachable regardless of the flag (matching the share-pool entry).
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-fit self-center"
+          onClick={onIncentivize}
+        >
+          {t("incentivizePool.entry")}
+        </Button>
       )}
 
       {hasIncentives && (

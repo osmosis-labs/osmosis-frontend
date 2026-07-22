@@ -9,6 +9,17 @@ import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Checkbox } from "~/components/ui/checkbox";
+import {
+  ADD_TO_GAUGE_FEE_LABEL,
+  ADD_TO_GAUGE_FEE_OSMO,
+  CREATE_GAUGE_FEE_LABEL,
+  CREATE_GAUGE_FEE_OSMO,
+  DUST_WARN_POSITIONS,
+  EPOCH_HOUR_UTC,
+  FALLBACK_UPTIMES_SECONDS,
+  MIN_DISTR_VALUE_LABEL,
+  MIN_DISTR_VALUE_OSMO,
+} from "~/config/incentives";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
@@ -18,39 +29,6 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 const DEFAULT_NUM_EPOCHS = "30";
-
-/** The chain's x/incentives `min_value_for_distribution` param: per-recipient
- *  payouts worth less than this per epoch are silently skipped (spam/dust
- *  defense), and a reward denom with no OSMO pool route is never valued, so
- *  it never distributes. Surfaced as copy; update if governance changes it. */
-const MIN_DISTR_VALUE_LABEL = "0.01 OSMO";
-/** The chain's `min_value_for_distribution`, in OSMO. Kept in sync with
- *  MIN_DISTR_VALUE_LABEL above. */
-const MIN_DISTR_VALUE_OSMO = "0.01";
-
-/** The dust floor is per recipient and the recipient count is unknowable
- *  ahead of an epoch, so an exact sub-floor check is impossible client-side.
- *  Heuristic: warn when the whole daily emission couldn't clear the floor
- *  for even this many positions — in any realistically busy pool, most
- *  recipients would then be skipped. */
-const DUST_WARN_POSITIONS = 500;
-
-/** Mainnet CL `authorized_uptimes` (1ns / 1min / 1h / 24h), used when the
- *  chain param can't be fetched so the uptime selector still offers the full
- *  set instead of a lone fallback button. */
-const FALLBACK_UPTIMES_SECONDS = [0.000000001, 60, 3600, 86400];
-
-/** x/incentives hardcoded fees (CreateGaugeFee / AddToGaugeFee, sent to the
- *  community pool). These are constants in the chain, not gov params. If the
- *  gauge is funded with OSMO, this fee is charged on top of the reward
- *  amount, so the sender needs reward + fee in OSMO. */
-const CREATE_GAUGE_FEE_LABEL = "50 OSMO";
-const ADD_TO_GAUGE_FEE_LABEL = "25 OSMO";
-
-/** The daily distribution epoch fires at ~17:00 UTC. A custom start is a
- *  date-only choice; we pin the time of day to the epoch so the gauge goes
- *  active on the intended day rather than a day late. */
-const EPOCH_HOUR_UTC = 17;
 
 /** Guided flow for funding external incentives on a pool: create a new
  *  gauge (MsgCreateGauge) or top up an existing one (MsgAddToGauge).
@@ -89,10 +67,22 @@ export const IncentivizePoolModal: FunctionComponent<
   const positiveBalances = queriesStore
     .get(chainId)
     .queryBalances.getQueryBech32Address(address).positiveBalances;
-  const selectableTokens = useMemo(
-    () => positiveBalances.map((balance) => balance.balance),
-    [positiveBalances]
-  );
+  // TokenSelect keys on the display denom (coinDenom), so two held assets that
+  // share a symbol (e.g. bridged variants of the same token) would collide and
+  // the onSelect .find could resolve to the wrong, unrecoverable asset. Dedupe
+  // by display denom here so the picker never offers an ambiguous pair; a
+  // proper fix keys TokenSelect on coinMinimalDenom (tracked separately).
+  const selectableTokens = useMemo(() => {
+    const seen = new Set<string>();
+    const tokens = [];
+    for (const balance of positiveBalances) {
+      const denom = balance.balance.currency.coinDenom;
+      if (seen.has(denom)) continue;
+      seen.add(denom);
+      tokens.push(balance.balance);
+    }
+    return tokens;
+  }, [positiveBalances]);
   // Default the reward token to OSMO when available.
   useEffect(() => {
     if (selectedCurrency !== undefined || selectableTokens.length === 0) return;
@@ -231,6 +221,31 @@ export const IncentivizePoolModal: FunctionComponent<
   const isTopUp = topUpGaugeId !== null;
   const needsDuration = !isConcentrated && !isTopUp;
 
+  // The x/incentives gauge fee (50 create / 25 top-up) is charged in OSMO on
+  // top of the reward, so the sender needs `fee` OSMO free, plus the reward
+  // itself when the reward is also OSMO. useAmountInput only validates the
+  // reward against its own balance, so validate the OSMO fee here and block
+  // the button; otherwise a user with just enough OSMO for the reward signs a
+  // tx that fails on the fee.
+  const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
+  const osmoBalance = queriesStore
+    .get(chainId)
+    .queryBalances.getQueryBech32Address(address)
+    .getBalanceFromCurrency(osmoCurrencyForFee);
+  const feeOsmo = isTopUp ? ADD_TO_GAUGE_FEE_OSMO : CREATE_GAUGE_FEE_OSMO;
+  const feeCoin = new CoinPretty(
+    osmoCurrencyForFee,
+    DecUtils.getTenExponentN(osmoCurrencyForFee.coinDecimals).mul(
+      new Dec(feeOsmo)
+    )
+  );
+  // OSMO the tx needs beyond gas: the fee, plus the reward when it is OSMO.
+  const requiredOsmo =
+    selectedCurrency?.coinMinimalDenom === "uosmo" && config.amount
+      ? feeCoin.add(config.amount)
+      : feeCoin;
+  const insufficientOsmoForFee = osmoBalance.toDec().lt(requiredOsmo.toDec());
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
@@ -250,6 +265,9 @@ export const IncentivizePoolModal: FunctionComponent<
         (isConcentrated &&
           !isTopUp &&
           !uptimeOptions.includes(uptimeSeconds)) ||
+        // The gauge fee is charged in OSMO on top of the reward; block when
+        // the wallet can't cover reward (if OSMO) + fee.
+        insufficientOsmoForFee ||
         !acknowledgeNoRecovery ||
         !acknowledgeFee ||
         Boolean(account?.txTypeInProgress),
@@ -518,6 +536,13 @@ export const IncentivizePoolModal: FunctionComponent<
             })}
           </span>
         )}
+        {config.amount && insufficientOsmoForFee && (
+          <span className="caption text-rust-300">
+            {t("incentivizePool.insufficientOsmoForFee", {
+              fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
+            })}
+          </span>
+        )}
         <span className="caption text-osmoverse-400">
           {t("incentivizePool.visibilityWarning")}
         </span>
@@ -533,30 +558,31 @@ export const IncentivizePoolModal: FunctionComponent<
               {t("incentivizePool.advancedWarning")}
             </span>
           </div>
-          <label className="flex cursor-pointer items-center gap-3">
-            <Checkbox
-              variant="destructive"
-              checked={acknowledgeNoRecovery}
-              onClick={() => setAcknowledgeNoRecovery(!acknowledgeNoRecovery)}
-            />
+          {/* onClick on the wrapper, not a <label>: <label> only forwards
+              clicks to labelable form controls, not the Radix Checkbox's
+              underlying <button>, so the text would not be a reliable target. */}
+          <div
+            className="flex cursor-pointer items-center gap-3"
+            onClick={() => setAcknowledgeNoRecovery(!acknowledgeNoRecovery)}
+          >
+            <Checkbox variant="destructive" checked={acknowledgeNoRecovery} />
             <span className="caption text-rust-200">
               {t("incentivizePool.acknowledgeNoRecovery")}
             </span>
-          </label>
+          </div>
         </div>
         <div className="rounded-xl bg-gradient-negative p-[2px]">
-          <label className="rounded-xlinset flex cursor-pointer items-center gap-3 bg-osmoverse-800 p-3.5">
-            <Checkbox
-              variant="destructive"
-              checked={acknowledgeFee}
-              onClick={() => setAcknowledgeFee(!acknowledgeFee)}
-            />
+          <div
+            className="rounded-xlinset flex cursor-pointer items-center gap-3 bg-osmoverse-800 p-3.5"
+            onClick={() => setAcknowledgeFee(!acknowledgeFee)}
+          >
+            <Checkbox variant="destructive" checked={acknowledgeFee} />
             <span className="caption text-osmoverse-100">
               {t("incentivizePool.acknowledgeFee", {
                 fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
               })}
             </span>
-          </label>
+          </div>
         </div>
         {accountActionButton}
       </div>

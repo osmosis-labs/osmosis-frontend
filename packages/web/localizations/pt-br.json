@@ -377,6 +377,7 @@
     "dustRule": "A chain ignora pagamentos por destinatário abaixo de {minValue} por dia; totais diários pequenos divididos entre muitas posições podem não ser distribuídos.",
     "dustUnpriceable": "Este ativo não tem preço aqui. Os gauges só podem distribuir ativos com uma rota de pool com OSMO onchain, então a transação falhará se este ativo não for roteável para OSMO.",
     "dustBelowMin": "Valor diário muito baixo: cotas abaixo de {minValue} por destinatário serão ignoradas pela defesa antipoeira da chain.",
+    "insufficientOsmoForFee": "OSMO insuficiente para cobrir a recompensa mais a taxa de gauge não reembolsável de {fee}.",
     "visibilityWarning": "Novos gauges podem não aparecer nas estatísticas da pool até que um dia tenha passado.",
     "acknowledgeNoRecovery": "Entendo que estes incentivos não podem ser recuperados depois de adicionados.",
     "acknowledgeFee": "Entendo que isto custa uma taxa não reembolsável de {fee}, enviada ao fundo da comunidade.",

@@ -44,9 +44,13 @@ export class ObservableQueryConcentratedLiquidityParams extends ObservableChainQ
     }
 
     // Duration strings like "0.000000001s", "60s", "3600s", "86400s".
-    return uptimes
+    const parsed = uptimes
       .filter((uptime): uptime is string => typeof uptime === "string")
       .map((uptime) => Number(uptime.replace(/s$/, "")))
       .filter((seconds) => Number.isFinite(seconds));
+
+    // Return undefined (not an empty array) when nothing parsed, so callers'
+    // `?? fallback` fires instead of masking with a non-nullish empty set.
+    return parsed.length > 0 ? parsed : undefined;
   }
 }

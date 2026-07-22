@@ -377,6 +377,7 @@
     "dustRule": "链会跳过每个接收者每天低于 {minValue} 的支付；分散到大量仓位的小额每日总量可能无法分配。",
     "dustUnpriceable": "此资产在此没有价格。Gauge 只能分配在链上有 OSMO 池路由的资产，因此如果此资产无法路由到 OSMO，交易将失败。",
     "dustBelowMin": "每日价值过低：每个接收者低于 {minValue} 的份额将被链的粉尘防御跳过。",
+    "insufficientOsmoForFee": "OSMO 不足以支付奖励以及不可退还的 {fee} Gauge 费用。",
     "visibilityWarning": "新 Gauge 可能要等一天后才会显示在池统计中。",
     "acknowledgeNoRecovery": "我了解作为激励添加的资产无法收回。",
     "acknowledgeFee": "我了解这需要支付一笔进入社区池的不可退还的 {fee} 费用。",

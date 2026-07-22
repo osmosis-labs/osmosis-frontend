@@ -377,6 +377,7 @@
     "dustRule": "Zincir, gün başına alıcı başına {minValue} altındaki ödemeleri atlar; çok sayıda pozisyona bölünen küçük günlük tutarlar dağıtılmayabilir.",
     "dustUnpriceable": "Bu varlığın burada fiyatı yok. Gauge'lar yalnızca zincirde OSMO havuz rotası olan varlıkları dağıtabilir, bu nedenle bu varlık OSMO'ya yönlendirilemiyorsa işlem başarısız olur.",
     "dustBelowMin": "Çok düşük günlük değer: alıcı başına {minValue} altındaki paylar zincirin toz savunması tarafından atlanacaktır.",
+    "insufficientOsmoForFee": "Ödülü ve iade edilmeyen {fee} gauge ücretini karşılamaya yetecek OSMO yok.",
     "visibilityWarning": "Yeni gauge'lar bir gün geçene kadar havuz istatistiklerinde görünmeyebilir.",
     "acknowledgeNoRecovery": "Eklenen teşviklerin geri alınamayacağını anlıyorum.",
     "acknowledgeFee": "Bunun, topluluk havuzuna gönderilen iade edilemez {fee} ücreti olduğunu anlıyorum.",
