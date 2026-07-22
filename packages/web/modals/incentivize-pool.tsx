@@ -30,19 +30,25 @@ const DEFAULT_NUM_EPOCHS = "30";
 
 /** Guided flow for funding external incentives on a pool by creating a new
  *  gauge (MsgCreateGauge). Share pools target a lockable duration; concentrated
- *  pools target the chain's no-lock gauge for in-range liquidity. */
+ *  pools target the chain's no-lock gauge for in-range liquidity.
+ *
+ *  `isConcentrated` comes from the caller (which already knows the pool kind)
+ *  rather than an in-flight query here: it selects the message shape
+ *  (byDuration vs noLock), so deriving it from a fetch that can be undefined
+ *  would compose the wrong Msg for a CL pool while its data loads. */
 export const IncentivizePoolModal: FunctionComponent<
-  { poolId: string } & ModalBaseProps
+  { poolId: string; isConcentrated: boolean } & ModalBaseProps
 > = observer((props) => {
-  const { poolId } = props;
+  const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
 
+  // Only used for the (non-critical) APR-against-TVL stat, which falls back to
+  // a dash when absent. The message-shaping `isConcentrated` is a prop above.
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
-  const isConcentrated = pool?.type === "concentrated";
 
   const { selectedCurrency, setSelectedCurrency, config, createGauge } =
     useIncentivizePoolConfig();
@@ -50,25 +56,16 @@ export const IncentivizePoolModal: FunctionComponent<
   // Reward token choices: only assets the connected wallet actually holds —
   // you can't fund a gauge with what you don't have. `.balances` is every
   // registered currency (zero-balance included), so use `.positiveBalances`.
+  // Selection is keyed by coinMinimalDenom (via TokenSelect's
+  // keyByMinimalDenom), so same-symbol assets (bridged variants) stay distinct
+  // and resolve unambiguously in this irreversible flow.
   const positiveBalances = queriesStore
     .get(chainId)
     .queryBalances.getQueryBech32Address(address).positiveBalances;
-  // TokenSelect keys on the display denom (coinDenom), so two held assets that
-  // share a symbol (e.g. bridged variants of the same token) would collide and
-  // the onSelect .find could resolve to the wrong, unrecoverable asset. Dedupe
-  // by display denom here so the picker never offers an ambiguous pair; a
-  // proper fix keys TokenSelect on coinMinimalDenom (tracked separately).
-  const selectableTokens = useMemo(() => {
-    const seen = new Set<string>();
-    const tokens = [];
-    for (const balance of positiveBalances) {
-      const denom = balance.balance.currency.coinDenom;
-      if (seen.has(denom)) continue;
-      seen.add(denom);
-      tokens.push(balance.balance);
-    }
-    return tokens;
-  }, [positiveBalances]);
+  const selectableTokens = useMemo(
+    () => positiveBalances.map((balance) => balance.balance),
+    [positiveBalances]
+  );
   // Default the reward token to OSMO when available.
   useEffect(() => {
     if (selectedCurrency !== undefined || selectableTokens.length === 0) return;
@@ -388,11 +385,12 @@ export const IncentivizePoolModal: FunctionComponent<
           </div>
           <div className="flex items-center gap-2">
             <TokenSelect
-              selectedTokenDenom={selectedCurrency?.coinDenom ?? ""}
+              selectedTokenDenom={selectedCurrency?.coinMinimalDenom ?? ""}
               tokens={selectableTokens}
-              onSelect={(tokenDenom) => {
+              keyByMinimalDenom
+              onSelect={(minimalDenom) => {
                 const match = selectableTokens.find(
-                  (coin) => coin.currency.coinDenom === tokenDenom
+                  (coin) => coin.currency.coinMinimalDenom === minimalDenom
                 );
                 if (match) setSelectedCurrency(match.currency);
               }}

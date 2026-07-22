@@ -9,7 +9,9 @@ import { useMeasure } from "react-use";
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetBreakdownChart } from "~/components/chart";
+import { Button as UIButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+import { IncentivizePoolModal } from "~/modals";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
@@ -17,6 +19,11 @@ export const BasePoolDetails: FunctionComponent<{
   const { t } = useTranslation();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
+  const [showIncentivizeModal, setShowIncentivizeModal] = useState(false);
+  // This fallback view renders mobile concentrated pools (the desktop CL and
+  // share views carry their own Incentivize entry). Only concentrated pools
+  // are wired into the gauge flow here; the modal composes a no-lock Msg.
+  const canIncentivize = pool.type === "concentrated";
 
   const poolNameAssetLinks = pool.reserveCoins.map(
     ({ denom, currency }, index) => (
@@ -122,8 +129,26 @@ export const BasePoolDetails: FunctionComponent<{
               <Icon id="chevron-down" width="14" height="8" />
             </div>
           </Button>
+          {canIncentivize && (
+            <UIButton
+              variant="outline"
+              size="sm"
+              className="mx-auto w-fit"
+              onClick={() => setShowIncentivizeModal(true)}
+            >
+              {t("incentivizePool.entry")}
+            </UIButton>
+          )}
         </div>
       </section>
+      {canIncentivize && showIncentivizeModal && (
+        <IncentivizePoolModal
+          isOpen={true}
+          poolId={pool.id}
+          isConcentrated={true}
+          onRequestClose={() => setShowIncentivizeModal(false)}
+        />
+      )}
     </main>
   );
 });

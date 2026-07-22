@@ -326,6 +326,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           <IncentivizePoolModal
             isOpen={true}
             poolId={pool.id}
+            isConcentrated={false}
             onRequestClose={setShowModal(setShowIncentivizeModal, false)}
           />
         )}

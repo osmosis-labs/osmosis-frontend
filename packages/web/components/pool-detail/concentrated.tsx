@@ -195,6 +195,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <IncentivizePoolModal
             isOpen={true}
             poolId={pool.id}
+            isConcentrated={true}
             onRequestClose={() => setActiveModal(null)}
           />
         )}
