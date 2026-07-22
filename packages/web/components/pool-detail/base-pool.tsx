@@ -1,4 +1,4 @@
-import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -23,7 +23,26 @@ export const BasePoolDetails: FunctionComponent<{
   // This fallback view renders mobile concentrated pools (the desktop CL and
   // share views carry their own Incentivize entry). Only concentrated pools
   // are wired into the gauge flow here; the modal composes a no-lock Msg.
-  const canIncentivize = pool.type === "concentrated";
+  //
+  // Mirror the desktop CL view's gating: hide the entry for uninitialized
+  // (no first position created; sqrt price and tick liquidity both zero) and
+  // inactive (has TVL but no in-range liquidity) pools, so mobile and desktop
+  // offer Incentivize under the same conditions.
+  const poolRaw =
+    pool.type === "concentrated"
+      ? (pool.raw as ConcentratedPoolRawResponse)
+      : null;
+  const isSqrtPriceZero = poolRaw?.current_sqrt_price
+    ? parseFloat(poolRaw.current_sqrt_price) === 0
+    : false;
+  const isTickLiquidityZero = poolRaw?.current_tick_liquidity
+    ? parseFloat(poolRaw.current_tick_liquidity) === 0
+    : false;
+  const hasTVL = pool.tvlUnknown || !pool.totalFiatValueLocked.toDec().isZero();
+  const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero;
+  const isInactivePool = !isUninitializedPool && isTickLiquidityZero && hasTVL;
+  const canIncentivize =
+    pool.type === "concentrated" && !isUninitializedPool && !isInactivePool;
 
   const poolNameAssetLinks = pool.reserveCoins.map(
     ({ denom, currency }, index) => (
