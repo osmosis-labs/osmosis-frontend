@@ -38,7 +38,7 @@
     "@sentry/core": "^9.5.0",
     "@sentry/node": "^9.5.0",
     "@upstash/redis": "^1.31.5",
-    "axios": "^0.27.2",
+    "axios": "^0.33.0",
     "cachified": "^3.5.4",
     "dataloader": "^2.2.2",
     "dayjs": "^1.10.7",
