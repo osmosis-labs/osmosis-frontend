@@ -25,14 +25,12 @@ export const DUST_WARN_POSITIONS = 500;
  *  instead of a lone fallback button. */
 export const FALLBACK_UPTIMES_SECONDS = [0.000000001, 60, 3600, 86400];
 
-/** x/incentives hardcoded fees (`CreateGaugeFee` / `AddToGaugeFee`), sent to the
- *  community pool. These are constants in the chain, not gov params. When a
- *  gauge is funded with OSMO, the fee is charged on top of the reward amount,
- *  so the sender needs reward + fee in OSMO. */
+/** x/incentives hardcoded `CreateGaugeFee`, sent to the community pool. This is
+ *  a constant in the chain, not a gov param. When a gauge is funded with OSMO,
+ *  the fee is charged on top of the reward amount, so the sender needs reward +
+ *  fee in OSMO. */
 export const CREATE_GAUGE_FEE_OSMO = 50;
-export const ADD_TO_GAUGE_FEE_OSMO = 25;
 export const CREATE_GAUGE_FEE_LABEL = `${CREATE_GAUGE_FEE_OSMO} OSMO`;
-export const ADD_TO_GAUGE_FEE_LABEL = `${ADD_TO_GAUGE_FEE_OSMO} OSMO`;
 
 /** Hour (UTC) a custom start date is pinned to. A custom start is a date-only
  *  choice, so we pin the time of day to 17:00, safely before the daily

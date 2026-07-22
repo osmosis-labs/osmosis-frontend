@@ -10,8 +10,6 @@ import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
-  ADD_TO_GAUGE_FEE_LABEL,
-  ADD_TO_GAUGE_FEE_OSMO,
   CREATE_GAUGE_FEE_LABEL,
   CREATE_GAUGE_FEE_OSMO,
   DUST_WARN_POSITIONS,
@@ -30,22 +28,15 @@ import { api } from "~/utils/trpc";
 
 const DEFAULT_NUM_EPOCHS = "30";
 
-/** Guided flow for funding external incentives on a pool: create a new
- *  gauge (MsgCreateGauge) or top up an existing one (MsgAddToGauge).
- *  Share pools target a lockable duration; concentrated pools target the
- *  chain's no-lock gauge for in-range liquidity. */
+/** Guided flow for funding external incentives on a pool by creating a new
+ *  gauge (MsgCreateGauge). Share pools target a lockable duration; concentrated
+ *  pools target the chain's no-lock gauge for in-range liquidity. */
 export const IncentivizePoolModal: FunctionComponent<
   { poolId: string } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
   const { t } = useTranslation();
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    queriesExternalStore,
-    priceStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
@@ -53,13 +44,8 @@ export const IncentivizePoolModal: FunctionComponent<
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
   const isConcentrated = pool?.type === "concentrated";
 
-  const {
-    selectedCurrency,
-    setSelectedCurrency,
-    config,
-    createGauge,
-    addToGauge,
-  } = useIncentivizePoolConfig();
+  const { selectedCurrency, setSelectedCurrency, config, createGauge } =
+    useIncentivizePoolConfig();
 
   // Reward token choices: only assets the connected wallet actually holds —
   // you can't fund a gauge with what you don't have. `.balances` is every
@@ -92,10 +78,6 @@ export const IncentivizePoolModal: FunctionComponent<
     setSelectedCurrency((osmo ?? selectableTokens[0]).currency);
   }, [selectedCurrency, selectableTokens, setSelectedCurrency]);
 
-  // Existing external gauges on this pool, offered for top-up.
-  const externalGauges =
-    queriesExternalStore.queryActiveGauges.getExternalGaugesForPool(poolId);
-  const [topUpGaugeId, setTopUpGaugeId] = useState<string | null>(null);
   // Two gating acknowledgements, both required before the confirm button
   // unlocks: the advanced-users warning box carries the non-recovery
   // confirmation, and the fee box below it carries the cost one.
@@ -218,25 +200,23 @@ export const IncentivizePoolModal: FunctionComponent<
     );
   }, [perDayValue, poolTvl]);
 
-  const isTopUp = topUpGaugeId !== null;
-  const needsDuration = !isConcentrated && !isTopUp;
+  const needsDuration = !isConcentrated;
 
-  // The x/incentives gauge fee (50 create / 25 top-up) is charged in OSMO on
-  // top of the reward, so the sender needs `fee` OSMO free, plus the reward
-  // itself when the reward is also OSMO. useAmountInput only validates the
-  // reward against its own balance, so validate the OSMO fee here and block
-  // the button; otherwise a user with just enough OSMO for the reward signs a
-  // tx that fails on the fee.
+  // The x/incentives gauge creation fee is charged in OSMO on top of the
+  // reward, so the sender needs the fee in OSMO free, plus the reward itself
+  // when the reward is also OSMO. useAmountInput only validates the reward
+  // against its own balance, so validate the OSMO fee here and block the
+  // button; otherwise a user with just enough OSMO for the reward signs a tx
+  // that fails on the fee.
   const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
   const osmoBalance = queriesStore
     .get(chainId)
     .queryBalances.getQueryBech32Address(address)
     .getBalanceFromCurrency(osmoCurrencyForFee);
-  const feeOsmo = isTopUp ? ADD_TO_GAUGE_FEE_OSMO : CREATE_GAUGE_FEE_OSMO;
   const feeCoin = new CoinPretty(
     osmoCurrencyForFee,
     DecUtils.getTenExponentN(osmoCurrencyForFee.coinDecimals).mul(
-      new Dec(feeOsmo)
+      new Dec(CREATE_GAUGE_FEE_OSMO)
     )
   );
   // OSMO the tx needs beyond gas: the fee, plus the reward when it is OSMO.
@@ -256,15 +236,13 @@ export const IncentivizePoolModal: FunctionComponent<
         // different (and narrower) condition than "the price store can't
         // value it" — a newly listed but routable asset is fine. We surface
         // an unpriced-asset caution below instead of gating on it.
-        (!isTopUp && !epochsValid) ||
-        (!isTopUp && startDate === undefined) ||
+        !epochsValid ||
+        startDate === undefined ||
         (needsDuration && fixedDuration === undefined) ||
         // Concentrated gauges must carry an authorized uptime; the offered
         // options are always an authorized set (chain param or the mainnet
         // fallback), so guard against a stale selection outside them.
-        (isConcentrated &&
-          !isTopUp &&
-          !uptimeOptions.includes(uptimeSeconds)) ||
+        (isConcentrated && !uptimeOptions.includes(uptimeSeconds)) ||
         // The gauge fee is charged in OSMO on top of the reward; block when
         // the wallet can't cover reward (if OSMO) + fee.
         insufficientOsmoForFee ||
@@ -272,33 +250,25 @@ export const IncentivizePoolModal: FunctionComponent<
         !acknowledgeFee ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
-        const send = isTopUp
-          ? addToGauge(topUpGaugeId)
-          : createGauge({
-              distributeTo: isConcentrated
-                ? { type: "noLock", poolId, uptimeSeconds }
-                : {
-                    type: "byDuration",
-                    denom: `gamm/pool/${poolId}`,
-                    durationSeconds: fixedDuration!.asSeconds(),
-                  },
-              numEpochs,
-              // Omit for the default (next epoch); otherwise pin to the
-              // chosen date's epoch time.
-              startTime: isDefaultStart ? undefined : startDate,
-            });
-        send
-          .then(() => {
-            queriesExternalStore.queryActiveGauges.waitFreshResponse();
-            props.onRequestClose();
-          })
+        createGauge({
+          distributeTo: isConcentrated
+            ? { type: "noLock", poolId, uptimeSeconds }
+            : {
+                type: "byDuration",
+                denom: `gamm/pool/${poolId}`,
+                durationSeconds: fixedDuration!.asSeconds(),
+              },
+          numEpochs,
+          // Omit for the default (next epoch); otherwise pin to the
+          // chosen date's epoch time.
+          startTime: isDefaultStart ? undefined : startDate,
+        })
+          .then(() => props.onRequestClose())
           .catch(console.error);
       },
       children:
         (config.error ? t(...tError(config.error)) : false) ||
-        (isTopUp
-          ? t("incentivizePool.ctaTopUp", { gaugeId: topUpGaugeId ?? "" })
-          : t("incentivizePool.ctaCreate")),
+        t("incentivizePool.ctaCreate"),
     },
     props.onRequestClose
   );
@@ -311,132 +281,94 @@ export const IncentivizePoolModal: FunctionComponent<
       isOpen={props.isOpen && showModalBase}
     >
       <div className="flex flex-col gap-6 pt-4 md:gap-4">
-        {externalGauges.length > 0 && (
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex place-content-between items-center">
             <span className="subtitle1">
-              {t("incentivizePool.existingGauges")}
+              {t("incentivizePool.distributesToLabel")}
             </span>
-            <div className="flex flex-col gap-1">
-              <GaugeChoiceRow
-                label={t("incentivizePool.newGauge")}
-                selected={!isTopUp}
-                onSelect={() => setTopUpGaugeId(null)}
-              />
-              {externalGauges.map((gaugeQuery) => {
-                const gaugeId = gaugeQuery.gauge?.id;
-                if (gaugeId === undefined) return null;
-                const remaining = gaugeQuery.coins
-                  .map(({ remaining }) => formatPretty(remaining))
-                  .join(", ");
-                return (
-                  <GaugeChoiceRow
-                    key={gaugeId}
-                    label={`#${gaugeId} · ${remaining} · ${t(
-                      "incentivizePool.epochsLeft",
-                      { epochs: gaugeQuery.remainingEpoch.toString() }
-                    )}`}
-                    selected={topUpGaugeId === gaugeId}
-                    onSelect={() => setTopUpGaugeId(gaugeId)}
-                  />
-                );
-              })}
+            <span className="body2 text-osmoverse-200">
+              {isConcentrated
+                ? t("incentivizePool.distributesToNoLock")
+                : t("incentivizePool.distributesToLocked", {
+                    duration: fixedDuration?.humanize() ?? "",
+                  })}
+            </span>
+          </div>
+          <span className="caption text-osmoverse-400">
+            {isConcentrated
+              ? t("incentivizePool.noLockNote")
+              : t("incentivizePool.durationFixed", {
+                  duration: fixedDuration?.humanize() ?? "",
+                })}
+          </span>
+        </div>
+        {isConcentrated && (
+          <div className="flex flex-col gap-2">
+            <div className="flex place-content-between items-center gap-2">
+              <span className="subtitle1">
+                {t("incentivizePool.uptimeLabel")}
+              </span>
+              <div className="flex flex-wrap justify-end gap-1">
+                {uptimeOptions.map((seconds) => (
+                  <button
+                    key={seconds}
+                    type="button"
+                    className={classNames(
+                      "caption rounded-full px-3 py-1 transition-colors",
+                      uptimeSeconds === seconds
+                        ? "bg-wosmongton-500 text-white-full"
+                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+                    )}
+                    onClick={() => setUptimeSeconds(seconds)}
+                  >
+                    {seconds < 1
+                      ? t("incentivizePool.uptimeNone")
+                      : dayjs.duration(seconds, "seconds").humanize()}
+                  </button>
+                ))}
+              </div>
             </div>
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.uptimeHelp")}
+            </span>
           </div>
         )}
-        {!isTopUp && (
-          <>
-            <div className="flex flex-col gap-2">
-              <div className="flex place-content-between items-center">
-                <span className="subtitle1">
-                  {t("incentivizePool.distributesToLabel")}
-                </span>
-                <span className="body2 text-osmoverse-200">
-                  {isConcentrated
-                    ? t("incentivizePool.distributesToNoLock")
-                    : t("incentivizePool.distributesToLocked", {
-                        duration: fixedDuration?.humanize() ?? "",
-                      })}
-                </span>
-              </div>
-              <span className="caption text-osmoverse-400">
-                {isConcentrated
-                  ? t("incentivizePool.noLockNote")
-                  : t("incentivizePool.durationFixed", {
-                      duration: fixedDuration?.humanize() ?? "",
-                    })}
-              </span>
-            </div>
-            {isConcentrated && (
-              <div className="flex flex-col gap-2">
-                <div className="flex place-content-between items-center gap-2">
-                  <span className="subtitle1">
-                    {t("incentivizePool.uptimeLabel")}
-                  </span>
-                  <div className="flex flex-wrap justify-end gap-1">
-                    {uptimeOptions.map((seconds) => (
-                      <button
-                        key={seconds}
-                        type="button"
-                        className={classNames(
-                          "caption rounded-full px-3 py-1 transition-colors",
-                          uptimeSeconds === seconds
-                            ? "bg-wosmongton-500 text-white-full"
-                            : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
-                        )}
-                        onClick={() => setUptimeSeconds(seconds)}
-                      >
-                        {seconds < 1
-                          ? t("incentivizePool.uptimeNone")
-                          : dayjs.duration(seconds, "seconds").humanize()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <span className="caption text-osmoverse-400">
-                  {t("incentivizePool.uptimeHelp")}
-                </span>
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-4 xs:grid-cols-1">
-              <div className="flex flex-col gap-2">
-                <span className="subtitle1">
-                  {t("incentivizePool.startLabel")}
-                </span>
-                <input
-                  type="date"
-                  min={nextEpochDateIso}
-                  // color-scheme:dark renders the native calendar-picker
-                  // glyph light so it stands out against the dark field.
-                  className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none [color-scheme:dark]"
-                  value={startInput}
-                  onChange={(e) => setStartInput(e.target.value)}
-                />
-                <span className="caption text-osmoverse-400">
-                  {isDefaultStart && epochCountdown
-                    ? t("incentivizePool.epochsCaption", {
-                        countdown: epochCountdown,
-                      })
-                    : isDefaultStart
-                    ? t("incentivizePool.epochsCaptionNoCountdown")
-                    : t("incentivizePool.startCustomCaption")}
-                </span>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <span className="subtitle1 text-right">
-                  {t("incentivizePool.epochsLabel")}
-                </span>
-                <InputBox
-                  className="w-2/3"
-                  type="number"
-                  currentValue={epochsInput}
-                  onInput={(value) => setEpochsInput(value)}
-                  placeholder=""
-                  rightEntry
-                />
-              </div>
-            </div>
-          </>
-        )}
+        <div className="grid grid-cols-2 gap-4 xs:grid-cols-1">
+          <div className="flex flex-col gap-2">
+            <span className="subtitle1">{t("incentivizePool.startLabel")}</span>
+            <input
+              type="date"
+              min={nextEpochDateIso}
+              // color-scheme:dark renders the native calendar-picker
+              // glyph light so it stands out against the dark field.
+              className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none [color-scheme:dark]"
+              value={startInput}
+              onChange={(e) => setStartInput(e.target.value)}
+            />
+            <span className="caption text-osmoverse-400">
+              {isDefaultStart && epochCountdown
+                ? t("incentivizePool.epochsCaption", {
+                    countdown: epochCountdown,
+                  })
+                : isDefaultStart
+                ? t("incentivizePool.epochsCaptionNoCountdown")
+                : t("incentivizePool.startCustomCaption")}
+            </span>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <span className="subtitle1 text-right">
+              {t("incentivizePool.epochsLabel")}
+            </span>
+            <InputBox
+              className="w-2/3"
+              type="number"
+              currentValue={epochsInput}
+              onInput={(value) => setEpochsInput(value)}
+              placeholder=""
+              rightEntry
+            />
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
           <div className="flex place-content-between items-center">
             <span className="subtitle1">
@@ -476,40 +408,57 @@ export const IncentivizePoolModal: FunctionComponent<
             />
           </div>
         </div>
-        {!isTopUp && (
-          <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-900 p-3">
-            <div className="flex place-content-between items-center">
-              <span className="caption text-osmoverse-400">
-                {t("incentivizePool.statsTotalValue")}
-              </span>
-              <span className="caption text-osmoverse-200">
-                {totalValue ? formatPretty(totalValue) : "–"}
-              </span>
-            </div>
-            <div className="flex place-content-between items-center">
-              <span className="caption text-osmoverse-400">
-                {t("incentivizePool.statsPerDay")}
-              </span>
-              <span className="caption text-osmoverse-200">
-                {perDayValue
-                  ? `${formatPretty(perDayValue)}${
-                      perEpochEmission
-                        ? ` · ${formatPretty(perEpochEmission)}`
-                        : ""
-                    }`
-                  : "–"}
+        {perDayValue &&
+          minDistrFiat &&
+          perDayValue
+            .toDec()
+            .lt(minDistrFiat.toDec().mul(new Dec(DUST_WARN_POSITIONS))) && (
+            <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
+              <Icon
+                id="alert-triangle"
+                width={16}
+                height={16}
+                className="mt-0.5 shrink-0 text-rust-300"
+              />
+              <span className="caption text-rust-200">
+                {t("incentivizePool.dustBelowMin", {
+                  minValue: MIN_DISTR_VALUE_LABEL,
+                })}
               </span>
             </div>
-            <div className="flex place-content-between items-center">
-              <span className="caption text-osmoverse-400">
-                {t("incentivizePool.statsEstApr")}
-              </span>
-              <span className="caption text-osmoverse-200">
-                {estApr ? formatPretty(estApr, { maxDecimals: 1 }) : "–"}
-              </span>
-            </div>
+          )}
+        <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-900 p-3">
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsTotalValue")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {totalValue ? formatPretty(totalValue) : "–"}
+            </span>
           </div>
-        )}
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsPerDay")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {perDayValue
+                ? `${formatPretty(perDayValue)}${
+                    perEpochEmission
+                      ? ` · ${formatPretty(perEpochEmission)}`
+                      : ""
+                  }`
+                : "–"}
+            </span>
+          </div>
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsEstApr")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {estApr ? formatPretty(estApr, { maxDecimals: 1 }) : "–"}
+            </span>
+          </div>
+        </div>
         {config.amount &&
           selectedCurrency?.coinMinimalDenom !== "uosmo" &&
           totalValue === undefined && (
@@ -517,35 +466,15 @@ export const IncentivizePoolModal: FunctionComponent<
               {t("incentivizePool.dustUnpriceable")}
             </span>
           )}
-        {!isTopUp &&
-          perDayValue &&
-          minDistrFiat &&
-          perDayValue
-            .toDec()
-            .lt(minDistrFiat.toDec().mul(new Dec(DUST_WARN_POSITIONS))) && (
-            <span className="caption text-rust-300">
-              {t("incentivizePool.dustBelowMin", {
-                minValue: MIN_DISTR_VALUE_LABEL,
-              })}
-            </span>
-          )}
-        {!isTopUp && (
-          <span className="caption text-osmoverse-400">
-            {t("incentivizePool.dustRule", {
-              minValue: MIN_DISTR_VALUE_LABEL,
-            })}
-          </span>
-        )}
         {config.amount && insufficientOsmoForFee && (
           <span className="caption text-rust-300">
             {t("incentivizePool.insufficientOsmoForFee", {
-              fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
+              fee: CREATE_GAUGE_FEE_LABEL,
             })}
           </span>
         )}
-        <span className="caption text-osmoverse-400">
-          {t("incentivizePool.visibilityWarning")}
-        </span>
+        {/* Both gating acknowledgements live in one red warning box: the
+            non-recovery confirmation and, below it, the non-refundable fee. */}
         <div className="flex flex-col gap-3 rounded-xl bg-rust-800/40 p-3">
           <div className="flex items-start gap-2">
             <Icon
@@ -570,41 +499,23 @@ export const IncentivizePoolModal: FunctionComponent<
               {t("incentivizePool.acknowledgeNoRecovery")}
             </span>
           </div>
-        </div>
-        <div className="rounded-xl bg-gradient-negative p-[2px]">
           <div
-            className="rounded-xlinset flex cursor-pointer items-center gap-3 bg-osmoverse-800 p-3.5"
+            className="flex cursor-pointer items-center gap-3"
             onClick={() => setAcknowledgeFee(!acknowledgeFee)}
           >
             <Checkbox variant="destructive" checked={acknowledgeFee} />
-            <span className="caption text-osmoverse-100">
+            <span className="caption text-rust-200">
               {t("incentivizePool.acknowledgeFee", {
-                fee: isTopUp ? ADD_TO_GAUGE_FEE_LABEL : CREATE_GAUGE_FEE_LABEL,
+                fee: CREATE_GAUGE_FEE_LABEL,
               })}
             </span>
           </div>
         </div>
         {accountActionButton}
+        <span className="caption text-center text-osmoverse-400">
+          {t("incentivizePool.visibilityWarning")}
+        </span>
       </div>
     </ModalBase>
   );
 });
-
-const GaugeChoiceRow: FunctionComponent<{
-  label: string;
-  selected: boolean;
-  onSelect: () => void;
-}> = ({ label, selected, onSelect }) => (
-  <button
-    type="button"
-    className={classNames(
-      "caption w-full rounded-xl border px-3 py-2 text-left transition-colors",
-      selected
-        ? "border-wosmongton-400 bg-osmoverse-700 text-osmoverse-100"
-        : "border-osmoverse-600 text-osmoverse-300 hover:border-osmoverse-400"
-    )}
-    onClick={onSelect}
-  >
-    {label}
-  </button>
-);

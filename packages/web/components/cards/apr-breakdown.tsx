@@ -1,7 +1,7 @@
 import type { PoolDataRange, PoolIncentives } from "@osmosis-labs/server";
 import { RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent } from "react";
 
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
@@ -12,11 +12,7 @@ import { CustomClasses } from "../types";
 
 export const AprBreakdown: FunctionComponent<
   PoolIncentives["aprBreakdown"] &
-    CustomClasses & {
-      showDisclaimerTooltip?: boolean;
-      /** Rendered inside the card, below the total row (e.g. a pool action). */
-      footer?: ReactNode;
-    }
+    CustomClasses & { showDisclaimerTooltip?: boolean }
 > = ({
   total,
   swapFee,
@@ -25,7 +21,6 @@ export const AprBreakdown: FunctionComponent<
   boost,
   className,
   showDisclaimerTooltip = false,
-  footer,
 }) => {
   const { t } = useTranslation();
 
@@ -108,8 +103,6 @@ export const AprBreakdown: FunctionComponent<
           )}
         </div>
       )}
-
-      {footer && <div className="flex justify-center">{footer}</div>}
     </div>
   );
 };

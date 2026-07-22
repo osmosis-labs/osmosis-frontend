@@ -605,37 +605,29 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
           ))}
         </div>
       </div>
-      {featureFlags.aprBreakdown ? (
-        <SkeletonLoader isLoaded={!isLoadingIncentives}>
-          <AprBreakdown
-            className="shrink-0 rounded-3xl"
-            showDisclaimerTooltip
-            {...incentives?.aprBreakdown}
-            footer={
-              <Button
-                variant="outline"
-                size="sm"
-                className="!px-1"
-                onClick={onIncentivize}
-              >
-                {t("incentivizePool.entry")}
-              </Button>
-            }
-          />
-        </SkeletonLoader>
-      ) : (
-        // The incentivize entry lives in the AprBreakdown footer, so when that
-        // flag is off it would vanish. Render it standalone so the feature is
-        // reachable regardless of the flag (matching the share-pool entry).
+      {/* Incentivize entry sits to the right of the Total APR card, filling
+          the dead space beside it. Rendered regardless of the aprBreakdown
+          flag so the feature is always reachable (matching the share-pool
+          entry). */}
+      <div className="flex shrink-0 items-center gap-4">
+        {featureFlags.aprBreakdown && (
+          <SkeletonLoader isLoaded={!isLoadingIncentives}>
+            <AprBreakdown
+              className="shrink-0 rounded-3xl"
+              showDisclaimerTooltip
+              {...incentives?.aprBreakdown}
+            />
+          </SkeletonLoader>
+        )}
         <Button
           variant="outline"
           size="sm"
-          className="w-fit self-center"
+          className="w-fit"
           onClick={onIncentivize}
         >
           {t("incentivizePool.entry")}
         </Button>
-      )}
+      </div>
 
       {hasIncentives && (
         <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
