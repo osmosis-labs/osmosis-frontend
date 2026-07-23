@@ -63,8 +63,8 @@ const warnedQuote = (overrides?: Partial<BridgeQuote>): BridgeQuote =>
   makeQuote({
     userCanAdvance: false, // an active warning sets errorBoxMessage upstream
     errorBoxMessage: {
-      heading: "Slippage is too high",
-      description: "The slippage for this transfer is too high.",
+      heading: "Slippage is high",
+      description: "Slippage on this transfer is high.",
     },
     highLossWarningActive: true,
     warningNeedsAcknowledgement: true,
@@ -110,7 +110,7 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
   it("renders the warning copy + checkbox and disables confirm while unacknowledged", () => {
     renderScreen(warnedQuote());
 
-    expect(screen.getByText("Slippage is too high")).toBeInTheDocument();
+    expect(screen.getByText("Slippage is high")).toBeInTheDocument();
     expect(acknowledgementCheckbox()).toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeChecked();
     expect(confirmButton()).toBeDisabled();
