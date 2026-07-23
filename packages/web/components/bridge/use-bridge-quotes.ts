@@ -241,6 +241,10 @@ export const useBridgeQuotes = ({
             const expectedOutputFiatDec = expectedOutput.fiatValue?.toDec();
             const inputFiatDec = input.fiatValue?.toDec();
 
+            // Total end-to-end value loss of the transfer as a fraction of the
+            // input (1 - output/input). This is the all-in figure — it bundles
+            // provider/bridge fees, gas, any bundled swap's price impact, and
+            // exchange-rate spread — not swap slippage in the AMM sense.
             let transferSlippage: Dec;
             if (!expectedOutputFiatDec || !inputFiatDec) {
               // If we don't have fiat values, use actual token amounts for slippage calculation
