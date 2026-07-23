@@ -1614,7 +1614,14 @@ export class OsmosisAccountImpl {
               timestamp: new Date(0),
             },
       coins: primitiveCoins,
-      startTime,
+      // Floor to whole seconds. The amino sign path (telescope's
+      // Timestamp.toAmino) strips sub-second precision from start_time, but the
+      // broadcast proto body keeps the nanos, so a Date with millisecond
+      // precision (e.g. `new Date()`) makes the signed amino doc and the chain's
+      // re-derived amino disagree -> "signature verification failed". Sub-second
+      // precision is meaningless here anyway (the chain floors the start to the
+      // next epoch).
+      startTime: new Date(Math.floor(startTime.getTime() / 1000) * 1000),
       numEpochsPaidOver: BigInt(numEpochsPaidOver),
       poolId:
         distributeTo.type === "noLock"
