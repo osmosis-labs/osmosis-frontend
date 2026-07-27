@@ -17,6 +17,8 @@ import * as osmosisGammPoolmodelsStableswapV1beta1TxAmino from "./gamm/poolmodel
 import * as osmosisGammPoolmodelsStableswapV1beta1TxRegistry from "./gamm/poolmodels/stableswap/v1beta1/tx.registry";
 import * as osmosisGammV1beta1TxAmino from "./gamm/v1beta1/tx.amino";
 import * as osmosisGammV1beta1TxRegistry from "./gamm/v1beta1/tx.registry";
+import * as osmosisIncentivesTxAmino from "./incentives/tx.amino";
+import * as osmosisIncentivesTxRegistry from "./incentives/tx.registry";
 import * as osmosisLockupTxAmino from "./lockup/tx.amino";
 import * as osmosisLockupTxRegistry from "./lockup/tx.registry";
 import * as osmosisPoolmanagerV1beta1TxAmino from "./poolmanager/v1beta1/tx.amino";
@@ -33,6 +35,7 @@ export const osmosisAminoConverters = {
   ...osmosisGammPoolmodelsBalancerV1beta1TxAmino.AminoConverter,
   ...osmosisGammPoolmodelsStableswapV1beta1TxAmino.AminoConverter,
   ...osmosisGammV1beta1TxAmino.AminoConverter,
+  ...osmosisIncentivesTxAmino.AminoConverter,
   ...osmosisLockupTxAmino.AminoConverter,
   ...osmosisPoolmanagerV1beta1TxAmino.AminoConverter,
   ...osmosisSmartaccountV1beta1TxAmino.AminoConverter,
@@ -45,6 +48,7 @@ export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
   ...osmosisGammPoolmodelsBalancerV1beta1TxRegistry.registry,
   ...osmosisGammPoolmodelsStableswapV1beta1TxRegistry.registry,
   ...osmosisGammV1beta1TxRegistry.registry,
+  ...osmosisIncentivesTxRegistry.registry,
   ...osmosisLockupTxRegistry.registry,
   ...osmosisPoolmanagerV1beta1TxRegistry.registry,
   ...osmosisSmartaccountV1beta1TxRegistry.registry,

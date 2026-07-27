@@ -1,0 +1,519 @@
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+import classNames from "classnames";
+import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
+
+import { Icon } from "~/components/assets";
+import { TokenSelect } from "~/components/control/token-select";
+import { InputBox } from "~/components/input";
+import { tError } from "~/components/localization";
+import { Checkbox } from "~/components/ui/checkbox";
+import {
+  CREATE_GAUGE_FEE_LABEL,
+  CREATE_GAUGE_FEE_OSMO,
+  DUST_WARN_POSITIONS,
+  EPOCH_HOUR_UTC,
+  FALLBACK_UPTIMES_SECONDS,
+  MIN_DISTR_VALUE_LABEL,
+  MIN_DISTR_VALUE_OSMO,
+} from "~/config/incentives";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
+import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
+import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
+
+const DEFAULT_NUM_EPOCHS = "30";
+
+/** Guided flow for funding external incentives on a pool by creating a new
+ *  gauge (MsgCreateGauge). Share pools target a lockable duration; concentrated
+ *  pools target the chain's no-lock gauge for in-range liquidity.
+ *
+ *  `isConcentrated` comes from the caller (which already knows the pool kind)
+ *  rather than an in-flight query here: it selects the message shape
+ *  (byDuration vs noLock), so deriving it from a fetch that can be undefined
+ *  would compose the wrong Msg for a CL pool while its data loads. */
+export const IncentivizePoolModal: FunctionComponent<
+  { poolId: string; isConcentrated: boolean } & ModalBaseProps
+> = observer((props) => {
+  const { poolId, isConcentrated } = props;
+  const { t } = useTranslation();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
+  const address = account?.address ?? "";
+
+  // Only used for the (non-critical) APR-against-TVL stat, which falls back to
+  // a dash when absent. The message-shaping `isConcentrated` is a prop above.
+  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+
+  const { selectedCurrency, setSelectedCurrency, config, createGauge } =
+    useIncentivizePoolConfig();
+
+  // Reward token choices: only assets the connected wallet actually holds —
+  // you can't fund a gauge with what you don't have. `.balances` is every
+  // registered currency (zero-balance included), so use `.positiveBalances`.
+  // Selection is keyed by coinMinimalDenom (via TokenSelect's
+  // keyByMinimalDenom), so same-symbol assets (bridged variants) stay distinct
+  // and resolve unambiguously in this irreversible flow.
+  const positiveBalances = queriesStore
+    .get(chainId)
+    .queryBalances.getQueryBech32Address(address).positiveBalances;
+  const selectableTokens = useMemo(
+    () => positiveBalances.map((balance) => balance.balance),
+    [positiveBalances]
+  );
+  // Default the reward token to OSMO when available.
+  useEffect(() => {
+    if (selectedCurrency !== undefined || selectableTokens.length === 0) return;
+    const osmo = selectableTokens.find(
+      (coin) => coin.currency.coinMinimalDenom === "uosmo"
+    );
+    setSelectedCurrency((osmo ?? selectableTokens[0]).currency);
+  }, [selectedCurrency, selectableTokens, setSelectedCurrency]);
+
+  // Two gating acknowledgements, both required before the confirm button
+  // unlocks: the advanced-users warning box carries the non-recovery
+  // confirmation, and the fee box below it carries the cost one.
+  const [acknowledgeNoRecovery, setAcknowledgeNoRecovery] = useState(false);
+  const [acknowledgeFee, setAcknowledgeFee] = useState(false);
+
+  // Lock-duration choices for share pools; concentrated pools use the
+  // chain's no-lock gauge instead.
+  const lockableDurationsRaw =
+    queriesStore.get(chainId).osmosis?.queryLockableDurations.lockableDurations;
+  // Only the longest lockup (14 days) is promoted for external incentives —
+  // shorter gauges fragment rewards across durations for no benefit.
+  const fixedDuration = useMemo(
+    () =>
+      lockableDurationsRaw && lockableDurationsRaw.length > 0
+        ? lockableDurationsRaw[lockableDurationsRaw.length - 1]
+        : undefined,
+    [lockableDurationsRaw]
+  );
+
+  // Minimum position uptime for concentrated gauges: how long a position
+  // must be in range before it qualifies, encouraging broader and more
+  // reliable liquidity. Options come from the CL module's authorized-uptimes
+  // param; 1 hour is the promoted default, 24 hours suits stable pairs. When
+  // the param can't be fetched, fall back to the mainnet-standard set so all
+  // options still render rather than collapsing to a single button.
+  const authorizedUptimes =
+    queriesStore.get(chainId).osmosis?.queryConcentratedLiquidityParams
+      .authorizedUptimes;
+  const uptimeOptions = authorizedUptimes ?? FALLBACK_UPTIMES_SECONDS;
+  const [uptimeSeconds, setUptimeSeconds] = useState(3600);
+  useEffect(() => {
+    // Snap to an authorized value if the param set doesn't include ours.
+    if (
+      authorizedUptimes &&
+      authorizedUptimes.length > 0 &&
+      !authorizedUptimes.includes(uptimeSeconds)
+    ) {
+      setUptimeSeconds(
+        authorizedUptimes.includes(3600)
+          ? 3600
+          : authorizedUptimes[authorizedUptimes.length - 1]
+      );
+    }
+  }, [authorizedUptimes, uptimeSeconds]);
+
+  const [epochsInput, setEpochsInput] = useState(DEFAULT_NUM_EPOCHS);
+  const numEpochs = Number(epochsInput);
+  const epochsValid = Number.isInteger(numEpochs) && numEpochs >= 1;
+
+  // Start: an editable date, defaulting to the next daily epoch. The picker
+  // is date-only; the time of day is pinned to the epoch hour (UTC). Dates
+  // before the next epoch are unselectable (a `min` on the input) — an
+  // earlier date can never take effect, since the earliest a gauge can go
+  // active is the next epoch.
+  const toUtcDateIso = (date: Date) =>
+    `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getUTCDate()).padStart(2, "0")}`;
+  // The calendar day of the next epoch: today if it's still before 17:00 UTC,
+  // otherwise tomorrow.
+  const nextEpochDateIso = useMemo(() => {
+    const now = new Date();
+    const next = new Date(now);
+    if (now.getUTCHours() >= EPOCH_HOUR_UTC)
+      next.setUTCDate(next.getUTCDate() + 1);
+    return toUtcDateIso(next);
+  }, []);
+  const [startInput, setStartInput] = useState(nextEpochDateIso);
+  const startDate = useMemo(() => {
+    if (!startInput) return undefined;
+    // Pin the chosen calendar day to the daily epoch hour (UTC).
+    const date = new Date(`${startInput}T00:00:00Z`);
+    if (isNaN(date.getTime())) return undefined;
+    date.setUTCHours(EPOCH_HOUR_UTC, 0, 0, 0);
+    return date;
+  }, [startInput]);
+  // The default (next epoch) needs no explicit start time — omitting it lets
+  // the chain begin at the next epoch. Only pass a start when it's later.
+  const isDefaultStart = startInput === nextEpochDateIso;
+
+  const epochCountdown = useDailyEpochCountdown();
+
+  const perEpochEmission = useMemo(() => {
+    if (!config.amount || !epochsValid) return undefined;
+    try {
+      return config.amount.quo(new Dec(numEpochs));
+    } catch {
+      return undefined;
+    }
+  }, [config.amount, epochsValid, numEpochs]);
+
+  // Fiat stats for the configured emission: total value, value per day
+  // (one epoch per day), and an annualized APR against the pool's current
+  // liquidity. All best-effort — undefined when the asset can't be priced.
+  const totalValue = config.amount
+    ? priceStore.calculatePrice(config.amount)
+    : undefined;
+  const perDayValue =
+    totalValue && epochsValid ? totalValue.quo(new Dec(numEpochs)) : undefined;
+  // Fiat value of the chain's 0.01 OSMO per-recipient dust floor, tracking
+  // the live OSMO price rather than a fixed dollar figure. Undefined while
+  // the OSMO price hasn't loaded, in which case the dust warning is skipped.
+  const osmoCurrency = chainStore.osmosis.stakeCurrency;
+  const minDistrFiat = priceStore.calculatePrice(
+    new CoinPretty(
+      osmoCurrency,
+      DecUtils.getTenExponentN(osmoCurrency.coinDecimals).mul(
+        new Dec(MIN_DISTR_VALUE_OSMO)
+      )
+    )
+  );
+  const poolTvl = pool?.totalFiatValueLocked;
+  const estApr = useMemo(() => {
+    if (!perDayValue || !poolTvl || !poolTvl.toDec().isPositive())
+      return undefined;
+    return new RatePretty(
+      perDayValue.toDec().mul(new Dec(365)).quo(poolTvl.toDec())
+    );
+  }, [perDayValue, poolTvl]);
+
+  const needsDuration = !isConcentrated;
+
+  // The x/incentives gauge creation fee is charged in OSMO on top of the
+  // reward, so the sender needs the fee in OSMO free, plus the reward itself
+  // when the reward is also OSMO. useAmountInput only validates the reward
+  // against its own balance, so validate the OSMO fee here and block the
+  // button; otherwise a user with just enough OSMO for the reward signs a tx
+  // that fails on the fee.
+  const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
+  const osmoBalance = queriesStore
+    .get(chainId)
+    .queryBalances.getQueryBech32Address(address)
+    .getBalanceFromCurrency(osmoCurrencyForFee);
+  const feeCoin = new CoinPretty(
+    osmoCurrencyForFee,
+    DecUtils.getTenExponentN(osmoCurrencyForFee.coinDecimals).mul(
+      new Dec(CREATE_GAUGE_FEE_OSMO)
+    )
+  );
+  // OSMO the tx needs beyond gas: the fee, plus the reward when it is OSMO.
+  const requiredOsmo =
+    selectedCurrency?.coinMinimalDenom === "uosmo" && config.amount
+      ? feeCoin.add(config.amount)
+      : feeCoin;
+  const insufficientOsmoForFee = osmoBalance.toDec().lt(requiredOsmo.toDec());
+
+  const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
+    {
+      disabled:
+        Boolean(config.error) ||
+        !config.amount ||
+        // Note: a missing frontend price is NOT a block. The chain only
+        // rejects a reward denom with no protorev OSMO route, which is a
+        // different (and narrower) condition than "the price store can't
+        // value it" — a newly listed but routable asset is fine. We surface
+        // an unpriced-asset caution below instead of gating on it.
+        !epochsValid ||
+        startDate === undefined ||
+        (needsDuration && fixedDuration === undefined) ||
+        // Concentrated gauges must carry an authorized uptime; the offered
+        // options are always an authorized set (chain param or the mainnet
+        // fallback), so guard against a stale selection outside them.
+        (isConcentrated && !uptimeOptions.includes(uptimeSeconds)) ||
+        // The gauge fee is charged in OSMO on top of the reward; block when
+        // the wallet can't cover reward (if OSMO) + fee.
+        insufficientOsmoForFee ||
+        !acknowledgeNoRecovery ||
+        !acknowledgeFee ||
+        Boolean(account?.txTypeInProgress),
+      onClick: () => {
+        createGauge({
+          distributeTo: isConcentrated
+            ? { type: "noLock", poolId, uptimeSeconds }
+            : {
+                type: "byDuration",
+                denom: `gamm/pool/${poolId}`,
+                durationSeconds: fixedDuration!.asSeconds(),
+              },
+          numEpochs,
+          // Omit for the default (next epoch); otherwise pin to the
+          // chosen date's epoch time.
+          startTime: isDefaultStart ? undefined : startDate,
+        })
+          .then(() => props.onRequestClose())
+          .catch(console.error);
+      },
+      children:
+        (config.error ? t(...tError(config.error)) : false) ||
+        t("incentivizePool.ctaCreate"),
+    },
+    props.onRequestClose
+  );
+
+  return (
+    <ModalBase
+      title={t("incentivizePool.title", { poolId })}
+      className="!max-w-[31.5rem]"
+      {...props}
+      isOpen={props.isOpen && showModalBase}
+    >
+      <div className="flex flex-col gap-6 pt-4 md:gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex place-content-between items-center">
+            <span className="subtitle1">
+              {t("incentivizePool.distributesToLabel")}
+            </span>
+            <span className="body2 text-osmoverse-200">
+              {isConcentrated
+                ? t("incentivizePool.distributesToNoLock")
+                : t("incentivizePool.distributesToLocked", {
+                    duration: fixedDuration?.humanize() ?? "",
+                  })}
+            </span>
+          </div>
+          <span className="caption text-osmoverse-400">
+            {isConcentrated
+              ? t("incentivizePool.noLockNote")
+              : t("incentivizePool.durationFixed", {
+                  duration: fixedDuration?.humanize() ?? "",
+                })}
+          </span>
+        </div>
+        {isConcentrated && (
+          <div className="flex flex-col gap-2">
+            <div className="flex place-content-between items-center gap-2">
+              <span className="subtitle1">
+                {t("incentivizePool.uptimeLabel")}
+              </span>
+              <div className="flex flex-wrap justify-end gap-1">
+                {uptimeOptions.map((seconds) => (
+                  <button
+                    key={seconds}
+                    type="button"
+                    className={classNames(
+                      "caption rounded-full px-3 py-1 transition-colors",
+                      uptimeSeconds === seconds
+                        ? "bg-wosmongton-500 text-white-full"
+                        : "bg-osmoverse-700 text-osmoverse-300 hover:bg-osmoverse-600"
+                    )}
+                    onClick={() => setUptimeSeconds(seconds)}
+                  >
+                    {seconds < 1
+                      ? t("incentivizePool.uptimeNone")
+                      : dayjs.duration(seconds, "seconds").humanize()}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.uptimeHelp")}
+            </span>
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-4 xs:grid-cols-1">
+          <div className="flex flex-col gap-2">
+            <span className="subtitle1">{t("incentivizePool.startLabel")}</span>
+            <input
+              type="date"
+              min={nextEpochDateIso}
+              // color-scheme:dark renders the native calendar-picker
+              // glyph light so it stands out against the dark field.
+              className="w-full rounded-lg bg-osmoverse-900 px-3 py-2 text-sm text-osmoverse-100 outline-none [color-scheme:dark]"
+              value={startInput}
+              onChange={(e) => setStartInput(e.target.value)}
+            />
+            <span className="caption text-osmoverse-400">
+              {isDefaultStart && epochCountdown
+                ? t("incentivizePool.epochsCaption", {
+                    countdown: epochCountdown,
+                  })
+                : isDefaultStart
+                ? t("incentivizePool.epochsCaptionNoCountdown")
+                : t("incentivizePool.startCustomCaption")}
+            </span>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <span className="subtitle1 text-right">
+              {t("incentivizePool.epochsLabel")}
+            </span>
+            <InputBox
+              className="w-2/3"
+              type="number"
+              currentValue={epochsInput}
+              onInput={(value) => setEpochsInput(value)}
+              placeholder=""
+              rightEntry
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex place-content-between items-center">
+            <span className="subtitle1">
+              {t("incentivizePool.rewardAmount")}
+            </span>
+            {config.balance && (
+              <div className="caption flex gap-1 text-osmoverse-300">
+                <span>{t("lockToken.availableToken")}</span>
+                <span
+                  className="cursor-pointer text-wosmongton-300"
+                  onClick={() => config.setFraction(1)}
+                >
+                  {formatPretty(config.balance)}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <TokenSelect
+              selectedTokenDenom={selectedCurrency?.coinMinimalDenom ?? ""}
+              tokens={selectableTokens}
+              keyByMinimalDenom
+              onSelect={(minimalDenom) => {
+                const match = selectableTokens.find(
+                  (coin) => coin.currency.coinMinimalDenom === minimalDenom
+                );
+                if (match) setSelectedCurrency(match.currency);
+              }}
+              sortByBalances
+            />
+            <InputBox
+              className="grow"
+              type="number"
+              currentValue={config.inputAmount}
+              onInput={(value) => config.setAmount(value)}
+              placeholder=""
+              rightEntry
+            />
+          </div>
+        </div>
+        {perDayValue &&
+          minDistrFiat &&
+          perDayValue
+            .toDec()
+            .lt(minDistrFiat.toDec().mul(new Dec(DUST_WARN_POSITIONS))) && (
+            <div className="flex items-start gap-2 rounded-xl bg-rust-800/40 p-3">
+              <Icon
+                id="alert-triangle"
+                width={16}
+                height={16}
+                className="mt-0.5 shrink-0 text-rust-300"
+              />
+              <span className="caption text-rust-200">
+                {t("incentivizePool.dustBelowMin", {
+                  minValue: MIN_DISTR_VALUE_LABEL,
+                })}
+              </span>
+            </div>
+          )}
+        <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-900 p-3">
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsTotalValue")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {totalValue ? formatPretty(totalValue) : "–"}
+            </span>
+          </div>
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsPerDay")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {perDayValue
+                ? `${formatPretty(perDayValue)}${
+                    perEpochEmission
+                      ? ` · ${formatPretty(perEpochEmission)}`
+                      : ""
+                  }`
+                : "–"}
+            </span>
+          </div>
+          <div className="flex place-content-between items-center">
+            <span className="caption text-osmoverse-400">
+              {t("incentivizePool.statsEstApr")}
+            </span>
+            <span className="caption text-osmoverse-200">
+              {estApr ? formatPretty(estApr, { maxDecimals: 1 }) : "–"}
+            </span>
+          </div>
+        </div>
+        {config.amount &&
+          selectedCurrency?.coinMinimalDenom !== "uosmo" &&
+          totalValue === undefined && (
+            <span className="caption text-rust-300">
+              {t("incentivizePool.dustUnpriceable")}
+            </span>
+          )}
+        {config.amount && insufficientOsmoForFee && (
+          <span className="caption text-rust-300">
+            {t("incentivizePool.insufficientOsmoForFee", {
+              fee: CREATE_GAUGE_FEE_LABEL,
+            })}
+          </span>
+        )}
+        {/* Both gating acknowledgements live in one red warning box: the
+            non-recovery confirmation and, below it, the non-refundable fee. */}
+        <div className="flex flex-col gap-3 rounded-xl bg-rust-800/40 p-3">
+          <div className="flex items-start gap-2">
+            <Icon
+              id="alert-triangle"
+              width={16}
+              height={16}
+              className="mt-0.5 shrink-0 text-rust-300"
+            />
+            <span className="caption text-rust-200">
+              {t("incentivizePool.advancedWarning")}
+            </span>
+          </div>
+          {/* onClick on the wrapper, not a <label>: <label> only forwards
+              clicks to labelable form controls, not the Radix Checkbox's
+              underlying <button>, so the text would not be a reliable target. */}
+          <div
+            className="flex cursor-pointer items-center gap-3"
+            onClick={() => setAcknowledgeNoRecovery(!acknowledgeNoRecovery)}
+          >
+            <Checkbox variant="destructive" checked={acknowledgeNoRecovery} />
+            <span className="caption text-rust-200">
+              {t("incentivizePool.acknowledgeNoRecovery")}
+            </span>
+          </div>
+          <div
+            className="flex cursor-pointer items-center gap-3"
+            onClick={() => setAcknowledgeFee(!acknowledgeFee)}
+          >
+            <Checkbox variant="destructive" checked={acknowledgeFee} />
+            <span className="caption text-rust-200">
+              {t("incentivizePool.acknowledgeFee", {
+                fee: CREATE_GAUGE_FEE_LABEL,
+              })}
+            </span>
+          </div>
+        </div>
+        {accountActionButton}
+        <span className="caption text-center text-osmoverse-400">
+          {t("incentivizePool.visibilityWarning")}
+        </span>
+      </div>
+    </ModalBase>
+  );
+});
