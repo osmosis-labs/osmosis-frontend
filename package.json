@@ -94,5 +94,8 @@
     "@keplr-wallet/types/axios": "^0.33.0",
     "@0xsquid/sdk/axios": "^0.33.0",
     "@terra-money/feather.js/axios": "^0.33.0"
+  },
+  "dependencies": {
+    "protobufjs": "6.11.4"
   }
 }
