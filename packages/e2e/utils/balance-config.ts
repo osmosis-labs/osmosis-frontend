@@ -63,26 +63,27 @@ export const ACCOUNT_REQUIREMENTS: Record<
   ],
 
   "Monitoring SG": [
-    // monitoring.swap.wallet.spec.ts + monitoring.market.wallet.spec.ts
+    // Only monitoring.swap runs in SG (see monitoring-limit-geo workflow);
+    // OSMO/BTC entries cover gas + manual market-spec runs.
     {
       token: "USDC",
-      minAmount: 7,
-      warnAmount: 8.4,
-      note: "market buy + swap stables",
+      minAmount: 1.2,
+      warnAmount: 2.3,
+      note: "swap stables (~1.10 forward legs/tick)",
     },
     {
       token: "OSMO",
-      minAmount: 2,
-      warnAmount: 5,
+      minAmount: 1.2,
+      warnAmount: 2.4,
       unit: "usd",
-      note: "market sell OSMO",
+      note: "gas + market sell OSMO (manual runs)",
     },
     {
       token: "BTC",
-      minAmount: 1.6,
-      warnAmount: 5,
+      minAmount: 0.6,
+      warnAmount: 1.5,
       unit: "usd",
-      note: "market sell BTC (fiat-mode ~$1.60)",
+      note: "market sell BTC (fiat-mode ~$0.54, manual runs)",
     },
     {
       token: "USDC.eth.axl",
@@ -94,26 +95,27 @@ export const ACCOUNT_REQUIREMENTS: Record<
   ],
 
   "Monitoring EU": [
-    // monitoring.swap + monitoring.market + monitoring.limit
+    // Only monitoring.swap runs in EU (see monitoring-limit-geo workflow);
+    // OSMO/BTC entries cover gas + manual market/limit-spec runs.
     {
       token: "USDC",
-      minAmount: 7,
-      warnAmount: 8.4,
-      note: "market buy + limit buy + swap stables",
+      minAmount: 1.2,
+      warnAmount: 2.3,
+      note: "swap stables (~1.10 forward legs/tick)",
     },
     {
       token: "OSMO",
-      minAmount: 2,
-      warnAmount: 5,
+      minAmount: 1.2,
+      warnAmount: 2.4,
       unit: "usd",
-      note: "market sell + limit sell OSMO",
+      note: "gas + market/limit sell OSMO (manual runs)",
     },
     {
       token: "BTC",
-      minAmount: 1.6,
-      warnAmount: 5,
+      minAmount: 0.6,
+      warnAmount: 1.5,
       unit: "usd",
-      note: "market sell BTC (fiat-mode ~$1.60)",
+      note: "market sell BTC (fiat-mode ~$0.54, manual runs)",
     },
     {
       token: "USDC.eth.axl",
@@ -128,23 +130,23 @@ export const ACCOUNT_REQUIREMENTS: Record<
     // monitoring.swap + monitoring.market + monitoring.limit
     {
       token: "USDC",
-      minAmount: 7,
-      warnAmount: 8.4,
-      note: "market buy + limit buy + swap stables",
+      minAmount: 2.9,
+      warnAmount: 5.5,
+      note: "market buys ($0.55 x2) + limit buy ($0.52) + swap stables (1.10) ≈ 2.72/tick",
     },
     {
       token: "OSMO",
-      minAmount: 2,
-      warnAmount: 5,
+      minAmount: 1.2,
+      warnAmount: 2.4,
       unit: "usd",
-      note: "market sell + limit sell OSMO",
+      note: "market sell ($0.54) + limit sell ($0.54) OSMO + gas",
     },
     {
       token: "BTC",
-      minAmount: 1.6,
-      warnAmount: 5,
+      minAmount: 0.6,
+      warnAmount: 1.5,
       unit: "usd",
-      note: "market sell BTC (fiat-mode ~$1.60)",
+      note: "market sell BTC (fiat-mode ~$0.54)",
     },
     {
       token: "USDC.eth.axl",

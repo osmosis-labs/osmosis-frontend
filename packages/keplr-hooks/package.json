@@ -42,7 +42,7 @@
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
-    "axios": "^0.27.2",
+    "axios": "^0.33.0",
     "long": "^4.0.0",
     "mobx": "^6.1.7",
     "mobx-utils": "^6.0.3",

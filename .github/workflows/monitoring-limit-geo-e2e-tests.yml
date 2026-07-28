@@ -1,9 +1,16 @@
 name: Synthetic Geo Monitoring Frontend tests
 
+# Two-tier cadence (cost control): the stablecoin swap suites are near-free
+# (round-trips net to ~0 USDC), so they run every hour in all regions. The US
+# market + limit suites cause almost all of the wallet drain (~25x the swap
+# suites' burn), so they only run on the 12-hourly ticks below. The two cron
+# entries don't overlap — every hour still fires exactly one run, and the
+# preflight/topup jobs keep their hourly rhythm.
 on:
   workflow_dispatch:
   schedule:
-    - cron: "1 * * * *"
+    - cron: "1 1-11,13-23 * * *" # hourly ticks: swap suites only
+    - cron: "1 0,12 * * *" # 12-hourly ticks: swap + market + limit
 
 permissions:
   actions: write
@@ -328,6 +335,10 @@ jobs:
   # Each `needs:` its region's preflight and skips when preflight reports
   # a critical (`fail`) balance shortage. Per-job balance checks have moved
   # to the preflight; these jobs only run the playwright tests.
+  #
+  # The swap jobs run on every tick; fe-trade-us and fe-limit-us are
+  # additionally gated to the 12-hourly schedule (see the cadence note on
+  # the schedule trigger).
   # -------------------------------------------------------------------------
 
   fe-swap-us:
@@ -481,7 +492,11 @@ jobs:
   fe-trade-us:
     timeout-minutes: 10
     needs: [preflight-us, fe-swap-us]
-    if: always() && needs.preflight-us.outputs.outcome != 'fail'
+    # Only on the 12-hourly ticks (or manual dispatch) — see the cadence note
+    # on the schedule trigger above.
+    if: >-
+      always() && needs.preflight-us.outputs.outcome != 'fail' &&
+      (github.event_name == 'workflow_dispatch' || github.event.schedule == '1 0,12 * * *')
     name: prod-fe-trade-us
     runs-on: macos-14
     outputs:
@@ -534,7 +549,11 @@ jobs:
   fe-limit-us:
     timeout-minutes: 15
     needs: [preflight-us, fe-trade-us]
-    if: always() && needs.preflight-us.outputs.outcome != 'fail'
+    # Only on the 12-hourly ticks (or manual dispatch) — see the cadence note
+    # on the schedule trigger above.
+    if: >-
+      always() && needs.preflight-us.outputs.outcome != 'fail' &&
+      (github.event_name == 'workflow_dispatch' || github.event.schedule == '1 0,12 * * *')
     name: prod-fe-limit-us
     runs-on: macos-14
     outputs:
