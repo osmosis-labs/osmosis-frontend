@@ -24,10 +24,11 @@ import { trimPlaceholderZeros } from "~/utils/number";
 // Head-room multiplier on the quoted gas cost when clamping a max-amount
 // input. Must absorb base-fee drift between quote time and signing time
 // plus wallet-side padding: the EIP-1559 base fee moves up to ±12.5% per
-// block and wallets budget their own worst-case fee when the user signs,
-// so a thin margin fails the signature with "insufficient funds".
-// Over-reserving only leaves ~one gas fee of dust in the wallet.
-const mulGasSlippage = new Dec("2");
+// block and wallets budget their own worst-case fee (own gas-limit padding
+// included) when the user signs, so a thin margin fails the signature with
+// "insufficient funds". 2x proved insufficient in field testing; the reserve
+// only strands a couple of gas fees of dust in the wallet, so err high.
+const mulGasSlippage = new Dec("3");
 
 /** Safely converts a raw input string to a Dec value.
  * Returns "0" for empty strings or lone decimals that can't be parsed.
@@ -286,25 +287,44 @@ export const CryptoFiatInput: FunctionComponent<{
       additiveTransferFee &&
         isSameCoinDenom(additiveTransferFee, assetWithBalance.amount)
     );
+    const gasMatchesInputDenom = Boolean(
+      transferGasCost &&
+        isSameCoinDenom(transferGasCost, assetWithBalance.amount)
+    );
 
     if (transferGasCost || additiveFeeMatchesInputDenom) {
       // Skip only if the latched application already covered everything
       // currently known: a gas-only application must re-run when an
       // additive fee shows up later so the fee also gets reserved.
-      if (
+      const alreadyApplied =
         gasAppliedToMax.current &&
-        (feeAppliedToMax.current || !additiveFeeMatchesInputDenom)
-      ) {
-        return;
+        (feeAppliedToMax.current || !additiveFeeMatchesInputDenom);
+
+      if (alreadyApplied) {
+        // Quotes keep refreshing while the user lingers, and the fee market
+        // moves underneath the latched input. Stay latched while the input
+        // still covers the LATEST face-value fee + gas (the head-room from
+        // the original clamp is intact enough); once even face value no
+        // longer fits the balance, fall through and re-clamp with full
+        // head-room instead of letting the signature fail in the wallet.
+        let faceValue = new Dec(0);
+        if (gasMatchesInputDenom) {
+          faceValue = faceValue.add(transferGasCost!.toDec());
+        }
+        if (additiveFeeMatchesInputDenom) {
+          faceValue = faceValue.add(additiveTransferFee!.toDec());
+        }
+        const stillFunded = inputCoin
+          .toDec()
+          .add(faceValue)
+          .lte(assetWithBalance.amount.toDec());
+        if (stillFunded) return;
       }
 
       let deduction = new Dec(0);
 
-      if (
-        transferGasCost &&
-        isSameCoinDenom(transferGasCost, assetWithBalance.amount)
-      ) {
-        deduction = deduction.add(transferGasCost.toDec().mul(mulGasSlippage));
+      if (gasMatchesInputDenom) {
+        deduction = deduction.add(transferGasCost!.toDec().mul(mulGasSlippage));
       }
       if (additiveFeeMatchesInputDenom) {
         deduction = deduction.add(additiveTransferFee!.toDec());

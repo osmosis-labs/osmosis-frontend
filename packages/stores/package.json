@@ -72,7 +72,7 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
-    "axios": "^0.27.2",
+    "axios": "^0.33.0",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.5.2",
     "dayjs": "^1.10.7",
@@ -81,7 +81,7 @@
     "long": "^5.2.3",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "protobufjs": "^7.5.5",
+    "protobufjs": "^7.6.5",
     "sha.js": "^2.4.11",
     "utility-types": "^3.10.0"
   },

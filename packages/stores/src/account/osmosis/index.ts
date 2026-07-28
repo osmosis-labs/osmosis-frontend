@@ -10,6 +10,7 @@ import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
+  makeAddToGaugeMsg,
   makeAddToPositionMsg,
   makeBeginUnlockingMsg,
   makeCollectIncentivesMsg,
@@ -17,6 +18,7 @@ import {
   makeCreateBalancerPoolMsg,
   makeCreateConcentratedPoolMsg,
   makeCreateFullRangePositionAndSuperfluidDelegateMsg,
+  makeCreateGaugeMsg,
   makeCreatePositionMsg,
   makeCreateStableswapPoolMsg,
   makeDelegateToValidatorSetMsg,
@@ -1779,6 +1781,160 @@ export class OsmosisAccountImpl {
           this.queries.queryGammPoolShare.fetch(this.address);
 
           this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Creates an external incentive gauge on a pool via
+   * osmosis.incentives.MsgCreateGauge.
+   *
+   * @param distributeTo Gauge target: `byDuration` for share (lockup) pools
+   *   — denom is the pool share denom and duration one of the pool's
+   *   lockable durations — or `noLock` for concentrated pools, where the
+   *   chain derives the internal no-lock denom from the pool id and
+   *   `uptimeSeconds` is the minimum time in range a position needs before
+   *   it qualifies (anti just-in-time liquidity; must be one of the CL
+   *   module's authorized uptimes or creation is rejected).
+   * @param coins Reward coins funding the gauge, in minimal (chain) units.
+   * @param startTime When distribution may begin; emissions start at the
+   *   first epoch after this time.
+   * @param numEpochsPaidOver Number of epochs the rewards are spread over
+   *   (must be 1 for perpetual gauges).
+   * @param isPerpetual Perpetual gauges distribute their full balance every
+   *   epoch and are refilled with MsgAddToGauge.
+   * @param memo Tx memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendCreateGaugeMsg(
+    distributeTo:
+      | { type: "byDuration"; denom: string; durationSeconds: number }
+      | { type: "noLock"; poolId: string; uptimeSeconds: number },
+    coins: { currency: Currency; amount: string }[],
+    startTime: Date,
+    numEpochsPaidOver: number,
+    isPerpetual: boolean = false,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const primitiveCoins = coins.map((coin) => ({
+      amount: coin.amount,
+      denom: coin.currency.coinMinimalDenom,
+    }));
+
+    const [{ Duration }, { LockQueryType }] = await Promise.all([
+      import(
+        "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration"
+      ),
+      import("@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/lock"),
+    ]);
+
+    const msg = await makeCreateGaugeMsg({
+      isPerpetual,
+      owner: this.address,
+      distributeTo:
+        distributeTo.type === "byDuration"
+          ? {
+              lockQueryType: LockQueryType.ByDuration,
+              denom: distributeTo.denom,
+              duration: Duration.fromPartial({
+                seconds: BigInt(distributeTo.durationSeconds),
+                nanos: 0,
+              }),
+              timestamp: new Date(0),
+            }
+          : {
+              // The chain derives the no-lock denom from poolId; the
+              // condition's denom must be left empty. Its duration carries
+              // the required position uptime.
+              lockQueryType: LockQueryType.NoLock,
+              denom: "",
+              duration: Duration.fromPartial({
+                seconds: BigInt(Math.floor(distributeTo.uptimeSeconds)),
+                nanos: Math.round((distributeTo.uptimeSeconds % 1) * 1e9),
+              }),
+              timestamp: new Date(0),
+            },
+      coins: primitiveCoins,
+      // Floor to whole seconds. The amino sign path (telescope's
+      // Timestamp.toAmino) strips sub-second precision from start_time, but the
+      // broadcast proto body keeps the nanos, so a Date with millisecond
+      // precision (e.g. `new Date()`) makes the signed amino doc and the chain's
+      // re-derived amino disagree -> "signature verification failed". Sub-second
+      // precision is meaningless here anyway (the chain floors the start to the
+      // next epoch).
+      startTime: new Date(Math.floor(startTime.getTime() / 1000) * 1000),
+      numEpochsPaidOver: BigInt(numEpochsPaidOver),
+      poolId:
+        distributeTo.type === "noLock"
+          ? BigInt(distributeTo.poolId)
+          : BigInt(0),
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "createGauge",
+      [msg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances (gauge funding left the wallet).
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Tops up an existing incentive gauge via osmosis.incentives.MsgAddToGauge.
+   *
+   * @param gaugeId Id of the gauge to fund.
+   * @param rewards Additional reward coins, in minimal (chain) units.
+   * @param memo Tx memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendAddToGaugeMsg(
+    gaugeId: string,
+    rewards: { currency: Currency; amount: string }[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const primitiveRewards = rewards.map((coin) => ({
+      amount: coin.amount,
+      denom: coin.currency.coinMinimalDenom,
+    }));
+
+    const msg = await makeAddToGaugeMsg({
+      owner: this.address,
+      gaugeId: BigInt(gaugeId),
+      rewards: primitiveRewards,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "addToGauge",
+      [msg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances and the funded gauge.
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+          this.queries.queryGauge.get(gaugeId).waitFreshResponse();
         }
 
         onFulfill?.(tx);

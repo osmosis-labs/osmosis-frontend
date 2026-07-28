@@ -15,8 +15,10 @@ test.describe("Test Filled Limit Order feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "OSMO", amount: 1.1 }, // For limit sell OSMO
-      { token: "USDC", amount: 1.1, unit: "usd" }, // For limit buy OSMO
+      // Sell-tab amounts are fiat-mode in prod (inGivenOut flag, see MTN-157
+      // note in balance-config.ts), so both requirements are USD-denominated.
+      { token: "OSMO", amount: 0.6, unit: "usd" }, // For limit sell OSMO ($0.54)
+      { token: "USDC", amount: 0.55, unit: "usd" }, // For limit buy OSMO ($0.52)
     ]);
 
     tradePage = new TradePage(context.pages()[0]);
@@ -46,7 +48,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.08");
+    await tradePage.enterAmount("0.54");
     await tradePage.setLimitPriceChange("Market");
     await tradePage.sellAndApprove(context);
     await tradePage.getTransactionUrl();
@@ -58,7 +60,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.04");
+    await tradePage.enterAmount("0.52");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
     const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);

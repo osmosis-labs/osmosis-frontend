@@ -23,7 +23,10 @@ export const TokenSelectModal: FunctionComponent<
       token: CoinPretty | AppCurrency;
       chainName: string;
     }[];
-    onSelect: (coinDenom: string) => void;
+    onSelect: (tokenDenom: string) => void;
+    /** Emit `coinMinimalDenom` from `onSelect` instead of the display denom, so
+     *  assets sharing a symbol resolve unambiguously. Default: display denom. */
+    keyByMinimalDenom?: boolean;
   } & InputProps<string>
 > = observer((props) => {
   const { priceStore } = useStore();
@@ -54,6 +57,9 @@ export const TokenSelectModal: FunctionComponent<
           const currency =
             t.token instanceof CoinPretty ? t.token.currency : t.token;
           const { coinDenom, coinImageUrl } = currency;
+          const selectKey = props.keyByMinimalDenom
+            ? currency.coinMinimalDenom
+            : coinDenom;
           const networkName = t.chainName;
           const justDenom = coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
           const channel =
@@ -74,11 +80,11 @@ export const TokenSelectModal: FunctionComponent<
 
           return (
             <li
-              key={currency.coinDenom}
+              key={selectKey}
               className="mx-3 my-1 flex cursor-pointer items-center justify-between rounded-2xl px-4 py-2.5 hover:bg-osmoverse-900"
               onClick={(e) => {
                 e.stopPropagation();
-                props.onSelect(coinDenom);
+                props.onSelect(selectKey);
                 props.onRequestClose();
               }}
             >

@@ -25,7 +25,7 @@ function makeGasCost(amount: string) {
   return new CoinPretty(ATOM_CURRENCY, amount);
 }
 
-const MUL_GAS_SLIPPAGE = new Dec("2");
+const MUL_GAS_SLIPPAGE = new Dec("3");
 
 function expectedMaxAfterGas(balanceRaw: string, gasRaw: string) {
   const balance = new CoinPretty(ATOM_CURRENCY, balanceRaw);
@@ -160,6 +160,61 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     // Give effects time to settle — gas should NOT be re-applied
     await new Promise((r) => setTimeout(r, 100));
     expect(onChangeCryptoInput).not.toHaveBeenCalled();
+  });
+
+  it("re-clamps when fee drift exhausts the head-room", async () => {
+    const balanceRaw = "2000000";
+    const gasRaw1 = "5000";
+    // rises enough that the latched input (balance - 3*5000 = 1985000) no
+    // longer covers even face-value gas: 1985000 + 20000 > 2000000
+    const gasRaw2 = "20000";
+    const onChangeCryptoInput = jest.fn();
+
+    const { rerender } = renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: makeGasCost(gasRaw1),
+      balanceRaw,
+      onChangeCryptoInput,
+    });
+
+    const expected1 = expectedMaxAfterGas(balanceRaw, gasRaw1);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected1);
+    });
+
+    onChangeCryptoInput.mockClear();
+
+    const balance = makeBalance(balanceRaw);
+    rerender(
+      <CryptoFiatInput
+        currentUnit="crypto"
+        setCurrentUnit={jest.fn()}
+        isMax={true}
+        setIsMax={jest.fn()}
+        canSetMax={true}
+        transferGasCost={makeGasCost(gasRaw2)}
+        transferGasChain={{ prettyName: "Cosmos Hub" }}
+        assetPrice={undefined}
+        assetWithBalance={{
+          denom: "ATOM",
+          address: "uatom",
+          decimals: 6,
+          amount: balance,
+        }}
+        cryptoInput={expected1}
+        onChangeCryptoInput={onChangeCryptoInput}
+        fiatInput=""
+        onChangeFiatInput={jest.fn()}
+        isInsufficientBal={false}
+        isInsufficientFee={false}
+      />
+    );
+
+    const expected2 = expectedMaxAfterGas(balanceRaw, gasRaw2);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected2);
+    });
   });
 
   it("resets guard when isMax is toggled off, allowing gas to apply on next Max", async () => {
