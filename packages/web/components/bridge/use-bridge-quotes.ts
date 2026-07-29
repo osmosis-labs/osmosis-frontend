@@ -25,6 +25,7 @@ import { ToastType } from "~/components/alert/types";
 import {
   LossFigures,
   needsAcknowledgement,
+  normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
@@ -234,7 +235,7 @@ export const useBridgeQuotes = ({
             // Normalize to magnitude so the gate comparison and the re-arm
             // math work regardless of the provider's sign convention.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact).abs()
+              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined

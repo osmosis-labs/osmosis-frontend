@@ -3,11 +3,46 @@ import { Dec } from "@osmosis-labs/unit";
 import {
   hasActiveWarning,
   needsAcknowledgement,
+  normalizePriceImpact,
   shouldResetAcknowledgement,
 } from "~/components/bridge/loss-acknowledgement";
-import { AckReArmTolerance } from "~/config/trade-warnings";
+import {
+  AckReArmTolerance,
+  HighPriceImpactGate,
+} from "~/config/trade-warnings";
 
 import { baseFigures, warnedSlippage } from "./loss-figures.fixture";
+
+describe("normalizePriceImpact", () => {
+  it("converts a negative provider-reported impact to a positive magnitude", () => {
+    expect(normalizePriceImpact(new Dec("-0.12")).toString()).toBe(
+      new Dec("0.12").toString()
+    );
+  });
+
+  it("leaves an already-positive impact unchanged", () => {
+    expect(normalizePriceImpact(new Dec("0.12")).toString()).toBe(
+      new Dec("0.12").toString()
+    );
+  });
+
+  // The regression this guards: bundled-swap providers (int3face, Nomic) report
+  // impact negatively, so an un-normalized figure fails `gte` against the gate
+  // and the warning silently never fires — no error, no misrender, just an
+  // ungated high-loss transfer.
+  it("makes a negative impact beyond the gate trip it, where the raw value would not", () => {
+    const raw = HighPriceImpactGate.add(new Dec(0.05)).neg();
+
+    expect(raw.gte(HighPriceImpactGate)).toBe(false);
+    expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(true);
+  });
+
+  it("does not trip the gate for a small negative impact", () => {
+    const raw = HighPriceImpactGate.sub(new Dec(0.05)).neg();
+
+    expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(false);
+  });
+});
 
 describe("hasActiveWarning", () => {
   it("is false when no warning is active", () => {
