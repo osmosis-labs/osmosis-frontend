@@ -42,7 +42,10 @@
       "valueOut": "Giden değer",
       "totalCost": "Toplam maliyet",
       "totalCostWarning": "Bu yatırmanın toplam maliyeti {totalCost} olup fiyat etkisi ve takas ücretlerini içerir; bu da pozisyonunuza ulaşan değeri azaltır.",
-      "quoteLoading": "En iyi takas bulunuyor…"
+      "quoteLoading": "En iyi takas bulunuyor…",
+      "estimatedTotalReceive": "Tahmini toplam alınacak tutar",
+      "existingBalanceCaution": "Fiyat kayma toleransınızın ötesine geçerse, mevcut bakiyenizden {amount} kadarı takasa dahil edilebilir.",
+      "poolDataUnavailable": "Seçilen oran için gereken havuz verileri kullanılamıyor. Standart çekim için kaydırıcıyı başlangıç konumuna geri getirin."
     }
   },
   "addConcentratedLiquidityIntro": {

@@ -42,7 +42,10 @@
       "valueOut": "Ausgabewert",
       "totalCost": "Gesamtkosten",
       "totalCostWarning": "Die Gesamtkosten dieser Einzahlung betragen {totalCost}, einschließlich Preisauswirkung und Tauschgebühren, wodurch sich der Wert verringert, der deine Position erreicht.",
-      "quoteLoading": "Besten Tausch wird gesucht…"
+      "quoteLoading": "Besten Tausch wird gesucht…",
+      "estimatedTotalReceive": "Geschätzter Gesamterhalt",
+      "existingBalanceCaution": "Wenn sich der Preis über deine Slippage-Toleranz hinaus bewegt, können bis zu {amount} deines vorhandenen Guthabens in den Tausch einbezogen werden.",
+      "poolDataUnavailable": "Die für die gewählte Aufteilung benötigten Pool-Daten sind nicht verfügbar. Schiebe den Regler zurück in die Ausgangsposition für eine normale Auszahlung."
     }
   },
   "addConcentratedLiquidityIntro": {

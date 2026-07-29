@@ -42,7 +42,10 @@
       "valueOut": "출금액",
       "totalCost": "총 비용",
       "totalCostWarning": "이 예치의 총 비용은 {totalCost}이며, 가격 영향과 스왑 수수료가 포함되어 포지션에 도달하는 가치가 줄어듭니다.",
-      "quoteLoading": "최적 스왑을 찾는 중…"
+      "quoteLoading": "최적 스왑을 찾는 중…",
+      "estimatedTotalReceive": "예상 총 수령액",
+      "existingBalanceCaution": "가격이 슬리피지 허용 범위를 넘어 움직이면 기존 잔액에서 최대 {amount}가 스왑에 포함될 수 있습니다.",
+      "poolDataUnavailable": "선택한 비율에 필요한 풀 데이터를 사용할 수 없습니다. 표준 출금을 하려면 슬라이더를 시작 위치로 되돌리세요."
     }
   },
   "addConcentratedLiquidityIntro": {

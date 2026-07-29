@@ -959,10 +959,16 @@ export class OsmosisAccountImpl {
    * The caller (see `useRemoveConcentratedLiquidityConfig` / `use-zap-out-quote`)
    * computes the swap split via SQS and the slippage floor. Note `MsgWithdrawPosition`
    * carries NO token minima, so slippage protection lives entirely on the swap
-   * leg's `tokenOutMinAmount`. Critically, the swap leg's `tokenInAmount` must be
-   * the conservative LOWER BOUND of the projected withdrawn amount of the side
-   * being sold: it is fixed at sign time, and if it exceeds what the withdraw
-   * actually yields at execution the swap reverts the whole tx.
+   * leg's `tokenOutMinAmount`. The swap leg's `tokenInAmount` must be the
+   * conservative LOWER BOUND of the projected withdrawn amount of the side
+   * being sold: it is fixed at sign time, and the swap spends it from the
+   * ACCOUNT BALANCE, not specifically from the withdrawal's outputs. If spot
+   * drift makes the withdraw deliver less than this amount, the tx reverts
+   * only when the account holds none of the sold denom; any pre-existing
+   * balance covers the shortfall and is swapped along with the withdrawn
+   * funds. The caller must disclose that residual to the user when such a
+   * balance exists — no message-level construction can scope a swap to the
+   * withdrawal's outputs.
    *
    * @param positionId Position to withdraw from.
    * @param liquidityAmount Liquidity to withdraw (chain-raw decimal string).

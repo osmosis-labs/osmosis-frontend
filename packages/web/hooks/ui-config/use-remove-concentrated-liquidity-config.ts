@@ -56,6 +56,11 @@ export function useRemoveConcentratedLiquidityConfig(
    *  the tx submits, so the "receive at least" display can't overstate it.
    *  Undefined when no swap is needed or the quote isn't ready. */
   swapMinOut: CoinPretty | undefined;
+  /** The sold-side amount the swap message actually spends (sold-side
+   *  currency). The swap spends from the whole account balance, so when the
+   *  wallet already holds the sold denom the modal sizes a caution row
+   *  against this. Undefined when no swap is needed or the plan isn't ready. */
+  swapExecutedIn: CoinPretty | undefined;
   /** Whether the pool query (source of the spot price the swap math needs) is
    *  still loading. The consumer only blocks a chosen mix while this is true, so
    *  a never-resolving query can't trap the user with no path to withdraw. */
@@ -212,9 +217,15 @@ export function useRemoveConcentratedLiquidityConfig(
     if (!quotedSwap?.needsSwap || !zapQuote.quote) return undefined;
 
     // Each leg's tokenIn is the conservative LOWER BOUND of the projected
-    // withdrawn amount of the sold side (fixed at sign time; if it exceeds what
-    // the withdraw yields after spot drift, the tx reverts). Truncation is
-    // per-leg, so the actual total input is slightly below the full quote input.
+    // withdrawn amount of the sold side, fixed at sign time. NOTE the swap
+    // message spends from the whole account balance, not specifically from
+    // the withdrawal's outputs: if spot drift beyond the slippage buffer
+    // makes the withdraw deliver less than this input, the tx reverts only
+    // when the wallet holds none of the sold denom; an existing balance
+    // covers the shortfall and is swapped instead. That residual is surfaced
+    // to the user as a caution row when such a balance exists (the modal
+    // reads `swapExecutedIn` for it). Truncation is per-leg, so the actual
+    // total input is slightly below the full quote input.
     const routes = zapQuote.quote.split.map((route) => ({
       pools: route.pools.map((routePool, i: number) => ({
         id: routePool.id,
@@ -267,13 +278,15 @@ export function useRemoveConcentratedLiquidityConfig(
         positionLowerTick: new Int(position.position.position.lower_tick),
         positionUpperTick: new Int(position.position.position.upper_tick),
       });
-      // Only the pool-routed share degrades; other legs execute as quoted.
-      const poolFraction = fullInput.isZero()
-        ? new Dec(0)
-        : new Dec(poolRoutedInput).quo(fullInput);
-      expectedOut = expectedOut.mul(
-        new Dec(1).sub(poolFraction.mul(new Dec(1).sub(degradation)))
-      );
+      // Applied to the WHOLE expected output, not weighted by the pool
+      // route's input share: split routes can carry different average
+      // execution rates, so the input share can understate the own-pool
+      // route's output contribution and leave the floor above the
+      // post-withdraw result. The quote gives no per-route outputs, so the
+      // conservative whole-output application is the safe choice; it only
+      // over-degrades (weaker floor, never a self-inflicted revert), and is
+      // exact in the dominant case of a single direct route.
+      expectedOut = expectedOut.mul(degradation);
     }
 
     const tokenOutMinAmount = expectedOut
@@ -289,6 +302,13 @@ export function useRemoveConcentratedLiquidityConfig(
       swapMinOut: new CoinPretty(
         quotedSwap.tokenOutCurrency,
         tokenOutMinAmount
+      ),
+      /** The total sold-side amount the swap message actually spends (sum of
+       *  the scaled leg inputs), as the sold-side currency. The wallet-balance
+       *  caution row is sized against this. */
+      swapExecutedIn: new CoinPretty(
+        quotedSwap.tokenInCurrency,
+        scaledInput.truncate()
       ),
     };
   })();
@@ -385,10 +405,13 @@ export function useRemoveConcentratedLiquidityConfig(
             swapExecution;
 
           // The swap leg's tokenIn is the conservative LOWER BOUND of the
-          // projected withdrawn amount of the sold side (fixed at sign time; if
-          // it exceeds what the withdraw yields, the whole tx reverts).
-          // MsgWithdrawPosition carries no minima, so this lower bound plus the
-          // swap's tokenOutMinAmount are the only slippage guards.
+          // projected withdrawn amount of the sold side, fixed at sign time.
+          // MsgWithdrawPosition carries no minima, so this lower bound plus
+          // the swap's tokenOutMinAmount are the only slippage guards; the
+          // swap spends from the account balance, so beyond-tolerance drift
+          // draws on any pre-existing sold-denom balance instead of
+          // reverting (see sendZapOutOfConcentratedPositionMsg's doc and the
+          // modal's caution row).
           const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
             .mul(slippageMultiplier)
             .truncate();
@@ -468,6 +491,7 @@ export function useRemoveConcentratedLiquidityConfig(
     currentBaseValueFraction,
     quoteInSync,
     swapMinOut: swapExecution?.swapMinOut,
+    swapExecutedIn: swapExecution?.swapExecutedIn,
     isPoolLoading,
   };
 }
