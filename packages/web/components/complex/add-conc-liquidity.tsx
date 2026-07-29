@@ -1,6 +1,12 @@
 import { Disclosure } from "@headlessui/react";
 import type { Pool } from "@osmosis-labs/server";
-import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -39,10 +45,6 @@ import {
   useTranslation,
 } from "~/hooks";
 import {
-  getTokenInFeeAmountFiatValue,
-  getTokenOutFiatValue,
-} from "~/hooks/fiat-getters";
-import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
@@ -76,6 +78,9 @@ export const AddConcLiquidity: FunctionComponent<
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     zapQuote?: ReturnType<typeof useClZapQuote>;
     zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+    zapValueIn?: PricePretty;
+    zapValueOut?: PricePretty;
+    zapTotalCostPercent?: RatePretty;
     zapHighCost?: boolean;
     zapCostAcknowledged?: boolean;
     onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
@@ -88,6 +93,9 @@ export const AddConcLiquidity: FunctionComponent<
     addLiquidityConfig,
     zapQuote,
     zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
     zapHighCost,
     zapCostAcknowledged,
     onZapCostAcknowledgedChange,
@@ -106,6 +114,9 @@ export const AddConcLiquidity: FunctionComponent<
           addLiquidityConfig={addLiquidityConfig}
           zapQuote={zapQuote}
           zapSlippageConfig={zapSlippageConfig}
+          zapValueIn={zapValueIn}
+          zapValueOut={zapValueOut}
+          zapTotalCostPercent={zapTotalCostPercent}
           zapHighCost={zapHighCost}
           zapCostAcknowledged={zapCostAcknowledged}
           onZapCostAcknowledgedChange={onZapCostAcknowledgedChange}
@@ -122,6 +133,9 @@ const AddConcLiqView: FunctionComponent<
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     zapQuote?: ReturnType<typeof useClZapQuote>;
     zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+    zapValueIn?: PricePretty;
+    zapValueOut?: PricePretty;
+    zapTotalCostPercent?: RatePretty;
     zapHighCost?: boolean;
     zapCostAcknowledged?: boolean;
     onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
@@ -133,6 +147,9 @@ const AddConcLiqView: FunctionComponent<
     addLiquidityConfig,
     zapQuote,
     zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
     zapHighCost,
     zapCostAcknowledged,
     onZapCostAcknowledgedChange,
@@ -426,6 +443,9 @@ const AddConcLiqView: FunctionComponent<
               addLiquidityConfig={addLiquidityConfig}
               zapQuote={zapQuote}
               zapSlippageConfig={zapSlippageConfig}
+              zapValueIn={zapValueIn}
+              zapValueOut={zapValueOut}
+              zapTotalCostPercent={zapTotalCostPercent}
               zapHighCost={zapHighCost}
               zapCostAcknowledged={zapCostAcknowledged}
               onZapCostAcknowledgedChange={onZapCostAcknowledgedChange}
@@ -471,6 +491,9 @@ const SingleAssetDeposit: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
   zapQuote?: ReturnType<typeof useClZapQuote>;
   zapSlippageConfig?: ReturnType<typeof useSlippageConfig>;
+  zapValueIn?: PricePretty;
+  zapValueOut?: PricePretty;
+  zapTotalCostPercent?: RatePretty;
   zapHighCost?: boolean;
   zapCostAcknowledged?: boolean;
   onZapCostAcknowledgedChange?: (acknowledged: boolean) => void;
@@ -480,6 +503,9 @@ const SingleAssetDeposit: FunctionComponent<{
     addLiquidityConfig,
     zapQuote,
     zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
     zapHighCost,
     zapCostAcknowledged,
     onZapCostAcknowledgedChange,
@@ -491,8 +517,6 @@ const SingleAssetDeposit: FunctionComponent<{
       singleAssetDepositAmountIn,
       requiredSwap,
       singleAssetInputState,
-      baseDepositPrice,
-      quoteDepositPrice,
       setBaseDepositAmountMax,
       setQuoteDepositAmountMax,
     } = addLiquidityConfig;
@@ -520,71 +544,22 @@ const SingleAssetDeposit: FunctionComponent<{
     // the zap: swap fee + price impact. Surfaced instead of price impact, which
     // alone only covers the swap leg, not the whole deposit.
     //
-    // Both sides are valued off the SAME token-in price, deriving the swap output
-    // value from price impact + fee (the swap tool's `getTokenOutFiatValue`
-    // method), not an independent output oracle price. Mixing two price sources
-    // let the swap look value-positive (value out > value in), which is
-    // impossible for a fee-and-impact-bearing swap.
-    const inputPrice =
-      singleAssetSide === "base" ? baseDepositPrice : quoteDepositPrice;
-
-    const valueIn =
-      requiredSwap && inputPrice
-        ? inputPrice.mul(
-            new CoinPretty(
-              requiredSwap.tokenInCurrency,
-              requiredSwap.inputAmount
-            )
-          )
-        : undefined;
-
-    // Value of just the swapped portion of the input, then the swap output's value
-    // after price impact and fee. The retained portion keeps its full input value.
-    const swapInValue =
-      requiredSwap && inputPrice
-        ? inputPrice.mul(
-            new CoinPretty(
-              requiredSwap.tokenInCurrency,
-              requiredSwap.swapInAmount
-            )
-          )
-        : undefined;
-
-    const valueOut =
-      requiredSwap && quote && inputPrice && swapInValue
-        ? inputPrice
-            .mul(
-              new CoinPretty(
-                requiredSwap.tokenInCurrency,
-                requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
-              )
-            )
-            .add(
-              getTokenOutFiatValue(
-                quote.priceImpactTokenOut?.toDec(),
-                swapInValue.toDec()
-              ).sub(
-                getTokenInFeeAmountFiatValue(
-                  requiredSwap.tokenInCurrency,
-                  quote.tokenInFeeAmount,
-                  inputPrice
-                )
-              )
-            )
-        : undefined;
+    // All three values come from the config hook's single calculation (the same
+    // one that drives the `zapHighCost` Confirm gate), so the rows, the rust
+    // styling and the gate can never diverge. That calculation values both
+    // sides off the SAME token-in price, deriving the swap output value from
+    // price impact + fee, not an independent output oracle price — mixing two
+    // price sources let the swap look value-positive (value out > value in),
+    // which is impossible for a fee-and-impact-bearing swap.
+    const valueIn = zapValueIn;
+    const valueOut = zapValueOut;
 
     // Total cost of the zap: the full value lost between what goes in and what
     // lands in the position (swap fee + price impact combined). Shown below the
     // swap-fee row since it includes that fee. Flagged rust at the swap tool's
     // high-impact threshold so a thin-pool loss can't slip by unnoticed.
     const totalCost = valueIn && valueOut ? valueIn.sub(valueOut) : undefined;
-    const totalCostPercent =
-      totalCost && valueIn && valueIn.toDec().isPositive()
-        ? new RatePretty(totalCost.toDec().quo(valueIn.toDec()))
-        : undefined;
-    // The total-cost rust and the submit Confirm gate share one signal
-    // (`zapHighCost` from the config hook: combined price impact + swap fees at
-    // or above 5% of value in), so the styling and the gate never diverge.
+    const totalCostPercent = zapTotalCostPercent;
     const isCostHigh = zapHighCost;
 
     return (
@@ -806,11 +781,18 @@ const SingleAssetDeposit: FunctionComponent<{
                     className="shrink-0"
                   />
                   <p className="body2 text-center">
-                    {t("transfer.priceImpactWarning", {
-                      priceImpact: formatPretty(
-                        quote?.priceImpactTokenOut ?? new RatePretty(0)
-                      ),
-                    })}
+                    {/* The gate flags on TOTAL cost (impact + swap fees), so
+                        the warning quotes that same figure under its own
+                        label — the price-impact copy would mislabel it and
+                        understate a fee-heavy zap. */}
+                    {t(
+                      "addConcentratedLiquidity.singleAsset.totalCostWarning",
+                      {
+                        totalCost: formatPretty(
+                          zapTotalCostPercent ?? new RatePretty(0)
+                        ),
+                      }
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3">

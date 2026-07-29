@@ -41,6 +41,7 @@
       "valueIn": "Value in",
       "valueOut": "Value out",
       "totalCost": "Total cost",
+      "totalCostWarning": "The total cost of this deposit is {totalCost}, including price impact and swap fees, which reduces the value that reaches your position.",
       "quoteLoading": "Finding the best swap…"
     }
   },

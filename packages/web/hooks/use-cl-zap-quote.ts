@@ -1,4 +1,4 @@
-import { Dec, Int } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
 
 import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { makeRouterErrorFromTrpcError } from "~/hooks/use-swap";
@@ -81,26 +81,34 @@ export function useClZapQuote({
 
   // Hold the last successful quote so the breakdown doesn't collapse to a
   // spinner on each 5s background refetch (mirrors the swap tool's
-  // `usePreviousWhen` over its quote).
-  const previousQuote = usePreviousWhen(freshQuote, (q) => Boolean(q));
+  // `usePreviousWhen` over its quote). The full request context is captured
+  // alongside the quote so the fallback below can verify it.
+  const previousHeld = usePreviousWhen(
+    freshQuote
+      ? { quote: freshQuote, tokenInAmount, tokenInDenom, tokenOutDenom }
+      : undefined,
+    (held) => Boolean(held)
+  );
 
-  // Only fall back to the held quote when it was computed for the SAME input
-  // amount. After an amount edit the held quote is for the old amount; reusing
-  // it for display would be wrong (and `zapInLiquidity` derives the swap leg
-  // from the quote's own `initialAmount`), so we let it show loading in that
-  // brief window rather than render a mismatched quote.
+  // Only fall back to the held quote when it was computed for the SAME request:
+  // amount, input denom AND output denom. Amount alone is not enough — in a
+  // centered range, switching the provided side commonly produces the identical
+  // swap amount, and reusing the opposite-direction quote would compose its
+  // route with the new token-in denom. After any of the three changes we let it
+  // show loading in that brief window rather than render a mismatched quote.
   const heldMatchesInput =
-    previousQuote &&
-    previousQuote.split
-      .reduce((sum, s) => sum.add(s.initialAmount), new Int(0))
-      .toString() === tokenInAmount;
+    previousHeld &&
+    previousHeld.tokenInAmount === tokenInAmount &&
+    previousHeld.tokenInDenom === tokenInDenom &&
+    previousHeld.tokenOutDenom === tokenOutDenom;
 
   // Don't fall back to the held quote when the latest fetch errored: holding it
   // would render a valid-looking breakdown while submit is silently disabled.
   // Dropping it lets the consumer show the error (typed `routerError`) instead.
   // The flicker the hold prevents only applies to transient success refetches.
   const quote =
-    freshQuote ?? (heldMatchesInput && !isError ? previousQuote : undefined);
+    freshQuote ??
+    (heldMatchesInput && !isError ? previousHeld.quote : undefined);
 
   // Map the raw SQS/tRPC error string to a typed router error (NoRouteError /
   // NotEnoughLiquidityError / NotEnoughQuotedError / generic), reusing the swap

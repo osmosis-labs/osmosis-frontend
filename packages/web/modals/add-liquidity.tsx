@@ -68,18 +68,25 @@ export const AddLiquidityModal: FunctionComponent<
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
     zapHighCost,
   } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // Reset the acknowledgement when the trade context changes, so a stale
   // "confirmed" can't carry over to a different high-impact trade. Keyed on the
-  // projected swap amount (changes when the user edits amount / side / range,
-  // NOT on the 5s quote refetch) and whether the warning is currently showing.
+  // full trade context: swap direction (in/out denoms — the amount alone can
+  // survive a side switch in a symmetric range), the projected swap amount and
+  // tick range (which change when the user edits amount / side / range, NOT on
+  // the 5s quote refetch), and whether the warning is currently showing.
   // Deliberately not keyed on the live quote output, which would uncheck the box
   // on every refetch tick.
   const zapCostContextKey = `${
+    addConliqConfig.requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
+  }>${addConliqConfig.requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
     addConliqConfig.requiredSwap?.swapInAmount.toString() ?? ""
-  }:${zapHighCost}`;
+  }:${addConliqConfig.tickRange[0].toString()}:${addConliqConfig.tickRange[1].toString()}:${zapHighCost}`;
   useEffect(() => {
     setZapCostAcknowledged(false);
   }, [zapCostContextKey]);
@@ -138,7 +145,14 @@ export const AddLiquidityModal: FunctionComponent<
         // Superfluid staking is full-range two-asset only, so it never applies
         // here.
         if (isConcentrated && addConliqConfig.singleAssetMode) {
-          zapInLiquidity().then(() => props.onRequestClose());
+          // Every failure is toasted before the rejection reaches here:
+          // broadcast failures by the global tx-event handler, preflight
+          // failures by `zapInLiquidity` itself. The catch only consumes the
+          // rejection so the modal stays open for a retry instead of closing
+          // on an unhandled rejection.
+          zapInLiquidity()
+            .then(() => props.onRequestClose())
+            .catch(console.error);
           return;
         }
 
@@ -298,6 +312,9 @@ export const AddLiquidityModal: FunctionComponent<
             addLiquidityConfig={addConliqConfig}
             zapQuote={zapQuote}
             zapSlippageConfig={zapSlippageConfig}
+            zapValueIn={zapValueIn}
+            zapValueOut={zapValueOut}
+            zapTotalCostPercent={zapTotalCostPercent}
             zapHighCost={zapHighCost}
             zapCostAcknowledged={zapCostAcknowledged}
             onZapCostAcknowledgedChange={setZapCostAcknowledged}

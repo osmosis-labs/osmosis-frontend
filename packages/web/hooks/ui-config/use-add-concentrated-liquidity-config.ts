@@ -8,7 +8,9 @@ import {
   BigDec,
   calcAmount0,
   calcAmount1,
+  calcZapInPositionMinima,
   calcZapInSwapAmount,
+  estimateSqrtPriceAfterSwapIn,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -43,6 +45,8 @@ import {
 } from "mobx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
 import { EventName } from "~/config";
 import {
   getTokenInFeeAmountFiatValue,
@@ -72,6 +76,14 @@ export function useAddConcentratedLiquidityConfig(
   zapInLiquidity: () => Promise<void>;
   zapQuote: ReturnType<typeof useClZapQuote>;
   zapSlippageConfig: ReturnType<typeof useSlippageConfig>;
+  /** Fiat value of the full single-asset deposit, or undefined when there is
+   *  no swap / quote yet. Same single-price calculation as
+   *  `zapTotalCostPercent`. */
+  zapValueIn: PricePretty | undefined;
+  /** Fiat value landing in the position (value in minus swap fees and price
+   *  impact on the swapped slice), or undefined when there is no swap / quote
+   *  yet. Same single-price calculation as `zapTotalCostPercent`. */
+  zapValueOut: PricePretty | undefined;
   /** Combined zap-in cost (price impact + swap fees) as a fraction of value in,
    *  or undefined when there is no swap / quote yet. */
   zapTotalCostPercent: RatePretty | undefined;
@@ -202,19 +214,28 @@ export function useAddConcentratedLiquidityConfig(
     enabled: config.singleAssetMode && Boolean(requiredSwap?.needsSwap),
   });
 
-  // Total zap-in cost as a fraction of value in: the combined value lost to
-  // price impact AND swap fees on the swapped slice. This is the authoritative
-  // high-cost signal shared by the breakdown's rust styling and the submit
-  // Confirm gate, so the two never diverge. Priced off the single input-side
-  // price (same source the breakdown uses) so value out can't exceed value in.
+  // Fiat value in, value out and the total zap-in cost as a fraction of value
+  // in: the combined value lost to price impact AND swap fees on the swapped
+  // slice. This is the single authoritative calculation shared by the
+  // breakdown's value rows, its rust styling and the submit Confirm gate, so
+  // the display and the gate can never diverge. Priced off the single
+  // input-side price so value out can't exceed value in.
   const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
-  const zapTotalCostPercent: RatePretty | undefined = (() => {
+  const {
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
+  }: {
+    zapValueIn?: PricePretty;
+    zapValueOut?: PricePretty;
+    zapTotalCostPercent?: RatePretty;
+  } = (() => {
     const quote = zapQuote.quote;
-    if (!requiredSwap || !quote || !zapInputPrice) return undefined;
+    if (!requiredSwap || !quote || !zapInputPrice) return {};
     const valueIn = zapInputPrice.mul(
       new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
     );
-    if (!valueIn.toDec().isPositive()) return undefined;
+    if (!valueIn.toDec().isPositive()) return {};
     const swapInValue = zapInputPrice.mul(
       new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.swapInAmount)
     );
@@ -237,7 +258,11 @@ export function useAddConcentratedLiquidityConfig(
       )
     );
     const cost = valueIn.toDec().sub(valueOut.toDec());
-    return new RatePretty(cost.quo(valueIn.toDec()));
+    return {
+      zapValueIn: valueIn,
+      zapValueOut: valueOut,
+      zapTotalCostPercent: new RatePretty(cost.quo(valueIn.toDec())),
+    };
   })();
 
   // High-cost when the combined loss reaches 5% of value in. Lower and broader
@@ -402,6 +427,11 @@ export function useAddConcentratedLiquidityConfig(
   const zapInLiquidity = useCallback(
     () =>
       new Promise<void>(async (resolve, reject) => {
+        // Failures after broadcasting are surfaced by the global tx-event
+        // toast; failures BEFORE it (preflight: stale quote, missing pool
+        // price, unavailable depth data) have no other user-visible surface,
+        // so the catch below toasts them itself.
+        let broadcastAttempted = false;
         try {
           const requiredSwap = config.requiredSwap;
           if (!requiredSwap) throw new Error("No single-asset amount entered");
@@ -472,6 +502,7 @@ export function useAddConcentratedLiquidityConfig(
                     },
                   };
 
+            broadcastAttempted = true;
             await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
               poolId,
               lowerTick,
@@ -544,29 +575,89 @@ export function useAddConcentratedLiquidityConfig(
             .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
           // token0/token1 minima: a slippage buffer below each side's EXPECTED
-          // deposit, not below its cap. The caps are deliberately skewed: the
-          // swapped side is capped at its guaranteed floor (expected out x
-          // (1 - slip)) while the provided side carries the full leftover, so
-          // with zero drift the ratio-fit consumes the full swapped-side cap
-          // but only ~(1 - slip) of the provided side. The provided side's
-          // minimum therefore buffers below that expected usage (a second
-          // (1 - slip) factor); buffering below its cap would leave zero
-          // headroom and revert on any adverse ratio drift. Each side keeps
-          // one slippage-width of room. Both legs revert together.
-          const providedSideMin = new Dec(providedRemaining)
-            .mul(slippageMultiplier)
-            .mul(slippageMultiplier)
-            .truncate();
-          const swapSideMin = new Dec(swapFloor)
-            .mul(slippageMultiplier)
-            .truncate();
-          const tokenMinAmount0 = (
-            config.singleAssetSide === "base" ? providedSideMin : swapSideMin
-          ).toString();
-          const tokenMinAmount1 = (
-            config.singleAssetSide === "base" ? swapSideMin : providedSideMin
-          ).toString();
+          // consumption, not below its cap. The chain fits the caps to the
+          // position's required ratio at the sqrt price AT EXECUTION — after
+          // the swap leg has settled. Two effects put that price below the
+          // frictionless spot projection the split was solved against:
+          //  - The quoted output embeds spread, fee and impact, so the
+          //    swapped side's cap (its guaranteed floor) sits below the spot
+          //    projection and the ratio-fit consumes proportionally less of
+          //    the provided side.
+          //  - A route through the DESTINATION pool itself moves the pool's
+          //    own sqrt price before MsgCreatePosition runs. In an acyclic
+          //    route the destination pair pool can only appear as a direct
+          //    single-hop route (any other position would revisit a denom),
+          //    so the exact amount routed through it is known from the split.
+          //    Simulate that movement over the pool's live tick liquidity and
+          //    envelope the expected consumption between the pre- and
+          //    post-swap prices (see `calcZapInPositionMinima`).
+          // Deriving minima from the raw caps instead would exceed what the
+          // position can consume and revert on any quoted spread or own-pool
+          // movement. Both legs revert together.
+          const spotSqrtPrice = config.pool?.currentSqrtPrice;
+          if (!spotSqrtPrice) throw new Error("Pool price not loaded");
 
+          let postSwapSqrtPrice: BigDec | undefined;
+          const destinationRoutes = quote.split.filter(
+            (route: ClZapQuote["split"][number]) =>
+              route.pools.length === 1 && route.pools[0].id === poolId
+          );
+          const amountThroughDestination = destinationRoutes.reduce(
+            (sum: Int, route: ClZapQuote["split"][number]) =>
+              sum.add(route.initialAmount),
+            new Int(0)
+          );
+          if (amountThroughDestination.gt(new Int(0))) {
+            // The depth data is REQUIRED to compose safe minima for a route
+            // through the destination pool: falling back to the spot-only fit
+            // would recreate the revert this simulation prevents (a
+            // high-impact own-swap shifts the ratio past the spot-fitted
+            // floors). Fail closed — reject the submission — when it cannot
+            // be loaded, rather than broadcasting with unsafe minima.
+            const depths =
+              await apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                .fetch({ poolId })
+                .catch((e) => {
+                  console.error(e);
+                  throw new Error(
+                    "Pool liquidity data required for this swap route could not be loaded, please try again"
+                  );
+                });
+            if (!depths || depths.length === 0) {
+              throw new Error(
+                "Pool liquidity data required for this swap route could not be loaded, please try again"
+              );
+            }
+            // The chain charges the spread factor (and taker fee) on
+            // token-in before the price math; deduct the spread here. The
+            // un-deducted taker fee overstates the movement slightly, which
+            // the pre/post-swap envelope absorbs.
+            const spread =
+              destinationRoutes[0].pools[0].spreadFactor?.toDec() ?? new Dec(0);
+            const effectiveIn = new Dec(amountThroughDestination)
+              .mul(new Dec(1).sub(spread))
+              .truncate();
+            postSwapSqrtPrice = estimateSqrtPriceAfterSwapIn({
+              tokenInAmount: effectiveIn,
+              inputSide: config.singleAssetSide,
+              currentSqrtPrice: spotSqrtPrice,
+              liquidityDepths: depths,
+            });
+          }
+
+          const minima = calcZapInPositionMinima({
+            cap0: baseMicro,
+            cap1: quoteMicro,
+            lowerTick,
+            upperTick,
+            currentSqrtPrice: spotSqrtPrice,
+            postSwapSqrtPrice,
+            slippage: zapSlippageConfig.slippage.toDec(),
+          });
+          const tokenMinAmount0 = minima.tokenMinAmount0.toString();
+          const tokenMinAmount1 = minima.tokenMinAmount1.toString();
+
+          broadcastAttempted = true;
           await account?.osmosis.sendZapInToConcentratedPositionMsg(
             poolId,
             lowerTick,
@@ -585,7 +676,20 @@ export function useAddConcentratedLiquidityConfig(
           );
         } catch (e: unknown) {
           console.error(e);
-          reject(e instanceof Error ? e.message : String(e));
+          const message = e instanceof Error ? e.message : String(e);
+          // Preflight failures never reach the broadcast machinery, so no
+          // tx toast exists for them; surface the cause here. Broadcast
+          // failures are already toasted by the global tx-event handler.
+          if (!broadcastAttempted) {
+            displayToast(
+              {
+                titleTranslationKey: "errors.generic",
+                captionElement: message,
+              },
+              ToastType.ERROR
+            );
+          }
+          reject(message);
         }
       }),
     [
@@ -607,6 +711,8 @@ export function useAddConcentratedLiquidityConfig(
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
     zapTotalCostPercent,
     zapHighCost,
   };

@@ -36,12 +36,13 @@
     "estimated": "估計的",
     "estimatedInfo": "這是基於當前選定價格的估計值。實際年利率可能會有所不同。如果部位超出範圍，年利率將為 0%。",
     "singleAsset": {
-      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
-      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
-      "valueIn": "Value in",
-      "valueOut": "Value out",
-      "totalCost": "Total cost",
-      "quoteLoading": "Finding the best swap…"
+      "splitBreakdown": "你的 {inputAmount} {inputDenom} 中，{swapAmount} {inputDenom}（{swapPercent}）將被兌換為 {outDenom} 以符合倉位比例。",
+      "noSwapNeeded": "你選擇的價格範圍只需要 {inputDenom}，所以無需進行兌換。",
+      "valueIn": "輸入價值",
+      "valueOut": "輸出價值",
+      "totalCost": "總成本",
+      "totalCostWarning": "此存入的總成本為 {totalCost}，包括價格影響和兌換費用，這會減少進入您倉位的價值。",
+      "quoteLoading": "尋找最佳兌換…"
     }
   },
   "addConcentratedLiquidityIntro": {
