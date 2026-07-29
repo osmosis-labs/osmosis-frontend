@@ -45,7 +45,8 @@
       "quoteLoading": "Buscando el mejor intercambio…",
       "estimatedTotalReceive": "Total estimado a recibir",
       "existingBalanceCaution": "Si el precio se mueve más allá de tu tolerancia de deslizamiento, hasta {amount} de tu saldo existente puede incluirse en el intercambio.",
-      "poolDataUnavailable": "Los datos del pool necesarios para la mezcla seleccionada no están disponibles. Mueve el control deslizante a su posición inicial para un retiro estándar."
+      "poolDataUnavailable": "Los datos del pool necesarios para la mezcla seleccionada no están disponibles. Mueve el control deslizante a su posición inicial para un retiro estándar.",
+      "mixedOwnPoolRoute": "Esta cotización pasa parcialmente por el propio pool de la posición, por lo que no se puede calcular un mínimo seguro. Esperando una nueva cotización; otro monto u otra mezcla también puede cambiar la ruta."
     }
   },
   "addConcentratedLiquidityIntro": {

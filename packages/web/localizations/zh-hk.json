@@ -45,7 +45,8 @@
       "quoteLoading": "尋找最佳兌換…",
       "estimatedTotalReceive": "預計總接收額",
       "existingBalanceCaution": "如果價格波動超出您的滑點容差，您現有結餘中最多 {amount} 可能會被計入兌換。",
-      "poolDataUnavailable": "所選比例所需的資金池數據不可用。將滑桿移回起始位置以進行標準提取。"
+      "poolDataUnavailable": "所選比例所需的資金池數據不可用。將滑桿移回起始位置以進行標準提取。",
+      "mixedOwnPoolRoute": "此報價部分經由該倉位自身的資金池，因此無法計算安全最小值。正在等待新報價；更改金額或比例也可能改變路由。"
     }
   },
   "addConcentratedLiquidityIntro": {

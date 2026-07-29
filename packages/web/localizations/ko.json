@@ -45,7 +45,8 @@
       "quoteLoading": "최적 스왑을 찾는 중…",
       "estimatedTotalReceive": "예상 총 수령액",
       "existingBalanceCaution": "가격이 슬리피지 허용 범위를 넘어 움직이면 기존 잔액에서 최대 {amount}가 스왑에 포함될 수 있습니다.",
-      "poolDataUnavailable": "선택한 비율에 필요한 풀 데이터를 사용할 수 없습니다. 표준 출금을 하려면 슬라이더를 시작 위치로 되돌리세요."
+      "poolDataUnavailable": "선택한 비율에 필요한 풀 데이터를 사용할 수 없습니다. 표준 출금을 하려면 슬라이더를 시작 위치로 되돌리세요.",
+      "mixedOwnPoolRoute": "이 견적은 포지션 자체 풀을 부분적으로 경유하므로 안전한 최소값을 계산할 수 없습니다. 새 견적을 기다리는 중입니다. 금액이나 비율을 바꾸면 경로가 달라질 수 있습니다."
     }
   },
   "addConcentratedLiquidityIntro": {

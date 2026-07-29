@@ -45,7 +45,8 @@
       "quoteLoading": "Recherche du meilleur échange…",
       "estimatedTotalReceive": "Total estimé à recevoir",
       "existingBalanceCaution": "Si le prix dépasse votre tolérance de glissement, jusqu'à {amount} de votre solde existant peut être inclus dans l'échange.",
-      "poolDataUnavailable": "Les données du pool nécessaires au mélange sélectionné sont indisponibles. Ramenez le curseur à sa position initiale pour un retrait standard."
+      "poolDataUnavailable": "Les données du pool nécessaires au mélange sélectionné sont indisponibles. Ramenez le curseur à sa position initiale pour un retrait standard.",
+      "mixedOwnPoolRoute": "Cette cotation passe en partie par le pool de la position elle-même, un minimum sûr ne peut donc pas être calculé. En attente d'une nouvelle cotation ; un montant ou un mélange différent peut aussi changer la route."
     }
   },
   "addConcentratedLiquidityIntro": {

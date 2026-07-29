@@ -72,6 +72,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     quoteInSync,
     swapMinOut,
     swapExecutedIn,
+    swapExpectedOut,
+    zapOutBlockedReason,
     isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(
     chainStore,
@@ -187,26 +189,36 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
 
   // Estimated holdings after exit, per token: the retained (un-swapped) side
   // at its PROJECTED withdrawn amount, plus the target side's projected
-  // withdrawn amount plus the swap's quoted output. These are estimates, not
+  // withdrawn amount plus the executed plan's expected output. Built from
+  // `swapExecutedIn` / `swapExpectedOut` (the post-scaling amounts the tx
+  // actually submits), not the raw quote, so a large manual slippage cannot
+  // open a gap between the estimate and execution. Still estimates, not
   // guarantees: MsgWithdrawPosition enforces no token minima, so the
   // withdrawn amounts can move with spot right up to execution while the tx
   // still succeeds. The only onchain-enforced floor is the swap leg's
   // min-out (`swapMinOut`), shown on its own row. Drops any side that rounds
   // to zero (e.g. a full single-asset exit leaves only the target).
   const estimatedReceiveCoins: CoinPretty[] = (() => {
-    if (!needsSwap || !requiredSwap || !quote || !baseAsset || !quoteAsset)
+    if (
+      !needsSwap ||
+      !requiredSwap ||
+      !swapExecutedIn ||
+      !swapExpectedOut ||
+      !baseAsset ||
+      !quoteAsset
+    )
       return [];
     const swapSideWithdrawn =
       requiredSwap.swapSide === "base" ? baseAsset : quoteAsset;
     const targetSideWithdrawn =
       requiredSwap.swapSide === "base" ? quoteAsset : baseAsset;
 
-    // Retained amount of the sold side = withdrawn minus what we swap.
-    const retained = swapSideWithdrawn.sub(
-      new CoinPretty(swapSideWithdrawn.currency, requiredSwap.swapInAmount)
-    );
-    // Target side: its own withdrawn amount plus the swap's quoted output.
-    const targetTotal = targetSideWithdrawn.add(quote.amount);
+    // Retained amount of the sold side = withdrawn minus what the plan
+    // actually spends.
+    const retained = swapSideWithdrawn.sub(swapExecutedIn);
+    // Target side: its own withdrawn amount plus the executed plan's
+    // expected output.
+    const targetTotal = targetSideWithdrawn.add(swapExpectedOut);
 
     return [targetTotal, retained].filter((c) => c.toDec().isPositive());
   })();
@@ -215,8 +227,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // the swap message spends a FIXED amount from the account balance, not
   // specifically the withdrawal's outputs. If spot drift beyond the slippage
   // buffer makes the withdraw deliver less than that amount, an existing
-  // balance covers the shortfall (up to the executed input) instead of the tx
-  // reverting. Surfaced as a caution row whenever such a balance exists.
+  // balance covers some or all of the shortfall (it does not guarantee a
+  // revert). Surfaced as an explicit acknowledgement below whenever such a
+  // balance exists.
   const existingBalanceAtRisk: CoinPretty | undefined = (() => {
     if (!needsSwap || !requiredSwap || !swapExecutedIn || !account?.address)
       return undefined;
@@ -261,6 +274,19 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     setCostAcknowledged(false);
   }, [costContextKey]);
 
+  // Wallet-balance-at-risk acknowledgement: spending outside the position is
+  // possible (see `existingBalanceAtRisk`), so a passive caption is not
+  // enough — the user must explicitly confirm. Reset when the sold denom
+  // changes or the risk appears/disappears; NOT on the amount, which drifts
+  // with every 5s requote and would hostilely uncheck the box.
+  const [balanceRiskAcknowledged, setBalanceRiskAcknowledged] = useState(false);
+  const balanceRiskContextKey = `${
+    requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
+  }:${Boolean(existingBalanceAtRisk)}`;
+  useEffect(() => {
+    setBalanceRiskAcknowledged(false);
+  }, [balanceRiskContextKey]);
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
@@ -283,7 +309,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // withdrawal without any pool data. An error caption below the mix
         // slider says exactly that once the query has settled.
         mixUncomputable ||
-        (highCost && !costAcknowledged),
+        (highCost && !costAcknowledged) ||
+        // Possible spending outside the position requires an explicit
+        // acknowledgement, not just a caption.
+        (Boolean(existingBalanceAtRisk) && !balanceRiskAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
           .then(() => props.onRequestClose())
@@ -450,6 +479,17 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   <p className="caption py-2 text-center text-rust-300">
                     {t("transfer.transferAmountTooLowValueLoss")}
                   </p>
+                ) : zapOutBlockedReason === "mixedOwnPoolRoute" ? (
+                  // The execution plan is deliberately withheld: a split
+                  // route passes partly through the position's own pool and
+                  // no safe minimum can be derived for it. The 5s requote
+                  // usually resolves to a clean route; a different amount or
+                  // mix also changes the routing.
+                  <p className="caption py-2 text-center text-rust-300">
+                    {t(
+                      "addConcentratedLiquidity.singleAsset.mixedOwnPoolRoute"
+                    )}
+                  </p>
                 ) : (
                   <ZapOutBreakdown
                     quote={quote}
@@ -457,7 +497,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     valueOut={positionValueOut}
                     swapMinOut={swapMinOut}
                     estimatedReceiveCoins={estimatedReceiveCoins}
-                    existingBalanceAtRisk={existingBalanceAtRisk}
                     zapSlippageConfig={zapSlippageConfig}
                   />
                 )}
@@ -489,6 +528,45 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                         checked={costAcknowledged}
                         onCheckedChange={(checked) =>
                           setCostAcknowledged(checked === true)
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* The swap spends a fixed amount from the ACCOUNT balance,
+                    not specifically the withdrawal's outputs. When the wallet
+                    already holds the sold denom, a beyond-tolerance move can
+                    make the swap draw on that balance (covering some or all
+                    of any shortfall) instead of reverting — spending outside
+                    the position, so it requires an explicit acknowledgement,
+                    not just a caption. */}
+                {existingBalanceAtRisk && quote && quoteInSync && (
+                  <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
+                    <div className="flex items-center justify-center gap-2 text-rust-300">
+                      <Icon
+                        id="alert-circle-filled"
+                        width={16}
+                        height={16}
+                        className="shrink-0"
+                      />
+                      <p className="body2 text-center">
+                        {t(
+                          "addConcentratedLiquidity.singleAsset.existingBalanceCaution",
+                          { amount: formatPretty(existingBalanceAtRisk) }
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-3">
+                      <label htmlFor="cl-zap-out-balance-ack" className="body2">
+                        {t("transfer.confirm")}
+                      </label>
+                      <Checkbox
+                        id="cl-zap-out-balance-ack"
+                        variant="destructive"
+                        checked={balanceRiskAcknowledged}
+                        onCheckedChange={(checked) =>
+                          setBalanceRiskAcknowledged(checked === true)
                         }
                       />
                     </div>
@@ -539,12 +617,8 @@ const ZapOutBreakdown: FunctionComponent<{
    *  (`MsgWithdrawPosition` carries no token minima). */
   swapMinOut: CoinPretty | undefined;
   /** Estimated holdings after exit, per token (projected withdrawn amounts +
-   *  the swap's quoted output). Estimates, not guarantees. */
+   *  the executed plan's expected output). Estimates, not guarantees. */
   estimatedReceiveCoins: CoinPretty[];
-  /** Existing wallet balance of the sold denom the swap could draw on if the
-   *  withdraw under-delivers beyond the slippage buffer; undefined when the
-   *  wallet holds none. */
-  existingBalanceAtRisk: CoinPretty | undefined;
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
@@ -555,7 +629,6 @@ const ZapOutBreakdown: FunctionComponent<{
     valueOut,
     swapMinOut,
     estimatedReceiveCoins,
-    existingBalanceAtRisk,
     zapSlippageConfig,
   } = props;
   const { t } = useTranslation();
@@ -649,17 +722,6 @@ const ZapOutBreakdown: FunctionComponent<{
             </>
           )}
         </Disclosure>
-      )}
-      {/* The swap spends a fixed amount from the ACCOUNT balance, not
-          specifically the withdrawal's outputs. When the wallet already
-          holds the sold denom, a beyond-tolerance move can make the swap
-          draw on that balance instead of reverting; say so explicitly. */}
-      {existingBalanceAtRisk && (
-        <p className="caption pt-2 text-center text-osmoverse-300">
-          {t("addConcentratedLiquidity.singleAsset.existingBalanceCaution", {
-            amount: formatPretty(existingBalanceAtRisk),
-          })}
-        </p>
       )}
     </div>
   );
