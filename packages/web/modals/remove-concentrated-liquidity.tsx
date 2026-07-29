@@ -222,10 +222,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   );
 
   // Reset the acknowledgement when the trade context changes, so a prior
-  // confirm can't carry over to a different high-impact swap. Keyed on the live
-  // swap amount (changes when the user moves the mix, not on the 5s refetch) and
+  // confirm can't carry over to a different high-impact swap. Keyed on the
+  // swap direction (the sold denom — dragging across the no-swap point flips
+  // it, and the amount alone can coincide across the flip) and the live swap
+  // amount (changes when the user moves the mix, not on the 5s refetch), plus
   // whether the warning is showing.
   const costContextKey = `${
+    requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
+  }>${requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
     requiredSwap?.swapInAmount.toString() ?? ""
   }:${highCost}`;
   useEffect(() => {
@@ -237,10 +241,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       disabled:
         config.error !== undefined ||
         isSendingMsg ||
-        // Block submission while a needed swap quote isn't ready, or while the
-        // quote (debounced) doesn't yet reflect the live slider target, so we
-        // never execute a stale target mix.
-        (needsSwap && (zapQuote.isLoading || !quote || !quoteInSync)) ||
+        // Block submission while a needed swap quote isn't ready, while the
+        // quote (debounced) doesn't yet reflect the live slider target (so we
+        // never execute a stale target mix), or while the execution plan is
+        // withheld (`!swapMinOut`): a route through the position's own pool
+        // needs the pool's tick depths to derive a safe min-out, and the plan
+        // fails closed until they load.
+        (needsSwap &&
+          (zapQuote.isLoading || !quote || !quoteInSync || !swapMinOut)) ||
         // The user chose a real target mix but the pool data needed to compute
         // the swap is still loading, so we can't tell if it needs a swap yet.
         // Block only while that query is in flight (not once it has settled), so

@@ -1,6 +1,11 @@
-import { Int } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../big-dec";
+import {
+  ActiveLiquidityDepth,
+  simulateSwapOverDepths,
+  ZapInInputSide,
+} from "./zap-in";
 
 /** Which side of the pool is being swapped on the way out.
  *  `base` is token0, `quote` is token1 (matching the pool's reserve coin order). */
@@ -97,4 +102,122 @@ export function calcZapOutSwapAmount({
 
   // targetBaseValue === baseValue: holdings already match the target.
   return noSwap;
+}
+
+/**
+ * Removes `liquidity` from every depth range overlapping the position's
+ * `[lowerTick, upperTick)` span, clamping at zero. Ranges partially covered
+ * by the span are split at the span bounds so liquidity outside the span is
+ * untouched. (In practice the position's bounds are initialized ticks, i.e.
+ * existing breakpoints of the depth partition, so splits are rare.)
+ */
+export function subtractLiquidityFromDepths({
+  liquidityDepths,
+  lowerTick,
+  upperTick,
+  liquidity,
+}: {
+  liquidityDepths: ActiveLiquidityDepth[];
+  lowerTick: Int;
+  upperTick: Int;
+  liquidity: Dec;
+}): ActiveLiquidityDepth[] {
+  const zero = new Dec(0);
+  const result: ActiveLiquidityDepth[] = [];
+  for (const depth of liquidityDepths) {
+    const overlapLower = depth.lowerTick.gt(lowerTick)
+      ? depth.lowerTick
+      : lowerTick;
+    const overlapUpper = depth.upperTick.lt(upperTick)
+      ? depth.upperTick
+      : upperTick;
+    if (overlapLower.gte(overlapUpper)) {
+      result.push(depth);
+      continue;
+    }
+    if (depth.lowerTick.lt(overlapLower)) {
+      result.push({
+        lowerTick: depth.lowerTick,
+        upperTick: overlapLower,
+        liquidityAmount: depth.liquidityAmount,
+      });
+    }
+    const reduced = depth.liquidityAmount.sub(liquidity);
+    result.push({
+      lowerTick: overlapLower,
+      upperTick: overlapUpper,
+      liquidityAmount: reduced.lt(zero) ? zero : reduced,
+    });
+    if (depth.upperTick.gt(overlapUpper)) {
+      result.push({
+        lowerTick: overlapUpper,
+        upperTick: depth.upperTick,
+        liquidityAmount: depth.liquidityAmount,
+      });
+    }
+  }
+  return result;
+}
+
+/**
+ * How much the zap-out swap's output through the position's OWN pool degrades
+ * because the withdraw leg executes first: `MsgWithdrawPosition` removes the
+ * withdrawn liquidity from exactly the depths the SQS quote assumed, so the
+ * swap lands on a thinner book than quoted.
+ *
+ * Returns the factor in `[0, 1]` to scale the quoted output of the
+ * pool-routed slice by: simulated output over the post-withdraw depths
+ * divided by simulated output over the full depths. Both simulations treat
+ * fees identically, so fee handling cancels in the ratio and `swapInAmount`
+ * can be passed without fee deduction. Returns `1` (no adjustment) for
+ * degenerate inputs where the full-depth simulation yields nothing.
+ */
+export function calcZapOutRouteDegradation({
+  swapInAmount,
+  swapSide,
+  currentSqrtPrice,
+  liquidityDepths,
+  withdrawnLiquidity,
+  positionLowerTick,
+  positionUpperTick,
+}: {
+  /** Micro amount of the swap routed through the position's own pool. */
+  swapInAmount: Int;
+  swapSide: ZapOutSwapSide;
+  currentSqrtPrice: BigDec;
+  liquidityDepths: ActiveLiquidityDepth[];
+  /** Liquidity the withdraw leg removes (the withdrawn fraction of the
+   *  position's liquidity). */
+  withdrawnLiquidity: Dec;
+  positionLowerTick: Int;
+  positionUpperTick: Int;
+}): Dec {
+  const one = new Dec(1);
+  if (swapInAmount.lte(new Int(0)) || liquidityDepths.length === 0) return one;
+
+  const inputSide: ZapInInputSide = swapSide;
+  const fullOut = simulateSwapOverDepths({
+    tokenInAmount: swapInAmount,
+    inputSide,
+    currentSqrtPrice,
+    liquidityDepths,
+  }).amountOut;
+  if (fullOut.lte(new Int(0))) return one;
+
+  const reducedOut = simulateSwapOverDepths({
+    tokenInAmount: swapInAmount,
+    inputSide,
+    currentSqrtPrice,
+    liquidityDepths: subtractLiquidityFromDepths({
+      liquidityDepths,
+      lowerTick: positionLowerTick,
+      upperTick: positionUpperTick,
+      liquidity: withdrawnLiquidity,
+    }),
+  }).amountOut;
+
+  const factor = new Dec(reducedOut).quo(new Dec(fullOut));
+  if (factor.gt(one)) return one;
+  if (factor.lt(new Dec(0))) return new Dec(0);
+  return factor;
 }
