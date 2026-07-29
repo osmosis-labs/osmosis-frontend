@@ -42,7 +42,10 @@
       "valueOut": "输出价值",
       "totalCost": "总成本",
       "totalCostWarning": "此存入的总成本为 {totalCost}，包括价格影响和兑换费用，这会减少进入您仓位的价值。",
-      "quoteLoading": "正在寻找最优兑换…"
+      "quoteLoading": "正在寻找最优兑换…",
+      "estimatedTotalReceive": "预计总接收额",
+      "existingBalanceCaution": "如果价格波动超出您的滑点容差，您现有余额中最多 {amount} 可能会被计入兑换。",
+      "poolDataUnavailable": "所选比例所需的资金池数据不可用。将滑块移回起始位置以进行标准提取。"
     }
   },
   "addConcentratedLiquidityIntro": {

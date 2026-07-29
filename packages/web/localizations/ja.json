@@ -42,7 +42,10 @@
       "valueOut": "出金額",
       "totalCost": "総コスト",
       "totalCostWarning": "この入金の合計コストは{totalCost}で、価格インパクトとスワップ手数料が含まれ、ポジションに届く価値が減少します。",
-      "quoteLoading": "最適なスワップを検索中…"
+      "quoteLoading": "最適なスワップを検索中…",
+      "estimatedTotalReceive": "受取合計の見積もり",
+      "existingBalanceCaution": "価格がスリッページ許容度を超えて変動した場合、既存残高から最大{amount}がスワップに含まれる可能性があります。",
+      "poolDataUnavailable": "選択した比率に必要なプールデータを取得できません。標準の引き出しを行うには、スライダーを開始位置に戻してください。"
     }
   },
   "addConcentratedLiquidityIntro": {

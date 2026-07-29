@@ -55,7 +55,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props;
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
@@ -71,6 +71,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     currentBaseValueFraction,
     quoteInSync,
     swapMinOut,
+    swapExecutedIn,
     isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(
     chainStore,
@@ -184,20 +185,16 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       ? new RatePretty(swapInValue.toDec().quo(positionValueIn.toDec()))
       : undefined;
 
-  // Minimum holdings after exit, per token: the retained (un-swapped) side at
-  // its firm withdrawn amount, plus the target side's withdrawn amount plus the
-  // swap's slippage-floored output. Drops any side that rounds to zero (e.g. a
-  // full single-asset exit leaves only the target). Covers both symbols, since
-  // a mix exit returns both.
-  const minReceivedCoins: CoinPretty[] = (() => {
-    if (
-      !needsSwap ||
-      !requiredSwap ||
-      !quote ||
-      !swapMinOut ||
-      !baseAsset ||
-      !quoteAsset
-    )
+  // Estimated holdings after exit, per token: the retained (un-swapped) side
+  // at its PROJECTED withdrawn amount, plus the target side's projected
+  // withdrawn amount plus the swap's quoted output. These are estimates, not
+  // guarantees: MsgWithdrawPosition enforces no token minima, so the
+  // withdrawn amounts can move with spot right up to execution while the tx
+  // still succeeds. The only onchain-enforced floor is the swap leg's
+  // min-out (`swapMinOut`), shown on its own row. Drops any side that rounds
+  // to zero (e.g. a full single-asset exit leaves only the target).
+  const estimatedReceiveCoins: CoinPretty[] = (() => {
+    if (!needsSwap || !requiredSwap || !quote || !baseAsset || !quoteAsset)
       return [];
     const swapSideWithdrawn =
       requiredSwap.swapSide === "base" ? baseAsset : quoteAsset;
@@ -208,11 +205,39 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     const retained = swapSideWithdrawn.sub(
       new CoinPretty(swapSideWithdrawn.currency, requiredSwap.swapInAmount)
     );
-    // Target side: its own withdrawn amount plus the swap's minimum output.
-    const targetTotal = targetSideWithdrawn.add(swapMinOut);
+    // Target side: its own withdrawn amount plus the swap's quoted output.
+    const targetTotal = targetSideWithdrawn.add(quote.amount);
 
     return [targetTotal, retained].filter((c) => c.toDec().isPositive());
   })();
+
+  // The sold-denom balance already in the wallet that the swap could draw on:
+  // the swap message spends a FIXED amount from the account balance, not
+  // specifically the withdrawal's outputs. If spot drift beyond the slippage
+  // buffer makes the withdraw deliver less than that amount, an existing
+  // balance covers the shortfall (up to the executed input) instead of the tx
+  // reverting. Surfaced as a caution row whenever such a balance exists.
+  const existingBalanceAtRisk: CoinPretty | undefined = (() => {
+    if (!needsSwap || !requiredSwap || !swapExecutedIn || !account?.address)
+      return undefined;
+    const balance = queriesStore
+      .get(chainId)
+      .queryBalances.getQueryBech32Address(account.address)
+      .getBalanceFromCurrency(requiredSwap.tokenInCurrency);
+    if (!balance || !balance.toDec().isPositive()) return undefined;
+    return balance.toDec().lt(swapExecutedIn.toDec())
+      ? balance
+      : swapExecutedIn;
+  })();
+
+  // A real target mix is selected but the swap leg can't be computed: the
+  // pool query is loading, failed, or returned no usable spot price. This
+  // must block submission — dispatching would silently execute a PLAIN
+  // withdrawal while the slider still shows the selected mix.
+  const mixUncomputable =
+    singleAssetExitEnabled &&
+    config.targetBaseValueFraction !== undefined &&
+    !requiredSwap;
 
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
   // explicit Confirm before it can be submitted.
@@ -249,16 +274,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // fails closed until they load.
         (needsSwap &&
           (zapQuote.isLoading || !quote || !quoteInSync || !swapMinOut)) ||
-        // The user chose a real target mix but the pool data needed to compute
-        // the swap is still loading, so we can't tell if it needs a swap yet.
-        // Block only while that query is in flight (not once it has settled), so
-        // a never-resolving query can't trap the user with no path to withdraw;
-        // once settled with no computable swap, submit falls through to a plain
-        // withdrawal. (No target = the explicit no-swap state, which is fine.)
-        (singleAssetExitEnabled &&
-          config.targetBaseValueFraction !== undefined &&
-          !requiredSwap &&
-          isPoolLoading) ||
+        // The user chose a real target mix but the swap can't be computed
+        // (pool data loading, failed, or unusable). NEVER fall through to a
+        // plain withdrawal while a mix is selected — that silently discards
+        // the requested conversion. Submission stays blocked; the user is
+        // never trapped, because moving the handle back to its starting
+        // point (the explicit no-swap state) re-enables the standard
+        // withdrawal without any pool data. An error caption below the mix
+        // slider says exactly that once the query has settled.
+        mixUncomputable ||
         (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
@@ -382,6 +406,16 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               />
             </div>
 
+            {/* A mix is selected but the swap can't be computed and the pool
+                query has settled: submission is blocked (never a silent
+                plain withdrawal); tell the user how to proceed. While the
+                query is still loading, the disabled button is enough. */}
+            {mixUncomputable && !isPoolLoading && (
+              <p className="caption text-center text-rust-300">
+                {t("addConcentratedLiquidity.singleAsset.poolDataUnavailable")}
+              </p>
+            )}
+
             {needsSwap && requiredSwap && (
               <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
                 <p className="body2 text-center text-osmoverse-200">
@@ -421,7 +455,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     quote={quote}
                     requiredSwap={requiredSwap}
                     valueOut={positionValueOut}
-                    minReceivedCoins={minReceivedCoins}
+                    swapMinOut={swapMinOut}
+                    estimatedReceiveCoins={estimatedReceiveCoins}
+                    existingBalanceAtRisk={existingBalanceAtRisk}
                     zapSlippageConfig={zapSlippageConfig}
                   />
                 )}
@@ -498,27 +534,56 @@ const ZapOutBreakdown: FunctionComponent<{
   /** Whole-position value the user ends holding after the swap. Value in is the
    *  headline total above the amount slider, so it is not repeated here. */
   valueOut?: PricePretty;
-  /** Minimum holdings after exit, per token (retained side + target side's
-   *  slippage-floored total). Covers both symbols for a mix exit. */
-  minReceivedCoins: CoinPretty[];
+  /** The swap leg's onchain-enforced minimum output — the ONLY quantity in
+   *  this breakdown the transaction actually guarantees
+   *  (`MsgWithdrawPosition` carries no token minima). */
+  swapMinOut: CoinPretty | undefined;
+  /** Estimated holdings after exit, per token (projected withdrawn amounts +
+   *  the swap's quoted output). Estimates, not guarantees. */
+  estimatedReceiveCoins: CoinPretty[];
+  /** Existing wallet balance of the sold denom the swap could draw on if the
+   *  withdraw under-delivers beyond the slippage buffer; undefined when the
+   *  wallet holds none. */
+  existingBalanceAtRisk: CoinPretty | undefined;
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
 }> = observer((props) => {
-  const { quote, requiredSwap, valueOut, minReceivedCoins, zapSlippageConfig } =
-    props;
+  const {
+    quote,
+    requiredSwap,
+    valueOut,
+    swapMinOut,
+    estimatedReceiveCoins,
+    existingBalanceAtRisk,
+    zapSlippageConfig,
+  } = props;
   const { t } = useTranslation();
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col">
-      <RecapRow
-        left={t("receiveAtLeast")}
-        right={
-          <span className="body2 text-right text-white-full">
-            {minReceivedCoins.map((c) => formatPretty(c)).join(" + ")}
-          </span>
-        }
-      />
+      {estimatedReceiveCoins.length > 0 && (
+        <RecapRow
+          left={t("addConcentratedLiquidity.singleAsset.estimatedTotalReceive")}
+          right={
+            <span className="body2 text-right text-osmoverse-200">
+              {estimatedReceiveCoins.map((c) => formatPretty(c)).join(" + ")}
+            </span>
+          }
+        />
+      )}
+      {/* Only the swap leg carries an onchain floor; the withdrawn amounts
+          above are projections the tx does not enforce. */}
+      {swapMinOut && (
+        <RecapRow
+          left={t("receiveAtLeast")}
+          right={
+            <span className="body2 text-right text-white-full">
+              {formatPretty(swapMinOut)}
+            </span>
+          }
+        />
+      )}
       {valueOut && (
         <RecapRow
           left={t("addConcentratedLiquidity.singleAsset.valueOut")}
@@ -585,6 +650,17 @@ const ZapOutBreakdown: FunctionComponent<{
           )}
         </Disclosure>
       )}
+      {/* The swap spends a fixed amount from the ACCOUNT balance, not
+          specifically the withdrawal's outputs. When the wallet already
+          holds the sold denom, a beyond-tolerance move can make the swap
+          draw on that balance instead of reverting; say so explicitly. */}
+      {existingBalanceAtRisk && (
+        <p className="caption pt-2 text-center text-osmoverse-300">
+          {t("addConcentratedLiquidity.singleAsset.existingBalanceCaution", {
+            amount: formatPretty(existingBalanceAtRisk),
+          })}
+        </p>
+      )}
     </div>
   );
 });
@@ -602,6 +678,10 @@ const ZapOutBreakdownSkeleton: FunctionComponent<{
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col">
+      <RecapRow
+        left={t("addConcentratedLiquidity.singleAsset.estimatedTotalReceive")}
+        right={<SkeletonLoader className="h-4 w-40" />}
+      />
       <RecapRow
         left={t("receiveAtLeast")}
         right={<SkeletonLoader className="h-4 w-40" />}

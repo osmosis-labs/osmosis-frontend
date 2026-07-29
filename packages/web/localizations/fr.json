@@ -42,7 +42,10 @@
       "valueOut": "Valeur sortante",
       "totalCost": "Coût total",
       "totalCostWarning": "Le coût total de ce dépôt est de {totalCost}, incluant l'impact sur le prix et les frais d'échange, ce qui réduit la valeur qui atteint votre position.",
-      "quoteLoading": "Recherche du meilleur échange…"
+      "quoteLoading": "Recherche du meilleur échange…",
+      "estimatedTotalReceive": "Total estimé à recevoir",
+      "existingBalanceCaution": "Si le prix dépasse votre tolérance de glissement, jusqu'à {amount} de votre solde existant peut être inclus dans l'échange.",
+      "poolDataUnavailable": "Les données du pool nécessaires au mélange sélectionné sont indisponibles. Ramenez le curseur à sa position initiale pour un retrait standard."
     }
   },
   "addConcentratedLiquidityIntro": {

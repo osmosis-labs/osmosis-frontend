@@ -42,7 +42,10 @@
       "valueOut": "輸出價值",
       "totalCost": "總成本",
       "totalCostWarning": "此存入的總成本為 {totalCost}，包括價格影響和兌換費用，這會減少進入您倉位的價值。",
-      "quoteLoading": "正在尋找最佳兌換方案…"
+      "quoteLoading": "正在尋找最佳兌換方案…",
+      "estimatedTotalReceive": "預計總接收額",
+      "existingBalanceCaution": "如果價格波動超出您的滑點容差，您現有餘額中最多 {amount} 可能會被計入兌換。",
+      "poolDataUnavailable": "所選比例所需的流動池數據不可用。將滑桿移回起始位置以進行標準提取。"
     }
   },
   "addConcentratedLiquidityIntro": {

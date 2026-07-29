@@ -42,7 +42,10 @@
       "valueOut": "Valor de saída",
       "totalCost": "Custo total",
       "totalCostWarning": "O custo total deste depósito é {totalCost}, incluindo o impacto no preço e as taxas de troca, o que reduz o valor que chega à sua posição.",
-      "quoteLoading": "Encontrando a melhor troca…"
+      "quoteLoading": "Encontrando a melhor troca…",
+      "estimatedTotalReceive": "Total estimado a receber",
+      "existingBalanceCaution": "Se o preço se mover além da sua tolerância de slippage, até {amount} do seu saldo existente pode ser incluído na troca.",
+      "poolDataUnavailable": "Os dados do pool necessários para a proporção selecionada estão indisponíveis. Mova o controle deslizante de volta à posição inicial para um saque padrão."
     }
   },
   "addConcentratedLiquidityIntro": {

@@ -42,7 +42,10 @@
       "valueOut": "Wartość wyjściowa",
       "totalCost": "Koszt całkowity",
       "totalCostWarning": "Całkowity koszt tej wpłaty wynosi {totalCost}, wliczając wpływ na cenę i opłaty za wymianę, co zmniejsza wartość trafiającą do Twojej pozycji.",
-      "quoteLoading": "Szukanie najlepszej zamiany…"
+      "quoteLoading": "Szukanie najlepszej zamiany…",
+      "estimatedTotalReceive": "Szacowana łączna kwota otrzymana",
+      "existingBalanceCaution": "Jeśli cena przekroczy Twoją tolerancję poślizgu, do {amount} z Twojego istniejącego salda może zostać uwzględnione w wymianie.",
+      "poolDataUnavailable": "Dane puli potrzebne dla wybranej proporcji są niedostępne. Przesuń suwak z powrotem do pozycji początkowej, aby wykonać standardową wypłatę."
     }
   },
   "addConcentratedLiquidityIntro": {
