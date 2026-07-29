@@ -45,7 +45,8 @@
       "quoteLoading": "Besten Tausch wird gesucht…",
       "estimatedTotalReceive": "Geschätzter Gesamterhalt",
       "existingBalanceCaution": "Wenn sich der Preis über deine Slippage-Toleranz hinaus bewegt, können bis zu {amount} deines vorhandenen Guthabens in den Tausch einbezogen werden.",
-      "poolDataUnavailable": "Die für die gewählte Aufteilung benötigten Pool-Daten sind nicht verfügbar. Schiebe den Regler zurück in die Ausgangsposition für eine normale Auszahlung."
+      "poolDataUnavailable": "Die für die gewählte Aufteilung benötigten Pool-Daten sind nicht verfügbar. Schiebe den Regler zurück in die Ausgangsposition für eine normale Auszahlung.",
+      "mixedOwnPoolRoute": "Diese Quote verläuft teilweise über den Pool der Position selbst, daher kann kein sicheres Minimum berechnet werden. Es wird auf eine neue Quote gewartet; ein anderer Betrag oder eine andere Aufteilung kann die Route ebenfalls ändern."
     }
   },
   "addConcentratedLiquidityIntro": {

@@ -45,7 +45,8 @@
       "quoteLoading": "正在寻找最优兑换…",
       "estimatedTotalReceive": "预计总接收额",
       "existingBalanceCaution": "如果价格波动超出您的滑点容差，您现有余额中最多 {amount} 可能会被计入兑换。",
-      "poolDataUnavailable": "所选比例所需的资金池数据不可用。将滑块移回起始位置以进行标准提取。"
+      "poolDataUnavailable": "所选比例所需的资金池数据不可用。将滑块移回起始位置以进行标准提取。",
+      "mixedOwnPoolRoute": "此报价部分经由该仓位自身的资金池，因此无法计算安全最小值。正在等待新报价；更改金额或比例也可能改变路由。"
     }
   },
   "addConcentratedLiquidityIntro": {

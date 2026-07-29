@@ -964,11 +964,12 @@ export class OsmosisAccountImpl {
    * being sold: it is fixed at sign time, and the swap spends it from the
    * ACCOUNT BALANCE, not specifically from the withdrawal's outputs. If spot
    * drift makes the withdraw deliver less than this amount, the tx reverts
-   * only when the account holds none of the sold denom; any pre-existing
-   * balance covers the shortfall and is swapped along with the withdrawn
-   * funds. The caller must disclose that residual to the user when such a
-   * balance exists — no message-level construction can scope a swap to the
-   * withdrawal's outputs.
+   * exactly when the account's existing sold-denom balance plus the actual
+   * withdrawn amount is below it; a pre-existing balance covers some or all
+   * of the shortfall (and is swapped along with the withdrawn funds) instead
+   * of guaranteeing a revert. The caller must disclose that residual to the
+   * user when such a balance exists — no message-level construction can
+   * scope a swap to the withdrawal's outputs.
    *
    * @param positionId Position to withdraw from.
    * @param liquidityAmount Liquidity to withdraw (chain-raw decimal string).
