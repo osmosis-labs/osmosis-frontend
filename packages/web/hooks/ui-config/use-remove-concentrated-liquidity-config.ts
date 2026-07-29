@@ -3,6 +3,7 @@ import {
   BigDec,
   calcZapOutRouteDegradation,
   calcZapOutSwapAmount,
+  combineImpactWithDegradation,
 } from "@osmosis-labs/math";
 import type {
   ConcentratedPoolRawResponse,
@@ -69,6 +70,11 @@ export function useRemoveConcentratedLiquidityConfig(
    *  when no swap is needed, the plan isn't ready, or the quote reports no
    *  fee. */
   swapExecutedFeeIn: CoinPretty | undefined;
+  /** Effective execution price impact (signed fraction, loss negative): the
+   *  quoted impact compounded with the own-pool post-withdraw degradation.
+   *  The high-cost guard and value display must use this, not the quoted
+   *  impact. Undefined when no swap is needed or the plan isn't ready. */
+  swapEffectiveImpact: Dec | undefined;
   /** Set when the execution plan is deliberately withheld: a split route
    *  passes partly through the position's own pool and no safe min-out can
    *  be derived for it (see `swapExecution`). Submission stays blocked while
@@ -270,6 +276,8 @@ export function useRemoveConcentratedLiquidityConfig(
       : scaledInput.quo(fullInput);
     const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
     let expectedOut = new Dec(outMicro);
+    // 1 = no own-pool degradation; set below for a direct own-pool route.
+    let degradationFactor = new Dec(1);
 
     // Degrade the pool-routed slice of the expected output for the liquidity
     // the withdraw removes before the swap runs. FAIL CLOSED while the data
@@ -298,7 +306,7 @@ export function useRemoveConcentratedLiquidityConfig(
         zapOutBlockedReason = "mixedOwnPoolRoute";
         return undefined;
       }
-      const degradation = calcZapOutRouteDegradation({
+      degradationFactor = calcZapOutRouteDegradation({
         swapInAmount: poolRoutedInput,
         swapSide: quotedSwap.swapSide,
         currentSqrtPrice,
@@ -307,7 +315,7 @@ export function useRemoveConcentratedLiquidityConfig(
         positionLowerTick: new Int(position.position.position.lower_tick),
         positionUpperTick: new Int(position.position.position.upper_tick),
       });
-      expectedOut = expectedOut.mul(degradation);
+      expectedOut = expectedOut.mul(degradationFactor);
     }
 
     const tokenOutMinAmount = expectedOut
@@ -348,6 +356,16 @@ export function useRemoveConcentratedLiquidityConfig(
             new Dec(zapQuote.quote.tokenInFeeAmount).mul(inputRatio).truncate()
           )
         : undefined,
+      /** Effective execution price impact: the SQS-quoted impact (computed
+       *  against PRE-withdraw depths) compounded with the own-pool
+       *  post-withdraw degradation. Equals the quoted impact when the route
+       *  avoids the own pool. A direct own-pool route can quote ~1% impact
+       *  while the thinned book degrades the output by far more, so the
+       *  high-cost guard and the value display must use THIS figure. */
+      swapEffectiveImpact: combineImpactWithDegradation({
+        quotedImpact: zapQuote.quote.priceImpactTokenOut?.toDec() ?? new Dec(0),
+        degradation: degradationFactor,
+      }),
     };
   })();
 
@@ -533,6 +551,7 @@ export function useRemoveConcentratedLiquidityConfig(
     swapExecutedIn: swapExecution?.swapExecutedIn,
     swapExpectedOut: swapExecution?.swapExpectedOut,
     swapExecutedFeeIn: swapExecution?.swapExecutedFeeIn,
+    swapEffectiveImpact: swapExecution?.swapEffectiveImpact,
     zapOutBlockedReason,
     isPoolLoading,
   };

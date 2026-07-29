@@ -80,6 +80,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     swapExecutedIn,
     swapExpectedOut,
     swapExecutedFeeIn,
+    swapEffectiveImpact,
     zapOutBlockedReason,
     isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(
@@ -172,15 +173,22 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         )
       : undefined;
 
+  // The impact figure every guard and value display below must use: the
+  // quoted impact compounded with the own-pool post-withdraw degradation
+  // (`swapEffectiveImpact`). A direct own-pool route can quote ~1% impact
+  // while the withdraw-thinned book degrades the output far past the
+  // high-cost threshold; the raw quote figure alone would let that through
+  // unconfirmed and overstate value out. Falls back to the quoted impact
+  // while the execution plan isn't ready (submission is blocked then).
+  const effectiveImpact =
+    swapEffectiveImpact ?? quote?.priceImpactTokenOut?.toDec();
+
   // Value lost on the swapped slice (impact + fee), then the whole-position
   // value out. Uses the swap tool's fiat method so value out can't exceed in.
   // The fee is the executed plan's (scaled) fee amount when available.
   const swapValueOut =
     quote && swapInValue && swapSidePrice && requiredSwap
-      ? getTokenOutFiatValue(
-          quote.priceImpactTokenOut?.toDec(),
-          swapInValue.toDec()
-        ).sub(
+      ? getTokenOutFiatValue(effectiveImpact, swapInValue.toDec()).sub(
           getTokenInFeeAmountFiatValue(
             requiredSwap.tokenInCurrency,
             swapExecutedFeeIn
@@ -276,9 +284,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
   // explicit Confirm before it can be submitted.
   const [costAcknowledged, setCostAcknowledged] = useState(false);
-  const highCost = Boolean(
-    needsSwap && quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.1))
-  );
+  const highCost = Boolean(needsSwap && effectiveImpact?.lt(new Dec(-0.1)));
 
   // Reset the acknowledgement when the trade context changes, so a prior
   // confirm can't carry over to a different high-impact swap. Keyed on the
@@ -534,9 +540,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                         className="shrink-0"
                       />
                       <p className="body2 text-center">
+                        {/* The EFFECTIVE impact (quoted x own-pool
+                            degradation) — the figure the gate trips on. */}
                         {t("transfer.priceImpactWarning", {
                           priceImpact: formatPretty(
-                            quote.priceImpactTokenOut ?? new RatePretty(0)
+                            new RatePretty(effectiveImpact ?? new Dec(0))
                           ),
                         })}
                       </p>

@@ -172,6 +172,29 @@ export function subtractLiquidityFromDepths({
  * can be passed without fee deduction. Returns `1` (no adjustment) for
  * degenerate inputs where the full-depth simulation yields nothing.
  */
+/**
+ * Effective execution price impact of the zap-out swap: the SQS-quoted
+ * impact (computed against PRE-withdraw depths) compounded with the
+ * post-withdraw output degradation, `(1 + effective) = (1 + quoted) x
+ * degradation`. Both the inputs and the result are signed fractions
+ * (a loss is negative). A direct own-pool route can quote a tiny impact
+ * while the withdraw-thinned book degrades the output heavily; guards and
+ * value displays must use this combined figure, not the quoted impact
+ * alone.
+ */
+export function combineImpactWithDegradation({
+  quotedImpact,
+  degradation,
+}: {
+  /** SQS `priceImpactTokenOut` as a signed fraction (<= 0 for a loss). */
+  quotedImpact: Dec;
+  /** Output degradation factor in [0, 1] (see `calcZapOutRouteDegradation`). */
+  degradation: Dec;
+}): Dec {
+  const one = new Dec(1);
+  return one.add(quotedImpact).mul(degradation).sub(one);
+}
+
 export function calcZapOutRouteDegradation({
   swapInAmount,
   swapSide,

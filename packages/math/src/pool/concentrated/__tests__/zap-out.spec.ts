@@ -5,6 +5,7 @@ import { simulateSwapOverDepths } from "../zap-in";
 import {
   calcZapOutRouteDegradation,
   calcZapOutSwapAmount,
+  combineImpactWithDegradation,
   subtractLiquidityFromDepths,
 } from "../zap-out";
 
@@ -345,5 +346,61 @@ describe("calcZapOutRouteDegradation", () => {
       positionUpperTick,
     });
     expect(factor.isZero()).toBe(true);
+  });
+});
+
+describe("combineImpactWithDegradation", () => {
+  it("returns the quoted impact unchanged when there is no degradation", () => {
+    const combined = combineImpactWithDegradation({
+      quotedImpact: new Dec("-0.01"),
+      degradation: new Dec(1),
+    });
+    expect(combined.toString()).toBe(new Dec("-0.01").toString());
+  });
+
+  // Regression for the guard bypass: a direct own-pool route can quote a
+  // TINY impact (computed against pre-withdraw depths) while the
+  // withdraw-thinned book degrades the output past the high-cost threshold.
+  // The combined figure must trip the -10% gate the quoted figure sails
+  // under.
+  it("trips the high-cost threshold when degradation dwarfs the quoted impact", () => {
+    const threshold = new Dec("-0.1");
+    const quotedImpact = new Dec("-0.01"); // 1%: sails under the gate alone
+    expect(quotedImpact.lt(threshold)).toBe(false);
+
+    // A position holding half the book, fully withdrawn, degrades a large
+    // same-pool swap's output well past 10%.
+    const positionLowerTick = new Int(-5000000);
+    const positionUpperTick = new Int(5000000);
+    const degradation = calcZapOutRouteDegradation({
+      swapInAmount: new Int("20000000000"), // 2e10 vs 5e10 remaining depth
+      swapSide: "base",
+      currentSqrtPrice: new BigDec(1),
+      liquidityDepths: [
+        {
+          lowerTick: positionLowerTick,
+          upperTick: positionUpperTick,
+          liquidityAmount: new Dec("100000000000"), // 1e11 total
+        },
+      ],
+      withdrawnLiquidity: new Dec("50000000000"), // 5e10: half the book
+      positionLowerTick,
+      positionUpperTick,
+    });
+    expect(degradation.lt(new Dec("0.9"))).toBe(true);
+
+    const combined = combineImpactWithDegradation({
+      quotedImpact,
+      degradation,
+    });
+    expect(combined.lt(threshold)).toBe(true);
+    // Sanity on the formula shape: (1 + combined) = (1 + quoted) x factor.
+    expect(
+      new Dec(1)
+        .add(combined)
+        .sub(new Dec(1).add(quotedImpact).mul(degradation))
+        .abs()
+        .lte(new Dec("0.0000000001"))
+    ).toBe(true);
   });
 });
