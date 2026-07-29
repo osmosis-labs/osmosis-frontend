@@ -1,7 +1,12 @@
-import { Int } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../../big-dec";
-import { calcZapOutSwapAmount } from "../zap-out";
+import { simulateSwapOverDepths } from "../zap-in";
+import {
+  calcZapOutRouteDegradation,
+  calcZapOutSwapAmount,
+  subtractLiquidityFromDepths,
+} from "../zap-out";
 
 /** Spot price P = sqrtPrice^2 (token1 per token0, micro basis). Build a
  *  sqrtPrice from a desired spot for readable fixtures. */
@@ -183,5 +188,162 @@ describe("calcZapOutSwapAmount", () => {
       expect(swapSide).toBe("quote");
       expect(swapInAmount.lte(new Int("1000000000"))).toBe(true);
     });
+  });
+});
+
+describe("subtractLiquidityFromDepths", () => {
+  const depth = (lower: number, upper: number, liq: string) => ({
+    lowerTick: new Int(lower),
+    upperTick: new Int(upper),
+    liquidityAmount: new Dec(liq),
+  });
+
+  it("subtracts over fully covered ranges and clamps at zero", () => {
+    const result = subtractLiquidityFromDepths({
+      liquidityDepths: [
+        depth(-1000, 0, "500"),
+        depth(0, 1000, "2000"),
+        depth(1000, 2000, "3000"),
+      ],
+      lowerTick: new Int(-1000),
+      upperTick: new Int(1000),
+      liquidity: new Dec("1000"),
+    });
+    expect(
+      result.map((d) => [
+        d.lowerTick.toString(),
+        d.upperTick.toString(),
+        d.liquidityAmount.toString(),
+      ])
+    ).toEqual([
+      ["-1000", "0", new Dec(0).toString()], // 500 - 1000 clamps to 0
+      ["0", "1000", new Dec(1000).toString()],
+      ["1000", "2000", new Dec(3000).toString()], // outside the span, untouched
+    ]);
+  });
+
+  it("splits a range partially covered by the position span", () => {
+    const result = subtractLiquidityFromDepths({
+      liquidityDepths: [depth(-2000, 2000, "1000")],
+      lowerTick: new Int(-500),
+      upperTick: new Int(500),
+      liquidity: new Dec("400"),
+    });
+    expect(
+      result.map((d) => [
+        d.lowerTick.toString(),
+        d.upperTick.toString(),
+        d.liquidityAmount.toString(),
+      ])
+    ).toEqual([
+      ["-2000", "-500", new Dec(1000).toString()],
+      ["-500", "500", new Dec(600).toString()],
+      ["500", "2000", new Dec(1000).toString()],
+    ]);
+  });
+});
+
+describe("calcZapOutRouteDegradation", () => {
+  // Wide range around sqrt price 1; the position holds half the liquidity.
+  const positionLowerTick = new Int(-5000000);
+  const positionUpperTick = new Int(5000000);
+  const liquidityDepths = [
+    {
+      lowerTick: positionLowerTick,
+      upperTick: positionUpperTick,
+      liquidityAmount: new Dec("200000000000"), // 2e11 total
+    },
+  ];
+  const withdrawnLiquidity = new Dec("100000000000"); // 1e11: half the book
+  const one = new BigDec(1);
+
+  it("returns 1 when nothing routes through the pool or depths are missing", () => {
+    expect(
+      calcZapOutRouteDegradation({
+        swapInAmount: new Int(0),
+        swapSide: "base",
+        currentSqrtPrice: one,
+        liquidityDepths,
+        withdrawnLiquidity,
+        positionLowerTick,
+        positionUpperTick,
+      }).toString()
+    ).toBe(new Dec(1).toString());
+    expect(
+      calcZapOutRouteDegradation({
+        swapInAmount: new Int("1000000"),
+        swapSide: "base",
+        currentSqrtPrice: one,
+        liquidityDepths: [],
+        withdrawnLiquidity,
+        positionLowerTick,
+        positionUpperTick,
+      }).toString()
+    ).toBe(new Dec(1).toString());
+  });
+
+  // Regression for the withdraw-before-swap ordering: the withdraw removes the
+  // position's liquidity before the swap executes, so a min-out derived from
+  // the full-depth quote exceeds what the post-withdraw book delivers and the
+  // whole tx reverts. The degradation factor must bring the expected output
+  // at or below the post-withdraw simulation.
+  it("degrades the output for the thinner post-withdraw book", () => {
+    const swapInAmount = new Int("1000000000"); // 1e9: ~1% of remaining depth
+    const currentSqrtPrice = one;
+
+    const factor = calcZapOutRouteDegradation({
+      swapInAmount,
+      swapSide: "base",
+      currentSqrtPrice,
+      liquidityDepths,
+      withdrawnLiquidity,
+      positionLowerTick,
+      positionUpperTick,
+    });
+    expect(factor.lt(new Dec(1))).toBe(true);
+    expect(factor.gt(new Dec(0))).toBe(true);
+
+    // Independent check: the full-book output (what the quote promises)
+    // exceeds the post-withdraw book's output (what the chain delivers), and
+    // scaling the full output by the factor admits the actual delivery.
+    const fullOut = simulateSwapOverDepths({
+      tokenInAmount: swapInAmount,
+      inputSide: "base",
+      currentSqrtPrice,
+      liquidityDepths,
+    }).amountOut;
+    const reducedOut = simulateSwapOverDepths({
+      tokenInAmount: swapInAmount,
+      inputSide: "base",
+      currentSqrtPrice,
+      liquidityDepths: subtractLiquidityFromDepths({
+        liquidityDepths,
+        lowerTick: positionLowerTick,
+        upperTick: positionUpperTick,
+        liquidity: withdrawnLiquidity,
+      }),
+    }).amountOut;
+    expect(fullOut.gt(reducedOut)).toBe(true);
+    const adjusted = new Dec(fullOut).mul(factor).truncate();
+    expect(adjusted.lte(reducedOut)).toBe(true);
+  });
+
+  it("degrades to (near) zero when the withdraw empties the book", () => {
+    const factor = calcZapOutRouteDegradation({
+      swapInAmount: new Int("1000000000"),
+      swapSide: "quote",
+      currentSqrtPrice: one,
+      liquidityDepths: [
+        {
+          lowerTick: positionLowerTick,
+          upperTick: positionUpperTick,
+          liquidityAmount: new Dec("100000000000"),
+        },
+      ],
+      withdrawnLiquidity: new Dec("100000000000"), // the whole book
+      positionLowerTick,
+      positionUpperTick,
+    });
+    expect(factor.isZero()).toBe(true);
   });
 });

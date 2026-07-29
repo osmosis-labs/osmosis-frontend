@@ -1,5 +1,9 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import { BigDec, calcZapOutSwapAmount } from "@osmosis-labs/math";
+import {
+  BigDec,
+  calcZapOutRouteDegradation,
+  calcZapOutSwapAmount,
+} from "@osmosis-labs/math";
 import type {
   ConcentratedPoolRawResponse,
   UserPosition,
@@ -9,6 +13,8 @@ import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
 import { EventName } from "~/config";
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -178,6 +184,25 @@ export function useRemoveConcentratedLiquidityConfig(
     enabled: Boolean(quotedSwap?.needsSwap),
   });
 
+  // Portion of the quoted swap routed through the position's OWN pool. The
+  // withdraw leg executes FIRST and removes the withdrawn liquidity from
+  // exactly the depths the SQS quote assumed, so a min-out derived from the
+  // raw quote can exceed what the thinner post-withdraw book delivers and
+  // revert the whole tx. In an acyclic route this pair pool can only appear
+  // as a direct single-hop route (any other placement revisits a denom), so
+  // the routed amount is known exactly from the split. When it is non-zero,
+  // the pool's live tick depths are fetched and the expected output of that
+  // slice is degraded by a post-withdraw simulation (see `swapExecution`).
+  const poolRoutedInput = (zapQuote.quote?.split ?? [])
+    .filter((route) => route.pools.length === 1 && route.pools[0].id === poolId)
+    .reduce((sum, route) => sum.add(route.initialAmount), new Int(0));
+  const needsDepthAdjustment = poolRoutedInput.gt(new Int(0));
+  const { data: liquidityDepths } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      { poolId },
+      { enabled: needsDepthAdjustment }
+    );
+
   // The swap-leg execution plan: the slippage-scaled per-leg routes and the
   // resulting tokenOutMinAmount. Derived once and used both for submission and
   // for the "receive at least" display, so the UI shows exactly what the tx
@@ -218,7 +243,40 @@ export function useRemoveConcentratedLiquidityConfig(
       ? new Dec(0)
       : scaledInput.quo(fullInput);
     const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
-    const tokenOutMinAmount = new Dec(outMicro)
+    let expectedOut = new Dec(outMicro);
+
+    // Degrade the pool-routed slice of the expected output for the liquidity
+    // the withdraw removes before the swap runs. FAIL CLOSED while the data
+    // this requires is missing: returning undefined here blocks submission
+    // (and the breakdown shows its loading state) rather than composing a
+    // min-out the post-withdraw book may not deliver.
+    if (needsDepthAdjustment) {
+      if (
+        !currentSqrtPrice ||
+        !liquidityDepths ||
+        liquidityDepths.length === 0 ||
+        !config.effectiveLiquidity
+      )
+        return undefined;
+      const degradation = calcZapOutRouteDegradation({
+        swapInAmount: poolRoutedInput,
+        swapSide: quotedSwap.swapSide,
+        currentSqrtPrice,
+        liquidityDepths,
+        withdrawnLiquidity: new Dec(config.effectiveLiquidity.toString()),
+        positionLowerTick: new Int(position.position.position.lower_tick),
+        positionUpperTick: new Int(position.position.position.upper_tick),
+      });
+      // Only the pool-routed share degrades; other legs execute as quoted.
+      const poolFraction = fullInput.isZero()
+        ? new Dec(0)
+        : new Dec(poolRoutedInput).quo(fullInput);
+      expectedOut = expectedOut.mul(
+        new Dec(1).sub(poolFraction.mul(new Dec(1).sub(degradation)))
+      );
+    }
+
+    const tokenOutMinAmount = expectedOut
       .mul(inputRatio)
       .mul(slippageMultiplier)
       .truncate();
@@ -301,15 +359,27 @@ export function useRemoveConcentratedLiquidityConfig(
   const zapOutLiquidity = useCallback(
     () =>
       new Promise<void>(async (resolve, reject) => {
+        // Failures after broadcasting are surfaced by the global tx-event
+        // toast; failures BEFORE it (preflight: stale quote, dust floors)
+        // have no other user-visible surface, so they are toasted below.
+        // Mirrors the zap-in flow.
+        const rejectPreflight = (message: string) => {
+          displayToast(
+            { titleTranslationKey: "errors.generic", captionElement: message },
+            ToastType.ERROR
+          );
+          reject(message);
+        };
+        let broadcastAttempted = false;
         try {
           const liquidity = config.effectiveLiquidity;
-          if (!liquidity) return reject("Invalid liquidity");
-          if (!account) return reject("No account");
+          if (!liquidity) return rejectPreflight("Invalid liquidity");
+          if (!account) return rejectPreflight("No account");
           // Submit against the debounced swap the quote was computed for, not
           // the live (possibly mid-drag) one. `swapExecution` is the shared
           // scaled-routes + min-out plan, also used by the breakdown display.
           if (!quotedSwap?.needsSwap || !swapExecution)
-            return reject("Swap quote not ready");
+            return rejectPreflight("Swap quote not ready");
 
           const { routes, tokenOutMinAmount, tokenInCoinMinimalDenom } =
             swapExecution;
@@ -323,9 +393,9 @@ export function useRemoveConcentratedLiquidityConfig(
             .mul(slippageMultiplier)
             .truncate();
           if (swapInLowerBound.lte(new Int(0)))
-            return reject("Swap input too small after slippage");
+            return rejectPreflight("Swap input too small after slippage");
           if (tokenOutMinAmount.lte(new Int(0)))
-            return reject("Swap output floor rounds to zero");
+            return rejectPreflight("Swap output floor rounds to zero");
 
           logEvent([
             EventName.ConcentratedLiquidity.removeLiquidityClicked,
@@ -337,6 +407,7 @@ export function useRemoveConcentratedLiquidityConfig(
             },
           ]);
 
+          broadcastAttempted = true;
           await account.osmosis.sendZapOutOfConcentratedPositionMsg(
             position.id,
             liquidity.toString(),
@@ -367,7 +438,10 @@ export function useRemoveConcentratedLiquidityConfig(
           );
         } catch (e: unknown) {
           console.error(e);
-          reject(e instanceof Error ? e.message : String(e));
+          const message = e instanceof Error ? e.message : String(e);
+          // Broadcast failures already toast via the global tx-event handler.
+          if (!broadcastAttempted) rejectPreflight(message);
+          else reject(message);
         }
       }),
     [
