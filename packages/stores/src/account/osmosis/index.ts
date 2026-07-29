@@ -816,8 +816,11 @@ export class OsmosisAccountImpl {
    * @param upperTick Upper tick index.
    * @param swapIn SQS route(s), the token being swapped in, and the
    *   slippage-adjusted minimum out amount (all micro amounts).
-   * @param tokensProvided Coins to provide to the position, denom-sorted, in
-   *   micro amounts (remaining input side + the swap's expected output side).
+   * @param tokensProvided Coins to provide to the position, in micro amounts
+   *   (remaining input side + the swap leg's guaranteed floor, i.e.
+   *   `tokenOutMinAmount`, on the swapped side — NOT the quoted expected
+   *   output, which the wallet is not guaranteed to hold after the swap).
+   *   Sorted by denom before composing the message.
    * @param tokenMinAmount0 Slippage floor for token0 on the create-position leg.
    * @param tokenMinAmount1 Slippage floor for token1 on the create-position leg.
    * @param memo Transaction memo.
@@ -873,6 +876,12 @@ export class OsmosisAccountImpl {
     if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
     if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
 
+    // The chain rejects coins that are not denom-sorted; sort here rather than
+    // trusting the caller, mirroring the sibling create-position methods.
+    const sortedTokensProvided = [...tokensProvided].sort((a, b) =>
+      a.denom.localeCompare(b.denom)
+    );
+
     await this.base.signAndBroadcast(
       this.chainId,
       "clZapInPosition",
@@ -904,7 +913,7 @@ export class OsmosisAccountImpl {
           sender: this.address,
           tokenMinAmount0,
           tokenMinAmount1,
-          tokensProvided,
+          tokensProvided: sortedTokensProvided,
         });
 
         return [swapMsg, createPositionMsg];

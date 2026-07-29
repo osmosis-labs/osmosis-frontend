@@ -41,6 +41,7 @@
       "valueIn": "Wartość wejściowa",
       "valueOut": "Wartość wyjściowa",
       "totalCost": "Koszt całkowity",
+      "totalCostWarning": "Całkowity koszt tej wpłaty wynosi {totalCost}, wliczając wpływ na cenę i opłaty za wymianę, co zmniejsza wartość trafiającą do Twojej pozycji.",
       "quoteLoading": "Szukanie najlepszej zamiany…"
     }
   },

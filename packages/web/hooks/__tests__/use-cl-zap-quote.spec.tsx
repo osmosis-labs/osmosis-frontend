@@ -132,6 +132,52 @@ describe("useClZapQuote", () => {
     expect(options.enabled).toBe(false);
   });
 
+  it("holds the last quote across a same-request background refetch", () => {
+    const { result, rerender } = renderHook(
+      (props: { tokenInDenom: string; tokenOutDenom: string }) =>
+        useClZapQuote({ tokenInAmount: "1000000", ...props }),
+      { initialProps: { tokenInDenom: usdcDenom, tokenOutDenom: osmoDenom } }
+    );
+    expect(result.current.quote).toBeDefined();
+
+    // Same request, data transiently gone on the 5s refetch: the held quote
+    // keeps the breakdown from collapsing to a spinner.
+    mockUseOutGivenIn.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    });
+    rerender({ tokenInDenom: usdcDenom, tokenOutDenom: osmoDenom });
+
+    expect(result.current.quote?.amount.toCoin().amount).toBe("995000");
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it("drops the held quote when the direction flips, even at the same amount", () => {
+    const { result, rerender } = renderHook(
+      (props: { tokenInDenom: string; tokenOutDenom: string }) =>
+        useClZapQuote({ tokenInAmount: "1000000", ...props }),
+      { initialProps: { tokenInDenom: usdcDenom, tokenOutDenom: osmoDenom } }
+    );
+    expect(result.current.quote).toBeDefined();
+
+    // Flip the direction while the new fetch is still pending. In a centered
+    // range the swap amount is commonly identical for both sides, so the held
+    // quote can only be rejected on its denoms: exposing the old USDC->OSMO
+    // quote here would let submit compose its route with the new token-in.
+    mockUseOutGivenIn.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    });
+    rerender({ tokenInDenom: osmoDenom, tokenOutDenom: usdcDenom });
+
+    expect(result.current.quote).toBeUndefined();
+    expect(result.current.isLoading).toBe(true);
+  });
+
   it("respects an external enabled=false gate (e.g. no swap needed)", () => {
     renderHook(() =>
       useClZapQuote({

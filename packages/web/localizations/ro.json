@@ -41,6 +41,7 @@
       "valueIn": "Valoare intrare",
       "valueOut": "Valoare ieșire",
       "totalCost": "Cost total",
+      "totalCostWarning": "Costul total al acestui depozit este {totalCost}, incluzând impactul asupra prețului și comisioanele de schimb, ceea ce reduce valoarea care ajunge în poziția ta.",
       "quoteLoading": "Se caută cea mai bună schimbare…"
     }
   },

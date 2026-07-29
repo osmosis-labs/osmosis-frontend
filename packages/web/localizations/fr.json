@@ -41,6 +41,7 @@
       "valueIn": "Valeur entrante",
       "valueOut": "Valeur sortante",
       "totalCost": "Coût total",
+      "totalCostWarning": "Le coût total de ce dépôt est de {totalCost}, incluant l'impact sur le prix et les frais d'échange, ce qui réduit la valeur qui atteint votre position.",
       "quoteLoading": "Recherche du meilleur échange…"
     }
   },

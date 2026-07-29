@@ -41,6 +41,7 @@
       "valueIn": "입금액",
       "valueOut": "출금액",
       "totalCost": "총 비용",
+      "totalCostWarning": "이 예치의 총 비용은 {totalCost}이며, 가격 영향과 스왑 수수료가 포함되어 포지션에 도달하는 가치가 줄어듭니다.",
       "quoteLoading": "최적 스왑을 찾는 중…"
     }
   },

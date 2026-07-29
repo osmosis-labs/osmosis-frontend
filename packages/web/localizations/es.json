@@ -41,6 +41,7 @@
       "valueIn": "Valor de entrada",
       "valueOut": "Valor de salida",
       "totalCost": "Costo total",
+      "totalCostWarning": "El costo total de este depósito es {totalCost}, incluyendo el impacto en el precio y las comisiones de intercambio, lo que reduce el valor que llega a tu posición.",
       "quoteLoading": "Buscando el mejor intercambio…"
     }
   },

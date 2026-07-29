@@ -41,6 +41,7 @@
       "valueIn": "Eingabewert",
       "valueOut": "Ausgabewert",
       "totalCost": "Gesamtkosten",
+      "totalCostWarning": "Die Gesamtkosten dieser Einzahlung betragen {totalCost}, einschließlich Preisauswirkung und Tauschgebühren, wodurch sich der Wert verringert, der deine Position erreicht.",
       "quoteLoading": "Besten Tausch wird gesucht…"
     }
   },

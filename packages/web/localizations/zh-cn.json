@@ -41,6 +41,7 @@
       "valueIn": "输入价值",
       "valueOut": "输出价值",
       "totalCost": "总成本",
+      "totalCostWarning": "此存入的总成本为 {totalCost}，包括价格影响和兑换费用，这会减少进入您仓位的价值。",
       "quoteLoading": "正在寻找最优兑换…"
     }
   },
