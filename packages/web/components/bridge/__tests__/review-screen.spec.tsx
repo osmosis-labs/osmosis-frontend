@@ -26,6 +26,7 @@ const osmosis: BridgeChainWithDisplayInfo = {
   chainId: "osmosis-1",
   chainType: "cosmos",
   chainName: "osmosis",
+  bech32Prefix: "osmo",
   prettyName: "Osmosis",
   color: "#ffffff",
   logoUri: "/osmosis.svg",
@@ -169,6 +170,25 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
 
     expect(acknowledgementCheckbox()).not.toBeChecked();
     expect(confirmButton()).toBeDisabled();
+  });
+
+  // Regression (found in MTN-199 QA): the acknowledgement lives in the parent's
+  // `useBridgeQuotes`, so it outlives this screen's unmount. Navigating back to
+  // the amount screen and returning without touching the quote left the checkbox
+  // still ticked, because an unchanged quote gives the frozen-basis check nothing
+  // to re-arm. Consent is per visit to the signing surface.
+  it("clears an inherited acknowledgement on mount", () => {
+    const setLossAcknowledged = jest.fn();
+
+    renderScreen(
+      warnedQuote({
+        hasAcknowledgedLoss: true,
+        warningNeedsAcknowledgement: false,
+        setLossAcknowledged,
+      })
+    );
+
+    expect(setLossAcknowledged).toHaveBeenCalledWith(false);
   });
 
   it("hides the checkbox and keeps confirm disabled when a non-acknowledgeable error owns the warning slot", () => {

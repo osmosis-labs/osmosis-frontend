@@ -7,7 +7,7 @@ import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -91,6 +91,17 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   // active), so unacknowledgeable errors can never be unlocked through the
   // checkbox.
   const hasLossWarning = quote.highLossWarningActive;
+
+  // Consent is per visit to this screen, not per quote identity. The
+  // acknowledgement lives in `useBridgeQuotes`, owned by the parent, so it
+  // outlives this screen's unmount: without this reset, a tick made before
+  // going back to the amount screen is still live on return, because an
+  // unchanged quote gives `shouldResetAcknowledgement` nothing to re-arm.
+  // Mount-scoped, so it can never clear a tick made on this screen.
+  useEffect(() => {
+    quote.setLossAcknowledged(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -423,27 +434,31 @@ const TransferDetails: FunctionComponent<
           }}
         >
           <DisclosureButton className="md:caption flex place-content-between items-center py-3 md:py-2">
-            {open ? (
-              <div className="subtitle1">{t("transfer.transferDetails")}</div>
-            ) : (
-              <div className="flex items-center gap-3 text-osmoverse-300 md:gap-1.5">
-                {selectedQuoteUpdatedAt && (
-                  <QueryRemainingTime
-                    className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
-                    dataUpdatedAt={selectedQuoteUpdatedAt}
-                    refetchInterval={refetchInterval}
-                    isPaused={isRefetchingQuote || isTxPending}
-                    strokeWidth={2}
-                  >
-                    <Icon id="down-arrow" className="md:h-4 md:w-4" />
-                  </QueryRemainingTime>
-                )}
-                <div className="flex items-center gap-1">
+            {/* The refresh countdown stays outside the open/closed branch: a
+                high-loss quote opens this panel by default, and that is exactly
+                when the user needs to see that the quote refreshes every 30s —
+                a drifted quote silently unticks the acknowledgement below. */}
+            <div className="flex items-center gap-3 md:gap-1.5">
+              {selectedQuoteUpdatedAt && (
+                <QueryRemainingTime
+                  className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
+                  dataUpdatedAt={selectedQuoteUpdatedAt}
+                  refetchInterval={refetchInterval}
+                  isPaused={isRefetchingQuote || isTxPending}
+                  strokeWidth={2}
+                >
+                  <Icon id="down-arrow" className="md:h-4 md:w-4" />
+                </QueryRemainingTime>
+              )}
+              {open ? (
+                <div className="subtitle1">{t("transfer.transferDetails")}</div>
+              ) : (
+                <div className="flex items-center gap-1 text-osmoverse-300">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
                   <p className="first-letter:capitalize">{estTime}</p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
             <ExpandDetailsControlContent
               warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
               warnUserOfSlippage={quote.warnUserOfSlippage}
