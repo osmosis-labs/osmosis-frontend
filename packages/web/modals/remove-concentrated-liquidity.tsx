@@ -5,7 +5,13 @@ import type {
   UserPositionDetails,
 } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, {
@@ -73,6 +79,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     swapMinOut,
     swapExecutedIn,
     swapExpectedOut,
+    swapExecutedFeeIn,
     zapOutBlockedReason,
     isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(
@@ -137,25 +144,37 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       ? baseAssetValue.add(quoteAssetValue)
       : undefined;
 
+  // The sold amount the tx will actually execute. Per-leg inputs are scaled
+  // deterministically by (1 - slippage), so before the execution plan exists
+  // (quote still fetching) the instant displays apply the same scale to the
+  // live swap amount, then switch to the plan's exact `swapExecutedIn` once
+  // available. Every breakdown row below describes this EXECUTED amount, not
+  // the raw quote input — at a large manual slippage the two differ
+  // materially.
+  const slippageMultiplier = new Dec(1).sub(zapSlippageConfig.slippage.toDec());
+  const displayedSwapIn: CoinPretty | undefined = requiredSwap
+    ? swapExecutedIn ??
+      new CoinPretty(
+        requiredSwap.tokenInCurrency,
+        new Dec(requiredSwap.swapInAmount).mul(slippageMultiplier).truncate()
+      )
+    : undefined;
+
   // Price of the side being swapped, used to value the swapped slice and to
   // express the swapped amount as a % of the whole position's value.
   const swapSidePrice =
     requiredSwap?.swapSide === "base" ? baseAssetPrice : quoteAssetPrice;
   const swapInValue =
-    requiredSwap && swapSidePrice
+    displayedSwapIn && swapSidePrice
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
-          new CoinPretty(
-            requiredSwap.tokenInCurrency,
-            requiredSwap.swapInAmount
-          )
-            .toDec()
-            .mul(swapSidePrice.toDec())
+          displayedSwapIn.toDec().mul(swapSidePrice.toDec())
         )
       : undefined;
 
   // Value lost on the swapped slice (impact + fee), then the whole-position
   // value out. Uses the swap tool's fiat method so value out can't exceed in.
+  // The fee is the executed plan's (scaled) fee amount when available.
   const swapValueOut =
     quote && swapInValue && swapSidePrice && requiredSwap
       ? getTokenOutFiatValue(
@@ -164,7 +183,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         ).sub(
           getTokenInFeeAmountFiatValue(
             requiredSwap.tokenInCurrency,
-            quote.tokenInFeeAmount,
+            swapExecutedFeeIn
+              ? new Int(swapExecutedFeeIn.toCoin().amount)
+              : quote.tokenInFeeAmount,
             swapSidePrice
           )
         )
@@ -276,13 +297,18 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
 
   // Wallet-balance-at-risk acknowledgement: spending outside the position is
   // possible (see `existingBalanceAtRisk`), so a passive caption is not
-  // enough — the user must explicitly confirm. Reset when the sold denom
-  // changes or the risk appears/disappears; NOT on the amount, which drifts
+  // enough — the user must explicitly confirm. Reset on the USER-CONTROLLED
+  // risk context: the sold denom, the projected swap amount (moves with the
+  // withdrawal percentage and the mix slider) and the slippage setting, so
+  // confirming a small exposure can't authorize a materially larger one.
+  // Deliberately NOT keyed on the quote or the live balance, which drift
   // with every 5s requote and would hostilely uncheck the box.
   const [balanceRiskAcknowledged, setBalanceRiskAcknowledged] = useState(false);
   const balanceRiskContextKey = `${
     requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
-  }:${Boolean(existingBalanceAtRisk)}`;
+  }:${requiredSwap?.swapInAmount.toString() ?? ""}:${zapSlippageConfig.slippage
+    .toDec()
+    .toString()}:${Boolean(existingBalanceAtRisk)}`;
   useEffect(() => {
     setBalanceRiskAcknowledged(false);
   }, [balanceRiskContextKey]);
@@ -445,16 +471,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               </p>
             )}
 
-            {needsSwap && requiredSwap && (
+            {needsSwap && requiredSwap && displayedSwapIn && (
               <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 p-4">
+                {/* The EXECUTED amount (scaled per-leg inputs), not the raw
+                    quote input — see `displayedSwapIn`. */}
                 <p className="body2 text-center text-osmoverse-200">
                   {t("clPositions.swapBreakdown", {
-                    swapAmount: formatPretty(
-                      new CoinPretty(
-                        requiredSwap.tokenInCurrency,
-                        requiredSwap.swapInAmount
-                      ).hideDenom(true)
-                    ),
+                    swapAmount: formatPretty(displayedSwapIn.hideDenom(true)),
                     inDenom: requiredSwap.tokenInCurrency.coinDenom,
                     swapPercent: formatPretty(
                       (swapPercentOfPosition ?? new RatePretty(0)).maxDecimals(
@@ -493,10 +516,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 ) : (
                   <ZapOutBreakdown
                     quote={quote}
-                    requiredSwap={requiredSwap}
                     valueOut={positionValueOut}
                     swapMinOut={swapMinOut}
                     estimatedReceiveCoins={estimatedReceiveCoins}
+                    swapExecutedFeeIn={swapExecutedFeeIn}
                     zapSlippageConfig={zapSlippageConfig}
                   />
                 )}
@@ -606,9 +629,6 @@ const ZapOutBreakdown: FunctionComponent<{
   quote: NonNullable<
     ReturnType<typeof useRemoveConcentratedLiquidityConfig>["zapQuote"]["quote"]
   >;
-  requiredSwap: NonNullable<
-    ReturnType<typeof useRemoveConcentratedLiquidityConfig>["requiredSwap"]
-  >;
   /** Whole-position value the user ends holding after the swap. Value in is the
    *  headline total above the amount slider, so it is not repeated here. */
   valueOut?: PricePretty;
@@ -619,16 +639,18 @@ const ZapOutBreakdown: FunctionComponent<{
   /** Estimated holdings after exit, per token (projected withdrawn amounts +
    *  the executed plan's expected output). Estimates, not guarantees. */
   estimatedReceiveCoins: CoinPretty[];
+  /** Swap fee on the executed (scaled) input; the row is hidden without it. */
+  swapExecutedFeeIn: CoinPretty | undefined;
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
 }> = observer((props) => {
   const {
     quote,
-    requiredSwap,
     valueOut,
     swapMinOut,
     estimatedReceiveCoins,
+    swapExecutedFeeIn,
     zapSlippageConfig,
   } = props;
   const { t } = useTranslation();
@@ -667,18 +689,15 @@ const ZapOutBreakdown: FunctionComponent<{
           }
         />
       )}
-      {quote.swapFee && quote.tokenInFeeAmount && (
+      {/* Fee amount on the EXECUTED input (scaled), not the full quote's;
+          the effective fee rate is scale-invariant so the quote's rate
+          stands. */}
+      {quote.swapFee && swapExecutedFeeIn && (
         <RecapRow
           left={t("pools.aprBreakdown.swapFees")}
           right={
             <span className="body2 text-osmoverse-200">
-              {formatPretty(
-                new CoinPretty(
-                  requiredSwap.tokenInCurrency,
-                  quote.tokenInFeeAmount
-                )
-              )}{" "}
-              ({quote.swapFee.toString()})
+              {formatPretty(swapExecutedFeeIn)} ({quote.swapFee.toString()})
             </span>
           }
         />
