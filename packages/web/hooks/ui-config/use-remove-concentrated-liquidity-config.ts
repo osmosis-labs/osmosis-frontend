@@ -65,6 +65,10 @@ export function useRemoveConcentratedLiquidityConfig(
    *  (target-side currency); pairs with `swapExecutedIn` for the estimated
    *  display. Undefined when no swap is needed or the plan isn't ready. */
   swapExpectedOut: CoinPretty | undefined;
+  /** Swap fee charged on the executed input (sold-side currency); undefined
+   *  when no swap is needed, the plan isn't ready, or the quote reports no
+   *  fee. */
+  swapExecutedFeeIn: CoinPretty | undefined;
   /** Set when the execution plan is deliberately withheld: a split route
    *  passes partly through the position's own pool and no safe min-out can
    *  be derived for it (see `swapExecution`). Submission stays blocked while
@@ -335,6 +339,15 @@ export function useRemoveConcentratedLiquidityConfig(
         quotedSwap.tokenOutCurrency,
         expectedOut.mul(inputRatio).truncate()
       ),
+      /** Swap fee charged on the EXECUTED input (sold-side currency): the
+       *  quote's fee amount scaled by the realised input ratio, so the fee
+       *  row describes the executed plan, not the full quote. */
+      swapExecutedFeeIn: zapQuote.quote.tokenInFeeAmount
+        ? new CoinPretty(
+            quotedSwap.tokenInCurrency,
+            new Dec(zapQuote.quote.tokenInFeeAmount).mul(inputRatio).truncate()
+          )
+        : undefined,
     };
   })();
 
@@ -519,6 +532,7 @@ export function useRemoveConcentratedLiquidityConfig(
     swapMinOut: swapExecution?.swapMinOut,
     swapExecutedIn: swapExecution?.swapExecutedIn,
     swapExpectedOut: swapExecution?.swapExpectedOut,
+    swapExecutedFeeIn: swapExecution?.swapExecutedFeeIn,
     zapOutBlockedReason,
     isPoolLoading,
   };
