@@ -33,7 +33,6 @@ import {
   useScreenManager,
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
@@ -175,8 +174,7 @@ export const AmountScreen = observer(
       isLoadingBridgeQuote,
       isInsufficientBal,
       isInsufficientFee,
-      warnUserOfPriceImpact,
-      warnUserOfSlippage,
+      highLossWarningActive,
       errorBoxMessage,
       warningBoxMessage,
     } = quote;
@@ -184,7 +182,6 @@ export const AmountScreen = observer(
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
     const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
     const [pendingChainApproval, setPendingChainApproval] = useState(false);
-    const [wishesToProceed, setWishesToProceed] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
 
@@ -839,25 +836,16 @@ export const AmountScreen = observer(
           ? !fromChain || !fromAsset
           : !toChain || !toAsset));
 
+    // A high-loss warning does not gate this screen: the user may advance to
+    // review, where the acknowledgement checkbox lives (the surface that
+    // actually signs — see MTN-199).
     const isTransferButtonDisabled = useMemo(() => {
-      if (
+      return (
         cryptoAmount === "" ||
         cryptoAmount === "0" ||
-        (!quote.userCanAdvance && !warnUserOfPriceImpact && !warnUserOfSlippage)
-      )
-        return true;
-
-      if (warnUserOfPriceImpact || warnUserOfSlippage) {
-        return !wishesToProceed;
-      }
-      return false;
-    }, [
-      cryptoAmount,
-      quote.userCanAdvance,
-      warnUserOfPriceImpact,
-      warnUserOfSlippage,
-      wishesToProceed,
-    ]);
+        (!quote.userCanAdvance && !highLossWarningActive)
+      );
+    }, [cryptoAmount, quote.userCanAdvance, highLossWarningActive]);
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
@@ -1571,33 +1559,10 @@ export const AmountScreen = observer(
                     </div>
                   </div>
                 )}
-                {(warnUserOfPriceImpact || warnUserOfSlippage) &&
-                  !isInsufficientFee && (
-                    <div className="flex gap-4">
-                      <Checkbox
-                        checked={wishesToProceed}
-                        onCheckedChange={(checked) => {
-                          if (checked === "indeterminate") {
-                            return setWishesToProceed(false);
-                          }
-
-                          return setWishesToProceed(checked);
-                        }}
-                      />
-                      <h2 className="body2">
-                        Yes, I understand this could cause heavy loss of funds
-                        and I wish to proceed.
-                      </h2>
-                    </div>
-                  )}
                 <Button
                   disabled={isTransferButtonDisabled}
                   className="w-full md:h-12"
-                  variant={
-                    warnUserOfSlippage || warnUserOfPriceImpact
-                      ? "destructive"
-                      : "default"
-                  }
+                  variant={highLossWarningActive ? "destructive" : "default"}
                   onClick={onConfirm}
                 >
                   <div className="md:subtitle1 text-h6 font-h6">
@@ -1769,7 +1734,7 @@ const TransferDetails: FunctionComponent<{
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const successfulQuotes = quote?.successfulQuotes ?? [];
-  const isOpen = quote?.warnUserOfPriceImpact || quote?.warnUserOfSlippage;
+  const isOpen = quote?.highLossWarningActive;
 
   if (!isLoading && successfulQuotes.length === 0) {
     return null;
@@ -1818,6 +1783,9 @@ const TransferDetails: FunctionComponent<{
                 <ExpandDetailsControlContent
                   warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
                   warnUserOfSlippage={quote.warnUserOfSlippage}
+                  warnUserOfUnknownSwapImpact={
+                    quote.warnUserOfUnknownSwapImpact
+                  }
                   selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
                   refetchInterval={quote.refetchInterval}
                   selectedQuote={quote.selectedQuote}

@@ -206,6 +206,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   warnUserOfPriceImpact: boolean | undefined;
   warnUserOfSlippage: boolean | undefined;
+  warnUserOfUnknownSwapImpact: boolean | undefined;
   selectedQuoteUpdatedAt: number | undefined;
   refetchInterval: number;
   open: boolean;
@@ -215,6 +216,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuote,
   warnUserOfPriceImpact,
   warnUserOfSlippage,
+  warnUserOfUnknownSwapImpact,
   selectedQuoteUpdatedAt,
   refetchInterval,
   open,
@@ -245,11 +247,15 @@ export const ExpandDetailsControlContent: FunctionComponent<{
             {t("transfer.fees")}
           </span>
         )}
-        {(warnUserOfPriceImpact || warnUserOfSlippage) && (
+        {(warnUserOfPriceImpact ||
+          warnUserOfSlippage ||
+          warnUserOfUnknownSwapImpact) && (
           <Tooltip
             content={
               warnUserOfSlippage
                 ? t("transfer.slippageWarning")
+                : warnUserOfUnknownSwapImpact
+                ? t("transfer.unknownSwapImpactDescription")
                 : t("transfer.priceImpactWarning", {
                     priceImpact: selectedQuote.priceImpact.toString(),
                   })

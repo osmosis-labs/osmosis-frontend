@@ -261,6 +261,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         ...nomicBridgeAsset,
         denom: "BTC",
         priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
+        priceImpactUnknown: !!swapRoute && !swapRoute.priceImpactTokenOut,
       },
       fromChain: params.fromChain,
       toChain: params.toChain,

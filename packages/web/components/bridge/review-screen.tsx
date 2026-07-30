@@ -7,7 +7,7 @@ import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -21,6 +21,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
+import { LossAcknowledgementCheckbox } from "./loss-acknowledgement-checkbox";
 import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
@@ -81,6 +82,26 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   isManualAddress,
 }) => {
   const { t } = useTranslation();
+
+  // A high-loss warning intentionally *enables* the confirm button
+  // (warn-and-accept, no hard block) — but only once the acknowledgement
+  // checkbox below is ticked and its basis is still fresh
+  // (`warningNeedsAcknowledgement`). `highLossWarningActive` is true only
+  // when the warning owns `errorBoxMessage` (no higher-precedence error is
+  // active), so unacknowledgeable errors can never be unlocked through the
+  // checkbox.
+  const hasLossWarning = quote.highLossWarningActive;
+
+  // Consent is per visit to this screen, not per quote identity. The
+  // acknowledgement lives in `useBridgeQuotes`, owned by the parent, so it
+  // outlives this screen's unmount: without this reset, a tick made before
+  // going back to the amount screen is still live on return, because an
+  // unchanged quote gives `shouldResetAcknowledgement` nothing to re-arm.
+  // Mount-scoped, so it can never clear a tick made on this screen.
+  useEffect(() => {
+    quote.setLossAcknowledged(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -155,6 +176,29 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           {t("transfer.learnMore")}
         </Link>
       </div>
+      {/* Renders for any active error, not just loss warnings — when the
+          quote errors out (e.g. every provider fails a refetch), the details
+          above unrender and this box is the only thing telling the user why
+          the screen is empty and Confirm is disabled. */}
+      {quote.errorBoxMessage && (
+        <div className="flex flex-col gap-3 pt-3">
+          <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+            <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
+            <div className="flex flex-col">
+              <h1 className="body2">{quote.errorBoxMessage.heading}</h1>
+              <p className="body2 text-osmoverse-300">
+                {quote.errorBoxMessage.description}
+              </p>
+            </div>
+          </div>
+          {hasLossWarning && (
+            <LossAcknowledgementCheckbox
+              checked={quote.hasAcknowledgedLoss}
+              onCheckedChange={quote.setLossAcknowledged}
+            />
+          )}
+        </div>
+      )}
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
         {!quote.isTxPending && (
           <Button
@@ -170,11 +214,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         )}
         <Button
           className="w-full md:h-12"
+          variant={hasLossWarning ? "destructive" : "default"}
           onClick={onConfirm}
           disabled={
-            (!quote.userCanAdvance &&
-              !quote.warnUserOfPriceImpact &&
-              !quote.warnUserOfSlippage) ||
+            (!quote.userCanAdvance && !hasLossWarning) ||
+            (hasLossWarning && quote.warningNeedsAcknowledgement) ||
             quote.isTxPending ||
             quote.isApprovingToken
           }
@@ -377,9 +421,7 @@ const TransferDetails: FunctionComponent<
   const expandedPadding = isMobile ? 10 : 0;
 
   return (
-    <Disclosure
-      defaultOpen={quote.warnUserOfPriceImpact || quote.warnUserOfSlippage}
-    >
+    <Disclosure defaultOpen={quote.highLossWarningActive}>
       {({ open }) => (
         <div
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
@@ -416,11 +458,17 @@ const TransferDetails: FunctionComponent<
             <ExpandDetailsControlContent
               warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
               warnUserOfSlippage={quote.warnUserOfSlippage}
+              warnUserOfUnknownSwapImpact={quote.warnUserOfUnknownSwapImpact}
               selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
               refetchInterval={quote.refetchInterval}
               selectedQuote={selectedQuote}
               isRemainingTimePaused={isRefetchingQuote || isTxPending}
               open={open}
+              // A high-loss quote opens this panel by default, so the countdown
+              // has to survive expansion — a drifted quote silently unticks the
+              // acknowledgement below. Rendered here rather than beside the
+              // title so it does not grow the header past `collapsedHeight`.
+              showRemainingTime={open}
             />
           </DisclosureButton>
           <DisclosurePanel ref={detailsRef} className="flex flex-col gap-3">
