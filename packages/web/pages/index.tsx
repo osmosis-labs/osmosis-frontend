@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
@@ -21,6 +21,7 @@ import {
   useFeatureFlags,
   useTranslation,
 } from "~/hooks";
+import { useNavBarStore } from "~/stores/nav-bar-store";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -33,6 +34,9 @@ export type PreviousTrade = {
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
+  const visibleBannerHeight = useNavBarStore(
+    (state) => state.visibleBannerHeight
+  );
 
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
@@ -55,7 +59,14 @@ const Home = () => {
             className="absolute bottom-0 max-h-[720px] w-full"
           />
         </div>
-        <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center md:top-0">
+        <div
+          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center md:top-0"
+          style={
+            {
+              "--visible-banner-height": `${visibleBannerHeight}px`,
+            } as CSSProperties
+          }
+        >
           <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
             {/** Hydration issues need to be investigated before this client wrapper can be removed. */}

@@ -12,6 +12,7 @@ describe("NavBarStore (Zustand)", () => {
     useNavBarStore.setState({
       title: undefined,
       callToActionButtons: [],
+      visibleBannerHeight: 0,
     });
   });
 
@@ -95,6 +96,35 @@ describe("NavBarStore (Zustand)", () => {
         result.current.setCallToActionButtons([]);
       });
       expect(result.current.callToActionButtons).toEqual([]);
+    });
+  });
+
+  describe("setVisibleBannerHeight", () => {
+    it("should update visibleBannerHeight", () => {
+      const { result } = renderHook(() => useNavBarStore());
+      expect(result.current.visibleBannerHeight).toBe(0);
+
+      act(() => {
+        result.current.setVisibleBannerHeight(106);
+      });
+
+      expect(result.current.visibleBannerHeight).toBe(106);
+    });
+
+    it("should survive reset, since it is owned by the always-mounted NavBar", () => {
+      const { result } = renderHook(() => useNavBarStore());
+
+      act(() => {
+        result.current.setVisibleBannerHeight(106);
+        result.current.setTitle("Test Title");
+      });
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.title).toBeUndefined();
+      expect(result.current.visibleBannerHeight).toBe(106);
     });
   });
 
