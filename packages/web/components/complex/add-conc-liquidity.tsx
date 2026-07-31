@@ -772,42 +772,39 @@ const SingleAssetDeposit: FunctionComponent<{
               ))}
 
             {zapHighCost && (
-              <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
-                <div className="flex items-center justify-center gap-2 text-rust-300">
-                  <Icon
-                    id="alert-circle-filled"
-                    width={16}
-                    height={16}
-                    className="shrink-0"
-                  />
-                  <p className="body2 text-center">
-                    {/* The gate flags on TOTAL cost (impact + swap fees), so
-                        the warning quotes that same figure under its own
-                        label — the price-impact copy would mislabel it and
-                        understate a fee-heavy zap. */}
-                    {t(
-                      "addConcentratedLiquidity.singleAsset.totalCostWarning",
-                      {
-                        totalCost: formatPretty(
-                          zapTotalCostPercent ?? new RatePretty(0)
-                        ),
-                      }
-                    )}
-                  </p>
-                </div>
-                <div className="flex items-center justify-center gap-3">
-                  <label htmlFor="cl-zap-high-cost-ack" className="body2">
-                    {t("transfer.confirm")}
-                  </label>
-                  <Checkbox
-                    id="cl-zap-high-cost-ack"
-                    variant="destructive"
-                    checked={Boolean(zapCostAcknowledged)}
-                    onCheckedChange={(checked) =>
-                      onZapCostAcknowledgedChange?.(checked === true)
-                    }
-                  />
-                </div>
+              <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
+                <Icon
+                  id="alert-circle-filled"
+                  width={16}
+                  height={16}
+                  className="shrink-0 text-rust-300"
+                />
+                <p className="body2 flex-1 text-left text-rust-300">
+                  {/* The gate flags on TOTAL cost (impact + swap fees), so
+                      the warning quotes that same figure under its own
+                      label — the price-impact copy would mislabel it and
+                      understate a fee-heavy zap. */}
+                  {t("addConcentratedLiquidity.singleAsset.totalCostWarning", {
+                    totalCost: formatPretty(
+                      zapTotalCostPercent ?? new RatePretty(0)
+                    ),
+                  })}
+                </p>
+                <label
+                  htmlFor="cl-zap-high-cost-ack"
+                  className="body2 shrink-0"
+                >
+                  {t("transfer.confirm")}
+                </label>
+                <Checkbox
+                  id="cl-zap-high-cost-ack"
+                  variant="destructive"
+                  className="shrink-0"
+                  checked={Boolean(zapCostAcknowledged)}
+                  onCheckedChange={(checked) =>
+                    onZapCostAcknowledgedChange?.(checked === true)
+                  }
+                />
               </div>
             )}
           </div>
