@@ -531,37 +531,37 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 )}
 
                 {highCost && quote && quoteInSync && (
-                  <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
-                    <div className="flex items-center justify-center gap-2 text-rust-300">
-                      <Icon
-                        id="alert-circle-filled"
-                        width={16}
-                        height={16}
-                        className="shrink-0"
-                      />
-                      <p className="body2 text-center">
-                        {/* The EFFECTIVE impact (quoted x own-pool
-                            degradation) — the figure the gate trips on. */}
-                        {t("transfer.priceImpactWarning", {
-                          priceImpact: formatPretty(
-                            new RatePretty(effectiveImpact ?? new Dec(0))
-                          ),
-                        })}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-center gap-3">
-                      <label htmlFor="cl-zap-out-cost-ack" className="body2">
-                        {t("transfer.confirm")}
-                      </label>
-                      <Checkbox
-                        id="cl-zap-out-cost-ack"
-                        variant="destructive"
-                        checked={costAcknowledged}
-                        onCheckedChange={(checked) =>
-                          setCostAcknowledged(checked === true)
-                        }
-                      />
-                    </div>
+                  <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
+                    <Icon
+                      id="alert-circle-filled"
+                      width={16}
+                      height={16}
+                      className="shrink-0 text-rust-300"
+                    />
+                    <p className="body2 flex-1 text-left text-rust-300">
+                      {/* The EFFECTIVE impact (quoted x own-pool
+                          degradation) — the figure the gate trips on. */}
+                      {t("transfer.priceImpactWarning", {
+                        priceImpact: formatPretty(
+                          new RatePretty(effectiveImpact ?? new Dec(0))
+                        ),
+                      })}
+                    </p>
+                    <label
+                      htmlFor="cl-zap-out-cost-ack"
+                      className="body2 shrink-0"
+                    >
+                      {t("transfer.confirm")}
+                    </label>
+                    <Checkbox
+                      id="cl-zap-out-cost-ack"
+                      variant="destructive"
+                      className="shrink-0"
+                      checked={costAcknowledged}
+                      onCheckedChange={(checked) =>
+                        setCostAcknowledged(checked === true)
+                      }
+                    />
                   </div>
                 )}
 
@@ -573,34 +573,34 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     the position, so it requires an explicit acknowledgement,
                     not just a caption. */}
                 {existingBalanceAtRisk && quote && quoteInSync && (
-                  <div className="flex flex-col items-center gap-3 rounded-xl bg-osmoverse-825 p-3">
-                    <div className="flex items-center justify-center gap-2 text-rust-300">
-                      <Icon
-                        id="alert-circle-filled"
-                        width={16}
-                        height={16}
-                        className="shrink-0"
-                      />
-                      <p className="body2 text-center">
-                        {t(
-                          "addConcentratedLiquidity.singleAsset.existingBalanceCaution",
-                          { amount: formatPretty(existingBalanceAtRisk) }
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-center gap-3">
-                      <label htmlFor="cl-zap-out-balance-ack" className="body2">
-                        {t("transfer.confirm")}
-                      </label>
-                      <Checkbox
-                        id="cl-zap-out-balance-ack"
-                        variant="destructive"
-                        checked={balanceRiskAcknowledged}
-                        onCheckedChange={(checked) =>
-                          setBalanceRiskAcknowledged(checked === true)
-                        }
-                      />
-                    </div>
+                  <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
+                    <Icon
+                      id="alert-circle-filled"
+                      width={16}
+                      height={16}
+                      className="shrink-0 text-rust-300"
+                    />
+                    <p className="body2 flex-1 text-left text-rust-300">
+                      {t(
+                        "addConcentratedLiquidity.singleAsset.existingBalanceCaution",
+                        { amount: formatPretty(existingBalanceAtRisk) }
+                      )}
+                    </p>
+                    <label
+                      htmlFor="cl-zap-out-balance-ack"
+                      className="body2 shrink-0"
+                    >
+                      {t("transfer.confirm")}
+                    </label>
+                    <Checkbox
+                      id="cl-zap-out-balance-ack"
+                      variant="destructive"
+                      className="shrink-0"
+                      checked={balanceRiskAcknowledged}
+                      onCheckedChange={(checked) =>
+                        setBalanceRiskAcknowledged(checked === true)
+                      }
+                    />
                   </div>
                 )}
               </div>
