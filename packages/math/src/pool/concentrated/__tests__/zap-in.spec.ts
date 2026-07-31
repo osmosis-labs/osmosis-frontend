@@ -5,6 +5,7 @@ import { approxSqrt } from "../../../utils";
 import { calcAmount0Delta, calcAmount1Delta } from "../math";
 import { tickToSqrtPrice } from "../tick";
 import {
+  calcMarginalPriceImpact,
   calcZapInPositionMinima,
   calcZapInSwapAmount,
   estimateSqrtPriceAfterSwapIn,
@@ -557,5 +558,85 @@ describe("calcZapInPositionMinima", () => {
       true
     );
     expect(enveloped.tokenMinAmount1.lt(spotOnly.tokenMinAmount1)).toBe(true);
+  });
+});
+
+describe("calcMarginalPriceImpact", () => {
+  it("measures the out-per-in rate change for a base-in swap (price down)", () => {
+    // sqrt 1 -> 0.9: P falls from 1 to 0.81; selling base gets 19% less per
+    // unit at the margin.
+    const impact = calcMarginalPriceImpact({
+      currentSqrtPrice: new BigDec(1),
+      postSwapSqrtPrice: new BigDec("0.9"),
+      inputSide: "base",
+    });
+    expect(impact.sub(new Dec("-0.19")).abs().lte(new Dec("0.0000001"))).toBe(
+      true
+    );
+  });
+
+  it("measures the inverse rate for a quote-in swap (price up)", () => {
+    // sqrt 1 -> 1.1: P rises to 1.21; selling quote buys base at 1/1.21 of
+    // the spot rate: ~-17.36%.
+    const impact = calcMarginalPriceImpact({
+      currentSqrtPrice: new BigDec(1),
+      postSwapSqrtPrice: new BigDec("1.1"),
+      inputSide: "quote",
+    });
+    expect(
+      impact.sub(new Dec("-0.173553719")).abs().lte(new Dec("0.000001"))
+    ).toBe(true);
+  });
+
+  it("clamps a favourable move to zero and handles degenerate prices", () => {
+    expect(
+      calcMarginalPriceImpact({
+        currentSqrtPrice: new BigDec(1),
+        postSwapSqrtPrice: new BigDec("1.1"),
+        inputSide: "base", // price up while selling base = favourable
+      }).isZero()
+    ).toBe(true);
+    expect(
+      calcMarginalPriceImpact({
+        currentSqrtPrice: new BigDec(0),
+        postSwapSqrtPrice: new BigDec(1),
+        inputSide: "base",
+      }).isZero()
+    ).toBe(true);
+  });
+
+  // The scenario that motivates the marginal basis: the average-fill impact
+  // reads materially lower than the marginal figure for the same swap over
+  // the same book, because early tranches fill near spot. The display/gate
+  // must use the WORSE (marginal) figure for own-pool routes, where price
+  // reversion is paid by the depositor's own position.
+  it("exceeds the average-fill impact for the same swap over the same book", () => {
+    const liquidity = new BigDec("100000000000"); // 1e11
+    const depths = [
+      {
+        lowerTick: new Int(-5000000),
+        upperTick: new Int(5000000),
+        liquidityAmount: new Dec("100000000000"),
+      },
+    ];
+    const swapIn = new Int("20000000000"); // 2e10: a big fill
+    const spot = new BigDec(1);
+    const postSwapSqrtPrice = estimateSqrtPriceAfterSwapIn({
+      tokenInAmount: swapIn,
+      inputSide: "base",
+      currentSqrtPrice: spot,
+      liquidityDepths: depths,
+    });
+    // Single range, no tick crossing: token1 out = L * (Pc - Pt), so the
+    // average-fill impact is out/in - 1 at a spot rate of 1.
+    const amountOut = liquidity.mul(spot.sub(postSwapSqrtPrice)).toDec();
+    const averageImpact = amountOut.quo(new Dec(swapIn)).sub(new Dec(1));
+    const marginalImpact = calcMarginalPriceImpact({
+      currentSqrtPrice: spot,
+      postSwapSqrtPrice,
+      inputSide: "base",
+    });
+    expect(averageImpact.lt(new Dec(0))).toBe(true);
+    expect(marginalImpact.lt(averageImpact)).toBe(true);
   });
 });

@@ -72,6 +72,7 @@ export const AddLiquidityModal: FunctionComponent<
     zapValueOut,
     zapTotalCostPercent,
     zapHighCost,
+    zapImpactPending,
   } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // Reset the acknowledgement when the trade context changes, so a stale
@@ -121,7 +122,11 @@ export const AddLiquidityModal: FunctionComponent<
     (zapQuote.isLoading ||
       !zapQuote.quote ||
       zapQuote.isError ||
-      Boolean(zapQuote.routerError));
+      Boolean(zapQuote.routerError) ||
+      // The swap routes through this pool and the depth data for the
+      // conservative (marginal) impact hasn't loaded: block until the gate
+      // can be evaluated on the overstated figure, never the average fill.
+      zapImpactPending);
 
   // Block an empty or sub-precision/dust single-asset amount (an amount that
   // rounds to zero micro units, or whose swap rounds to zero on a two-sided
