@@ -8,6 +8,7 @@ import {
   BigDec,
   calcAmount0,
   calcAmount1,
+  calcMarginalPriceImpact,
   calcZapInPositionMinima,
   calcZapInSwapAmount,
   estimateSqrtPriceAfterSwapIn,
@@ -85,11 +86,20 @@ export function useAddConcentratedLiquidityConfig(
    *  yet. Same single-price calculation as `zapTotalCostPercent`. */
   zapValueOut: PricePretty | undefined;
   /** Combined zap-in cost (price impact + swap fees) as a fraction of value in,
-   *  or undefined when there is no swap / quote yet. */
+   *  or undefined when there is no swap / quote yet. For a swap routed through
+   *  the destination pool this uses the POST-swap marginal impact when it is
+   *  worse than the quoted average-fill impact (overstating beats
+   *  understating: the averaging benefit on an own-pool route is clawed back
+   *  from the depositor's own position by arbitrage reversion). */
   zapTotalCostPercent: RatePretty | undefined;
   /** True when `zapTotalCostPercent` reaches the high-cost threshold (5%); the
    *  breakdown styles the cost rust and the submit Confirm gate engages. */
   zapHighCost: boolean;
+  /** True while the quote routes through the destination pool but the depth
+   *  data for the conservative (marginal) impact hasn't loaded. The modal
+   *  blocks submission on this so the gate never fires on the understated
+   *  average-fill figure. */
+  zapImpactPending: boolean;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -214,6 +224,60 @@ export function useAddConcentratedLiquidityConfig(
     enabled: config.singleAssetMode && Boolean(requiredSwap?.needsSwap),
   });
 
+  // Portion of the quoted swap routed through the DESTINATION pool itself.
+  // In an acyclic route the destination pair pool can only appear as a
+  // direct single-hop route (any other placement revisits a denom), so the
+  // routed amount is known exactly from the split. For that portion the
+  // quote's average-fill impact understates the depositor's true cost:
+  // arbitrage reverts the moved price at the expense of the in-range LPs,
+  // which the depositor is about to become, so the conservative basis is
+  // the POST-swap marginal price. Depths are fetched reactively to compute
+  // it; the same simulation runs authoritatively at submit time for the
+  // position minima.
+  const destinationRoutes = (zapQuote.quote?.split ?? []).filter(
+    (route) => route.pools.length === 1 && route.pools[0].id === poolId
+  );
+  const destinationRoutedInput = destinationRoutes.reduce(
+    (sum, route) => sum.add(route.initialAmount),
+    new Int(0)
+  );
+  const needsMarginalImpact = destinationRoutedInput.gt(new Int(0));
+  const { data: liquidityDepths } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      { poolId },
+      { enabled: needsMarginalImpact }
+    );
+  const marginalImpact: Dec | undefined = (() => {
+    if (!needsMarginalImpact) return undefined;
+    const spotSqrtPrice = config.pool?.currentSqrtPrice;
+    if (
+      !spotSqrtPrice ||
+      spotSqrtPrice.isZero() ||
+      !liquidityDepths ||
+      liquidityDepths.length === 0
+    )
+      return undefined;
+    const spread =
+      destinationRoutes[0].pools[0].spreadFactor?.toDec() ?? new Dec(0);
+    const effectiveIn = new Dec(destinationRoutedInput)
+      .mul(new Dec(1).sub(spread))
+      .truncate();
+    return calcMarginalPriceImpact({
+      currentSqrtPrice: spotSqrtPrice,
+      postSwapSqrtPrice: estimateSqrtPriceAfterSwapIn({
+        tokenInAmount: effectiveIn,
+        inputSide: config.singleAssetSide,
+        currentSqrtPrice: spotSqrtPrice,
+        liquidityDepths,
+      }),
+      inputSide: config.singleAssetSide,
+    });
+  })();
+  // True while the conservative figure is REQUIRED but not yet computable
+  // (depths still loading). The modal blocks submission on this, so the
+  // gate can never be evaluated on the understated average-fill figure.
+  const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
+
   // Fiat value in, value out and the total zap-in cost as a fraction of value
   // in: the combined value lost to price impact AND swap fees on the swapped
   // slice. This is the single authoritative calculation shared by the
@@ -245,11 +309,18 @@ export function useAddConcentratedLiquidityConfig(
         requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
       )
     );
+    // Worst of the quoted (average-fill) impact and the destination pool's
+    // marginal impact: overstating beats understating here, because the
+    // averaging benefit on an own-pool route is clawed back from the
+    // depositor's own position when arbitrage reverts the price.
+    const quotedImpact = quote.priceImpactTokenOut?.toDec();
+    const displayImpact =
+      marginalImpact !== undefined &&
+      (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
+        ? marginalImpact
+        : quotedImpact;
     const valueOut = retainedValue.add(
-      getTokenOutFiatValue(
-        quote.priceImpactTokenOut?.toDec(),
-        swapInValue.toDec()
-      ).sub(
+      getTokenOutFiatValue(displayImpact, swapInValue.toDec()).sub(
         getTokenInFeeAmountFiatValue(
           requiredSwap.tokenInCurrency,
           quote.tokenInFeeAmount,
@@ -715,6 +786,7 @@ export function useAddConcentratedLiquidityConfig(
     zapValueOut,
     zapTotalCostPercent,
     zapHighCost,
+    zapImpactPending,
   };
 }
 
