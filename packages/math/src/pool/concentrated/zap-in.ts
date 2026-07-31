@@ -139,6 +139,50 @@ export interface ActiveLiquidityDepth {
 }
 
 /**
+ * Price impact measured at the POST-swap marginal price rather than the
+ * average fill: the change in the out-per-in exchange rate between the
+ * pre-swap and post-swap sqrt prices, as a signed fraction (a loss is
+ * negative).
+ *
+ * A quote's `priceImpactTokenOut` averages the fill (early tranches near
+ * spot, late tranches at the moved price), which understates the true cost
+ * of a swap routed through the pool the user is about to LP INTO: arbitrage
+ * reverts the moved price, and that reversion is paid by the in-range LPs,
+ * so a dominant depositor claws back little of the averaging benefit. The
+ * marginal figure is the conservative bound: roughly exact when the user is
+ * most of the in-range liquidity, an overstatement otherwise, never an
+ * understatement.
+ *
+ * - input `base` (selling token0): out-per-in is P = sqrt^2, so
+ *   impact = post^2 / spot^2 - 1 (negative, price moved down).
+ * - input `quote` (selling token1): out-per-in is 1/P, so
+ *   impact = spot^2 / post^2 - 1 (negative, price moved up).
+ */
+export function calcMarginalPriceImpact({
+  currentSqrtPrice,
+  postSwapSqrtPrice,
+  inputSide,
+}: {
+  currentSqrtPrice: BigDec;
+  postSwapSqrtPrice: BigDec;
+  inputSide: ZapInInputSide;
+}): Dec {
+  const zero = new Dec(0);
+  if (
+    currentSqrtPrice.lte(new BigDec(0)) ||
+    postSwapSqrtPrice.lte(new BigDec(0))
+  )
+    return zero;
+  const spot = currentSqrtPrice.mul(currentSqrtPrice);
+  const post = postSwapSqrtPrice.mul(postSwapSqrtPrice);
+  const ratio = inputSide === "base" ? post.quo(spot) : spot.quo(post);
+  const impact = ratio.sub(new BigDec(1)).toDec();
+  // A favourable move is not a cost; clamp to <= 0 so callers can take the
+  // worst of this and the quoted impact without sign gymnastics.
+  return impact.gt(zero) ? zero : impact;
+}
+
+/**
  * Estimates the pool's sqrt price after swapping `tokenInAmount` of
  * `inputSide` INTO this pool, by walking the pool's active-liquidity tick
  * ranges with the chain's within-range swap math:
