@@ -38,6 +38,15 @@ export type PoolIncentiveFilter = NonNullable<
   NonNullable<Pool["incentives"]>["incentiveTypes"]
 >[number];
 
+/** Pool types supported by the add liquidity modal. The modal has no
+ *  cosmwasm support, so cosmwasm pools get no quick action; their liquidity
+ *  is managed through dedicated UIs linked from the pool row instead. */
+const quickAddLiquidityPoolTypes: readonly PoolType[] = [
+  "weighted",
+  "stable",
+  "concentrated",
+];
+
 // These are the options for filtering the pools.
 export const poolFilterTypes: PoolTypeFilter[] = [
   "concentrated",
@@ -322,7 +331,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             <PoolQuickActionCell
               poolId={row.original.id}
               onAddLiquidity={
-                quickAddLiquidity
+                quickAddLiquidityPoolTypes.includes(row.original.type)
                   ? () => quickAddLiquidity(row.original.id, row.original.type)
                   : undefined
               }
