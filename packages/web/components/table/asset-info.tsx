@@ -202,7 +202,8 @@ export const AssetsInfoTable: FunctionComponent<{
       sort,
       watchListDenoms,
       categories,
-      excludeVariants: selectedCategory === "topGainers",
+      excludeVariants:
+        selectedCategory === "topGainers" || selectedCategory === "new",
       excludeStablecoins: selectedCategory === "topGainers",
       minLiquidity:
         selectedCategory === "topGainers" ? 5000 : searchQuery ? 0 : undefined,

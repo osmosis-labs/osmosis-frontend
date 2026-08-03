@@ -106,6 +106,23 @@ describe("getAssets", () => {
 
         expect(assets.some((asset) => asset.coinDenom === "OSMO")).toBeFalsy();
       });
+
+      it("should still return alloy variants, which callers filter out themselves", () => {
+        const assets = getAssets({
+          assetLists: MockAssetLists,
+          categories: ["new"],
+        });
+
+        // WBTC is a variant (variantGroupKey "BTC" !== its coinMinimalDenom).
+        // The category filter is date-only; dropping variants so a newly listed
+        // constituent doesn't appear next to its alloy is the caller's job, via
+        // getTopNewAssets' canonical filter and getMarketAssets' excludeVariants.
+        const wbtc = assets.find((asset) => asset.coinDenom === "WBTC");
+
+        expect(wbtc).toBeDefined();
+        expect(wbtc?.variantGroupKey).toBe("BTC");
+        expect(wbtc?.variantGroupKey).not.toBe(wbtc?.coinMinimalDenom);
+      });
     });
   });
 });
