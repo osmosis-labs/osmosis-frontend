@@ -374,7 +374,8 @@ export const AssetLists: AssetList[] = [
             },
           },
         ],
-        variantGroupKey: "BTC",
+        variantGroupKey:
+          "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC",
         name: "Wrapped Bitcoin",
         isAlloyed: false,
         verified: true,
