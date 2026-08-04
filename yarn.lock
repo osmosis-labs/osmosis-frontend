@@ -12631,10 +12631,10 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-es5-ext@^0.10.35, es5-ext@^0.10.46, es5-ext@^0.10.50, es5-ext@^0.10.53, es5-ext@^0.10.61, es5-ext@^0.10.62, es5-ext@~0.10.14, es5-ext@~0.10.2, es5-ext@~0.10.46:
-  version "0.10.64"
-  resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.64.tgz#12e4ffb48f1ba2ea777f1fcdd1918ef73ea21714"
-  integrity sha512-p2snDhiLaXe6dahss1LddxqEm+SkuDvV8dnIQG0MWjyHpcMNfXKPE+/Cc0y+PhxJX3A4xGNeFCj5oc0BUh6deg==
+es5-ext@^0.10.35, es5-ext@^0.10.46, es5-ext@^0.10.50, es5-ext@^0.10.53, es5-ext@^0.10.61, es5-ext@^0.10.62, "es5-ext@npm:@unes/es5-ext@0.10.64-1", es5-ext@~0.10.14, es5-ext@~0.10.2, es5-ext@~0.10.46:
+  version "0.10.64-1"
+  resolved "https://registry.yarnpkg.com/@unes/es5-ext/-/es5-ext-0.10.64-1.tgz#4364fd5a1431f70c42e538982318a184b99992b0"
+  integrity sha512-nZSbffWxU0SleuK9kPrC9zwsbNmzkrSxQSa0+UOR8ghBQSlnj1wmtZZA5+ZRtgk8Xn+kaoAYPT9aOBwFZzXfFA==
   dependencies:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.3"
