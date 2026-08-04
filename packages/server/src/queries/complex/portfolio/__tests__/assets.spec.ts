@@ -1,7 +1,7 @@
 import { AssetLists as assetLists } from "../../../__tests__/mock-asset-lists";
 import { PortfolioAssetsResponse } from "../../../sidecar";
 import { calculatePercentAndFiatValues, getAllocations } from "../assets";
-import { checkAssetVariants } from "../assets";
+import { checkAssetVariants, getHeldAssets } from "../assets";
 
 const MOCK_DATA: PortfolioAssetsResponse = {
   categories: {
@@ -252,6 +252,65 @@ describe("calculatePercentAndFiatValues", () => {
         fiatValue: "$0",
       },
     ]);
+  });
+});
+
+describe("getHeldAssets", () => {
+  it("should return denoms and symbols from the total-assets breakdown, including pooled-only holdings", () => {
+    // The ibc/7ED9... denom is only present in total-assets (not user-balances),
+    // representing a holding that only exists in a pool or lock.
+    expect(getHeldAssets(MOCK_DATA.categories, assetLists)).toEqual([
+      {
+        denom: "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
+        coinDenom: "WOSMO",
+      },
+      {
+        denom:
+          "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+        coinDenom: "SAIL",
+      },
+      {
+        denom:
+          "ibc/7ED954CFFFC06EE8419387F3FC688837FF64EF264DE14219935F724EEEDBF8D3",
+        coinDenom: "CTK",
+      },
+    ]);
+  });
+
+  it("should leave coinDenom undefined for unlisted denoms", () => {
+    expect(
+      getHeldAssets(
+        {
+          ...MOCK_DATA.categories,
+          "total-assets": {
+            capitalization: "1",
+            account_coins_result: [
+              {
+                coin: { denom: "factory/osmo1notlisted/spam", amount: "1" },
+                cap_value: "1",
+              },
+            ],
+            is_best_effort: false,
+          },
+        },
+        assetLists
+      )
+    ).toEqual([{ denom: "factory/osmo1notlisted/spam", coinDenom: undefined }]);
+  });
+
+  it("should return an empty array when the breakdown is missing", () => {
+    expect(
+      getHeldAssets(
+        {
+          ...MOCK_DATA.categories,
+          "total-assets": {
+            capitalization: "0",
+            is_best_effort: true,
+          },
+        },
+        assetLists
+      )
+    ).toEqual([]);
   });
 });
 
