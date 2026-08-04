@@ -10,6 +10,7 @@ import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
+import { vultisigExtensionInfo } from "@cosmos-kit/vultisig-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 import * as prettier from "prettier";
@@ -34,6 +35,7 @@ const CosmosKitWalletList: Wallet[] = [
   cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
+  vultisigExtensionInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {

@@ -244,4 +244,14 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["vultisig-extension"],
+    logo: "/wallets/vultisig.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/vultisig-extension").then(
+        (m) => m.VultisigExtensionWallet
+      ),
+    windowPropertyName: "vultisig",
+    features: [],
+  },
 ];

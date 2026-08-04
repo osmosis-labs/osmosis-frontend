@@ -3057,6 +3057,20 @@
     "@cosmos-kit/trust-extension" "^2.15.1"
     "@cosmos-kit/trust-mobile" "^2.15.1"
 
+"@cosmos-kit/vultisig-extension@^2.17.1":
+  version "2.17.1"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/vultisig-extension/-/vultisig-extension-2.17.1.tgz#9c672b038ed0f70972a52a65f1f1d4e9e0ae84b4"
+  integrity sha512-n0uunlCQTtiqFq2UlP7AOlVQ9P4w13tpxWNt0mqajQc/QYX62aCBISGE6qjLi/lBe1CKjXQrhR3Efmami24zgQ==
+  dependencies:
+    "@cosmos-kit/core" "^2.18.1"
+
+"@cosmos-kit/vultisig@^2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/vultisig/-/vultisig-2.16.1.tgz#138999f4ef5d5473290fc2a0c3f3d12033245754"
+  integrity sha512-L6yqibdnK2v76uhLgwg8qokEu2lffnhRYDXpLs0p8NKXwcy1AHa9nyKWLuooa9VGLccA+xoFTMzw3iVUoqYG4Q==
+  dependencies:
+    "@cosmos-kit/vultisig-extension" "^2.17.1"
+
 "@cosmos-kit/walletconnect@^2.15.1":
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/walletconnect/-/walletconnect-2.15.1.tgz#7552865ad9670caba0e36d886f7c6436bc6632e4"
