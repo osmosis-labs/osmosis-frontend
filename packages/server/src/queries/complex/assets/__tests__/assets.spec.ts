@@ -1,5 +1,37 @@
 import { AssetLists as MockAssetLists } from "../../../__tests__/mock-asset-lists";
+import { queryAllTokenData } from "../../../data-services";
 import { getAsset, getAssets, getAssetWithVariants } from "../index";
+import { mapGetMarketAssets } from "../market";
+
+jest.mock("../../../data-services", () => {
+  const actual = jest.requireActual("../../../data-services");
+
+  return {
+    ...actual,
+    queryAllTokenData: jest.fn(),
+  };
+});
+
+const mockedQueryAllTokenData = jest.mocked(queryAllTokenData);
+
+const makeTokenData = (denom: string, symbol: string) => ({
+  price: 1,
+  denom,
+  symbol,
+  main: true,
+  liquidity: 1_000,
+  liquidity_24h_change: 0,
+  volume_24h: 1_000,
+  volume_24h_change: 0,
+  name: symbol,
+  price_1h_change: 0,
+  price_24h_change: 0,
+  price_7d_change: 0,
+  exponent: 6,
+  display: symbol,
+  coingecko_id: null,
+  coingecko_mcap: null,
+});
 
 describe("getAssets", () => {
   describe("search", () => {
@@ -107,21 +139,27 @@ describe("getAssets", () => {
         expect(assets.some((asset) => asset.coinDenom === "OSMO")).toBeFalsy();
       });
 
-      it("should still return alloy variants, which callers filter out themselves", () => {
-        const assets = getAssets({
+      it("should exclude variants from the new assets table when requested", async () => {
+        const wbtc = getAsset({ assetLists: MockAssetLists, anyDenom: "WBTC" });
+        const badkid = getAsset({
           assetLists: MockAssetLists,
-          categories: ["new"],
+          anyDenom: "BADKID",
         });
 
-        // WBTC is a variant (variantGroupKey "BTC" !== its coinMinimalDenom).
-        // The category filter is date-only; dropping variants so a newly listed
-        // constituent doesn't appear next to its alloy is the caller's job, via
-        // getTopNewAssets' canonical filter and getMarketAssets' excludeVariants.
-        const wbtc = assets.find((asset) => asset.coinDenom === "WBTC");
+        mockedQueryAllTokenData.mockResolvedValueOnce([
+          makeTokenData(wbtc.coinMinimalDenom, wbtc.coinDenom),
+          makeTokenData(badkid.coinMinimalDenom, badkid.coinDenom),
+        ]);
 
-        expect(wbtc).toBeDefined();
-        expect(wbtc?.variantGroupKey).toBe("BTC");
-        expect(wbtc?.variantGroupKey).not.toBe(wbtc?.coinMinimalDenom);
+        const assets = await mapGetMarketAssets({
+          assetLists: MockAssetLists,
+          chainList: [],
+          categories: ["new"],
+          excludeVariants: true,
+        });
+
+        expect(assets.map(({ coinDenom }) => coinDenom)).toContain("BADKID");
+        expect(assets.map(({ coinDenom }) => coinDenom)).not.toContain("WBTC");
       });
     });
   });
