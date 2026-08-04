@@ -32,6 +32,7 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDailyEpochCountdown,
+  useFeatureFlags,
   useLockTokenConfig,
   useSuperfluidPool,
   useTranslation,
@@ -57,6 +58,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading } = useWalletSelect();
+    const { incentivizePool } = useFeatureFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -322,7 +324,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             onAddLiquidity={onAddLiquidity}
           />
         )}
-        {pool && showIncentivizeModal && (
+        {pool && incentivizePool && showIncentivizeModal && (
           <IncentivizePoolModal
             isOpen={true}
             poolId={pool.id}
@@ -771,14 +773,16 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         {t("pool.bondShares")}
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-fit"
-                      onClick={() => setShowIncentivizeModal(true)}
-                    >
-                      {t("incentivizePool.entry")}
-                    </Button>
+                    {incentivizePool && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-fit"
+                        onClick={() => setShowIncentivizeModal(true)}
+                      >
+                        {t("incentivizePool.entry")}
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 1.5xl:grid-cols-1">
