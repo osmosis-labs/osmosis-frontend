@@ -28,6 +28,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   sqsActiveOrders: false,
   alloyedAssets: false,
   assetAlerts: false,
+  incentivizePool: false,
   bridgeDepositAddress: false,
   nomicWithdrawAmount: false,
   swapToolTopGainers: false,

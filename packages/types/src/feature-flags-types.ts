@@ -22,6 +22,7 @@ export type AvailableFlags =
   | "sqsActiveOrders"
   | "alloyedAssets"
   | "assetAlerts"
+  | "incentivizePool"
   | "bridgeDepositAddress"
   | "nomicWithdrawAmount"
   | "swapToolTopGainers"

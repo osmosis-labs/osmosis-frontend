@@ -10,13 +10,14 @@ import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetBreakdownChart } from "~/components/chart";
 import { Button as UIButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { IncentivizePoolModal } from "~/modals";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
 }> = observer(({ pool }) => {
   const { t } = useTranslation();
+  const { incentivizePool } = useFeatureFlags();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
   const [showIncentivizeModal, setShowIncentivizeModal] = useState(false);
@@ -42,7 +43,10 @@ export const BasePoolDetails: FunctionComponent<{
   const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero;
   const isInactivePool = !isUninitializedPool && isTickLiquidityZero && hasTVL;
   const canIncentivize =
-    pool.type === "concentrated" && !isUninitializedPool && !isInactivePool;
+    incentivizePool &&
+    pool.type === "concentrated" &&
+    !isUninitializedPool &&
+    !isInactivePool;
 
   const poolNameAssetLinks = pool.reserveCoins.map(
     ({ denom, currency }, index) => (

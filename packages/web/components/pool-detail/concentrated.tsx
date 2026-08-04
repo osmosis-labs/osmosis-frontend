@@ -61,6 +61,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading } = useWalletSelect();
+    const { incentivizePool } = useFeatureFlags();
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
@@ -191,7 +192,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             onRequestClose={() => setActiveModal(null)}
           />
         )}
-        {pool && activeModal === "incentivize" && (
+        {pool && incentivizePool && activeModal === "incentivize" && (
           <IncentivizePoolModal
             isOpen={true}
             poolId={pool.id}
@@ -607,9 +608,8 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
         </div>
       </div>
       {/* Incentivize entry sits to the right of the Total APR card, filling
-          the dead space beside it. Rendered regardless of the aprBreakdown
-          flag so the feature is always reachable (matching the share-pool
-          entry). */}
+          the dead space beside it. Gated on its own incentivizePool flag, not
+          on aprBreakdown, so the two can be toggled independently. */}
       <div className="flex shrink-0 items-center gap-4">
         {featureFlags.aprBreakdown && (
           <SkeletonLoader isLoaded={!isLoadingIncentives}>
@@ -620,14 +620,16 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             />
           </SkeletonLoader>
         )}
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-fit"
-          onClick={onIncentivize}
-        >
-          {t("incentivizePool.entry")}
-        </Button>
+        {featureFlags.incentivizePool && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-fit"
+            onClick={onIncentivize}
+          >
+            {t("incentivizePool.entry")}
+          </Button>
+        )}
       </div>
 
       {hasIncentives && (
