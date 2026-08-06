@@ -14,4 +14,5 @@ export * from "./feature-flag";
 /** Config for displaying IBC assets in a human-friendly way. */
 export * from "./analytics-events";
 export * from "./env";
+export * from "./incentives";
 export * from "./pools";

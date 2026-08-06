@@ -87,6 +87,13 @@
     "sha.js": "^2.4.12",
     "cipher-base": "^1.0.5",
     "handlebars": "^4.7.9",
-    "joi": "^17.13.4"
+    "joi": "^17.13.4",
+    "@keplr-wallet/background/axios": "^0.33.0",
+    "@keplr-wallet/cosmos/axios": "^0.33.0",
+    "@keplr-wallet/ens/axios": "^0.33.0",
+    "@keplr-wallet/types/axios": "^0.33.0",
+    "@0xsquid/sdk/axios": "^0.33.0",
+    "@terra-money/feather.js/axios": "^0.33.0",
+    "es5-ext": "npm:@unes/es5-ext@0.10.64-1"
   }
 }

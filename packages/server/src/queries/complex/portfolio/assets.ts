@@ -143,12 +143,25 @@ export function calculatePercentAndFiatValues(
   return [...assets, other];
 }
 
+export type HeldAsset = {
+  /** Minimal denom, e.g. `ibc/HASH`. */
+  denom: string;
+  /** Display symbol from the asset list, when the asset is listed. */
+  coinDenom?: string;
+};
+
 export type PortfolioAssets = {
   all: Allocation[];
   assets: Allocation[];
   available: Allocation[];
   totalCap: PricePretty;
   assetVariants: AssetVariant[];
+  /**
+   * Assets the user holds across all categories (bank balances, staked,
+   * unstaking, in-locks, unclaimed rewards, and pooled — GAMM shares and
+   * CL positions are broken down to underlying denoms by sidecar).
+   */
+  heldAssets: HeldAsset[];
 };
 
 /**
@@ -201,13 +214,38 @@ export async function getPortfolioAssets({
   // check for asset variants, alloys and canonical assets such as USDC
   const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
 
+  const heldAssets = getHeldAssets(categories, assetLists);
+
   return {
     all: allocations,
     assets,
     available,
     totalCap,
     assetVariants,
+    heldAssets,
   };
+}
+
+/**
+ * Extracts the assets the user holds from the total-assets category, which
+ * sidecar composes from every category (bank balances, staked, unstaking,
+ * in-locks, unclaimed rewards, and pooled) in underlying denoms, and pairs
+ * each denom with its asset list display symbol when listed.
+ */
+export function getHeldAssets(
+  categories: Categories,
+  assetLists: AssetList[]
+): HeldAsset[] {
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
+
+  return (
+    categories["total-assets"]?.account_coins_result?.map(({ coin }) => ({
+      denom: coin.denom,
+      coinDenom: assetListAssets.find(
+        (asset) => asset.coinMinimalDenom === coin.denom
+      )?.symbol,
+    })) ?? []
+  );
 }
 
 export function checkAssetVariants(

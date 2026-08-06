@@ -56,6 +56,31 @@ type SortKey =
     >["keyPath"]
   | undefined;
 
+/** Query filters that depend only on which category is selected.
+ *
+ *  Top Gainers needs the market-quality gates because a shallow-pool price blip
+ *  otherwise fabricates a fake gainer. New only needs variant exclusion: it is
+ *  date-ordered, so a liquidity floor would hide legitimately new small
+ *  listings, but a newly listed alloy constituent should not appear next to the
+ *  alloy it backs. */
+export function getCategoryFilters(selectedCategory: string | undefined): {
+  excludeVariants: boolean;
+  excludeStablecoins: boolean;
+  minLiquidity?: number;
+  minVolume24h?: number;
+  maxPriceChange24h?: number;
+} {
+  const isTopGainers = selectedCategory === "topGainers";
+
+  return {
+    excludeVariants: isTopGainers || selectedCategory === "new",
+    excludeStablecoins: isTopGainers,
+    minLiquidity: isTopGainers ? 5000 : undefined,
+    minVolume24h: isTopGainers ? 1000 : undefined,
+    maxPriceChange24h: isTopGainers ? 1000 : undefined,
+  };
+}
+
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
@@ -114,6 +139,10 @@ export const AssetsInfoTable: FunctionComponent<{
       selectedCategory && selectedCategory !== "topGainers"
         ? [selectedCategory]
         : undefined,
+    [selectedCategory]
+  );
+  const categoryFilters = useMemo(
+    () => getCategoryFilters(selectedCategory),
     [selectedCategory]
   );
 
@@ -202,12 +231,9 @@ export const AssetsInfoTable: FunctionComponent<{
       sort,
       watchListDenoms,
       categories,
-      excludeVariants: selectedCategory === "topGainers",
-      excludeStablecoins: selectedCategory === "topGainers",
+      ...categoryFilters,
       minLiquidity:
-        selectedCategory === "topGainers" ? 5000 : searchQuery ? 0 : undefined,
-      minVolume24h: selectedCategory === "topGainers" ? 1000 : undefined,
-      maxPriceChange24h: selectedCategory === "topGainers" ? 1000 : undefined,
+        categoryFilters.minLiquidity ?? (searchQuery ? 0 : undefined),
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

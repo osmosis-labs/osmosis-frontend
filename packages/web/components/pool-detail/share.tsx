@@ -32,6 +32,7 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDailyEpochCountdown,
+  useFeatureFlags,
   useLockTokenConfig,
   useSuperfluidPool,
   useTranslation,
@@ -40,6 +41,7 @@ import {
 } from "~/hooks";
 import {
   AddLiquidityModal,
+  IncentivizePoolModal,
   LockShares,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
@@ -56,6 +58,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading } = useWalletSelect();
+    const { incentivizePool } = useFeatureFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -155,6 +158,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     } = useLockTokenConfig(sharePool?.currency);
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
       useState(false);
+    const [showIncentivizeModal, setShowIncentivizeModal] = useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
 
     /**
@@ -318,6 +322,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             poolId={pool.id}
             onRequestClose={setShowModal(setShowAddLiquidityModal, false)}
             onAddLiquidity={onAddLiquidity}
+          />
+        )}
+        {pool && incentivizePool && showIncentivizeModal && (
+          <IncentivizePoolModal
+            isOpen={true}
+            poolId={pool.id}
+            isConcentrated={false}
+            onRequestClose={setShowModal(setShowIncentivizeModal, false)}
           />
         )}
         {pool &&
@@ -730,36 +742,48 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
                   </div>
-                  {Boolean(account) &&
-                  (isLoadingBondDurations || isLoadingUserSharePool) ? (
-                    <Spinner />
-                  ) : level2Disabled ? (
-                    <h6 className="text-osmoverse-100">
-                      {t("pool.checkBackForBondingRewards")}
-                    </h6>
-                  ) : (
-                    <Button
-                      className={classNames("w-64 border-none md:w-full", {
-                        "!border-0 bg-gradient-positive text-osmoverse-900":
-                          levelCta === 2,
-                      })}
-                      disabled={
-                        // isFetchingUserSharePool is checked within levelCta
-                        levelCta !== 2 || isRefetchingBondDurations
-                      }
-                      isLoading={
-                        Boolean(account) &&
-                        (isLoadingBondDurations || isLoadingUserSharePool)
-                      }
-                      loadingText={t("pool.bondShares")}
-                      onClick={() => {
-                        logEvent([E.bondSharesClicked, baseEventInfo]);
-                        setShowLockLPTokenModal(true);
-                      }}
-                    >
-                      {t("pool.bondShares")}
-                    </Button>
-                  )}
+                  <div className="flex flex-col items-end gap-2 lg:items-start">
+                    {Boolean(account) &&
+                    (isLoadingBondDurations || isLoadingUserSharePool) ? (
+                      <Spinner />
+                    ) : level2Disabled ? (
+                      <h6 className="text-osmoverse-100">
+                        {t("pool.checkBackForBondingRewards")}
+                      </h6>
+                    ) : (
+                      <Button
+                        className={classNames("w-64 border-none md:w-full", {
+                          "!border-0 bg-gradient-positive text-osmoverse-900":
+                            levelCta === 2,
+                        })}
+                        disabled={
+                          // isFetchingUserSharePool is checked within levelCta
+                          levelCta !== 2 || isRefetchingBondDurations
+                        }
+                        isLoading={
+                          Boolean(account) &&
+                          (isLoadingBondDurations || isLoadingUserSharePool)
+                        }
+                        loadingText={t("pool.bondShares")}
+                        onClick={() => {
+                          logEvent([E.bondSharesClicked, baseEventInfo]);
+                          setShowLockLPTokenModal(true);
+                        }}
+                      >
+                        {t("pool.bondShares")}
+                      </Button>
+                    )}
+                    {incentivizePool && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-fit"
+                        onClick={() => setShowIncentivizeModal(true)}
+                      >
+                        {t("incentivizePool.entry")}
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 1.5xl:grid-cols-1">
                   {bondDurations.map((bondDuration) => (

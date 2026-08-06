@@ -2,6 +2,7 @@ export * from "./authenticator";
 export * from "./balancer";
 export * from "./concentrated";
 export * from "./gamm";
+export * from "./incentives";
 export * from "./lockup";
 export * from "./poolmanager";
 export * from "./stableswap";

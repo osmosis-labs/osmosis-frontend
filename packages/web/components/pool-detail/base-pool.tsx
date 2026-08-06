@@ -1,4 +1,4 @@
-import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -9,14 +9,44 @@ import { useMeasure } from "react-use";
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetBreakdownChart } from "~/components/chart";
-import { useTranslation } from "~/hooks";
+import { Button as UIButton } from "~/components/ui/button";
+import { useFeatureFlags, useTranslation } from "~/hooks";
+import { IncentivizePoolModal } from "~/modals";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
 }> = observer(({ pool }) => {
   const { t } = useTranslation();
+  const { incentivizePool } = useFeatureFlags();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
+  const [showIncentivizeModal, setShowIncentivizeModal] = useState(false);
+  // This fallback view renders mobile concentrated pools (the desktop CL and
+  // share views carry their own Incentivize entry). Only concentrated pools
+  // are wired into the gauge flow here; the modal composes a no-lock Msg.
+  //
+  // Mirror the desktop CL view's gating: hide the entry for uninitialized
+  // (no first position created; sqrt price and tick liquidity both zero) and
+  // inactive (has TVL but no in-range liquidity) pools, so mobile and desktop
+  // offer Incentivize under the same conditions.
+  const poolRaw =
+    pool.type === "concentrated"
+      ? (pool.raw as ConcentratedPoolRawResponse)
+      : null;
+  const isSqrtPriceZero = poolRaw?.current_sqrt_price
+    ? parseFloat(poolRaw.current_sqrt_price) === 0
+    : false;
+  const isTickLiquidityZero = poolRaw?.current_tick_liquidity
+    ? parseFloat(poolRaw.current_tick_liquidity) === 0
+    : false;
+  const hasTVL = pool.tvlUnknown || !pool.totalFiatValueLocked.toDec().isZero();
+  const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero;
+  const isInactivePool = !isUninitializedPool && isTickLiquidityZero && hasTVL;
+  const canIncentivize =
+    incentivizePool &&
+    pool.type === "concentrated" &&
+    !isUninitializedPool &&
+    !isInactivePool;
 
   const poolNameAssetLinks = pool.reserveCoins.map(
     ({ denom, currency }, index) => (
@@ -122,8 +152,26 @@ export const BasePoolDetails: FunctionComponent<{
               <Icon id="chevron-down" width="14" height="8" />
             </div>
           </Button>
+          {canIncentivize && (
+            <UIButton
+              variant="outline"
+              size="sm"
+              className="mx-auto w-fit"
+              onClick={() => setShowIncentivizeModal(true)}
+            >
+              {t("incentivizePool.entry")}
+            </UIButton>
+          )}
         </div>
       </section>
+      {canIncentivize && showIncentivizeModal && (
+        <IncentivizePoolModal
+          isOpen={true}
+          poolId={pool.id}
+          isConcentrated={true}
+          onRequestClose={() => setShowIncentivizeModal(false)}
+        />
+      )}
     </main>
   );
 });
