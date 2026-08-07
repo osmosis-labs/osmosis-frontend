@@ -1,6 +1,16 @@
 import type { Bridge } from "@osmosis-labs/bridge";
 
-export const BridgeLogoUrls: Record<Bridge, string> = {
+/**
+ * Bridges whose provider was removed but whose past transfers still render in
+ * transfer history (persisted `TxSnapshot`s outlive the provider, and the
+ * transaction-details panel looks the logo up by the snapshot's provider id).
+ * Must stay in sync with the historical status providers registered in
+ * `~/stores/root.ts`: only providers with a status source reach the render
+ * site, so a bridge belongs here exactly when its status provider is kept.
+ */
+type HistoricalBridge = "Int3face";
+
+export const BridgeLogoUrls: Record<Bridge | HistoricalBridge, string> = {
   Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
   IBC: "/bridges/ibc.svg",
@@ -20,7 +30,6 @@ export const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Generic: "/external-bridges/generic.svg",
   Nitro: "/bridges/nitro.svg",
   Penumbra: "/networks/penumbra.svg",
-  Int3face: "/bridges/int3face.svg",
 };
 
 /**

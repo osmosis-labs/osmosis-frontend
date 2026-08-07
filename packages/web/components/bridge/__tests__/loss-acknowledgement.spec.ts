@@ -26,7 +26,7 @@ describe("normalizePriceImpact", () => {
     );
   });
 
-  // The regression this guards: bundled-swap providers (int3face, Nomic) report
+  // The regression this guards: Nomic (a bundled-swap provider) reports
   // impact negatively, so an un-normalized figure fails `gte` against the gate
   // and the warning silently never fires — no error, no misrender, just an
   // ungated high-loss transfer.
@@ -75,7 +75,7 @@ describe("shouldResetAcknowledgement", () => {
 
   describe("transfer identity changes", () => {
     it.each([
-      ["provider", { providerId: "Int3face" as const }],
+      ["provider", { providerId: "Wormhole" as const }],
       ["from chain", { fromChainId: "osmosis-2" }],
       ["to chain", { toChainId: "dogecoin" }],
       ["from asset", { fromAssetAddress: "other-denom" }],

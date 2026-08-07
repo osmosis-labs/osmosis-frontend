@@ -88,7 +88,7 @@ describe("useLossAcknowledgement", () => {
     );
 
     act(() => result.current.setLossAcknowledged(true));
-    rerender({ current: figures({ providerId: "Int3face" }) });
+    rerender({ current: figures({ providerId: "Wormhole" }) });
 
     expect(result.current.hasAcknowledgedLoss).toBe(false);
   });
