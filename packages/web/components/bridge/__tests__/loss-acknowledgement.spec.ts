@@ -1,6 +1,7 @@
 import { Dec } from "@osmosis-labs/unit";
 
 import {
+  deriveMemoFlags,
   hasActiveWarning,
   needsAcknowledgement,
   normalizePriceImpact,
@@ -196,5 +197,51 @@ describe("needsAcknowledgement", () => {
       slippage: warnedSlippage.add(AckReArmTolerance).add(new Dec(0.0001)),
     });
     expect(needsAcknowledgement(baseFigures(), worse)).toBe(true);
+  });
+});
+
+describe("deriveMemoFlags", () => {
+  it("is undefined when nothing was acknowledged", () => {
+    expect(deriveMemoFlags(null)).toBeUndefined();
+  });
+
+  it("stamps only the slippage figure when only the total-loss warning fired", () => {
+    const flags = deriveMemoFlags(baseFigures());
+    expect(flags?.slippage).toEqual(warnedSlippage);
+    expect(flags?.priceImpact).toBeUndefined();
+  });
+
+  it("stamps only the price-impact figure when only its warning fired", () => {
+    const impact = new Dec("0.124");
+    const flags = deriveMemoFlags(
+      baseFigures({
+        warnSlippage: false,
+        warnPriceImpact: true,
+        priceImpact: impact,
+      })
+    );
+    expect(flags?.priceImpact).toEqual(impact);
+    expect(flags?.slippage).toBeUndefined();
+  });
+
+  it("stamps both acknowledged figures when both warnings fired", () => {
+    const impact = new Dec("0.124");
+    const flags = deriveMemoFlags(
+      baseFigures({ warnPriceImpact: true, priceImpact: impact })
+    );
+    expect(flags?.slippage).toEqual(warnedSlippage);
+    expect(flags?.priceImpact).toEqual(impact);
+  });
+
+  it("yields no flags for an unknown-impact-only acknowledgement (no figure to stamp)", () => {
+    expect(
+      deriveMemoFlags(
+        baseFigures({
+          warnSlippage: false,
+          warnPriceImpact: false,
+          swapImpactUnknown: true,
+        })
+      )
+    ).toBeUndefined();
   });
 });

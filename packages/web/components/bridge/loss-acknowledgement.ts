@@ -1,4 +1,5 @@
 import type { Bridge } from "@osmosis-labs/bridge";
+import type { TxFeMemoFlags } from "@osmosis-labs/stores";
 import { Dec } from "@osmosis-labs/unit";
 
 import { AckReArmTolerance } from "~/config/trade-warnings";
@@ -118,4 +119,23 @@ export function shouldResetAcknowledgement(
   }
 
   return false;
+}
+
+/**
+ * Tx auth-memo flags (MTN-137) derived from the acknowledged basis — never
+ * from live sign-time figures, so the memo can only claim acceptance of
+ * numbers the user was actually shown. A figure is stamped iff its warning
+ * fired and was acknowledged; an unknown-impact acknowledgement has no figure
+ * to stamp, so it yields no flags.
+ */
+export function deriveMemoFlags(
+  basis: LossFigures | null
+): TxFeMemoFlags | undefined {
+  if (!basis) return undefined;
+
+  const flags: TxFeMemoFlags = {};
+  if (basis.warnSlippage) flags.slippage = basis.slippage;
+  if (basis.warnPriceImpact) flags.priceImpact = basis.priceImpact;
+
+  return flags.slippage || flags.priceImpact ? flags : undefined;
 }
