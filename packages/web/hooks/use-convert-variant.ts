@@ -1,4 +1,4 @@
-import type { AssetVariant } from "@osmosis-labs/server";
+import { type AssetVariant, isOneToOnePoolType } from "@osmosis-labs/server";
 import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
@@ -201,16 +201,28 @@ export async function getConvertVariantMessages(
     throw new Error("No quote found");
   }
 
-  // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
-  // so, let's remove slippage to convert more of the asset
-  const isAlloyPoolSwap =
+  // A conversion routing through a single 1:1 pool (transmuter or alloyed) has a
+  // fixed ratio, so we demand the exact quoted amount out rather than silently
+  // accepting less. Any other shape (a split, a multi-hop, or a price-moving
+  // pool) can drift between quote and execution and keeps a slippage allowance.
+  //
+  // Not every variant conversion is an alloy conversion: `variantGroupKey` also
+  // groups non-alloy canonical assets, whose conversions route through ordinary
+  // AMMs. The pool-type check, not the caller, is what makes this safe.
+  //
+  // NOTE: match the exact CosmWasm subtypes. On the quote path
+  // `getCosmwasmPoolTypeFromCodeId` has already narrowed `type`, so a
+  // `startsWith("cosmwasm")` prefix test would also catch Astroport PCL,
+  // WhiteWhale and orderbook pools, which are not 1:1.
+  const [singleRoute] = quote.split;
+  const isOneToOneSwap =
     quote.split.length === 1 &&
-    quote.split[0].pools.length === 0 &&
-    quote.split[0].pools[0].type.startsWith("cosmwasm");
+    singleRoute.pools.length === 1 &&
+    isOneToOnePoolType(singleRoute.pools[0].type);
 
   return await getSwapMessages({
     coinAmount: amount,
-    maxSlippage: isAlloyPoolSwap ? "0" : "0.05",
+    maxSlippage: isOneToOneSwap ? "0" : "0.05",
     quote,
     tokenInCoinMinimalDenom: tokenInDenom,
     tokenOutCoinMinimalDenom: tokenOutDenom,
