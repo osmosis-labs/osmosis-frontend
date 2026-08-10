@@ -6,15 +6,15 @@ import {
   ToastContent,
   ToastOptions as ReactToastifyOptions,
 } from "react-toastify";
-import { useLocalStorage } from "react-use";
 
-import { Alert, ToastType } from "~/components/alert";
+import { Alert, AlloyedAssetsAlert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
+import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 
 type ToastOptions = Partial<ReactToastifyOptions> & {
@@ -22,10 +22,20 @@ type ToastOptions = Partial<ReactToastifyOptions> & {
 };
 
 export function displayToast(
+  alert: AlloyedAssetsAlert,
+  type: ToastType.ALLOYED_ASSETS,
+  toastOptions?: ToastOptions
+): void;
+export function displayToast(
   alert: Alert,
+  type: Exclude<ToastType, ToastType.ALLOYED_ASSETS>,
+  toastOptions?: ToastOptions
+): void;
+export function displayToast(
+  alert: Alert | AlloyedAssetsAlert,
   type: ToastType,
   toastOptions?: ToastOptions
-) {
+): void {
   toastOptions = {
     position: "top-right",
     autoClose: type === ToastType.LOADING ? 2000 : 7000,
@@ -72,10 +82,21 @@ export function displayToast(
     case ToastType.ONE_CLICK_TRADING:
       showToast(<OneClickTradingToast {...alert} />, toastOptions);
       break;
-    case ToastType.ALLOYED_ASSETS:
+    case ToastType.ALLOYED_ASSETS: {
+      if (
+        !("variantGroupKeys" in alert) ||
+        alert.variantGroupKeys.length === 0
+      ) {
+        throw new Error("Alloyed assets toast requires variant group keys");
+      }
+
       showToast(
         ({ closeToast }) => (
-          <AlloyedAssetsToast {...alert} closeToast={closeToast} />
+          <AlloyedAssetsToast
+            {...alert}
+            variantGroupKeys={alert.variantGroupKeys}
+            closeToast={closeToast}
+          />
         ),
         {
           ...toastOptions,
@@ -85,6 +106,7 @@ export function displayToast(
         }
       );
       break;
+    }
   }
 }
 
@@ -221,12 +243,14 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   </div>
 );
 
-export const AlloyedAssetsToastDoNotShowKey =
-  "do-not-show-alloyed-assets-toast";
-
 const AlloyedAssetsToast: FunctionComponent<
-  Alert & { closeToast: () => void }
-> = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  AlloyedAssetsAlert & { closeToast: () => void }
+> = ({
+  titleTranslationKey,
+  captionTranslationKey,
+  variantGroupKeys,
+  closeToast,
+}) => {
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
   // should close toast if screen size changes to mobile while shown
@@ -239,18 +263,21 @@ const AlloyedAssetsToast: FunctionComponent<
 
   const { setIsOpen } = useAssetVariantsModalStore();
 
-  const [, setDoNotShowAgain] = useLocalStorage(
-    AlloyedAssetsToastDoNotShowKey,
-    false
-  );
+  const { dismissGroups } = useAlloyedAssetsToastDismissal();
 
-  const [isRemindMeLaterChecked, setIsRemindMeLaterChecked] = useState(false);
+  const [isDontShowAgainChecked, setIsDontShowAgainChecked] = useState(false);
 
   const onDismiss = () => {
-    if (isRemindMeLaterChecked) {
-      setDoNotShowAgain(false);
-    } else {
-      setDoNotShowAgain(true);
+    // Opt-in suppression: the default (unchecked) only closes the toast, so it
+    // can return in a future session. Ticking "Don't show again" suppresses just
+    // the groups this toast was showing, never a future alloy the user has not
+    // been told about yet.
+    //
+    // The polarity matters. This was previously an inverted "Remind me later"
+    // checkbox whose *unchecked* default suppressed permanently, so anyone who
+    // closed the toast without reading it opted out for good.
+    if (isDontShowAgainChecked) {
+      dismissGroups(variantGroupKeys);
     }
 
     logEvent([EventName.ConvertVariants.declineFlow]);
@@ -309,13 +336,13 @@ const AlloyedAssetsToast: FunctionComponent<
         )}
         <label className="my-1 flex items-center gap-2">
           <Checkbox
-            checked={isRemindMeLaterChecked}
+            checked={isDontShowAgainChecked}
             onCheckedChange={() =>
-              setIsRemindMeLaterChecked(!isRemindMeLaterChecked)
+              setIsDontShowAgainChecked(!isDontShowAgainChecked)
             }
           />
           <span className="text-body2 text-osmoverse-300">
-            {t("alloyedAssets.remindMeLater")}
+            {t("alloyedAssets.dontShowAgain")}
           </span>
         </label>
         <div>

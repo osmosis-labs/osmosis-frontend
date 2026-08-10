@@ -1481,7 +1481,7 @@
   "alloyedAssets": {
     "title": "Variantes détectées",
     "caption": "Dites adieu à toutes ces variantes d'actifs déroutantes. Dites bonjour à une expérience plus fluide sur Osmosis.",
-    "remindMeLater": "Rappelle-moi plus tard",
+    "dontShowAgain": "Ne plus afficher",
     "dismiss": "Rejeter",
     "convert": "Convertir"
   },
