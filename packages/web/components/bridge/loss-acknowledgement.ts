@@ -27,7 +27,11 @@ export interface LossFigures {
   /** Debounced input amount in base units. */
   inputAmount: string;
 
-  /** Total value loss as a fraction (0..1). */
+  /**
+   * Total value loss as a fraction (0..1). Stamped into the auth memo as
+   * `loss=` — the field keeps its historical name, the memo key does not
+   * (see `TxFeMemoFlags.totalLoss`).
+   */
   slippage: Dec;
   /**
    * Bundled-swap price impact as a positive magnitude fraction (0..1).
@@ -134,8 +138,8 @@ export function deriveMemoFlags(
   if (!basis) return undefined;
 
   const flags: TxFeMemoFlags = {};
-  if (basis.warnSlippage) flags.slippage = basis.slippage;
+  if (basis.warnSlippage) flags.totalLoss = basis.slippage;
   if (basis.warnPriceImpact) flags.priceImpact = basis.priceImpact;
 
-  return flags.slippage || flags.priceImpact ? flags : undefined;
+  return flags.totalLoss || flags.priceImpact ? flags : undefined;
 }

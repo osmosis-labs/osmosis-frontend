@@ -205,9 +205,9 @@ describe("deriveMemoFlags", () => {
     expect(deriveMemoFlags(null)).toBeUndefined();
   });
 
-  it("stamps only the slippage figure when only the total-loss warning fired", () => {
+  it("stamps only the total-loss figure when only the total-loss warning fired", () => {
     const flags = deriveMemoFlags(baseFigures());
-    expect(flags?.slippage).toEqual(warnedSlippage);
+    expect(flags?.totalLoss).toEqual(warnedSlippage);
     expect(flags?.priceImpact).toBeUndefined();
   });
 
@@ -221,7 +221,7 @@ describe("deriveMemoFlags", () => {
       })
     );
     expect(flags?.priceImpact).toEqual(impact);
-    expect(flags?.slippage).toBeUndefined();
+    expect(flags?.totalLoss).toBeUndefined();
   });
 
   it("stamps both acknowledged figures when both warnings fired", () => {
@@ -229,7 +229,7 @@ describe("deriveMemoFlags", () => {
     const flags = deriveMemoFlags(
       baseFigures({ warnPriceImpact: true, priceImpact: impact })
     );
-    expect(flags?.slippage).toEqual(warnedSlippage);
+    expect(flags?.totalLoss).toEqual(warnedSlippage);
     expect(flags?.priceImpact).toEqual(impact);
   });
 
