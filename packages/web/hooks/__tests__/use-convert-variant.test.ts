@@ -1,6 +1,12 @@
 import type { AssetVariant } from "@osmosis-labs/server";
 import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
-import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 
 import {
   checkLargeAmountDiff,
@@ -38,31 +44,37 @@ describe("getConvertVariantMessages slippage", () => {
   const VARIANT_DENOM = "ibc/VARIANT";
   const ALLOY_DENOM = "factory/osmo1alloycontract/alloyed/allTEST";
 
-  const currency = {
+  const variantCurrency = {
     coinDenom: "TEST.variant",
     coinMinimalDenom: VARIANT_DENOM,
     coinDecimals: 6,
   };
 
+  const alloyCurrency = {
+    coinDenom: "TEST",
+    coinMinimalDenom: ALLOY_DENOM,
+    coinDecimals: 6,
+  };
+
   const variant = {
     name: "Test Variant",
-    amount: new CoinPretty(currency, new Dec("1000000")),
+    amount: new CoinPretty(variantCurrency, new Dec("1000000")),
     fiatValue: new PricePretty(
       { currency: "usd", symbol: "$", maxDecimals: 2, locale: "en-US" },
       new Dec("1")
     ),
-    canonicalAsset: {
-      coinDenom: "TEST",
-      coinMinimalDenom: ALLOY_DENOM,
-      coinDecimals: 6,
-    },
+    canonicalAsset: alloyCurrency,
   } as unknown as AssetVariant;
 
-  /** Minimal quote shaped like the tRPC route output. Pool `type` here is the
-   *  CosmWasm *subtype*, because `makeDisplayableOutGivenInSplit` rewrites the
-   *  raw type via `getCosmwasmPoolTypeFromCodeId` whenever a codeId is present
-   *  (which it is for every CosmWasm pool). Fixtures using a bare "cosmwasm"
-   *  would assert a shape production does not emit. */
+  /** Quote shaped like the tRPC route output, i.e. post-
+   *  `makeDisplayableOutGivenInSplit`. Two details matter:
+   *
+   *  - `type` is the CosmWasm *subtype*. That transform rewrites the raw type
+   *    via `getCosmwasmPoolTypeFromCodeId`, so a bare "cosmwasm" would assert a
+   *    shape production does not emit.
+   *  - the displayable pool carries `spreadFactor` / `dynamicSpreadFactor` /
+   *    `inCurrency` / `outCurrency`, and NOT `codeId` or `swapFee`; the code id
+   *    is consumed by the transform and dropped. */
   const makeQuote = (split: { poolTypes: string[] }[]): QuoteOutGivenIn =>
     ({
       amount: new Int("1000000"),
@@ -71,8 +83,10 @@ describe("getConvertVariantMessages slippage", () => {
         pools: poolTypes.map((type, i) => ({
           id: String(i + 1),
           type,
-          codeId: "996",
-          swapFee: new Dec(0),
+          spreadFactor: new RatePretty(new Dec(0)),
+          dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
+          inCurrency: variantCurrency,
+          outCurrency: alloyCurrency,
         })),
         tokenInDenom: VARIANT_DENOM,
         tokenOutDenoms: poolTypes.map(() => ALLOY_DENOM),
