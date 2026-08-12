@@ -45,8 +45,16 @@ const writeDismissedGroups = (groups: string[]) => {
  * written by the toast was invisible to the gate, and each instance merging onto
  * its own stale snapshot could erase the other's writes.
  *
- * Every mutation re-reads localStorage and merges onto the freshly-read value,
- * so concurrent writers (and other tabs) accumulate instead of clobbering.
+ * Every mutation re-reads localStorage and merges onto the freshly-read value
+ * rather than onto captured state, so writers within this tab accumulate instead
+ * of clobbering, and a write picks up whatever another tab has already stored.
+ *
+ * This is best-effort across tabs, not atomic: `getItem` then `setItem` is not a
+ * transaction, so two tabs writing in the same instant can still lose one
+ * update. There is no lost-update primitive for localStorage, and the cost here
+ * is one re-offered toast, so coordinating (a lock key, or a `storage` event
+ * listener to re-merge) is not worth the complexity. Do not read the merge as a
+ * concurrency guarantee.
  */
 const useDismissedGroupsStore = create<{
   dismissedGroups: string[];

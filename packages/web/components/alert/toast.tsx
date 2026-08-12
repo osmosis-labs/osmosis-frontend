@@ -14,6 +14,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
+import { shouldPersistDismissalOnClose } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 
@@ -268,15 +269,10 @@ const AlloyedAssetsToast: FunctionComponent<
   const [isDontShowAgainChecked, setIsDontShowAgainChecked] = useState(false);
 
   const onDismiss = () => {
-    // Opt-in suppression: the default (unchecked) only closes the toast, so it
-    // can return in a future session. Ticking "Don't show again" suppresses just
-    // the groups this toast was showing, never a future alloy the user has not
-    // been told about yet.
-    //
-    // The polarity matters. This was previously an inverted "Remind me later"
-    // checkbox whose *unchecked* default suppressed permanently, so anyone who
-    // closed the toast without reading it opted out for good.
-    if (isDontShowAgainChecked) {
+    // Opt-in suppression, and only for the groups this toast was showing, never
+    // a future alloy the user has not been told about yet. Polarity lives in
+    // shouldPersistDismissalOnClose, which is tested.
+    if (shouldPersistDismissalOnClose(isDontShowAgainChecked)) {
       dismissGroups(variantGroupKeys);
     }
 

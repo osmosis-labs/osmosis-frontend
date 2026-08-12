@@ -96,7 +96,11 @@ describe("useAlloyedAssetsToastDismissal", () => {
       expect(gate.result.current.areAllGroupsDismissed([ALL_BTC])).toBe(true);
     });
 
-    it("concurrent writes accumulate instead of clobbering", () => {
+    // Sequential writes from two live instances, which is the real failure mode
+    // here (each instance merging onto its own stale snapshot). This does NOT
+    // cover a same-instant cross-tab race: getItem/setItem is not atomic and
+    // that update can still be lost by design. See the hook's docstring.
+    it("writes from separate instances accumulate instead of clobbering", () => {
       const gate = renderHook(() => useAlloyedAssetsToastDismissal());
       const toast = renderHook(() => useAlloyedAssetsToastDismissal());
 

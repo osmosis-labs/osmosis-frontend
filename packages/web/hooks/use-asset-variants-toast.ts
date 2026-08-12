@@ -3,6 +3,10 @@ import { useEffect } from "react";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { useFeatureFlags, useWalletSelect, useWindowSize } from "~/hooks";
+import {
+  getToastEligibleVariantGroupKeys,
+  shouldDisplayAlloyedAssetsToast,
+} from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAlloyedAssetsToastSession } from "~/hooks/use-alloyed-assets-toast-session";
 import { useStore } from "~/stores";
@@ -49,35 +53,21 @@ export const useAssetVariantsToast = () => {
       onSuccess: (data) => {
         if (hasSeenToastThisSession) return;
 
-        const assetVariants = data?.assetVariants ?? [];
-        // Only nag proactively for alloys. `variantGroupKey` also groups
-        // non-alloy canonical assets (legacy consolidations like MARS.old and
-        // ASTRO.terra, and today's ibc-denom USDC with its ten bridged
-        // variants), and volunteering those unprompted is noise. Conversion
-        // itself stays available for every variant group via the portfolio
-        // Convert button and the modal; this filter narrows only the unsolicited
-        // toast, so it deliberately does NOT gate `checkAssetVariants`.
-        //
-        // Note this is a moving target by design: when a group's canonical asset
-        // becomes an alloy (as USDC will), it starts qualifying here with no code
-        // change.
-        const variantGroupKeys = [
-          ...new Set(
-            assetVariants
-              .filter((variant) => variant.canonicalAsset.isAlloyed)
-              .map((variant) => variant.canonicalAsset.coinMinimalDenom)
-          ),
-        ];
+        // Eligibility and visibility live in alloyed-assets-toast-policy so the
+        // release-critical rules are assertable without a component or a tRPC
+        // client. Keep this callback to wiring only.
+        const variantGroupKeys = getToastEligibleVariantGroupKeys(
+          data?.assetVariants
+        );
 
-        const hasAssetsToConvert = variantGroupKeys.length > 0;
-
-        const shouldDisplayToast =
-          alloyedAssets &&
-          hasAssetsToConvert &&
-          !isMobile &&
-          !areAllGroupsDismissed(variantGroupKeys);
-
-        if (shouldDisplayToast) {
+        if (
+          shouldDisplayAlloyedAssetsToast({
+            variantGroupKeys,
+            isAlloyedAssetsEnabled: alloyedAssets,
+            isMobile,
+            areAllGroupsDismissed,
+          })
+        ) {
           displayToast(
             {
               titleTranslationKey: "alloyedAssets.title",
