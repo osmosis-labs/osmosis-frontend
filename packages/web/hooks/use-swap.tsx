@@ -6,7 +6,11 @@ import {
 } from "@osmosis-labs/pools";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
+import {
+  ObservableSlippageConfig,
+  SignOptions,
+  TxFeMemoFlags,
+} from "@osmosis-labs/stores";
 import {
   getSwapMessages,
   getSwapTxParameters,
@@ -408,9 +412,15 @@ export function useSwap(
     return balance.toDec().lt(amountWithSlippage);
   }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
 
-  /** Send trade token in transaction. */
+  /**
+   * Send trade token in transaction.
+   *
+   * `memoFlags` carries the figures the user acknowledged in the review-order
+   * modal (MTN-137 / MTN-150) into the tx auth memo, so a tx hash alone answers
+   * "was this user warned, and by how much?". Absent for an unwarned trade.
+   */
   const sendTradeTokenInTx = useCallback(
-    () =>
+    (memoFlags?: TxFeMemoFlags) =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
           if (!maxSlippage)
@@ -531,6 +541,11 @@ export function useSwap(
                   },
                 }
               : {}),
+            // On the amino path it is the wallet-returned memo that gets
+            // encoded, so without this a wallet could offer to edit the
+            // acknowledgement proof away. Set only when there is a proof to
+            // protect, to leave the unwarned path byte-identical.
+            ...(memoFlags ? { preferNoSetMemo: true } : {}),
           };
 
           const { routes } = txParams;
@@ -637,7 +652,8 @@ export function useSwap(
                         : "multiroute"
                     );
                   }
-                }
+                },
+                memoFlags
               )
               .catch(reject);
           } else {
@@ -705,7 +721,8 @@ export function useSwap(
                         : "multiroute"
                     );
                   }
-                }
+                },
+                memoFlags
               )
               .catch(reject);
           }

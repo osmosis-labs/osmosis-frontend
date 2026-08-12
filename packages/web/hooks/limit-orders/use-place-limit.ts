@@ -1,5 +1,6 @@
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type { TxFeMemoFlags } from "@osmosis-labs/stores";
 import {
   makeExecuteCosmwasmContractMsg,
   QuoteDirection,
@@ -309,17 +310,75 @@ export const usePlaceLimit = ({
       : [];
   }, [encodedMsg, isLedger, isMarket, oneClickMessages?.msgs]);
 
-  const placeLimit = useCallback(async () => {
-    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
-    if (quantity === "0") {
-      return;
-    }
+  /**
+   * `memoFlags` carries the figures the user acknowledged in the review-order
+   * modal (MTN-137 / MTN-150) into the tx auth memo. Absent for an unwarned
+   * order.
+   */
+  const placeLimit = useCallback(
+    async (memoFlags?: TxFeMemoFlags) => {
+      const quantity = paymentTokenValue?.toCoin().amount ?? "0";
+      if (quantity === "0") {
+        return;
+      }
 
-    if (isMarket) {
-      let valueUsd = Number(
-        marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-      );
+      if (isMarket) {
+        let valueUsd = Number(
+          marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+        );
 
+        // Protect our data from outliers
+        // Perhaps from upstream issues with price data providers
+        if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+          valueUsd = 0;
+        }
+
+        const baseEvent = {
+          fromToken: marketState.fromAsset?.coinDenom,
+          tokenAmount: Number(
+            marketState.inAmountInput.amount?.toDec().toString() ?? "0"
+          ),
+          toToken: marketState.toAsset?.coinDenom,
+          isOnHome: page === "Swap Page",
+          isMultiHop: marketState.quote?.split.some(
+            ({ pools }) => pools.length !== 1
+          ),
+          isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
+          valueUsd,
+          feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
+          page,
+          quoteTimeMilliseconds: marketState.quote?.timeMs,
+          swapSource: "market" as "swap" | "market",
+        };
+        try {
+          logEvent([EventName.Swap.swapStarted, baseEvent]);
+          // A market-type "limit" order is a swap, so the swap hook's own
+          // stamping covers it.
+          const result = await marketState.sendTradeTokenInTx(memoFlags);
+          logEvent([
+            EventName.Swap.swapCompleted,
+            {
+              ...baseEvent,
+              isMultiHop: result === "multihop",
+            },
+          ]);
+        } catch (error) {
+          console.error("swap failed", error);
+          if (error instanceof Error && error.message === "Request rejected") {
+            // don't log when the user rejects in wallet
+            return;
+          }
+          logEvent([EventName.Swap.swapFailed, baseEvent]);
+        } finally {
+          return;
+        }
+      }
+
+      if (!limitMessages || limitMessages.length === 0) return;
+
+      const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
+
+      let valueUsd = Number(paymentFiatValue?.toDec().toString() ?? "0");
       // Protect our data from outliers
       // Perhaps from upstream issues with price data providers
       if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
@@ -327,212 +386,174 @@ export const usePlaceLimit = ({
       }
 
       const baseEvent = {
-        fromToken: marketState.fromAsset?.coinDenom,
-        tokenAmount: Number(
-          marketState.inAmountInput.amount?.toDec().toString() ?? "0"
-        ),
-        toToken: marketState.toAsset?.coinDenom,
-        isOnHome: page === "Swap Page",
-        isMultiHop: marketState.quote?.split.some(
-          ({ pools }) => pools.length !== 1
-        ),
-        isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
+        type: orderDirection === "bid" ? "buy" : "sell",
+        fromToken: paymentDenom,
+        toToken:
+          orderDirection === "bid"
+            ? baseAsset?.coinDenom
+            : quoteAsset?.coinDenom,
         valueUsd,
-        feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
+        tokenAmount: Number(quantity),
         page,
-        quoteTimeMilliseconds: marketState.quote?.timeMs,
-        swapSource: "market" as "swap" | "market",
+        isOnHomePage: page === "Swap Page",
+        feeUsdValue,
       };
+
       try {
-        logEvent([EventName.Swap.swapStarted, baseEvent]);
-        const result = await marketState.sendTradeTokenInTx();
-        logEvent([
-          EventName.Swap.swapCompleted,
-          {
-            ...baseEvent,
-            isMultiHop: result === "multihop",
-          },
-        ]);
+        logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
+        /**
+         * If it's ledger and we have one-click messages, we need to add a 1CT session
+         * before broadcasting the transaction as there is a payload limit on ledger
+         */
+        if (
+          isLedger &&
+          oneClickMessages &&
+          oneClickMessages.msgs &&
+          shouldSend1CTTx
+        ) {
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "Add 1CT session",
+            oneClickMessages.msgs,
+            undefined,
+            undefined,
+            undefined,
+            async (tx) => {
+              const { code } = tx;
+              if (code) {
+                throw new Error("Failed to send swap exact amount in message");
+              } else {
+                if (
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  await onAdd1CTSession({
+                    privateKey: oneClickMessages.key,
+                    tx,
+                    userOsmoAddress: account?.address ?? "",
+                    fallbackGetAuthenticatorId:
+                      apiUtils.local.oneClickTrading.getSessionAuthenticator
+                        .fetch,
+                    accountStore,
+                    allowedMessages: oneClickMessages.allowedMessages,
+                    sessionPeriod: oneClickMessages.sessionPeriod,
+                    spendLimitTokenDecimals:
+                      oneClickMessages.spendLimitTokenDecimals,
+                    transaction1CTParams: oneClickMessages.transaction1CTParams,
+                    allowedAmount: oneClickMessages.allowedAmount,
+                    t,
+                    logEvent,
+                  });
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  await onEnd1CTSession({
+                    accountStore,
+                    authenticatorId: oneClickMessages.authenticatorId,
+                    logEvent,
+                  });
+                }
+              }
+            }
+          );
+
+          // Widened from three arguments so the ledger path can carry the memo
+          // at all — before this it had no way to record an acknowledgement.
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "executeWasm",
+            limitMessages,
+            undefined,
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            undefined,
+            memoFlags
+          );
+        } else {
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "executeWasm",
+            limitMessages,
+            "",
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            (tx) => {
+              if (!tx.code) {
+                if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  onAdd1CTSession({
+                    privateKey: oneClickMessages.key,
+                    tx,
+                    userOsmoAddress: account?.address ?? "",
+                    fallbackGetAuthenticatorId:
+                      apiUtils.local.oneClickTrading.getSessionAuthenticator
+                        .fetch,
+                    accountStore,
+                    allowedMessages: oneClickMessages.allowedMessages,
+                    sessionPeriod: oneClickMessages.sessionPeriod,
+                    spendLimitTokenDecimals:
+                      oneClickMessages.spendLimitTokenDecimals,
+                    transaction1CTParams: oneClickMessages.transaction1CTParams,
+                    allowedAmount: oneClickMessages.allowedAmount,
+                    t,
+                    logEvent,
+                  });
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  onEnd1CTSession({
+                    accountStore,
+                    authenticatorId: oneClickMessages.authenticatorId,
+                    logEvent,
+                  });
+                }
+              }
+            },
+            memoFlags
+          );
+        }
+        logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
       } catch (error) {
-        console.error("swap failed", error);
+        console.error("Error attempting to broadcast place limit tx", error);
         if (error instanceof Error && error.message === "Request rejected") {
           // don't log when the user rejects in wallet
           return;
         }
-        logEvent([EventName.Swap.swapFailed, baseEvent]);
-      } finally {
-        return;
+        const { message } = error as Error;
+        logEvent([
+          EventName.LimitOrder.placeOrderFailed,
+          { ...baseEvent, errorMessage: message },
+        ]);
       }
-    }
-
-    if (!limitMessages || limitMessages.length === 0) return;
-
-    const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
-
-    let valueUsd = Number(paymentFiatValue?.toDec().toString() ?? "0");
-    // Protect our data from outliers
-    // Perhaps from upstream issues with price data providers
-    if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
-      valueUsd = 0;
-    }
-
-    const baseEvent = {
-      type: orderDirection === "bid" ? "buy" : "sell",
-      fromToken: paymentDenom,
-      toToken:
-        orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
-      valueUsd,
-      tokenAmount: Number(quantity),
+    },
+    [
+      paymentTokenValue,
+      isMarket,
+      limitMessages,
+      paymentFiatValue,
+      orderDirection,
+      baseAsset?.coinDenom,
+      quoteAsset?.coinDenom,
       page,
-      isOnHomePage: page === "Swap Page",
       feeUsdValue,
-    };
-
-    try {
-      logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
-      /**
-       * If it's ledger and we have one-click messages, we need to add a 1CT session
-       * before broadcasting the transaction as there is a payload limit on ledger
-       */
-      if (
-        isLedger &&
-        oneClickMessages &&
-        oneClickMessages.msgs &&
-        shouldSend1CTTx
-      ) {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "Add 1CT session",
-          oneClickMessages.msgs,
-          undefined,
-          undefined,
-          undefined,
-          async (tx) => {
-            const { code } = tx;
-            if (code) {
-              throw new Error("Failed to send swap exact amount in message");
-            } else {
-              if (
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                await onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                  logEvent,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                await onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                  logEvent,
-                });
-              }
-            }
-          }
-        );
-
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages
-        );
-      } else {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages,
-          "",
-          undefined,
-          undefined,
-          (tx) => {
-            if (!tx.code) {
-              if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                  logEvent,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                  logEvent,
-                });
-              }
-            }
-          }
-        );
-      }
-      logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
-    } catch (error) {
-      console.error("Error attempting to broadcast place limit tx", error);
-      if (error instanceof Error && error.message === "Request rejected") {
-        // don't log when the user rejects in wallet
-        return;
-      }
-      const { message } = error as Error;
-      logEvent([
-        EventName.LimitOrder.placeOrderFailed,
-        { ...baseEvent, errorMessage: message },
-      ]);
-    }
-  }, [
-    paymentTokenValue,
-    isMarket,
-    limitMessages,
-    paymentFiatValue,
-    orderDirection,
-    baseAsset?.coinDenom,
-    quoteAsset?.coinDenom,
-    page,
-    feeUsdValue,
-    marketState,
-    logEvent,
-    isLedger,
-    oneClickMessages,
-    shouldSend1CTTx,
-    accountStore,
-    account?.address,
-    apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-    t,
-  ]);
+      marketState,
+      logEvent,
+      isLedger,
+      oneClickMessages,
+      shouldSend1CTTx,
+      accountStore,
+      account?.address,
+      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      t,
+    ]
+  );
 
   const { data, isLoading: isBalancesLoading } =
     api.edge.assets.getUserAssets.useQuery(

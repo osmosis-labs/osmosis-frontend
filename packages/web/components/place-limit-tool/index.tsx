@@ -1034,9 +1034,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           page={page}
-          confirmAction={async () => {
+          confirmAction={async (opts) => {
             setIsSendingTx(true);
-            await swapState.placeLimit();
+            await swapState.placeLimit(opts?.warnFlags);
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);

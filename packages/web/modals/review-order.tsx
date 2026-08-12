@@ -2,6 +2,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import {
   InsufficientBalanceForFeeError,
   ObservableSlippageConfig,
+  TxFeMemoFlags,
 } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
@@ -27,6 +28,7 @@ import {
 } from "~/components/loss-acknowledgement";
 import { LossAcknowledgementCheckbox } from "~/components/loss-acknowledgement/checkbox";
 import {
+  deriveTradeMemoFlags,
   getTradeWarnings,
   hasQuoteDriftedBeyondSlippage,
 } from "~/components/loss-acknowledgement/trade-gate";
@@ -64,7 +66,12 @@ import {
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  confirmAction: () => void;
+  /**
+   * `warnFlags` are the figures the user acknowledged, frozen at tick time, for
+   * stamping into the tx auth memo (MTN-137). The modal owns the
+   * acknowledgement, so it is the only place that can derive them honestly.
+   */
+  confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
   amountWithSlippage?: IntPretty;
@@ -934,7 +941,9 @@ export function ReviewOrder({
                         ) {
                           return;
                         }
-                        confirmAction();
+                        confirmAction({
+                          warnFlags: deriveTradeMemoFlags(acknowledgedBasis),
+                        });
                       }}
                       disabled={
                         isConfirmationDisabled ||
