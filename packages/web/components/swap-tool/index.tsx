@@ -1,6 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
+import {
+  InsufficientBalanceForFeeError,
+  TxFeMemoFlags,
+} from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -224,31 +227,34 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
-    const sendSwapTx = useCallback(() => {
-      if (!swapState.inAmountInput.amount) return;
+    const sendSwapTx = useCallback(
+      (opts?: { warnFlags?: TxFeMemoFlags }) => {
+        if (!swapState.inAmountInput.amount) return;
 
-      setIsSendingTx(true);
-      swapState
-        .sendTradeTokenInTx()
-        .then(() => {
-          if (swapState.toAsset && swapState.fromAsset) {
-            onSwapSuccess?.({
-              outTokenDenom: swapState.toAsset.coinMinimalDenom,
-              sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
-            });
-          }
+        setIsSendingTx(true);
+        swapState
+          .sendTradeTokenInTx(opts?.warnFlags)
+          .then(() => {
+            if (swapState.toAsset && swapState.fromAsset) {
+              onSwapSuccess?.({
+                outTokenDenom: swapState.toAsset.coinMinimalDenom,
+                sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
+              });
+            }
 
-          resetSlippage();
-        })
-        .catch((error) => {
-          console.error("swap failed", error);
-        })
-        .finally(() => {
-          setIsSendingTx(false);
-          onRequestModalClose?.();
-          setShowSwapReviewModal(false);
-        });
-    }, [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]);
+            resetSlippage();
+          })
+          .catch((error) => {
+            console.error("swap failed", error);
+          })
+          .finally(() => {
+            setIsSendingTx(false);
+            onRequestModalClose?.();
+            setShowSwapReviewModal(false);
+          });
+      },
+      [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]
+    );
 
     const isSwapToolLoading =
       isWalletLoading ||
