@@ -21,6 +21,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { hasQuoteDriftedBeyondSlippage } from "~/components/loss-acknowledgement/trade-gate";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
@@ -164,39 +165,37 @@ export function ReviewOrder({
       slippageConfig.slippage.toDec().gt(new Dec(0.01)));
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  /**
+   * The quote the user is reviewing, which later quotes are compared against.
+   *
+   * Held in state rather than as a local inside a memo, so that accepting an
+   * updated quote actually re-renders — its predecessor reassigned a memo-local
+   * variable, which changed nothing on screen and was reset to the original
+   * value on the next quote tick, leaving the "Accept" button inert.
+   *
+   * Keyed on `isOpen`, not on mount: this component renders unconditionally and
+   * passes `isOpen` down to `ModalBase`, so its body stays mounted between opens
+   * and a mount-keyed baseline would be the first quote the page ever saw.
+   */
+  const [reviewedOutput, setReviewedOutput] = useState(amountWithSlippage);
 
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      let originalValue = initialOutput;
-      return {
-        diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          originalValue = amountWithSlippage ?? new IntPretty(0);
-        },
-      };
-    },
-
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
+  useEffect(() => {
+    if (isOpen) setReviewedOutput(amountWithSlippage);
+    // Deliberately keyed on `isOpen` alone — re-baselining on every quote tick
+    // would mean nothing ever counts as drift.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amountWithSlippage, slippageConfig]
-  );
+  }, [isOpen]);
+
+  const diffGteSlippage = hasQuoteDriftedBeyondSlippage({
+    initial: reviewedOutput?.toDec(),
+    current: amountWithSlippage?.toDec(),
+    slippageTolerance: slippageConfig?.slippage.toDec(),
+    quoteType,
+  });
+
+  const acceptUpdatedQuote = useCallback(() => {
+    setReviewedOutput(amountWithSlippage);
+  }, [amountWithSlippage]);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
@@ -843,7 +842,7 @@ export function ReviewOrder({
                 </span>
                 <Button
                   mode="primary"
-                  onClick={restart}
+                  onClick={acceptUpdatedQuote}
                   className="body2 w-fit !rounded-2xl"
                 >
                   <h6>{t("limitOrders.accept")}</h6>
