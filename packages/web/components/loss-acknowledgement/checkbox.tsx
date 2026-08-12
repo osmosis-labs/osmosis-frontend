@@ -5,7 +5,7 @@ import { useTranslation } from "~/hooks";
 
 /**
  * The high-loss acknowledgement gate (MTN-199). Bind `checked` /
- * `onCheckedChange` to `useBridgeQuotes`'s `hasAcknowledgedLoss` /
+ * `onCheckedChange` to `useLossAcknowledgement`'s `hasAcknowledgedLoss` /
  * `setLossAcknowledged` so ticking freezes the acknowledged basis and drift
  * re-arms it — never to local component state.
  */
