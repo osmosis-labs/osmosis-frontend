@@ -1,4 +1,5 @@
 import type { TxFeMemoFlags } from "@osmosis-labs/stores";
+import type { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 
 import {
@@ -101,4 +102,42 @@ export function deriveTradeMemoFlags(
   }
 
   return Object.keys(flags).length > 0 ? flags : undefined;
+}
+
+/**
+ * Whether the live quote has moved far enough against the user, since the quote
+ * they are reviewing, to be worth re-confirming (MTN-150).
+ *
+ * The comparison is **relative**. Its predecessor subtracted two human-unit token
+ * amounts and compared the difference against a slippage *fraction* like 0.005,
+ * so the banner's behaviour depended entirely on the denom's scale: for a
+ * BTC-scale asset with amounts around 0.001 the difference could never reach
+ * 0.005 and the banner never appeared, while for a large-supply token any 0.5%
+ * move dwarfed 0.005 and it always did.
+ *
+ * Direction depends on the quote type, and getting it wrong is silent: worsening
+ * means receiving less for `out-given-in`, but paying more for `in-given-out`. A
+ * subtraction fixed in one direction simply never fires for half of all quotes.
+ *
+ * `initial` of zero returns false rather than dividing by it — an unpriced or
+ * still-loading quote is not drift.
+ */
+export function hasQuoteDriftedBeyondSlippage({
+  initial,
+  current,
+  slippageTolerance,
+  quoteType = "out-given-in",
+}: {
+  initial?: Dec;
+  current?: Dec;
+  slippageTolerance?: Dec;
+  quoteType?: QuoteDirection;
+}): boolean {
+  if (!initial || !current || !slippageTolerance) return false;
+  if (!initial.isPositive()) return false;
+
+  const worsening =
+    quoteType === "in-given-out" ? current.sub(initial) : initial.sub(current);
+
+  return worsening.quo(initial).gte(slippageTolerance);
 }
