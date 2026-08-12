@@ -193,6 +193,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
           {hasLossWarning && (
             <LossAcknowledgementCheckbox
+              label={t("transfer.lossAcknowledgement")}
               checked={quote.hasAcknowledgedLoss}
               onCheckedChange={quote.setLossAcknowledged}
             />

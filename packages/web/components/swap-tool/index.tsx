@@ -877,6 +877,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           gasError={swapState.networkFeeError}
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
+          priceImpactTokenOut={swapState.quote?.priceImpactTokenOut}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
