@@ -10,7 +10,9 @@ import {
 
 import {
   checkLargeAmountDiff,
+  DEFAULT_CONVERT_MAX_SLIPPAGE,
   getConvertVariantMessages,
+  ONE_TO_ONE_MAX_SLIPPAGE,
 } from "../use-convert-variant";
 
 jest.mock("@osmosis-labs/tx", () => ({
@@ -102,20 +104,31 @@ describe("getConvertVariantMessages slippage", () => {
     mockGetSwapMessages.mockClear();
   });
 
-  test("uses zero slippage for a single-hop alloyed pool", async () => {
-    // The regression this guards: the condition previously required
-    // pools.length === 0, so this case fell through to 5%.
+  test("the 1:1 tolerance is small but non-zero", () => {
+    // Non-zero so a unit of chain-side truncation cannot revert the tx; small
+    // enough to be economically irrelevant (0.01% = 100 base units on a 1M USDC
+    // conversion). Exact "0" would demand byte-exact output.
+    expect(ONE_TO_ONE_MAX_SLIPPAGE).toBe("0.0001");
+    expect(new Dec(ONE_TO_ONE_MAX_SLIPPAGE).isPositive()).toBe(true);
     expect(
-      await slippageForQuote(makeQuote([{ poolTypes: ["cosmwasm-alloyed"] }]))
-    ).toBe("0");
+      new Dec(ONE_TO_ONE_MAX_SLIPPAGE).lt(new Dec(DEFAULT_CONVERT_MAX_SLIPPAGE))
+    ).toBe(true);
   });
 
-  test("uses zero slippage for a single-hop transmuter pool", async () => {
+  test("uses the near-zero tolerance for a single-hop alloyed pool", async () => {
+    // The regression this guards: the condition previously required
+    // pools.length === 0, so this case fell through to the full 5%.
+    expect(
+      await slippageForQuote(makeQuote([{ poolTypes: ["cosmwasm-alloyed"] }]))
+    ).toBe(ONE_TO_ONE_MAX_SLIPPAGE);
+  });
+
+  test("uses the near-zero tolerance for a single-hop transmuter pool", async () => {
     expect(
       await slippageForQuote(
         makeQuote([{ poolTypes: ["cosmwasm-transmuter"] }])
       )
-    ).toBe("0");
+    ).toBe(ONE_TO_ONE_MAX_SLIPPAGE);
   });
 
   // The CosmWasm subtypes below are NOT 1:1. A prefix test on "cosmwasm" would
@@ -125,7 +138,7 @@ describe("getConvertVariantMessages slippage", () => {
       await slippageForQuote(
         makeQuote([{ poolTypes: ["cosmwasm-astroport-pcl"] }])
       )
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("keeps slippage for a single-hop WhiteWhale pool", async () => {
@@ -133,26 +146,26 @@ describe("getConvertVariantMessages slippage", () => {
       await slippageForQuote(
         makeQuote([{ poolTypes: ["cosmwasm-whitewhale"] }])
       )
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("keeps slippage for a single-hop orderbook pool", async () => {
     expect(
       await slippageForQuote(makeQuote([{ poolTypes: ["cosmwasm-orderbook"] }]))
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("keeps slippage for an unrecognised bare cosmwasm pool", async () => {
     // Unknown code id means unknown semantics; do not assume 1:1.
     expect(
       await slippageForQuote(makeQuote([{ poolTypes: ["cosmwasm"] }]))
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("allows slippage when the route is not a CosmWasm pool", async () => {
     expect(
       await slippageForQuote(makeQuote([{ poolTypes: ["concentrated"] }]))
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("allows slippage on a multi-hop route even via an alloyed pool", async () => {
@@ -161,7 +174,7 @@ describe("getConvertVariantMessages slippage", () => {
       await slippageForQuote(
         makeQuote([{ poolTypes: ["cosmwasm-alloyed", "concentrated"] }])
       )
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("allows slippage on a split route", async () => {
@@ -172,12 +185,14 @@ describe("getConvertVariantMessages slippage", () => {
           { poolTypes: ["cosmwasm-alloyed"] },
         ])
       )
-    ).toBe("0.05");
+    ).toBe(DEFAULT_CONVERT_MAX_SLIPPAGE);
   });
 
   test("falls back to slippage when the route has no pools", async () => {
     // An empty pool list is malformed; it must not be read as a 1:1 alloy hop.
     // This is the exact shape the old `pools.length === 0` condition tested for.
-    expect(await slippageForQuote(makeQuote([{ poolTypes: [] }]))).toBe("0.05");
+    expect(await slippageForQuote(makeQuote([{ poolTypes: [] }]))).toBe(
+      DEFAULT_CONVERT_MAX_SLIPPAGE
+    );
   });
 });
