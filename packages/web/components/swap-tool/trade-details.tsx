@@ -9,10 +9,12 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { normalizePriceImpact } from "~/components/loss-acknowledgement";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   UseDisclosureReturn,
@@ -64,8 +66,15 @@ export const TradeDetails = observer(
 
     const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
+    // Same constant and same comparison as the acknowledgement gate, so the red
+    // icon and the checkbox can never disagree about what counts as high impact
+    // — including at the boundary, which a `lt(gate.neg())` form would get
+    // wrong by one tick.
     const isPriceImpactHigh = useMemo(
-      () => priceImpact?.toDec().lt(new Dec(-0.1)),
+      () =>
+        priceImpact
+          ? normalizePriceImpact(priceImpact.toDec()).gte(HighPriceImpactGate)
+          : undefined,
       [priceImpact]
     );
 

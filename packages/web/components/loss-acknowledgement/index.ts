@@ -49,8 +49,19 @@ export interface LossFigures {
    */
   priceImpact: Dec;
 
+  /**
+   * How far past the market price a true limit order is priced, as a positive
+   * magnitude fraction (0..1) — such an order crosses the book and fills
+   * immediately instead of resting. Trade surfaces only; absent when the figure
+   * is unavailable, in which case `warnMarketFill` still gates but there is
+   * nothing to stamp.
+   */
+  marketFillDistance?: Dec;
+
   warnSlippage: boolean;
   warnPriceImpact: boolean;
+  /** True limit order priced across the opposite side of the book. */
+  warnMarketFill?: boolean;
   /**
    * Quote bundles an Osmosis swap whose price impact is unknown. Bridge-only —
    * the trade surfaces quote their own impact directly and omit this.
@@ -82,6 +93,7 @@ export function hasActiveWarning(figures: LossFigures): boolean {
   return (
     figures.warnSlippage ||
     figures.warnPriceImpact ||
+    (figures.warnMarketFill ?? false) ||
     (figures.swapImpactUnknown ?? false)
   );
 }
@@ -120,12 +132,26 @@ export function shouldResetAcknowledgement(
 
   if (current.warnSlippage && !acknowledged.warnSlippage) return true;
   if (current.warnPriceImpact && !acknowledged.warnPriceImpact) return true;
+  if (current.warnMarketFill && !acknowledged.warnMarketFill) return true;
   if (current.swapImpactUnknown && !acknowledged.swapImpactUnknown) return true;
 
   if (current.slippage.sub(acknowledged.slippage).gt(AckReArmTolerance)) {
     return true;
   }
   if (current.priceImpact.sub(acknowledged.priceImpact).gt(AckReArmTolerance)) {
+    return true;
+  }
+  // Spot moves while the modal is open, so how far past market a limit order
+  // sits drifts like any other figure. Compared only when both sides have it;
+  // a figure appearing where there was none is caught by the newly-warned
+  // checks above.
+  if (
+    current.marketFillDistance &&
+    acknowledged.marketFillDistance &&
+    current.marketFillDistance
+      .sub(acknowledged.marketFillDistance)
+      .gt(AckReArmTolerance)
+  ) {
     return true;
   }
 
