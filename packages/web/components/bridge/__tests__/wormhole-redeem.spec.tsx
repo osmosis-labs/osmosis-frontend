@@ -51,6 +51,7 @@ import { MultiLanguageProvider, t } from "~/hooks/language";
 
 import {
   checkIfRedeemed,
+  checkOsmosisPacketFate,
   fetchGovernorDelay,
   findWormchainRecvTx,
   formatGovernorReleaseCountdown,
@@ -476,6 +477,119 @@ describe("findWormchainRecvTx", () => {
       })
     ).rejects.toThrow(/Could not query Wormchain RPC/);
   });
+
+  it("keeps asking after an empty result, so a pruned node can't fake a miss", async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [], total_count: "0" } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [{ hash: WORMCHAIN_HASH }] } }),
+      });
+    global.fetch = fetchMock;
+
+    const hash = await findWormchainRecvTx({
+      sequence: "43411",
+      srcChannel: "channel-2186",
+      wormchainRpcs: [
+        "https://wormchain-rpc-pruned.example",
+        "https://wormchain-rpc-healthy.example",
+      ],
+    });
+    expect(hash).toBe(WORMCHAIN_HASH);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("checkOsmosisPacketFate", () => {
+  const originalFetch = global.fetch;
+  const LCDS = ["https://lcd.example"];
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("reports in_flight while the packet commitment is still live", async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ commitment: "Y29tbWl0bWVudA==" }),
+    });
+
+    await expect(
+      checkOsmosisPacketFate({
+        sequence: "43411",
+        srcChannel: "channel-2186",
+        lcds: LCDS,
+      })
+    ).resolves.toEqual({ status: "in_flight" });
+  });
+
+  it("reports timed_out with the refund tx once the commitment is cleared", async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 404 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          tx_responses: [
+            { txhash: "TIMEOUTHASH", timestamp: "2026-08-09T17:21:51Z" },
+          ],
+        }),
+      });
+    global.fetch = fetchMock;
+
+    await expect(
+      checkOsmosisPacketFate({
+        sequence: "43411",
+        srcChannel: "channel-2186",
+        lcds: LCDS,
+      })
+    ).resolves.toEqual({
+      status: "timed_out",
+      txHash: "TIMEOUTHASH",
+      timestamp: "2026-08-09T17:21:51Z",
+    });
+
+    expect(decodeURIComponent(fetchMock.mock.calls[1][0] as string)).toContain(
+      "timeout_packet.packet_sequence='43411' AND timeout_packet.packet_src_channel='channel-2186'"
+    );
+  });
+
+  it("reports acknowledged when the commitment cleared without a timeout", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 404 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ tx_responses: [] }),
+      });
+
+    await expect(
+      checkOsmosisPacketFate({
+        sequence: "43411",
+        srcChannel: "channel-2186",
+        lcds: LCDS,
+      })
+    ).resolves.toEqual({ status: "acknowledged" });
+  });
+
+  it("degrades to unknown rather than throwing when every LCD fails", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 503 });
+
+    await expect(
+      checkOsmosisPacketFate({
+        sequence: "43411",
+        srcChannel: "channel-2186",
+        lcds: ["https://lcd-a.example", "https://lcd-b.example"],
+      })
+    ).resolves.toEqual({ status: "unknown" });
+  });
 });
 
 describe("resolveOperation", () => {
@@ -570,6 +684,81 @@ describe("resolveOperation", () => {
 
     await expect(resolveOperation(OSMOSIS_HASH)).rejects.toThrow(
       /has not been relayed yet/i
+    );
+  });
+
+  // Regression for the real support case: Osmosis tx A1F5976E… (packet 43579)
+  // was never relayed, timed out, and was refunded on 2026-08-09. The widget
+  // used to tell the user to wait a minute for a packet that no longer existed.
+  it("explains the refund instead of telling the user to wait when the packet timed out", async () => {
+    mockedApiClient.mockResolvedValueOnce({ operations: [] });
+
+    global.fetch = jest
+      .fn()
+      // Osmosis LCD: the send packet.
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => OSMOSIS_TX_EVENTS_FIXTURE,
+      })
+      // Both Wormchain RPCs agree there is no receive.
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [] } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [] } }),
+      })
+      // The packet commitment is gone...
+      .mockResolvedValueOnce({ ok: false, status: 404 })
+      // ...because it timed out and was refunded.
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          tx_responses: [
+            {
+              txhash:
+                "9488C16915D31303460B949B62B3FF8483136EED3C2E1ED059E88A88D561A218",
+              timestamp: "2026-08-09T17:21:51Z",
+            },
+          ],
+        }),
+      });
+
+    const error = await resolveOperation(OSMOSIS_HASH).catch((e) => e);
+    expect(error.message).toMatch(/timed out/i);
+    expect(error.message).toMatch(/refunded/i);
+    expect(error.message).toContain("9488C169");
+    expect(error.message).not.toMatch(/try again in a minute/i);
+  });
+
+  it("points at Wormholescan when Osmosis acked a receive we cannot locate", async () => {
+    mockedApiClient.mockResolvedValueOnce({ operations: [] });
+
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => OSMOSIS_TX_EVENTS_FIXTURE,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [] } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [] } }),
+      })
+      .mockResolvedValueOnce({ ok: false, status: 404 })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ tx_responses: [] }),
+      });
+
+    await expect(resolveOperation(OSMOSIS_HASH)).rejects.toThrow(
+      /received on Wormchain, but the receive transaction could not be located/i
     );
   });
 

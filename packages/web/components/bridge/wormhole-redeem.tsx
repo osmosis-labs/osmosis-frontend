@@ -58,6 +58,11 @@ const OSMOSIS_LCDS = [
 
 // Wormchain RPC fallbacks. Same rationale as `OSMOSIS_LCDS`: a single
 // provider going down would otherwise break recovery for every user.
+//
+// `wormchain-rpc.publicnode.com` was verified down on 2026-08-12 (404 on
+// every path, including `/status`), leaving polkachu as the only working
+// provider. It is kept deliberately in case it returns: `findWormchainRecvTx`
+// skips non-200 responses, so a dead entry costs nothing.
 const WORMCHAIN_RPCS = [
   "https://wormchain-rpc.polkachu.com",
   "https://wormchain-rpc.publicnode.com",
@@ -273,6 +278,28 @@ interface WormchainTxSearchResponse {
   };
 }
 
+interface PacketCommitmentResponse {
+  commitment?: string;
+}
+
+interface CosmosTxSearchResponse {
+  tx_responses?: { txhash: string; timestamp?: string }[];
+}
+
+/**
+ * What Osmosis says became of a send_packet we couldn't find on Wormchain.
+ *
+ * Osmosis is authoritative here: it clears the packet commitment on either an
+ * acknowledgement or a timeout, so the commitment plus the presence of a
+ * timeout tx tell us which case we're in. `unknown` means the probe itself
+ * failed and the caller should fall back to the neutral "still pending" copy.
+ */
+type OsmosisPacketFate =
+  | { status: "in_flight" }
+  | { status: "timed_out"; txHash: string; timestamp?: string }
+  | { status: "acknowledged" }
+  | { status: "unknown" };
+
 const getAttr = (event: CosmosTxEvent, key: string): string | undefined =>
   event.attributes.find((a) => a.key === key)?.value;
 
@@ -410,6 +437,10 @@ export async function findWormchainRecvTx({
   // Tendermint RPC requires the query value to be a quoted string.
   const query = `"recv_packet.packet_sequence='${sequence}' AND recv_packet.packet_src_channel='${srcChannel}'"`;
   let lastError: unknown = null;
+  // A provider answering with zero results may simply have pruned the block
+  // or be lagging behind. Treat an empty answer as non-authoritative and keep
+  // asking, so one stale node can't manufacture a "not relayed yet" verdict.
+  let sawEmptyResult = false;
   for (const rpc of wormchainRpcs) {
     try {
       const url = `${rpc}/tx_search?query=${encodeURIComponent(query)}`;
@@ -419,16 +450,75 @@ export async function findWormchainRecvTx({
         continue;
       }
       const json = (await res.json()) as WormchainTxSearchResponse;
-      return json.result?.txs?.[0]?.hash ?? null;
+      const hash = json.result?.txs?.[0]?.hash;
+      if (hash) return hash;
+      sawEmptyResult = true;
     } catch (err) {
       lastError = err;
     }
   }
+  // At least one provider gave us a clean "no such packet" and none found it.
+  if (sawEmptyResult) return null;
   throw new Error(
     `Could not query Wormchain RPC: ${
       lastError instanceof Error ? lastError.message : String(lastError)
     }`
   );
+}
+
+/**
+ * Ask Osmosis what happened to a send_packet that has no Wormchain receive.
+ *
+ * Purely diagnostic: it only ever refines the error message we show, so every
+ * failure path degrades to `unknown` rather than throwing and turning a
+ * recoverable transfer into a hard error.
+ */
+export async function checkOsmosisPacketFate({
+  sequence,
+  srcChannel,
+  lcds = OSMOSIS_LCDS,
+}: {
+  sequence: string;
+  srcChannel: string;
+  lcds?: readonly string[];
+}): Promise<OsmosisPacketFate> {
+  for (const lcd of lcds) {
+    try {
+      const commitmentRes = await fetchWithTimeout(
+        `${lcd}/ibc/core/channel/v1/channels/${encodeURIComponent(
+          srcChannel
+        )}/ports/transfer/packet_commitments/${encodeURIComponent(sequence)}`
+      );
+      if (commitmentRes.ok) {
+        const json = (await commitmentRes.json()) as PacketCommitmentResponse;
+        // A live commitment means the packet really is still pending.
+        if (json.commitment) return { status: "in_flight" };
+      } else if (commitmentRes.status !== 404) {
+        // Provider trouble rather than an answer — ask the next one.
+        continue;
+      }
+
+      // The commitment is gone, so the packet was either acknowledged or
+      // timed out. Only the presence of a timeout tx separates the two.
+      const query = `timeout_packet.packet_sequence='${sequence}' AND timeout_packet.packet_src_channel='${srcChannel}'`;
+      const txRes = await fetchWithTimeout(
+        `${lcd}/cosmos/tx/v1beta1/txs?query=${encodeURIComponent(query)}`
+      );
+      if (!txRes.ok) continue;
+      const txJson = (await txRes.json()) as CosmosTxSearchResponse;
+      const timeoutTx = txJson.tx_responses?.[0];
+      return timeoutTx
+        ? {
+            status: "timed_out",
+            txHash: timeoutTx.txhash,
+            timestamp: timeoutTx.timestamp,
+          }
+        : { status: "acknowledged" };
+    } catch {
+      // Try the next provider.
+    }
+  }
+  return { status: "unknown" };
 }
 
 interface ResolvedOperation {
@@ -501,6 +591,32 @@ export async function resolveOperation(
     srcChannel: packet.srcChannel,
   });
   if (!wormchainHash) {
+    // "No receive on Wormchain" has three very different causes, and telling
+    // a user to wait for a packet that timed out days ago is a dead end.
+    const fate = await checkOsmosisPacketFate({
+      sequence: packet.sequence,
+      srcChannel: packet.srcChannel,
+    });
+
+    if (fate.status === "timed_out") {
+      const when = fate.timestamp
+        ? ` on ${new Date(fate.timestamp).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}`
+        : "";
+      throw new Error(
+        `This transfer timed out before it reached Wormchain, so it was automatically refunded to your Osmosis address${when} (tx ${fate.txHash}). There is nothing to redeem — the tokens are already back in your wallet, and you can bridge again from the Wormhole page.`
+      );
+    }
+
+    if (fate.status === "acknowledged") {
+      throw new Error(
+        "Osmosis confirms this packet was received on Wormchain, but the receive transaction could not be located. Look this transfer up directly on Wormholescan."
+      );
+    }
+
     throw new Error(
       "Found the Osmosis send packet but the corresponding Wormchain receive has not been relayed yet. Try again in a minute."
     );
