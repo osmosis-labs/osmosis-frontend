@@ -731,6 +731,20 @@ describe("resolveOperation", () => {
     expect(error.message).toMatch(/refunded/i);
     expect(error.message).toContain("9488C169");
     expect(error.message).not.toMatch(/try again in a minute/i);
+
+    // Comes from the translation catalogue, not a hardcoded literal, so the
+    // message is localized like the rest of the widget.
+    expect(error.message).toBe(
+      t("transfer.wormholeRedeem.packetTimedOutRefunded", {
+        date: new Date("2026-08-09T17:21:51Z").toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        txHash:
+          "9488C16915D31303460B949B62B3FF8483136EED3C2E1ED059E88A88D561A218",
+      })
+    );
   });
 
   it("points at Wormholescan when Osmosis acked a receive we cannot locate", async () => {

@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Połączone konto {wallet}",
       "confirmInNamed": "Potwierdź w {wallet}...",
       "submittingOnSui": "Wysyłanie na Sui...",
-      "redeemOnSui": "Odbierz na Sui"
+      "redeemOnSui": "Odbierz na Sui",
+      "osmosisTxNotFound": "Nie znaleziono transakcji Osmosis. Sprawdź hash i upewnij się, że została rozgłoszona w sieci głównej Osmosis.",
+      "osmosisLcdUnavailable": "Nie udało się pobrać transakcji Osmosis z żadnego LCD: {error}",
+      "wormchainRpcUnavailable": "Nie udało się odpytać RPC Wormchain: {error}",
+      "notAWormholeTx": "Nie znaleziono transakcji. Upewnij się, że to hash transakcji mostu Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "Nie znaleziono transakcji w Wormholescan ani odpowiadającej jej transakcji Osmosis. Jeśli to hash odbioru Wormchain, strażnicy mogą wciąż podpisywać — spróbuj ponownie za minutę. W przeciwnym razie sprawdź hash.",
+      "noGatewayTransferInTx": "Nie znaleziono transakcji w Wormholescan, a w tej transakcji Osmosis nie znaleziono transferu IBC przez bramę Wormhole.",
+      "packetTimedOutRefunded": "Ten transfer wygasł, zanim dotarł do Wormchain, więc {date} został automatycznie zwrócony na Twój adres Osmosis (tx {txHash}). Nie ma nic do odebrania — tokeny są już z powrotem w Twoim portfelu, a transfer możesz ponowić ze strony Wormhole.",
+      "packetTimedOutRefundedNoDate": "Ten transfer wygasł, zanim dotarł do Wormchain, więc został automatycznie zwrócony na Twój adres Osmosis (tx {txHash}). Nie ma nic do odebrania — tokeny są już z powrotem w Twoim portfelu, a transfer możesz ponowić ze strony Wormhole.",
+      "packetReceivedButTxNotFound": "Osmosis potwierdza, że ten pakiet został odebrany w Wormchain, ale nie udało się znaleźć transakcji odbioru. Sprawdź ten transfer bezpośrednio w Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Znaleziono pakiet wysyłki Osmosis, ale odpowiadający mu odbiór w Wormchain nie został jeszcze przekazany. Spróbuj ponownie za minutę.",
+      "vaaNotIndexedYet": "Znaleziono odbiór Wormchain ({txHash}), ale Wormholescan nie zaindeksował jeszcze dla niego VAA. Strażnicy mogą wciąż podpisywać — spróbuj ponownie za minutę."
     }
   },
   "unknownError": "Nieznany błąd",

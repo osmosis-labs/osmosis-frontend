@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Подключённый аккаунт {wallet}",
       "confirmInNamed": "Подтвердите в {wallet}...",
       "submittingOnSui": "Отправка в Sui...",
-      "redeemOnSui": "Получить в Sui"
+      "redeemOnSui": "Получить в Sui",
+      "osmosisTxNotFound": "Транзакция Osmosis не найдена. Проверьте хеш и то, что она была отправлена в основной сети Osmosis.",
+      "osmosisLcdUnavailable": "Не удалось получить транзакцию Osmosis ни с одного LCD: {error}",
+      "wormchainRpcUnavailable": "Не удалось выполнить запрос к RPC Wormchain: {error}",
+      "notAWormholeTx": "Транзакция не найдена. Убедитесь, что это хеш транзакции моста Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "Транзакция не найдена на Wormholescan, и соответствующая транзакция Osmosis также не обнаружена. Если это хеш получения Wormchain, хранители, возможно, ещё подписывают — попробуйте снова через минуту. В противном случае проверьте хеш.",
+      "noGatewayTransferInTx": "Транзакция не найдена на Wormholescan, и в этой транзакции Osmosis не обнаружен IBC-перевод через шлюз Wormhole.",
+      "packetTimedOutRefunded": "Этот перевод истёк по времени, не достигнув Wormchain, поэтому {date} он был автоматически возвращён на ваш адрес Osmosis (tx {txHash}). Получать нечего — токены уже вернулись в ваш кошелёк, и вы можете повторить перевод на странице Wormhole.",
+      "packetTimedOutRefundedNoDate": "Этот перевод истёк по времени, не достигнув Wormchain, поэтому он был автоматически возвращён на ваш адрес Osmosis (tx {txHash}). Получать нечего — токены уже вернулись в ваш кошелёк, и вы можете повторить перевод на странице Wormhole.",
+      "packetReceivedButTxNotFound": "Osmosis подтверждает, что этот пакет был получен в Wormchain, но найти транзакцию получения не удалось. Посмотрите этот перевод напрямую на Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Пакет отправки Osmosis найден, но соответствующее получение в Wormchain ещё не ретранслировано. Попробуйте снова через минуту.",
+      "vaaNotIndexedYet": "Получение в Wormchain ({txHash}) найдено, но Wormholescan ещё не проиндексировал VAA для него. Хранители, возможно, ещё подписывают — попробуйте снова через минуту."
     }
   },
   "unknownError": "Неизвестная ошибка",

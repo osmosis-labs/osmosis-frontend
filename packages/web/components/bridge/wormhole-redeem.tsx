@@ -9,7 +9,7 @@ import type {
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
-import { type MultiLanguageT, useTranslation } from "~/hooks/language";
+import { type MultiLanguageT, t, useTranslation } from "~/hooks/language";
 import { formatPretty } from "~/utils/formatter";
 
 import {
@@ -327,6 +327,15 @@ function parseGatewayMemo(
 }
 
 /**
+ * Every configured LCD reported the tx as missing.
+ *
+ * Identified by class rather than by matching the message text, because the
+ * message is translated and a substring check would silently stop matching in
+ * every non-English locale.
+ */
+export class OsmosisTxNotFoundError extends Error {}
+
+/**
  * Look up an Osmosis transaction and extract the Wormhole gateway IBC packet
  * (sequence + channels + memo). Returns null if no Wormhole gateway transfer
  * was found in the tx. Tries multiple LCD providers because individual
@@ -402,15 +411,16 @@ export async function lookupOsmosisIbcPacket(
   // it). Surface a tx-not-found error rather than a generic provider
   // outage so the user can correct the hash.
   if (!lastError && seenNotFound) {
-    throw new Error(
-      "Osmosis transaction not found. Double-check the hash and that it was broadcast on Osmosis mainnet."
+    throw new OsmosisTxNotFoundError(
+      t("transfer.wormholeRedeem.osmosisTxNotFound")
     );
   }
   if (lastError) {
     throw new Error(
-      `Could not fetch Osmosis tx from any LCD: ${
-        lastError instanceof Error ? lastError.message : String(lastError)
-      }`
+      t("transfer.wormholeRedeem.osmosisLcdUnavailable", {
+        error:
+          lastError instanceof Error ? lastError.message : String(lastError),
+      })
     );
   }
   return null;
@@ -460,9 +470,9 @@ export async function findWormchainRecvTx({
   // At least one provider gave us a clean "no such packet" and none found it.
   if (sawEmptyResult) return null;
   throw new Error(
-    `Could not query Wormchain RPC: ${
-      lastError instanceof Error ? lastError.message : String(lastError)
-    }`
+    t("transfer.wormholeRedeem.wormchainRpcUnavailable", {
+      error: lastError instanceof Error ? lastError.message : String(lastError),
+    })
   );
 }
 
@@ -556,9 +566,7 @@ export async function resolveOperation(
   }
 
   if (!COSMOS_TX_HASH_RE.test(userHash)) {
-    throw new Error(
-      "Transaction not found. Make sure this is a Wormhole bridge transaction hash."
-    );
+    throw new Error(t("transfer.wormholeRedeem.notAWormholeTx"));
   }
 
   // The hash format alone can't tell us whether this is an Osmosis tx or
@@ -570,20 +578,15 @@ export async function resolveOperation(
   try {
     packet = await lookupOsmosisIbcPacket(userHash);
   } catch (err) {
-    if (
-      err instanceof Error &&
-      err.message.startsWith("Osmosis transaction not found")
-    ) {
+    if (err instanceof OsmosisTxNotFoundError) {
       throw new Error(
-        "Transaction not found on Wormholescan and no matching Osmosis transaction was located. If this is a Wormchain receive hash, the guardians may still be signing — try again in a minute. Otherwise, double-check the hash."
+        t("transfer.wormholeRedeem.notFoundOnWormholescanOrOsmosis")
       );
     }
     throw err;
   }
   if (!packet) {
-    throw new Error(
-      "Transaction not found on Wormholescan and no Wormhole gateway IBC transfer was found in this Osmosis transaction."
-    );
+    throw new Error(t("transfer.wormholeRedeem.noGatewayTransferInTx"));
   }
 
   const wormchainHash = await findWormchainRecvTx({
@@ -599,33 +602,35 @@ export async function resolveOperation(
     });
 
     if (fate.status === "timed_out") {
-      const when = fate.timestamp
-        ? ` on ${new Date(fate.timestamp).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}`
-        : "";
+      // Two whole sentences rather than splicing the date into one, so
+      // translators get a complete sentence in both cases.
       throw new Error(
-        `This transfer timed out before it reached Wormchain, so it was automatically refunded to your Osmosis address${when} (tx ${fate.txHash}). There is nothing to redeem — the tokens are already back in your wallet, and you can bridge again from the Wormhole page.`
+        fate.timestamp
+          ? t("transfer.wormholeRedeem.packetTimedOutRefunded", {
+              date: new Date(fate.timestamp).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }),
+              txHash: fate.txHash,
+            })
+          : t("transfer.wormholeRedeem.packetTimedOutRefundedNoDate", {
+              txHash: fate.txHash,
+            })
       );
     }
 
     if (fate.status === "acknowledged") {
-      throw new Error(
-        "Osmosis confirms this packet was received on Wormchain, but the receive transaction could not be located. Look this transfer up directly on Wormholescan."
-      );
+      throw new Error(t("transfer.wormholeRedeem.packetReceivedButTxNotFound"));
     }
 
-    throw new Error(
-      "Found the Osmosis send packet but the corresponding Wormchain receive has not been relayed yet. Try again in a minute."
-    );
+    throw new Error(t("transfer.wormholeRedeem.wormchainReceiveNotRelayedYet"));
   }
 
   const op = await fetchOperation(wormchainHash);
   if (!op) {
     throw new Error(
-      `Found the Wormchain receive (${wormchainHash}) but Wormholescan has not indexed a VAA for it yet. The guardians may still be signing — try again in a minute.`
+      t("transfer.wormholeRedeem.vaaNotIndexedYet", { txHash: wormchainHash })
     );
   }
 

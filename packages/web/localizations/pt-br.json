@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Conta {wallet} conectada",
       "confirmInNamed": "Confirme na {wallet}...",
       "submittingOnSui": "Enviando na Sui...",
-      "redeemOnSui": "Resgatar na Sui"
+      "redeemOnSui": "Resgatar na Sui",
+      "osmosisTxNotFound": "Transação Osmosis não encontrada. Verifique o hash e se ela foi transmitida na mainnet da Osmosis.",
+      "osmosisLcdUnavailable": "Não foi possível buscar a transação Osmosis em nenhum LCD: {error}",
+      "wormchainRpcUnavailable": "Não foi possível consultar o RPC da Wormchain: {error}",
+      "notAWormholeTx": "Transação não encontrada. Verifique se este é um hash de transação da ponte Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "Transação não encontrada no Wormholescan e nenhuma transação Osmosis correspondente foi localizada. Se este for um hash de recebimento da Wormchain, os guardiões podem ainda estar assinando — tente novamente em um minuto. Caso contrário, verifique o hash.",
+      "noGatewayTransferInTx": "Transação não encontrada no Wormholescan e nenhuma transferência IBC pelo gateway da Wormhole foi encontrada nesta transação Osmosis.",
+      "packetTimedOutRefunded": "Esta transferência expirou antes de chegar à Wormchain, então foi reembolsada automaticamente para o seu endereço Osmosis em {date} (tx {txHash}). Não há nada a resgatar — os tokens já estão de volta na sua carteira, e você pode fazer a ponte novamente pela página da Wormhole.",
+      "packetTimedOutRefundedNoDate": "Esta transferência expirou antes de chegar à Wormchain, então foi reembolsada automaticamente para o seu endereço Osmosis (tx {txHash}). Não há nada a resgatar — os tokens já estão de volta na sua carteira, e você pode fazer a ponte novamente pela página da Wormhole.",
+      "packetReceivedButTxNotFound": "A Osmosis confirma que este pacote foi recebido na Wormchain, mas a transação de recebimento não pôde ser localizada. Consulte esta transferência diretamente no Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "O pacote de envio da Osmosis foi encontrado, mas o recebimento correspondente na Wormchain ainda não foi retransmitido. Tente novamente em um minuto.",
+      "vaaNotIndexedYet": "O recebimento na Wormchain ({txHash}) foi encontrado, mas o Wormholescan ainda não indexou um VAA para ele. Os guardiões podem ainda estar assinando — tente novamente em um minuto."
     }
   },
   "unknownError": "Erro desconhecido",
