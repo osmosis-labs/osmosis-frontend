@@ -84,11 +84,22 @@ export function displayToast(
       showToast(<OneClickTradingToast {...alert} />, toastOptions);
       break;
     case ToastType.ALLOYED_ASSETS: {
+      // Without keys, Dismiss would persist nothing and the toast would return
+      // every session, so showing it is worse than not showing it. Fail loudly
+      // in development to catch a bad call site; in production drop the toast
+      // rather than throw, since this runs inside a query callback where an
+      // unhandled error would take out more than the toast.
       if (
         !("variantGroupKeys" in alert) ||
         alert.variantGroupKeys.length === 0
       ) {
-        throw new Error("Alloyed assets toast requires variant group keys");
+        const message =
+          "Alloyed assets toast requires variant group keys; skipping toast";
+        if (process.env.NODE_ENV === "development") {
+          throw new Error(message);
+        }
+        console.error(message);
+        break;
       }
 
       showToast(
@@ -333,8 +344,12 @@ const AlloyedAssetsToast: FunctionComponent<
         <label className="my-1 flex items-center gap-2">
           <Checkbox
             checked={isDontShowAgainChecked}
-            onCheckedChange={() =>
-              setIsDontShowAgainChecked(!isDontShowAgainChecked)
+            // Take the state from the callback, not the closure: Radix reports
+            // `boolean | "indeterminate"`, and toggling a captured value can go
+            // stale. Suppression is opt-in, so anything non-true reads as
+            // unchecked.
+            onCheckedChange={(checked) =>
+              setIsDontShowAgainChecked(checked === true)
             }
           />
           <span className="text-body2 text-osmoverse-300">

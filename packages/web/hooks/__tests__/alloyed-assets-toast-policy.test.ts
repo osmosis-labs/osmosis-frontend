@@ -167,4 +167,19 @@ describe("shouldPersistDismissalOnClose", () => {
     // unchecked default suppressed every alloy permanently.
     expect(shouldPersistDismissalOnClose(false)).toBe(false);
   });
+
+  it("treats a non-boolean checkbox state as unchecked", () => {
+    // Radix's onCheckedChange reports `boolean | "indeterminate"`, so the toast
+    // normalises with `checked === true` before calling this. Reproduce that
+    // normalisation over every value Radix can emit: only `true` may persist a
+    // suppression, since erring toward showing the toast again is the safe
+    // direction.
+    const normalise = (checked: boolean | "indeterminate" | undefined) =>
+      shouldPersistDismissalOnClose(checked === true);
+
+    expect(normalise(true)).toBe(true);
+    expect(normalise(false)).toBe(false);
+    expect(normalise("indeterminate")).toBe(false);
+    expect(normalise(undefined)).toBe(false);
+  });
 });
