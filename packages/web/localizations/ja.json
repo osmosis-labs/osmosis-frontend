@@ -1481,7 +1481,7 @@
   "alloyedAssets": {
     "title": "検出された変異体",
     "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
-    "remindMeLater": "後で通知する",
+    "dontShowAgain": "今後表示しない",
     "dismiss": "却下する",
     "convert": "変換する"
   },

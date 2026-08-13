@@ -1481,7 +1481,7 @@
   "alloyedAssets": {
     "title": "Varyantlar Tespit Edildi",
     "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
-    "remindMeLater": "Daha sonra hatırlat bana",
+    "dontShowAgain": "Bir daha gösterme",
     "dismiss": "Azletmek",
     "convert": "Dönüştürmek"
   },
