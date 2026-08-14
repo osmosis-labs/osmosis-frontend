@@ -492,6 +492,7 @@ export async function checkOsmosisPacketFate({
   srcChannel: string;
   lcds?: readonly string[];
 }): Promise<OsmosisPacketFate> {
+  let sawEmptyTimeoutSearch = false;
   for (const lcd of lcds) {
     try {
       const commitmentRes = await fetchWithTimeout(
@@ -517,17 +518,22 @@ export async function checkOsmosisPacketFate({
       if (!txRes.ok) continue;
       const txJson = (await txRes.json()) as CosmosTxSearchResponse;
       const timeoutTx = txJson.tx_responses?.[0];
-      return timeoutTx
-        ? {
-            status: "timed_out",
-            txHash: timeoutTx.txhash,
-            timestamp: timeoutTx.timestamp,
-          }
-        : { status: "acknowledged" };
+      if (timeoutTx) {
+        return {
+          status: "timed_out",
+          txHash: timeoutTx.txhash,
+          timestamp: timeoutTx.timestamp,
+        };
+      }
+      // A provider that pruned the block or does not index transactions
+      // answers empty for a packet that did time out. Claiming acknowledgement
+      // on that would send a refunded user to Wormholescan for nothing.
+      sawEmptyTimeoutSearch = true;
     } catch {
       // Try the next provider.
     }
   }
+  if (sawEmptyTimeoutSearch) return { status: "acknowledged" };
   return { status: "unknown" };
 }
 
@@ -603,11 +609,13 @@ export async function resolveOperation(
 
     if (fate.status === "timed_out") {
       // Two whole sentences rather than splicing the date into one, so
-      // translators get a complete sentence in both cases.
+      // translators get a complete sentence in both cases. An LCD timestamp we
+      // cannot parse falls back to the undated sentence, never "Invalid Date".
+      const refundedAt = fate.timestamp ? new Date(fate.timestamp) : null;
       throw new Error(
-        fate.timestamp
+        refundedAt && !Number.isNaN(refundedAt.getTime())
           ? t("transfer.wormholeRedeem.packetTimedOutRefunded", {
-              date: new Date(fate.timestamp).toLocaleDateString(undefined, {
+              date: refundedAt.toLocaleDateString(undefined, {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
