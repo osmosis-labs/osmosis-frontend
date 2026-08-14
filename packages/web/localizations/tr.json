@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
     "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
     "reviewTrade": "Ticareti inceleyin",
+    "highPriceImpact": {
+      "title": "Fiyat etkisi yüksek",
+      "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
+    },
+    "lossAcknowledgement": "Evet, bu işlemin önemli değer kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "errors": {
       "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
       "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",

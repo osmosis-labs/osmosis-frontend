@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "建議採用較低的滑移容差。",
     "tryHigherSlippage": "嘗試更高的最大滑動容差。",
     "reviewTrade": "審查交易",
+    "highPriceImpact": {
+      "title": "價格影響較高",
+      "description": "此交易將使市場價格變動{impact}，因此您收到的金額可能遠低於顯示的金額。"
+    },
+    "lossAcknowledgement": "是的，我明白此交易可能導致重大價值損失，我仍希望繼續。",
     "errors": {
       "noAssetAvailable": "您在 Osmosis 上沒有任何可用於交易的{coinName}資金。選擇一個選項繼續。",
       "tradeMayResultInLossOfValue": "您的交易可能會導致重大價值損失",
