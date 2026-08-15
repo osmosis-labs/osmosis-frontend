@@ -528,7 +528,10 @@ export class CosmosAccountImpl {
         );
       }
 
-      const { makeSignDoc } = await import("@cosmjs/launchpad");
+      // `@cosmjs/amino` re-exports the same `makeSignDoc`. Importing it from
+      // `@cosmjs/launchpad` instead drags launchpad's axios 0.21.4 LcdClient
+      // into the client bundle — this is launchpad's only runtime use.
+      const { makeSignDoc } = await import("@cosmjs/amino");
       const signDoc = makeSignDoc(
         aminoMsgs,
         fee,

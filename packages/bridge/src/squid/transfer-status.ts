@@ -1,4 +1,4 @@
-import { StatusResponse } from "@0xsquid/sdk";
+import type { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
