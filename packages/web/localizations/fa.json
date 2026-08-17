@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "حساب {wallet} متصل",
       "confirmInNamed": "در {wallet} تأیید کنید...",
       "submittingOnSui": "در حال ارسال در Sui...",
-      "redeemOnSui": "بازخرید در Sui"
+      "redeemOnSui": "بازخرید در Sui",
+      "osmosisTxNotFound": "تراکنش Osmosis پیدا نشد. هش را بررسی کنید و مطمئن شوید که در شبکه اصلی Osmosis ارسال شده است.",
+      "osmosisLcdUnavailable": "دریافت تراکنش Osmosis از هیچ LCD ممکن نشد: {error}",
+      "wormchainRpcUnavailable": "امکان جست‌وجو در RPC وُرم‌چین وجود نداشت: {error}",
+      "notAWormholeTx": "تراکنش پیدا نشد. مطمئن شوید که این هش یک تراکنش پل Wormhole است.",
+      "notFoundOnWormholescanOrOsmosis": "تراکنش در Wormholescan پیدا نشد و هیچ تراکنش متناظری در Osmosis یافت نشد. اگر این هش دریافت وُرم‌چین است، ممکن است نگهبانان هنوز در حال امضا باشند — یک دقیقه دیگر دوباره تلاش کنید. در غیر این صورت، هش را بررسی کنید.",
+      "noGatewayTransferInTx": "تراکنش در Wormholescan پیدا نشد و هیچ انتقال IBC از دروازه Wormhole در این تراکنش Osmosis یافت نشد.",
+      "packetTimedOutRefunded": "این انتقال پیش از رسیدن به وُرم‌چین منقضی شد، بنابراین در تاریخ {date} به‌طور خودکار به آدرس Osmosis شما بازگردانده شد (تراکنش {txHash}). چیزی برای دریافت وجود ندارد — توکن‌ها هم‌اکنون در کیف پول شما هستند و می‌توانید دوباره از صفحه Wormhole انتقال دهید.",
+      "packetTimedOutRefundedNoDate": "این انتقال پیش از رسیدن به وُرم‌چین منقضی شد، بنابراین به‌طور خودکار به آدرس Osmosis شما بازگردانده شد (تراکنش {txHash}). چیزی برای دریافت وجود ندارد — توکن‌ها هم‌اکنون در کیف پول شما هستند و می‌توانید دوباره از صفحه Wormhole انتقال دهید.",
+      "packetReceivedButTxNotFound": "Osmosis تأیید می‌کند که این بسته در وُرم‌چین دریافت شده است، اما تراکنش دریافت پیدا نشد. این انتقال را مستقیماً در Wormholescan بررسی کنید.",
+      "wormchainReceiveNotRelayedYet": "بسته ارسال Osmosis پیدا شد اما دریافت متناظر در وُرم‌چین هنوز رله نشده است. یک دقیقه دیگر دوباره تلاش کنید.",
+      "vaaNotIndexedYet": "دریافت وُرم‌چین ({txHash}) پیدا شد اما Wormholescan هنوز VAA آن را ایندکس نکرده است. ممکن است نگهبانان هنوز در حال امضا باشند — یک دقیقه دیگر دوباره تلاش کنید."
     }
   },
   "unknownError": "خطای نا شناس",

@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "연결된 {wallet} 계정",
       "confirmInNamed": "{wallet}에서 확인하세요...",
       "submittingOnSui": "Sui에서 제출하는 중...",
-      "redeemOnSui": "Sui에서 청구"
+      "redeemOnSui": "Sui에서 청구",
+      "osmosisTxNotFound": "Osmosis 트랜잭션을 찾을 수 없습니다. 해시를 확인하고 Osmosis 메인넷에 브로드캐스트되었는지 확인하세요.",
+      "osmosisLcdUnavailable": "어떤 LCD에서도 Osmosis 트랜잭션을 가져오지 못했습니다: {error}",
+      "wormchainRpcUnavailable": "Wormchain RPC를 조회하지 못했습니다: {error}",
+      "notAWormholeTx": "트랜잭션을 찾을 수 없습니다. Wormhole 브리지 트랜잭션 해시가 맞는지 확인하세요.",
+      "notFoundOnWormholescanOrOsmosis": "Wormholescan에서 트랜잭션을 찾지 못했고 일치하는 Osmosis 트랜잭션도 찾지 못했습니다. 이것이 Wormchain 수신 해시라면 가디언이 아직 서명 중일 수 있습니다. 1분 후에 다시 시도하세요. 그렇지 않다면 해시를 다시 확인하세요.",
+      "noGatewayTransferInTx": "Wormholescan에서 트랜잭션을 찾지 못했고 이 Osmosis 트랜잭션에서 Wormhole 게이트웨이 IBC 전송을 찾지 못했습니다.",
+      "packetTimedOutRefunded": "이 전송은 Wormchain에 도달하기 전에 시간이 초과되어 {date}에 Osmosis 주소로 자동 환불되었습니다 (tx {txHash}). 청구할 것이 없습니다. 토큰은 이미 지갑에 돌아와 있으며 Wormhole 페이지에서 다시 브리지할 수 있습니다.",
+      "packetTimedOutRefundedNoDate": "이 전송은 Wormchain에 도달하기 전에 시간이 초과되어 Osmosis 주소로 자동 환불되었습니다 (tx {txHash}). 청구할 것이 없습니다. 토큰은 이미 지갑에 돌아와 있으며 Wormhole 페이지에서 다시 브리지할 수 있습니다.",
+      "packetReceivedButTxNotFound": "Osmosis는 이 패킷이 Wormchain에서 수신되었음을 확인했지만 수신 트랜잭션을 찾을 수 없습니다. Wormholescan에서 이 전송을 직접 조회하세요.",
+      "wormchainReceiveNotRelayedYet": "Osmosis 전송 패킷을 찾았지만 해당하는 Wormchain 수신이 아직 릴레이되지 않았습니다. 1분 후에 다시 시도하세요.",
+      "vaaNotIndexedYet": "Wormchain 수신 ({txHash})을 찾았지만 Wormholescan이 아직 VAA를 인덱싱하지 않았습니다. 가디언이 아직 서명 중일 수 있습니다. 1분 후에 다시 시도하세요."
     }
   },
   "unknownError": "알 수 없는 에러",

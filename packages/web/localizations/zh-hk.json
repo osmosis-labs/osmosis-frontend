@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "已連接的 {wallet} 帳戶",
       "confirmInNamed": "請在 {wallet} 中確認...",
       "submittingOnSui": "正在 Sui 上提交...",
-      "redeemOnSui": "在 Sui 上領取"
+      "redeemOnSui": "在 Sui 上領取",
+      "osmosisTxNotFound": "找不到 Osmosis 交易。請核對雜湊，並確認已在 Osmosis 主網廣播。",
+      "osmosisLcdUnavailable": "無法從任何 LCD 取得 Osmosis 交易：{error}",
+      "wormchainRpcUnavailable": "無法查詢 Wormchain RPC：{error}",
+      "notAWormholeTx": "找不到交易。請確認這是 Wormhole 跨鏈橋交易雜湊。",
+      "notFoundOnWormholescanOrOsmosis": "在 Wormholescan 上找不到該交易，亦找不到相符的 Osmosis 交易。如果這是 Wormchain 接收雜湊，守護者可能仍在簽署——請一分鐘後再試。否則，請核對雜湊。",
+      "noGatewayTransferInTx": "在 Wormholescan 上找不到該交易，且此 Osmosis 交易中找不到 Wormhole 閘道 IBC 轉帳。",
+      "packetTimedOutRefunded": "此轉帳在到達 Wormchain 之前已逾時，因此已於 {date} 自動退回至你的 Osmosis 地址（交易 {txHash}）。無需贖回——代幣已回到你的錢包，你可以在 Wormhole 頁面重新發起跨鏈。",
+      "packetTimedOutRefundedNoDate": "此轉帳在到達 Wormchain 之前已逾時，因此已自動退回至你的 Osmosis 地址（交易 {txHash}）。無需贖回——代幣已回到你的錢包，你可以在 Wormhole 頁面重新發起跨鏈。",
+      "packetReceivedButTxNotFound": "Osmosis 確認此封包已在 Wormchain 上接收，但找不到接收交易。請直接在 Wormholescan 上查詢此轉帳。",
+      "wormchainReceiveNotRelayedYet": "已找到 Osmosis 傳送封包，但對應的 Wormchain 接收尚未中繼。請一分鐘後再試。",
+      "vaaNotIndexedYet": "已找到 Wormchain 接收（{txHash}），但 Wormholescan 尚未為其建立 VAA 索引。守護者可能仍在簽署——請一分鐘後再試。"
     }
   },
   "unknownError": "未知錯誤",
