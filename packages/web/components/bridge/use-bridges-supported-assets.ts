@@ -14,14 +14,10 @@ const supportedAssetsBridges: Bridge[] = [
   "Squid",
   "IBC",
   "Nomic",
-  // Wormhole is ordered ahead of Int3face so that the in-alloy SOL.wh route is
-  // recommended (index 0) for SOL withdrawals over the not-in-alloy SOL.int3
-  // route. Note this makes the default SOL withdraw an external-url route
-  // (Wormhole returns ["external-url"]) rather than Int3face's in-app quote.
-  // The withdraw dropdown scopes supported assets to the selected asset family,
-  // so this reorder only affects the SOL withdraw row ordering.
+  // Wormhole returns ["external-url"], so the recommended SOL withdraw is an
+  // external-url hand-off rather than an in-app quote. That is now the only SOL
+  // withdraw path: Int3face was the last in-app SOL quote and is gone.
   "Wormhole",
-  "Int3face",
   // include nomic, nitro, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
@@ -57,45 +53,34 @@ export const useBridgesSupportedAssets = ({
   direction: "deposit" | "withdraw";
 }) => {
   const supportedAssetsResults = api.useQueries((t) =>
-    supportedAssetsBridges
-      /**
-       * Disable Int3face for deposits
-       * since we should not be using Int3face for deposits
-       * as of https://osmosis-network.slack.com/archives/C0963S0DB4Z/p1758138969630079
-       */
-      .filter((bridge) => {
-        if (direction === "withdraw") return true;
-
-        return bridge !== "Int3face";
-      })
-      .flatMap((bridge) =>
-        (assets ?? []).map((asset) =>
-          t.bridgeTransfer.getSupportedAssetsByBridge(
-            {
-              bridge,
-              asset: {
-                address: asset.coinMinimalDenom,
-                decimals: asset.coinDecimals,
-                denom: asset.coinDenom,
-              },
-              direction,
-              chain,
+    supportedAssetsBridges.flatMap((bridge) =>
+      (assets ?? []).map((asset) =>
+        t.bridgeTransfer.getSupportedAssetsByBridge(
+          {
+            bridge,
+            asset: {
+              address: asset.coinMinimalDenom,
+              decimals: asset.coinDecimals,
+              denom: asset.coinDenom,
             },
-            {
-              enabled: !isNil(assets),
-              staleTime: 30_000,
-              cacheTime: 30_000,
-              // Disable retries, as useQueries
-              // will block successful queries from being returned
-              // if failed queries are being returned
-              // until retry starts returning false.
-              // This causes slow UX even though there's a
-              // query that the user can use.
-              retry: false,
-            }
-          )
+            direction,
+            chain,
+          },
+          {
+            enabled: !isNil(assets),
+            staleTime: 30_000,
+            cacheTime: 30_000,
+            // Disable retries, as useQueries
+            // will block successful queries from being returned
+            // if failed queries are being returned
+            // until retry starts returning false.
+            // This causes slow UX even though there's a
+            // query that the user can use.
+            retry: false,
+          }
         )
       )
+    )
   );
 
   const successfulQueries = useMemo(

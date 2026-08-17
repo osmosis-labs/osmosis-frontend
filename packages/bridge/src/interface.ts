@@ -481,7 +481,7 @@ export interface BridgeQuote {
     /**
      * Price impact of any swap bundled into the quote, as a stringified
      * fraction (e.g. "0.1" = 10%), NOT a percentage. Sign convention varies
-     * by provider: bundled Osmosis swaps (int3face, Nomic) report negative
+     * by provider: Nomic bundles an Osmosis swap and reports negative
      * fractions, Squid reports positive (its API's percentage is divided by
      * 100 at the provider) — consumers must compare magnitudes, not raw
      * values. "0" when the quote involves no swap — except Skip, which

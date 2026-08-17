@@ -231,8 +231,8 @@ export const useBridgeQuotes = ({
               totalFeeFiatValue,
             } = quote;
 
-            // Providers whose quotes bundle an Osmosis swap (int3face, Nomic)
-            // report price impact as a negative fraction, Squid as positive.
+            // Nomic, whose quotes bundle an Osmosis swap, reports price impact
+            // as a negative fraction, Squid as positive.
             // Normalize to magnitude so the gate comparison and the re-arm
             // math work regardless of the provider's sign convention.
             const priceImpact = new RatePretty(
