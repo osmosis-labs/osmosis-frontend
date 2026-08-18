@@ -29,6 +29,7 @@
     "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix"
   },
   "dependencies": {
+    "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "^0.24.0-alpha.25",
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/tendermint-rpc": "^0.24.1",

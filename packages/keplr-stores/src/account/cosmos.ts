@@ -528,7 +528,13 @@ export class CosmosAccountImpl {
         );
       }
 
-      const { makeSignDoc } = await import("@cosmjs/launchpad");
+      // `@cosmjs/amino` re-exports the same `makeSignDoc`. Importing it from
+      // `@cosmjs/launchpad` instead drags launchpad's axios 0.21.4 LcdClient
+      // into the client bundle. This was our source's last runtime import of
+      // launchpad, but not launchpad's last way in: `@keplr-wallet/cosmos`'
+      // barrel re-exports an adr-36 module that requires it, so launchpad is
+      // also aliased to `@cosmjs/amino` in `packages/web/next.config.js`.
+      const { makeSignDoc } = await import("@cosmjs/amino");
       const signDoc = makeSignDoc(
         aminoMsgs,
         fee,
