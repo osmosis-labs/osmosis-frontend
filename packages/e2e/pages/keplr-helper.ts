@@ -37,6 +37,10 @@ export async function getKeplrExtensionId(
   return null;
 }
 
+/** True for any Keplr popup page — including Home, which is not a sign request. */
+export const isKeplrPopupPage = (p: Page) =>
+  p.url().includes("chrome-extension://") && p.url().includes("/popup.html");
+
 /**
  * Opens the Keplr extension popup directly via chrome-extension:// URL.
  *
@@ -44,6 +48,9 @@ export async function getKeplrExtensionId(
  * `context.waitForEvent("page")`. In headless mode on Linux these popups
  * often don't fire that event. This function opens the popup page manually
  * so the pending approval request can be acted on.
+ *
+ * Only meaningful when an approval is actually pending: with no queued request
+ * this URL renders Keplr Home, which has no Approve button.
  */
 export async function openKeplrPopupDirect(
   context: BrowserContext,
@@ -77,26 +84,36 @@ export async function getKeplrPopupPage(
 ): Promise<Page | null> {
   const { timeout = 15_000 } = opts;
 
-  const existing = context
-    .pages()
-    .find(
-      (p) =>
-        p.url().includes("chrome-extension://") &&
-        p.url().includes("/popup.html")
-    );
+  const existing = context.pages().find(isKeplrPopupPage);
   if (existing) {
     console.log(`Found already-open Keplr popup: ${existing.url()}`);
     return existing;
   }
 
   try {
-    return await context.waitForEvent("page", { timeout });
+    // The predicate matters: Keplr re-opens `register.html` tabs of its own
+    // accord, and an unfiltered wait hands one back as though it were the popup.
+    return await context.waitForEvent("page", {
+      timeout,
+      predicate: isKeplrPopupPage,
+    });
   } catch {
-    console.log(
-      "Keplr popup did not appear as page event; trying direct navigation."
-    );
+    console.log("Keplr popup did not appear as a page event.");
   }
 
+  // Headless-only by design. Bare `popup.html` renders Keplr Home whether or not
+  // a request is pending, so in headed mode this fallback manufactures a popup
+  // with no Approve button and hides the real one — a slow sign popup becomes a
+  // hard failure. Headed Chrome fires the page event reliably, so if we got here
+  // without one, there is genuinely no approval to act on.
+  if (process.env.HEADLESS !== "true") {
+    console.log(
+      "Headed mode: no Keplr popup appeared, treating as no approval needed."
+    );
+    return null;
+  }
+
+  console.log("Headless mode: trying direct navigation.");
   const extensionId = await getKeplrExtensionId(context);
   if (extensionId) {
     try {
@@ -114,6 +131,48 @@ export async function getKeplrPopupPage(
 // step that actually timed out (popup load vs Approve button).
 const APPROVE_LOAD_TIMEOUT_MS = 10_000;
 const APPROVE_BUTTON_TIMEOUT_MS = 10_000;
+// Short window to catch a genuine sign popup that lost the race to the
+// direct-navigation fallback. Kept well under the per-attempt budgets so a
+// re-acquisition attempt cannot dominate the retry loop.
+const REACQUIRE_TIMEOUT_MS = 5_000;
+
+/** Non-blocking probe: is this page currently showing a sign request? */
+const hasApproveButton = (p: Page) =>
+  p
+    .getByRole("button", { name: "Approve" })
+    .isVisible()
+    .catch(() => false);
+
+/**
+ * Finds a Keplr popup that is actually showing a sign request.
+ *
+ * Bare `popup.html` renders Keplr Home, which never grows an "Approve" button.
+ * So when the direct-navigation fallback beats a slow sign popup, reloading it
+ * just yields Home again — the only useful move is to go find the real popup.
+ * Prefers an already-open popup showing Approve, then waits briefly for one to
+ * arrive as a page event. Returns null if neither turns up.
+ */
+async function reacquireSignPopup(
+  context: BrowserContext,
+  current: Page
+): Promise<Page | null> {
+  for (const p of context.pages()) {
+    if (p === current || p.isClosed() || !isKeplrPopupPage(p)) continue;
+    if (await hasApproveButton(p)) {
+      console.log("Re-acquired an open Keplr popup showing a sign request.");
+      return p;
+    }
+  }
+
+  const arrived = await context
+    .waitForEvent("page", {
+      timeout: REACQUIRE_TIMEOUT_MS,
+      predicate: isKeplrPopupPage,
+    })
+    .catch(() => null);
+  if (arrived) console.log("Sign popup arrived late as a page event.");
+  return arrived;
+}
 
 /**
  * Waits for a Keplr approval popup and clicks "Approve".
@@ -139,9 +198,6 @@ export async function waitForKeplrApproval(
   opts: { timeout?: number; attempts?: number } = {}
 ): Promise<Page | null> {
   const { timeout = 15_000, attempts = 3 } = opts;
-
-  const isPopup = (p: Page) =>
-    p.url().includes("chrome-extension://") && p.url().includes("/popup.html");
 
   // A null result here means no approval popup ever appeared (1CT /
   // pre-approved) — a no-op success, not a failure.
@@ -190,14 +246,18 @@ export async function waitForKeplrApproval(
     );
 
     if (attempt < attempts) {
-      // Reload to re-render a blank/stuck popup; the pending request persists
-      // in the service worker. If the popup was re-emitted as a new page,
-      // switch to the freshest open popup.
-      await popupPage.reload({ waitUntil: "domcontentloaded" }).catch(() => {});
-      await popupPage.waitForTimeout(1_500);
-      const popups = context.pages().filter(isPopup);
-      const fresh = popups[popups.length - 1];
-      if (fresh) popupPage = fresh;
+      const fresh = await reacquireSignPopup(context, popupPage);
+      if (fresh) {
+        popupPage = fresh;
+      } else {
+        // No better popup to switch to, so fall back to reloading this one:
+        // a blank/stuck popup re-reads the still-pending approval from the
+        // background service worker, which survives the reload.
+        await popupPage
+          .reload({ waitUntil: "domcontentloaded" })
+          .catch(() => {});
+        await popupPage.waitForTimeout(1_500);
+      }
     }
   }
 
