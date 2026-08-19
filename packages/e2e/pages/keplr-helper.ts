@@ -144,13 +144,17 @@ const hasApproveButton = (p: Page) =>
     .catch(() => false);
 
 /**
- * Finds a Keplr popup that is actually showing a sign request.
+ * Finds a better Keplr popup to retry the approval against.
  *
  * Bare `popup.html` renders Keplr Home, which never grows an "Approve" button.
  * So when the direct-navigation fallback beats a slow sign popup, reloading it
  * just yields Home again — the only useful move is to go find the real popup.
- * Prefers an already-open popup showing Approve, then waits briefly for one to
- * arrive as a page event. Returns null if neither turns up.
+ * Prefers an already-open popup showing Approve. Failing that, returns the next
+ * Keplr popup to arrive as a page event without re-checking it: this is only
+ * called once the current popup has already failed, so any other popup is at
+ * worst an equal starting point, and the retry loop re-tests Approve anyway.
+ * Callers must not treat the result as guaranteed to be a sign request.
+ * Returns null if nothing turns up.
  */
 async function reacquireSignPopup(
   context: BrowserContext,
