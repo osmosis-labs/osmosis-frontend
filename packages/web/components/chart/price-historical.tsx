@@ -2,6 +2,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { curveNatural } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
+import { scaleLinear } from "@visx/scale";
 import {
   AnimatedAreaSeries,
   AnimatedAxis,
@@ -31,6 +32,66 @@ import {
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
+
+const NUM_Y_TICKS = 5;
+
+/**
+ * Derives the y-axis tick formatter and the left margin needed to fit the
+ * widest tick label, both keyed off the chart's domain.
+ *
+ * `formatYTick` builds on d3's own linear tick formatter (via @visx/scale),
+ * matching the tick count the axis uses, so tight or sub-cent ranges get the
+ * same decimal precision the axis would pick; it then adds thousands separators
+ * the raw d3 formatter omits. The margin is measured from the actual rendered
+ * pixel width of those labels (canvas, using the axis font Inter 12px/500 per
+ * the chart theme's svgLabelSmall), so the gutter fits six-figure prices
+ * (e.g. "118,000") without clipping and stays snug for cheap pairs, with no
+ * hand-tuned per-char guess. Falls back to a generous char estimate when canvas
+ * is unavailable (SSR).
+ */
+function useYAxisTickLayout(domain: [number, number]) {
+  const formatYTick = useMemo(() => {
+    const scale = scaleLinear({ domain, range: [0, 1] });
+    const d3Format = scale.tickFormat(NUM_Y_TICKS);
+    return (value: number) => {
+      // Keep d3's chosen decimal precision (it varies with tick spacing), then
+      // add thousands separators to the integer part, which d3 omits.
+      const formatted = d3Format(value);
+      const negative = formatted.startsWith("-");
+      const [intPart, decPart] = formatted.replace(/^-/, "").split(".");
+      const withCommas = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return (
+        (negative ? "-" : "") + withCommas + (decPart ? `.${decPart}` : "")
+      );
+    };
+  }, [domain]);
+
+  const leftMargin = useMemo(() => {
+    const scale = scaleLinear({ domain, range: [0, 1] });
+    const ticks = scale.ticks(NUM_Y_TICKS);
+    // A dead pool with a flat price series yields a zero-width domain and no
+    // ticks; fall back to a representative label so the gutter is still sized.
+    const labels = ticks.length ? ticks.map(formatYTick) : ["0.00"];
+    const tickGap = 8; // tick line + label padding
+
+    let widestPx: number | null = null;
+    if (typeof document !== "undefined") {
+      const ctx = document.createElement("canvas").getContext("2d");
+      if (ctx) {
+        ctx.font = "500 12px Inter, ui-sans-serif, system-ui";
+        widestPx = Math.max(...labels.map((l) => ctx.measureText(l).width));
+      }
+    }
+    // Fallback: 8px per char is a safe upper bound for Inter digits at 12px.
+    if (widestPx == null) {
+      widestPx = Math.max(...labels.map((l) => l.length)) * 8;
+    }
+
+    return Math.max(36, Math.ceil(widestPx + tickGap));
+  }, [domain, formatYTick]);
+
+  return { formatYTick, leftMargin };
+}
 
 export const HistoricalPriceChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -65,184 +126,197 @@ export const HistoricalPriceChart: FunctionComponent<{
     xNumTicks = 4,
     showTooltip = false,
     fiatSymbol,
-  }) => (
-    <ParentSize
-      className={`flex-shrink-1 flex-1 ${
-        !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
-      }`}
-    >
-      {({ height, width }) => (
-        <XYChart
-          key="line-chart"
-          margin={
-            minimal
-              ? { top: 0, right: 0, bottom: 24, left: 0 }
-              : { top: 0, right: 0, bottom: 24, left: 36 }
-          }
-          height={height}
-          width={width}
-          xScale={{
-            type: "time",
-            paddingInner: 0.5,
-          }}
-          yScale={{
-            type: "linear",
-            domain,
-            zero: false,
-          }}
-          onPointerOut={onPointerOut}
-          onPointerMove={(tooltipData) => {
-            const datum = tooltipData.datum as any;
-            const close = datum.close;
+  }) => {
+    const { formatYTick, leftMargin } = useYAxisTickLayout(domain);
 
-            if (close && onPointerHover) {
-              onPointerHover(close);
+    return (
+      <ParentSize
+        className={`flex-shrink-1 flex-1 ${
+          !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
+        }`}
+      >
+        {({ height, width }) => (
+          <XYChart
+            key="line-chart"
+            margin={
+              minimal
+                ? { top: 0, right: 0, bottom: 24, left: 0 }
+                : { top: 0, right: 0, bottom: 24, left: leftMargin }
             }
-          }}
-          theme={buildChartTheme({
-            backgroundColor: "transparent",
-            colors: showGradient ? [theme.colors.wosmongton["300"]] : ["white"],
-            gridColor: theme.colors.osmoverse["600"],
-            gridColorDark: theme.colors.osmoverse["300"],
-            svgLabelSmall: {
-              fill: theme.colors.osmoverse["300"],
-              fontSize: 12,
-              fontWeight: 500,
-            },
-            svgLabelBig: {
-              fill: theme.colors.osmoverse["300"],
-              fontSize: 12,
-              fontWeight: 500,
-            },
-            tickLength: 1,
-            xAxisLineStyles: {
-              strokeWidth: 0,
-            },
-            xTickLineStyles: {
-              strokeWidth: 0,
-            },
-            yAxisLineStyles: {
-              strokeWidth: 0,
-            },
-          })}
-        >
-          <AnimatedAxis
-            orientation="bottom"
-            numTicks={xNumTicks}
-            hideTicks={minimal}
-            hideZero={minimal}
-          />
-          {!minimal && (
-            <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
-          )}
-          {!minimal && <AnimatedGrid columns={false} numTicks={5} />}
+            height={height}
+            width={width}
+            xScale={{
+              type: "time",
+              paddingInner: 0.5,
+            }}
+            yScale={{
+              type: "linear",
+              domain,
+              zero: false,
+            }}
+            onPointerOut={onPointerOut}
+            onPointerMove={(tooltipData) => {
+              const datum = tooltipData.datum as any;
+              const close = datum.close;
 
-          {showGradient ? (
-            <>
-              <AnimatedAreaSeries
+              if (close != null && onPointerHover) {
+                onPointerHover(close);
+              }
+            }}
+            theme={buildChartTheme({
+              backgroundColor: "transparent",
+              colors: showGradient
+                ? [theme.colors.wosmongton["300"]]
+                : ["white"],
+              gridColor: theme.colors.osmoverse["600"],
+              gridColorDark: theme.colors.osmoverse["300"],
+              svgLabelSmall: {
+                fill: theme.colors.osmoverse["300"],
+                fontSize: 12,
+                fontWeight: 500,
+              },
+              svgLabelBig: {
+                fill: theme.colors.osmoverse["300"],
+                fontSize: 12,
+                fontWeight: 500,
+              },
+              tickLength: 1,
+              xAxisLineStyles: {
+                strokeWidth: 0,
+              },
+              xTickLineStyles: {
+                strokeWidth: 0,
+              },
+              yAxisLineStyles: {
+                strokeWidth: 0,
+              },
+            })}
+          >
+            <AnimatedAxis
+              orientation="bottom"
+              numTicks={xNumTicks}
+              hideTicks={minimal}
+              hideZero={minimal}
+            />
+            {!minimal && (
+              <AnimatedAxis
+                orientation="left"
+                numTicks={NUM_Y_TICKS}
+                strokeWidth={0}
+                tickFormat={formatYTick}
+              />
+            )}
+            {!minimal && (
+              <AnimatedGrid columns={false} numTicks={NUM_Y_TICKS} />
+            )}
+
+            {showGradient ? (
+              <>
+                <AnimatedAreaSeries
+                  dataKey="close"
+                  data={data}
+                  xAccessor={(d: { time: number; close: number }) => d?.time}
+                  yAccessor={(d: { time: number; close: number }) => d?.close}
+                  fillOpacity={0.4}
+                  curve={curveNatural}
+                  fill="url(#gradient)"
+                />
+                <LinearGradient
+                  id="gradient"
+                  from={theme.colors.chartGradientPrimary}
+                  to={theme.colors.chartGradientSecondary}
+                  rotate={-8}
+                  fromOffset="13.08%"
+                  fromOpacity={1}
+                  toOpacity={0}
+                  toOffset="85.36%"
+                />
+              </>
+            ) : (
+              <AnimatedLineSeries
+                key={data.length}
                 dataKey="close"
                 data={data}
+                curve={curveNatural}
                 xAccessor={(d: { time: number; close: number }) => d?.time}
                 yAccessor={(d: { time: number; close: number }) => d?.close}
-                fillOpacity={0.4}
-                curve={curveNatural}
-                fill="url(#gradient)"
-              />
-              <LinearGradient
-                id="gradient"
-                from={theme.colors.chartGradientPrimary}
-                to={theme.colors.chartGradientSecondary}
-                rotate={-8}
-                fromOffset="13.08%"
-                fromOpacity={1}
-                toOpacity={0}
-                toOffset="85.36%"
-              />
-            </>
-          ) : (
-            <AnimatedLineSeries
-              key={data.length}
-              dataKey="close"
-              data={data}
-              curve={curveNatural}
-              xAccessor={(d: { time: number; close: number }) => d?.time}
-              yAccessor={(d: { time: number; close: number }) => d?.close}
-              stroke={theme.colors.wosmongton["200"]}
-            />
-          )}
-          {annotations.map((dec, i) => (
-            <Annotation
-              key={i}
-              dataKey="depth"
-              xAccessor={(d: { close: number; time: number }) => d.time}
-              yAccessor={(d: { close: number; time: number }) => d.close}
-              datum={{ close: Number(dec.toString()), time: 0 }}
-            >
-              <AnnotationConnector />
-              <AnnotationLineSubject
-                orientation="horizontal"
                 stroke={theme.colors.wosmongton["200"]}
-                strokeWidth={2}
-                strokeDasharray={4}
               />
-            </Annotation>
-          ))}
-          <Tooltip
-            detectBounds
-            showDatumGlyph
-            horizontalCrosshairStyle={{
-              strokeWidth: 2,
-              strokeDasharray: "5 5",
-              opacity: 0.17,
-              stroke: theme.colors.osmoverse[300],
-            }}
-            verticalCrosshairStyle={{
-              strokeWidth: 2,
-              strokeDasharray: "5 5",
-              opacity: 0.17,
-              stroke: theme.colors.osmoverse[300],
-            }}
-            showVerticalCrosshair={true}
-            renderTooltip={({ tooltipData }: any) => {
-              const close = tooltipData?.nearestDatum?.datum?.close;
-              const time = tooltipData?.nearestDatum?.datum?.time;
+            )}
+            {annotations.map((dec, i) => (
+              <Annotation
+                key={i}
+                dataKey="depth"
+                xAccessor={(d: { close: number; time: number }) => d.time}
+                yAccessor={(d: { close: number; time: number }) => d.close}
+                datum={{ close: Number(dec.toString()), time: 0 }}
+              >
+                <AnnotationConnector />
+                <AnnotationLineSubject
+                  orientation="horizontal"
+                  stroke={theme.colors.wosmongton["200"]}
+                  strokeWidth={2}
+                  strokeDasharray={4}
+                />
+              </Annotation>
+            ))}
+            <Tooltip
+              detectBounds
+              showDatumGlyph
+              horizontalCrosshairStyle={{
+                strokeWidth: 2,
+                strokeDasharray: "5 5",
+                opacity: 0.17,
+                stroke: theme.colors.osmoverse[300],
+              }}
+              verticalCrosshairStyle={{
+                strokeWidth: 2,
+                strokeDasharray: "5 5",
+                opacity: 0.17,
+                stroke: theme.colors.osmoverse[300],
+              }}
+              showVerticalCrosshair={true}
+              renderTooltip={({ tooltipData }: any) => {
+                const close = tooltipData?.nearestDatum?.datum?.close;
+                const time = tooltipData?.nearestDatum?.datum?.time;
 
-              if (showTooltip && time && close) {
-                const date = dayjs(time).format("MMM Do, hh:mma");
-                const minimumDecimals = 2;
-                const maxDecimals = Math.max(
-                  getDecimalCount(close),
-                  minimumDecimals
-                );
+                if (showTooltip && time != null && close != null) {
+                  const date = dayjs(time).format("MMM Do, hh:mma");
+                  const minimumDecimals = 2;
+                  const maxDecimals = Math.max(
+                    getDecimalCount(close),
+                    minimumDecimals
+                  );
 
-                const closeDec = new Dec(close);
+                  const closeDec = new Dec(close);
 
-                const formatOpts = getPriceExtendedFormatOptions(closeDec);
+                  const formatOpts = getPriceExtendedFormatOptions(closeDec);
 
-                return (
-                  <div className="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
-                    <h6 className="text-h6 font-semibold text-white-full">
-                      {fiatSymbol}
-                      {formatPretty(closeDec, {
-                        maxDecimals,
-                        ...formatOpts,
-                      }) || ""}
-                    </h6>
+                  return (
+                    <div className="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
+                      <h6 className="text-h6 font-semibold text-white-full">
+                        {fiatSymbol}
+                        {formatPretty(closeDec, {
+                          maxDecimals,
+                          ...formatOpts,
+                        }) || ""}
+                      </h6>
 
-                    <p className="text-caption font-medium text-osmoverse-200">
-                      {date}
-                    </p>
-                  </div>
-                );
-              }
+                      <p className="text-caption font-medium text-osmoverse-200">
+                        {date}
+                      </p>
+                    </div>
+                  );
+                }
 
-              return <div></div>;
-            }}
-          />
-        </XYChart>
-      )}
-    </ParentSize>
-  )
+                return <div></div>;
+              }}
+            />
+          </XYChart>
+        )}
+      </ParentSize>
+    );
+  }
 );
 
 export const PriceChartHeader: FunctionComponent<{

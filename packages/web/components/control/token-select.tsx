@@ -15,12 +15,16 @@ import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 
-/** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
+/** Will display balances if provided `CoinPretty` objects. Assumes denoms are
+ *  unique. By default tokens are keyed by their display denom (`coinDenom`); set
+ *  `keyByMinimalDenom` to key selection by `coinMinimalDenom` instead, so assets
+ *  that share a display symbol (bridged variants) resolve unambiguously. */
 export const TokenSelect: FunctionComponent<{
   selectedTokenDenom: string;
   tokens: (CoinPretty | AppCurrency)[];
   onSelect: (tokenDenom: string) => void;
   sortByBalances?: boolean;
+  keyByMinimalDenom?: boolean;
   dropdownOpen?: boolean;
   setDropdownState?: (isOpen: boolean) => void;
 }> = observer(
@@ -29,11 +33,23 @@ export const TokenSelect: FunctionComponent<{
     tokens,
     onSelect,
     sortByBalances = false,
+    keyByMinimalDenom = false,
     dropdownOpen,
     setDropdownState,
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
+
+    // The unique key a token is matched/selected by. Display denom by default;
+    // minimal denom when the caller needs same-symbol assets disambiguated.
+    const tokenKey = (token: CoinPretty | AppCurrency) =>
+      keyByMinimalDenom
+        ? token instanceof CoinPretty
+          ? token.currency.coinMinimalDenom
+          : token.coinMinimalDenom
+        : token instanceof CoinPretty
+        ? token.denom
+        : token.coinDenom;
 
     // parent overrideable state
     const [isSelectOpenLocal, setIsSelectOpenLocal] =
@@ -45,17 +61,11 @@ export const TokenSelect: FunctionComponent<{
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const selectedToken = tokens.find(
-      (token) =>
-        (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
-        selectedTokenDenom
+      (token) => tokenKey(token) === selectedTokenDenom
     );
 
     const dropdownTokens = tokens
-      .filter(
-        (token) =>
-          (token instanceof CoinPretty ? token.denom : token.coinDenom) !==
-          selectedTokenDenom
-      )
+      .filter((token) => tokenKey(token) !== selectedTokenDenom)
       .map((token) => ({
         token,
         // filter by chain name
@@ -191,6 +201,7 @@ export const TokenSelect: FunctionComponent<{
           onInput={(v) => setTokenSearch(v)}
           tokens={searchedTokens}
           onSelect={onSelect}
+          keyByMinimalDenom={keyByMinimalDenom}
         />
       </div>
     );

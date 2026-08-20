@@ -478,8 +478,24 @@ export type BridgeCoin = {
 export interface BridgeQuote {
   input: BridgeCoin;
   expectedOutput: BridgeCoin & {
-    /** Percentage represented as string. E.g. 10.0, 95.0 */
+    /**
+     * Price impact of any swap bundled into the quote, as a stringified
+     * fraction (e.g. "0.1" = 10%), NOT a percentage. Sign convention varies
+     * by provider: Nomic bundles an Osmosis swap and reports negative
+     * fractions, Squid reports positive (its API's percentage is divided by
+     * 100 at the provider) — consumers must compare magnitudes, not raw
+     * values. "0" when the quote involves no swap — except Skip, which
+     * reports "0" even when its route swaps internally (known gap; the
+     * fiat-loss check is its only defense).
+     */
     priceImpact: string;
+    /**
+     * True when the quote bundles an Osmosis swap (e.g. alloy → variant
+     * conversion) whose price impact could not be determined, so `priceImpact`
+     * is a fallback "0" rather than a real figure. Consumers must treat the
+     * loss as unknown rather than zero.
+     */
+    priceImpactUnknown?: boolean;
   };
   fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;

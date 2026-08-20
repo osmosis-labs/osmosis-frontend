@@ -29,6 +29,7 @@
     "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix"
   },
   "dependencies": {
+    "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "^0.24.0-alpha.25",
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/tendermint-rpc": "^0.24.1",
@@ -41,7 +42,7 @@
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
-    "axios": "^0.27.2",
+    "axios": "^0.33.0",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",

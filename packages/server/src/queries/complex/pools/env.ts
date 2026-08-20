@@ -13,6 +13,21 @@ const WhitewhalePoolCodeIds = IS_TESTNET ? ["6688"] : ["503", "641"];
 /** Cosmwasm Code Ids confirmed to be orderbook pools in current env. */
 export const OrderbookPoolCodeIds = IS_TESTNET ? ["9373"] : ["885"];
 
+/** Pool types that swap at a fixed 1:1 ratio with no price movement, so a quote
+ *  against them cannot drift between quote and execution. Deliberately excludes
+ *  `cosmwasm-astroport-pcl` (a concentrated AMM, with a dynamic spread factor),
+ *  `cosmwasm-whitewhale` (an AMM), `cosmwasm-orderbook` (fills at book prices),
+ *  and bare `cosmwasm` (unrecognised code id, unknown semantics). */
+const OneToOnePoolTypes = ["cosmwasm-transmuter", "cosmwasm-alloyed"];
+
+/** Whether a quoted pool swaps 1:1, so callers may demand the exact quoted
+ *  amount out instead of allowing a slippage tolerance. Takes the pool `type`
+ *  as it appears on a quote, which `getCosmwasmPoolTypeFromCodeId` has already
+ *  narrowed to a CosmWasm subtype. */
+export function isOneToOnePoolType(type: string): boolean {
+  return OneToOnePoolTypes.includes(type);
+}
+
 export function getCosmwasmPoolTypeFromCodeId(
   codeId: string
 ):

@@ -11,6 +11,11 @@ export interface Alert {
   iconElement?: ReactNode;
 }
 
+export interface AlloyedAssetsAlert extends Alert {
+  /** Variant groups (canonical coinMinimalDenoms) shown by this toast. */
+  variantGroupKeys: string[];
+}
+
 export const enum ToastType {
   SUCCESS = "SUCCESS",
   ERROR = "ERROR",

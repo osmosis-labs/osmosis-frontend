@@ -16,9 +16,9 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 3.2, unit: "usd" }, // For market buy BTC and OSMO (1.55 each)
-      { token: "BTC", amount: 1.6, unit: "usd" }, // For market sell BTC
-      { token: "OSMO", amount: 1.6, unit: "usd" }, // For market sell OSMO
+      { token: "USDC", amount: 1.2, unit: "usd" }, // For market buy BTC and OSMO (0.55 each)
+      { token: "BTC", amount: 0.6, unit: "usd" }, // For market sell BTC
+      { token: "OSMO", amount: 0.6, unit: "usd" }, // For market sell OSMO
     ]);
 
     tradePage = new TradePage(context.pages()[0]);
@@ -46,7 +46,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("1.55");
+      await tradePage.enterAmount("0.55");
       await tradePage.isSufficientBalanceForTrade();
       await tradePage.showSwapInfo();
       await tradePage.buyAndApprove(context, { slippagePercent: "3" });
@@ -59,7 +59,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("BTC");
-    await tradePage.enterAmount("1.54");
+    await tradePage.enterAmount("0.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     await tradePage.sellAndApprove(context, { slippagePercent: "3" });
@@ -70,7 +70,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.54");
+    await tradePage.enterAmount("0.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     await tradePage.sellAndApprove(context, { slippagePercent: "3" });

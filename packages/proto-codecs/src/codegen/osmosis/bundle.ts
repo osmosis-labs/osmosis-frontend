@@ -31,6 +31,9 @@ import * as _34 from "./gamm/v1beta1/shared";
 import * as _35 from "./gamm/v1beta1/tx";
 import * as _97 from "./gamm/v1beta1/tx.amino";
 import * as _107 from "./gamm/v1beta1/tx.registry";
+import * as _200 from "./incentives/tx";
+import * as _201 from "./incentives/tx.amino";
+import * as _202 from "./incentives/tx.registry";
 import * as _36 from "./lockup/genesis";
 import * as _37 from "./lockup/lock";
 import * as _38 from "./lockup/params";
@@ -127,6 +130,11 @@ export namespace osmosis {
       ..._107,
     };
   }
+  export const incentives = {
+    ..._200,
+    ..._201,
+    ..._202,
+  };
   export const lockup = {
     ..._36,
     ..._37,

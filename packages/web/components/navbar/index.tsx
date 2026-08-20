@@ -34,6 +34,7 @@ import { Button } from "~/components/ui/button";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
+import { useAssetAlerts } from "~/hooks/use-asset-alerts";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
@@ -48,6 +49,11 @@ import { useNavBarStore } from "~/stores/nav-bar-store";
 import { useProfileStore } from "~/stores/profile-store";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
+import {
+  CMSBannerFields,
+  getMatchedSymbolsText,
+  interpolateBannerText,
+} from "~/utils/asset-alerts";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -72,7 +78,12 @@ export const NavBar: FunctionComponent<
       },
       accountStore,
     } = useStore();
-    const { title: navBarTitle, callToActionButtons } = useNavBarStore();
+    const {
+      title: navBarTitle,
+      callToActionButtons,
+      visibleBannerHeight,
+      setVisibleBannerHeight,
+    } = useNavBarStore();
     const { t } = useTranslation();
 
     const featureFlags = useFeatureFlags();
@@ -90,6 +101,7 @@ export const NavBar: FunctionComponent<
     } = useDisclosure();
 
     const closeMobileMenuRef = useRef(noop);
+    const bannerStackRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { isLoading: isWalletLoading } = useWalletSelect();
 
@@ -154,6 +166,45 @@ export const NavBar: FunctionComponent<
       !!topAnnouncementBannerData &&
       Boolean(topAnnouncementBannerData?.banner) &&
       isBannerWithinDateRange;
+
+    // Denom-gated asset alerts (fe-content cms/asset-alerts.json), shown only
+    // to wallets holding an affected denom. Dismissal is persisted per alert
+    // under its localStorageKey, matching the announcement banner convention.
+    // Keep the global announcement surface bounded. Surplus alerts wait until
+    // an earlier alert is dismissed or expires.
+    const { visibleAlerts, dismissAlert } = useAssetAlerts();
+    const visibleAssetAlerts = visibleAlerts.slice(
+      0,
+      MAX_STACKED_BANNERS - (showBanner ? 1 : 0)
+    );
+
+    // Banners can wrap as copy, locale, and viewport width change. Measure the
+    // rendered stack so both in-flow and fixed page content use its real height.
+    useEffect(() => {
+      const bannerStack = bannerStackRef.current;
+      if (!bannerStack) return;
+
+      const updateBannerHeight = () => {
+        setVisibleBannerHeight(
+          Math.ceil(bannerStack.getBoundingClientRect().height)
+        );
+      };
+
+      updateBannerHeight();
+      window.addEventListener("resize", updateBannerHeight);
+
+      const resizeObserver =
+        typeof ResizeObserver === "undefined"
+          ? undefined
+          : new ResizeObserver(updateBannerHeight);
+      resizeObserver?.observe(bannerStack);
+
+      return () => {
+        resizeObserver?.disconnect();
+        window.removeEventListener("resize", updateBannerHeight);
+        setVisibleBannerHeight(0);
+      };
+    }, [setVisibleBannerHeight]);
 
     const handleTradeClicked = () => {
       // logEvent(EventName.Topnav.tradeClicked);
@@ -279,19 +330,34 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         {/* Back-layer element to occupy space for the caller */}
+        <div className={classNames("bg-osmoverse-1000", backElementClassNames)}>
+          <div className="h-navbar md:h-navbar-mobile" />
+          <div style={{ height: visibleBannerHeight }} />
+        </div>
         <div
-          className={classNames(
-            "bg-osmoverse-1000",
-            showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
-            backElementClassNames
+          ref={bannerStackRef}
+          className="fixed top-[71px] z-[51] ml-sidebar flex w-[calc(100vw_-_14.58rem)] flex-col md:top-[57px] md:ml-0 md:w-full"
+        >
+          {showBanner && (
+            <AnnouncementBanner
+              closeBanner={() => setShowBanner(false)}
+              bannerResponse={topAnnouncementBannerData}
+            />
           )}
-        />
-        {showBanner && (
-          <AnnouncementBanner
-            closeBanner={() => setShowBanner(false)}
-            bannerResponse={topAnnouncementBannerData}
-          />
-        )}
+          {visibleAssetAlerts.map((alert) => (
+            <AnnouncementBanner
+              key={alert.banner.localStorageKey}
+              closeBanner={() => dismissAlert(alert.banner.localStorageKey)}
+              bannerResponse={{
+                isChainHalted: false,
+                banner: alert.banner,
+                localization: alert.localization,
+              }}
+              dismissible={!alert.banner.persistent}
+              textInterpolations={{ symbols: getMatchedSymbolsText(alert) }}
+            />
+          ))}
+        </div>
         <ProfileModal
           isOpen={isProfileOpen}
           onRequestClose={onCloseProfile}
@@ -539,28 +605,26 @@ const OneClickTradingRadialProgress = observer(() => {
 
 interface TopAnnouncementBannerResponse {
   isChainHalted: boolean;
-  banner: {
-    enTextOrLocalizationPath: string;
-    localStorageKey?: string;
-    pageRoute?: string;
-    link?: {
-      enTextOrLocalizationKey: string;
-      url: string;
-      isExternal: boolean;
-    };
-    isWarning?: boolean;
-    persistent?: boolean;
-    bg?: string;
-    startDate?: string;
-    endDate?: string;
-  } | null;
+  banner:
+    | (CMSBannerFields & {
+        /** Only show the banner on this page route. */
+        pageRoute?: string;
+      })
+    | null;
   localization?: Record<string, Record<string, any>>;
 }
+
+/** Most banners renderable at once, including the announcement banner. */
+const MAX_STACKED_BANNERS = 3;
 
 const AnnouncementBanner: FunctionComponent<{
   closeBanner: () => void;
   bannerResponse: TopAnnouncementBannerResponse;
-}> = ({ closeBanner, bannerResponse }) => {
+  /** Overrides the default `!persistent && !isWarning` close-button rule. */
+  dismissible?: boolean;
+  /** Values for `{key}` placeholders in the banner text, e.g. `{symbols}`. */
+  textInterpolations?: Record<string, string>;
+}> = ({ closeBanner, bannerResponse, dismissible, textInterpolations }) => {
   const { t, language } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
@@ -608,7 +672,7 @@ const AnnouncementBanner: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "flex min-h-[53px] w-full items-center px-8 py-[14px] sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,
@@ -616,14 +680,19 @@ const AnnouncementBanner: FunctionComponent<{
         bg
       )}
     >
-      <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>
+      <div className="flex min-w-0 w-full flex-wrap place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
+        <span className="min-w-0 [overflow-wrap:anywhere]">
           {isChainHalted
             ? banner?.enTextOrLocalizationPath ?? ""
-            : getDeepValue<string>(
-                currentLanguageTranslations,
-                banner?.enTextOrLocalizationPath
-              ) ?? banner?.enTextOrLocalizationPath}
+            : interpolateBannerText(
+                getDeepValue<string>(
+                  currentLanguageTranslations,
+                  banner?.enTextOrLocalizationPath
+                ) ??
+                  banner?.enTextOrLocalizationPath ??
+                  "",
+                textInterpolations ?? {}
+              )}
         </span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
@@ -645,7 +714,7 @@ const AnnouncementBanner: FunctionComponent<{
           </div>
         )}
       </div>
-      {!persistent && !isWarning && (
+      {(dismissible ?? (!persistent && !isWarning)) && (
         <IconButton
           className="flex w-fit cursor-pointer items-center py-0 text-white-full"
           onClick={closeBanner}

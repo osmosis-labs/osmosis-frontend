@@ -618,8 +618,16 @@ export const assetsRouter = createTRPCRouter({
         categories: ["new"],
       });
 
+      // Exclude alloy variants (keep only canonical assets), so a newly listed
+      // constituent doesn't show alongside the alloy it backs.
+      const canonicalAssets = assets.filter(
+        (asset) =>
+          !asset.variantGroupKey ||
+          asset.variantGroupKey === asset.coinMinimalDenom
+      );
+
       const marketAssets = await Promise.all(
-        assets.map(async (asset) => {
+        canonicalAssets.map(async (asset) => {
           const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           );

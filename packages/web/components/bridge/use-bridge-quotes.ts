@@ -22,7 +22,15 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import {
+  deriveMemoFlags,
+  LossFigures,
+  needsAcknowledgement,
+  normalizePriceImpact,
+} from "~/components/bridge/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
+import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
@@ -223,14 +231,22 @@ export const useBridgeQuotes = ({
               totalFeeFiatValue,
             } = quote;
 
+            // Nomic, whose quotes bundle an Osmosis swap, reports price impact
+            // as a negative fraction, Squid as positive.
+            // Normalize to magnitude so the gate comparison and the re-arm
+            // math work regardless of the provider's sign convention.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact)
+              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
             const expectedOutputFiatDec = expectedOutput.fiatValue?.toDec();
             const inputFiatDec = input.fiatValue?.toDec();
 
+            // Total end-to-end value loss of the transfer as a fraction of the
+            // input (1 - output/input). This is the all-in figure — it bundles
+            // provider/bridge fees, gas, any bundled swap's price impact, and
+            // exchange-rate spread — not swap slippage in the AMM sense.
             let transferSlippage: Dec;
             if (!expectedOutputFiatDec || !inputFiatDec) {
               // If we don't have fiat values, use actual token amounts for slippage calculation
@@ -281,8 +297,14 @@ export const useBridgeQuotes = ({
               fromChain,
               toChain,
               totalFeeFiatValue,
-              isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
-              isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
+              transferSlippage,
+              isSlippageTooHigh: transferSlippage.gt(HighSlippageGate),
+              isPriceImpactTooHigh: priceImpact
+                .toDec()
+                .gte(HighPriceImpactGate),
+              // the quote bundles an Osmosis swap whose price impact could not
+              // be determined — the loss is unknown, which must warn, not pass
+              isSwapImpactUnknown: expectedOutput.priceImpactUnknown === true,
             };
           },
 
@@ -320,6 +342,41 @@ export const useBridgeQuotes = ({
   const selectedQuote = useMemo(() => {
     return selectedQuoteQuery?.data;
   }, [selectedQuoteQuery]);
+
+  /**
+   * Live loss figures for the selected quote — the input to the frozen-basis
+   * acknowledgement model. See `loss-acknowledgement.ts`.
+   */
+  const currentLossFigures: LossFigures | undefined = useMemo(() => {
+    if (!selectedQuote) return undefined;
+    return {
+      providerId: selectedQuote.provider.id,
+      fromChainId: fromChain?.chainId,
+      toChainId: toChain?.chainId,
+      fromAssetAddress: fromAsset?.address,
+      toAssetAddress: toAsset?.address,
+      inputAmount: inputAmount.toString(),
+      slippage: selectedQuote.transferSlippage,
+      priceImpact: selectedQuote.priceImpact.toDec(),
+      warnSlippage: selectedQuote.isSlippageTooHigh,
+      warnPriceImpact: selectedQuote.isPriceImpactTooHigh,
+      swapImpactUnknown: selectedQuote.isSwapImpactUnknown,
+    };
+  }, [
+    selectedQuote,
+    fromChain?.chainId,
+    toChain?.chainId,
+    fromAsset?.address,
+    toAsset?.address,
+    inputAmount,
+  ]);
+
+  const {
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
+  } = useLossAcknowledgement(currentLossFigures);
 
   const numSucceeded = successfulQuotes.length;
   const isOneSuccessful = Boolean(numSucceeded);
@@ -627,6 +684,12 @@ export const useBridgeQuotes = ({
   }, [isTxPending, onRequestClose, transferInitiated]);
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
+  /**
+   * EVM transactions carry no auth-memo field (`EvmBridgeTransactionRequest`
+   * is only to/data/value/gas), so the warn-accept memo stamp (MTN-137)
+   * cannot be recorded on this path. The acknowledgement gate itself still
+   * applies — only the on-chain forensic proof is unavailable.
+   */
   const signAndBroadcastEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
@@ -734,6 +797,11 @@ export const useBridgeQuotes = ({
     const gasFee = transactionRequest.gasFee;
     let nomicCheckpointIndex: number | undefined;
 
+    // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
+    // frozen acknowledged basis — the sign-time guard in `onTransfer` has
+    // already ensured the basis is fresh for the quote being signed.
+    const memoFlags = deriveMemoFlags(acknowledgedBasis);
+
     return accountStore.signAndBroadcast(
       fromChain.chainId,
       `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
@@ -755,6 +823,9 @@ export const useBridgeQuotes = ({
         : undefined,
       {
         preferNoSetFee: Boolean(gasFee),
+        // On the amino path the wallet-returned memo is what gets encoded —
+        // don't let wallets offer to edit/drop the warn-accept proof.
+        ...(memoFlags && { preferNoSetMemo: true }),
       },
       {
         /**
@@ -807,11 +878,29 @@ export const useBridgeQuotes = ({
             setIsBroadcastingTx(false);
           }
         },
-      }
+      },
+      memoFlags
     );
   };
 
   const onTransfer = async () => {
+    // Last-line guard: a warned transfer must hold a fresh acknowledgement at
+    // the moment of signing. The disabled state of the confirm button is
+    // advisory rendering — a 30s refetch or provider auto-switch can land
+    // between the last render and the click, so the acknowledgement is
+    // re-validated synchronously here against the figures that will be signed.
+    if (needsAcknowledgement(acknowledgedBasis, currentLossFigures)) {
+      setLossAcknowledged(false);
+      displayToast(
+        {
+          titleTranslationKey: "transfer.quoteUpdatedTitle",
+          captionTranslationKey: "transfer.quoteUpdatedCaption",
+        },
+        ToastType.ERROR
+      );
+      return;
+    }
+
     const transactionRequest =
       selectedQuote?.transactionRequest ??
       bridgeTransaction.data?.transactionRequest;
@@ -841,6 +930,7 @@ export const useBridgeQuotes = ({
   );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
+  const warnUserOfUnknownSwapImpact = selectedQuote?.isSwapImpactUnknown;
   const isCorrectEvmChainSelected =
     fromChain?.chainType === "evm"
       ? currentEvmChainId === fromChain?.chainId
@@ -850,6 +940,15 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
+  /**
+   * True only when a high-loss warning owns `errorBoxMessage` — i.e. no
+   * higher-precedence error (insufficient fee, value loss, invalid address,
+   * transaction-request failure, …) is active. This is the flag surfaces use
+   * to decide whether to render the acknowledgement checkbox and unlock the
+   * confirm button through it; using the raw warn flags instead would pair
+   * the checkbox with the wrong copy and unlock past blocking errors.
+   */
+  let highLossWarningActive = false;
   if (hasInsufficientFeeTokensForOsmosis) {
     // Surface this case via the dedicated warning component rendered by the
     // consumer (amount-screen). We still set a fallback text-only errorBox to
@@ -913,18 +1012,29 @@ export const useBridgeQuotes = ({
       description: t("transfer.sorryForTheInconvenience"),
     };
   } else if (warnUserOfSlippage) {
+    highLossWarningActive = true;
     errorBoxMessage = {
-      heading: "Slippage is too high",
-      description:
-        "The slippage for this transfer is too high. Try a smaller amount or check to confirm you are happy to proceed.",
+      heading: t("transfer.slippageTooHighTitle"),
+      description: t("transfer.slippageTooHighDescription"),
     };
   } else if (warnUserOfPriceImpact) {
+    highLossWarningActive = true;
     errorBoxMessage = {
-      heading: "Price impact is too high",
-      description:
-        "The price impact for this transfer is too high. Check to confirm you are happy to proceed.",
+      heading: t("transfer.priceImpactTooHighTitle"),
+      description: t("transfer.priceImpactTooHighDescription"),
+    };
+  } else if (warnUserOfUnknownSwapImpact) {
+    highLossWarningActive = true;
+    errorBoxMessage = {
+      heading: t("transfer.unknownSwapImpactTitle"),
+      description: t("transfer.unknownSwapImpactDescription"),
     };
   }
+  // Insufficient balance is not part of the errorBox chain (it renders its
+  // own inline error), so exclude it here explicitly: quote queries disable
+  // while the balance is insufficient, and a stale warned quote must not let
+  // the acknowledgement checkbox unlock a transfer the user cannot fund.
+  if (isInsufficientBal) highLossWarningActive = false;
 
   let warningBoxMessage: { heading: string; description: string } | undefined;
   if (toAsset?.isUnstable) {
@@ -964,11 +1074,7 @@ export const useBridgeQuotes = ({
     Boolean(selectedQuote);
 
   let buttonText: string;
-  if (
-    (warnUserOfSlippage || warnUserOfPriceImpact) &&
-    !isInsufficientFee &&
-    !isValueLossTooHigh
-  ) {
+  if (highLossWarningActive) {
     buttonText = t("assets.transfer.transferAnyway");
   } else {
     buttonText =
@@ -1008,6 +1114,13 @@ export const useBridgeQuotes = ({
     isInsufficientBal,
     warnUserOfSlippage,
     warnUserOfPriceImpact,
+    warnUserOfUnknownSwapImpact,
+    highLossWarningActive,
+
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
 
     successfulQuotes,
     isAllQuotesSuccessful: isAllSuccessful,

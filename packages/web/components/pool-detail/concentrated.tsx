@@ -28,7 +28,7 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { AddLiquidityModal } from "~/modals";
+import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
@@ -61,12 +61,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading } = useWalletSelect();
+    const { incentivizePool } = useFeatureFlags();
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const [activeModal, setActiveModal] = useState<
-      "add-liquidity" | "learn-more" | null
+      "add-liquidity" | "learn-more" | "incentivize" | null
     >(null);
 
     // Query pool data for state detection
@@ -188,6 +189,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <AddLiquidityModal
             isOpen={true}
             poolId={pool.id}
+            onRequestClose={() => setActiveModal(null)}
+          />
+        )}
+        {pool && incentivizePool && activeModal === "incentivize" && (
+          <IncentivizePoolModal
+            isOpen={true}
+            poolId={pool.id}
+            isConcentrated={true}
             onRequestClose={() => setActiveModal(null)}
           />
         )}
@@ -346,7 +355,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             )}
           </div>
           {!isInactivePool && !isUninitializedPool && (
-            <UserAssetsAndExternalIncentives poolId={poolId} />
+            <UserAssetsAndExternalIncentives
+              poolId={poolId}
+              onIncentivize={() => setActiveModal("incentivize")}
+            />
           )}
           {isUninitializedPool || isInactivePool ? (
             <div className="flex flex-col items-center gap-4 pt-8">
@@ -518,81 +530,87 @@ const Chart: FunctionComponent<{
   );
 });
 
-const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
-  observer(({ poolId }) => {
-    const { derivedDataStore } = useStore();
-    const { t } = useTranslation();
-    const featureFlags = useFeatureFlags();
+const UserAssetsAndExternalIncentives: FunctionComponent<{
+  poolId: string;
+  onIncentivize: () => void;
+}> = observer(({ poolId, onIncentivize }) => {
+  const { derivedDataStore } = useStore();
+  const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
-    const concentratedPoolDetail =
-      derivedDataStore.concentratedPoolDetails.get(poolId);
+  const concentratedPoolDetail =
+    derivedDataStore.concentratedPoolDetails.get(poolId);
 
-    const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+  const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
-    const { data: incentives, isLoading: isLoadingIncentives } =
-      api.edge.pools.getPoolIncentives.useQuery(
-        {
-          poolId,
-        },
-        {
-          enabled: featureFlags.aprBreakdown,
-        }
-      );
+  const { data: incentives, isLoading: isLoadingIncentives } =
+    api.edge.pools.getPoolIncentives.useQuery(
+      {
+        poolId,
+      },
+      {
+        enabled: featureFlags.aprBreakdown,
+      }
+    );
 
-    return (
-      <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7">
-          <div className="flex h-full flex-col place-content-between">
-            <span className="body2 text-osmoverse-300">
-              {t("clPositions.totalBalance")}
+  return (
+    <div className="flex flex-wrap gap-4">
+      <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7">
+        <div className="flex h-full flex-col place-content-between">
+          <span className="body2 text-osmoverse-300">
+            {t("clPositions.totalBalance")}
+          </span>
+          <div>
+            <h4 className="text-osmoverse-100">
+              {concentratedPoolDetail.userPoolValue.toString()}
+            </h4>
+            <span className="subtitle1 text-osmoverse-300">
+              {concentratedPoolDetail.userPositions.length === 1
+                ? t("clPositions.onePosition")
+                : t("clPositions.numPositions", {
+                    numPositions:
+                      concentratedPoolDetail.userPositions.length.toString(),
+                  })}
             </span>
-            <div>
-              <h4 className="text-osmoverse-100">
-                {concentratedPoolDetail.userPoolValue.toString()}
-              </h4>
-              <span className="subtitle1 text-osmoverse-300">
-                {concentratedPoolDetail.userPositions.length === 1
-                  ? t("clPositions.onePosition")
-                  : t("clPositions.numPositions", {
-                      numPositions:
-                        concentratedPoolDetail.userPositions.length.toString(),
-                    })}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-5">
-            {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
-              <div
-                className="subtitle1 flex gap-2"
-                key={asset.currency.coinMinimalDenom}
-              >
-                {asset.currency.coinImageUrl && (
-                  <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
-                    <EntityImage
-                      logoURIs={{
-                        svg: asset.currency.coinImageUrl?.replace(
-                          /\.png$/,
-                          ".svg"
-                        ),
-                        png: asset.currency.coinImageUrl,
-                      }}
-                      width={20}
-                      height={20}
-                      name={asset.currency.coinDenom}
-                      symbol={asset.currency.coinDenom}
-                    />
-                  </div>
-                )}
-                <span className="text-osmoverse-300">
-                  {asset.currency.coinDenom}
-                </span>
-                <span className="text-osmoverse-100">
-                  {formatPretty(asset, { maxDecimals: 2 })}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
+        <div className="flex flex-col gap-5">
+          {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+            <div
+              className="subtitle1 flex gap-2"
+              key={asset.currency.coinMinimalDenom}
+            >
+              {asset.currency.coinImageUrl && (
+                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={{
+                      svg: asset.currency.coinImageUrl?.replace(
+                        /\.png$/,
+                        ".svg"
+                      ),
+                      png: asset.currency.coinImageUrl,
+                    }}
+                    width={20}
+                    height={20}
+                    name={asset.currency.coinDenom}
+                    symbol={asset.currency.coinDenom}
+                  />
+                </div>
+              )}
+              <span className="text-osmoverse-300">
+                {asset.currency.coinDenom}
+              </span>
+              <span className="text-osmoverse-100">
+                {formatPretty(asset, { maxDecimals: 2 })}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Incentivize entry sits to the right of the Total APR card, filling
+          the dead space beside it. Gated on its own incentivizePool flag, not
+          on aprBreakdown, so the two can be toggled independently. */}
+      <div className="flex shrink-0 items-center gap-4">
         {featureFlags.aprBreakdown && (
           <SkeletonLoader isLoaded={!isLoadingIncentives}>
             <AprBreakdown
@@ -602,53 +620,64 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             />
           </SkeletonLoader>
         )}
-
-        {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
-            <span className="body2 mr-auto text-osmoverse-300">
-              {t("pool.incentives")}
-            </span>
-            <div className="flex w-full items-center">
-              {concentratedPoolDetail.incentiveGauges.map((incentive) => (
-                <div
-                  className="flex items-center gap-3"
-                  key={incentive.coinPerDay.denom}
-                >
-                  <div className="flex items-center gap-1">
-                    {incentive.apr && (
-                      <span className="subtitle1 text-osmoverse-100">
-                        +{incentive.apr.maxDecimals(0).toString()}
-                      </span>
-                    )}
-                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
-                      <EntityImage
-                        logoURIs={{
-                          png: incentive.coinPerDay.currency.coinImageUrl,
-                        }}
-                        name={incentive.coinPerDay.currency.coinDenom}
-                        symbol={incentive.coinPerDay.currency.coinDenom}
-                        width={20}
-                        height={20}
-                      />
-                    </div>
-                  </div>
-                  <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
-                    <span>
-                      {t("pool.dailyEarnAmount", {
-                        amount: formatPretty(incentive.coinPerDay, {
-                          maxDecimals: 2,
-                        }),
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <span className="caption mr-auto text-osmoverse-500">
-              *{t("pool.onlyInRangePositions")}
-            </span>
-          </div>
+        {featureFlags.incentivizePool && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-fit"
+            onClick={onIncentivize}
+          >
+            {t("incentivizePool.entry")}
+          </Button>
         )}
       </div>
-    );
-  });
+
+      {hasIncentives && (
+        <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
+          <span className="body2 mr-auto text-osmoverse-300">
+            {t("pool.incentives")}
+          </span>
+          <div className="flex w-full items-center">
+            {concentratedPoolDetail.incentiveGauges.map((incentive) => (
+              <div
+                className="flex items-center gap-3"
+                key={incentive.coinPerDay.denom}
+              >
+                <div className="flex items-center gap-1">
+                  {incentive.apr && (
+                    <span className="subtitle1 text-osmoverse-100">
+                      +{incentive.apr.maxDecimals(0).toString()}
+                    </span>
+                  )}
+                  <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={{
+                        png: incentive.coinPerDay.currency.coinImageUrl,
+                      }}
+                      name={incentive.coinPerDay.currency.coinDenom}
+                      symbol={incentive.coinPerDay.currency.coinDenom}
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                </div>
+                <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
+                  <span>
+                    {t("pool.dailyEarnAmount", {
+                      amount: formatPretty(incentive.coinPerDay, {
+                        maxDecimals: 2,
+                      }),
+                    })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <span className="caption mr-auto text-osmoverse-500">
+            *{t("pool.onlyInRangePositions")}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+});

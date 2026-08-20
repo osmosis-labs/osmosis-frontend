@@ -8,7 +8,9 @@
     "setup": "yarn install && npx playwright install --with-deps chromium",
     "check-balances": "npx tsx scripts/check-balances.ts",
     "migrate-funds": "npx tsx scripts/migrate-funds.ts",
-    "topup-accounts": "npx tsx scripts/topup-accounts.ts"
+    "topup-accounts": "npx tsx scripts/topup-accounts.ts",
+    "sweep-surplus": "npx tsx scripts/sweep-surplus.ts",
+    "report-fleet-balances": "npx tsx scripts/report-fleet-balances.ts"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
