@@ -330,15 +330,15 @@ describe("ReviewOrder acknowledgement gate", () => {
       expect(screen.getByText("Quote updated")).toBeInTheDocument();
     });
 
-    // Accepting the updated quote dismisses the banner and restores the confirm
-    // row, and the loss acknowledgement survives it. The two are independent
-    // acceptances: the banner is about the quote moving against you, while the
-    // checkbox is about this trade's price impact — a figure that can be
-    // unchanged while the output drops, because the market moved rather than the
-    // trade's own effect on it. The acknowledgement re-arms on its own figures
-    // worsening (covered above), not on output drift, and the memo it stamps
-    // stays truthful either way.
-    it("dismisses the banner on accept and leaves the acknowledgement standing", () => {
+    // Accepting the updated quote dismisses the banner and brings the confirm
+    // row back, but the loss acknowledgement does not survive it. The two guards
+    // cover independent risks — the banner is the market moving against you,
+    // while the checkbox is this trade's own price impact, which can be unchanged
+    // while the output drops — yet a user who accepts a worse quote is looking at
+    // materially different terms from the ones they consented to. Re-asking is
+    // the safer default on a signing surface, and it keeps the stamped memo tied
+    // to figures the user ticked against.
+    it("dismisses the banner on accept and re-arms the acknowledgement", () => {
       const props = driftedProps();
       const { rerenderWith } = renderModal(props);
 
@@ -351,7 +351,27 @@ describe("ReviewOrder acknowledgement gate", () => {
       fireEvent.click(screen.getByRole("button", { name: /accept/i }));
 
       expect(screen.queryByText("Quote updated")).toBeNull();
-      expect(checkbox()).toBeChecked();
+      expect(checkbox()).not.toBeChecked();
+      expect(confirmButton()).toBeDisabled();
+    });
+
+    // The re-arm is specific to accepting a drifted quote. A trade that never
+    // gated in the first place must not come back from "Accept" with a disabled
+    // confirm button and no checkbox to satisfy.
+    it("leaves an ungated trade confirmable after accepting a drifted quote", () => {
+      const props = { ...driftedProps(), priceImpactTokenOut: lowImpact };
+      const { rerenderWith } = renderModal(props);
+
+      expect(checkbox()).not.toBeInTheDocument();
+
+      rerenderWith({
+        ...props,
+        amountWithSlippage: new IntPretty(new Dec("90")),
+      });
+      fireEvent.click(screen.getByRole("button", { name: /accept/i }));
+
+      expect(screen.queryByText("Quote updated")).toBeNull();
+      expect(checkbox()).not.toBeInTheDocument();
       expect(confirmButton()).toBeEnabled();
     });
   });

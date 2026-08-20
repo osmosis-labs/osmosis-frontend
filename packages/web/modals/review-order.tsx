@@ -215,10 +215,6 @@ export function ReviewOrder({
     quoteType,
   });
 
-  const acceptUpdatedQuote = useCallback(() => {
-    setReviewedOutput(amountWithSlippage);
-  }, [amountWithSlippage]);
-
   /**
    * Live loss figures for the trade being reviewed (MTN-150).
    *
@@ -275,6 +271,23 @@ export function ReviewOrder({
     setLossAcknowledged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
+
+  /**
+   * Accepting a drifted quote re-baselines the comparison *and* re-arms the loss
+   * acknowledgement, so the user has to tick again.
+   *
+   * The two guards cover independent risks — the banner is the market moving
+   * against you, the checkbox is this trade's own price impact, and impact can be
+   * unchanged while the output drops. Re-asking is nonetheless the right default
+   * on a signing surface: the user is being shown materially worse terms than the
+   * ones they consented to, and one extra click in a rare case is cheaper than a
+   * consent that silently carries over to a different set of numbers. Declared
+   * after `useLossAcknowledgement` because it needs `setLossAcknowledged`.
+   */
+  const acceptUpdatedQuote = useCallback(() => {
+    setReviewedOutput(amountWithSlippage);
+    setLossAcknowledged(false);
+  }, [amountWithSlippage, setLossAcknowledged]);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
