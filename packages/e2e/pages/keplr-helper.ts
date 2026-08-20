@@ -71,7 +71,9 @@ export async function openKeplrPopupDirect(
  *   1. Check `context.pages()` for an already-open Keplr popup (handles
  *      fast-opening popups when the helper is called after the click).
  *   2. `context.waitForEvent("page")` (headed mode on macOS).
- *   3. Direct `chrome-extension://` navigation (headless Linux fallback).
+ *   3. Re-scan `context.pages()` once that wait times out, since the predicate
+ *      can miss a popup whose URL was not set yet when the event fired.
+ *   4. Direct `chrome-extension://` navigation (headless Linux fallback).
  *
  * Returns null if no popup could be obtained.
  *
@@ -99,6 +101,19 @@ export async function getKeplrPopupPage(
     });
   } catch {
     console.log("Keplr popup did not appear as a page event.");
+  }
+
+  // The page event can fire before the popup has navigated, so the predicate
+  // gets an empty URL and rejects a real sign popup; Playwright tests the
+  // predicate once per event and never re-checks. Loosening it is not the fix —
+  // Keplr's self-opened `register.html` tabs are equally URL-less at that
+  // moment, which is exactly what the predicate is there to reject. By the time
+  // the wait has timed out the navigation has committed, so a re-scan is
+  // unambiguous.
+  const late = context.pages().find(isKeplrPopupPage);
+  if (late) {
+    console.log(`Found Keplr popup on re-scan after timeout: ${late.url()}`);
+    return late;
   }
 
   // Headless-only by design. Bare `popup.html` renders Keplr Home whether or not
@@ -150,7 +165,8 @@ const hasApproveButton = (p: Page) =>
  * So when the direct-navigation fallback beats a slow sign popup, reloading it
  * just yields Home again — the only useful move is to go find the real popup.
  * Prefers an already-open popup showing Approve. Failing that, returns the next
- * Keplr popup to arrive as a page event without re-checking it: this is only
+ * Keplr popup to arrive as a page event — or, if that wait times out, one found
+ * by re-scanning afterwards — without re-checking it: this is only
  * called once the current popup has already failed, so any other popup is at
  * worst an equal starting point, and the retry loop re-tests Approve anyway.
  * Callers must not treat the result as guaranteed to be a sign request.
@@ -174,8 +190,20 @@ async function reacquireSignPopup(
       predicate: isKeplrPopupPage,
     })
     .catch(() => null);
-  if (arrived) console.log("Sign popup arrived late as a page event.");
-  return arrived;
+  if (arrived) {
+    console.log("Sign popup arrived late as a page event.");
+    return arrived;
+  }
+
+  // Same blind spot as `getKeplrPopupPage`, and it bites hardest here: the scan
+  // at the top of the next call would catch a popup this wait rejected, but only
+  // while a next attempt remains. On the final re-acquisition there is none, so
+  // the miss costs the whole spec.
+  const late = context
+    .pages()
+    .find((p) => p !== current && !p.isClosed() && isKeplrPopupPage(p));
+  if (late) console.log(`Re-acquired Keplr popup on re-scan: ${late.url()}`);
+  return late ?? null;
 }
 
 /**
