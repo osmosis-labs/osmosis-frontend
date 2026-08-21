@@ -130,16 +130,16 @@ export const ACCOUNT_REQUIREMENTS: Record<
     // monitoring.swap + monitoring.market + monitoring.limit
     {
       token: "USDC",
-      minAmount: 2.9,
-      warnAmount: 5.5,
-      note: "market buys ($0.55 x2) + limit buy ($0.52) + swap stables (1.10) ≈ 2.72/tick",
+      minAmount: 3.5,
+      warnAmount: 6.6,
+      note: "market buys ($0.55 x2) + limit buy ($1.10) + swap stables (1.10) ≈ 3.30/tick",
     },
     {
       token: "OSMO",
-      minAmount: 1.2,
-      warnAmount: 2.4,
+      minAmount: 1.8,
+      warnAmount: 3.6,
       unit: "usd",
-      note: "market sell ($0.54) + limit sell ($0.54) OSMO + gas",
+      note: "market sell ($0.54) + limit sell ($1.10) OSMO + gas",
     },
     {
       token: "BTC",

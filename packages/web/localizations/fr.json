@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Compte {wallet} connecté",
       "confirmInNamed": "Confirmez dans {wallet}...",
       "submittingOnSui": "Envoi sur Sui...",
-      "redeemOnSui": "Récupérer sur Sui"
+      "redeemOnSui": "Récupérer sur Sui",
+      "osmosisTxNotFound": "Transaction Osmosis introuvable. Vérifiez le hash et qu'elle a bien été diffusée sur le mainnet Osmosis.",
+      "osmosisLcdUnavailable": "Impossible de récupérer la transaction Osmosis depuis un LCD : {error}",
+      "wormchainRpcUnavailable": "Impossible d'interroger le RPC Wormchain : {error}",
+      "notAWormholeTx": "Transaction introuvable. Assurez-vous qu'il s'agit d'un hash de transaction du pont Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "Transaction introuvable sur Wormholescan et aucune transaction Osmosis correspondante n'a été trouvée. S'il s'agit d'un hash de réception Wormchain, les gardiens sont peut-être encore en train de signer — réessayez dans une minute. Sinon, vérifiez le hash.",
+      "noGatewayTransferInTx": "Transaction introuvable sur Wormholescan et aucun transfert IBC via la passerelle Wormhole n'a été trouvé dans cette transaction Osmosis.",
+      "packetTimedOutRefunded": "Ce transfert a expiré avant d'atteindre Wormchain ; il a donc été automatiquement remboursé sur votre adresse Osmosis le {date} (tx {txHash}). Il n'y a rien à réclamer — les jetons sont déjà de retour dans votre portefeuille et vous pouvez relancer le transfert depuis la page Wormhole.",
+      "packetTimedOutRefundedNoDate": "Ce transfert a expiré avant d'atteindre Wormchain ; il a donc été automatiquement remboursé sur votre adresse Osmosis (tx {txHash}). Il n'y a rien à réclamer — les jetons sont déjà de retour dans votre portefeuille et vous pouvez relancer le transfert depuis la page Wormhole.",
+      "packetReceivedButTxNotFound": "Osmosis confirme que ce paquet a été reçu sur Wormchain, mais la transaction de réception est introuvable. Consultez ce transfert directement sur Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Le paquet d'envoi Osmosis a été trouvé, mais la réception Wormchain correspondante n'a pas encore été relayée. Réessayez dans une minute.",
+      "vaaNotIndexedYet": "La réception Wormchain ({txHash}) a été trouvée, mais Wormholescan n'a pas encore indexé de VAA pour celle-ci. Les gardiens sont peut-être encore en train de signer — réessayez dans une minute."
     }
   },
   "unknownError": "Erreur inconnue",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Variantes détectées",
     "caption": "Dites adieu à toutes ces variantes d'actifs déroutantes. Dites bonjour à une expérience plus fluide sur Osmosis.",
-    "remindMeLater": "Rappelle-moi plus tard",
+    "dontShowAgain": "Ne plus afficher",
     "dismiss": "Rejeter",
     "convert": "Convertir"
   },

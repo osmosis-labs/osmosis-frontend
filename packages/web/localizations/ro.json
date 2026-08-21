@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Cont {wallet} conectat",
       "confirmInNamed": "Confirmă în {wallet}...",
       "submittingOnSui": "Se trimite pe Sui...",
-      "redeemOnSui": "Revendică pe Sui"
+      "redeemOnSui": "Revendică pe Sui",
+      "osmosisTxNotFound": "Tranzacția Osmosis nu a fost găsită. Verifică hash-ul și dacă a fost transmisă în mainnet-ul Osmosis.",
+      "osmosisLcdUnavailable": "Nu s-a putut prelua tranzacția Osmosis de la niciun LCD: {error}",
+      "wormchainRpcUnavailable": "Nu s-a putut interoga RPC-ul Wormchain: {error}",
+      "notAWormholeTx": "Tranzacția nu a fost găsită. Asigură-te că acesta este un hash de tranzacție al punții Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "Tranzacția nu a fost găsită pe Wormholescan și nicio tranzacție Osmosis corespunzătoare nu a fost localizată. Dacă acesta este un hash de recepție Wormchain, gardienii ar putea încă semna — încearcă din nou într-un minut. În caz contrar, verifică hash-ul.",
+      "noGatewayTransferInTx": "Tranzacția nu a fost găsită pe Wormholescan și nu s-a găsit niciun transfer IBC prin gateway-ul Wormhole în această tranzacție Osmosis.",
+      "packetTimedOutRefunded": "Acest transfer a expirat înainte de a ajunge la Wormchain, așa că a fost rambursat automat în adresa ta Osmosis pe {date} (tx {txHash}). Nu ai ce revendica — tokenurile sunt deja înapoi în portofel, iar transferul poate fi reluat din pagina Wormhole.",
+      "packetTimedOutRefundedNoDate": "Acest transfer a expirat înainte de a ajunge la Wormchain, așa că a fost rambursat automat în adresa ta Osmosis (tx {txHash}). Nu ai ce revendica — tokenurile sunt deja înapoi în portofel, iar transferul poate fi reluat din pagina Wormhole.",
+      "packetReceivedButTxNotFound": "Osmosis confirmă că acest pachet a fost primit pe Wormchain, dar tranzacția de recepție nu a putut fi localizată. Caută acest transfer direct pe Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Pachetul de trimitere Osmosis a fost găsit, dar recepția corespunzătoare pe Wormchain nu a fost încă retransmisă. Încearcă din nou într-un minut.",
+      "vaaNotIndexedYet": "Recepția Wormchain ({txHash}) a fost găsită, dar Wormholescan nu a indexat încă un VAA pentru ea. Gardienii ar putea încă semna — încearcă din nou într-un minut."
     }
   },
   "unknownError": "Eroare necunoscuta",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Variante detectate",
     "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
-    "remindMeLater": "Amintește-mi mai târziu",
+    "dontShowAgain": "Nu mai afișa",
     "dismiss": "Respingeți",
     "convert": "Convertit"
   },

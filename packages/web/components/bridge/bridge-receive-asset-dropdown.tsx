@@ -33,15 +33,12 @@ interface BridgeReceiveAssetDropdownProps {
 
 /**
  * Map a bridge provider id to a short, user-facing route name. Used to tell
- * apart withdraw variants that share the same counterparty denom (e.g. the
- * Nomic and Int3face routes both report `denom: "BTC"`, and the Wormhole and
- * Int3face routes both report `denom: "SOL"`), where the only real
- * differentiator is which bridge performs the transfer. Includes the named
- * custom bridges; generic routers (Skip/Squid/IBC) stay unlabeled.
+ * apart withdraw variants that share the same counterparty denom, where the
+ * only real differentiator is which bridge performs the transfer. Includes the
+ * named custom bridges; generic routers (Skip/Squid/IBC) stay unlabeled.
  */
 const bridgeRouteName: Partial<Record<Bridge, string>> = {
   Nomic: "Nomic",
-  Int3face: "Int3face",
   Wormhole: "Wormhole",
 };
 
@@ -52,8 +49,8 @@ const bridgeRouteName: Partial<Record<Bridge, string>> = {
  *
  * Each row is one destination address, and rows are keyed/deduped per address,
  * so a row carries at most one named bridge — picking the first match is
- * unambiguous. (A destination denom can have several named bridges, e.g. SOL
- * via Wormhole and via Int3face, but those are separate rows.)
+ * unambiguous. (A destination denom can have several named bridges, but those
+ * are separate rows.)
  */
 const getWithdrawRouteLabel = (
   asset: SupportedAsset,

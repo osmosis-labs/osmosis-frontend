@@ -178,7 +178,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             direction: sortParams.allPoolsSortDir,
           }
         : undefined,
-      minLiquidityUsd,
+      // Drop the liquidity floor while searching, mirroring the assets table:
+      // a pool the user asks for by name should be findable even below the
+      // browsing threshold (orderbook pools also report 0 liquidity to SQS).
+      minLiquidityUsd: filters.searchQuery ? 0 : minLiquidityUsd,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

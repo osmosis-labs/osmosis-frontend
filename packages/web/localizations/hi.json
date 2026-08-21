@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "कनेक्टेड {wallet} खाता",
       "confirmInNamed": "{wallet} में पुष्टि करें...",
       "submittingOnSui": "Sui पर सबमिट किया जा रहा है...",
-      "redeemOnSui": "Sui पर रिडीम करें"
+      "redeemOnSui": "Sui पर रिडीम करें",
+      "osmosisTxNotFound": "Osmosis ट्रांज़ैक्शन नहीं मिला। हैश जाँचें और सुनिश्चित करें कि यह Osmosis मेननेट पर ब्रॉडकास्ट हुआ था।",
+      "osmosisLcdUnavailable": "किसी भी LCD से Osmosis ट्रांज़ैक्शन प्राप्त नहीं किया जा सका: {error}",
+      "wormchainRpcUnavailable": "Wormchain RPC से क्वेरी नहीं की जा सकी: {error}",
+      "notAWormholeTx": "ट्रांज़ैक्शन नहीं मिला। सुनिश्चित करें कि यह एक Wormhole ब्रिज ट्रांज़ैक्शन हैश है।",
+      "notFoundOnWormholescanOrOsmosis": "Wormholescan पर ट्रांज़ैक्शन नहीं मिला और कोई मेल खाता Osmosis ट्रांज़ैक्शन भी नहीं मिला। यदि यह Wormchain रिसीव हैश है, तो हो सकता है गार्डियन अभी भी साइन कर रहे हों — एक मिनट में फिर कोशिश करें। अन्यथा, हैश जाँचें।",
+      "noGatewayTransferInTx": "Wormholescan पर ट्रांज़ैक्शन नहीं मिला और इस Osmosis ट्रांज़ैक्शन में कोई Wormhole गेटवे IBC ट्रांसफ़र नहीं मिला।",
+      "packetTimedOutRefunded": "यह ट्रांसफ़र Wormchain तक पहुँचने से पहले टाइम आउट हो गया, इसलिए {date} को यह अपने आप आपके Osmosis पते पर वापस कर दिया गया (tx {txHash})। रिडीम करने के लिए कुछ नहीं है — टोकन पहले से ही आपके वॉलेट में हैं, और आप Wormhole पेज से दोबारा ब्रिज कर सकते हैं।",
+      "packetTimedOutRefundedNoDate": "यह ट्रांसफ़र Wormchain तक पहुँचने से पहले टाइम आउट हो गया, इसलिए यह अपने आप आपके Osmosis पते पर वापस कर दिया गया (tx {txHash})। रिडीम करने के लिए कुछ नहीं है — टोकन पहले से ही आपके वॉलेट में हैं, और आप Wormhole पेज से दोबारा ब्रिज कर सकते हैं।",
+      "packetReceivedButTxNotFound": "Osmosis पुष्टि करता है कि यह पैकेट Wormchain पर प्राप्त हुआ था, लेकिन रिसीव ट्रांज़ैक्शन नहीं मिल सका। इस ट्रांसफ़र को सीधे Wormholescan पर देखें।",
+      "wormchainReceiveNotRelayedYet": "Osmosis सेंड पैकेट मिल गया लेकिन उससे संबंधित Wormchain रिसीव अभी तक रिले नहीं हुआ है। एक मिनट में फिर कोशिश करें।",
+      "vaaNotIndexedYet": "Wormchain रिसीव ({txHash}) मिल गया लेकिन Wormholescan ने अभी तक इसके लिए VAA इंडेक्स नहीं किया है। हो सकता है गार्डियन अभी भी साइन कर रहे हों — एक मिनट में फिर कोशिश करें।"
     }
   },
   "unknownError": "अज्ञात त्रुटि",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "पता लगाए गए वेरिएंट",
     "caption": "उन सभी भ्रामक परिसंपत्ति प्रकारों को अलविदा कहें। ओस्मोसिस पर अधिक सहज अनुभव का स्वागत करें।",
-    "remindMeLater": "बाद में याद दिलाना",
+    "dontShowAgain": "फिर से न दिखाएं",
     "dismiss": "नकार देना",
     "convert": "बदलना"
   },

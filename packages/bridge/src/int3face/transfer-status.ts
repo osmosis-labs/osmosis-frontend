@@ -13,6 +13,17 @@ import type {
 import { getTransferStatus, Int3faceTransferStatus } from "./queries";
 import { Int3faceProviderId } from "./utils";
 
+/**
+ * Deliberately outlives the Int3face BRIDGE provider, which was removed when
+ * the bridge shut down. This directory now contains only the transfer-STATUS
+ * half: without a registered status provider, persisted int3face `TxSnapshot`s
+ * stop rendering in the user's transfer history (`getHistoriesByAccount` drops
+ * snapshots whose provider has no status source), which would erase real past
+ * transfers from the transactions page. Keeping this registered preserves that
+ * history. Nothing expires the persisted snapshots automatically, so deleting
+ * this (plus the root-store registration, the `HistoricalBridge` logo entry,
+ * and the logo svg) is a deliberate future decision, not an age-out.
+ */
 export class Int3faceTransferStatusProvider implements TransferStatusProvider {
   readonly providerId = Int3faceProviderId;
   readonly sourceDisplayName = "Int3face Bridge";

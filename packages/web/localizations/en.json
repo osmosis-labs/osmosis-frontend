@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Connected {wallet} account",
       "confirmInNamed": "Confirm in {wallet}...",
       "submittingOnSui": "Submitting on Sui...",
-      "redeemOnSui": "Redeem on Sui"
+      "redeemOnSui": "Redeem on Sui",
+      "osmosisTxNotFound": "Osmosis transaction not found. Double-check the hash and that it was broadcast on Osmosis mainnet.",
+      "osmosisLcdUnavailable": "Could not fetch Osmosis tx from any LCD: {error}",
+      "wormchainRpcUnavailable": "Could not query Wormchain RPC: {error}",
+      "notAWormholeTx": "Transaction not found. Make sure this is a Wormhole bridge transaction hash.",
+      "notFoundOnWormholescanOrOsmosis": "Transaction not found on Wormholescan and no matching Osmosis transaction was located. If this is a Wormchain receive hash, the guardians may still be signing — try again in a minute. Otherwise, double-check the hash.",
+      "noGatewayTransferInTx": "Transaction not found on Wormholescan and no Wormhole gateway IBC transfer was found in this Osmosis transaction.",
+      "packetTimedOutRefunded": "This transfer timed out before it reached Wormchain, so it was automatically refunded to your Osmosis address on {date} (tx {txHash}). There is nothing to redeem — the tokens are already back in your wallet, and you can bridge again from the Wormhole page.",
+      "packetTimedOutRefundedNoDate": "This transfer timed out before it reached Wormchain, so it was automatically refunded to your Osmosis address (tx {txHash}). There is nothing to redeem — the tokens are already back in your wallet, and you can bridge again from the Wormhole page.",
+      "packetReceivedButTxNotFound": "Osmosis confirms this packet was received on Wormchain, but the receive transaction could not be located. Look this transfer up directly on Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Found the Osmosis send packet but the corresponding Wormchain receive has not been relayed yet. Try again in a minute.",
+      "vaaNotIndexedYet": "Found the Wormchain receive ({txHash}) but Wormholescan has not indexed a VAA for it yet. The guardians may still be signing — try again in a minute."
     }
   },
   "unknownError": "Unknown error",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Variants Detected",
     "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis.",
-    "remindMeLater": "Remind me later",
+    "dontShowAgain": "Don't show again",
     "dismiss": "Dismiss",
     "convert": "Convert"
   },

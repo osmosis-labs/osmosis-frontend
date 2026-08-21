@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "接続済みの {wallet} アカウント",
       "confirmInNamed": "{wallet} で確認してください...",
       "submittingOnSui": "Sui に送信しています...",
-      "redeemOnSui": "Sui で請求"
+      "redeemOnSui": "Sui で請求",
+      "osmosisTxNotFound": "Osmosis のトランザクションが見つかりません。ハッシュと、Osmosis メインネットでブロードキャストされたかを確認してください。",
+      "osmosisLcdUnavailable": "いずれの LCD からも Osmosis のトランザクションを取得できませんでした: {error}",
+      "wormchainRpcUnavailable": "Wormchain RPC に問い合わせできませんでした: {error}",
+      "notAWormholeTx": "トランザクションが見つかりません。Wormhole ブリッジのトランザクションハッシュであることを確認してください。",
+      "notFoundOnWormholescanOrOsmosis": "Wormholescan にトランザクションが見つからず、対応する Osmosis のトランザクションも見つかりませんでした。これが Wormchain の受信ハッシュの場合、ガーディアンがまだ署名中の可能性があります。1 分ほど待って再試行してください。そうでない場合は、ハッシュを確認してください。",
+      "noGatewayTransferInTx": "Wormholescan にトランザクションが見つからず、この Osmosis トランザクションには Wormhole ゲートウェイの IBC 送金が含まれていませんでした。",
+      "packetTimedOutRefunded": "この送金は Wormchain に到達する前にタイムアウトしたため、{date} に Osmosis アドレスへ自動的に返金されました (tx {txHash})。受け取るものはありません。トークンはすでにウォレットに戻っており、Wormhole ページから再度ブリッジできます。",
+      "packetTimedOutRefundedNoDate": "この送金は Wormchain に到達する前にタイムアウトしたため、Osmosis アドレスへ自動的に返金されました (tx {txHash})。受け取るものはありません。トークンはすでにウォレットに戻っており、Wormhole ページから再度ブリッジできます。",
+      "packetReceivedButTxNotFound": "Osmosis はこのパケットが Wormchain で受信されたことを確認していますが、受信トランザクションを特定できませんでした。この送金を Wormholescan で直接確認してください。",
+      "wormchainReceiveNotRelayedYet": "Osmosis の送信パケットは見つかりましたが、対応する Wormchain の受信がまだリレーされていません。1 分ほど待って再試行してください。",
+      "vaaNotIndexedYet": "Wormchain の受信 ({txHash}) は見つかりましたが、Wormholescan がまだ VAA をインデックスしていません。ガーディアンがまだ署名中の可能性があります。1 分ほど待って再試行してください。"
     }
   },
   "unknownError": "不明なエラー",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "検出された変異体",
     "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
-    "remindMeLater": "後で通知する",
+    "dontShowAgain": "今後表示しない",
     "dismiss": "却下する",
     "convert": "変換する"
   },

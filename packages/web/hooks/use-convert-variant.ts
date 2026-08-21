@@ -1,4 +1,4 @@
-import type { AssetVariant } from "@osmosis-labs/server";
+import { type AssetVariant, isOneToOnePoolType } from "@osmosis-labs/server";
 import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
@@ -9,6 +9,21 @@ import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
+
+/** Slippage tolerance for a conversion through a single fixed-ratio pool
+ *  (transmuter / alloyed), as a decimal fraction: 0.01%.
+ *
+ *  Deliberately not "0". `maxSlippage` sets `tokenOutMinAmount` to
+ *  `quoted * (1 - maxSlippage)`, so exact zero demands byte-exact output and one
+ *  unit of chain-side truncation reverts the tx. This is small enough to be
+ *  economically irrelevant (100 base units on a 1M USDC conversion) while still
+ *  absorbing rounding. */
+export const ONE_TO_ONE_MAX_SLIPPAGE = "0.0001";
+
+/** Slippage tolerance for any conversion that can genuinely move against the
+ *  user between quote and execution: splits, multi-hops, and price-moving pools
+ *  (AMMs, orderbooks). Unchanged long-standing default. */
+export const DEFAULT_CONVERT_MAX_SLIPPAGE = "0.05";
 
 /**
  * Hook to convert a variant asset to its canonical form.
@@ -201,16 +216,36 @@ export async function getConvertVariantMessages(
     throw new Error("No quote found");
   }
 
-  // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
-  // so, let's remove slippage to convert more of the asset
-  const isAlloyPoolSwap =
+  // A conversion routing through a single 1:1 pool (transmuter or alloyed) has a
+  // fixed ratio, so it gets a near-zero tolerance instead of silently accepting
+  // up to 5% less. Any other shape (a split, a multi-hop, or a price-moving
+  // pool) can drift between quote and execution and keeps the full allowance.
+  //
+  // Not exactly zero: `maxSlippage` becomes `tokenOutMinAmount` via
+  // `quoted * (1 - maxSlippage)`, so "0" demands byte-exact output and a single
+  // unit of chain-side truncation reverts the tx. ONE_TO_ONE_MAX_SLIPPAGE is the
+  // smallest tolerance that absorbs rounding while still capping loss at 0.01%
+  // (100 base units on a 1M USDC conversion, against 50,000 under the old 5%).
+  //
+  // Not every variant conversion is an alloy conversion: `variantGroupKey` also
+  // groups non-alloy canonical assets, whose conversions route through ordinary
+  // AMMs. The pool-type check, not the caller, is what makes this safe.
+  //
+  // NOTE: match the exact CosmWasm subtypes. On the quote path
+  // `getCosmwasmPoolTypeFromCodeId` has already narrowed `type`, so a
+  // `startsWith("cosmwasm")` prefix test would also catch Astroport PCL,
+  // WhiteWhale and orderbook pools, which are not 1:1.
+  const [singleRoute] = quote.split;
+  const isOneToOneSwap =
     quote.split.length === 1 &&
-    quote.split[0].pools.length === 0 &&
-    quote.split[0].pools[0].type.startsWith("cosmwasm");
+    singleRoute.pools.length === 1 &&
+    isOneToOnePoolType(singleRoute.pools[0].type);
 
   return await getSwapMessages({
     coinAmount: amount,
-    maxSlippage: isAlloyPoolSwap ? "0" : "0.05",
+    maxSlippage: isOneToOneSwap
+      ? ONE_TO_ONE_MAX_SLIPPAGE
+      : DEFAULT_CONVERT_MAX_SLIPPAGE,
     quote,
     tokenInCoinMinimalDenom: tokenInDenom,
     tokenOutCoinMinimalDenom: tokenOutDenom,

@@ -1,4 +1,5 @@
 import type { Bridge } from "@osmosis-labs/bridge";
+import type { TxFeMemoFlags } from "@osmosis-labs/stores";
 import { Dec } from "@osmosis-labs/unit";
 
 import { AckReArmTolerance } from "~/config/trade-warnings";
@@ -44,11 +45,11 @@ export interface LossFigures {
 /**
  * Normalize a provider-reported price impact to a positive magnitude.
  *
- * Providers whose quotes bundle an Osmosis swap (int3face, Nomic) report impact
- * as a negative fraction; Squid reports it positive. Both the `HighPriceImpactGate`
+ * Nomic, whose quotes bundle an Osmosis swap, reports impact as a negative
+ * fraction; Squid reports it positive. Both the `HighPriceImpactGate`
  * comparison and the worsening check in `shouldResetAcknowledgement` assume
  * larger = worse, so a negative figure silently fails every gate — which is why
- * the ≥10% gate had never fired for int3face/Nomic before MTN-199.
+ * the ≥10% gate had never fired for any bundled-swap provider before MTN-199.
  *
  * Exported (rather than inlined at the call site) so this sign contract is
  * test-enforced: a regression here does not throw or misrender, it just stops
@@ -118,4 +119,23 @@ export function shouldResetAcknowledgement(
   }
 
   return false;
+}
+
+/**
+ * Tx auth-memo flags (MTN-137) derived from the acknowledged basis — never
+ * from live sign-time figures, so the memo can only claim acceptance of
+ * numbers the user was actually shown. A figure is stamped iff its warning
+ * fired and was acknowledged; an unknown-impact acknowledgement has no figure
+ * to stamp, so it yields no flags.
+ */
+export function deriveMemoFlags(
+  basis: LossFigures | null
+): TxFeMemoFlags | undefined {
+  if (!basis) return undefined;
+
+  const flags: TxFeMemoFlags = {};
+  if (basis.warnSlippage) flags.slippage = basis.slippage;
+  if (basis.warnPriceImpact) flags.priceImpact = basis.priceImpact;
+
+  return flags.slippage || flags.priceImpact ? flags : undefined;
 }

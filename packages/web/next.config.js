@@ -87,6 +87,19 @@ const config = {
         // replacing it with a no-op breaks build, so we can at least replace it with a lighter weight version for now.
         // ideally this becomes replaced with an API-compatible no-op.
         bip39: path.resolve(__dirname, "../../node_modules/bip39-light"),
+        // @cosmjs/launchpad is deprecated and pins axios 0.21.4, which any scanner reports
+        // against the client bundle. We never import it at runtime, but @keplr-wallet/cosmos'
+        // barrel unconditionally re-exports its adr-36 module, which requires launchpad, so it
+        // ships anyway along with launchpad's axios-based LcdClient.
+        //
+        // @cosmjs/amino is the maintained successor and is already eagerly bundled. It exports
+        // every symbol the real call sites use (serializeSignDoc, encodeSecp256k1Pubkey,
+        // encodeSecp256k1Signature), so aliasing keeps ADR-36 working rather than stubbing it.
+        // yarn resolutions cannot fix this — they do not reach launchpad's nested axios.
+        "@cosmjs/launchpad": path.resolve(
+          __dirname,
+          "../../node_modules/@cosmjs/amino"
+        ),
       },
     };
 

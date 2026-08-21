@@ -237,6 +237,8 @@ export class RootStore {
         ChainList,
         IS_TESTNET ? "testnet" : "mainnet"
       ),
+      // Kept after the Int3face bridge provider's removal so past int3face
+      // transfers still render in transfer history; see the note on the class.
       new Int3faceTransferStatusProvider(
         ChainList,
         IS_TESTNET ? "testnet" : "mainnet"

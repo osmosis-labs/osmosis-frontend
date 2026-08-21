@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "કનેક્ટેડ {wallet} એકાઉન્ટ",
       "confirmInNamed": "{wallet} માં પુષ્ટિ કરો...",
       "submittingOnSui": "Sui પર સબમિટ કરવામાં આવી રહ્યું છે...",
-      "redeemOnSui": "Sui પર રિડીમ કરો"
+      "redeemOnSui": "Sui પર રિડીમ કરો",
+      "osmosisTxNotFound": "Osmosis ટ્રાન્ઝેક્શન મળ્યું નથી. હેશ તપાસો અને ખાતરી કરો કે તે Osmosis મેઇનનેટ પર બ્રોડકાસ્ટ થયું હતું.",
+      "osmosisLcdUnavailable": "કોઈ પણ LCD પરથી Osmosis ટ્રાન્ઝેક્શન મેળવી શકાયું નથી: {error}",
+      "wormchainRpcUnavailable": "Wormchain RPC ને ક્વેરી કરી શકાયું નથી: {error}",
+      "notAWormholeTx": "ટ્રાન્ઝેક્શન મળ્યું નથી. ખાતરી કરો કે આ Wormhole બ્રિજ ટ્રાન્ઝેક્શન હેશ છે.",
+      "notFoundOnWormholescanOrOsmosis": "Wormholescan પર ટ્રાન્ઝેક્શન મળ્યું નથી અને કોઈ મેળ ખાતું Osmosis ટ્રાન્ઝેક્શન પણ મળ્યું નથી. જો આ Wormchain રિસીવ હેશ હોય, તો ગાર્ડિયન કદાચ હજી સહી કરી રહ્યા હોય — એક મિનિટમાં ફરી પ્રયાસ કરો. અન્યથા, હેશ તપાસો.",
+      "noGatewayTransferInTx": "Wormholescan પર ટ્રાન્ઝેક્શન મળ્યું નથી અને આ Osmosis ટ્રાન્ઝેક્શનમાં કોઈ Wormhole ગેટવે IBC ટ્રાન્સફર મળ્યું નથી.",
+      "packetTimedOutRefunded": "આ ટ્રાન્સફર Wormchain સુધી પહોંચે તે પહેલાં સમય સમાપ્ત થઈ ગયો, તેથી {date} ના રોજ તે આપોઆપ તમારા Osmosis સરનામે પરત કરવામાં આવ્યું (tx {txHash}). રિડીમ કરવા માટે કંઈ નથી — ટોકન પહેલેથી જ તમારા વૉલેટમાં છે, અને તમે Wormhole પેજ પરથી ફરી બ્રિજ કરી શકો છો.",
+      "packetTimedOutRefundedNoDate": "આ ટ્રાન્સફર Wormchain સુધી પહોંચે તે પહેલાં સમય સમાપ્ત થઈ ગયો, તેથી તે આપોઆપ તમારા Osmosis સરનામે પરત કરવામાં આવ્યું (tx {txHash}). રિડીમ કરવા માટે કંઈ નથી — ટોકન પહેલેથી જ તમારા વૉલેટમાં છે, અને તમે Wormhole પેજ પરથી ફરી બ્રિજ કરી શકો છો.",
+      "packetReceivedButTxNotFound": "Osmosis પુષ્ટિ કરે છે કે આ પેકેટ Wormchain પર પ્રાપ્ત થયું હતું, પરંતુ રિસીવ ટ્રાન્ઝેક્શન શોધી શકાયું નથી. આ ટ્રાન્સફર સીધું Wormholescan પર જુઓ.",
+      "wormchainReceiveNotRelayedYet": "Osmosis સેન્ડ પેકેટ મળ્યું પરંતુ તેને અનુરૂપ Wormchain રિસીવ હજી રિલે થયું નથી. એક મિનિટમાં ફરી પ્રયાસ કરો.",
+      "vaaNotIndexedYet": "Wormchain રિસીવ ({txHash}) મળ્યું પરંતુ Wormholescan એ હજી તેના માટે VAA ઇન્ડેક્સ કર્યું નથી. ગાર્ડિયન કદાચ હજી સહી કરી રહ્યા હોય — એક મિનિટમાં ફરી પ્રયાસ કરો."
     }
   },
   "unknownError": "અજાણી ભૂલ",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "વેરિઅન્ટ્સ મળી આવ્યા",
     "caption": "તે બધા મૂંઝવણભર્યા એસેટ વેરિઅન્ટ્સને ગુડબાય કહો. ઓસ્મોસિસ પર વધુ સીમલેસ અનુભવ માટે હેલો કહો.",
-    "remindMeLater": "મને પછીથી યાદ કરાવો",
+    "dontShowAgain": "ફરીથી બતાવશો નહીં",
     "dismiss": "કાઢી નાખો",
     "convert": "કન્વર્ટ કરો"
   },

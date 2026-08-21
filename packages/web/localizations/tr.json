@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Bağlı {wallet} hesabı",
       "confirmInNamed": "{wallet} içinde onaylayın...",
       "submittingOnSui": "Sui üzerinde gönderiliyor...",
-      "redeemOnSui": "Sui üzerinde geri al"
+      "redeemOnSui": "Sui üzerinde geri al",
+      "osmosisTxNotFound": "Osmosis işlemi bulunamadı. Hash'i ve işlemin Osmosis ana ağında yayınlandığını kontrol edin.",
+      "osmosisLcdUnavailable": "Osmosis işlemi hiçbir LCD'den alınamadı: {error}",
+      "wormchainRpcUnavailable": "Wormchain RPC sorgulanamadı: {error}",
+      "notAWormholeTx": "İşlem bulunamadı. Bunun bir Wormhole köprü işlemi hash'i olduğundan emin olun.",
+      "notFoundOnWormholescanOrOsmosis": "İşlem Wormholescan'de bulunamadı ve eşleşen bir Osmosis işlemi de tespit edilemedi. Bu bir Wormchain alım hash'i ise muhafızlar hâlâ imzalıyor olabilir — bir dakika sonra tekrar deneyin. Aksi hâlde hash'i kontrol edin.",
+      "noGatewayTransferInTx": "İşlem Wormholescan'de bulunamadı ve bu Osmosis işleminde Wormhole ağ geçidi IBC transferi bulunamadı.",
+      "packetTimedOutRefunded": "Bu transfer Wormchain'e ulaşmadan zaman aşımına uğradı ve {date} tarihinde Osmosis adresinize otomatik olarak iade edildi (tx {txHash}). Talep edilecek bir şey yok — tokenlar zaten cüzdanınızda ve Wormhole sayfasından yeniden köprüleme yapabilirsiniz.",
+      "packetTimedOutRefundedNoDate": "Bu transfer Wormchain'e ulaşmadan zaman aşımına uğradı ve Osmosis adresinize otomatik olarak iade edildi (tx {txHash}). Talep edilecek bir şey yok — tokenlar zaten cüzdanınızda ve Wormhole sayfasından yeniden köprüleme yapabilirsiniz.",
+      "packetReceivedButTxNotFound": "Osmosis bu paketin Wormchain'de alındığını doğruluyor, ancak alım işlemi bulunamadı. Bu transferi doğrudan Wormholescan'de arayın.",
+      "wormchainReceiveNotRelayedYet": "Osmosis gönderim paketi bulundu ancak buna karşılık gelen Wormchain alımı henüz aktarılmadı. Bir dakika sonra tekrar deneyin.",
+      "vaaNotIndexedYet": "Wormchain alımı ({txHash}) bulundu ancak Wormholescan bunun için henüz bir VAA indekslemedi. Muhafızlar hâlâ imzalıyor olabilir — bir dakika sonra tekrar deneyin."
     }
   },
   "unknownError": "Bilinmeyen hata",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Varyantlar Tespit Edildi",
     "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
-    "remindMeLater": "Daha sonra hatırlat bana",
+    "dontShowAgain": "Bir daha gösterme",
     "dismiss": "Azletmek",
     "convert": "Dönüştürmek"
   },

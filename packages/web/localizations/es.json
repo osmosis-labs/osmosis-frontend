@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Cuenta de {wallet} conectada",
       "confirmInNamed": "Confirma en {wallet}...",
       "submittingOnSui": "Enviando en Sui...",
-      "redeemOnSui": "Reclamar en Sui"
+      "redeemOnSui": "Reclamar en Sui",
+      "osmosisTxNotFound": "No se encontró la transacción de Osmosis. Verifica el hash y que se haya transmitido en la mainnet de Osmosis.",
+      "osmosisLcdUnavailable": "No se pudo obtener la transacción de Osmosis desde ningún LCD: {error}",
+      "wormchainRpcUnavailable": "No se pudo consultar el RPC de Wormchain: {error}",
+      "notAWormholeTx": "No se encontró la transacción. Asegúrate de que sea un hash de transacción del puente Wormhole.",
+      "notFoundOnWormholescanOrOsmosis": "No se encontró la transacción en Wormholescan ni se localizó una transacción de Osmosis correspondiente. Si este es un hash de recepción de Wormchain, es posible que los guardianes aún estén firmando: inténtalo de nuevo en un minuto. De lo contrario, verifica el hash.",
+      "noGatewayTransferInTx": "No se encontró la transacción en Wormholescan y no se encontró ninguna transferencia IBC del gateway de Wormhole en esta transacción de Osmosis.",
+      "packetTimedOutRefunded": "Esta transferencia expiró antes de llegar a Wormchain, por lo que se reembolsó automáticamente a tu dirección de Osmosis el {date} (tx {txHash}). No hay nada que canjear: los tokens ya están de vuelta en tu billetera y puedes volver a usar el puente desde la página de Wormhole.",
+      "packetTimedOutRefundedNoDate": "Esta transferencia expiró antes de llegar a Wormchain, por lo que se reembolsó automáticamente a tu dirección de Osmosis (tx {txHash}). No hay nada que canjear: los tokens ya están de vuelta en tu billetera y puedes volver a usar el puente desde la página de Wormhole.",
+      "packetReceivedButTxNotFound": "Osmosis confirma que este paquete se recibió en Wormchain, pero no se pudo localizar la transacción de recepción. Consulta esta transferencia directamente en Wormholescan.",
+      "wormchainReceiveNotRelayedYet": "Se encontró el paquete de envío de Osmosis, pero la recepción correspondiente en Wormchain aún no se ha retransmitido. Inténtalo de nuevo en un minuto.",
+      "vaaNotIndexedYet": "Se encontró la recepción de Wormchain ({txHash}), pero Wormholescan aún no ha indexado un VAA para ella. Es posible que los guardianes aún estén firmando: inténtalo de nuevo en un minuto."
     }
   },
   "unknownError": "Error desconocido",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Variantes detectadas",
     "caption": "Dile adiós a todas esas variantes de activos confusas. Saluda a una experiencia más fluida en Osmosis.",
-    "remindMeLater": "Recuérdamelo más tarde",
+    "dontShowAgain": "No volver a mostrar",
     "dismiss": "Despedir",
     "convert": "Convertir"
   },

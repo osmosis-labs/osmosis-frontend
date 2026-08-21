@@ -1,6 +1,6 @@
 import {
   type ChainsResponse,
-  ChainType,
+  type ChainType,
   type GetRoute as SquidGetRouteParams,
   type RouteResponse,
   type TokensResponse,
@@ -410,7 +410,10 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       for (const variant of tokenVariants) {
         const chainInfo =
-          variant.chainType === ChainType.EVM
+          // `ChainType` is a runtime enum, so importing it as a value pulls the
+          // whole SDK — and its nested `@cosmjs/tendermint-rpc` → axios 0.21.4 —
+          // into the client bundle. Compare against the literal instead.
+          variant.chainType === ("evm" as ChainType)
             ? {
                 chainId: variant.chainId as number,
                 chainType: "evm" as const,

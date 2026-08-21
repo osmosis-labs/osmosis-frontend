@@ -1097,7 +1097,18 @@
       "connectedNamedAccount": "Verbundenes {wallet}-Konto",
       "confirmInNamed": "In {wallet} bestätigen...",
       "submittingOnSui": "Wird auf Sui übermittelt...",
-      "redeemOnSui": "Auf Sui einlösen"
+      "redeemOnSui": "Auf Sui einlösen",
+      "osmosisTxNotFound": "Osmosis-Transaktion nicht gefunden. Überprüfe den Hash und ob sie im Osmosis-Mainnet gesendet wurde.",
+      "osmosisLcdUnavailable": "Osmosis-Transaktion konnte von keinem LCD abgerufen werden: {error}",
+      "wormchainRpcUnavailable": "Wormchain-RPC konnte nicht abgefragt werden: {error}",
+      "notAWormholeTx": "Transaktion nicht gefunden. Stelle sicher, dass dies der Hash einer Wormhole-Bridge-Transaktion ist.",
+      "notFoundOnWormholescanOrOsmosis": "Transaktion wurde nicht auf Wormholescan gefunden und es konnte keine passende Osmosis-Transaktion ermittelt werden. Falls dies ein Wormchain-Empfangs-Hash ist, signieren die Guardians möglicherweise noch — versuche es in einer Minute erneut. Andernfalls überprüfe den Hash.",
+      "noGatewayTransferInTx": "Transaktion wurde nicht auf Wormholescan gefunden und in dieser Osmosis-Transaktion wurde kein Wormhole-Gateway-IBC-Transfer gefunden.",
+      "packetTimedOutRefunded": "Diese Überweisung ist abgelaufen, bevor sie Wormchain erreicht hat, und wurde am {date} automatisch an deine Osmosis-Adresse zurückerstattet (Tx {txHash}). Es gibt nichts einzulösen — die Token sind bereits in deiner Wallet, und du kannst die Überweisung auf der Wormhole-Seite erneut starten.",
+      "packetTimedOutRefundedNoDate": "Diese Überweisung ist abgelaufen, bevor sie Wormchain erreicht hat, und wurde automatisch an deine Osmosis-Adresse zurückerstattet (Tx {txHash}). Es gibt nichts einzulösen — die Token sind bereits in deiner Wallet, und du kannst die Überweisung auf der Wormhole-Seite erneut starten.",
+      "packetReceivedButTxNotFound": "Osmosis bestätigt, dass dieses Paket auf Wormchain empfangen wurde, aber die Empfangstransaktion konnte nicht gefunden werden. Sieh dir diese Überweisung direkt auf Wormholescan an.",
+      "wormchainReceiveNotRelayedYet": "Das Osmosis-Sendepaket wurde gefunden, aber der zugehörige Wormchain-Empfang wurde noch nicht weitergeleitet. Versuche es in einer Minute erneut.",
+      "vaaNotIndexedYet": "Der Wormchain-Empfang ({txHash}) wurde gefunden, aber Wormholescan hat dafür noch keine VAA indexiert. Die Guardians signieren möglicherweise noch — versuche es in einer Minute erneut."
     }
   },
   "unknownError": "Unbekannter Fehler",
@@ -1481,7 +1492,7 @@
   "alloyedAssets": {
     "title": "Erkannte Varianten",
     "caption": "Verabschieden Sie sich von all den verwirrenden Asset-Varianten. Begrüßen Sie ein nahtloseres Erlebnis mit Osmosis.",
-    "remindMeLater": "Später erinnern",
+    "dontShowAgain": "Nicht mehr anzeigen",
     "dismiss": "Zurückweisen",
     "convert": "Konvertieren"
   },

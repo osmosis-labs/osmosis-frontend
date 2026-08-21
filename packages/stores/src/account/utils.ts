@@ -79,9 +79,29 @@ export async function makeSignDocAmino(
   timeout_height?: bigint
 ): Promise<StdSignDoc> {
   const { Uint53 } = await import("@cosmjs/math");
+
+  // A `number` above the safe integer range has already been rounded before it
+  // reaches us, so its digits cannot be trusted and signing would use the wrong
+  // account. Callers must pass a uint64 account number as a string.
+  if (
+    typeof accountNumber === "number" &&
+    !Number.isSafeInteger(accountNumber)
+  ) {
+    throw new Error(
+      `Account number ${accountNumber} exceeds the safe integer range; pass it as a string`
+    );
+  }
+
+  // account_number is a uint64 on chain and can exceed JS's safe integer range,
+  // so validate it as a decimal string instead of narrowing it to 53 bits.
+  const account_number = accountNumber.toString();
+  if (!/^\d+$/.test(account_number)) {
+    throw new Error(`Invalid account number: ${account_number}`);
+  }
+
   return {
     chain_id: chainId,
-    account_number: Uint53.fromString(accountNumber.toString()).toString(),
+    account_number,
     sequence: Uint53.fromString(sequence.toString()).toString(),
     fee: fee,
     msgs: msgs,

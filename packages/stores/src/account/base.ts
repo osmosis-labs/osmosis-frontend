@@ -9,7 +9,7 @@ import {
   type OfflineDirectSigner,
   type Registry,
 } from "@cosmjs/proto-signing";
-import type { AminoTypes, SignerData } from "@cosmjs/stargate";
+import type { AminoTypes } from "@cosmjs/stargate";
 import {
   MainWalletBase,
   WalletConnectOptions,
@@ -60,6 +60,12 @@ import { OsmosisQueries } from "../queries";
 import { InsufficientBalanceForFeeError } from "../ui-config";
 import { getAminoConverters } from "./amino-converters";
 import {
+  appendFeMemoTag,
+  FeMemoTag,
+  OneClickFeMemoTag,
+  TxFeMemoFlags,
+} from "./memo";
+import {
   AccountStoreWallet,
   CosmosRegistryWallet,
   DeliverTxResponse,
@@ -85,6 +91,17 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
+
+/**
+ * CosmJS's own SignerData declares `accountNumber: number`, which cannot hold a
+ * uint64 — chains on Cosmos SDK 0.53+ assign account numbers above 2^53. Carry
+ * it as a decimal string and convert at the encoder instead.
+ */
+type SignerData = {
+  accountNumber: string;
+  sequence: number;
+  chainId: string;
+};
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -518,6 +535,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *   - `onBroadcastFailed`: Invoked when the broadcast fails.
    *   - `onBroadcasted`: Invoked when the transaction is successfully broadcasted.
    *   - `onFulfill`: Invoked when the transaction is successfully fulfilled.
+   * @param memoFlags - Optional warn-accept flags stamped into the auth memo's frontend tag (see `memo.ts`).
    *
    * @throws Throws an error if:
    *   - Wallet for the given chain is not provided or not connected.
@@ -541,7 +559,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
           onSign?: () => Promise<void> | void;
-        }
+        },
+    memoFlags?: TxFeMemoFlags
   ) {
     runInAction(() => {
       this.txTypeInProgressByChain.set(chainNameOrId, type);
@@ -617,6 +636,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo || "",
         messages: msgs,
         signOptions: mergedSignOptions,
+        memoFlags,
       });
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
@@ -807,12 +827,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee,
     memo,
     signOptions,
+    memoFlags,
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     fee: StdFee;
     memo: string;
     signOptions?: SignOptions;
+    memoFlags?: TxFeMemoFlags;
   }): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
@@ -863,6 +885,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         fee,
         memo,
         signerData,
+        memoFlags,
       });
     }
 
@@ -916,6 +939,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           memo,
           signerData,
           signOptions,
+          memoFlags,
         })
       : this.signDirect({
           wallet,
@@ -925,6 +949,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           memo,
           signerData,
           signOptions,
+          memoFlags,
         });
   }
 
@@ -935,6 +960,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee,
     memo,
     signerData: { accountNumber, sequence, chainId },
+    memoFlags,
   }: {
     wallet: AccountStoreWallet;
     signerAddress: string;
@@ -942,6 +968,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee: StdFee;
     memo: string;
     signerData: SignerData;
+    memoFlags?: TxFeMemoFlags;
   }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -959,14 +986,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("One click trading info is not available");
     }
 
-    if (memo === "") {
-      // If the memo is empty, set it to "1CT" so we know it originated from the frontend for
-      // QA purposes.
-      memo = "1CT";
-    } else {
-      // Otherwise, tack on "1CT" to the end of the memo.
-      memo += " \n1CT";
-    }
+    // Tag the memo so we know the tx originated from the frontend (QA), plus
+    // any warn-accept flags the user acknowledged.
+    memo = appendFeMemoTag(memo, OneClickFeMemoTag, memoFlags);
 
     const [
       { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
@@ -1031,7 +1053,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyBytes,
       authInfoBytes,
       chainId,
-      accountNumber
+      // Typed as a number upstream, but only ever handed to BigInt(), which is
+      // exact on a decimal string. Cast goes away on the @cosmjs 0.39.0 upgrade.
+      accountNumber as unknown as number
     );
 
     const sig = privateKey.signDigest32(
@@ -1067,6 +1091,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo,
     signerData: { accountNumber, sequence, chainId },
     signOptions,
+    memoFlags,
   }: {
     wallet: AccountStoreWallet;
     signerAddress: string;
@@ -1075,6 +1100,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
+    memoFlags?: TxFeMemoFlags;
   }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -1095,14 +1121,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Failed to retrieve account from signer");
     }
 
-    if (memo === "") {
-      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
-      // QA purposes.
-      memo = "OsmosisFE";
-    } else {
-      // Otherwise, tack on "OsmosisFE" to the end of the memo.
-      memo += " \nOsmosisFE";
-    }
+    // Tag the memo so we know the tx originated from the frontend (QA), plus
+    // any warn-accept flags the user acknowledged. On this path the wallet
+    // can return an edited memo (`signed.memo` below is what gets encoded) —
+    // callers stamping flags should set `preferNoSetMemo`.
+    memo = appendFeMemoTag(memo, FeMemoTag, memoFlags);
 
     const [
       { encodeSecp256k1Pubkey },
@@ -1239,6 +1262,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo,
     signerData: { accountNumber, sequence, chainId },
     signOptions,
+    memoFlags,
   }: {
     wallet: AccountStoreWallet;
     signerAddress: string;
@@ -1247,6 +1271,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
+    memoFlags?: TxFeMemoFlags;
   }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -1295,14 +1320,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     pubkey.typeUrl = pubKeyTypeUrl;
 
-    if (memo === "") {
-      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
-      // QA purposes.
-      memo = "OsmosisFE";
-    } else {
-      // Otherwise, tack on "OsmosisFE" to the end of the memo.
-      memo += " \nOsmosisFE";
-    }
+    // Tag the memo so we know the tx originated from the frontend (QA), plus
+    // any warn-accept flags the user acknowledged.
+    memo = appendFeMemoTag(memo, FeMemoTag, memoFlags);
 
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
@@ -1326,7 +1346,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyBytes,
       authInfoBytes,
       chainId,
-      accountNumber
+      // Typed as a number upstream, but only ever handed to BigInt(), which is
+      // exact on a decimal string. Cast goes away on the @cosmjs 0.39.0 upgrade.
+      accountNumber as unknown as number
     );
 
     const { signature, signed } = await (wallet.client.signDirect
@@ -1412,7 +1434,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   public async getSequence(
     wallet: AccountStoreWallet
-  ): Promise<{ accountNumber: number; sequence: number }> {
+  ): Promise<{ accountNumber: string; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
       throw new Error(
@@ -1421,7 +1443,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     return {
-      accountNumber: Number(account.accountNumber.toString()),
+      // account_number is a uint64 and can exceed Number.MAX_SAFE_INTEGER, so
+      // keep the exact decimal string the node returned.
+      accountNumber: account.accountNumber.toString(),
       sequence: Number(account.sequence.toString()),
     };
   }
