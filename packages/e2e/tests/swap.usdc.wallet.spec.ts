@@ -10,7 +10,7 @@ test.describe("Test Swap to/from USDC feature", () => {
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
   const _USDC =
-    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+    "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
   const _ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
   const _TIA =

@@ -13,6 +13,7 @@ import { Icon } from "~/components/assets";
 import {
   ATOM_BASE_DENOM,
   USDC_BASE_DENOM,
+  USDC_NOBLE_BASE_DENOM,
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -40,6 +41,8 @@ const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
 const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
+  // "USDC.noble" — no longer the default, but still widely held
+  USDC_NOBLE_BASE_DENOM,
   // "USDC.sol.wh",
   "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45",
   // "USDC.eth.grv",
