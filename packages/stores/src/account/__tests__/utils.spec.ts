@@ -40,4 +40,18 @@ describe("makeSignDocAmino", () => {
       makeSignDocAmino([], fee, "osmosis-1", "", "1.09e19", 2)
     ).rejects.toThrow("Invalid account number: 1.09e19");
   });
+
+  it("rejects a numeric account number that has already lost precision", async () => {
+    // Parsed as a JS number, 10937563465699879211 rounds to ...879000. Those
+    // digits are wrong before we ever see them, and they are all decimal digits,
+    // so the string check alone would let us sign for a different account.
+    const rounded = Number("10937563465699879211");
+    expect(rounded.toString()).toBe("10937563465699879000");
+
+    await expect(
+      makeSignDocAmino([], fee, "stride-1", "", rounded, 0)
+    ).rejects.toThrow(
+      "Account number 10937563465699879000 exceeds the safe integer range"
+    );
+  });
 });
