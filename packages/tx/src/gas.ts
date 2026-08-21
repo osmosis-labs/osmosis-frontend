@@ -416,13 +416,7 @@ export async function selectFeeAmountFromBalances({
       continue;
     }
 
-    // Calculate the raw fee amount first before applying Math.max
     const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).roundUp();
-
-    // Only skip if the fee amount is greater than balance
-    if (rawFeeAmount.gt(new Int(amount))) {
-      continue;
-    }
 
     // Ensure a minimum of 1.
     // This covers cases where the fee amount precision is too small to be represented in the balance.
@@ -430,6 +424,12 @@ export async function selectFeeAmountFromBalances({
     // Stay in integer arithmetic: a Number round-trip corrupts fee amounts above
     // 2^53, which is only 0.009 tokens for an 18-decimal fee denom.
     const feeAmount = rawFeeAmount.isZero() ? "1" : rawFeeAmount.toString();
+
+    // Skip a denom we cannot actually pay with. Compared after the floor above,
+    // so a zero balance is not selected on the strength of a zero raw fee.
+    if (new Int(feeAmount).gt(new Int(amount))) {
+      continue;
+    }
 
     const spentAmount =
       coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";

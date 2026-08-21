@@ -1691,4 +1691,16 @@ describe("selectFeeAmountFromBalances", () => {
 
     expect(fee.amount).toBe("5000");
   });
+
+  it("does not select a zero balance floored up to a fee of 1", async () => {
+    // The raw fee is zero here, so a balance check made before the floor sees
+    // 0 > 0 and lets the denom through, then charges a fee of 1 against nothing.
+    await expect(
+      selectFeeAmountFromBalances({
+        feeBalances: [{ denom: "uosmo", amount: "0" }],
+        gasLimit: "200000",
+        getGasPriceByDenom: () => ({ gasPrice: new Dec("0") }),
+      })
+    ).rejects.toThrow(InsufficientFeeError);
+  });
 });
