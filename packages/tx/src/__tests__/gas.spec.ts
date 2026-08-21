@@ -19,6 +19,7 @@ import {
   getGasFeeAmount,
   getGasPriceByFeeDenom,
   InsufficientFeeError,
+  selectFeeAmountFromBalances,
   simulateCosmosTxBody,
   SimulateNotAvailableError,
 } from "../gas";
@@ -915,7 +916,8 @@ describe("getGasFeeAmount", () => {
       expect(queryFeeTokenSpotPrice).toBeCalledWith({
         chainId,
         chainList: MockChains,
-        denom: "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
       });
 
       expect(gasAmount.denom).toBe(
@@ -981,7 +983,9 @@ describe("getGasFeeAmount", () => {
       base_denom: "uosmo",
     } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockImplementation(() =>
-      Promise.reject(new Error("error getting spot price: no liquidity in pool"))
+      Promise.reject(
+        new Error("error getting spot price: no liquidity in pool")
+      )
     );
 
     const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -1638,5 +1642,53 @@ describe("getDefaultGasPrice", () => {
 
     expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
     expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
+  });
+});
+
+describe("selectFeeAmountFromBalances", () => {
+  // Large enough that the balance check never short-circuits the cases below.
+  const ampleBalance = "100000000000000000000000000";
+
+  it("keeps a fee amount above 2^53 exact", async () => {
+    const [fee] = await selectFeeAmountFromBalances({
+      feeBalances: [{ denom: "inj", amount: ampleBalance }],
+      gasLimit: "7654321",
+      getGasPriceByDenom: () => ({ gasPrice: new Dec("2500000000.7") }),
+    });
+
+    // A Number round-trip would have returned ...024 for this product.
+    expect(fee.amount).toBe("19135802505358025");
+  });
+
+  it("does not emit exponential notation above 1e21", async () => {
+    const [fee] = await selectFeeAmountFromBalances({
+      feeBalances: [{ denom: "inj", amount: ampleBalance }],
+      gasLimit: "1234567",
+      getGasPriceByDenom: () => ({ gasPrice: new Dec("1000000000000000") }),
+    });
+
+    // Number.prototype.toString() would have produced "1.234567e+21" here,
+    // which is not a valid Cosmos coin amount.
+    expect(fee.amount).toBe("1234567000000000000000");
+  });
+
+  it("floors a zero fee amount at 1", async () => {
+    const [fee] = await selectFeeAmountFromBalances({
+      feeBalances: [{ denom: "uosmo", amount: "1000" }],
+      gasLimit: "200000",
+      getGasPriceByDenom: () => ({ gasPrice: new Dec("0") }),
+    });
+
+    expect(fee.amount).toBe("1");
+  });
+
+  it("is unchanged for a 6-decimal fee denom", async () => {
+    const [fee] = await selectFeeAmountFromBalances({
+      feeBalances: [{ denom: "uosmo", amount: "1000000" }],
+      gasLimit: "200000",
+      getGasPriceByDenom: () => ({ gasPrice: new Dec("0.025") }),
+    });
+
+    expect(fee.amount).toBe("5000");
   });
 });
