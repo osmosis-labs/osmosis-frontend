@@ -684,6 +684,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const broadcasted = res.data.tx_response;
 
+      if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
+      }
+
+      // The POST returning code 0 IS acceptance: record it via onBroadcasted
+      // before any tracer setup, whose endpoint resolution can itself fail —
+      // callers persisting acceptance state (e.g. duplicate-creation guards)
+      // must learn the tx hash even when everything after this point throws.
+      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
+
+      if (this.options.preTxEvents?.onBroadcasted) {
+        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
+      }
+
+      if (onBroadcasted) {
+        onBroadcasted(txHashBuffer);
+      }
+
       // Pass all RPC endpoints to TxTracer for WebSocket failover.
       const rpcUrls = this.getChainRpcUrls(wallet);
       let sortedRpcUrls: string[] =
@@ -708,21 +727,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
-
-      if (broadcasted.code) {
-        const { BroadcastTxError } = await import("@cosmjs/stargate");
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
-      }
-
-      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
-
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
 
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {

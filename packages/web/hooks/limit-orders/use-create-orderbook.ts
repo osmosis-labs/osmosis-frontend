@@ -44,14 +44,22 @@ const PENDING_TTL_MS = 1000 * 60 * 2;
 /** Must be comfortably shorter than PENDING_TTL_MS. */
 const PENDING_HEARTBEAT_MS = 1000 * 45;
 /**
- * A broadcast-accepted tx normally delivers within a block, but when tx
- * tracing fails delivery is unknown. The entry carries the tx hash, and every
- * later confirm reconciles it against the node's tx endpoint (not the
- * SQS-derived pool list, which can lag indexing) before the pair is released,
- * so this TTL is a janitor for abandoned entries rather than the safety
- * boundary.
+ * Retention janitor for broadcasted entries, far beyond any inclusion window.
+ * A broadcasted mark is never released by mere read-time expiry: it stays
+ * readable so every confirm can reconcile its persisted tx hash, and is only
+ * released by proof (delivered or failed onchain) or by provably outliving
+ * the tx's inclusion window (see BROADCASTED_RELEASE_AFTER_MS).
  */
-const BROADCASTED_TTL_MS = 1000 * 60 * 10;
+const BROADCASTED_JANITOR_TTL_MS = 1000 * 60 * 60 * 24;
+/**
+ * Broadcast txs carry a timeout height (NEXT_TX_TIMEOUT_HEIGHT_OFFSET, ~75
+ * blocks — a few minutes at Osmosis block times), beyond which an unincluded
+ * tx can never be included. A broadcasted entry whose tx is still not found
+ * on the node after this much longer window is therefore provably dead and
+ * safe to release; a delivered-but-unindexed tx is additionally caught by the
+ * fresh existence checks every new creation attempt must pass.
+ */
+const BROADCASTED_RELEASE_AFTER_MS = 1000 * 60 * 10;
 
 type JustCreatedStatus = "pending" | "broadcasted" | "created";
 type JustCreatedEntry = {
@@ -68,7 +76,7 @@ type JustCreatedEntry = {
 
 const TTL_BY_STATUS: Record<JustCreatedStatus, number> = {
   pending: PENDING_TTL_MS,
-  broadcasted: BROADCASTED_TTL_MS,
+  broadcasted: BROADCASTED_JANITOR_TTL_MS,
   created: CREATED_TTL_MS,
 };
 
@@ -577,19 +585,29 @@ export function useCreateOrderbook({
 
         // A broadcast-accepted attempt whose delivery was never observed:
         // reconcile by tx hash against the node before deciding anything.
-        if (entry?.s === "broadcasted" && entry.h) {
-          const outcome = await fetchBroadcastedTxOutcome(entry.h);
+        // Broadcasted marks are never released by mere expiry — only by proof
+        // (delivered or failed) or by provably outliving the tx's
+        // timeout-height inclusion window.
+        if (entry?.s === "broadcasted") {
+          const outcome = entry.h
+            ? await fetchBroadcastedTxOutcome(entry.h)
+            : "unknown";
           if (outcome === "delivered") {
             await settleAsAlreadyCreated();
             return;
           }
-          if (outcome === "failed") {
-            // Provably failed onchain: no pool exists, release the pair and
-            // continue into a fresh creation attempt.
+          const pastInclusionWindow =
+            Date.now() - entry.t > BROADCASTED_RELEASE_AFTER_MS;
+          if (outcome === "failed" || pastInclusionWindow) {
+            // Provably failed onchain, or unfound long past the timeout
+            // height (the tx can no longer be included; a delivered tx the
+            // node lookup missed is still caught by the creation path's
+            // fresh existence checks). Release the pair and continue into a
+            // fresh creation attempt.
             clearJustCreatedOrderbook(baseDenom, quoteDenom);
             entry = undefined;
           }
-          // "unknown": delivery unproven, fall through to the gate below.
+          // Fresh and unknown: delivery unproven, keep protection (below).
         }
 
         // The registry holds the pair: either a delivered creation whose
