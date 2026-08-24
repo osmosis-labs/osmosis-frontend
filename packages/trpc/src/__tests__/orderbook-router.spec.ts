@@ -1,4 +1,4 @@
-import { getOrderbookPools } from "@osmosis-labs/server";
+import { getOrderbookPools, queryTx } from "@osmosis-labs/server";
 
 import {
   createCallerFactory,
@@ -12,10 +12,12 @@ jest.mock("@osmosis-labs/server", () => {
   return {
     ...actual,
     getOrderbookPools: jest.fn(),
+    queryTx: jest.fn(),
   };
 });
 
 const mockedGetOrderbookPools = jest.mocked(getOrderbookPools);
+const mockedQueryTx = jest.mocked(queryTx);
 
 const BASE_DENOM = "uatom";
 const QUOTE_DENOM =
@@ -108,5 +110,52 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
       orderbookExists: false,
       endpointFunctional: true,
     });
+  });
+});
+
+describe("orderbookRouter.getCreateOrderbookTxStatus", () => {
+  const TX_HASH = "AB".repeat(32);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns delivered for a tx with code 0", async () => {
+    mockedQueryTx.mockResolvedValue({
+      tx_response: { code: 0 },
+    } as Awaited<ReturnType<typeof queryTx>>);
+
+    const caller = makeCaller();
+    const result = await caller.orderbooks.getCreateOrderbookTxStatus({
+      txHash: TX_HASH,
+    });
+
+    expect(result).toEqual({ status: "delivered" });
+  });
+
+  it("returns failed with code and raw log for a delivered tx with a non-zero code", async () => {
+    mockedQueryTx.mockResolvedValue({
+      tx_response: { code: 5, raw_log: "out of gas" },
+    } as Awaited<ReturnType<typeof queryTx>>);
+
+    const caller = makeCaller();
+    const result = await caller.orderbooks.getCreateOrderbookTxStatus({
+      txHash: TX_HASH,
+    });
+
+    expect(result).toEqual({ status: "failed", code: 5, rawLog: "out of gas" });
+  });
+
+  it("returns notFound when the node lookup fails (unknown tx or endpoint error)", async () => {
+    // Both an unindexed tx and a network failure surface as a throw; report
+    // notFound so callers keep their duplicate protection either way.
+    mockedQueryTx.mockRejectedValue(new Error("tx not found"));
+
+    const caller = makeCaller();
+    const result = await caller.orderbooks.getCreateOrderbookTxStatus({
+      txHash: TX_HASH,
+    });
+
+    expect(result).toEqual({ status: "notFound" });
   });
 });

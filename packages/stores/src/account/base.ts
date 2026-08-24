@@ -630,14 +630,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
-      if (this.options.preTxEvents?.onSign) {
-        await this.options.preTxEvents.onSign();
-      }
-
-      if (onSign) {
-        await onSign();
-      }
-
       // Pre-probe REST endpoints to find a working one for broadcast.
       // Falls back to the wallet's default endpoint if probe fails.
       let restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
@@ -654,6 +646,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         } catch {
           // Pre-probe failed; use wallet default
         }
+      }
+
+      // onSign runs after the (up to multi-second) endpoint probe so it sits
+      // immediately before the broadcast POST: callers use it for last-moment
+      // pre-broadcast checks (a throw here aborts the broadcast and discards
+      // the signed tx), so no other awaits may separate it from the POST.
+      if (this.options.preTxEvents?.onSign) {
+        await this.options.preTxEvents.onSign();
+      }
+
+      if (onSign) {
+        await onSign();
       }
 
       const res = await axios.post<{

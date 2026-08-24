@@ -1,4 +1,5 @@
 import { OrderbookPoolCodeIds } from "@osmosis-labs/server";
+import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/stores";
 import { getOsmosisCodec } from "@osmosis-labs/tx";
 import { useCallback, useState } from "react";
 
@@ -11,19 +12,25 @@ const IS_ORDERBOOK_CREATION_SUPPORTED =
   OrderbookPoolCodeIds.length > 0 && OrderbookPoolCodeIds[0] !== "?";
 
 /**
- * Pairs whose orderbook was created onchain but may not yet be reflected in
- * the canonical pools list (the sidecar ingests per block, so the list can lag
- * the delivered tx; if the post-create refresh loses that race, the stale list
- * can sit in the server LRU for up to its 1h TTL). Consumers that reset UI
- * state, or offer creation, when a pair looks orderbook-less must consult this
- * so they don't undo the user's selection or invite a duplicate paid creation
- * tx during that window. Module-level on purpose: the creation entry points
- * (Limit tab, Pay With / Receive dropdown) live in different component
- * subtrees. Persisted to localStorage so a page reload inside the stale-cache
- * window cannot re-offer creation; entries expire per-status and are cleared
- * early once the canonical list reflects the pair.
+ * Registry of pairs whose orderbook was created onchain but may not yet be
+ * reflected in the canonical pools list (the sidecar ingests per block, so
+ * the list can lag the delivered tx; if the post-create refresh loses that
+ * race, the stale list can sit in the server LRU for up to its 1h TTL).
+ * Consumers that reset UI state, or offer creation, when a pair looks
+ * orderbook-less must consult this so they don't undo the user's selection or
+ * invite a duplicate paid creation tx during that window. Module-level on
+ * purpose: the creation entry points (Limit tab, Pay With / Receive dropdown)
+ * live in different component subtrees. Persisted to localStorage so a page
+ * reload inside the stale-cache window cannot re-offer creation; entries
+ * expire per-status and are cleared early once the canonical list reflects
+ * the pair.
+ *
+ * One storage key PER PAIR: concurrent attempts for different pairs must not
+ * share a read-modify-write over one aggregated map, or the later write drops
+ * the other pair's entry (the Web Lock serializing attempts is per pair, so
+ * cross-pair concurrency is allowed).
  */
-const JUST_CREATED_STORAGE_KEY = "just-created-orderbooks";
+const JUST_CREATED_KEY_PREFIX = "just-created-orderbook:";
 /** Matches the server orderbook-pools LRU TTL. */
 const CREATED_TTL_MS = 1000 * 60 * 60;
 /**
@@ -38,11 +45,11 @@ const PENDING_TTL_MS = 1000 * 60 * 2;
 const PENDING_HEARTBEAT_MS = 1000 * 45;
 /**
  * A broadcast-accepted tx normally delivers within a block, but when tx
- * tracing fails delivery is unknown, so the mark outlives any plausible
- * inclusion window before re-arming creation. The entry carries the tx hash
- * for reconciliation/debugging, and the fail-closed existence checks (before
- * the wallet prompt AND after approval, immediately before broadcast)
- * backstop the expiry: a landed tx is visible to them by then.
+ * tracing fails delivery is unknown. The entry carries the tx hash, and every
+ * later confirm reconciles it against the node's tx endpoint (not the
+ * SQS-derived pool list, which can lag indexing) before the pair is released,
+ * so this TTL is a janitor for abandoned entries rather than the safety
+ * boundary.
  */
 const BROADCASTED_TTL_MS = 1000 * 60 * 10;
 
@@ -51,10 +58,11 @@ type JustCreatedEntry = {
   t: number;
   s: JustCreatedStatus;
   /** Attempt owner id: only the attempt that wrote a pending/broadcasted
-   *  entry may roll it back, so a failed concurrent attempt can never strip
-   *  another attempt's protection. */
+   *  entry may roll it back or restamp it, so a failed concurrent attempt can
+   *  never strip or take over another attempt's protection. */
   o?: string;
-  /** Tx hash (hex) once broadcast-accepted, for reconciliation/debugging. */
+  /** Tx hash (hex) once broadcast-accepted; reconciled against the node
+   *  before the pair is ever released for another attempt. */
   h?: string;
 };
 
@@ -80,10 +88,13 @@ const STATUS_RANK: Record<JustCreatedStatus, number> = {
 const orderbookPairKey = (baseDenom: string, quoteDenom: string) =>
   JSON.stringify([baseDenom, quoteDenom].sort());
 
+const storageKeyFor = (pairKey: string) =>
+  `${JUST_CREATED_KEY_PREFIX}${pairKey}`;
+
 /**
- * In-memory mirror of the persisted registry: when localStorage is
- * unavailable (privacy mode, quota), duplicate protection degrades to
- * session-only instead of disappearing entirely.
+ * In-memory mirror of the persisted registry (keyed by pair key): when
+ * localStorage is unavailable (privacy mode, quota), duplicate protection
+ * degrades to session-only instead of disappearing entirely.
  */
 let inMemoryJustCreated: Record<string, JustCreatedEntry> = {};
 
@@ -106,41 +117,42 @@ function isLiveEntry(value: unknown, now: number): value is JustCreatedEntry {
   return now - entry.t < TTL_BY_STATUS[entry.s];
 }
 
-function readJustCreatedOrderbooks(): Record<string, JustCreatedEntry> {
+function readJustCreatedEntry(pairKey: string): JustCreatedEntry | undefined {
   const now = Date.now();
-  let stored: Record<string, unknown> = {};
+  let stored: unknown;
   if (typeof window !== "undefined") {
     try {
-      const raw = window.localStorage.getItem(JUST_CREATED_STORAGE_KEY);
-      const parsed: unknown = raw ? JSON.parse(raw) : {};
-      if (parsed && typeof parsed === "object")
-        stored = parsed as Record<string, unknown>;
+      const raw = window.localStorage.getItem(storageKeyFor(pairKey));
+      stored = raw ? JSON.parse(raw) : undefined;
     } catch {
       // Fall through to the in-memory mirror alone.
     }
   }
-  const merged: Record<string, JustCreatedEntry> = {};
-  for (const [key, value] of [
-    ...Object.entries(stored),
-    ...Object.entries(inMemoryJustCreated),
-  ]) {
-    if (!isLiveEntry(value, now)) continue;
-    const existing = merged[key];
-    // The mirror and storage can disagree (e.g. a write that only reached the
-    // mirror); the newer stamp is the truth.
-    if (!existing || value.t >= existing.t) merged[key] = value;
-  }
-  return merged;
+  // The mirror and storage can disagree (e.g. a write that only reached the
+  // mirror); the newer stamp is the truth.
+  const candidates = [stored, inMemoryJustCreated[pairKey]].filter(
+    (value): value is JustCreatedEntry => isLiveEntry(value, now)
+  );
+  if (candidates.length === 0) return undefined;
+  return candidates.reduce((a, b) => (b.t >= a.t ? b : a));
 }
 
-function writeJustCreatedOrderbooks(entries: Record<string, JustCreatedEntry>) {
-  inMemoryJustCreated = entries;
+function writeJustCreatedEntry(
+  pairKey: string,
+  entry: JustCreatedEntry | undefined
+) {
+  if (entry) inMemoryJustCreated[pairKey] = entry;
+  else delete inMemoryJustCreated[pairKey];
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(
-      JUST_CREATED_STORAGE_KEY,
-      JSON.stringify(entries)
-    );
+    if (entry) {
+      window.localStorage.setItem(
+        storageKeyFor(pairKey),
+        JSON.stringify(entry)
+      );
+    } else {
+      window.localStorage.removeItem(storageKeyFor(pairKey));
+    }
   } catch {
     // Quota/privacy-mode failures degrade to the in-memory mirror above:
     // session-only protection, no cross-reload persistence.
@@ -148,15 +160,7 @@ function writeJustCreatedOrderbooks(entries: Record<string, JustCreatedEntry>) {
 }
 
 export function wasOrderbookJustCreated(baseDenom: string, quoteDenom: string) {
-  return orderbookPairKey(baseDenom, quoteDenom) in readJustCreatedOrderbooks();
-}
-
-function getJustCreatedStatus(
-  baseDenom: string,
-  quoteDenom: string
-): JustCreatedStatus | undefined {
-  return readJustCreatedOrderbooks()[orderbookPairKey(baseDenom, quoteDenom)]
-    ?.s;
+  return !!readJustCreatedEntry(orderbookPairKey(baseDenom, quoteDenom));
 }
 
 function markOrderbookJustCreated(
@@ -165,27 +169,26 @@ function markOrderbookJustCreated(
   status: JustCreatedStatus,
   opts?: { owner?: string; txHash?: string }
 ) {
-  const entries = readJustCreatedOrderbooks();
-  const key = orderbookPairKey(baseDenom, quoteDenom);
-  const existing = entries[key];
-  // Monotonic across attempts: never downgrade another attempt's stronger
-  // entry (e.g. a concurrent attempt's "created" must not be overwritten by
-  // this attempt's "pending"). An attempt may freely re-stamp its own entry
-  // (heartbeat) and anyone may upgrade.
+  const pairKey = orderbookPairKey(baseDenom, quoteDenom);
+  const existing = readJustCreatedEntry(pairKey);
+  // Ownership is monotonic across attempts: a write may replace a foreign
+  // entry only by strictly upgrading it. This blocks both downgrades (a
+  // "pending" over a concurrent attempt's "created") and equal-rank takeovers
+  // (a second attempt's "broadcasted" replacing another owner's "broadcasted"
+  // and its tx hash, then deleting it on its own failure).
   if (
     existing &&
-    STATUS_RANK[existing.s] > STATUS_RANK[status] &&
-    existing.o !== opts?.owner
+    existing.o !== opts?.owner &&
+    STATUS_RANK[existing.s] >= STATUS_RANK[status]
   ) {
     return;
   }
-  entries[key] = {
+  writeJustCreatedEntry(pairKey, {
     t: Date.now(),
     s: status,
     ...(opts?.owner ? { o: opts.owner } : {}),
     ...(opts?.txHash ? { h: opts.txHash } : {}),
-  };
-  writeJustCreatedOrderbooks(entries);
+  });
 }
 
 /** Roll back an in-flight mark, but only the one this attempt owns: a failed
@@ -195,12 +198,10 @@ function clearJustCreatedOrderbookIfOwned(
   quoteDenom: string,
   owner: string
 ) {
-  const entries = readJustCreatedOrderbooks();
-  const key = orderbookPairKey(baseDenom, quoteDenom);
-  const entry = entries[key];
+  const pairKey = orderbookPairKey(baseDenom, quoteDenom);
+  const entry = readJustCreatedEntry(pairKey);
   if (entry && entry.o === owner && entry.s !== "created") {
-    delete entries[key];
-    writeJustCreatedOrderbooks(entries);
+    writeJustCreatedEntry(pairKey, undefined);
   }
 }
 
@@ -209,12 +210,7 @@ export function clearJustCreatedOrderbook(
   baseDenom: string,
   quoteDenom: string
 ) {
-  const entries = readJustCreatedOrderbooks();
-  const key = orderbookPairKey(baseDenom, quoteDenom);
-  if (key in entries) {
-    delete entries[key];
-    writeJustCreatedOrderbooks(entries);
-  }
+  writeJustCreatedEntry(orderbookPairKey(baseDenom, quoteDenom), undefined);
 }
 
 /**
@@ -224,7 +220,7 @@ export function clearJustCreatedOrderbook(
  * pair and both broadcast. `ifAvailable` fails fast: a second confirm while
  * another tab holds the lock (e.g. sitting on its wallet prompt) errors
  * instead of queueing a duplicate behind it. Falls back to the registry-only
- * protection when the API is missing.
+ * protection (owner-scoped, monotonic marks) when the API is missing.
  */
 async function withPairCreationLock<T>(
   pairKey: string,
@@ -309,6 +305,29 @@ export function useCreateOrderbook({
     ]);
   }, [apiUtils, baseDenom, quoteDenom]);
 
+  /**
+   * Delivery outcome of a broadcast-accepted tx, from the node's tx endpoint
+   * (authoritative for delivery, unlike the SQS-derived pool list which can
+   * lag indexing). "unknown" covers both not-yet-indexed and lookup failure —
+   * the safe direction, since callers keep the pair's protection.
+   */
+  const fetchBroadcastedTxOutcome = useCallback(
+    async (txHash: string): Promise<"delivered" | "failed" | "unknown"> => {
+      try {
+        const res =
+          await apiUtils.edge.orderbooks.getCreateOrderbookTxStatus.fetch({
+            txHash,
+          });
+        if (res.status === "delivered") return "delivered";
+        if (res.status === "failed") return "failed";
+        return "unknown";
+      } catch {
+        return "unknown";
+      }
+    },
+    [apiUtils]
+  );
+
   const createOrderbook = useCallback(async () => {
     // Precondition violations throw rather than silently resolving: callers
     // treat a resolved createOrderbook as success (close the modal, activate
@@ -330,42 +349,7 @@ export function useCreateOrderbook({
       );
     }
 
-    const runAttempt = async () => {
-      // The registry holds the pair: either a delivered creation whose caches
-      // are still catching up, or an in-flight broadcast (this tab or
-      // another). Broadcasting again would create a duplicate pool and charge
-      // another creation fee, so a re-confirm becomes a cache-refresh retry
-      // instead.
-      const justCreatedStatus = getJustCreatedStatus(baseDenom, quoteDenom);
-      if (justCreatedStatus) {
-        setIsCreating(true);
-        setError(undefined);
-        try {
-          const exists = await refreshOrderbookCaches();
-          // A delivered ("created") mark proves the pool exists onchain, so
-          // the refresh-only confirm is a success even if the sidecar still
-          // lags. A "pending" or "broadcasted" mark proves nothing was
-          // delivered yet: reporting success would close the modal on a pool
-          // that may never exist (e.g. the marking tab closed mid-signing).
-          // Reject instead; those marks self-expire, after which a re-confirm
-          // broadcasts.
-          if (justCreatedStatus !== "created" && !exists) {
-            throw new Error(t("errors.uhOhSomethingWentWrong"));
-          }
-        } catch (e) {
-          const message =
-            e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
-          setError(message);
-          throw e;
-        } finally {
-          setIsCreating(false);
-        }
-        return;
-      }
-
-      setIsCreating(true);
-      setError(undefined);
-
+    const broadcastCreation = async () => {
       // This attempt's identity in the registry: only the owner may roll its
       // in-flight mark back, so a failed concurrent attempt can never strip
       // protection written by a different (possibly successful) attempt.
@@ -384,10 +368,13 @@ export function useCreateOrderbook({
       });
       // Signing waits on the human, so the wallet prompt can outlive any
       // fixed pending TTL; keep the mark alive while this attempt is
-      // genuinely still in flight. Only re-stamps "pending" so it can never
-      // downgrade a "broadcasted"/"created" upgrade from the callbacks below.
+      // genuinely still in flight. Only re-stamps this attempt's own
+      // "pending" so it can never downgrade or take over another entry.
       const pendingHeartbeat = setInterval(() => {
-        if (getJustCreatedStatus(baseDenom, quoteDenom) === "pending") {
+        const entry = readJustCreatedEntry(
+          orderbookPairKey(baseDenom, quoteDenom)
+        );
+        if (entry?.s === "pending" && entry.o === attemptOwner) {
           markOrderbookJustCreated(baseDenom, quoteDenom, "pending", {
             owner: attemptOwner,
           });
@@ -395,6 +382,7 @@ export function useCreateOrderbook({
       }, PENDING_HEARTBEAT_MS);
 
       let broadcastAccepted = false;
+      let broadcastedTxHash: string | undefined;
       let existsDiscoveredPreBroadcast = false;
       let deliveredCode: number | undefined;
       let deliveredLog: string | undefined;
@@ -415,9 +403,14 @@ export function useCreateOrderbook({
         }
         if (verification.orderbookExists) {
           // Someone else already created this pair: the goal state is
-          // reached, so abort the broadcast and settle as success.
+          // reached, so abort the broadcast and settle as success. The
+          // no-broadcast event class skips the account store's global
+          // onBroadcastFailed handlers, so the user does not see a spurious
+          // failed-transaction toast for an intentional abort.
           existsDiscoveredPreBroadcast = true;
-          throw new Error("Orderbook already exists for this pair");
+          throw new AccountStoreNoBroadcastErrorEvent(
+            "Orderbook already exists for this pair"
+          );
         }
       };
 
@@ -455,21 +448,25 @@ export function useCreateOrderbook({
           undefined,
           {
             onSign: async () => {
-              // The wallet approval window is unbounded, so the early check
-              // can be arbitrarily stale by the time the user approves.
-              // Re-verify after approval, immediately before broadcast; a
-              // throw here discards the signed tx without broadcasting it.
+              // The wallet approval window is unbounded and the endpoint
+              // probe adds seconds more, so the early check can be
+              // arbitrarily stale. This callback runs immediately before the
+              // broadcast POST (nothing else awaits between them); a throw
+              // here discards the signed tx without broadcasting it.
               await assertPairStillAbsent();
             },
             onBroadcasted: (txHash) => {
               // CheckTx accepted: the tx is in the mempool and may land even
               // if everything after this point (tracing, refetches) fails, so
               // from here the mark must survive a rejection of the overall
-              // flow. The hash is persisted for reconciliation/debugging.
+              // flow. The hash is persisted so any later confirm can
+              // reconcile delivery against the node before the pair is
+              // released.
               broadcastAccepted = true;
+              broadcastedTxHash = Buffer.from(txHash).toString("hex");
               markOrderbookJustCreated(baseDenom, quoteDenom, "broadcasted", {
                 owner: attemptOwner,
-                txHash: Buffer.from(txHash).toString("hex"),
+                txHash: broadcastedTxHash,
               });
             },
             onFulfill: async (tx) => {
@@ -519,21 +516,42 @@ export function useCreateOrderbook({
         } else if (broadcastAccepted) {
           // Accepted but delivery unknown (tx tracing failed): the tx can
           // still land, so the mark must NOT be released or a retry could
-          // broadcast a duplicate paid creation. Reconcile against the chain
-          // first; if the pool is already visible, the creation in fact
-          // succeeded.
-          try {
-            const exists = await refreshOrderbookCaches();
-            if (exists) {
-              markOrderbookJustCreated(baseDenom, quoteDenom, "created", {
-                owner: attemptOwner,
-              });
-              return;
+          // broadcast a duplicate paid creation. Reconcile by tx hash against
+          // the node first (authoritative for delivery), then fall back to
+          // the SQS pool list.
+          const outcome = broadcastedTxHash
+            ? await fetchBroadcastedTxOutcome(broadcastedTxHash)
+            : "unknown";
+          if (outcome === "delivered") {
+            markOrderbookJustCreated(baseDenom, quoteDenom, "created", {
+              owner: attemptOwner,
+            });
+            try {
+              await refreshOrderbookCaches();
+            } catch {
+              // Best-effort; caches heal on their normal cadence.
             }
-          } catch {
-            // Keep the "broadcasted" mark; it self-expires well after any
-            // plausible inclusion window, and the pre-broadcast checks of a
-            // later attempt backstop the expiry.
+            return;
+          }
+          if (outcome === "failed") {
+            clearJustCreatedOrderbookIfOwned(
+              baseDenom,
+              quoteDenom,
+              attemptOwner
+            );
+          } else {
+            try {
+              const exists = await refreshOrderbookCaches();
+              if (exists) {
+                markOrderbookJustCreated(baseDenom, quoteDenom, "created", {
+                  owner: attemptOwner,
+                });
+                return;
+              }
+            } catch {
+              // Keep the "broadcasted" mark: delivery is unproven, and later
+              // confirms reconcile the persisted hash before releasing it.
+            }
           }
         } else {
           // Nothing was accepted by the chain (verification fail-closed,
@@ -543,12 +561,64 @@ export function useCreateOrderbook({
           clearJustCreatedOrderbookIfOwned(baseDenom, quoteDenom, attemptOwner);
         }
         console.error("Error creating orderbook pool", e);
+        throw e;
+      } finally {
+        clearInterval(pendingHeartbeat);
+      }
+    };
+
+    const runAttempt = async () => {
+      setIsCreating(true);
+      setError(undefined);
+      try {
+        let entry = readJustCreatedEntry(
+          orderbookPairKey(baseDenom, quoteDenom)
+        );
+
+        // A broadcast-accepted attempt whose delivery was never observed:
+        // reconcile by tx hash against the node before deciding anything.
+        if (entry?.s === "broadcasted" && entry.h) {
+          const outcome = await fetchBroadcastedTxOutcome(entry.h);
+          if (outcome === "delivered") {
+            await settleAsAlreadyCreated();
+            return;
+          }
+          if (outcome === "failed") {
+            // Provably failed onchain: no pool exists, release the pair and
+            // continue into a fresh creation attempt.
+            clearJustCreatedOrderbook(baseDenom, quoteDenom);
+            entry = undefined;
+          }
+          // "unknown": delivery unproven, fall through to the gate below.
+        }
+
+        // The registry holds the pair: either a delivered creation whose
+        // caches are still catching up, or an in-flight/unproven broadcast
+        // (this tab or another). Broadcasting again would create a duplicate
+        // pool and charge another creation fee, so a re-confirm becomes a
+        // cache-refresh retry instead.
+        if (entry) {
+          const exists = await refreshOrderbookCaches();
+          // A delivered ("created") mark proves the pool exists onchain, so
+          // the refresh-only confirm is a success even if the sidecar still
+          // lags. A "pending" or "broadcasted" mark proves nothing was
+          // delivered yet: reporting success would close the modal on a pool
+          // that may never exist (e.g. the marking tab closed mid-signing).
+          // Reject instead; those marks self-expire, after which a re-confirm
+          // broadcasts.
+          if (entry.s !== "created" && !exists) {
+            throw new Error(t("errors.uhOhSomethingWentWrong"));
+          }
+          return;
+        }
+
+        await broadcastCreation();
+      } catch (e) {
         const message =
           e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
         setError(message);
         throw e;
       } finally {
-        clearInterval(pendingHeartbeat);
         setIsCreating(false);
       }
     };
@@ -574,6 +644,7 @@ export function useCreateOrderbook({
     quoteDenom,
     accountStore,
     apiUtils,
+    fetchBroadcastedTxOutcome,
     refreshOrderbookCaches,
     settleAsAlreadyCreated,
     t,

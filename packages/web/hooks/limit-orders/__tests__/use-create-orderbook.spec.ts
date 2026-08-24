@@ -4,6 +4,7 @@ import { act, renderHook } from "@testing-library/react";
 import {
   __resetJustCreatedOrderbooksForTesting,
   useCreateOrderbook,
+  wasOrderbookJustCreated,
 } from "../use-create-orderbook";
 
 // ---------------------------------------------------------------------------
@@ -13,6 +14,7 @@ import {
 const mockInvalidateGetPools = jest.fn().mockResolvedValue(undefined);
 const mockInvalidateVerify = jest.fn().mockResolvedValue(undefined);
 const mockFetchVerify = jest.fn();
+const mockFetchTxStatus = jest.fn();
 const mockSignAndBroadcast = jest.fn();
 
 // Matches the real verifyOrderbookCreation response shape.
@@ -40,6 +42,9 @@ jest.mock("~/utils/trpc", () => ({
           verifyOrderbookCreation: {
             invalidate: mockInvalidateVerify,
             fetch: mockFetchVerify,
+          },
+          getCreateOrderbookTxStatus: {
+            fetch: mockFetchTxStatus,
           },
         },
       },
@@ -130,6 +135,9 @@ describe("useCreateOrderbook", () => {
       .mockResolvedValueOnce(PAIR_ABSENT)
       .mockResolvedValueOnce(PAIR_ABSENT)
       .mockResolvedValue(PAIR_PRESENT);
+    // A broadcast-accepted tx's node lookup defaults to notFound (delivery
+    // unproven), the direction that keeps duplicate protection.
+    mockFetchTxStatus.mockReset().mockResolvedValue({ status: "notFound" });
   });
 
   describe("createOrderbook — instantiate message", () => {
@@ -459,13 +467,13 @@ describe("useCreateOrderbook", () => {
 
       // Another attempt's delivered success lands while ours awaits delivery.
       window.localStorage.setItem(
-        "just-created-orderbooks",
+        `just-created-orderbook:${JSON.stringify(
+          [BASE_DENOM, QUOTE_DENOM].sort()
+        )}`,
         JSON.stringify({
-          [JSON.stringify([BASE_DENOM, QUOTE_DENOM].sort())]: {
-            t: Date.now(),
-            s: "created",
-            o: "another-attempt",
-          },
+          t: Date.now(),
+          s: "created",
+          o: "another-attempt",
         })
       );
 
@@ -480,6 +488,92 @@ describe("useCreateOrderbook", () => {
       });
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
     }, 20_000); // the all-absent refresh loop sleeps between retry attempts
+
+    it("keeps per-pair marks independent (no cross-pair lost updates)", async () => {
+      mockBroadcastSuccess();
+
+      const first = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await first.result.current.createOrderbook();
+      });
+
+      // A second pair's full creation must not clobber the first pair's
+      // protection (each pair persists under its own storage key).
+      mockFetchVerify
+        .mockReset()
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValue(PAIR_PRESENT);
+      const second = renderHook(() =>
+        useCreateOrderbook({ baseDenom: "uosmo", quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await second.result.current.createOrderbook();
+      });
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+      expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(true);
+      expect(wasOrderbookJustCreated("uosmo", QUOTE_DENOM)).toBe(true);
+    });
+  });
+
+  describe("createOrderbook — broadcasted-mark reconciliation by tx hash", () => {
+    const writeBroadcastedEntry = () =>
+      window.localStorage.setItem(
+        `just-created-orderbook:${JSON.stringify(
+          [BASE_DENOM, QUOTE_DENOM].sort()
+        )}`,
+        JSON.stringify({
+          t: Date.now(),
+          s: "broadcasted",
+          o: "another-attempt",
+          h: "abcd",
+        })
+      );
+
+    it("settles as success when the node shows the broadcasted tx delivered", async () => {
+      // A prior attempt broadcast and its tab died before observing delivery.
+      // The node's tx endpoint (not the possibly-lagging SQS list) proves the
+      // pool exists, so a confirm resolves without another paid broadcast.
+      writeBroadcastedEntry();
+      mockFetchTxStatus.mockReset().mockResolvedValue({ status: "delivered" });
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_PRESENT);
+      mockBroadcastSuccess();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+
+      expect(mockFetchTxStatus).toHaveBeenCalledWith({ txHash: "abcd" });
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
+      expect(result.current.error).toBeUndefined();
+    });
+
+    it("releases a provably failed tx and proceeds to a fresh creation", async () => {
+      // The node shows the prior broadcast delivered with a non-zero code:
+      // no pool exists, so the pair is released and this confirm creates.
+      writeBroadcastedEntry();
+      mockFetchTxStatus
+        .mockReset()
+        .mockResolvedValue({ status: "failed", code: 5, rawLog: "out of gas" });
+      mockBroadcastSuccess();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+      expect(result.current.error).toBeUndefined();
+    });
   });
 
   describe("createOrderbook — error path", () => {

@@ -11,6 +11,7 @@ import {
   MappedLimitOrder,
   maybeCachePaginatedItems,
   OrderStatus,
+  queryTx,
 } from "@osmosis-labs/server";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -271,5 +272,33 @@ export const orderbookRouter = createTRPCRouter({
       );
 
       return { orderbookExists, endpointFunctional };
+    }),
+  /**
+   * Delivery status of a broadcast-accepted orderbook-creation tx, straight
+   * from the node (`/cosmos/tx/v1beta1/txs/{hash}`) rather than the
+   * SQS-derived pool list, which can lag indexing. Used to reconcile a
+   * creation whose tx tracing failed before releasing the pair for another
+   * paid attempt. Any lookup failure reports "notFound" — the safe direction,
+   * since callers keep their duplicate protection while the tx is unproven.
+   */
+  getCreateOrderbookTxStatus: publicProcedure
+    .input(z.object({ txHash: z.string() }))
+    .query(async ({ input, ctx }) => {
+      try {
+        const tx = await queryTx({
+          chainList: ctx.chainList,
+          txHash: input.txHash,
+        });
+        const code = tx.tx_response?.code ?? 0;
+        return code === 0
+          ? { status: "delivered" as const }
+          : {
+              status: "failed" as const,
+              code,
+              rawLog: tx.tx_response?.raw_log,
+            };
+      } catch {
+        return { status: "notFound" as const };
+      }
     }),
 });
