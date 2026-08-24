@@ -537,7 +537,9 @@ const CreatableQuoteItem = observer(
   ({
     base,
     baseSymbol,
+    baseDecimals,
     coinMinimalDenom,
+    quoteDecimals,
     logoURIs,
     name,
     symbol,
@@ -546,7 +548,9 @@ const CreatableQuoteItem = observer(
   }: {
     base: string;
     baseSymbol?: string;
+    baseDecimals?: number;
     coinMinimalDenom: string;
+    quoteDecimals?: number;
     logoURIs?: Asset["logoURIs"];
     name: string;
     symbol: string;
@@ -561,15 +565,10 @@ const CreatableQuoteItem = observer(
         quoteDenom: coinMinimalDenom,
       });
 
-    const { data: baseAssetData } = api.edge.assets.getUserAsset.useQuery({
-      findMinDenomOrSymbol: base,
-    });
-    const { data: quoteAssetData } = api.edge.assets.getUserAsset.useQuery({
-      findMinDenomOrSymbol: coinMinimalDenom,
-    });
-
-    const is18DecimalBase =
-      baseAssetData?.coinDecimals === 18 && quoteAssetData?.coinDecimals === 6;
+    // Decimals come from the parent's already-loaded asset data: one such row
+    // renders per non-selectable quote, so per-row asset queries here would
+    // multiply into a request burst every time the dropdown opens.
+    const is18DecimalBase = baseDecimals === 18 && quoteDecimals === 6;
 
     const { data: basePrice, isLoading: isBasePriceLoading } =
       api.edge.assets.getAssetPrice.useQuery(
@@ -603,61 +602,72 @@ const CreatableQuoteItem = observer(
       !wasOrderbookJustCreated(base, coinMinimalDenom);
 
     return (
-      <button
-        type="button"
-        onClick={() => {
-          if (canCreate) onOpenCreate();
-        }}
-        className={classNames(
-          // Greyed in both states, matching the Limit tab's create
-          // affordance: dimmed like an unavailable row, clickable only when
-          // creation is possible.
-          "flex items-center justify-between rounded-lg py-2 px-3 opacity-50 transition-colors",
-          {
-            "pointer-events-none": !canCreate,
-            "cursor-pointer": canCreate,
-          }
+      // A Menu.Item (not a bare button) so Headless UI includes the row in
+      // its roving keyboard focus list: without it, arrow-key users could
+      // never reach the create affordance.
+      <Menu.Item disabled={!canCreate}>
+        {({ active }) => (
+          <button
+            type="button"
+            onClick={() => {
+              if (canCreate) onOpenCreate();
+            }}
+            className={classNames(
+              // Greyed in both states, matching the Limit tab's create
+              // affordance: dimmed like an unavailable row, clickable only when
+              // creation is possible.
+              "flex items-center justify-between rounded-lg py-2 px-3 opacity-50 transition-colors",
+              {
+                "pointer-events-none": !canCreate,
+                "cursor-pointer": canCreate,
+                "bg-osmoverse-600": active && canCreate,
+              }
+            )}
+            disabled={!canCreate}
+          >
+            <div className="flex items-center gap-3">
+              <EntityImage
+                width={40}
+                height={40}
+                logoURIs={logoURIs}
+                name={name}
+                symbol={symbol}
+                className="h-10 w-10"
+              />
+              <div className="flex flex-col gap-1 text-left">
+                <p>{name}</p>
+                <small className="text-sm leading-5 text-osmoverse-300">
+                  {symbol}
+                </small>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex w-[80px] items-end gap-3">
+                <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+                  <span className="body2 font-light">
+                    {canCreate
+                      ? t("limitOrders.clickToCreateOrderbook")
+                      : t("limitOrders.unavailable", {
+                          denom: baseSymbol ?? base,
+                        })}
+                  </span>
+                </p>
+              </div>
+              <Icon
+                id="check-mark"
+                width={16}
+                height={16}
+                className={classNames(
+                  "text-white h-[16px] w-[16px] rounded-full",
+                  {
+                    "opacity-0": !isSelected,
+                  }
+                )}
+              />
+            </div>
+          </button>
         )}
-        disabled={!canCreate}
-      >
-        <div className="flex items-center gap-3">
-          <EntityImage
-            width={40}
-            height={40}
-            logoURIs={logoURIs}
-            name={name}
-            symbol={symbol}
-            className="h-10 w-10"
-          />
-          <div className="flex flex-col gap-1 text-left">
-            <p>{name}</p>
-            <small className="text-sm leading-5 text-osmoverse-300">
-              {symbol}
-            </small>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex w-[80px] items-end gap-3">
-            <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-              <span className="body2 font-light">
-                {canCreate
-                  ? t("limitOrders.clickToCreateOrderbook")
-                  : t("limitOrders.unavailable", {
-                      denom: baseSymbol ?? base,
-                    })}
-              </span>
-            </p>
-          </div>
-          <Icon
-            id="check-mark"
-            width={16}
-            height={16}
-            className={classNames("text-white h-[16px] w-[16px] rounded-full", {
-              "opacity-0": !isSelected,
-            })}
-          />
-        </div>
-      </button>
+      </Menu.Item>
     );
   }
 );
@@ -698,7 +708,7 @@ const SelectableQuotes = observer(
     );
 
     return selectableQuotes.map(
-      ({ name, logoURIs, symbol, coinMinimalDenom }) => {
+      ({ name, logoURIs, symbol, coinMinimalDenom, decimals }) => {
         const isSelected = quote === coinMinimalDenom;
         const availableBalance =
           userQuotes &&
@@ -718,7 +728,9 @@ const SelectableQuotes = observer(
               key={name}
               base={base}
               baseSymbol={baseAsset?.symbol}
+              baseDecimals={baseAsset?.decimals}
               coinMinimalDenom={coinMinimalDenom}
+              quoteDecimals={decimals}
               logoURIs={logoURIs}
               name={name}
               symbol={symbol}

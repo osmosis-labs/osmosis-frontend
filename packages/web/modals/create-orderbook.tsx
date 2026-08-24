@@ -85,11 +85,15 @@ export const CreateOrderbookModal: FunctionComponent<
         <div className="rounded-xl bg-gradient-negative p-[2px]">
           <div className="flex items-center gap-3 rounded-xlinset bg-osmoverse-800 p-3.5">
             <Checkbox
+              id="acknowledge-orderbook-fee"
               variant="destructive"
               checked={acknowledgeFee}
               onClick={() => onAcknowledgeFee(!acknowledgeFee)}
             />
-            <label className="body2 cursor-pointer text-osmoverse-200">
+            <label
+              htmlFor="acknowledge-orderbook-fee"
+              className="body2 cursor-pointer text-osmoverse-200"
+            >
               {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
             </label>
           </div>

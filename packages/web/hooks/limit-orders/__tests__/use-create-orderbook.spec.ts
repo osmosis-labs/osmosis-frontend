@@ -1,7 +1,10 @@
 import { OrderbookPoolCodeIds } from "@osmosis-labs/server";
 import { act, renderHook } from "@testing-library/react";
 
-import { useCreateOrderbook } from "../use-create-orderbook";
+import {
+  __resetJustCreatedOrderbooksForTesting,
+  useCreateOrderbook,
+} from "../use-create-orderbook";
 
 // ---------------------------------------------------------------------------
 // Module mocks
@@ -9,14 +12,12 @@ import { useCreateOrderbook } from "../use-create-orderbook";
 
 const mockInvalidateGetPools = jest.fn().mockResolvedValue(undefined);
 const mockInvalidateVerify = jest.fn().mockResolvedValue(undefined);
-// Matches the real verifyOrderbookCreation response shape; orderbookExists
-// true so the post-create refresh's sidecar-catch-up retry loop exits on the
-// first attempt.
-const mockFetchVerify = jest.fn().mockResolvedValue({
-  orderbookExists: true,
-  endpointFunctional: true,
-});
+const mockFetchVerify = jest.fn();
 const mockSignAndBroadcast = jest.fn();
+
+// Matches the real verifyOrderbookCreation response shape.
+const PAIR_ABSENT = { orderbookExists: false, endpointFunctional: true };
+const PAIR_PRESENT = { orderbookExists: true, endpointFunctional: true };
 
 let mockWalletAddress: string | undefined = "osmo1testaddress";
 
@@ -73,7 +74,12 @@ const BASE_DENOM = "uatom";
 const QUOTE_DENOM =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 
-/** Capture the msg passed to signAndBroadcast and resolve the tx callback with success. */
+type OnTxEvents = {
+  onBroadcasted?: (txHash: Uint8Array) => void;
+  onFulfill?: (tx: { code: number; rawLog?: string }) => Promise<void> | void;
+};
+
+/** Capture the msg passed to signAndBroadcast and resolve the tx lifecycle with success. */
 function mockBroadcastSuccess() {
   mockSignAndBroadcast.mockImplementation(
     async (
@@ -83,9 +89,10 @@ function mockBroadcastSuccess() {
       _memo: unknown,
       _fee: unknown,
       _signOpts: unknown,
-      onFulfill: (tx: { code: number }) => Promise<void>
+      onTxEvents: OnTxEvents
     ) => {
-      await onFulfill({ code: 0 });
+      onTxEvents.onBroadcasted?.(new Uint8Array());
+      await onTxEvents.onFulfill?.({ code: 0 });
     }
   );
 }
@@ -94,6 +101,9 @@ function mockBroadcastFailure(error: Error) {
   mockSignAndBroadcast.mockRejectedValue(error);
 }
 
+/** Drain the pre-broadcast await chain (preflight fetch, codec load). */
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -101,10 +111,20 @@ function mockBroadcastFailure(error: Error) {
 describe("useCreateOrderbook", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // The just-created registry persists to localStorage (so a page reload
-    // can't re-offer a paid creation); clear it or the duplicate-broadcast
-    // gate short-circuits every test after the first success.
+    // The just-created registry persists to localStorage AND an in-memory
+    // mirror (so a page reload or a storage-denied browser can't re-offer a
+    // paid creation); clear both or the duplicate-broadcast gate
+    // short-circuits every test after the first success.
     window.localStorage.clear();
+    __resetJustCreatedOrderbooksForTesting();
+    // Default verify sequencing: the pre-broadcast preflight sees the pair as
+    // absent (so creation proceeds), and every later fresh read (the
+    // post-create refresh's sidecar-catch-up loop) sees it present so the
+    // retry loop exits on the first attempt.
+    mockFetchVerify
+      .mockReset()
+      .mockResolvedValueOnce(PAIR_ABSENT)
+      .mockResolvedValue(PAIR_PRESENT);
   });
 
   describe("createOrderbook — instantiate message", () => {
@@ -211,6 +231,89 @@ describe("useCreateOrderbook", () => {
     });
   });
 
+  describe("createOrderbook — pre-broadcast verification", () => {
+    it("resolves without broadcasting when the pair already exists at confirmation", async () => {
+      // Another user created the pair since the UI's cached verification was
+      // populated; the fresh preflight must catch it instead of broadcasting
+      // a duplicate paid creation.
+      mockBroadcastSuccess();
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_PRESENT);
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      // The goal state (orderbook exists) is reached, so this is a success.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+      // Client caches refresh so the existing orderbook becomes visible.
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
+
+      // The pair is marked, so a re-confirm stays broadcast-free too.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+    });
+
+    it("fails closed when the preflight verification cannot complete", async () => {
+      mockBroadcastSuccess();
+      mockFetchVerify
+        .mockReset()
+        .mockRejectedValueOnce(new Error("sidecar down"));
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      let thrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+
+      expect(thrown).toBeInstanceOf(Error);
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+      expect(result.current.error).toBeDefined();
+
+      // The failed attempt released its in-flight mark: once verification
+      // recovers, a retry broadcasts normally.
+      mockFetchVerify
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValue(PAIR_PRESENT);
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
+    it("fails closed when the orderbook endpoint is not functional", async () => {
+      mockBroadcastSuccess();
+      mockFetchVerify.mockReset().mockResolvedValue({
+        orderbookExists: false,
+        endpointFunctional: false,
+      });
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      let thrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+
+      expect(thrown).toBeInstanceOf(Error);
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+    });
+  });
+
   describe("createOrderbook — error path", () => {
     it("re-throws so callers can detect failure", async () => {
       mockBroadcastFailure(new Error("broadcast failed"));
@@ -258,6 +361,8 @@ describe("useCreateOrderbook", () => {
 
   describe("createOrderbook — delivered tx failure", () => {
     it("rejects with the raw log when the delivered tx has a non-zero code", async () => {
+      // Both attempts below must preflight through an absent pair.
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
       mockSignAndBroadcast.mockImplementation(
         async (
           _chainId: string,
@@ -266,9 +371,10 @@ describe("useCreateOrderbook", () => {
           _memo: unknown,
           _fee: unknown,
           _signOpts: unknown,
-          onFulfill: (tx: { code: number; rawLog?: string }) => Promise<void>
+          onTxEvents: OnTxEvents
         ) => {
-          await onFulfill({ code: 5, rawLog: "out of gas" });
+          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onFulfill?.({ code: 5, rawLog: "out of gas" });
         }
       );
 
@@ -287,11 +393,120 @@ describe("useCreateOrderbook", () => {
       expect(thrown).toBeInstanceOf(Error);
       expect((thrown as Error).message).toContain("out of gas");
 
-      // A failed delivery must not arm the duplicate-broadcast gate.
+      // A failed delivery must not arm the duplicate-broadcast gate, even
+      // though the tx was broadcast-accepted before it failed.
       await act(async () => {
         await result.current.createOrderbook().catch(() => {});
       });
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("createOrderbook — broadcast accepted, delivery unknown", () => {
+    it("resolves as success when tracing fails but the pool is already visible", async () => {
+      // CheckTx accepted, then the tx tracer fails: signAndBroadcast rejects
+      // even though the tx landed. The reconcile verify sees the pool, so the
+      // flow is a success and the pair is marked created.
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          onTxEvents.onBroadcasted?.(new Uint8Array());
+          throw new Error("tx tracing failed");
+        }
+      );
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(result.current.error).toBeUndefined();
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+
+      // Marked created: a re-confirm is refresh-only.
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the duplicate gate when tracing fails and the pool is not yet visible", async () => {
+      // CheckTx accepted, tracer fails, and the sidecar has not (yet) seen
+      // the pool. The tx can still land, so the mark must survive the error
+      // and a re-confirm must NOT broadcast a second paid creation.
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          onTxEvents.onBroadcasted?.(new Uint8Array());
+          throw new Error("tx tracing failed");
+        }
+      );
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      let thrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
+      });
+      expect(thrown).toBeInstanceOf(Error);
+
+      // The re-confirm hits the "broadcasted" mark: refresh-only, and since
+      // the pool still is not visible it rejects rather than re-broadcasting.
+      let rethrown: unknown;
+      await act(async () => {
+        await result.current.createOrderbook().catch((e) => {
+          rethrown = e;
+        });
+      });
+      expect(rethrown).toBeInstanceOf(Error);
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    }, 30_000); // both the reconcile and the refresh-only retry loops sleep between attempts
+
+    it("still invalidates caches via the reconcile after a trace failure", async () => {
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          onTxEvents.onBroadcasted?.(new Uint8Array());
+          throw new Error("tx tracing failed");
+        }
+      );
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -313,7 +528,8 @@ describe("useCreateOrderbook", () => {
         await result.current.createOrderbook();
       });
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
-      expect(mockFetchVerify).toHaveBeenCalledTimes(2);
+      // preflight + post-create refresh + re-confirm refresh
+      expect(mockFetchVerify).toHaveBeenCalledTimes(3);
     });
 
     it("gates the reversed orientation of a just-created pair", async () => {
@@ -339,21 +555,32 @@ describe("useCreateOrderbook", () => {
     });
 
     it("rejects a refresh-only confirm while a pending pair has not landed", async () => {
-      // Arm an in-flight ("pending") mark: a broadcast that never settles.
-      mockSignAndBroadcast.mockReturnValue(new Promise(() => {}));
+      // Arm an in-flight ("pending") mark: a broadcast that stays open, as if
+      // the wallet approval prompt were sitting unanswered.
+      let rejectBroadcast!: (e: Error) => void;
+      mockSignAndBroadcast.mockReturnValue(
+        new Promise((_resolve, reject) => {
+          rejectBroadcast = reject;
+        })
+      );
+      // The first attempt's preflight and the second attempt's refresh-only
+      // retries must all see the pair as absent.
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+
       const first = renderHook(() =>
         useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
       );
-      act(() => {
-        void first.result.current.createOrderbook();
+      let firstAttempt!: Promise<unknown>;
+      await act(async () => {
+        firstAttempt = first.result.current.createOrderbook().catch(() => {});
+        // Drain the preflight/codec chain so the pending mark is armed and
+        // the (hanging) broadcast has been issued.
+        await flushAsync();
       });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
 
       // A concurrent confirm sees the pending mark; the pool never appears,
       // so the refresh-only path must reject rather than report success.
-      mockFetchVerify.mockResolvedValue({
-        orderbookExists: false,
-        endpointFunctional: true,
-      });
       const second = renderHook(() =>
         useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
       );
@@ -368,15 +595,18 @@ describe("useCreateOrderbook", () => {
       // Only the first (hanging) broadcast was ever sent.
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
 
-      // Restore the default for subsequent tests.
-      mockFetchVerify.mockResolvedValue({
-        orderbookExists: true,
-        endpointFunctional: true,
+      // Settle the hanging broadcast so the attempt's heartbeat interval is
+      // cleared and nothing leaks into later tests.
+      await act(async () => {
+        rejectBroadcast(new Error("aborted"));
+        await firstAttempt;
       });
-    }, 15_000); // the not-found refresh path sleeps between its retry attempts
+    }, 20_000); // the not-found refresh path sleeps between its retry attempts
 
     it("resolves the flow even when the post-create cache refresh fails", async () => {
       mockBroadcastSuccess();
+      // Queue after the beforeEach preflight entry: the post-create refresh's
+      // first fresh read fails.
       mockFetchVerify.mockRejectedValueOnce(new Error("network down"));
 
       const { result } = renderHook(() =>
@@ -393,6 +623,36 @@ describe("useCreateOrderbook", () => {
         await result.current.createOrderbook();
       });
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps gating duplicates when localStorage writes are denied", async () => {
+      // Privacy mode / quota: persistence is unavailable, so protection
+      // degrades to the in-memory mirror — but must not disappear.
+      const setItemSpy = jest
+        .spyOn(Storage.prototype, "setItem")
+        .mockImplementation(() => {
+          throw new Error("quota exceeded");
+        });
+      try {
+        mockBroadcastSuccess();
+
+        const { result } = renderHook(() =>
+          useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+        );
+
+        await act(async () => {
+          await result.current.createOrderbook();
+        });
+        expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+
+        // The in-memory registry alone gates the re-confirm.
+        await act(async () => {
+          await result.current.createOrderbook();
+        });
+        expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+      } finally {
+        setItemSpy.mockRestore();
+      }
     });
   });
 
@@ -415,6 +675,9 @@ describe("useCreateOrderbook", () => {
 
       expect(thrown).toBeInstanceOf(Error);
       expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+      // The guard also surfaces a user-facing error so the confirm modal
+      // never sits open with no explanation.
+      expect(result.current.error).toBeDefined();
       mockWalletAddress = "osmo1testaddress";
     });
   });
