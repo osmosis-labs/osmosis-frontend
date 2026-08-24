@@ -39,18 +39,37 @@ const PENDING_HEARTBEAT_MS = 1000 * 45;
 /**
  * A broadcast-accepted tx normally delivers within a block, but when tx
  * tracing fails delivery is unknown, so the mark outlives any plausible
- * inclusion window before re-arming creation. The pre-broadcast fresh
- * existence check backstops the expiry: by then a landed tx is visible to it.
+ * inclusion window before re-arming creation. The entry carries the tx hash
+ * for reconciliation/debugging, and the fail-closed existence checks (before
+ * the wallet prompt AND after approval, immediately before broadcast)
+ * backstop the expiry: a landed tx is visible to them by then.
  */
 const BROADCASTED_TTL_MS = 1000 * 60 * 10;
 
 type JustCreatedStatus = "pending" | "broadcasted" | "created";
-type JustCreatedEntry = { t: number; s: JustCreatedStatus };
+type JustCreatedEntry = {
+  t: number;
+  s: JustCreatedStatus;
+  /** Attempt owner id: only the attempt that wrote a pending/broadcasted
+   *  entry may roll it back, so a failed concurrent attempt can never strip
+   *  another attempt's protection. */
+  o?: string;
+  /** Tx hash (hex) once broadcast-accepted, for reconciliation/debugging. */
+  h?: string;
+};
 
 const TTL_BY_STATUS: Record<JustCreatedStatus, number> = {
   pending: PENDING_TTL_MS,
   broadcasted: BROADCASTED_TTL_MS,
   created: CREATED_TTL_MS,
+};
+
+/** created > broadcasted > pending: transitions must be monotonic across
+ *  attempts, so a weaker write can never downgrade a stronger entry. */
+const STATUS_RANK: Record<JustCreatedStatus, number> = {
+  pending: 0,
+  broadcasted: 1,
+  created: 2,
 };
 
 // Denoms themselves contain "/" (ibc/..., factory/...), so a joined string is
@@ -143,14 +162,46 @@ function getJustCreatedStatus(
 function markOrderbookJustCreated(
   baseDenom: string,
   quoteDenom: string,
-  status: JustCreatedStatus
+  status: JustCreatedStatus,
+  opts?: { owner?: string; txHash?: string }
 ) {
   const entries = readJustCreatedOrderbooks();
-  entries[orderbookPairKey(baseDenom, quoteDenom)] = {
+  const key = orderbookPairKey(baseDenom, quoteDenom);
+  const existing = entries[key];
+  // Monotonic across attempts: never downgrade another attempt's stronger
+  // entry (e.g. a concurrent attempt's "created" must not be overwritten by
+  // this attempt's "pending"). An attempt may freely re-stamp its own entry
+  // (heartbeat) and anyone may upgrade.
+  if (
+    existing &&
+    STATUS_RANK[existing.s] > STATUS_RANK[status] &&
+    existing.o !== opts?.owner
+  ) {
+    return;
+  }
+  entries[key] = {
     t: Date.now(),
     s: status,
+    ...(opts?.owner ? { o: opts.owner } : {}),
+    ...(opts?.txHash ? { h: opts.txHash } : {}),
   };
   writeJustCreatedOrderbooks(entries);
+}
+
+/** Roll back an in-flight mark, but only the one this attempt owns: a failed
+ *  attempt must never strip a concurrent attempt's (stronger) protection. */
+function clearJustCreatedOrderbookIfOwned(
+  baseDenom: string,
+  quoteDenom: string,
+  owner: string
+) {
+  const entries = readJustCreatedOrderbooks();
+  const key = orderbookPairKey(baseDenom, quoteDenom);
+  const entry = entries[key];
+  if (entry && entry.o === owner && entry.s !== "created") {
+    delete entries[key];
+    writeJustCreatedOrderbooks(entries);
+  }
 }
 
 /** Call once the canonical pools list reflects the pair, to re-arm resets. */
@@ -164,6 +215,35 @@ export function clearJustCreatedOrderbook(
     delete entries[key];
     writeJustCreatedOrderbooks(entries);
   }
+}
+
+/**
+ * Serialize an attempt per pair across tabs via the Web Locks API where
+ * available (all evergreen browsers). Check-then-mark on the registry is not
+ * atomic across tabs, so without this two tabs could both observe an absent
+ * pair and both broadcast. `ifAvailable` fails fast: a second confirm while
+ * another tab holds the lock (e.g. sitting on its wallet prompt) errors
+ * instead of queueing a duplicate behind it. Falls back to the registry-only
+ * protection when the API is missing.
+ */
+async function withPairCreationLock<T>(
+  pairKey: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const locks = typeof navigator !== "undefined" ? navigator.locks : undefined;
+  if (!locks) return fn();
+  return locks.request(
+    `create-orderbook:${pairKey}`,
+    { ifAvailable: true },
+    async (lock) => {
+      if (!lock) {
+        throw new Error(
+          "An orderbook creation for this pair is already in progress in another tab"
+        );
+      }
+      return fn();
+    }
+  );
 }
 
 /**
@@ -219,6 +299,16 @@ export function useCreateOrderbook({
     return orderbookExists;
   }, [apiUtils, baseDenom, quoteDenom]);
 
+  /** Marks the pair created (someone's tx delivered a pool), refreshes
+   *  consumers, and lets the flow resolve as success. */
+  const settleAsAlreadyCreated = useCallback(async () => {
+    markOrderbookJustCreated(baseDenom, quoteDenom, "created");
+    await Promise.all([
+      apiUtils.edge.orderbooks.getPools.invalidate(),
+      apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
+    ]);
+  }, [apiUtils, baseDenom, quoteDenom]);
+
   const createOrderbook = useCallback(async () => {
     // Precondition violations throw rather than silently resolving: callers
     // treat a resolved createOrderbook as success (close the modal, activate
@@ -240,184 +330,243 @@ export function useCreateOrderbook({
       );
     }
 
-    // The registry holds the pair: either a delivered creation whose caches
-    // are still catching up, or an in-flight broadcast (this tab or another).
-    // Broadcasting again would create a duplicate pool and charge another
-    // creation fee, so a re-confirm becomes a cache-refresh retry instead.
-    const justCreatedStatus = getJustCreatedStatus(baseDenom, quoteDenom);
-    if (justCreatedStatus) {
+    const runAttempt = async () => {
+      // The registry holds the pair: either a delivered creation whose caches
+      // are still catching up, or an in-flight broadcast (this tab or
+      // another). Broadcasting again would create a duplicate pool and charge
+      // another creation fee, so a re-confirm becomes a cache-refresh retry
+      // instead.
+      const justCreatedStatus = getJustCreatedStatus(baseDenom, quoteDenom);
+      if (justCreatedStatus) {
+        setIsCreating(true);
+        setError(undefined);
+        try {
+          const exists = await refreshOrderbookCaches();
+          // A delivered ("created") mark proves the pool exists onchain, so
+          // the refresh-only confirm is a success even if the sidecar still
+          // lags. A "pending" or "broadcasted" mark proves nothing was
+          // delivered yet: reporting success would close the modal on a pool
+          // that may never exist (e.g. the marking tab closed mid-signing).
+          // Reject instead; those marks self-expire, after which a re-confirm
+          // broadcasts.
+          if (justCreatedStatus !== "created" && !exists) {
+            throw new Error(t("errors.uhOhSomethingWentWrong"));
+          }
+        } catch (e) {
+          const message =
+            e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
+          setError(message);
+          throw e;
+        } finally {
+          setIsCreating(false);
+        }
+        return;
+      }
+
       setIsCreating(true);
       setError(undefined);
-      try {
-        const exists = await refreshOrderbookCaches();
-        // A delivered ("created") mark proves the pool exists onchain, so the
-        // refresh-only confirm is a success even if the sidecar still lags.
-        // A "pending" or "broadcasted" mark proves nothing was delivered yet:
-        // reporting success would close the modal on a pool that may never
-        // exist (e.g. the marking tab closed mid-signing). Reject instead;
-        // those marks self-expire, after which a re-confirm broadcasts.
-        if (justCreatedStatus !== "created" && !exists) {
+
+      // This attempt's identity in the registry: only the owner may roll its
+      // in-flight mark back, so a failed concurrent attempt can never strip
+      // protection written by a different (possibly successful) attempt.
+      const attemptOwner = `${Date.now().toString(36)}-${Math.random()
+        .toString(36)
+        .slice(2)}`;
+
+      // Mark the pair before any await so an overlapping confirm (double
+      // click, second tab without Web Locks) hits the just-created gate
+      // instead of broadcasting a second paid creation while this one is in
+      // flight. Upgraded to "broadcasted" on CheckTx acceptance and "created"
+      // on delivery; rolled back below only when the attempt provably did not
+      // and can no longer land.
+      markOrderbookJustCreated(baseDenom, quoteDenom, "pending", {
+        owner: attemptOwner,
+      });
+      // Signing waits on the human, so the wallet prompt can outlive any
+      // fixed pending TTL; keep the mark alive while this attempt is
+      // genuinely still in flight. Only re-stamps "pending" so it can never
+      // downgrade a "broadcasted"/"created" upgrade from the callbacks below.
+      const pendingHeartbeat = setInterval(() => {
+        if (getJustCreatedStatus(baseDenom, quoteDenom) === "pending") {
+          markOrderbookJustCreated(baseDenom, quoteDenom, "pending", {
+            owner: attemptOwner,
+          });
+        }
+      }, PENDING_HEARTBEAT_MS);
+
+      let broadcastAccepted = false;
+      let existsDiscoveredPreBroadcast = false;
+      let deliveredCode: number | undefined;
+      let deliveredLog: string | undefined;
+
+      // Fail-closed fresh existence check, run before the wallet prompt and
+      // again in onSign after approval. Cannot make creation atomic (nothing
+      // onchain enforces pair uniqueness), but bounds the race to roughly a
+      // block of sidecar lag.
+      const assertPairStillAbsent = async () => {
+        const verification =
+          await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
+            baseDenom,
+            quoteDenom,
+            fresh: true,
+          });
+        if (!verification.endpointFunctional) {
           throw new Error(t("errors.uhOhSomethingWentWrong"));
         }
+        if (verification.orderbookExists) {
+          // Someone else already created this pair: the goal state is
+          // reached, so abort the broadcast and settle as success.
+          existsDiscoveredPreBroadcast = true;
+          throw new Error("Orderbook already exists for this pair");
+        }
+      };
+
+      try {
+        // Early check: avoids pointlessly prompting the wallet when the UI's
+        // (LRU-cached, up to 1h stale) gating missed a recent creation.
+        await assertPairStillAbsent();
+
+        const osmosis = await getOsmosisCodec();
+
+        const instantiateMsgBytes = new TextEncoder().encode(
+          JSON.stringify({
+            base_denom: baseDenom,
+            quote_denom: quoteDenom,
+          })
+        );
+
+        const msg = {
+          typeUrl: "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool",
+          value: osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool.fromPartial(
+            {
+              codeId: BigInt(OrderbookPoolCodeIds[0]),
+              instantiateMsg: instantiateMsgBytes,
+              sender: account.address,
+            }
+          ),
+        };
+
+        await accountStore.signAndBroadcast(
+          accountStore.osmosisChainId,
+          "createOrderbook",
+          [msg],
+          undefined,
+          undefined,
+          undefined,
+          {
+            onSign: async () => {
+              // The wallet approval window is unbounded, so the early check
+              // can be arbitrarily stale by the time the user approves.
+              // Re-verify after approval, immediately before broadcast; a
+              // throw here discards the signed tx without broadcasting it.
+              await assertPairStillAbsent();
+            },
+            onBroadcasted: (txHash) => {
+              // CheckTx accepted: the tx is in the mempool and may land even
+              // if everything after this point (tracing, refetches) fails, so
+              // from here the mark must survive a rejection of the overall
+              // flow. The hash is persisted for reconciliation/debugging.
+              broadcastAccepted = true;
+              markOrderbookJustCreated(baseDenom, quoteDenom, "broadcasted", {
+                owner: attemptOwner,
+                txHash: Buffer.from(txHash).toString("hex"),
+              });
+            },
+            onFulfill: async (tx) => {
+              deliveredCode = tx.code;
+              deliveredLog = tx.rawLog;
+              if (!tx.code) {
+                // Delivery is final: upgrade the in-flight mark so re-confirms
+                // and reloads treat the pair as provably created.
+                markOrderbookJustCreated(baseDenom, quoteDenom, "created", {
+                  owner: attemptOwner,
+                });
+                // The refresh is best-effort: the creation itself succeeded,
+                // so a refetch failure must not reject the flow (callers
+                // would show an error and leave the confirm re-armed for a
+                // duplicate paid tx).
+                try {
+                  await refreshOrderbookCaches();
+                } catch (refreshError) {
+                  console.error(
+                    "Orderbook cache refresh failed after creation; caches will heal on their normal cadence",
+                    refreshError
+                  );
+                }
+              }
+            },
+          }
+        );
+        // signAndBroadcast throws on broadcast (CheckTx) rejection but
+        // resolves on a delivered-but-failed tx (non-zero code), so surface
+        // that here or callers would treat the failed creation as success.
+        if (deliveredCode) {
+          throw new Error(deliveredLog || t("errors.uhOhSomethingWentWrong"));
+        }
       } catch (e) {
+        if (existsDiscoveredPreBroadcast) {
+          // The pair exists onchain (created by someone else while this
+          // attempt was underway): the goal state is reached without
+          // spending a creation fee, so settle as success.
+          await settleAsAlreadyCreated();
+          return;
+        }
+        if (deliveredCode) {
+          // Delivery is known and failed: this attempt created no pool, so
+          // release the pair for a retry. Owner-scoped: a concurrent
+          // attempt's stronger entry (e.g. its delivered "created") stays.
+          clearJustCreatedOrderbookIfOwned(baseDenom, quoteDenom, attemptOwner);
+        } else if (broadcastAccepted) {
+          // Accepted but delivery unknown (tx tracing failed): the tx can
+          // still land, so the mark must NOT be released or a retry could
+          // broadcast a duplicate paid creation. Reconcile against the chain
+          // first; if the pool is already visible, the creation in fact
+          // succeeded.
+          try {
+            const exists = await refreshOrderbookCaches();
+            if (exists) {
+              markOrderbookJustCreated(baseDenom, quoteDenom, "created", {
+                owner: attemptOwner,
+              });
+              return;
+            }
+          } catch {
+            // Keep the "broadcasted" mark; it self-expires well after any
+            // plausible inclusion window, and the pre-broadcast checks of a
+            // later attempt backstop the expiry.
+          }
+        } else {
+          // Nothing was accepted by the chain (verification fail-closed,
+          // sign rejection, or CheckTx failure): roll back this attempt's
+          // in-flight mark so the pair can be retried. Owner-scoped, so a
+          // concurrent attempt's protection is never stripped.
+          clearJustCreatedOrderbookIfOwned(baseDenom, quoteDenom, attemptOwner);
+        }
+        console.error("Error creating orderbook pool", e);
         const message =
           e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
         setError(message);
         throw e;
       } finally {
+        clearInterval(pendingHeartbeat);
         setIsCreating(false);
       }
-      return;
-    }
+    };
 
-    setIsCreating(true);
-    setError(undefined);
-
-    // Mark the pair before any await so an overlapping confirm (double click,
-    // second tab) hits the just-created gate instead of broadcasting a second
-    // paid creation while this one is in flight. Upgraded to "broadcasted" on
-    // CheckTx acceptance and "created" on delivery; rolled back below only
-    // when the attempt provably did not and can no longer land.
-    markOrderbookJustCreated(baseDenom, quoteDenom, "pending");
-    // Signing waits on the human, so the wallet prompt can outlive any fixed
-    // pending TTL; keep the mark alive while this attempt is genuinely still
-    // in flight. Only re-stamps "pending" so it can never downgrade a
-    // "broadcasted"/"created" upgrade from the callbacks below.
-    const pendingHeartbeat = setInterval(() => {
-      if (getJustCreatedStatus(baseDenom, quoteDenom) === "pending") {
-        markOrderbookJustCreated(baseDenom, quoteDenom, "pending");
-      }
-    }, PENDING_HEARTBEAT_MS);
-
-    let broadcastAccepted = false;
-    let deliveredCode: number | undefined;
-    let deliveredLog: string | undefined;
-
+    // Serialize the whole attempt (gate check through broadcast) per pair
+    // across tabs; see withPairCreationLock.
     try {
-      // Fail-closed fresh existence check immediately before signing: the UI
-      // entry points gate on the regular (LRU-cached, up to 1h stale)
-      // verification, so a pair created by another user since that cache was
-      // populated would otherwise still broadcast a duplicate paid creation.
-      // This cannot make creation atomic (nothing onchain enforces pair
-      // uniqueness), but it closes every race wider than one block.
-      const preflight =
-        await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
-          baseDenom,
-          quoteDenom,
-          fresh: true,
-        });
-      if (!preflight.endpointFunctional) {
-        throw new Error(t("errors.uhOhSomethingWentWrong"));
-      }
-      if (preflight.orderbookExists) {
-        // Someone else already created this pair: the goal state is reached
-        // without broadcasting. Mark it so UI gates hold through cache lag,
-        // refresh consumers, and resolve as success.
-        markOrderbookJustCreated(baseDenom, quoteDenom, "created");
-        await Promise.all([
-          apiUtils.edge.orderbooks.getPools.invalidate(),
-          apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
-        ]);
-        return;
-      }
-
-      const osmosis = await getOsmosisCodec();
-
-      const instantiateMsgBytes = new TextEncoder().encode(
-        JSON.stringify({
-          base_denom: baseDenom,
-          quote_denom: quoteDenom,
-        })
+      return await withPairCreationLock(
+        orderbookPairKey(baseDenom, quoteDenom),
+        runAttempt
       );
-
-      const msg = {
-        typeUrl: "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool",
-        value: osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool.fromPartial({
-          codeId: BigInt(OrderbookPoolCodeIds[0]),
-          instantiateMsg: instantiateMsgBytes,
-          sender: account.address,
-        }),
-      };
-
-      await accountStore.signAndBroadcast(
-        accountStore.osmosisChainId,
-        "createOrderbook",
-        [msg],
-        undefined,
-        undefined,
-        undefined,
-        {
-          onBroadcasted: () => {
-            // CheckTx accepted: the tx is in the mempool and may land even if
-            // everything after this point (tracing, refetches) fails, so from
-            // here the mark must survive a rejection of the overall flow.
-            broadcastAccepted = true;
-            markOrderbookJustCreated(baseDenom, quoteDenom, "broadcasted");
-          },
-          onFulfill: async (tx) => {
-            deliveredCode = tx.code;
-            deliveredLog = tx.rawLog;
-            if (!tx.code) {
-              // Delivery is final: upgrade the in-flight mark so re-confirms
-              // and reloads treat the pair as provably created.
-              markOrderbookJustCreated(baseDenom, quoteDenom, "created");
-              // The refresh is best-effort: the creation itself succeeded, so a
-              // refetch failure must not reject the flow (callers would show an
-              // error and leave the confirm re-armed for a duplicate paid tx).
-              try {
-                await refreshOrderbookCaches();
-              } catch (refreshError) {
-                console.error(
-                  "Orderbook cache refresh failed after creation; caches will heal on their normal cadence",
-                  refreshError
-                );
-              }
-            }
-          },
-        }
-      );
-      // signAndBroadcast throws on broadcast (CheckTx) rejection but resolves
-      // on a delivered-but-failed tx (non-zero code), so surface that here or
-      // callers would treat the failed creation as success.
-      if (deliveredCode) {
-        throw new Error(deliveredLog || t("errors.uhOhSomethingWentWrong"));
-      }
     } catch (e) {
-      if (deliveredCode) {
-        // Delivery is known and failed: no pool exists, so release the pair
-        // for a retry.
-        clearJustCreatedOrderbook(baseDenom, quoteDenom);
-      } else if (broadcastAccepted) {
-        // Accepted but delivery unknown (tx tracing failed): the tx can still
-        // land, so the mark must NOT be released or a retry could broadcast a
-        // duplicate paid creation. Reconcile against the chain first; if the
-        // pool is already visible, the creation in fact succeeded.
-        try {
-          const exists = await refreshOrderbookCaches();
-          if (exists) {
-            markOrderbookJustCreated(baseDenom, quoteDenom, "created");
-            return;
-          }
-        } catch {
-          // Keep the "broadcasted" mark; it self-expires well after any
-          // plausible inclusion window.
-        }
-      } else if (getJustCreatedStatus(baseDenom, quoteDenom) === "pending") {
-        // Nothing was accepted by the chain (sign rejection or CheckTx
-        // failure): roll back the in-flight mark so the pair can be retried.
-        // Only a still-pending mark is rolled back; a "created" entry proves
-        // some attempt (possibly another tab's) already delivered a pool and
-        // must keep its duplicate-creation protection.
-        clearJustCreatedOrderbook(baseDenom, quoteDenom);
-      }
-      console.error("Error creating orderbook pool", e);
+      // Errors thrown before runAttempt starts (lock unavailable) still need
+      // to surface in the modal; runAttempt sets its own messages.
       const message =
         e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
-      setError(message);
+      setError((current) => current ?? message);
       throw e;
-    } finally {
-      clearInterval(pendingHeartbeat);
-      setIsCreating(false);
     }
   }, [
     account?.address,
@@ -426,6 +575,7 @@ export function useCreateOrderbook({
     accountStore,
     apiUtils,
     refreshOrderbookCaches,
+    settleAsAlreadyCreated,
     t,
   ]);
 
