@@ -146,10 +146,10 @@ describe("orderbookRouter.getCreateOrderbookTxStatus", () => {
     expect(result).toEqual({ status: "failed", code: 5, rawLog: "out of gas" });
   });
 
-  it("returns notFound when the node lookup fails (unknown tx or endpoint error)", async () => {
-    // Both an unindexed tx and a network failure surface as a throw; report
-    // notFound so callers keep their duplicate protection either way.
-    mockedQueryTx.mockRejectedValue(new Error("tx not found"));
+  it("returns notFound only for an authoritative not-found response", async () => {
+    mockedQueryTx.mockRejectedValue(
+      new Error("rpc error: code = NotFound desc = tx not found")
+    );
 
     const caller = makeCaller();
     const result = await caller.orderbooks.getCreateOrderbookTxStatus({
@@ -157,5 +157,37 @@ describe("orderbookRouter.getCreateOrderbookTxStatus", () => {
     });
 
     expect(result).toEqual({ status: "notFound" });
+  });
+
+  it("returns unavailable for any other lookup failure", async () => {
+    // An outage or timeout proves nothing about the tx; it must not read as
+    // authoritative absence.
+    mockedQueryTx.mockRejectedValue(new Error("connect ECONNREFUSED"));
+
+    const caller = makeCaller();
+    const result = await caller.orderbooks.getCreateOrderbookTxStatus({
+      txHash: TX_HASH,
+    });
+
+    expect(result).toEqual({ status: "unavailable" });
+  });
+
+  it("returns unavailable for a malformed body instead of delivered", async () => {
+    mockedQueryTx.mockResolvedValue({} as Awaited<ReturnType<typeof queryTx>>);
+
+    const caller = makeCaller();
+    const result = await caller.orderbooks.getCreateOrderbookTxStatus({
+      txHash: TX_HASH,
+    });
+
+    expect(result).toEqual({ status: "unavailable" });
+  });
+
+  it("rejects a txHash that is not 64 hex characters", async () => {
+    const caller = makeCaller();
+    await expect(
+      caller.orderbooks.getCreateOrderbookTxStatus({ txHash: "../evil" })
+    ).rejects.toThrow();
+    expect(mockedQueryTx).not.toHaveBeenCalled();
   });
 });

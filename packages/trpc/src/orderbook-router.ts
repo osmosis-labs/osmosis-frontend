@@ -278,27 +278,47 @@ export const orderbookRouter = createTRPCRouter({
    * from the node (`/cosmos/tx/v1beta1/txs/{hash}`) rather than the
    * SQS-derived pool list, which can lag indexing. Used to reconcile a
    * creation whose tx tracing failed before releasing the pair for another
-   * paid attempt. Any lookup failure reports "notFound" — the safe direction,
-   * since callers keep their duplicate protection while the tx is unproven.
+   * paid attempt. Distinguishes an authoritative "notFound" (the node
+   * answered: no such tx) from "unavailable" (outage, timeout, malformed
+   * response — proof of nothing); callers must keep their duplicate
+   * protection on both, but the distinction must not be erased server-side.
    */
   getCreateOrderbookTxStatus: publicProcedure
-    .input(z.object({ txHash: z.string() }))
+    .input(
+      z.object({
+        // A tx hash is exactly 32 bytes hex; anything else is rejected before
+        // it can reach the node path interpolation.
+        txHash: z.string().regex(/^[0-9A-Fa-f]{64}$/),
+      })
+    )
     .query(async ({ input, ctx }) => {
       try {
         const tx = await queryTx({
           chainList: ctx.chainList,
           txHash: input.txHash,
         });
-        const code = tx.tx_response?.code ?? 0;
-        return code === 0
+        // A body without a well-formed tx_response proves nothing; never let
+        // a malformed 200 read as "delivered".
+        if (typeof tx?.tx_response?.code !== "number") {
+          return { status: "unavailable" as const };
+        }
+        return tx.tx_response.code === 0
           ? { status: "delivered" as const }
           : {
               status: "failed" as const,
-              code,
-              rawLog: tx.tx_response?.raw_log,
+              code: tx.tx_response.code,
+              rawLog: tx.tx_response.raw_log,
             };
-      } catch {
-        return { status: "notFound" as const };
+      } catch (e) {
+        // LCDs report an unknown hash as an error whose message names the tx
+        // as not found (code 3/NotFound); only that is authoritative absence.
+        const message =
+          (e as { data?: { message?: string } })?.data?.message ??
+          (e instanceof Error ? e.message : "");
+        if (/not\s*found/i.test(message)) {
+          return { status: "notFound" as const };
+        }
+        return { status: "unavailable" as const };
       }
     }),
 });

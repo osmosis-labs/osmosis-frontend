@@ -520,6 +520,7 @@ describe("useCreateOrderbook", () => {
   });
 
   describe("createOrderbook — broadcasted-mark reconciliation by tx hash", () => {
+    const TX_HASH_HEX = "ab".repeat(32);
     const writeBroadcastedEntry = (ageMs = 0) =>
       window.localStorage.setItem(
         `just-created-orderbook:${JSON.stringify(
@@ -529,7 +530,7 @@ describe("useCreateOrderbook", () => {
           t: Date.now() - ageMs,
           s: "broadcasted",
           o: "another-attempt",
-          h: "abcd",
+          h: TX_HASH_HEX,
         })
       );
 
@@ -549,7 +550,7 @@ describe("useCreateOrderbook", () => {
         await result.current.createOrderbook();
       });
 
-      expect(mockFetchTxStatus).toHaveBeenCalledWith({ txHash: "abcd" });
+      expect(mockFetchTxStatus).toHaveBeenCalledWith({ txHash: TX_HASH_HEX });
       expect(mockSignAndBroadcast).not.toHaveBeenCalled();
       expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
       expect(result.current.error).toBeUndefined();
@@ -591,34 +592,40 @@ describe("useCreateOrderbook", () => {
         await result.current.createOrderbook();
       });
 
-      expect(mockFetchTxStatus).toHaveBeenCalledWith({ txHash: "abcd" });
+      expect(mockFetchTxStatus).toHaveBeenCalledWith({ txHash: TX_HASH_HEX });
       expect(mockSignAndBroadcast).not.toHaveBeenCalled();
       expect(result.current.error).toBeUndefined();
     });
 
-    it("releases an unfound tx only after the inclusion window has provably passed", async () => {
-      // Aged past the timeout-height window AND not found on the node: the
-      // tx can never be included, so the pair releases into a fresh attempt.
+    it("keeps protecting an aged broadcasted mark whose tx is still unfound", async () => {
+      // These txs carry no signed timeout height, so no amount of elapsed
+      // time (nor an authoritative not-found) proves the tx can never land:
+      // the confirm must reject, not rebroadcast, no matter the entry's age.
       writeBroadcastedEntry(15 * 60 * 1000);
       mockFetchTxStatus.mockReset().mockResolvedValue({ status: "notFound" });
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
       mockBroadcastSuccess();
 
       const { result } = renderHook(() =>
         useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
       );
+      let thrown: unknown;
       await act(async () => {
-        await result.current.createOrderbook();
+        await result.current.createOrderbook().catch((e) => {
+          thrown = e;
+        });
       });
 
-      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
-      expect(result.current.error).toBeUndefined();
-    });
+      expect(thrown).toBeInstanceOf(Error);
+      expect(mockSignAndBroadcast).not.toHaveBeenCalled();
+    }, 15_000); // the all-absent refresh gate sleeps between retry attempts
 
-    it("keeps protecting a fresh broadcasted mark whose tx is not yet found", async () => {
-      // Within the inclusion window, notFound proves nothing (the tx may be
-      // in the next block): the confirm must reject, not rebroadcast.
-      writeBroadcastedEntry();
-      mockFetchTxStatus.mockReset().mockResolvedValue({ status: "notFound" });
+    it("keeps protecting when the status lookup is unavailable", async () => {
+      // A node outage proves nothing; it must never read as absence.
+      writeBroadcastedEntry(15 * 60 * 1000);
+      mockFetchTxStatus
+        .mockReset()
+        .mockResolvedValue({ status: "unavailable" });
       mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
       mockBroadcastSuccess();
 
