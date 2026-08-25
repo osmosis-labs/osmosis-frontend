@@ -188,8 +188,16 @@ export const OrderTypeSelector = ({
     [hasOrderbook, isLoading, isVerifyingInFlight, t]
   );
 
+  // The 18-decimal ratio guard can only run once both assets' metadata has
+  // loaded; until then its verdict is unknown, so the create affordance must
+  // stay hidden or a fast click lands before the guard can say no (and the
+  // tooltip would show the raw minimal denom instead of the symbol).
+  const isPairMetadataLoading =
+    baseAsset === undefined || quoteAsset === undefined;
+
   const showCreateOption =
     !isLoading &&
+    !isPairMetadataLoading &&
     !hasOrderbook &&
     !isVerifyingInFlight &&
     !is18DecimalMismatch &&
@@ -226,6 +234,14 @@ export const OrderTypeSelector = ({
           { walletType: "cosmos", chainId: accountStore.osmosisChainId },
         ],
       });
+      return;
+    }
+    // Re-check the ratio guard at confirm time: the modal can sit open while
+    // asset/price data finishes loading, and a guard verdict that arrives
+    // after the click must still block the broadcast.
+    if (isPairMetadataLoading || is18DecimalMismatch) {
+      setIsModalOpen(false);
+      setAcknowledgeFee(false);
       return;
     }
     try {
@@ -305,7 +321,9 @@ export const OrderTypeSelector = ({
               })}
               key={`order-type-selector-${id}`}
               containerClassName={classNames("!w-fit", {
-                hidden: isLoading,
+                // Also hide while the base asset's metadata loads: the label
+                // would otherwise fall back to the raw minimal denom.
+                hidden: isLoading || baseAsset === undefined,
               })}
             >
               {button}
