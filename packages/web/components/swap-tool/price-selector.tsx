@@ -128,12 +128,16 @@ export const PriceSelector = memo(
 
     const baseRawAsset = useMemo(
       () =>
+        // "from" may hold a symbol (?from=ATOM) or a minimal denom; resolve
+        // either so all orderbook logic below keys on real minimal denoms.
         getAssetFromAssetList({
           assetLists: AssetLists,
           coinMinimalDenom: base,
+          symbol: base,
         })?.rawAsset as Asset | undefined,
       [base]
     );
+    const baseMinimalDenom = baseRawAsset?.coinMinimalDenom;
 
     useEffect(() => {
       if (quote === base) {
@@ -229,18 +233,23 @@ export const PriceSelector = memo(
       // In limit mode, push orderbook-available quotes to the top only after
       // the orderbook data has loaded; avoids reordering before data arrives.
       // Keyed on `type` (market | limit), not `tab` (buy | sell | swap).
-      if (type !== "limit" || !selectableQuoteDenoms[base]) return filtered;
+      if (
+        type !== "limit" ||
+        !baseMinimalDenom ||
+        !selectableQuoteDenoms[baseMinimalDenom]
+      )
+        return filtered;
 
       // Rank-based comparator: sort() must compare both elements, and the
       // stable sort then preserves the incoming order within each group.
       const hasOrderbook = (quote: (typeof filtered)[number]) =>
-        selectableQuoteDenoms[base]?.some(
+        selectableQuoteDenoms[baseMinimalDenom]?.some(
           (asset) => asset.coinMinimalDenom === quote.coinMinimalDenom
         )
           ? 1
           : 0;
       return [...filtered].sort((a, b) => hasOrderbook(b) - hasOrderbook(a));
-    }, [base, selectableQuoteDenoms, type, userQuotes]);
+    }, [baseMinimalDenom, selectableQuoteDenoms, type, userQuotes]);
 
     const selectableQuotes = useMemo(() => {
       return wallet?.isWalletConnected
@@ -277,7 +286,9 @@ export const PriceSelector = memo(
       isCreating: isCreatingOrderbook,
       error: createOrderbookError,
     } = useCreateOrderbook({
-      baseDenom: base,
+      // Resolved minimal denom, never the raw "from" param: a symbol here
+      // would end up inside the instantiate message.
+      baseDenom: baseMinimalDenom ?? "",
       quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
     });
 
@@ -560,10 +571,15 @@ const CreatableQuoteItem = observer(
     const { t } = useTranslation();
 
     const { data: orderbookVerification, isLoading: isVerifying } =
-      api.edge.orderbooks.verifyOrderbookCreation.useQuery({
-        baseDenom: base,
-        quoteDenom: coinMinimalDenom,
-      });
+      api.edge.orderbooks.verifyOrderbookCreation.useQuery(
+        {
+          baseDenom: base,
+          quoteDenom: coinMinimalDenom,
+        },
+        // An empty base means the "from" param did not resolve to a listed
+        // asset; keep the row fail-closed (isVerifying stays true).
+        { enabled: !!base }
+      );
 
     // Decimals come from the parent's already-loaded asset data: one such row
     // renders per non-selectable quote, so per-row asset queries here would
@@ -700,12 +716,17 @@ const SelectableQuotes = observer(
 
     const baseAsset = useMemo(
       () =>
+        // "from" may hold a symbol or a minimal denom; resolve either so the
+        // creatable rows key on real minimal denoms (an unresolvable base
+        // leaves the rows fail-closed).
         getAssetFromAssetList({
           assetLists: AssetLists,
           coinMinimalDenom: base,
+          symbol: base,
         })?.rawAsset as Asset | undefined,
       [base]
     );
+    const baseMinimalDenom = baseAsset?.coinMinimalDenom;
 
     return selectableQuotes.map(
       ({ name, logoURIs, symbol, coinMinimalDenom, decimals }) => {
@@ -718,7 +739,7 @@ const SelectableQuotes = observer(
             new Dec(0));
         const isDisabled =
           type === "limit" &&
-          !selectableQuoteDenoms[base]?.some(
+          !selectableQuoteDenoms[baseMinimalDenom ?? base]?.some(
             (asset) => asset.coinMinimalDenom === coinMinimalDenom
           );
 
@@ -726,7 +747,7 @@ const SelectableQuotes = observer(
           return (
             <CreatableQuoteItem
               key={name}
-              base={base}
+              base={baseMinimalDenom ?? ""}
               baseSymbol={baseAsset?.symbol}
               baseDecimals={baseAsset?.decimals}
               coinMinimalDenom={coinMinimalDenom}

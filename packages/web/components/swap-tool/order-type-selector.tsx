@@ -1,4 +1,5 @@
 import { Dec } from "@osmosis-labs/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -9,6 +10,7 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import {
   useAmplitudeAnalytics,
   useTranslation,
@@ -60,34 +62,74 @@ export const OrderTypeSelector = ({
     parseAsString.withDefault(initialQuoteDenom)
   );
 
+  // The "from"/"quote" URL params hold either a symbol (?from=ATOM) or a
+  // minimal denom (?from=ibc/...). Every orderbook decision must key on
+  // minimal denoms: a raw symbol here made hasOrderbook and the server-side
+  // verification miss existing orderbooks (offering creation for pairs that
+  // already have one) and would have put the literal symbol into the
+  // instantiate message. Unresolvable params stay undefined and creation is
+  // not offered (fail closed).
+  const baseMinimalDenom = useMemo(
+    () =>
+      getAssetFromAssetList({
+        assetLists: AssetLists,
+        coinMinimalDenom: base,
+        symbol: base,
+      })?.coinMinimalDenom,
+    [base]
+  );
+  const quoteMinimalDenom = useMemo(
+    () =>
+      getAssetFromAssetList({
+        assetLists: AssetLists,
+        coinMinimalDenom: quote,
+        symbol: quote,
+      })?.coinMinimalDenom,
+    [quote]
+  );
+
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
     useOrderbookSelectableDenoms();
 
   const hasOrderbook = useMemo(
-    () => selectableBaseAssets.some((asset) => asset.coinMinimalDenom === base),
-    [base, selectableBaseAssets]
+    () =>
+      selectableBaseAssets.some(
+        (asset) => asset.coinMinimalDenom === baseMinimalDenom
+      ),
+    [baseMinimalDenom, selectableBaseAssets]
   );
 
   const selectableQuotes = useMemo(() => {
-    return selectableQuoteDenoms[base] ?? [];
-  }, [base, selectableQuoteDenoms]);
+    return baseMinimalDenom
+      ? selectableQuoteDenoms[baseMinimalDenom] ?? []
+      : [];
+  }, [baseMinimalDenom, selectableQuoteDenoms]);
+
+  // Registry entries and creation messages are keyed on resolved minimal
+  // denoms; the empty-string fallback matches nothing and the creation hook
+  // refuses it, so an unresolvable pair fails closed everywhere.
+  const resolvedBase = baseMinimalDenom ?? "";
+  const resolvedQuote = quoteMinimalDenom ?? "";
 
   useEffect(() => {
-    if (hasOrderbook && justCreatedPairRef.current === `${base}:${quote}`) {
+    if (
+      hasOrderbook &&
+      justCreatedPairRef.current === `${resolvedBase}:${resolvedQuote}`
+    ) {
       // Cache has caught up — safe to allow the reset effect again.
       justCreatedPairRef.current = null;
     }
     const quoteSelectable = selectableQuotes.some(
-      (asset) => asset.coinMinimalDenom === quote
+      (asset) => asset.coinMinimalDenom === quoteMinimalDenom
     );
     if (quoteSelectable) {
       // Canonical pools list reflects the pair — re-arm the quote reset.
-      clearJustCreatedOrderbook(base, quote);
+      clearJustCreatedOrderbook(resolvedBase, resolvedQuote);
     }
     if (type === "limit" && !hasOrderbook && !isLoading) {
       if (
-        justCreatedPairRef.current === `${base}:${quote}` ||
-        wasOrderbookJustCreated(base, quote)
+        justCreatedPairRef.current === `${resolvedBase}:${resolvedQuote}` ||
+        wasOrderbookJustCreated(resolvedBase, resolvedQuote)
       )
         return;
       setType("market");
@@ -98,18 +140,19 @@ export const OrderTypeSelector = ({
       // Suppress while a just-created orderbook (from either the Limit tab or
       // the Pay With / Receive dropdown) is waiting for the canonical pools
       // list to catch up, or the user's fresh selection would be undone.
-      !wasOrderbookJustCreated(base, quote)
+      !wasOrderbookJustCreated(resolvedBase, resolvedQuote)
     ) {
       setQuote(selectableQuotes[0].coinMinimalDenom);
     }
   }, [
-    base,
     hasOrderbook,
     setType,
     type,
     selectableQuotes,
     setQuote,
-    quote,
+    quoteMinimalDenom,
+    resolvedBase,
+    resolvedQuote,
     isLoading,
   ]);
 
@@ -138,13 +181,13 @@ export const OrderTypeSelector = ({
 
   const { data: basePrice, isLoading: isBasePriceLoading } =
     api.edge.assets.getAssetPrice.useQuery(
-      { coinMinimalDenom: base },
-      { enabled: is18DecimalBase }
+      { coinMinimalDenom: resolvedBase },
+      { enabled: is18DecimalBase && !!baseMinimalDenom }
     );
   const { data: quotePrice, isLoading: isQuotePriceLoading } =
     api.edge.assets.getAssetPrice.useQuery(
-      { coinMinimalDenom: quote },
-      { enabled: is18DecimalBase }
+      { coinMinimalDenom: resolvedQuote },
+      { enabled: is18DecimalBase && !!quoteMinimalDenom }
     );
 
   const is18DecimalMismatch =
@@ -166,8 +209,14 @@ export const OrderTypeSelector = ({
     isLoading: isVerifying,
     fetchStatus: verifyFetchStatus,
   } = api.edge.orderbooks.verifyOrderbookCreation.useQuery(
-    { baseDenom: base, quoteDenom: quote },
-    { enabled: !isLoading && !hasOrderbook }
+    { baseDenom: resolvedBase, quoteDenom: resolvedQuote },
+    {
+      enabled:
+        !isLoading &&
+        !hasOrderbook &&
+        !!baseMinimalDenom &&
+        !!quoteMinimalDenom,
+    }
   );
 
   const isVerifyingInFlight = isVerifying && verifyFetchStatus === "fetching";
@@ -198,6 +247,10 @@ export const OrderTypeSelector = ({
   const showCreateOption =
     !isLoading &&
     !isPairMetadataLoading &&
+    // Both params resolved to listed assets, so the creation message and all
+    // gating below key on real minimal denoms.
+    !!baseMinimalDenom &&
+    !!quoteMinimalDenom &&
     !hasOrderbook &&
     !isVerifyingInFlight &&
     !is18DecimalMismatch &&
@@ -207,7 +260,7 @@ export const OrderTypeSelector = ({
     // A pair created this session counts as existing even while the
     // verification data is still catching up, or the UI would invite a
     // duplicate pool-creation tx.
-    !wasOrderbookJustCreated(base, quote);
+    !wasOrderbookJustCreated(resolvedBase, resolvedQuote);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [acknowledgeFee, setAcknowledgeFee] = useState(false);
@@ -222,8 +275,8 @@ export const OrderTypeSelector = ({
     isCreating,
     error: createError,
   } = useCreateOrderbook({
-    baseDenom: base,
-    quoteDenom: quote,
+    baseDenom: resolvedBase,
+    quoteDenom: resolvedQuote,
   });
 
   const handleConfirmCreate = async () => {
@@ -251,7 +304,7 @@ export const OrderTypeSelector = ({
       // Optimistically activate limit tab — orderbook exists on-chain even if
       // SQS / server cache hasn't caught up yet. The ref suppresses the
       // !hasOrderbook reset effect until the cache refreshes.
-      justCreatedPairRef.current = `${base}:${quote}`;
+      justCreatedPairRef.current = `${resolvedBase}:${resolvedQuote}`;
       setType("limit");
     } catch {
       // createOrderbook sets error state internally; keep modal open so user sees it
