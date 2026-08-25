@@ -1463,6 +1463,7 @@
     "createOrderbook": "Orderbook Oluştur",
     "noOrderbookExists": "{denom} için orderbook yok",
     "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
+    "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
     "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
   },
   "tradeDetails": {

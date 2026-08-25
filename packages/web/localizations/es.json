@@ -1463,6 +1463,7 @@
     "createOrderbook": "Crear Orderbook",
     "noOrderbookExists": "Sin orderbook para {denom}",
     "clickToCreateOrderbook": "Haga clic para crear un orderbook para este par.",
+    "creationInProgress": "Ya hay una creación de orderbook para este par en curso en otra pestaña",
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis."
   },
   "tradeDetails": {

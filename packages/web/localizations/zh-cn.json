@@ -1463,6 +1463,7 @@
     "createOrderbook": "创建 Orderbook",
     "noOrderbookExists": "{denom} 没有 orderbook",
     "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
+    "creationInProgress": "该交易对的订单簿创建已在另一个标签页中进行",
     "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
   },
   "tradeDetails": {

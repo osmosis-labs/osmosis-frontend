@@ -1463,6 +1463,7 @@
     "createOrderbook": "Orderbook बनाएं",
     "noOrderbookExists": "{denom} के लिए कोई orderbook नहीं",
     "clickToCreateOrderbook": "इस जोड़ी के लिए एक orderbook बनाने के लिए क्लिक करें।",
+    "creationInProgress": "इस जोड़ी के लिए ऑर्डरबुक निर्माण पहले से ही दूसरे टैब में चल रहा है",
     "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।"
   },
   "tradeDetails": {

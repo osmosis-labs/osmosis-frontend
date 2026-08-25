@@ -1463,6 +1463,7 @@
     "createOrderbook": "Orderbookを作成",
     "noOrderbookExists": "{denom}のorderbookなし",
     "clickToCreateOrderbook": "クリックしてこのペアのorderbookを作成します。",
+    "creationInProgress": "このペアのオーダーブック作成は別のタブで既に進行中です",
     "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。"
   },
   "tradeDetails": {

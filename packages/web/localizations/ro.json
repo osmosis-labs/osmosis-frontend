@@ -1463,6 +1463,7 @@
     "createOrderbook": "Creați Orderbook",
     "noOrderbookExists": "Niciun orderbook pentru {denom}",
     "clickToCreateOrderbook": "Faceți clic pentru a crea un orderbook pentru această pereche.",
+    "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis."
   },
   "tradeDetails": {

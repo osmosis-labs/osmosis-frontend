@@ -234,6 +234,7 @@ export function clearJustCreatedOrderbook(
  */
 async function withPairCreationLock<T>(
   pairKey: string,
+  lockUnavailableMessage: string,
   fn: () => Promise<T>
 ): Promise<T> {
   const locks = typeof navigator !== "undefined" ? navigator.locks : undefined;
@@ -243,9 +244,8 @@ async function withPairCreationLock<T>(
     { ifAvailable: true },
     async (lock) => {
       if (!lock) {
-        throw new Error(
-          "An orderbook creation for this pair is already in progress in another tab"
-        );
+        // Surfaced directly in the confirm modal, so it must be localized.
+        throw new Error(lockUnavailableMessage);
       }
       return fn();
     }
@@ -644,6 +644,7 @@ export function useCreateOrderbook({
     try {
       return await withPairCreationLock(
         orderbookPairKey(baseDenom, quoteDenom),
+        t("limitOrders.creationInProgress"),
         runAttempt
       );
     } catch (e) {

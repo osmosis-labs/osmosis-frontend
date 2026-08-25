@@ -1463,6 +1463,7 @@
     "createOrderbook": "Orderbuch erstellen",
     "noOrderbookExists": "Kein Orderbuch für {denom}",
     "clickToCreateOrderbook": "Klicken, um ein Orderbuch für dieses Paar zu erstellen.",
+    "creationInProgress": "Für dieses Paar läuft bereits eine Orderbuch-Erstellung in einem anderen Tab",
     "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren."
   },
   "tradeDetails": {
