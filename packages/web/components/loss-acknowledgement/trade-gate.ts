@@ -6,7 +6,10 @@ import {
   LossFigures,
   normalizePriceImpact,
 } from "~/components/loss-acknowledgement";
-import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
+import {
+  HighPriceImpactGate,
+  HighSlippageToleranceGate,
+} from "~/config/trade-warnings";
 
 /** A trade's order type, as the review-order modal already models it. */
 export type TradeOrderType = "market" | "limit";
@@ -67,7 +70,7 @@ export function getTradeWarnings({
 
   return {
     slippage: tolerance,
-    warnSlippage: tolerance.gte(HighSlippageGate),
+    warnSlippage: tolerance.gte(HighSlippageToleranceGate),
 
     priceImpact: priceImpact ?? new Dec(0),
     warnPriceImpact: priceImpact?.gte(HighPriceImpactGate) ?? false,
