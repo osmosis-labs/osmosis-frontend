@@ -43,6 +43,7 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -180,11 +181,26 @@ export function ReviewOrder({
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
+  /**
+   * This warning and the acknowledgement checkbox must read the same number.
+   * While they did not, any tolerance between the two thresholds showed a loss
+   * warning with nothing to acknowledge and no gate behind it.
+   *
+   * Note the unit difference that made them easy to diverge: `manualSlippage`
+   * is a percentage string ("5"), while the config's value is already a
+   * fraction (0.05). The previous comparison also ran the typed value through
+   * `parseInt`, so 1.9% truncated to 1 and warned nowhere.
+   */
+  const manualSlippagePercent = Number(manualSlippage);
+  const effectiveSlippage = manualSlippage
+    ? new Dec(
+        Number.isFinite(manualSlippagePercent)
+          ? manualSlippagePercent.toString()
+          : "0"
+      ).quo(new Dec(100))
+    : slippageConfig?.slippage.toDec();
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
-    (!manualSlippage &&
-      !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
+    effectiveSlippage?.gte(HighSlippageToleranceGate) ?? false;
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
   /**

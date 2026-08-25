@@ -6,7 +6,10 @@ import {
   getTradeWarnings,
   hasQuoteDriftedBeyondSlippage,
 } from "~/components/loss-acknowledgement/trade-gate";
-import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
+import {
+  HighPriceImpactGate,
+  HighSlippageToleranceGate,
+} from "~/config/trade-warnings";
 
 /** A hair either side of a threshold, small enough not to cross any other. */
 const epsilon = new Dec(0.0001);
@@ -63,7 +66,7 @@ describe("getTradeWarnings", () => {
 
     it("still gates on slippage when impact data is missing", () => {
       expect(
-        getTradeWarnings({ slippage: HighSlippageGate }).warnSlippage
+        getTradeWarnings({ slippage: HighSlippageToleranceGate }).warnSlippage
       ).toBe(true);
     });
   });
@@ -71,13 +74,13 @@ describe("getTradeWarnings", () => {
   describe("slippage tolerance", () => {
     it("gates exactly at the threshold", () => {
       expect(
-        getTradeWarnings({ slippage: HighSlippageGate }).warnSlippage
+        getTradeWarnings({ slippage: HighSlippageToleranceGate }).warnSlippage
       ).toBe(true);
     });
 
     it("does not gate just below the threshold", () => {
       expect(
-        getTradeWarnings({ slippage: HighSlippageGate.sub(epsilon) })
+        getTradeWarnings({ slippage: HighSlippageToleranceGate.sub(epsilon) })
           .warnSlippage
       ).toBe(false);
     });
@@ -192,10 +195,12 @@ describe("deriveTradeMemoFlags", () => {
   // The whole point of the separate keys: a tolerance must never be recorded as
   // a realized loss, which is what `loss=` means.
   it("stamps an accepted tolerance as slippageTolerance, never as totalLoss", () => {
-    const flags = deriveTradeMemoFlags(basis({ slippage: HighSlippageGate }));
+    const flags = deriveTradeMemoFlags(
+      basis({ slippage: HighSlippageToleranceGate })
+    );
 
     expect(flags?.slippageTolerance?.toString()).toBe(
-      HighSlippageGate.toString()
+      HighSlippageToleranceGate.toString()
     );
     expect(flags?.totalLoss).toBeUndefined();
   });
@@ -234,7 +239,7 @@ describe("deriveTradeMemoFlags", () => {
     const flags = deriveTradeMemoFlags(
       basis({
         priceImpactTokenOut: quotedImpact(new Dec("0.124")),
-        slippage: HighSlippageGate,
+        slippage: HighSlippageToleranceGate,
         orderType: "limit",
         isBeyondOppositePrice: true,
         percentAdjusted: new Dec("0.0325"),

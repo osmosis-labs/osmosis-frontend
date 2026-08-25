@@ -5,7 +5,10 @@ import { CoinPretty, Dec, IntPretty, RatePretty } from "@osmosis-labs/unit";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 
-import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
+import {
+  HighPriceImpactGate,
+  HighSlippageToleranceGate,
+} from "~/config/trade-warnings";
 
 /** Mutable query state, so a test can put the modal on the limit tab. */
 const queryState: Record<string, string> = { tab: "swap", type: "market" };
@@ -162,12 +165,47 @@ describe("ReviewOrder acknowledgement gate", () => {
   it("gates a high slippage tolerance independently of price impact", () => {
     renderModal({
       ...baseProps(),
-      slippageConfig: slippageConfigStub(HighSlippageGate),
+      slippageConfig: slippageConfigStub(HighSlippageToleranceGate),
       priceImpactTokenOut: lowImpact,
     });
 
     expect(checkbox()).toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
+  });
+
+  // The slippage warning box and the checkbox must cross their threshold
+  // together. While they read different numbers, every tolerance in between
+  // rendered "may result in significant loss of value" with nothing to
+  // acknowledge and no gate behind it — a warning the user could not act on.
+  // Both sides read `HighSlippageToleranceGate`, so this is what would catch
+  // one of them being pointed somewhere else again.
+  describe("the slippage warning and the gate move together", () => {
+    const slippageWarning = () =>
+      screen.queryByText(/result in significant loss of value/i);
+
+    it("shows neither just below the threshold", () => {
+      renderModal({
+        ...baseProps(),
+        slippageConfig: slippageConfigStub(
+          HighSlippageToleranceGate.sub(new Dec("0.0001"))
+        ),
+        priceImpactTokenOut: lowImpact,
+      });
+
+      expect(slippageWarning()).not.toBeInTheDocument();
+      expect(checkbox()).not.toBeInTheDocument();
+    });
+
+    it("shows both at the threshold", () => {
+      renderModal({
+        ...baseProps(),
+        slippageConfig: slippageConfigStub(HighSlippageToleranceGate),
+        priceImpactTokenOut: lowImpact,
+      });
+
+      expect(slippageWarning()).toBeInTheDocument();
+      expect(checkbox()).toBeInTheDocument();
+    });
   });
 
   it("does not fire the transaction while the gate is unsatisfied", () => {
