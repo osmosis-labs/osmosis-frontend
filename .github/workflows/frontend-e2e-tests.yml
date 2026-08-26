@@ -159,12 +159,17 @@ jobs:
               if [ "$RECENT" -gt 0 ]; then
                 echo "Recent successful or in-flight topup within cooldown — skipping dispatch."
               else
+                # reserve_usdc guards allUSDC after the identity handover, and the
+                # converted alloy balance is far smaller than the old Noble one, so
+                # a 250/500 reserve left nothing distributable. Kept at the 100/3.0
+                # the other dispatchers use, which is what the README documents and
+                # what sweep-surplus's TOPUP_TARGET_MULTIPLIER assumes.
                 gh workflow run "E2E: Topup Test Accounts" \
                   --ref stage \
                   -f dry_run=false \
-                  -f topup_multiplier=1.5 \
+                  -f topup_multiplier=3.0 \
                   -f reserve_osmo=5 \
-                  -f reserve_usdc=250
+                  -f reserve_usdc=100
                 echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
               fi
             else

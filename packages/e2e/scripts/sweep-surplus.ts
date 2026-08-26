@@ -61,8 +61,9 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 
-/** Matches the auto-topup refill target (topup_multiplier 3.0 dispatched by
- * the monitoring workflow's topup-dispatch job). */
+/** Matches the auto-topup refill target (topup_multiplier 3.0, now dispatched
+ * uniformly by every auto-dispatcher: monitoring-limit-geo, frontend-e2e and
+ * prod-frontend-e2e). */
 const TOPUP_TARGET_MULTIPLIER = 3.0;
 /** Derived from the topup target so the floor stays above it even if the
  * target changes — sweeping below it would trigger auto-topup ping-pong. */
