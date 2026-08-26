@@ -42,7 +42,19 @@ export const TOKEN_DENOMS: Record<
   { denom: string; decimals: number }
 > = {
   OSMO: { denom: "uosmo", decimals: 6 },
+  // "USDC" follows the app's USDC identity. Since the assetlist handover
+  // (2026-08-25) the symbol resolves to the alloy, so tests that select
+  // "USDC" by symbol trade the alloy and balance checks / top-ups must
+  // fund the alloy, not Noble.
   USDC: {
+    denom: "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+    decimals: 6,
+  },
+  // Legacy Noble USDC (now "USDC.noble" in the app). Kept visible to the
+  // fleet report, and swept in full by sweep-surplus (legacy sweep) so the
+  // accounts' Noble consolidates in the holding account for the one-off
+  // conversion to the alloy. Not a top-up target.
+  "USDC.noble": {
     denom: "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
     decimals: 6,
   },

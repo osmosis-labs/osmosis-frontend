@@ -16,6 +16,10 @@
 
 import { SQS_BASE_URL } from "./config";
 
+// The denom SQS quotes prices in (the key of each inner price map). This is
+// SQS's quote asset, NOT the app's "USDC" identity: it stays Noble until the
+// sidecar repoints its quote denom to the alloy, independently of the
+// assetlist handover. Do not "fix" it alongside TOKEN_DENOMS.USDC.
 const USDC_DENOM =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 
