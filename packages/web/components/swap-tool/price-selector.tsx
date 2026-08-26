@@ -121,12 +121,17 @@ export const PriceSelector = memo(
 
     const quoteAsset = useMemo(
       () =>
+        // "quote" may hold a symbol (?quote=USDT) or a minimal denom, like
+        // "from" below; resolve either so a symbol-form quote is not mistaken
+        // for an unknown asset and reset to USDC.
         getAssetFromAssetList({
           assetLists: AssetLists,
           coinMinimalDenom: quote,
+          symbol: quote,
         })?.rawAsset as Asset | undefined,
       [quote]
     );
+    const quoteMinimalDenom = quoteAsset?.coinMinimalDenom;
 
     const baseRawAsset = useMemo(
       () =>
@@ -142,10 +147,15 @@ export const PriceSelector = memo(
     const baseMinimalDenom = baseRawAsset?.coinMinimalDenom;
 
     useEffect(() => {
-      if (quote === base) {
+      // Compare resolved denoms so a symbol-form param on one side and a
+      // minimal denom on the other still count as the same asset.
+      const sameAsset =
+        quote === base ||
+        (!!quoteMinimalDenom && quoteMinimalDenom === baseMinimalDenom);
+      if (sameAsset) {
         setBase(ATOM_BASE_DENOM);
       }
-    }, [base, quote, setBase]);
+    }, [base, quote, baseMinimalDenom, quoteMinimalDenom, setBase]);
 
     useEffect(() => {
       if (!quoteAsset) {
@@ -729,10 +739,21 @@ const SelectableQuotes = observer(
       [base]
     );
     const baseMinimalDenom = baseAsset?.coinMinimalDenom;
+    // Same symbol-or-denom resolution for the quote, so the selected row
+    // highlights correctly for symbol-form URLs (?quote=USDT).
+    const quoteMinimalDenom = useMemo(
+      () =>
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          coinMinimalDenom: quote,
+          symbol: quote,
+        })?.rawAsset.coinMinimalDenom,
+      [quote]
+    );
 
     return selectableQuotes.map(
       ({ name, logoURIs, symbol, coinMinimalDenom, decimals }) => {
-        const isSelected = quote === coinMinimalDenom;
+        const isSelected = (quoteMinimalDenom ?? quote) === coinMinimalDenom;
         const availableBalance =
           userQuotes &&
           (userQuotes
