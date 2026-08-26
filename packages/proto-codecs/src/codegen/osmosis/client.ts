@@ -7,12 +7,12 @@ import {
 } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 
-import * as osmosisCosmwasmpoolV1beta1TxAmino from "./cosmwasmpool/v1beta1/tx.amino";
-import * as osmosisCosmwasmpoolV1beta1TxRegistry from "./cosmwasmpool/v1beta1/tx.registry";
 import * as osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxAmino from "./concentratedliquidity/poolmodel/concentrated/v1beta1/tx.amino";
 import * as osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxRegistry from "./concentratedliquidity/poolmodel/concentrated/v1beta1/tx.registry";
 import * as osmosisConcentratedliquidityV1beta1TxAmino from "./concentratedliquidity/v1beta1/tx.amino";
 import * as osmosisConcentratedliquidityV1beta1TxRegistry from "./concentratedliquidity/v1beta1/tx.registry";
+import * as osmosisCosmwasmpoolV1beta1TxAmino from "./cosmwasmpool/v1beta1/tx.amino";
+import * as osmosisCosmwasmpoolV1beta1TxRegistry from "./cosmwasmpool/v1beta1/tx.registry";
 import * as osmosisGammPoolmodelsBalancerV1beta1TxAmino from "./gamm/poolmodels/balancer/v1beta1/tx.amino";
 import * as osmosisGammPoolmodelsBalancerV1beta1TxRegistry from "./gamm/poolmodels/balancer/v1beta1/tx.registry";
 import * as osmosisGammPoolmodelsStableswapV1beta1TxAmino from "./gamm/poolmodels/stableswap/v1beta1/tx.amino";
