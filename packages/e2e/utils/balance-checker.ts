@@ -50,8 +50,10 @@ export const TOKEN_DENOMS: Record<
     denom: "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
     decimals: 6,
   },
-  // Legacy Noble USDC (now "USDC.noble" in the app). Kept so the fleet
-  // report and surplus sweep still see these balances; not a top-up target.
+  // Legacy Noble USDC (now "USDC.noble" in the app). Kept visible to the
+  // fleet report, and swept in full by sweep-surplus (legacy sweep) so the
+  // accounts' Noble consolidates in the holding account for the one-off
+  // conversion to the alloy. Not a top-up target.
   "USDC.noble": {
     denom: "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
     decimals: 6,

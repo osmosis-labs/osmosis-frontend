@@ -3,26 +3,23 @@ import { TradePage } from "../pages/trade-page";
 import { TransactionsPage } from "../pages/transactions-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { resolveAppUsdcDenom } from "../utils/usdc-identity";
 import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Trade feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  // "USDC" resolves to the alloy on builds carrying the assetlist identity
-  // handover and to Noble on builds that predate it; the fleet is mid-
-  // transition (main's generated assetlist has not regenerated yet), so the
-  // signed message may name either. Tighten to the alloy once every build
-  // carries the handover.
-  const USDC_DENOMS = [
-    "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
-    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
-  ];
-  const USDC_DENOM_PATTERN = new RegExp(`denom: (${USDC_DENOMS.join("|")})`);
+  // Resolved from the build under test in beforeAll: "USDC" is the alloy on
+  // builds carrying the assetlist identity handover and Noble on builds that
+  // predate it. Derived, not hardcoded, so a handover build that regressed to
+  // routing through Noble would fail here instead of passing silently.
+  let USDC: string;
   const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
   test.beforeAll(async () => {
+    USDC = await resolveAppUsdcDenom();
     context = await new SetupKeplr().setupWallet(privateKey);
 
     const { address } = await deriveAddress(privateKey);
@@ -61,7 +58,7 @@ test.describe("Test Trade feature", () => {
     if (msgContentAmount) {
       expect(msgContentAmount).toContain(`denom: ${ATOM}`);
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-      expect(msgContentAmount).toMatch(USDC_DENOM_PATTERN);
+      expect(msgContentAmount).toContain(`denom: ${USDC}`);
     }
     await tradePage.getTransactionUrl();
   });
@@ -77,7 +74,7 @@ test.describe("Test Trade feature", () => {
     });
     // Only validate message content if Keplr popup appeared (not 1-click trading)
     if (msgContentAmount) {
-      expect(msgContentAmount).toMatch(USDC_DENOM_PATTERN);
+      expect(msgContentAmount).toContain(`denom: ${USDC}`);
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
       expect(msgContentAmount).toContain(`denom: ${ATOM}`);
     }
