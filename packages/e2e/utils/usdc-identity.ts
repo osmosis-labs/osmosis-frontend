@@ -9,8 +9,16 @@
  * resolve it to the alloy. Specs that assert on the USDC denom must derive
  * the expectation from the build they are running against rather than
  * hardcode it: hardcoding the alloy fails on pre-handover builds, and
- * accepting either denom would let a handover build silently regress to
- * routing through Noble.
+ * accepting either denom at the assertion would let a handover build
+ * silently regress to routing through Noble.
+ *
+ * What this does and does not prove. Pinning the assertion to the identity
+ * the build's own token selector reports catches the selector and the swap
+ * route disagreeing — a build that offers the alloy but trades Noble fails.
+ * It cannot prove that a build *ought* to carry the handover: if the
+ * assetlist itself still says Noble, this returns Noble and the assertion
+ * follows it. Deciding which identity a deployment should carry is the
+ * assetlist's job, not a spec's.
  */
 
 const ALLOY_DENOM =

@@ -12,8 +12,10 @@ test.describe("Test Trade feature", () => {
   let tradePage: TradePage;
   // Resolved from the build under test in beforeAll: "USDC" is the alloy on
   // builds carrying the assetlist identity handover and Noble on builds that
-  // predate it. Derived, not hardcoded, so a handover build that regressed to
-  // routing through Noble would fail here instead of passing silently.
+  // predate it. Derived, not hardcoded, so the assertion follows whichever
+  // identity the build's token selector reports and fails when the selector
+  // and the swap route disagree. It does not prove the build carries the
+  // handover — if the assetlist still says Noble, this expects Noble.
   let USDC: string;
   const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
@@ -33,7 +35,9 @@ test.describe("Test Trade feature", () => {
   });
 
   test.afterAll(async () => {
-    await context.close();
+    // beforeAll resolves the USDC identity before the wallet exists, and that
+    // resolver throws by design, so context can still be undefined here.
+    await context?.close();
   });
 
   test.beforeEach(async () => {
