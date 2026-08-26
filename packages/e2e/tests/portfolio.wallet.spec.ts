@@ -35,7 +35,7 @@ test.describe('Test Portfolio feature', () => {
     {
       name: 'USDC',
       minimalDenom:
-        'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4',
+        'factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC',
     },
     {
       name: 'TIA',
