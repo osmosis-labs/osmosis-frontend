@@ -10,6 +10,12 @@ test.describe("Test Filled Limit Order feature", () => {
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
 
+  // Prod rejects limit orders below $1 (NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT, enforced
+  // in use-place-limit.ts) by disabling the trade button. Size just above the floor:
+  // the check runs on a live fiat price, so an order sized at exactly $1 can round
+  // under it. Market/swap legs are exempt from the minimum and stay smaller.
+  const ORDER_AMOUNT = "1.10";
+
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
@@ -17,8 +23,8 @@ test.describe("Test Filled Limit Order feature", () => {
     await ensureBalances(address, [
       // Sell-tab amounts are fiat-mode in prod (inGivenOut flag, see MTN-157
       // note in balance-config.ts), so both requirements are USD-denominated.
-      { token: "OSMO", amount: 0.6, unit: "usd" }, // For limit sell OSMO ($0.54)
-      { token: "USDC", amount: 0.55, unit: "usd" }, // For limit buy OSMO ($0.52)
+      { token: "OSMO", amount: 1.2, unit: "usd" }, // For limit sell OSMO ($1.10)
+      { token: "USDC", amount: 1.15, unit: "usd" }, // For limit buy OSMO ($1.10)
     ]);
 
     tradePage = new TradePage(context.pages()[0]);
@@ -48,7 +54,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.54");
+    await tradePage.enterAmount(ORDER_AMOUNT);
     await tradePage.setLimitPriceChange("Market");
     await tradePage.sellAndApprove(context);
     await tradePage.getTransactionUrl();
@@ -60,7 +66,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.52");
+    await tradePage.enterAmount(ORDER_AMOUNT);
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
     const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);

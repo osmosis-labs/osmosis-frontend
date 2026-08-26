@@ -46,6 +46,8 @@ const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
 const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
+  // "allUSDC",
+  "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
   // "USDC.sol.wh",
   "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45",
   // "USDC.eth.grv",

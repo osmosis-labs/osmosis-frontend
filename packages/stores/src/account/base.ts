@@ -9,7 +9,7 @@ import {
   type OfflineDirectSigner,
   type Registry,
 } from "@cosmjs/proto-signing";
-import type { AminoTypes, SignerData } from "@cosmjs/stargate";
+import type { AminoTypes } from "@cosmjs/stargate";
 import {
   MainWalletBase,
   WalletConnectOptions,
@@ -91,6 +91,17 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
+
+/**
+ * CosmJS's own SignerData declares `accountNumber: number`, which cannot hold a
+ * uint64 — chains on Cosmos SDK 0.53+ assign account numbers above 2^53. Carry
+ * it as a decimal string and convert at the encoder instead.
+ */
+type SignerData = {
+  accountNumber: string;
+  sequence: number;
+  chainId: string;
+};
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -1050,7 +1061,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyBytes,
       authInfoBytes,
       chainId,
-      accountNumber
+      // Typed as a number upstream, but only ever handed to BigInt(), which is
+      // exact on a decimal string. Cast goes away on the @cosmjs 0.39.0 upgrade.
+      accountNumber as unknown as number
     );
 
     const sig = privateKey.signDigest32(
@@ -1341,7 +1354,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyBytes,
       authInfoBytes,
       chainId,
-      accountNumber
+      // Typed as a number upstream, but only ever handed to BigInt(), which is
+      // exact on a decimal string. Cast goes away on the @cosmjs 0.39.0 upgrade.
+      accountNumber as unknown as number
     );
 
     const { signature, signed } = await (wallet.client.signDirect
@@ -1427,7 +1442,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   public async getSequence(
     wallet: AccountStoreWallet
-  ): Promise<{ accountNumber: number; sequence: number }> {
+  ): Promise<{ accountNumber: string; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
       throw new Error(
@@ -1436,7 +1451,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     return {
-      accountNumber: Number(account.accountNumber.toString()),
+      // account_number is a uint64 and can exceed Number.MAX_SAFE_INTEGER, so
+      // keep the exact decimal string the node returned.
+      accountNumber: account.accountNumber.toString(),
       sequence: Number(account.sequence.toString()),
     };
   }

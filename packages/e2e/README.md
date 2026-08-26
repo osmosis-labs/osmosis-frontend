@@ -286,8 +286,8 @@ suite, so their USDC floor is lower:
 
 | Token | Min (US) | Warn (US) | Min (EU/SG) | Warn (EU/SG) | Unit | Used By |
 |-------|----------|-----------|-------------|--------------|------|---------|
-| USDC | 2.9 | 5.5 | 1.2 | 2.3 | token | market buys ($0.55 x2) + limit buy ($0.52) + swap stables (1.10) |
-| OSMO | $1.20 | $2.40 | $1.20 | $2.40 | USD | market sell + limit sell OSMO ($0.54 each) + gas |
+| USDC | 3.5 | 6.6 | 1.2 | 2.3 | token | market buys ($0.55 x2) + limit buy ($1.10) + swap stables (1.10) |
+| OSMO | $1.80 | $3.60 | $1.20 | $2.40 | USD | market sell ($0.54) + limit sell ($1.10) OSMO + gas |
 | BTC | $0.60 | $1.50 | $0.60 | $1.50 | USD | market sell BTC (~$0.54) |
 | USDC.eth.axl | 1 | 2 | 1 | 2 | token | swap stables |
 | USDT | 1 | 1.2 | 1 | 1.2 | token | swap stables |

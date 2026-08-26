@@ -30,3 +30,6 @@ packages/e2e/keplr-extension-manifest/
 packages/e2e/playwright-report/
 packages/e2e/test-results/
 packages/e2e/.env
+
+# Local agent config: skills and settings are personal and may carry credentials
+.claude/

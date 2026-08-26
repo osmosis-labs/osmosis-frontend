@@ -278,8 +278,10 @@ export const useBridgesSupportedAssets = ({
     // selects the single family member whose halt flags represent the hoisted
     // destination route (undefined => the same predicate as `matchesAsset`, used
     // when the asset and its destination route are the same entry).
+    // `chainId` is a string for Cosmos chains and a number for EVM ones, so it
+    // is compared by identity below rather than assumed to be a string.
     type HoistRule = {
-      chainId: string;
+      chainId: string | number;
       matchesAsset: (asset: MinimalAsset) => boolean | undefined;
       matchesRouteVariant?: (asset: MinimalAsset) => boolean | undefined;
     };
@@ -298,13 +300,14 @@ export const useBridgesSupportedAssets = ({
       asset.coinGeckoId === "cosmos";
 
     const hoistRules: HoistRule[] = [
-      // USDC -> Noble. The destination route is *native Noble* USDC, i.e. the
-      // canonical `USDC` entry (bridged variants are chain-qualified: USDC.eth.grv,
-      // USDC.avax.axl, ...). The route-variant matcher must be narrow: reusing the
-      // broad `isUsdcAsset` would let a halted bridged sibling (e.g. USDC.eth.grv)
-      // wrongly suppress the Noble default even when native Noble USDC is fine.
+      // USDC -> Ethereum, which holds the large majority of USDC supply.
+      // Routing is left to the bridge providers (Skip may use CCTP, Axelar or
+      // another path), so the route variant is the canonical `USDC` alloy that
+      // a routed transfer settles in, not any single bridge's wrapped variant.
+      // Gating on e.g. USDC.eth.axl would suppress the default whenever Axelar
+      // was halted, even with other Ethereum routes healthy.
       {
-        chainId: "noble-1",
+        chainId: 1,
         matchesAsset: isUsdcAsset,
         matchesRouteVariant: (asset) =>
           asset.coinDenom?.toUpperCase() === "USDC",
