@@ -25,14 +25,14 @@ export type SelectionToken = {
 };
 
 const USDC_ASSET: SelectionToken = {
-  chainName: "noble",
+  chainName: "osmosis",
   token: {
     coinDenom: "USDC",
     coinDecimals: 6,
     // Testnet
     // coinMinimalDenom: "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
     coinMinimalDenom:
-      "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+      "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
     coinImageUrl:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg",
   },
