@@ -36,6 +36,16 @@ type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
 const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
+/**
+ * Quotes a user may receive when selling. Sell mode is deliberately limited
+ * to the canonical stables, but Noble USDC stays selectable (not default)
+ * while pairs that only have a Noble-quoted orderbook remain: dropping it
+ * here would make limit sells on those pairs impossible while limit buys
+ * still work. Keeps default ordering (UI_DEFAULT_QUOTES) separate from the
+ * Sell allowlist.
+ */
+const SELL_QUOTES: string[] = [...UI_DEFAULT_QUOTES, USDC_NOBLE_BASE_DENOM];
+
 const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
   // "USDC.noble" — no longer the default, but still widely held
@@ -153,7 +163,7 @@ export const PriceSelector = memo(
           data.items
             .map((walletAsset) => {
               if (
-                !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
+                !(tab === "sell" ? SELL_QUOTES : VALID_QUOTES).includes(
                   walletAsset.coinMinimalDenom
                 )
               ) {
@@ -197,7 +207,8 @@ export const PriceSelector = memo(
 
     /**
      * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
-     * Sell trades limited to canonical USDC and alloyed USDT.
+     * Sell trades limited to the canonical stables plus legacy Noble USDC
+     * (see SELL_QUOTES).
      */
     const defaultQuotesWithBalances = useMemo(
       () =>
