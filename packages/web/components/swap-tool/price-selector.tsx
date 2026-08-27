@@ -34,6 +34,7 @@ import {
   wasOrderbookJustCreated,
 } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
 import { AddFundsModal } from "~/modals/add-funds";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { useStore } from "~/stores";
@@ -297,11 +298,22 @@ export const PriceSelector = memo(
       createOrderbook,
       isCreating: isCreatingOrderbook,
       error: createOrderbookError,
+      resetError: resetCreateOrderbookError,
     } = useCreateOrderbook({
       // Resolved minimal denom, never the raw "from" param: a symbol here
       // would end up inside the instantiate message.
       baseDenom: baseMinimalDenom ?? "",
       quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
+    });
+
+    // Same guard the creatable row used to enable itself, re-evaluated here
+    // for the pair the modal is open for: the row unmounts when the menu
+    // closes, so its verdict must not be the last word before a paid tx.
+    const { isBlocked: isPendingPairRatioBlocked } = useOrderbookRatioGuard({
+      baseDenom: baseMinimalDenom ?? "",
+      quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
+      baseDecimals: baseRawAsset?.decimals,
+      quoteDecimals: pendingCreateQuote?.decimals,
     });
 
     const handleOpenOrderbookModal = (asset: AssetWithBalance) => {
@@ -312,6 +324,9 @@ export const PriceSelector = memo(
     const handleCloseOrderbookModal = () => {
       setIsOrderbookModalOpen(false);
       setAcknowledgeOrderbookFee(false);
+      // The hook outlives the modal; drop this attempt's failure so the next
+      // open does not show it.
+      resetCreateOrderbookError();
     };
 
     const handleOrderbookConfirm = async () => {
@@ -324,6 +339,15 @@ export const PriceSelector = memo(
             { walletType: "cosmos", chainId: accountStore.osmosisChainId },
           ],
         });
+        return;
+      }
+      // Re-check the ratio guard at confirm time, as the Limit-tab entry
+      // point does: the modal can sit open while prices move or finish
+      // loading, and a blocked verdict must still stop the broadcast. The
+      // row the user reopens then shows the guard's explanation.
+      if (isPendingPairRatioBlocked) {
+        handleCloseOrderbookModal();
+        setPendingCreateQuote(undefined);
         return;
       }
       try {
@@ -595,28 +619,14 @@ const CreatableQuoteItem = observer(
 
     // Decimals come from the parent's already-loaded asset data: one such row
     // renders per non-selectable quote, so per-row asset queries here would
-    // multiply into a request burst every time the dropdown opens.
-    const is18DecimalBase = baseDecimals === 18 && quoteDecimals === 6;
-
-    const { data: basePrice, isLoading: isBasePriceLoading } =
-      api.edge.assets.getAssetPrice.useQuery(
-        { coinMinimalDenom: base },
-        { enabled: is18DecimalBase }
-      );
-    const { data: quotePrice, isLoading: isQuotePriceLoading } =
-      api.edge.assets.getAssetPrice.useQuery(
-        { coinMinimalDenom },
-        { enabled: is18DecimalBase }
-      );
-
-    const is18DecimalMismatch =
-      is18DecimalBase &&
-      (isBasePriceLoading ||
-        isQuotePriceLoading ||
-        basePrice === undefined ||
-        quotePrice === undefined ||
-        quotePrice.toDec().isZero() ||
-        basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+    // multiply into a request burst every time the dropdown opens. The price
+    // queries inside the guard only run for 18-decimal bases.
+    const { isBlocked: is18DecimalMismatch } = useOrderbookRatioGuard({
+      baseDenom: base,
+      quoteDenom: coinMinimalDenom,
+      baseDecimals,
+      quoteDecimals,
+    });
 
     const canCreate =
       !isVerifying &&

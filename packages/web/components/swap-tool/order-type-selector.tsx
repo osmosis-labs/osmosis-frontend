@@ -274,6 +274,7 @@ export const OrderTypeSelector = ({
     createOrderbook,
     isCreating,
     error: createError,
+    resetError: resetCreateError,
   } = useCreateOrderbook({
     baseDenom: resolvedBase,
     quoteDenom: resolvedQuote,
@@ -282,6 +283,9 @@ export const OrderTypeSelector = ({
   const handleConfirmCreate = async () => {
     if (!account?.isWalletConnected) {
       setIsModalOpen(false);
+      // Same reset as the other close paths, or the acknowledgement would
+      // carry over to the next pair the modal opens for.
+      setAcknowledgeFee(false);
       onOpenWalletSelect({
         walletOptions: [
           { walletType: "cosmos", chainId: accountStore.osmosisChainId },
@@ -390,6 +394,9 @@ export const OrderTypeSelector = ({
         onRequestClose={() => {
           setIsModalOpen(false);
           setAcknowledgeFee(false);
+          // The hook outlives the modal, so a failure from this attempt would
+          // otherwise still be showing when the modal next opens.
+          resetCreateError();
         }}
         baseDenom={base}
         baseSymbol={baseAsset?.coinDenom ?? base}

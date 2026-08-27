@@ -270,6 +270,10 @@ export function useCreateOrderbook({
   const apiUtils = api.useUtils();
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  /** Clears a previous attempt's error; `createOrderbook` also clears it on
+   *  start, but the confirm modal closes and reopens while this hook stays
+   *  mounted, so callers need to drop a stale failure on close. */
+  const resetError = useCallback(() => setError(undefined), []);
 
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -671,6 +675,7 @@ export function useCreateOrderbook({
     createOrderbook,
     isCreating,
     error,
+    resetError,
     canCreate:
       IS_ORDERBOOK_CREATION_SUPPORTED &&
       !!account?.address &&

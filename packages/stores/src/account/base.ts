@@ -86,6 +86,7 @@ import {
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
+  runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -706,13 +707,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       // must learn the tx hash even when everything after this point throws.
       const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
 
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
+      // The per-call callback records acceptance and must not be skipped
+      // because the store-wide one (toasts, analytics) threw.
+      runBroadcastedCallbacks({
+        chainId: chainNameOrId,
+        txHash: txHashBuffer,
+        preTxEvent: this.options.preTxEvents?.onBroadcasted,
+        perCall: onBroadcasted,
+      });
 
       // Pass all RPC endpoints to TxTracer for WebSocket failover.
       const rpcUrls = this.getChainRpcUrls(wallet);

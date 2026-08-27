@@ -687,6 +687,25 @@ describe("useCreateOrderbook", () => {
       expect(mockInvalidateGetPools).not.toHaveBeenCalled();
       expect(mockInvalidateVerify).not.toHaveBeenCalled();
     });
+
+    it("resetError clears the previous failure so a reopened modal starts clean", async () => {
+      mockBroadcastFailure(new Error("broadcast failed"));
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => {});
+      });
+      expect(result.current.error).toBeDefined();
+
+      act(() => {
+        result.current.resetError();
+      });
+
+      expect(result.current.error).toBeUndefined();
+    });
   });
 
   describe("createOrderbook — delivered tx failure", () => {
