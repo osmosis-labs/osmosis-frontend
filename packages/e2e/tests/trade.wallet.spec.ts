@@ -3,18 +3,25 @@ import { TradePage } from "../pages/trade-page";
 import { TransactionsPage } from "../pages/transactions-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { resolveAppUsdcDenom } from "../utils/usdc-identity";
 import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Trade feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const USDC =
-    "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+  // Resolved from the build under test in beforeAll: "USDC" is the alloy on
+  // builds carrying the assetlist identity handover and Noble on builds that
+  // predate it. Derived, not hardcoded, so the assertion follows whichever
+  // identity the build's token selector reports and fails when the selector
+  // and the swap route disagree. It does not prove the build carries the
+  // handover — if the assetlist still says Noble, this expects Noble.
+  let USDC: string;
   const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
   test.beforeAll(async () => {
+    USDC = await resolveAppUsdcDenom();
     context = await new SetupKeplr().setupWallet(privateKey);
 
     const { address } = await deriveAddress(privateKey);
@@ -28,7 +35,9 @@ test.describe("Test Trade feature", () => {
   });
 
   test.afterAll(async () => {
-    await context.close();
+    // beforeAll resolves the USDC identity before the wallet exists, and that
+    // resolver throws by design, so context can still be undefined here.
+    await context?.close();
   });
 
   test.beforeEach(async () => {
