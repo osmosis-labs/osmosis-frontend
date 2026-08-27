@@ -18,10 +18,7 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
-import {
-  AssetLists,
-  MainnetAssetSymbols,
-} from "~/config/generated/asset-lists";
+import { AssetLists } from "~/config/generated/asset-lists";
 import {
   Breakpoint,
   useAmplitudeAnalytics,
@@ -204,9 +201,12 @@ export const PriceSelector = memo(
      */
     const defaultQuotesWithBalances = useMemo(
       () =>
-        userQuotes?.filter(({ amount, symbol }) => {
-          if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
-            return true;
+        userQuotes?.filter(({ amount, coinMinimalDenom }) => {
+          // UI_DEFAULT_QUOTES holds minimal denoms, so the zero-balance
+          // exemption for the default quotes must compare denoms: comparing
+          // the symbol never matched, which balance-gated the defaults and
+          // would hide the new default from anyone not yet holding it.
+          if (UI_DEFAULT_QUOTES.includes(coinMinimalDenom)) return true;
           return amount?.toDec().gt(new Dec(0)) ?? false;
         }) ?? [],
       [userQuotes]

@@ -17,16 +17,13 @@
 import { SQS_BASE_URL } from "./config";
 
 // The denom SQS quotes prices in (the key of each inner price map). This is
-// SQS's quote asset, NOT the app's "USDC" identity: it stays Noble until the
-// sidecar repoints its quote denom to the alloy, independently of the
-// assetlist handover. Do not "fix" it alongside TOKEN_DENOMS.USDC.
+// SQS's quote asset, NOT the app's "USDC" identity, and it must move in the
+// same window as the sidecar's own quote-denom repoint, not with the
+// assetlist handover. Repointed to the alloy here as part of the default flip.
 const USDC_DENOM =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
 
-type SQSPriceResponse = Record<
-  string,
-  Record<string, string>
->;
+type SQSPriceResponse = Record<string, Record<string, string>>;
 
 // Retry parameters for transient SQS pricing failures (e.g. Node `fetch failed`
 // from EAI_AGAIN, ECONNRESET, TLS handshake hiccups, or 30s timeouts on cold
