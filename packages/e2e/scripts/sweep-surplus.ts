@@ -15,6 +15,10 @@
  * drop a wallet low enough to trigger an auto-topup — no ping-pong between
  * the two workflows.
  *
+ * Legacy denoms listed in LEGACY_SWEEP_SYMBOLS (currently Noble USDC, since the
+ * app's "USDC" identity moved to the alloy) have no requirement and are swept in
+ * full, so they consolidate in the holding account for the one-off conversion.
+ *
  * Environment variables:
  * - `E2E_PRIVATE_KEY_TOPUP`   — topup account key (destination address).
  * - `E2E_PRIVATE_KEY_PREVIEW`, `TEST_PRIVATE_KEY_SG/EU/US` — source signers.
@@ -35,6 +39,14 @@ import type { Coin } from "@cosmjs/stargate";
 import BigNumber from "bignumber.js";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
+
+/**
+ * Symbols swept in full regardless of requirements. These are legacy denoms the
+ * tests no longer use (the app's "USDC" identity moved to the alloy), so any
+ * balance is surplus, and consolidating them in the holding account is where
+ * the one-off conversion to the alloy happens. Must be keys of TOKEN_DENOMS.
+ */
+const LEGACY_SWEEP_SYMBOLS = ["USDC.noble"];
 import { TOKEN_DENOMS } from "../utils/balance-checker";
 import { deriveAddress, createSigningClient, OSMOSIS_RPC } from "../utils/order-utils";
 import {
@@ -49,8 +61,9 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 
-/** Matches the auto-topup refill target (topup_multiplier 3.0 dispatched by
- * the monitoring workflow's topup-dispatch job). */
+/** Matches the auto-topup refill target (topup_multiplier 3.0, now dispatched
+ * uniformly by every auto-dispatcher: monitoring-limit-geo, frontend-e2e and
+ * prod-frontend-e2e). */
 const TOPUP_TARGET_MULTIPLIER = 3.0;
 /** Derived from the topup target so the floor stays above it even if the
  * target changes — sweeping below it would trigger auto-topup ping-pong. */
@@ -293,6 +306,21 @@ async function main(): Promise<void> {
             .toFixed(Math.min(bal.decimals, 4))} (keep ${target.toFixed(4)})`
         );
         coins.push({ denom: bal.denom, amount: rawSweep.toFixed(0) });
+      }
+
+      // Legacy denoms: no requirement keeps any of the balance, sweep it all.
+      for (const symbol of LEGACY_SWEEP_SYMBOLS) {
+        const bal = balances.find((b) => b.symbol === symbol);
+        if (!bal || new BigNumber(bal.rawAmount).lte(0)) continue;
+        console.log(
+          `      ${symbol}: ${bal.amount.toFixed(
+            Math.min(bal.decimals, 4)
+          )} legacy denom  → sweep all`
+        );
+        coins.push({
+          denom: bal.denom,
+          amount: new BigNumber(bal.rawAmount).toFixed(0),
+        });
       }
 
       if (coins.length === 0) {
