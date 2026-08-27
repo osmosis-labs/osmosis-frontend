@@ -6,10 +6,12 @@ import {
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
+  getOrderbookPoolsFresh,
   getOrderbookState,
   MappedLimitOrder,
   maybeCachePaginatedItems,
   OrderStatus,
+  queryTx,
 } from "@osmosis-labs/server";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -233,4 +235,90 @@ export const orderbookRouter = createTRPCRouter({
     const pools = await getOrderbookPools();
     return pools;
   }),
+  /**
+   * Verifies whether an orderbook can be created for a given base/quote pair.
+   * Returns:
+   *  - `orderbookExists`: true if the canonical list already has this pair.
+   *  - `endpointFunctional`: true if the sidecar endpoint responded without throwing.
+   */
+  verifyOrderbookCreation: publicProcedure
+    .input(
+      z.object({
+        baseDenom: z.string(),
+        quoteDenom: z.string(),
+        // Pass true immediately after creation to bypass the server-side LRU
+        // cache and get a fresh result from SQS.
+        fresh: z.boolean().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { baseDenom, quoteDenom, fresh } = input;
+
+      let pools: Awaited<ReturnType<typeof getOrderbookPools>> = [];
+      let endpointFunctional = false;
+      try {
+        pools = fresh
+          ? await getOrderbookPoolsFresh()
+          : await getOrderbookPools();
+        endpointFunctional = true;
+      } catch {
+        return { orderbookExists: false, endpointFunctional: false };
+      }
+
+      const orderbookExists = pools.some(
+        (pool) =>
+          (pool.baseDenom === baseDenom && pool.quoteDenom === quoteDenom) ||
+          (pool.baseDenom === quoteDenom && pool.quoteDenom === baseDenom)
+      );
+
+      return { orderbookExists, endpointFunctional };
+    }),
+  /**
+   * Delivery status of a broadcast-accepted orderbook-creation tx, straight
+   * from the node (`/cosmos/tx/v1beta1/txs/{hash}`) rather than the
+   * SQS-derived pool list, which can lag indexing. Used to reconcile a
+   * creation whose tx tracing failed before releasing the pair for another
+   * paid attempt. Distinguishes an authoritative "notFound" (the node
+   * answered: no such tx) from "unavailable" (outage, timeout, malformed
+   * response — proof of nothing); callers must keep their duplicate
+   * protection on both, but the distinction must not be erased server-side.
+   */
+  getCreateOrderbookTxStatus: publicProcedure
+    .input(
+      z.object({
+        // A tx hash is exactly 32 bytes hex; anything else is rejected before
+        // it can reach the node path interpolation.
+        txHash: z.string().regex(/^[0-9A-Fa-f]{64}$/),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const tx = await queryTx({
+          chainList: ctx.chainList,
+          txHash: input.txHash,
+        });
+        // A body without a well-formed tx_response proves nothing; never let
+        // a malformed 200 read as "delivered".
+        if (typeof tx?.tx_response?.code !== "number") {
+          return { status: "unavailable" as const };
+        }
+        return tx.tx_response.code === 0
+          ? { status: "delivered" as const }
+          : {
+              status: "failed" as const,
+              code: tx.tx_response.code,
+              rawLog: tx.tx_response.raw_log,
+            };
+      } catch (e) {
+        // LCDs report an unknown hash as an error whose message names the tx
+        // as not found (code 3/NotFound); only that is authoritative absence.
+        const message =
+          (e as { data?: { message?: string } })?.data?.message ??
+          (e instanceof Error ? e.message : "");
+        if (/not\s*found/i.test(message)) {
+          return { status: "notFound" as const };
+        }
+        return { status: "unavailable" as const };
+      }
+    }),
 });
