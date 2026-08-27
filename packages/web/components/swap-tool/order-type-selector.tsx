@@ -1,4 +1,3 @@
-import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
@@ -22,6 +21,7 @@ import {
   wasOrderbookJustCreated,
 } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -176,28 +176,15 @@ export const OrderTypeSelector = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
-  const is18DecimalBase =
-    baseAsset?.coinDecimals === 18 && quoteAsset?.coinDecimals === 6;
-
-  const { data: basePrice, isLoading: isBasePriceLoading } =
-    api.edge.assets.getAssetPrice.useQuery(
-      { coinMinimalDenom: resolvedBase },
-      { enabled: is18DecimalBase && !!baseMinimalDenom }
-    );
-  const { data: quotePrice, isLoading: isQuotePriceLoading } =
-    api.edge.assets.getAssetPrice.useQuery(
-      { coinMinimalDenom: resolvedQuote },
-      { enabled: is18DecimalBase && !!quoteMinimalDenom }
-    );
-
-  const is18DecimalMismatch =
-    is18DecimalBase &&
-    (isBasePriceLoading ||
-      isQuotePriceLoading ||
-      basePrice === undefined ||
-      quotePrice === undefined ||
-      quotePrice.toDec().isZero() ||
-      basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+  // Shared with the quote dropdown's creatable rows so both entry points apply
+  // the same fail-closed verdict (loading, refetching, errored or missing
+  // prices all block).
+  const { isBlocked: is18DecimalMismatch } = useOrderbookRatioGuard({
+    baseDenom: resolvedBase,
+    quoteDenom: resolvedQuote,
+    baseDecimals: baseAsset?.coinDecimals,
+    quoteDecimals: quoteAsset?.coinDecimals,
+  });
 
   // Verify whether this is a real missing orderbook vs. an endpoint failure.
   // Use fetchStatus instead of isLoading — isLoading is true even when the query
@@ -280,12 +267,18 @@ export const OrderTypeSelector = ({
     quoteDenom: resolvedQuote,
   });
 
+  // Every way the modal closes (dismiss, wallet handoff, guard block, success)
+  // goes through here so the acknowledgement and any previous attempt's error
+  // never carry over to the next open.
+  const closeCreateModal = () => {
+    setIsModalOpen(false);
+    setAcknowledgeFee(false);
+    resetCreateError();
+  };
+
   const handleConfirmCreate = async () => {
     if (!account?.isWalletConnected) {
-      setIsModalOpen(false);
-      // Same reset as the other close paths, or the acknowledgement would
-      // carry over to the next pair the modal opens for.
-      setAcknowledgeFee(false);
+      closeCreateModal();
       onOpenWalletSelect({
         walletOptions: [
           { walletType: "cosmos", chainId: accountStore.osmosisChainId },
@@ -297,14 +290,12 @@ export const OrderTypeSelector = ({
     // asset/price data finishes loading, and a guard verdict that arrives
     // after the click must still block the broadcast.
     if (isPairMetadataLoading || is18DecimalMismatch) {
-      setIsModalOpen(false);
-      setAcknowledgeFee(false);
+      closeCreateModal();
       return;
     }
     try {
       await createOrderbook();
-      setIsModalOpen(false);
-      setAcknowledgeFee(false);
+      closeCreateModal();
       // Optimistically activate limit tab — orderbook exists on-chain even if
       // SQS / server cache hasn't caught up yet. The ref suppresses the
       // !hasOrderbook reset effect until the cache refreshes.
@@ -391,13 +382,7 @@ export const OrderTypeSelector = ({
 
       <CreateOrderbookModal
         isOpen={isModalOpen}
-        onRequestClose={() => {
-          setIsModalOpen(false);
-          setAcknowledgeFee(false);
-          // The hook outlives the modal, so a failure from this attempt would
-          // otherwise still be showing when the modal next opens.
-          resetCreateError();
-        }}
+        onRequestClose={closeCreateModal}
         baseDenom={base}
         baseSymbol={baseAsset?.coinDenom ?? base}
         quoteDenom={quote}
