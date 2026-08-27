@@ -51,7 +51,7 @@ const SELL_QUOTES: string[] = [...UI_DEFAULT_QUOTES, USDC_NOBLE_BASE_DENOM];
  * constituents that redeem 1:1 into them through their transmuter pools.
  * Constituent sets read from the pool contracts (allUSDC
  * osmo147h5x9p...hr75m0, allUSDT osmo1em6xs47...avdxek), not inferred from
- * variant grouping. Variants outside both pools are not quotes.
+ * variant grouping. Other variants are not quotes, except where noted.
  */
 const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
@@ -69,6 +69,9 @@ const VALID_QUOTES: string[] = [
   "ibc/2AD3C64D19ADFBB522CD738B58F421102143F827C1CAFF574A8BF0B81017D53D",
   // "USDT.eth.atom"
   "ibc/7BC2F718C47C0749791F2612A914C8C39D1A4F533A27AF7285D924D4B617DDA6",
+  // Kept as a quote in its own right; not an alloy constituent.
+  // "USDT.kava"
+  "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
 ];
 
 function sortByAmount(
