@@ -4,23 +4,11 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
-  static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
-    // 0.5%
-    new Dec("0.005"),
-    // 1%
-    new Dec("0.01"),
-    // 3%
-    new Dec("0.03"),
-    // 5%
-    new Dec("0.05"),
-  ];
-
   @observable
   protected _defaultManualSlippage: string = "0.5";
 
   @observable.shallow
-  protected _selectableSlippages: ReadonlyArray<Dec> =
-    ObservableSlippageConfig.defaultSelectableSlippages;
+  protected _selectableSlippages: ReadonlyArray<Dec> = [];
 
   @observable
   protected _selectedIndex: number = 0;
@@ -30,6 +18,9 @@ export class ObservableSlippageConfig {
 
   @observable
   protected _manualSlippage: string = "0.5";
+
+  @observable
+  protected _userOverrodeSlippage: boolean = false;
 
   constructor() {
     makeObservable(this);
@@ -77,10 +68,27 @@ export class ObservableSlippageConfig {
 
     // within bound
     const strDec = new Dec(str);
-    if (strDec.gte(new Dec(100)) || strDec.lt(new Dec(0))) return;
+    if (strDec.gt(new Dec(100)) || strDec.lt(new Dec(0))) return;
 
     this._isManualSlippage = true;
     this._manualSlippage = str;
+  }
+
+  /** True when the user has explicitly typed a slippage value.
+   *  Call markUserOverride() on user input and clearUserOverride() when
+   *  the auto-adjust hook writes or the user clears the field. */
+  get userOverrodeSlippage(): boolean {
+    return this._userOverrodeSlippage;
+  }
+
+  @action
+  markUserOverride() {
+    this._userOverrodeSlippage = true;
+  }
+
+  @action
+  clearUserOverride() {
+    this._userOverrodeSlippage = false;
   }
 
   @computed
