@@ -5,6 +5,7 @@ import {
   BridgeError,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  TxSnapshot,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
@@ -14,7 +15,7 @@ import {
   isNil,
 } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
 import { Address, createPublicClient } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
@@ -29,10 +30,17 @@ import {
   normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
+import {
+  getChainBalance,
+  useMultiTxFinalStep,
+  waitForSkipStepArrival,
+} from "~/components/bridge/use-multi-tx-step";
 import { IS_TESTNET } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -107,9 +115,35 @@ export const useBridgeQuotes = ({
     useSendEvmTransaction();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
+  /**
+   * Phase of an in-flight multi-transaction transfer:
+   * - "waiting-arrival": first tx sent; polling until the funds reach the
+   *   intermediate chain
+   * - "step2-signing": prompting the wallet for the final step
+   */
+  const [multiTxPhase, setMultiTxPhase] = useState<
+    "waiting-arrival" | "step2-signing" | undefined
+  >();
+  const isMountedRef = useRef(true);
+  useUnmount(() => {
+    isMountedRef.current = false;
+  });
 
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
+
+  const featureFlags = useFeatureFlags();
+  /**
+   * Multi-tx routes end with a step signed by the user's cosmos wallet on an
+   * intermediate chain (e.g. noble-1), so only request them when that wallet
+   * is connected — it's the Osmosis-side account, which chain-suggests the
+   * intermediate chain at signing time.
+   */
+  const cosmosSideChain = isWithdraw ? fromChain : toChain;
+  const allowMultiTx =
+    featureFlags.multiTxBridgeRoutes === true &&
+    cosmosSideChain?.chainType === "cosmos" &&
+    Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
 
   const quoteParams: Partial<
     Omit<
@@ -124,8 +158,17 @@ export const useBridgeQuotes = ({
       toAddress,
       toAsset,
       toChain,
+      allowMultiTx,
     }),
-    [fromAddress, fromAsset, fromChain, toAddress, toAsset, toChain]
+    [
+      fromAddress,
+      fromAsset,
+      fromChain,
+      toAddress,
+      toAsset,
+      toChain,
+      allowMultiTx,
+    ]
   );
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
@@ -200,6 +243,8 @@ export const useBridgeQuotes = ({
           enabled:
             // ensure new quote queries are not sent in bg when tx is being approved
             !isTxPending &&
+            // or while a multi-tx transfer is mid-flow
+            !multiTxPhase &&
             inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&
             !isInsufficientBal &&
@@ -600,10 +645,13 @@ export const useBridgeQuotes = ({
       sendTxHash,
       quote,
       nomicCheckpointIndex,
+      pendingStep,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
       nomicCheckpointIndex?: number;
+      /** Set for multi-tx transfers still awaiting a later user-signed step. */
+      pendingStep?: TxSnapshot["pendingStep"];
     }) => {
       if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
         throw new Error(
@@ -657,6 +705,7 @@ export const useBridgeQuotes = ({
               }
             : undefined,
           nomicCheckpointIndex,
+          pendingStep,
         });
       }
     },
@@ -684,6 +733,80 @@ export const useBridgeQuotes = ({
   }, [isTxPending, onRequestClose, transferInitiated]);
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
+  const { getIntermediateAccount, signFinalStep } = useMultiTxFinalStep();
+
+  /** Signs and broadcasts an EVM bridge tx — including any required ERC20
+   *  approval — resolving with the tx hash once it's included in a block. */
+  const sendEvmBridgeTx = async (
+    transactionRequest: EvmBridgeTransactionRequest
+  ): Promise<Address> => {
+    if (!isEvmWalletConnected || !evmAddress || !evmConnector)
+      throw new Error("No ETH wallet account is connected");
+    if (!currentEvmChain)
+      throw new Error("No EVM chain selected or chain is unsupported");
+
+    const publicClient = createPublicClient({
+      transport: getEvmRpcTransport(currentEvmChain),
+      chain: currentEvmChain,
+    });
+
+    /**
+     * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
+     */
+    if (transactionRequest.approvalTransactionRequest) {
+      setIsApprovingToken(true);
+
+      const approveTxHash = await sendTransactionAsync(
+        {
+          to: transactionRequest.approvalTransactionRequest.to as Address,
+          account: evmAddress,
+          data: transactionRequest.approvalTransactionRequest.data as Address,
+        },
+        {
+          onError: () => {
+            setIsApprovingToken(false);
+          },
+        }
+      );
+
+      await waitForTransactionReceipt(publicClient, {
+        hash: approveTxHash,
+      });
+
+      for (const quoteResult of quoteResults) {
+        await quoteResult.refetch();
+      }
+      setIsApprovingToken(false);
+    }
+
+    const sendTxHash = await sendTransactionAsync({
+      to: transactionRequest.to,
+      account: evmAddress,
+      value: transactionRequest?.value
+        ? BigInt(transactionRequest.value)
+        : undefined,
+      data: transactionRequest.data,
+      gas: transactionRequest.gas ? BigInt(transactionRequest.gas) : undefined,
+      gasPrice: transactionRequest.gasPrice
+        ? BigInt(transactionRequest.gasPrice)
+        : undefined,
+      maxFeePerGas: transactionRequest.maxFeePerGas
+        ? BigInt(transactionRequest.maxFeePerGas)
+        : undefined,
+      maxPriorityFeePerGas: transactionRequest.maxPriorityFeePerGas
+        ? BigInt(transactionRequest.maxPriorityFeePerGas)
+        : undefined,
+    });
+
+    setIsBroadcastingTx(true);
+
+    await waitForTransactionReceipt(publicClient, {
+      hash: sendTxHash,
+    });
+
+    return sendTxHash;
+  };
+
   /**
    * EVM transactions carry no auth-memo field (`EvmBridgeTransactionRequest`
    * is only to/data/value/gas), so the warn-accept memo stamp (MTN-137)
@@ -693,74 +816,10 @@ export const useBridgeQuotes = ({
   const signAndBroadcastEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
-    if (!isEvmWalletConnected || !evmAddress || !evmConnector)
-      throw new Error("No ETH wallet account is connected");
-    if (!currentEvmChain)
-      throw new Error("No EVM chain selected or chain is unsupported");
-
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
-      const publicClient = createPublicClient({
-        transport: getEvmRpcTransport(currentEvmChain),
-        chain: currentEvmChain,
-      });
-
-      /**
-       * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
-       */
-      if (transactionRequest.approvalTransactionRequest) {
-        setIsApprovingToken(true);
-
-        const approveTxHash = await sendTransactionAsync(
-          {
-            to: transactionRequest.approvalTransactionRequest.to as Address,
-            account: evmAddress,
-            data: transactionRequest.approvalTransactionRequest.data as Address,
-          },
-          {
-            onError: () => {
-              setIsApprovingToken(false);
-            },
-          }
-        );
-
-        await waitForTransactionReceipt(publicClient, {
-          hash: approveTxHash,
-        });
-
-        for (const quoteResult of quoteResults) {
-          await quoteResult.refetch();
-        }
-        setIsApprovingToken(false);
-      }
-
-      const sendTxHash = await sendTransactionAsync({
-        to: transactionRequest.to,
-        account: evmAddress,
-        value: transactionRequest?.value
-          ? BigInt(transactionRequest.value)
-          : undefined,
-        data: transactionRequest.data,
-        gas: transactionRequest.gas
-          ? BigInt(transactionRequest.gas)
-          : undefined,
-        gasPrice: transactionRequest.gasPrice
-          ? BigInt(transactionRequest.gasPrice)
-          : undefined,
-        maxFeePerGas: transactionRequest.maxFeePerGas
-          ? BigInt(transactionRequest.maxFeePerGas)
-          : undefined,
-        maxPriorityFeePerGas: transactionRequest.maxPriorityFeePerGas
-          ? BigInt(transactionRequest.maxPriorityFeePerGas)
-          : undefined,
-      });
-
-      setIsBroadcastingTx(true);
-
-      await waitForTransactionReceipt(publicClient, {
-        hash: sendTxHash,
-      });
+      const sendTxHash = await sendEvmBridgeTx(transactionRequest);
 
       trackTransferStatus({
         quote,
@@ -777,12 +836,175 @@ export const useBridgeQuotes = ({
       const toastContent = getWagmiToastErrorMessage({
         error,
         t,
-        walletName: evmConnector.name,
+        walletName: evmConnector?.name ?? "",
       });
       displayToast(toastContent, ToastType.ERROR);
     } finally {
       setIsApprovingToken(false);
       setIsBroadcastingTx(false);
+    }
+  };
+
+  /**
+   * Executes a multi-transaction route. The intermediate signer is
+   * preflighted BEFORE the irreversible first transaction: the wallet must
+   * connect on the intermediate chain, its account there must match the
+   * address the quote's transactions were built against, and the final
+   * step's fee token must be funded when it isn't paid from the arriving
+   * funds. Then: sign the first (EVM) tx, wait for the funds to reach the
+   * intermediate chain, and rebuild + sign the final step there. Closing
+   * the modal mid-flow is safe: the transfer persists with its pending step
+   * and can be resumed from history.
+   */
+  const signAndBroadcastMultiTx = async (
+    quote: NonNullable<typeof selectedQuote>["quote"],
+    transactionSteps: NonNullable<
+      NonNullable<typeof selectedQuote>["quote"]["transactionSteps"]
+    >
+  ) => {
+    const [firstStep, ...laterSteps] = transactionSteps;
+    const finalStep = laterSteps[0];
+    // Multi-tx routes Skip returns today are EVM-first with one final cosmos
+    // step; refuse anything else rather than executing a partial route.
+    if (
+      firstStep.type !== "evm" ||
+      laterSteps.length !== 1 ||
+      finalStep.type !== "cosmos" ||
+      typeof finalStep.chainId !== "string"
+    ) {
+      displayToast(
+        {
+          titleTranslationKey: "transfer.somethingIsntWorking",
+          captionTranslationKey: "transfer.sorryForTheInconvenience",
+        },
+        ToastType.ERROR
+      );
+      return;
+    }
+    const finalStepChainId = finalStep.chainId;
+    const finalStepPrettyName =
+      ChainList.find((c) => c.chain_id === finalStepChainId)?.prettyName ??
+      finalStepChainId;
+
+    try {
+      // ---- Preflight the intermediate signer; nothing irreversible yet ----
+      const senderAddress = await getIntermediateAccount(finalStepChainId);
+      // The quote's transactions were built against a derived intermediate
+      // address. If the wallet can't provide an account there, or provides a
+      // DIFFERENT one, the first tx would route funds through an account the
+      // user doesn't control — abort before anything is sent.
+      const draftSender = (
+        finalStep.msgs[0]?.value as { sender?: string } | undefined
+      )?.sender;
+      if (!senderAddress || !draftSender || draftSender !== senderAddress) {
+        displayToast(
+          {
+            titleTranslationKey: "transfer.multiTxWrongAccountTitle",
+            captionTranslationKey: [
+              "transfer.multiTxWrongAccount",
+              { chain: finalStepPrettyName },
+            ],
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
+      // When the final step's fee isn't paid from the arriving funds (e.g.
+      // INJ on Injective), the account there must already hold the fee token.
+      const stepGasFee = finalStep.gasFee;
+      if (
+        stepGasFee &&
+        fromAsset &&
+        stepGasFee.denom.replace(/^u/, "").toLowerCase() !==
+          fromAsset.denom.toLowerCase()
+      ) {
+        const balance = await getChainBalance({
+          chainId: finalStepChainId,
+          address: senderAddress,
+          denom: stepGasFee.denom,
+        });
+        if (balance !== undefined && balance < BigInt(stepGasFee.amount)) {
+          displayToast(
+            {
+              titleTranslationKey: "transfer.insufficientFundsForFees",
+              captionTranslationKey: [
+                "transfer.multiTxGasWarning",
+                { denom: stepGasFee.denom, chain: finalStepPrettyName },
+              ],
+            },
+            ToastType.ERROR
+          );
+          return;
+        }
+      }
+
+      // ---- Step 1: the EVM transaction ----
+      const sendTxHash = await sendEvmBridgeTx(firstStep);
+      setIsBroadcastingTx(false);
+
+      // persist mid-flow (with the quoted route, so the final step can be
+      // rebuilt after a reload) so an interrupted transfer can be resumed
+      trackTransferStatus({
+        quote,
+        sendTxHash,
+        pendingStep: {
+          chainId: finalStepChainId,
+          prettyName: finalStepPrettyName,
+          stepIndex: 2,
+          totalSteps: transactionSteps.length,
+          priorStepTxHash: sendTxHash,
+          routeData: quote.multiTxRouteData,
+        },
+      });
+
+      setMultiTxPhase("waiting-arrival");
+      const arrival = await waitForSkipStepArrival({
+        chainId: String(fromChain?.chainId ?? firstStep.chainId),
+        txHash: sendTxHash,
+        isActive: () => isMountedRef.current,
+      });
+      // the user closed the modal: leave the resumable entry in history
+      if (arrival === "aborted" || arrival === "pending") return;
+      if (arrival === "failed") {
+        transferHistoryStore.receiveNewTxStatus(
+          sendTxHash,
+          "failed",
+          undefined
+        );
+        return;
+      }
+
+      // ---- Step 2: the intermediate-chain transaction ----
+      setMultiTxPhase("step2-signing");
+      await signFinalStep({
+        bridge: quote.provider.id,
+        quoteParams: {
+          ...(quoteParams as Required<typeof quoteParams>),
+          fromAmount: quote.input.amount.toCoin().amount,
+        },
+        stepChainId: finalStepChainId,
+        senderAddress,
+        routeData: quote.multiTxRouteData,
+        priorStepTxHash: sendTxHash,
+        onBroadcasted: () => setIsBroadcastingTx(true),
+        onBroadcastFailed: () => setIsBroadcastingTx(false),
+        onFulfilled: () => {
+          onTransferProp?.();
+          setTransferInitiated(true);
+        },
+      });
+    } catch (e) {
+      const error = e as BaseError;
+      const toastContent = getWagmiToastErrorMessage({
+        error,
+        t,
+        walletName: evmConnector?.name ?? "",
+      });
+      displayToast(toastContent, ToastType.ERROR);
+    } finally {
+      setIsApprovingToken(false);
+      setIsBroadcastingTx(false);
+      setMultiTxPhase(undefined);
     }
   };
 
@@ -911,6 +1133,17 @@ export const useBridgeQuotes = ({
       return;
     }
 
+    // multi-transaction route: step-through flow with its own error handling
+    const transactionSteps = quote.transactionSteps;
+    if (transactionSteps && transactionSteps.length > 1) {
+      if (multiTxPhase) return; // already mid-flow
+      await signAndBroadcastMultiTx(quote, transactionSteps).catch((e) => {
+        console.error("multi-tx transfer failed", e);
+        throw e;
+      });
+      return;
+    }
+
     const tx =
       transactionRequest.type === "evm"
         ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
@@ -938,6 +1171,41 @@ export const useBridgeQuotes = ({
 
   const isWrongEvmChainSelected =
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
+
+  /** Info about the selected quote's multi-tx route, when it needs more than
+   *  one user-signed transaction. */
+  const multiTxSteps = selectedQuote?.quote.transactionSteps;
+  const multiTx = useMemo(() => {
+    if (!multiTxSteps || multiTxSteps.length <= 1) return undefined;
+    const finalStep = multiTxSteps[multiTxSteps.length - 1];
+    const chainId =
+      typeof finalStep.chainId === "string" ? finalStep.chainId : undefined;
+    const gasFee = finalStep.type === "cosmos" ? finalStep.gasFee : undefined;
+    return {
+      totalSteps: multiTxSteps.length,
+      intermediateChainId: chainId,
+      intermediatePrettyName:
+        ChainList.find((c) => c.chain_id === chainId)?.prettyName ??
+        chainId ??
+        "",
+      /** Denom of the final step's network fee (e.g. uusdc on noble-1, inj
+       *  on injective-1), so surfaces can warn when the account there must
+       *  hold a different asset than the one being transferred. */
+      finalStepGasFeeDenom: gasFee?.denom,
+      /**
+       * True when the final step's fee token loosely differs from the
+       * transferred asset (uusdc vs USDC matches; inj vs USDC doesn't) — the
+       * arriving funds then can't pay the step's own gas, so the user's
+       * account on the intermediate chain must hold the fee token.
+       */
+      finalStepGasWarning: Boolean(
+        gasFee &&
+          fromAsset &&
+          gasFee.denom.replace(/^u/, "").toLowerCase() !==
+            fromAsset.denom.toLowerCase()
+      ),
+    };
+  }, [multiTxSteps, fromAsset]);
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
   /**
@@ -1070,6 +1338,7 @@ export const useBridgeQuotes = ({
     !isLoadingBridgeQuote &&
     !isLoadingBridgeTransaction &&
     !isTxPending &&
+    !multiTxPhase &&
     !errorBoxMessage &&
     Boolean(selectedQuote);
 
@@ -1086,6 +1355,12 @@ export const useBridgeQuotes = ({
   let txButtonText: string | undefined;
   if (isApprovingToken) {
     txButtonText = t("assets.transfer.approving");
+  } else if (multiTxPhase === "waiting-arrival") {
+    txButtonText = t("transfer.multiTxWaitingForFunds", {
+      chain: multiTx?.intermediatePrettyName ?? "",
+    });
+  } else if (multiTxPhase === "step2-signing") {
+    txButtonText = t("assets.transfer.approveInWallet");
   } else if (isBroadcastingTx) {
     txButtonText = t("assets.transfer.sending");
   } else if (isTxPending) {
@@ -1109,6 +1384,11 @@ export const useBridgeQuotes = ({
     isApprovingToken,
     onTransfer,
     isWrongEvmChainSelected,
+
+    /** Set when the selected quote needs more than one signed transaction. */
+    multiTx,
+    /** Phase of an in-flight multi-tx transfer, undefined otherwise. */
+    multiTxPhase,
 
     isInsufficientFee,
     isInsufficientBal,

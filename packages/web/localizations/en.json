@@ -915,6 +915,16 @@
         "continueTo": "Continue to {provider}"
       }
     },
+    "multiTxTitle": "This transfer takes {steps} transactions",
+    "multiTxBadge": "{steps} transactions",
+    "multiTxDescription": "After the first transaction confirms, you'll be asked to sign a final transfer on {chain}.",
+    "multiTxWaitingForFunds": "Waiting for funds to arrive on {chain}…",
+    "multiTxSignFinal": "Sign the final transfer on {chain} in your wallet to complete the transfer.",
+    "multiTxGasWarning": "The final step pays its network fee in {denom} on {chain}. Make sure your {chain} account holds {denom}.",
+    "multiTxContinue": "Continue transfer",
+    "multiTxWrongAccountTitle": "Wallet account mismatch",
+    "multiTxWrongAccount": "Your wallet's {chain} account doesn't match this route. The transfer was canceled before any funds moved.",
+    "multiTxStillInTransit": "Funds are still in transit",
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",
       "titleWithdraw": "Select an asset to withdraw",

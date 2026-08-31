@@ -33,15 +33,23 @@ import {
   BridgeQuote,
   BridgeSupportedAsset,
   BridgeTransactionRequest,
+  BridgeTransactionStep,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
+  GetBridgeTransactionStepParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
 import { SkipApiClient } from "./client";
-import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
+import {
+  SkipEvmTx,
+  SkipMsg,
+  SkipMultiChainMsg,
+  SkipMultiTxRouteData,
+  SkipRouteResponse,
+} from "./types";
 
 export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";
@@ -64,6 +72,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       fromAddress,
       toAddress,
       slippage,
+      allowMultiTx,
     } = params;
 
     return cachified({
@@ -78,6 +87,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         toAsset,
         toChain,
         slippage,
+        allowMultiTx,
       }),
       ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
@@ -101,61 +111,92 @@ export class SkipBridgeProvider implements BridgeProvider {
           });
         }
 
-        const route = await this.skipClient
-          .route({
-            source_asset_denom: sourceAsset.denom,
-            source_asset_chain_id: fromChain.chainId.toString(),
-            dest_asset_denom: destinationAsset.denom,
-            dest_asset_chain_id: toChain.chainId.toString(),
-            amount_in: fromAmount,
-          })
-          .catch((e) => {
-            if (e instanceof Error) {
-              const msg = e.message;
-              if (
-                msg.includes(
-                  "Input amount is too low to cover"
-                  // Could be Axelar or CCTP
-                ) ||
-                msg.includes(
-                  "Difference in USD value of route input and output is too large"
-                )
-              ) {
-                throw new BridgeQuoteError({
-                  bridgeId: SkipBridgeProvider.ID,
-                  errorType: "InsufficientAmountError",
-                  message: msg,
-                });
+        const fetchRoute = (allowMulti: boolean) =>
+          this.skipClient
+            .route({
+              source_asset_denom: sourceAsset.denom,
+              source_asset_chain_id: fromChain.chainId.toString(),
+              dest_asset_denom: destinationAsset.denom,
+              dest_asset_chain_id: toChain.chainId.toString(),
+              amount_in: fromAmount,
+              // Omit the key entirely when off so the request matches the
+              // pre-multi-tx shape byte for byte.
+              ...(allowMulti ? { allow_multi_tx: true } : {}),
+            })
+            .catch((e) => {
+              if (e instanceof Error) {
+                const msg = e.message;
+                if (
+                  msg.includes(
+                    "Input amount is too low to cover"
+                    // Could be Axelar or CCTP
+                  ) ||
+                  msg.includes(
+                    "Difference in USD value of route input and output is too large"
+                  )
+                ) {
+                  throw new BridgeQuoteError({
+                    bridgeId: SkipBridgeProvider.ID,
+                    errorType: "InsufficientAmountError",
+                    message: msg,
+                  });
+                }
+                if (
+                  msg.includes(
+                    "cannot transfer across cctp after route demands swap"
+                  )
+                ) {
+                  throw new BridgeQuoteError({
+                    bridgeId: SkipBridgeProvider.ID,
+                    errorType: "NoQuotesError",
+                    message: msg,
+                  });
+                }
+                if (
+                  msg.includes(
+                    "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
+                  ) ||
+                  msg.includes("no routes found")
+                ) {
+                  throw new BridgeQuoteError({
+                    bridgeId: SkipBridgeProvider.ID,
+                    errorType: "NoQuotesError",
+                    message: msg,
+                  });
+                }
               }
-              if (
-                msg.includes(
-                  "cannot transfer across cctp after route demands swap"
-                )
-              ) {
-                throw new BridgeQuoteError({
-                  bridgeId: SkipBridgeProvider.ID,
-                  errorType: "NoQuotesError",
-                  message: msg,
-                });
-              }
-              if (
-                msg.includes(
-                  "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
-                ) ||
-                msg.includes("no routes found")
-              ) {
-                throw new BridgeQuoteError({
-                  bridgeId: SkipBridgeProvider.ID,
-                  errorType: "NoQuotesError",
-                  message: msg,
-                });
-              }
-            }
-            throw e;
-          });
+              throw e;
+            });
+
+        // Single-tx routes always win: only when Skip reports that no
+        // single-tx route exists do we ask again allowing multi-tx routes,
+        // so an available one-signature route is never degraded to a
+        // multi-step flow.
+        const route = await fetchRoute(false).catch((e) => {
+          if (
+            allowMultiTx &&
+            e instanceof BridgeQuoteError &&
+            e.message.includes("no single-tx routes found")
+          ) {
+            return fetchRoute(true);
+          }
+          throw e;
+        });
+
+        if (route.txs_required > 1) {
+          // Quote-time messages derive intermediate-chain addresses by
+          // bech32-converting the destination address. That's only the
+          // user's own account on chains with standard 118 key derivation —
+          // on e.g. Injective (ethsecp256k1, coin type 60) the converted
+          // address is one the user does NOT control, and the first tx
+          // would route funds through it. Refuse rather than build one.
+          this.assertControlledIntermediates(route, fromChain, toChain);
+        }
 
         const addressList = await this.getAddressList(
-          route.chain_ids,
+          // required_chain_addresses is the authoritative list for /msgs: it
+          // can repeat a chain (multi-tx routes), so chain_ids would misalign.
+          route.required_chain_addresses ?? route.chain_ids,
           fromAddress,
           toAddress,
           fromChain,
@@ -221,11 +262,46 @@ export class SkipBridgeProvider implements BridgeProvider {
           operations: route.operations,
         });
 
-        const transactionRequest = await this.createTransaction(
-          fromChain.chainId.toString(),
-          fromAddress as Address,
-          msgs
-        );
+        const isMultiTx = route.txs_required > 1 || msgs.length > 1;
+
+        let transactionRequest:
+          | (BridgeTransactionRequest & { fallbackGasLimit?: number })
+          | undefined;
+        let transactionSteps: BridgeTransactionStep[] | undefined;
+        let multiTxRouteData: SkipMultiTxRouteData | undefined;
+        let intermediateGasFees: BridgeQuote["intermediateGasFees"];
+        if (isMultiTx) {
+          transactionSteps = await this.createTransactionSteps(
+            fromAddress as Address,
+            msgs
+          );
+          // The first step is signed first on the from chain; expose it as
+          // the plain transactionRequest so gas estimation and single-tx
+          // consumers keep working unchanged.
+          transactionRequest = transactionSteps[0];
+          // Snapshot the quoted route so later steps are rebuilt for THIS
+          // route (getTransactionStep), never re-routed mid-transfer.
+          multiTxRouteData = {
+            source_asset_denom: route.source_asset_denom,
+            source_asset_chain_id: route.source_asset_chain_id,
+            dest_asset_denom: route.dest_asset_denom,
+            dest_asset_chain_id: route.dest_asset_chain_id,
+            amount_in: route.amount_in,
+            amount_out: route.amount_out,
+            operations: route.operations,
+            required_chain_addresses:
+              route.required_chain_addresses ?? route.chain_ids,
+          };
+          intermediateGasFees = await this.getIntermediateGasFees(
+            transactionSteps.slice(1)
+          );
+        } else {
+          transactionRequest = await this.createTransaction(
+            fromChain.chainId.toString(),
+            fromAddress as Address,
+            msgs
+          );
+        }
 
         if (!transactionRequest) {
           throw new Error("Failed to create transaction");
@@ -263,10 +339,73 @@ export class SkipBridgeProvider implements BridgeProvider {
                   },
                 }
               : transactionRequest,
+          transactionSteps,
+          multiTxRouteData,
+          intermediateGasFees,
           estimatedGasFee,
         };
       },
     });
+  }
+
+  /**
+   * Rejects multi-tx routes whose intermediate chains cannot safely receive
+   * funds at a bech32-converted address. Quote-time messages derive
+   * intermediate addresses from the destination address, which is only the
+   * user's own account on chains with standard secp256k1 / coin type 118
+   * derivation (e.g. Noble). On Injective (ethsecp256k1, coin type 60) the
+   * converted address belongs to no one the user controls, and the FIRST
+   * transaction would already route funds through it.
+   */
+  protected assertControlledIntermediates(
+    route: SkipRouteResponse,
+    fromChain: BridgeChain,
+    toChain: BridgeChain
+  ) {
+    const intermediateChainIds = new Set(
+      (route.required_chain_addresses ?? route.chain_ids).filter(
+        (chainId) =>
+          chainId !== String(fromChain.chainId) &&
+          chainId !== String(toChain.chainId)
+      )
+    );
+
+    for (const chainId of intermediateChainIds) {
+      const chain = this.ctx.chainList.find((c) => c.chain_id === chainId);
+      if (!chain || chain.slip44 !== 118) {
+        throw new BridgeQuoteError({
+          bridgeId: SkipBridgeProvider.ID,
+          errorType: "NoQuotesError",
+          message: `Multi-tx route requires an account on ${chainId}, whose key derivation differs from the destination address; refusing to derive an address the user may not control`,
+        });
+      }
+    }
+  }
+
+  /**
+   * Network fees of the later steps of a multi-tx route as displayable
+   * coins, resolved against Skip's asset registry for decimals/symbol.
+   */
+  async getIntermediateGasFees(
+    laterSteps: BridgeTransactionStep[]
+  ): Promise<NonNullable<BridgeQuote["intermediateGasFees"]>> {
+    const fees: NonNullable<BridgeQuote["intermediateGasFees"]> = [];
+    for (const step of laterSteps) {
+      if (step.type !== "cosmos" || !step.gasFee) continue;
+      const chainId = String(step.chainId);
+      const chainAssets = await this.getAssets(chainId).catch(() => undefined);
+      const asset = chainAssets?.[chainId]?.assets.find(
+        (a) => a.denom === step.gasFee!.denom
+      );
+      fees.push({
+        amount: step.gasFee.amount,
+        denom: asset?.symbol ?? step.gasFee.denom,
+        address: step.gasFee.denom,
+        decimals: asset?.decimals ?? 0,
+        coinGeckoId: asset?.coingecko_id,
+      });
+    }
+    return fees;
   }
 
   /**
@@ -484,6 +623,189 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
+  /**
+   * Builds the ordered user-signed steps of a multi-tx route, one per msg.
+   * Later cosmos steps are quote-time drafts: their sender is the address
+   * Skip derived from the quote's address list, so before signing they must
+   * be rebuilt via `getTransactionStep` with the wallet's real address on
+   * that chain.
+   */
+  async createTransactionSteps(
+    evmSenderAddress: Address,
+    messages: SkipMsg[]
+  ): Promise<BridgeTransactionStep[]> {
+    const steps: BridgeTransactionStep[] = [];
+    for (const [index, message] of messages.entries()) {
+      if ("evm_tx" in message) {
+        steps.push({
+          ...(await this.createEvmTransaction(
+            message.evm_tx.chain_id,
+            evmSenderAddress,
+            message.evm_tx
+          )),
+          chainId: Number(message.evm_tx.chain_id),
+        });
+      } else if ("multi_chain_msg" in message) {
+        const chainId = message.multi_chain_msg.chain_id;
+        const cosmosTx = await this.createCosmosTransaction(
+          message.multi_chain_msg
+        );
+        // Estimate gas only for steps after the first: the first step's gas
+        // is estimated by the caller through the regular quote path.
+        const gasFee =
+          index > 0
+            ? await this.estimateCosmosStepGasFee(
+                chainId,
+                cosmosTx,
+                JSON.parse(message.multi_chain_msg.msg).sender
+              )
+            : undefined;
+        steps.push({
+          type: "cosmos",
+          msgs: cosmosTx.msgs,
+          gasFee,
+          chainId,
+        });
+      }
+    }
+    return steps;
+  }
+
+  /**
+   * Gas fee for an intermediate-chain cosmos step. The account may not exist
+   * or be funded yet (funds arrive with the prior step), so simulation
+   * failures fall back to the msg's fallback gas limit priced at the chain's
+   * default fee token. Returns undefined when no estimate is possible;
+   * signing then falls back to wallet-side estimation.
+   */
+  async estimateCosmosStepGasFee(
+    chainId: string,
+    tx: CosmosBridgeTransactionRequest & { fallbackGasLimit?: number },
+    senderAddress: string
+  ): Promise<CosmosBridgeTransactionRequest["gasFee"] | undefined> {
+    try {
+      const txSimulation = await estimateGasFee({
+        chainId,
+        chainList: this.ctx.chainList,
+        body: {
+          messages: await Promise.all(
+            tx.msgs.map(async (msg) =>
+              (await this.getProtoRegistry()).encodeAsAny(msg)
+            )
+          ),
+        },
+        bech32Address: senderAddress,
+        fallbackGasLimit: tx.fallbackGasLimit,
+        // Price at the chain's default fee token without checking the
+        // account's balances, which don't hold the funds yet at quote time.
+        onlyDefaultFeeDenom: true,
+      });
+      const gasFee = txSimulation.amount[0];
+      if (!gasFee) return undefined;
+      return {
+        gas: txSimulation.gas,
+        denom: gasFee.denom,
+        amount: gasFee.amount,
+      };
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Rebuilds one intermediate-chain step of a multi-tx route for signing:
+   * the ORIGINALLY QUOTED route's msgs refreshed (never a new route — after
+   * the first tx has moved the funds, re-routing could select different
+   * operations entirely), the wallet's real account on that chain as sender
+   * (a bech32-converted address is invalid on chains with non-118 key
+   * derivation, e.g. Injective), fresh timeout, fresh gas estimate.
+   */
+  async getTransactionStep(
+    params: GetBridgeTransactionStepParams
+  ): Promise<CosmosBridgeTransactionRequest> {
+    const { step, fromChain, toChain } = params;
+
+    const routeData = params.route as Partial<SkipMultiTxRouteData> | null;
+    if (
+      !routeData ||
+      typeof routeData.source_asset_denom !== "string" ||
+      typeof routeData.source_asset_chain_id !== "string" ||
+      typeof routeData.dest_asset_denom !== "string" ||
+      typeof routeData.dest_asset_chain_id !== "string" ||
+      typeof routeData.amount_in !== "string" ||
+      typeof routeData.amount_out !== "string" ||
+      !Array.isArray(routeData.operations) ||
+      !Array.isArray(routeData.required_chain_addresses)
+    ) {
+      throw new BridgeQuoteError({
+        bridgeId: SkipBridgeProvider.ID,
+        errorType: "CreateCosmosTxError",
+        message: "Missing or invalid multi-tx route data for step rebuild",
+      });
+    }
+
+    const addressList = await this.getAddressList(
+      routeData.required_chain_addresses,
+      params.fromAddress,
+      params.toAddress,
+      fromChain,
+      toChain,
+      { [step.chainId]: step.senderAddress }
+    );
+
+    const { msgs } = await this.skipClient.messages({
+      address_list: addressList,
+      source_asset_denom: routeData.source_asset_denom,
+      source_asset_chain_id: routeData.source_asset_chain_id,
+      dest_asset_denom: routeData.dest_asset_denom,
+      dest_asset_chain_id: routeData.dest_asset_chain_id,
+      amount_in: routeData.amount_in,
+      amount_out: routeData.amount_out,
+      operations: routeData.operations,
+    });
+
+    const stepMsg = msgs.find(
+      (msg): msg is { multi_chain_msg: SkipMultiChainMsg } =>
+        "multi_chain_msg" in msg &&
+        msg.multi_chain_msg.chain_id === step.chainId
+    );
+    if (!stepMsg) {
+      throw new BridgeQuoteError({
+        bridgeId: SkipBridgeProvider.ID,
+        errorType: "CreateCosmosTxError",
+        message: `Route no longer includes a transaction on ${step.chainId}`,
+      });
+    }
+
+    // The step must be signed by the wallet's own account: reject a build
+    // whose sender is not the provided address rather than hand back a tx
+    // the wallet cannot sign (or worse, one routing funds via an account
+    // the user does not control).
+    const messageData = JSON.parse(stepMsg.multi_chain_msg.msg);
+    if (messageData.sender !== step.senderAddress) {
+      throw new BridgeQuoteError({
+        bridgeId: SkipBridgeProvider.ID,
+        errorType: "CreateCosmosTxError",
+        message: `Built step sender ${messageData.sender} does not match wallet address ${step.senderAddress} on ${step.chainId}`,
+      });
+    }
+
+    const cosmosTx = await this.createCosmosTransaction(
+      stepMsg.multi_chain_msg
+    );
+    const gasFee = await this.estimateCosmosStepGasFee(
+      step.chainId,
+      cosmosTx,
+      step.senderAddress
+    );
+
+    return {
+      type: "cosmos",
+      msgs: cosmosTx.msgs,
+      gasFee,
+    };
+  }
+
   async createCosmosTransaction(
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
@@ -693,7 +1015,13 @@ export class SkipBridgeProvider implements BridgeProvider {
     fromAddress: string,
     toAddress: string,
     fromChain: BridgeChain,
-    toChain: BridgeChain
+    toChain: BridgeChain,
+    /**
+     * Wallet-provided addresses by chain id, taking precedence over the
+     * bech32-derived fallback. Required for signing steps on chains whose
+     * key derivation differs from the source address (e.g. Injective).
+     */
+    addressOverrides?: Record<string, string>
   ) {
     const [{ fromBech32, toBech32 }, allSkipChains] = await Promise.all([
       import("@cosmjs/encoding"),
@@ -718,6 +1046,12 @@ export class SkipBridgeProvider implements BridgeProvider {
       const chain = allSkipChains.find((c) => c.chain_id === chainID);
       if (!chain) {
         throw new Error(`Failed to find chain ${chainID}`);
+      }
+
+      const override = addressOverrides?.[chainID];
+      if (override) {
+        addressList.push(override);
+        continue;
       }
 
       if (

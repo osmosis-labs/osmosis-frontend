@@ -18,6 +18,7 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import { FunctionComponent, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
@@ -133,8 +134,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       snapshot.provider.startsWith(source.providerId)
     );
 
-    // start tracking for life of current session
-    statusSource?.trackTxStatus(snapshot);
+    // start tracking for life of current session — except mid-flow multi-tx
+    // entries: their first tx's status completes when funds reach the
+    // intermediate chain, which the provider would misreport as transfer
+    // success. The multi-tx flow drives their status until the final step is
+    // signed (`advanceMultiTxStep`).
+    if (!snapshot.pendingStep) {
+      statusSource?.trackTxStatus(snapshot);
+    }
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
@@ -188,6 +195,48 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }, 1000);
 
     this.snapshots.push(snapshot);
+  }
+
+  /**
+   * The final step of a multi-tx route was signed: clear the pending step,
+   * key the entry on the final step's tx hash, and hand status tracking to
+   * the provider (polling on the intermediate chain the step was signed on).
+   */
+  @action
+  advanceMultiTxStep(
+    prevSendTxHash: string,
+    {
+      finalSendTxHash,
+      trackingChainId,
+      estimatedArrivalUnix,
+    }: {
+      finalSendTxHash: string;
+      trackingChainId: string;
+      estimatedArrivalUnix: number;
+    }
+  ) {
+    const snapshot = this.snapshots.find(
+      (snapshot) => snapshot.sendTxHash === prevSendTxHash
+    );
+    if (!snapshot) {
+      console.error("Couldn't find tx snapshot when advancing multi-tx step");
+      return;
+    }
+
+    // the pending toast is keyed on the first step's hash; dismiss it since
+    // further updates are keyed on the final step's hash
+    toast.dismiss(prevSendTxHash);
+
+    snapshot.pendingStep = undefined;
+    snapshot.sendTxHash = finalSendTxHash;
+    snapshot.trackingChainId = trackingChainId;
+    snapshot.estimatedArrivalUnix = estimatedArrivalUnix;
+    snapshot.status = "pending";
+
+    const statusSource = this.transferStatusProviders.find((source) =>
+      snapshot.provider.startsWith(source.providerId)
+    );
+    statusSource?.trackTxStatus(toJS(snapshot));
   }
 
   /**
@@ -351,10 +400,18 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       if (
         (snapshot.status === "pending" ||
           snapshot.status === "connection-error") &&
-        statusSource
+        statusSource &&
+        // mid-flow multi-tx entries stay pending without provider tracking:
+        // their first tx's status would misreport arrival on the
+        // intermediate chain as transfer success. They resolve when the user
+        // resumes and signs the final step.
+        !snapshot.pendingStep
       ) {
         statusSource.trackTxStatus(snapshot);
-      } else {
+      } else if (
+        snapshot.status !== "pending" &&
+        snapshot.status !== "connection-error"
+      ) {
         this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
       }
 

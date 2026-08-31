@@ -137,3 +137,112 @@ describe("PendingTransferCaption", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("TransferHistoryStore multi-tx entries", () => {
+  const { TransferHistoryStore } = jest.requireActual("../transfer-history");
+
+  const makeSnapshot = (overrides: object = {}) => ({
+    direction: "deposit" as const,
+    createdAtUnix: 1700000000,
+    type: "bridge-transfer" as const,
+    provider: "Skip",
+    fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    osmoBech32Address: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    fromAsset: {
+      denom: "USDC",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      decimals: 6,
+      amount: "1000000000",
+    },
+    toAsset: {
+      denom: "USDC",
+      address: "factory/osmo1alloy/alloyed/allUSDC",
+      decimals: 6,
+      amount: "999960000",
+    },
+    status: "pending" as const,
+    sendTxHash: "0xtx1",
+    fromChain: {
+      chainId: 42161,
+      chainType: "evm" as const,
+      prettyName: "Arbitrum",
+    },
+    toChain: {
+      chainId: "osmosis-1",
+      chainType: "cosmos" as const,
+      prettyName: "Osmosis",
+    },
+    estimatedArrivalUnix: 1700000600,
+    ...overrides,
+  });
+
+  const pendingStep = {
+    chainId: "noble-1",
+    prettyName: "Noble",
+    stepIndex: 2,
+    totalSteps: 2,
+    priorStepTxHash: "0xtx1",
+  };
+
+  const makeStore = () => {
+    const kvStore = {
+      get: jest.fn().mockResolvedValue([]),
+      set: jest.fn().mockResolvedValue(undefined),
+    };
+    const statusProvider = {
+      providerId: "Skip",
+      trackTxStatus: jest.fn(),
+      makeExplorerUrl: jest.fn().mockReturnValue(""),
+    };
+    const store = new TransferHistoryStore(
+      jest.fn(),
+      kvStore,
+      [statusProvider],
+      3
+    );
+    return { store, statusProvider };
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("does not hand mid-flow multi-tx entries to the status provider", () => {
+    const { store, statusProvider } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    expect(statusProvider.trackTxStatus).not.toHaveBeenCalled();
+
+    store.pushTxNow(makeSnapshot({ sendTxHash: "0xsingle" }));
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledTimes(1);
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ sendTxHash: "0xsingle" })
+    );
+  });
+
+  it("advanceMultiTxStep clears the pending step and tracks on the intermediate chain", () => {
+    const { store, statusProvider } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    store.advanceMultiTxStep("0xtx1", {
+      finalSendTxHash: "COSMOS_TX_2",
+      trackingChainId: "noble-1",
+      estimatedArrivalUnix: 1700000700,
+    });
+
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledTimes(1);
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sendTxHash: "COSMOS_TX_2",
+        trackingChainId: "noble-1",
+        pendingStep: undefined,
+        status: "pending",
+      })
+    );
+  });
+});

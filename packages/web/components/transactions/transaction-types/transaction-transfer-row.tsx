@@ -6,11 +6,13 @@ import React from "react";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { useMultiTxResume } from "~/components/bridge/use-multi-tx-step";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
@@ -36,6 +38,7 @@ export const TransactionTransferRow = ({
 }: TransactionTransferRowProps) => {
   const { t } = useTranslation();
   const { isMobile, width } = useWindowSize();
+  const { resume, isResuming } = useMultiTxResume();
 
   const size = isMobile ? "sm" : sizeProp;
 
@@ -282,18 +285,43 @@ export const TransactionTransferRow = ({
     </div>,
   ];
 
+  // A multi-tx transfer awaiting its next user-signed step: offer to resume
+  // it right from history (re-checks arrival, connects the intermediate
+  // chain's wallet, and prompts the final signature).
+  const continueButton =
+    simplifiedStatus === "pending" && transaction.pendingStep ? (
+      <Button
+        key="continue-step"
+        size="sm"
+        className="!h-8 shrink-0 !px-3"
+        disabled={isResuming(transaction.sendTxHash)}
+        onClick={(e) => {
+          e.stopPropagation();
+          resume(transaction);
+        }}
+      >
+        {isResuming(transaction.sendTxHash) ? (
+          <Spinner className="!h-4 !w-4" />
+        ) : (
+          t("transfer.multiTxContinue")
+        )}
+      </Button>
+    ) : null;
+
   const rightComponent =
     size === "lg" ? (
       <div className="w-2/3 justify-end gap-4 flex items-center">
         {transaction?.direction === "withdraw"
           ? rightLargeComponentList
           : rightLargeComponentList.reverse()}
+        {continueButton}
       </div>
     ) : (
       <>
         {transaction?.direction === "withdraw"
           ? rightSmallComponentList
           : rightSmallComponentList.reverse()}
+        {continueButton}
       </>
     );
 

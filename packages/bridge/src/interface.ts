@@ -66,6 +66,21 @@ export interface BridgeProvider {
   ): Promise<(BridgeChain & BridgeSupportedAsset)[]>;
 
   /**
+   * If the provider supports multi-transaction routes:
+   * Rebuilds one intermediate-chain step of a previously quoted multi-tx
+   * route for signing — with the wallet's real address on that chain as the
+   * sender, a fresh timeout, and a fresh gas estimate. Throws a
+   * `BridgeQuoteError` when the route no longer contains a transaction on
+   * the requested chain (e.g. the provider's routing changed since quoting).
+   *
+   * @param params The original quote parameters plus the step to rebuild.
+   * @returns A promise that resolves to the cosmos sign doc for that step.
+   */
+  getTransactionStep?: (
+    params: GetBridgeTransactionStepParams
+  ) => Promise<CosmosBridgeTransactionRequest>;
+
+  /**
    * If the provider supports deposit address transfers:
    * Requests for a deposit address generated from the given params.
    * Sending to the deposit address automatically triggers the transfer.
@@ -429,9 +444,38 @@ export const getBridgeQuoteSchema = z.object({
    * Optional: The tolerance for price slippage, represented as a percentage. Valid values are > 0 and < 99.99.
    */
   slippage: z.number().optional(),
+  /**
+   * Optional: Allow routes that require more than one user-signed transaction
+   * (e.g. Skip's CCTP deposits that end in a swap on Osmosis, where the
+   * Noble -> Osmosis leg must be signed separately). Multi-tx capable
+   * providers return `transactionSteps` on the quote when the route needs it.
+   */
+  allowMultiTx: z.boolean().optional(),
 });
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
+
+export const getBridgeTransactionStepSchema = getBridgeQuoteSchema.extend({
+  /**
+   * The intermediate-chain step to (re)build for signing. `senderAddress`
+   * must be the wallet's own account on that chain — an address derived by
+   * bech32-converting another chain's address is NOT valid for chains with
+   * different key types (e.g. Injective's ethsecp256k1).
+   */
+  step: z.object({
+    chainId: z.string(),
+    senderAddress: z.string(),
+  }),
+  /**
+   * The quote's `multiTxRouteData`, passed back verbatim so the step is
+   * rebuilt for the originally quoted route instead of a fresh one.
+   */
+  route: z.unknown(),
+});
+
+export type GetBridgeTransactionStepParams = z.infer<
+  typeof getBridgeTransactionStepSchema
+>;
 
 export interface EvmBridgeTransactionRequest {
   type: "evm";
@@ -463,6 +507,15 @@ export interface CosmosBridgeTransactionRequest {
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
   | CosmosBridgeTransactionRequest;
+
+/**
+ * One user-signed transaction of a multi-transaction route, tagged with the
+ * chain it must be signed on. `chainId` follows the `BridgeChain` shape:
+ * number for EVM chains, string for cosmos chains.
+ */
+export type BridgeTransactionStep = BridgeTransactionRequest & {
+  chainId: number | string;
+};
 /**
  * Bridge asset with raw base amount (without decimals).
  */
@@ -518,8 +571,34 @@ export interface BridgeQuote {
    */
   estimatedGasFee?: BridgeCoin;
 
-  /** Sign doc. */
+  /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
+
+  /**
+   * Present only when the route requires more than one user-signed
+   * transaction (`allowMultiTx` quotes). Ordered; the first step equals
+   * `transactionRequest`. Later steps are quote-time drafts built with
+   * derived addresses for estimation — before signing, each must be rebuilt
+   * via the provider's `getTransactionStep` with the wallet's real address
+   * on that chain.
+   */
+  transactionSteps?: BridgeTransactionStep[];
+
+  /**
+   * Provider-opaque snapshot of the quoted multi-tx route, passed back
+   * verbatim to `getTransactionStep` so later steps are rebuilt for the
+   * SAME route rather than re-routed (re-routing after the first tx has
+   * moved funds could select different operations entirely). Persist it
+   * alongside a mid-flow transfer so it survives a reload.
+   */
+  multiTxRouteData?: unknown;
+
+  /**
+   * Network fees of the later steps of a multi-tx route (e.g. the Noble
+   * IBC transfer's fee in uusdc), so fee totals can include every step.
+   * The first step's fee is `estimatedGasFee`.
+   */
+  intermediateGasFees?: BridgeCoin[];
 }
 
 export interface BridgeExternalUrl {
@@ -609,6 +688,33 @@ const txSnapshotSchema = z.object({
   ),
   estimatedArrivalUnix: z.number(),
   nomicCheckpointIndex: z.number().optional(),
+  /**
+   * Chain to poll the status provider on when it differs from `fromChain` —
+   * set when `sendTxHash` is a later step of a multi-tx route, signed on an
+   * intermediate chain (e.g. noble-1) rather than the route's from chain.
+   */
+  trackingChainId: z.string().optional(),
+  /**
+   * Present while a multi-transaction route is mid-flow: the next
+   * user-signed step, so an interrupted transfer can be resumed from
+   * history. Cleared (set to undefined) when the final step is signed.
+   * The rest of the snapshot (assets, chains, addresses, amount) carries
+   * everything needed to rebuild the step via `getTransactionStep`.
+   */
+  pendingStep: z
+    .object({
+      /** Cosmos chain the user must sign the next step on (e.g. noble-1). */
+      chainId: z.string(),
+      prettyName: z.string(),
+      /** 1-based index of the next step to sign. */
+      stepIndex: z.number(),
+      totalSteps: z.number(),
+      /** Hash of the previously signed step's tx, whose arrival gates this step. */
+      priorStepTxHash: z.string(),
+      /** The quote's `multiTxRouteData`, for rebuilding this step on resume. */
+      routeData: z.unknown().optional(),
+    })
+    .optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

@@ -915,6 +915,16 @@
         "continueTo": "Перейти к {provider}"
       }
     },
+    "multiTxTitle": "Для этого перевода требуется транзакций: {steps}",
+    "multiTxBadge": "транзакций: {steps}",
+    "multiTxDescription": "После подтверждения первой транзакции вам будет предложено подписать финальный перевод в сети {chain}.",
+    "multiTxWaitingForFunds": "Ожидание поступления средств в сеть {chain}…",
+    "multiTxSignFinal": "Подпишите финальный перевод в сети {chain} в своём кошельке, чтобы завершить перевод.",
+    "multiTxGasWarning": "Последний шаг оплачивает сетевую комиссию в {denom} в сети {chain}. Убедитесь, что на вашем счёте в {chain} есть {denom}.",
+    "multiTxContinue": "Продолжить перевод",
+    "multiTxWrongAccountTitle": "Аккаунт кошелька не совпадает",
+    "multiTxWrongAccount": "Аккаунт {chain} в вашем кошельке не соответствует этому маршруту. Перевод был отменён до перемещения средств.",
+    "multiTxStillInTransit": "Средства ещё в пути",
     "assetSelectScreen": {
       "titleDeposit": "Выберите актив для депозита",
       "titleWithdraw": "Выберите актив для вывода",

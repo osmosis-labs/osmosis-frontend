@@ -915,6 +915,16 @@
         "continueTo": "Weiter zu {provider}"
       }
     },
+    "multiTxTitle": "Diese Übertragung erfordert {steps} Transaktionen",
+    "multiTxBadge": "{steps} Transaktionen",
+    "multiTxDescription": "Nachdem die erste Transaktion bestätigt wurde, werden Sie gebeten, eine abschließende Übertragung auf {chain} zu signieren.",
+    "multiTxWaitingForFunds": "Warten auf den Eingang der Gelder auf {chain} …",
+    "multiTxSignFinal": "Signieren Sie die abschließende Übertragung auf {chain} in Ihrer Wallet, um den Transfer abzuschließen.",
+    "multiTxGasWarning": "Der letzte Schritt zahlt seine Netzwerkgebühr in {denom} auf {chain}. Stellen Sie sicher, dass Ihr {chain}-Konto {denom} enthält.",
+    "multiTxContinue": "Transfer fortsetzen",
+    "multiTxWrongAccountTitle": "Wallet-Konto stimmt nicht überein",
+    "multiTxWrongAccount": "Das {chain}-Konto Ihrer Wallet passt nicht zu dieser Route. Die Übertragung wurde abgebrochen, bevor Gelder bewegt wurden.",
+    "multiTxStillInTransit": "Die Gelder sind noch unterwegs",
     "assetSelectScreen": {
       "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
       "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",

@@ -176,6 +176,43 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           {t("transfer.learnMore")}
         </Link>
       </div>
+      {/* Multi-transaction route: explain the extra signature up front, then
+          narrate the phase while the transfer is mid-flight. */}
+      {quote.multiTx && (
+        <div className="flex gap-3 rounded-[20px] border-2 border-osmoverse-700 p-5 py-3 mt-3">
+          <Icon id="info" className="h-6 w-6 shrink-0 text-wosmongton-300" />
+          <div className="flex flex-col">
+            <h1 className="body2">
+              {t("transfer.multiTxTitle", {
+                steps: String(quote.multiTx.totalSteps),
+              })}
+            </h1>
+            <p className="body2 text-osmoverse-300">
+              {quote.multiTxPhase === "waiting-arrival"
+                ? t("transfer.multiTxWaitingForFunds", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })
+                : quote.multiTxPhase === "step2-signing"
+                ? t("transfer.multiTxSignFinal", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })
+                : t("transfer.multiTxDescription", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })}
+            </p>
+            {quote.multiTx.finalStepGasWarning &&
+              quote.multiTx.finalStepGasFeeDenom &&
+              !quote.multiTxPhase && (
+                <p className="body2 text-rust-300">
+                  {t("transfer.multiTxGasWarning", {
+                    denom: quote.multiTx.finalStepGasFeeDenom,
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })}
+                </p>
+              )}
+          </div>
+        </div>
+      )}
       {/* Renders for any active error, not just loss warnings — when the
           quote errors out (e.g. every provider fails a refetch), the details
           above unrender and this box is the only thing telling the user why
@@ -220,7 +257,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
             (!quote.userCanAdvance && !hasLossWarning) ||
             (hasLossWarning && quote.warningNeedsAcknowledgement) ||
             quote.isTxPending ||
-            quote.isApprovingToken
+            quote.isApprovingToken ||
+            Boolean(quote.multiTxPhase)
           }
         >
           <div className="md:subtitle1 text-h6 font-h6">

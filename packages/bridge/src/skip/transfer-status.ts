@@ -56,7 +56,9 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     await poll({
       fn: async () => {
         const tx = {
-          chainID: fromChainId.toString(),
+          // a later step of a multi-tx route is signed on an intermediate
+          // chain; its status must be polled there, not on the from chain
+          chainID: (snapshot.trackingChainId ?? fromChainId).toString(),
           txHash: sendTxHash,
           env: this.env,
         };

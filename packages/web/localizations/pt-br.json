@@ -915,6 +915,16 @@
         "continueTo": "Continuar para {provider}"
       }
     },
+    "multiTxTitle": "Esta transferência requer {steps} transações",
+    "multiTxBadge": "{steps} transações",
+    "multiTxDescription": "Após a confirmação da primeira transação, você deverá assinar uma transferência final em {chain}.",
+    "multiTxWaitingForFunds": "Aguardando a chegada dos fundos em {chain}…",
+    "multiTxSignFinal": "Assine a transferência final em {chain} na sua carteira para concluir a transferência.",
+    "multiTxGasWarning": "A última etapa paga sua taxa de rede em {denom} em {chain}. Certifique-se de que sua conta em {chain} possua {denom}.",
+    "multiTxContinue": "Continuar transferência",
+    "multiTxWrongAccountTitle": "Conta da carteira não corresponde",
+    "multiTxWrongAccount": "A conta {chain} da sua carteira não corresponde a esta rota. A transferência foi cancelada antes de qualquer movimentação de fundos.",
+    "multiTxStillInTransit": "Os fundos ainda estão em trânsito",
     "assetSelectScreen": {
       "titleDeposit": "Selecione um ativo para depositar",
       "titleWithdraw": "Selecione um ativo para retirar",
