@@ -162,16 +162,28 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       }
     }
 
-    const outputDifference = useMemo(
-      () =>
-        new RatePretty(
-          swapState.inAmountInput?.fiatValue
-            ?.toDec()
-            .sub(swapState.tokenOutFiatValue?.toDec())
-            .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
-        ),
-      [swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue]
-    );
+    const outputDifference = useMemo(() => {
+      if (quoteType === "in-given-out") {
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1. Adverse
+        // trades are negative (buyer receives less out per in than spot).
+        // Negate so that adverse = positive, matching the out-given-in fiat
+        // branch convention used by the display logic below.
+        return new RatePretty(
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)).neg()
+        );
+      }
+      return new RatePretty(
+        swapState.inAmountInput?.fiatValue
+          ?.toDec()
+          .sub(swapState.tokenOutFiatValue?.toDec())
+          .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+      );
+    }, [
+      quoteType,
+      swapState.inAmountInput?.fiatValue,
+      swapState.tokenOutFiatValue,
+      swapState.quote?.priceImpactTokenOut,
+    ]);
 
     const showOutputDifferenceWarning = outputDifference
       .toDec()
