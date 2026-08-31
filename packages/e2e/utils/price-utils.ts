@@ -17,16 +17,22 @@
 import { SQS_BASE_URL } from "./config";
 
 // The denom SQS quotes prices in (the key of each inner price map). This is
-// SQS's quote asset, NOT the app's "USDC" identity: it stays Noble until the
-// sidecar repoints its quote denom to the alloy, independently of the
-// assetlist handover. Do not "fix" it alongside TOKEN_DENOMS.USDC.
-const USDC_DENOM =
+// SQS's quote asset, NOT the app's "USDC" identity, and it moves with the
+// sidecar's own quote-denom repoint rather than with the assetlist handover.
+//
+// A sidecar instance resolves the symbol "usdc" once at boot, so it quotes in
+// the alloy from its next restart onward and in Noble USDC until then. A
+// load-balanced deployment can therefore serve both keys at the same time
+// while a restart rolls through the fleet, so read the alloy first and fall
+// back to Noble instead of pinning either one. Mirrors `getQuotePrice` in
+// packages/server/src/queries/sidecar/prices.ts; drop the fallback only once
+// every instance is confirmed quoting in the alloy.
+const QUOTE_DENOM =
+  "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+const LEGACY_QUOTE_DENOM =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 
-type SQSPriceResponse = Record<
-  string,
-  Record<string, string>
->;
+type SQSPriceResponse = Record<string, Record<string, string>>;
 
 // Retry parameters for transient SQS pricing failures (e.g. Node `fetch failed`
 // from EAI_AGAIN, ECONNRESET, TLS handshake hiccups, or 30s timeouts on cold
@@ -75,7 +81,9 @@ export async function fetchTokenPrices(
 
       const result: Record<string, number> = {};
       for (const [denom, priceMap] of Object.entries(data)) {
-        const usdcPrice = priceMap[USDC_DENOM] ?? Object.values(priceMap)[0];
+        // Never fall back to an arbitrary key: an unrecognised quote denom
+        // would silently price the token in the wrong asset.
+        const usdcPrice = priceMap[QUOTE_DENOM] ?? priceMap[LEGACY_QUOTE_DENOM];
         if (usdcPrice) {
           const parsed = parseFloat(usdcPrice);
           if (!isNaN(parsed)) {
