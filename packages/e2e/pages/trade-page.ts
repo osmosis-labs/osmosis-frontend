@@ -396,6 +396,17 @@ export class TradePage extends BasePage {
     await expect(swapInfo, "Show Swap Info button not visible!").toBeVisible({
       timeout: 10000,
     });
+    // The disclosure renders as soon as there is an input amount but stays
+    // disabled until the quote fills the out amount, so wait for it to be
+    // enabled rather than racing the quote with the click timeout.
+    const swapInfoBtn = this.page.locator(
+      "//button[.//span[.='Show details']]"
+    );
+    await expect(swapInfoBtn, "Show Swap Info button is disabled!").toBeEnabled(
+      {
+        timeout: 15000,
+      }
+    );
     await swapInfo.click({ timeout: 5000 });
   }
 
