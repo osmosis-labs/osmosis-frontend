@@ -52,6 +52,7 @@ import {
 import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
+  useDynamicSlippageFromQuote,
   useSwap,
 } from "~/hooks/use-swap";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -118,9 +119,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
-      defaultSlippage:
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
-      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
+      defaultSlippage: DefaultSlippage,
+      selectedIndex: 0,
     });
 
     const swapState = useSwap({
@@ -138,6 +138,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       feeError: swapState.networkFeeError,
       quoteType,
     });
+
+    const { autoAdjustedSlippage, resetAutoAdjust } =
+      useDynamicSlippageFromQuote({
+        quote: swapState.quote,
+        slippageConfig,
+        quoteType,
+      });
 
     if (
       swapState.fromAsset?.coinMinimalDenom ===
@@ -201,17 +208,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [setBuyOpen, setSellOpen]);
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage =
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
+      // Always clear the override sentinel so auto-adjust re-engages, even if
+      // slippage already equals DefaultSlippage (e.g. user typed "0.3" manually).
+      resetAutoAdjust();
       if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+        slippageConfig.slippage
+          .toDec()
+          .equals(new Dec(DefaultSlippage).quo(DecUtils.getTenExponentN(2)))
       ) {
         return;
       }
-      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
-      slippageConfig.setDefaultSlippage(defaultSlippage);
-    }, [quoteType, slippageConfig]);
+      slippageConfig.setManualSlippage(DefaultSlippage);
+      slippageConfig.setDefaultSlippage(DefaultSlippage);
+    }, [slippageConfig, resetAutoAdjust]);
 
     const { amountWithSlippage, fiatAmountWithSlippage } =
       useAmountWithSlippage({
@@ -220,7 +229,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         quoteType,
       });
 
-    // reivew swap modal
+    // review swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
@@ -806,6 +815,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
+          autoAdjustedSlippage={autoAdjustedSlippage}
           onClose={() => setShowSwapReviewModal(false)}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
