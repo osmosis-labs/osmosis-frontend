@@ -6,6 +6,7 @@ import {
 } from "@playwright/test";
 
 import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
+import { unfoldWalletMsgYaml } from "../utils/wallet-msg";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage, waitForKeplrApproval } from "./keplr-helper";
 
@@ -208,10 +209,11 @@ export class TradePage extends BasePage {
     await approvePage.waitForLoadState();
     const approveBtn = approvePage.getByRole("button", { name: "Approve" });
     await expect(approveBtn).toBeEnabled();
-    const msgContentAmount =
+    const msgContentAmount = unfoldWalletMsgYaml(
       (await approvePage
         .getByText("type: osmosis/poolmanager/")
-        .textContent()) ?? undefined;
+        .textContent()) ?? undefined
+    );
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     await approveBtn.click();
     return msgContentAmount;

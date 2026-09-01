@@ -6,6 +6,7 @@ import {
   expect,
 } from '@playwright/test'
 
+import { unfoldWalletMsgYaml } from '../utils/wallet-msg'
 import { BasePage } from './base-page'
 import { getKeplrPopupPage } from './keplr-helper'
 
@@ -89,9 +90,11 @@ export class SwapPage extends BasePage {
       name: 'Approve',
     })
     await expect(approveBtn).toBeEnabled()
-    const msgContentAmount = await approvePage
-      .getByText('type: osmosis/poolmanager/')
-      .textContent()
+    const msgContentAmount = unfoldWalletMsgYaml(
+      (await approvePage
+        .getByText('type: osmosis/poolmanager/')
+        .textContent()) ?? undefined,
+    )
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`)
     await approveBtn.click()
     await this.page.waitForTimeout(4000)
