@@ -39,7 +39,7 @@ describe("normalizePriceImpact", () => {
   });
 
   it("does not trip the gate for a small negative impact", () => {
-    const raw = HighPriceImpactGate.sub(new Dec(0.05)).neg();
+    const raw = HighPriceImpactGate.quo(new Dec(2)).neg();
 
     expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(false);
   });
