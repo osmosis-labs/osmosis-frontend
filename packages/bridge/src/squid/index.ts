@@ -682,6 +682,16 @@ export class SquidBridgeProvider implements BridgeProvider {
           throw error.data;
         }
       },
+      // A degraded registry response (e.g. a rate-limited 200 with an empty
+      // body) must not be cached as 30 minutes of truth: an empty registry
+      // reads as "asset unsupported" downstream, which silently bypasses
+      // the client's retry and re-poll machinery. Failing the check makes
+      // cachified throw instead, so it propagates as a provider failure
+      // the client retries. (cachified types the checked value as {}.)
+      checkValue: (value) => {
+        const chains = value as ChainsResponse["chains"];
+        return (chains?.length ?? 0) > 0 || "empty Squid chains response";
+      },
     });
   }
 
@@ -705,6 +715,13 @@ export class SquidBridgeProvider implements BridgeProvider {
           const error = e as ApiClientError;
           throw error.data;
         }
+      },
+      // see getChains: never cache a degraded/empty registry response
+      checkValue: (value) => {
+        const tokens = value as TokensResponse["tokens"];
+        return (
+          (tokens?.length ?? 0) > 0 || "empty Squid token registry response"
+        );
       },
     });
   }

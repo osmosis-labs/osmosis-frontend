@@ -685,10 +685,28 @@ export class SkipBridgeProvider implements BridgeProvider {
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + `_assets_${chainID}`,
       ttl: 1000 * 60 * 30, // 30 minutes
+      // A degraded registry response (e.g. a rate-limited 200 with an empty
+      // body) must not be cached as 30 minutes of truth: an empty registry
+      // reads as "asset unsupported" downstream, which silently bypasses the
+      // client's retry and re-poll machinery (observed in QA as a Skip-only
+      // asset intermittently rendering external-only). Failing the check
+      // makes cachified throw instead, so it propagates as a provider
+      // failure the client retries.
       getFreshValue: () =>
         this.skipClient.assets({
           chainID,
         }),
+      checkValue: (value) => {
+        // cachified types the checked value as {}; it is the fresh/cached
+        // return of skipClient.assets. An entirely empty map is the
+        // degraded shape; a present chain with an empty asset list is an
+        // ordinary lookup miss and stays cacheable.
+        const registry = value as Awaited<ReturnType<SkipApiClient["assets"]>>;
+        return (
+          Object.keys(registry ?? {}).length > 0 ||
+          "degraded or empty Skip asset registry response"
+        );
+      },
     });
   }
 
@@ -698,6 +716,11 @@ export class SkipBridgeProvider implements BridgeProvider {
       key: SkipBridgeProvider.ID + "_chains",
       ttl: 1000 * 60 * 30, // 30 minutes
       getFreshValue: () => this.skipClient.chains(),
+      // see getAssets: never cache a degraded/empty registry response
+      checkValue: (value) => {
+        const chains = value as Awaited<ReturnType<SkipApiClient["chains"]>>;
+        return (chains?.length ?? 0) > 0 || "empty Skip chains response";
+      },
     });
   }
 

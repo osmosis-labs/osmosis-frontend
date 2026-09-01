@@ -3918,4 +3918,48 @@ describe("SquidBridgeProvider getSupportedAssets failure propagation", () => {
       })
     ).resolves.toEqual([]);
   });
+
+  it("rejects (and does not cache) a degraded 200 registry response with an empty body", async () => {
+    // a rate-limited or degraded upstream can answer 200 with an empty
+    // token list; treating that as truth would read as "asset unsupported"
+    // for the 30-minute cache lifetime, silently bypassing the client's
+    // retry and re-poll machinery
+    server.use(
+      rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
+        res(ctx.json({ tokens: [] }))
+      )
+    );
+
+    const degradedCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const degradedProvider = new SquidBridgeProvider(
+      "integratorId",
+      degradedCtx
+    );
+
+    await expect(
+      degradedProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
+  });
 });
