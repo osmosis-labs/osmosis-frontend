@@ -283,8 +283,13 @@ export function ReviewOrder({
   // stale, and this component's body stays mounted between opens, so without
   // this a user who ticked the box, closed the modal and reopened it would find
   // the trade already acknowledged.
+  //
+  // Rising edge only: `isOpen` going false fires this effect too, and clearing
+  // the tick on the way out is visible for the whole of the modal's exit
+  // transition — so a cancelled signature looks like it silently un-ticked the
+  // box the user had just ticked.
   useEffect(() => {
-    setLossAcknowledged(false);
+    if (isOpen) setLossAcknowledged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
