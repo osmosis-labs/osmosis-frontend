@@ -1,4 +1,8 @@
-import { getPortfolioAssets, getPortfolioOverTime } from "@osmosis-labs/server";
+import {
+  getPortfolioAssets,
+  getPortfolioCurrentValue,
+  getPortfolioOverTime,
+} from "@osmosis-labs/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -27,6 +31,17 @@ export const portfolioRouter = createTRPCRouter({
       getPortfolioAssets({
         address,
         assetLists,
+      })
+    ),
+  getPortfolioCurrentValue: publicProcedure
+    .input(
+      z.object({
+        address: z.string(),
+      })
+    )
+    .query(({ input: { address } }) =>
+      getPortfolioCurrentValue({
+        address,
       })
     ),
 });
