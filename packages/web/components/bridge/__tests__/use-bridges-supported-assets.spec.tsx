@@ -106,6 +106,24 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     expect(result.current.isLoading).toBe(true);
   });
 
+  it("proceeds when one provider is still fetching but another already returned an in-app route", () => {
+    // one provider's slow first fetch (or its automatic retries) must not
+    // hide another provider's usable quote route behind a skeleton
+    mockQueryResults = [
+      loadingResult,
+      successResult({
+        providerName: "Squid",
+        availableChains: [ethereumChain],
+        assetsByChainId: ethereumAssetsByChainId,
+      }),
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.supportedChains).toHaveLength(1);
+  });
+
   it("holds the loading state when a provider failed and no chains were found", () => {
     // A failed provider (e.g. a rate-limited registry) must not be mistaken
     // for "asset unsupported for quoting": with zero supported chains the

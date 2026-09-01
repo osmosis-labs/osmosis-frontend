@@ -464,21 +464,10 @@ describe("SkipBridgeProvider", () => {
   });
 
   it("should handle unsupported asset error", async () => {
-    server.use(
-      rest.get(
-        "https://api.skip.money/v2/fungible/assets",
-        (_req, res, ctx) => {
-          return res(
-            ctx.json({
-              chain_to_assets_map: {
-                "1": { assets: [] },
-              },
-            })
-          );
-        }
-      )
-    );
-
+    // the global fixture serves a POPULATED chain-1 registry that simply
+    // lacks the requested asset: that is what "unsupported" means. (An
+    // empty chain asset list is the degraded-registry shape and is
+    // rejected by the cache guard instead.)
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -1094,6 +1083,63 @@ describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
         direction: "deposit",
       })
     ).resolves.toEqual([]);
+  });
+
+  it("rejects a scoped empty-chain response and recovers on the next populated one via the same cache", async () => {
+    // the degraded shape observed in production: a scoped request answered
+    // with the chain present but zero assets — it must be rejected (NOT
+    // cached for 30 minutes), so a later healthy response recovers
+    let assetRequests = 0;
+    server.use(
+      rest.get(
+        "https://api.skip.money/v2/fungible/assets",
+        (_req, res, ctx) => {
+          assetRequests++;
+          if (assetRequests === 1) {
+            return res(
+              ctx.json({
+                chain_to_assets_map: { "osmosis-1": { assets: [] } },
+              })
+            );
+          }
+          return res(ctx.json(SkipAssets));
+        }
+      )
+    );
+
+    const sharedCacheCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const sharedCacheProvider = new SkipBridgeProvider(sharedCacheCtx);
+
+    const request = {
+      chain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      asset: {
+        denom: "USDC",
+        address:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        decimals: 6,
+      },
+      direction: "deposit",
+    } as const;
+
+    await expect(
+      sharedCacheProvider.getSupportedAssets(request)
+    ).rejects.toThrow();
+
+    const recovered = await sharedCacheProvider.getSupportedAssets(request);
+    expect(recovered.length).toBeGreaterThan(0);
   });
 
   it("rejects (and does not cache) a degraded 200 registry response with an empty body", async () => {

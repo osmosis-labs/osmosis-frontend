@@ -698,12 +698,17 @@ export class SkipBridgeProvider implements BridgeProvider {
         }),
       checkValue: (value) => {
         // cachified types the checked value as {}; it is the fresh/cached
-        // return of skipClient.assets. An entirely empty map is the
-        // degraded shape; a present chain with an empty asset list is an
-        // ordinary lookup miss and stays cacheable.
+        // return of skipClient.assets. A scoped request must return the
+        // requested chain with a POPULATED asset list: a genuinely
+        // unsupported asset is a denom absent from a populated registry,
+        // while a missing or empty chain entry is the degraded shape
+        // (observed cached from a rate-limited upstream, reproducing the
+        // success-with-empty bug). Unscoped requests must be non-empty.
         const registry = value as Awaited<ReturnType<SkipApiClient["assets"]>>;
         return (
-          Object.keys(registry ?? {}).length > 0 ||
+          (chainID
+            ? Boolean(registry?.[chainID]?.assets?.length)
+            : Object.keys(registry ?? {}).length > 0) ||
           "degraded or empty Skip asset registry response"
         );
       },

@@ -480,23 +480,26 @@ export const useBridgesSupportedAssets = ({
   }, [successfulQueries, direction, assets, variantAssets]);
 
   /**
-   * Loading while any query is on its first fetch, and ALSO while a
-   * provider is failing and nothing has produced a supported chain: a
-   * failing provider must not be mistaken for "asset unsupported for
-   * quoting", which would settle the modal onto its external-providers
-   * fallback. The manual re-poll above keeps re-asking the failed
-   * provider, so this state resolves either into supported chains or into
-   * a genuine all-settled empty result. When other providers DID return
-   * chains, the flow proceeds with those rather than holding.
+   * Loading until any provider has produced a chain the app itself can
+   * transfer through. While that's missing, both first fetches and failing
+   * providers hold the state: a failing provider must not be mistaken for
+   * "asset unsupported for quoting", which would settle the modal onto its
+   * external-providers fallback. Once ANY in-app route is available, the
+   * flow proceeds with it immediately — one provider's slow first fetch or
+   * retries must not hide another provider's usable route. The manual
+   * re-poll above keeps re-asking failed providers, so a held state
+   * resolves either into supported chains or a genuine all-settled empty
+   * result.
    *
    * By design, a full outage of every quote-capable provider holds this
-   * screen in its loading state indefinitely (re-polling every 30s) rather
-   * than degrading to the external-providers view: misrepresenting a
-   * quotable asset as external-only routes users to third-party sites for
-   * transfers the app itself supports, which is worse than a visible wait.
+   * screen in its loading state indefinitely (re-polling with backoff)
+   * rather than degrading to the external-providers view: misrepresenting
+   * a quotable asset as external-only routes users to third-party sites
+   * for transfers the app itself supports, which is worse than a visible
+   * wait.
    */
   const isLoading =
-    isFetchingAny || (hasFailingQueries && !hasInAppTransferSupport);
+    (isFetchingAny || hasFailingQueries) && !hasInAppTransferSupport;
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };
