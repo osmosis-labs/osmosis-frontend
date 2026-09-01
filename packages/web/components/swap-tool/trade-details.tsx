@@ -78,6 +78,12 @@ export const TradeDetails = observer(
       [priceImpact]
     );
 
+    // Green is reserved for an impact genuinely in the user's favour. A
+    // negative impact under the gate is neutral, not green: colouring a loss
+    // the same as a gain reads as an endorsement of it, and did so directly
+    // beneath a rust output-difference figure describing the same trade.
+    const isPriceImpactPositive = priceImpact?.toDec().isPositive() ?? false;
+
     const limitTotalFees = useMemo(() => {
       if (!makerFee || makerFee.isZero()) return;
       return formatPretty((makerFee ?? new Dec(0)).mul(new Dec(100)), {
@@ -211,7 +217,10 @@ export const TradeDetails = observer(
                             <span
                               className={classNames({
                                 "text-rust-400": isPriceImpactHigh,
-                                "text-bullish-400": !isPriceImpactHigh,
+                                "text-bullish-400":
+                                  !isPriceImpactHigh && isPriceImpactPositive,
+                                "text-osmoverse-100":
+                                  !isPriceImpactHigh && !isPriceImpactPositive,
                               })}
                             >
                               {formatPretty(priceImpact ?? new Dec(0))}
