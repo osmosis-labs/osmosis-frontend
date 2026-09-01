@@ -161,6 +161,39 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     expect(result.current.supportedChains).toHaveLength(1);
   });
 
+  it("holds the loading state when a provider is failing and only external-url chains were found", () => {
+    // Wormhole always succeeds with an external-url-only Solana suggestion
+    // for assets with a solana counterparty. That must not release the
+    // failing-provider hold: with the only quote provider down, releasing
+    // would settle the withdraw on Solana and land the modal on the
+    // external-providers view.
+    mockQueryResults = [
+      errorResult,
+      successResult({
+        providerName: "Wormhole",
+        availableChains: [
+          { chainId: "solana", chainType: "solana", prettyName: "Solana" },
+        ],
+        assetsByChainId: {
+          solana: [
+            {
+              chainId: "solana",
+              chainType: "solana",
+              address: "solanaUSDCaddress",
+              denom: "USDC",
+              decimals: 6,
+              transferTypes: ["external-url"],
+            },
+          ],
+        },
+      }),
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
   it("settles into the empty (external-only) state only when every query succeeded with no chains", () => {
     mockQueryResults = [
       successResult(),

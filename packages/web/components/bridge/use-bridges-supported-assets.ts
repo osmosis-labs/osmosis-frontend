@@ -132,6 +132,30 @@ export const useBridgesSupportedAssets = ({
   );
 
   /**
+   * Whether any successful provider returned a chain the app itself can
+   * transfer through (a quote or deposit-address route). External-url-only
+   * results (e.g. Wormhole's Solana suggestion) don't count: they exist for
+   * assets that ALSO have in-app routes, and must not release the failing-
+   * provider hold below — otherwise a Skip outage on a Skip-only asset
+   * settles the modal on the external-url chain (observed as a withdraw
+   * "defaulting to Solana" and landing on the external-providers view).
+   */
+  const hasInAppTransferSupport = useMemo(
+    () =>
+      successfulQueries.some(({ data }) =>
+        Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
+          (assets) =>
+            assets.some((asset) =>
+              asset.transferTypes.some(
+                (type) => type === "quote" || type === "deposit-address"
+              )
+            )
+        )
+      ),
+    [successfulQueries]
+  );
+
+  /**
    * Aggregate supported assets from all successful queries.
    * This would be an object with chain id as key and an array of supported Osmosis variants as value.
    *
@@ -444,7 +468,7 @@ export const useBridgesSupportedAssets = ({
    * transfers the app itself supports, which is worse than a visible wait.
    */
   const isLoading =
-    isFetchingAny || (hasFailingQueries && supportedChains.length === 0);
+    isFetchingAny || (hasFailingQueries && !hasInAppTransferSupport);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };
