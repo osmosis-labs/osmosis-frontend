@@ -69,12 +69,13 @@ const successResult = ({
     },
   },
 });
-/** Retries exhausted; the error-only refetchInterval re-polls it later. */
+/** Retries exhausted; the hook's manual 30s re-poll refetches it later. */
 const errorResult = {
   isSuccess: false,
   isLoading: false,
   isError: true,
   errorUpdateCount: 1,
+  refetch: jest.fn(),
   data: undefined,
 };
 /** First fetch in flight, no failures yet. */
@@ -85,7 +86,7 @@ const loadingResult = {
   errorUpdateCount: 0,
   data: undefined,
 };
-/** Re-polling after a settled error (the error-only refetchInterval):
+/** Re-polling after a settled error (the hook's manual re-poll):
  *  react-query reports isLoading because the query has never had data, and
  *  resets failureCount at fetch start — errorUpdateCount is what persists. */
 const retryingResult = {
@@ -192,6 +193,47 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     const { result } = renderSupportedAssets();
 
     expect(result.current.isLoading).toBe(true);
+  });
+
+  it("re-polls errored queries with backoff (5s, 10s, 20s, then 30s) while a provider is failing", () => {
+    // react-query v4 never interval-refetches a query that settled into an
+    // error without data, so the hook drives this itself
+    jest.useFakeTimers();
+    try {
+      const refetch = jest.fn();
+      mockQueryResults = [{ ...errorResult, refetch }, successResult()];
+
+      renderSupportedAssets();
+
+      expect(refetch).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(5_000);
+      expect(refetch).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(10_000);
+      expect(refetch).toHaveBeenCalledTimes(2);
+      jest.advanceTimersByTime(20_000);
+      expect(refetch).toHaveBeenCalledTimes(3);
+      jest.advanceTimersByTime(30_000);
+      expect(refetch).toHaveBeenCalledTimes(4);
+      jest.advanceTimersByTime(30_000);
+      expect(refetch).toHaveBeenCalledTimes(5);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("does not schedule re-polls when no query is failing", () => {
+    jest.useFakeTimers();
+    try {
+      const refetch = jest.fn();
+      mockQueryResults = [{ ...successResult(), refetch }];
+
+      renderSupportedAssets();
+
+      jest.advanceTimersByTime(90_000);
+      expect(refetch).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("settles into the empty (external-only) state only when every query succeeded with no chains", () => {

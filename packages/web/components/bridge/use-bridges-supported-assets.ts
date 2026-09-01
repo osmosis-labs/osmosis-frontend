@@ -5,7 +5,7 @@ import type {
 } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -78,12 +78,10 @@ export const useBridgesSupportedAssets = ({
             // quoting. Bounded so a provider that is truly down still
             // settles within a few seconds.
             retry: 2,
-            // A provider that exhausted its retries self-heals while the
-            // modal stays open, instead of staying failed for the session.
-            // Healthy queries are left alone: refetching is only scheduled
-            // for errored ones.
-            refetchInterval: (_data, query) =>
-              query.state.status === "error" ? 30_000 : false,
+            // NOTE: no refetchInterval — react-query v4 never interval-
+            // refetches a query that settled into an error without data
+            // (verified against the installed version), so the self-heal
+            // re-poll of failed queries is driven manually below.
           }
         )
       )
@@ -130,6 +128,36 @@ export const useBridgesSupportedAssets = ({
       ),
     [supportedAssetsResults]
   );
+
+  // Self-heal: while any provider query is failing, re-ask the errored ones
+  // on a gentle backoff (5s, 10s, 20s, then every 30s) so a short blip
+  // doesn't cost the user half a minute of skeleton, while a sustained
+  // outage isn't hammered (the original failure mode was a rate-limited
+  // upstream). Driven manually because react-query v4 never interval-
+  // refetches a query that settled into an error without data. The results
+  // ref keeps the timer chain stable across render-to-render result churn;
+  // the chain resets to the short delays whenever failures clear and later
+  // reappear.
+  const resultsRef = useRef(supportedAssetsResults);
+  resultsRef.current = supportedAssetsResults;
+  useEffect(() => {
+    if (!hasFailingQueries) return;
+    const delaysMs = [5_000, 10_000, 20_000];
+    let attempt = 0;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      const delay = delaysMs[attempt] ?? 30_000;
+      attempt++;
+      timeoutId = setTimeout(() => {
+        resultsRef.current.forEach((result) => {
+          if (!isNil(result) && result.isError) result.refetch();
+        });
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(timeoutId);
+  }, [hasFailingQueries]);
 
   /**
    * Whether any successful provider returned a chain the app itself can
@@ -456,7 +484,7 @@ export const useBridgesSupportedAssets = ({
    * provider is failing and nothing has produced a supported chain: a
    * failing provider must not be mistaken for "asset unsupported for
    * quoting", which would settle the modal onto its external-providers
-   * fallback. The error-only refetch above keeps re-asking the failed
+   * fallback. The manual re-poll above keeps re-asking the failed
    * provider, so this state resolves either into supported chains or into
    * a genuine all-settled empty result. When other providers DID return
    * chains, the flow proceeds with those rather than holding.
