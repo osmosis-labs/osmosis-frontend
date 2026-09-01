@@ -70,13 +70,20 @@ export const useBridgesSupportedAssets = ({
             enabled: !isNil(assets),
             staleTime: 30_000,
             cacheTime: 30_000,
-            // Disable retries, as useQueries
-            // will block successful queries from being returned
-            // if failed queries are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // query that the user can use.
-            retry: false,
+            // Retry transient provider failures a couple of times. While
+            // retries run, the query counts as loading, so the modal keeps
+            // its loading state instead of settling into the external-only
+            // fallback screen: a single provider hiccup (e.g. a rate-limited
+            // Skip response) must not make an asset look unsupported for
+            // quoting. Bounded so a provider that is truly down still
+            // settles within a few seconds.
+            retry: 2,
+            // A provider that exhausted its retries self-heals while the
+            // modal stays open, instead of staying failed for the session.
+            // Healthy queries are left alone: refetching is only scheduled
+            // for errored ones.
+            refetchInterval: (_data, query) =>
+              query.state.status === "error" ? 30_000 : false,
           }
         )
       )
