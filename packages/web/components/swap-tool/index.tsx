@@ -32,6 +32,7 @@ import {
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
+import { normalizePriceImpact } from "~/components/loss-acknowledgement";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import {
   AmountPresetFraction,
@@ -44,6 +45,7 @@ import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -174,8 +176,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .abs()
       .gt(new Dec(0.05));
 
-    const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.05)) ?? false;
+    const quotedPriceImpact = swapState.quote?.priceImpactTokenOut;
+
+    // Same constant and same comparison as the acknowledgement gate in the
+    // review modal, so this button label and that checkbox can never disagree
+    // about what counts as high impact — including at the boundary, which the
+    // previous `lt(new Dec(-0.05))` form got wrong by one tick.
+    const showPriceImpactWarning = quotedPriceImpact
+      ? normalizePriceImpact(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
+      : false;
 
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
