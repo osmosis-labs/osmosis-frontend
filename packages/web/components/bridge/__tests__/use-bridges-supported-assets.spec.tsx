@@ -59,6 +59,7 @@ const successResult = ({
   isSuccess: true,
   isLoading: false,
   isError: false,
+  errorUpdateCount: 0,
   data: {
     supportedAssets: {
       providerName,
@@ -68,16 +69,30 @@ const successResult = ({
     },
   },
 });
+/** Retries exhausted; the error-only refetchInterval re-polls it later. */
 const errorResult = {
   isSuccess: false,
   isLoading: false,
   isError: true,
+  errorUpdateCount: 1,
   data: undefined,
 };
+/** First fetch in flight, no failures yet. */
 const loadingResult = {
   isSuccess: false,
   isLoading: true,
   isError: false,
+  errorUpdateCount: 0,
+  data: undefined,
+};
+/** Re-polling after a settled error (the error-only refetchInterval):
+ *  react-query reports isLoading because the query has never had data, and
+ *  resets failureCount at fetch start — errorUpdateCount is what persists. */
+const retryingResult = {
+  isSuccess: false,
+  isLoading: true,
+  isError: false,
+  errorUpdateCount: 1,
   data: undefined,
 };
 
@@ -117,6 +132,33 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.supportedChains).toHaveLength(1);
     expect(result.current.supportedChains[0].chainId).toBe(1);
+  });
+
+  it("holds the loading state while a provider is retrying and no chains were found", () => {
+    mockQueryResults = [retryingResult, successResult()];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it("does not flash loading when a failing provider re-polls while chains are available", () => {
+    // an error-interval re-poll reports isLoading (the query never had
+    // data); the modal must keep rendering the chains other providers
+    // returned instead of dropping to a skeleton every poll cycle
+    mockQueryResults = [
+      retryingResult,
+      successResult({
+        providerName: "Squid",
+        availableChains: [ethereumChain],
+        assetsByChainId: ethereumAssetsByChainId,
+      }),
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.supportedChains).toHaveLength(1);
   });
 
   it("settles into the empty (external-only) state only when every query succeeded with no chains", () => {

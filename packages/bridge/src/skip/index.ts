@@ -281,19 +281,25 @@ export class SkipBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    try {
-      const chainAsset = await this.getAsset(chain, asset);
-      if (!chainAsset) throw new Error("Asset not found: " + asset.address);
+    // Registry fetches live OUTSIDE the try/catch: their failures (registry
+    // down, rate limited) must reject so the client's query retries and
+    // re-polls. Everything below is pure lookup over the fetched data, where
+    // a miss legitimately means "no route for this asset".
+    const chainAsset = await this.getAsset(chain, asset);
+    // Asset not in Skip's registry: unsupported by this provider, not an
+    // outage — resolve empty so other transfer options can render.
+    if (!chainAsset) return [];
 
+    // find variants
+    const [assets, skipChains] = await Promise.all([
+      this.getAssets(),
+      this.getChains(),
+    ]);
+
+    try {
       // Use of toLowerCase is advised due to registry (Skip + others) differences
       // in casing of asset addresses. May be somewhat unsafe.
       // See original usage in `getAsset` method.
-
-      // find variants
-      const [assets, skipChains] = await Promise.all([
-        this.getAssets(),
-        this.getChains(),
-      ]);
       const foundVariants = new BridgeAssetMap<
         BridgeChain & BridgeSupportedAsset
       >();
@@ -438,12 +444,11 @@ export class SkipBridgeProvider implements BridgeProvider {
           e
         );
       }
-      // Propagate the failure instead of returning []: a swallowed error is
-      // indistinguishable from "asset unsupported for quoting", which parks
-      // the bridge modal on its external-providers fallback with nothing
-      // ever re-asking this provider. A rejected query is retried and
-      // re-polled by the client until the provider recovers.
-      throw e;
+      // Only pure lookup over already-fetched registry data can land here
+      // (infra failures reject above, before the try), so degrade to "no
+      // options from this provider" rather than an error the client would
+      // retry forever.
+      return [];
     }
   }
 
@@ -641,7 +646,11 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const chainAssets = await this.getAssets(chainID);
 
-    for (const skipAsset of chainAssets[chainID].assets) {
+    // A registry response that omits the requested chain is a lookup miss
+    // ("no assets on this chain"), not an outage: guard it so callers see
+    // "asset not found" rather than a TypeError rejection that clients
+    // would classify as a provider failure and retry forever.
+    for (const skipAsset of chainAssets[chainID]?.assets ?? []) {
       if (chain.chainType === "evm") {
         // For the chain's native EVM token, only match assets without token_contract.
         // For Ethereum specifically, Skip may have two ETH entries: one with token_contract

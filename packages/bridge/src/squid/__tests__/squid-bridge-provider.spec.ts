@@ -3884,4 +3884,38 @@ describe("SquidBridgeProvider getSupportedAssets failure propagation", () => {
       );
     expect(outcome).toBe("rejected");
   });
+
+  it("resolves empty when the token is not in the (healthy) registry", async () => {
+    // registry responds fine (global fixture handlers); the token is simply
+    // not listed — an ordinary unsupported asset, NOT an outage, so the
+    // result must resolve to [] rather than reject (a rejection would make
+    // the client retry forever and never render other transfer options)
+    const healthyCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const healthyProvider = new SquidBridgeProvider("integratorId", healthyCtx);
+
+    await expect(
+      healthyProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "FAKE",
+          address: "ibc/NOTINREGISTRY",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).resolves.toEqual([]);
+  });
 });

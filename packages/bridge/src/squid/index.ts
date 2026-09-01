@@ -319,21 +319,27 @@ export class SquidBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
+    // Registry fetches live OUTSIDE the try/catch: their failures (registry
+    // down, rate limited) must reject so the client's query retries and
+    // re-polls. Everything below is pure lookup over the fetched data, where
+    // a miss legitimately means "no route for this asset".
+    const [tokens, chains] = await Promise.all([
+      this.getTokens(),
+      this.getChains(),
+    ]);
+    const token = tokens.find(
+      (t) =>
+        (t.address.toLowerCase() === asset.address.toLowerCase() ||
+          t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
+        // squid uses canonical chain IDs (numerical and string)
+        String(t.chainId) === String(chain.chainId)
+    );
+
+    // Token not in Squid's registry: unsupported by this provider, not an
+    // outage — resolve empty so other transfer options can render.
+    if (!token) return [];
+
     try {
-      const [tokens, chains] = await Promise.all([
-        this.getTokens(),
-        this.getChains(),
-      ]);
-      const token = tokens.find(
-        (t) =>
-          (t.address.toLowerCase() === asset.address.toLowerCase() ||
-            t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
-          // squid uses canonical chain IDs (numerical and string)
-          String(t.chainId) === String(chain.chainId)
-      );
-
-      if (!token) throw new Error("Token not found: " + asset.address);
-
       const foundVariants = new BridgeAssetMap<
         BridgeChain & BridgeSupportedAsset
       >();
@@ -444,12 +450,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           e
         );
       }
-      // Propagate the failure instead of returning []: a swallowed error is
-      // indistinguishable from "asset unsupported for quoting", which parks
-      // the bridge modal on its external-providers fallback with nothing
-      // ever re-asking this provider. A rejected query is retried and
-      // re-polled by the client until the provider recovers.
-      throw e;
+      // Only pure lookup over already-fetched registry data can land here
+      // (infra failures reject above, before the try), so degrade to "no
+      // options from this provider" rather than an error the client would
+      // retry forever.
+      return [];
     }
   }
 

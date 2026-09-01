@@ -100,15 +100,34 @@ export const useBridgesSupportedAssets = ({
   );
 
   const isFetchingAny = useMemo(
-    () => supportedAssetsResults.some((data) => isNil(data) || data.isLoading),
+    () =>
+      supportedAssetsResults.some(
+        (data) =>
+          isNil(data) ||
+          // First fetches only: a query re-polling after failures also
+          // reports isLoading (it has never had data), but must not drop
+          // the whole modal back to a skeleton when other providers already
+          // returned usable chains. errorUpdateCount is the discriminator:
+          // unlike failureCount, which react-query resets to 0 at the start
+          // of every fetch, it increments on each settled error and never
+          // resets, so a re-poll after an error is always distinguishable
+          // from a first fetch. Failing queries are handled below.
+          (data.isLoading && data.errorUpdateCount === 0)
+      ),
     [supportedAssetsResults]
   );
 
-  /** A provider's query failed (all retries exhausted). Remote providers
-   *  (Skip, Squid) reject on infrastructure failures rather than returning
-   *  an empty result, so this is the "provider down" signal. */
-  const hasErroredQueries = useMemo(
-    () => supportedAssetsResults.some((data) => !isNil(data) && data.isError),
+  /** A provider's query failed (retries exhausted) or is re-attempting
+   *  after failures. Remote providers (Skip, Squid) reject on
+   *  infrastructure failures rather than returning an empty result, so
+   *  this is the "provider down" signal. */
+  const hasFailingQueries = useMemo(
+    () =>
+      supportedAssetsResults.some(
+        (data) =>
+          !isNil(data) &&
+          (data.isError || (data.isLoading && data.errorUpdateCount > 0))
+      ),
     [supportedAssetsResults]
   );
 
@@ -409,17 +428,23 @@ export const useBridgesSupportedAssets = ({
   }, [successfulQueries, direction, assets, variantAssets]);
 
   /**
-   * Loading while any query is in flight (retries included), and ALSO while
-   * a provider has failed and nothing has produced a supported chain: an
-   * errored provider must not be mistaken for "asset unsupported for
+   * Loading while any query is on its first fetch, and ALSO while a
+   * provider is failing and nothing has produced a supported chain: a
+   * failing provider must not be mistaken for "asset unsupported for
    * quoting", which would settle the modal onto its external-providers
    * fallback. The error-only refetch above keeps re-asking the failed
-   * provider, so this state resolves either into supported chains or into a
-   * genuine all-settled empty result. When other providers DID return
+   * provider, so this state resolves either into supported chains or into
+   * a genuine all-settled empty result. When other providers DID return
    * chains, the flow proceeds with those rather than holding.
+   *
+   * By design, a full outage of every quote-capable provider holds this
+   * screen in its loading state indefinitely (re-polling every 30s) rather
+   * than degrading to the external-providers view: misrepresenting a
+   * quotable asset as external-only routes users to third-party sites for
+   * transfers the app itself supports, which is worse than a visible wait.
    */
   const isLoading =
-    isFetchingAny || (hasErroredQueries && supportedChains.length === 0);
+    isFetchingAny || (hasFailingQueries && supportedChains.length === 0);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };
