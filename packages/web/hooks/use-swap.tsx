@@ -1856,16 +1856,9 @@ export function useDynamicSlippageFromQuote({
 }) {
   // Synchronously compute the display value from the current quote so it updates
   // in the same React render cycle as the quote/gas display, not one cycle later.
-  // Exact-out (in-given-out) quotes are excluded: SQS derives them by inverting
-  // an exact-in quote, so their price impact and fee metadata cannot be trusted
-  // for tier selection. Exact-out stays on the static default until SQS ships
-  // true in-given-out routing.
   const autoAdjustedSlippage = useMemo(
-    () =>
-      quoteType === "in-given-out"
-        ? DefaultSlippage
-        : computeSuggestedSlippage(quote),
-    [quote, quoteType]
+    () => computeSuggestedSlippage(quote),
+    [quote]
   );
 
   // Tracks the last value written by this hook — used only as an optimisation to
@@ -1880,20 +1873,6 @@ export function useDynamicSlippageFromQuote({
 
     // If useDynamicSlippageConfig (error hook) has called select() — don't override
     if (!slippageConfig.isManualSlippage) return;
-
-    // No auto-adjustment for exact-out quotes (see autoAdjustedSlippage above).
-    // If a previous exact-in auto-set is still in the config, unwind it so a
-    // direction switch doesn't carry an elevated tier into exact-out mode.
-    if (quoteType === "in-given-out") {
-      if (
-        lastAutoSet.current !== null &&
-        !slippageConfig.userOverrodeSlippage
-      ) {
-        lastAutoSet.current = null;
-        slippageConfig.setManualSlippage(DefaultSlippage);
-      }
-      return;
-    }
 
     // Explicit user override takes precedence — string equality is too fragile
     // (e.g. user types "0.5" which matches the tier string) so we rely on the
