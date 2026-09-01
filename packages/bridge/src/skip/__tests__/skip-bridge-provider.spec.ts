@@ -1020,3 +1020,45 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 });
+
+describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
+  it("rejects when the provider registry is unavailable", async () => {
+    server.use(
+      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ message: "registry unavailable" }))
+      )
+    );
+
+    const failingCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const failingProvider = new SkipBridgeProvider(failingCtx);
+
+    // A registry failure must reject rather than resolve to an empty list:
+    // an empty list means "asset unsupported", which the client settles on
+    // without retrying, while a rejected query is retried and re-polled.
+    await expect(
+      failingProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
+  });
+});

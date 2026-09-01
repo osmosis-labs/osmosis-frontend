@@ -99,8 +99,16 @@ export const useBridgesSupportedAssets = ({
     [supportedAssetsResults]
   );
 
-  const isLoading = useMemo(
+  const isFetchingAny = useMemo(
     () => supportedAssetsResults.some((data) => isNil(data) || data.isLoading),
+    [supportedAssetsResults]
+  );
+
+  /** A provider's query failed (all retries exhausted). Remote providers
+   *  (Skip, Squid) reject on infrastructure failures rather than returning
+   *  an empty result, so this is the "provider down" signal. */
+  const hasErroredQueries = useMemo(
+    () => supportedAssetsResults.some((data) => !isNil(data) && data.isError),
     [supportedAssetsResults]
   );
 
@@ -399,6 +407,19 @@ export const useBridgesSupportedAssets = ({
       ).values()
     );
   }, [successfulQueries, direction, assets, variantAssets]);
+
+  /**
+   * Loading while any query is in flight (retries included), and ALSO while
+   * a provider has failed and nothing has produced a supported chain: an
+   * errored provider must not be mistaken for "asset unsupported for
+   * quoting", which would settle the modal onto its external-providers
+   * fallback. The error-only refetch above keeps re-asking the failed
+   * provider, so this state resolves either into supported chains or into a
+   * genuine all-settled empty result. When other providers DID return
+   * chains, the flow proceeds with those rather than holding.
+   */
+  const isLoading =
+    isFetchingAny || (hasErroredQueries && supportedChains.length === 0);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };

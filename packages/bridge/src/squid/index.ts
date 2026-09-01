@@ -437,7 +437,6 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       return foundVariants.assets;
     } catch (e) {
-      // Avoid returning options if there's an unexpected error, such as the provider being down
       if (process.env.NODE_ENV !== "production") {
         console.error(
           SquidBridgeProvider.ID,
@@ -445,7 +444,12 @@ export class SquidBridgeProvider implements BridgeProvider {
           e
         );
       }
-      return [];
+      // Propagate the failure instead of returning []: a swallowed error is
+      // indistinguishable from "asset unsupported for quoting", which parks
+      // the bridge modal on its external-providers fallback with nothing
+      // ever re-asking this provider. A rejected query is retried and
+      // re-polled by the client until the provider recovers.
+      throw e;
     }
   }
 
