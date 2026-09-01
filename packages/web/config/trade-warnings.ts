@@ -9,12 +9,23 @@ import { Dec } from "@osmosis-labs/unit";
  */
 
 /**
- * Price impact (as a positive fraction, e.g. 0.10 = 10%) at or above which a
+ * Price impact (as a positive fraction, e.g. 0.05 = 5%) at or above which a
  * trade/transfer requires explicit user acknowledgement. Consumers must
  * normalize sign conventions (swap quotes report negative impact) before
  * comparing.
+ *
+ * Deliberately shared with the bridge, unlike the two slippage gates below.
+ * Those measure different quantities on either side — a realized loss on the
+ * bridge, a ceiling the user typed on a trade — but price impact means the
+ * same thing on both: the impact of an Osmosis swap. The bridge's is the
+ * impact of the swap its own quote bundles, so it should move with this value
+ * rather than diverge from it.
+ *
+ * Lowered from 10% to 5% (MTN-150) because 10% let a clearly bad trade through
+ * unacknowledged, and because the swap page already treats 5% impact as
+ * warning-worthy — the gate was the figure out of step, not the display.
  */
-export const HighPriceImpactGate = new Dec(0.1);
+export const HighPriceImpactGate = new Dec(0.05);
 
 /**
  * Realized value loss (as a positive fraction, e.g. 0.06 = 6%) above which a
