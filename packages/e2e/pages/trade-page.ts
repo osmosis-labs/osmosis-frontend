@@ -517,9 +517,10 @@ export class TradePage extends BasePage {
           const msgTextLocator = limit
             ? "Execute contract"
             : "type: osmosis/poolmanager/";
-          msgContentAmount =
+          msgContentAmount = unfoldWalletMsgYaml(
             (await approvePage.getByText(msgTextLocator).textContent()) ??
-            undefined;
+              undefined
+          );
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           await approveBtn.click();
         } else {
@@ -660,9 +661,10 @@ export class TradePage extends BasePage {
           const msgTextLocator = limit
             ? "Execute contract"
             : "type: osmosis/poolmanager/";
-          msgContentAmount =
+          msgContentAmount = unfoldWalletMsgYaml(
             (await approvePage.getByText(msgTextLocator).textContent()) ??
-            undefined;
+              undefined
+          );
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           await approveBtn.click();
         } else {
