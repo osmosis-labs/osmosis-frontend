@@ -342,7 +342,11 @@ jobs:
           path: packages/e2e/playwright-report
 
   preview-pools-and-select-pair-tests:
-    timeout-minutes: 10
+    # 15, matching the other long suites. This job runs 15 tests (3 pools + 12
+    # select-pair) and never had real headroom under 10: its best passing run
+    # finished in 9m17s. It has since drifted past the limit and now cancels at
+    # 10m every time, mid-suite, with no test having failed.
+    timeout-minutes: 15
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
