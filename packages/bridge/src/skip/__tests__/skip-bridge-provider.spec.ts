@@ -811,6 +811,39 @@ describe("SkipBridgeProvider", () => {
       ]);
     });
 
+    it("does not mutate the shared asset list when computing variants", async () => {
+      const request = {
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos" as const,
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit" as const,
+      };
+
+      const assetListAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((a) => a.coinMinimalDenom === request.asset.address)!;
+      const counterpartyCountBefore = assetListAsset.counterparty.length;
+
+      const first = await provider.getSupportedAssets(request);
+      // Aliasing the shared counterparty array previously doubled it on
+      // every call until the variant spread threw, permanently emptying
+      // results for the process.
+      for (let i = 0; i < 5; i++) {
+        await provider.getSupportedAssets(request);
+      }
+      const last = await provider.getSupportedAssets(request);
+
+      expect(assetListAsset.counterparty.length).toBe(counterpartyCountBefore);
+      expect(last).toEqual(first);
+    });
+
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
         rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {

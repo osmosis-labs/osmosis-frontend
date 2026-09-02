@@ -325,7 +325,12 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      const counterparties = assetListAsset?.counterparty ?? [];
+      // Copy, never alias: assetLists is module-static and shared across
+      // requests, and variantAssets below includes assetListAsset itself, so
+      // pushing into the original array doubles it on every request until
+      // the spread blows the argument limit ("Maximum call stack size
+      // exceeded") and this provider returns empty until instance recycle.
+      const counterparties = [...(assetListAsset?.counterparty ?? [])];
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
