@@ -14,20 +14,20 @@ import {
 } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { Checkbox } from "~/components/ui/checkbox";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -207,12 +207,15 @@ export const ReviewOrder = observer(function ReviewOrder({
       : Number(fiatAmountWithSlippage?.toDec().toString() ?? "0");
   // For out-given-in: fiatAmountWithSlippage is undefined when no quote is
   // available, so the !== undefined guard naturally covers the loading state.
+  // A zero minimum output (e.g. 100% slippage) is the most extreme disparity
+  // possible and MUST stay gated, so no > 0 check on this side.
   // For in-given-out: tokenOutFiatValue falls back to $0 (never undefined), so
   // we must also require minimumOutputUsdNum > 0 to avoid a false positive
-  // while the SOL (or other output asset) spot price is still loading.
+  // while the output asset's spot price is still loading; the output amount
+  // itself is fixed by the user, so a real zero cannot occur on this side.
   const isExtremeValueDisparity =
     inputUsdNum > 1 &&
-    minimumOutputUsdNum > 0 &&
+    (quoteType !== "in-given-out" || minimumOutputUsdNum > 0) &&
     (quoteType === "in-given-out"
       ? expectedOutputFiat
       : fiatAmountWithSlippage) !== undefined &&

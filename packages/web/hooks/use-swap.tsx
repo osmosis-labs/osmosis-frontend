@@ -1882,14 +1882,18 @@ export function useDynamicSlippageFromQuote({
     if (!slippageConfig.isManualSlippage) return;
 
     // No auto-adjustment for exact-out quotes (see autoAdjustedSlippage above).
-    // If a previous exact-in auto-set is still in the config, unwind it so a
-    // direction switch doesn't carry an elevated tier into exact-out mode.
+    // Pin the config to the static default whenever the user has not
+    // explicitly overridden it: this unwinds a previous exact-in auto-set on
+    // direction switch AND corrects the store's legacy 0.5% boot value, so
+    // the displayed default and the submitted tolerance cannot diverge.
+    // Error-hook preset selections never reach here (isManualSlippage guard
+    // above) and typed values are protected by userOverrodeSlippage.
     if (quoteType === "in-given-out") {
+      lastAutoSet.current = null;
       if (
-        lastAutoSet.current !== null &&
-        !slippageConfig.userOverrodeSlippage
+        !slippageConfig.userOverrodeSlippage &&
+        slippageConfig.manualSlippageStr !== DefaultSlippage
       ) {
-        lastAutoSet.current = null;
         slippageConfig.setManualSlippage(DefaultSlippage);
       }
       return;
