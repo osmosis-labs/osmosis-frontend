@@ -467,17 +467,21 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return foundVariants.assets;
     } catch (e) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error(
-          SkipBridgeProvider.ID,
-          "failed to get supported assets:",
-          e
-        );
-      }
       // Only pure lookup over already-fetched registry data can land here
-      // (infra failures reject above, before the try), so degrade to "no
-      // options from this provider" rather than an error the client would
-      // retry forever.
+      // (infra failures reject above, before the try). A throw therefore
+      // means the cached registry data is malformed, which the size-based
+      // cache guards cannot see, so log it in production too: a silent
+      // catch here turns a 30-minute poisoned cache entry into an
+      // unexplainable empty result.
+      console.warn(
+        `[Skip] supported-assets lookup threw for ${asset.address} on ${
+          chain.chainId
+        }: ${
+          e instanceof Error ? e.message : String(e)
+        }; unscoped registry chains=${
+          Object.keys((await this.getAssets()) ?? {}).length
+        }, chain list=${(await this.getChains())?.length ?? 0}`
+      );
       return [];
     }
   }
