@@ -796,7 +796,8 @@
     "slippageOverBalance": "スリッページをカバーするための資金が不足している",
     "extremeDisparityAcknowledgement": "送信する価値より大幅に少ない価値を受け取ることを理解しています。",
     "slippageAutoAdjustedTitle": "スリッページが自動調整されました",
-    "slippageAutoAdjustedBody": "価格への影響が大きい、または流動性が低いため、この取引のデフォルトのスリッページが引き上げられました。"
+    "slippageAutoAdjustedBody": "価格への影響が大きい、または流動性が低いため、この取引のデフォルトのスリッページが引き上げられました。",
+    "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

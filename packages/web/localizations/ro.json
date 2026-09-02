@@ -796,7 +796,8 @@
     "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul",
     "extremeDisparityAcknowledgement": "Înțeleg că primesc o valoare semnificativ mai mică decât cea pe care o trimit.",
     "slippageAutoAdjustedTitle": "Slippage ajustat automat",
-    "slippageAutoAdjustedBody": "Slippage-ul implicit al acestei tranzacții a fost mărit din cauza impactului mare asupra prețului sau a lichidității scăzute."
+    "slippageAutoAdjustedBody": "Slippage-ul implicit al acestei tranzacții a fost mărit din cauza impactului mare asupra prețului sau a lichidității scăzute.",
+    "amountTooSmallForSlippage": "Suma este prea mică pentru un schimb cu acest slippage. Măriți suma sau reduceți slippage-ul."
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",

@@ -796,7 +796,8 @@
     "slippageOverBalance": "Fundos insuficientes para cobrir o deslizamento",
     "extremeDisparityAcknowledgement": "Entendo que estou recebendo um valor significativamente menor do que estou enviando.",
     "slippageAutoAdjustedTitle": "Deslizamento ajustado automaticamente",
-    "slippageAutoAdjustedBody": "O deslizamento padrão desta operação foi aumentado devido ao alto impacto no preço ou à baixa liquidez."
+    "slippageAutoAdjustedBody": "O deslizamento padrão desta operação foi aumentado devido ao alto impacto no preço ou à baixa liquidez.",
+    "amountTooSmallForSlippage": "Valor muito pequeno para trocar com este deslizamento. Aumente o valor ou reduza o deslizamento."
   },
   "walletSelect": {
     "gettingStarted": "Começando",

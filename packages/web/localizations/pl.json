@@ -796,7 +796,8 @@
     "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu",
     "extremeDisparityAcknowledgement": "Rozumiem, że otrzymuję znacznie mniejszą wartość niż wysyłam.",
     "slippageAutoAdjustedTitle": "Poślizg dostosowany automatycznie",
-    "slippageAutoAdjustedBody": "Domyślny poślizg dla tej transakcji został podniesiony z powodu dużego wpływu na cenę lub niskiej płynności."
+    "slippageAutoAdjustedBody": "Domyślny poślizg dla tej transakcji został podniesiony z powodu dużego wpływu na cenę lub niskiej płynności.",
+    "amountTooSmallForSlippage": "Kwota zbyt mała, aby dokonać wymiany przy tym poślizgu. Zwiększ kwotę lub zmniejsz poślizg."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

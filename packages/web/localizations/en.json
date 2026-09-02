@@ -796,7 +796,8 @@
     "slippageOverBalance": "Insufficient funds to cover slippage",
     "extremeDisparityAcknowledgement": "I understand I am receiving significantly less value than I am sending.",
     "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
-    "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity."
+    "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity.",
+    "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

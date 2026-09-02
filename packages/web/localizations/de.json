@@ -796,7 +796,8 @@
     "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage",
     "extremeDisparityAcknowledgement": "Mir ist bewusst, dass ich deutlich weniger Wert erhalte, als ich sende.",
     "slippageAutoAdjustedTitle": "Slippage automatisch angepasst",
-    "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht."
+    "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht.",
+    "amountTooSmallForSlippage": "Betrag zu klein für einen Swap mit dieser Slippage. Erhöhen Sie den Betrag oder verringern Sie die Slippage."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

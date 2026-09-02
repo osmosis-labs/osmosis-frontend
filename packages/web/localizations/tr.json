@@ -796,7 +796,8 @@
     "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok",
     "extremeDisparityAcknowledgement": "Gönderdiğimden önemli ölçüde daha az değer aldığımı anlıyorum.",
     "slippageAutoAdjustedTitle": "Kayma otomatik ayarlandı",
-    "slippageAutoAdjustedBody": "Yüksek fiyat etkisi veya düşük likidite nedeniyle bu işlemin varsayılan kayması artırıldı."
+    "slippageAutoAdjustedBody": "Yüksek fiyat etkisi veya düşük likidite nedeniyle bu işlemin varsayılan kayması artırıldı.",
+    "amountTooSmallForSlippage": "Bu kayma ile takas için tutar çok küçük. Tutarı artırın veya kaymayı azaltın."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",

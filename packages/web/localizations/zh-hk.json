@@ -796,7 +796,8 @@
     "slippageOverBalance": "資金不足以彌補滑點",
     "extremeDisparityAcknowledgement": "我明白我收到的價值遠低於我發送的價值。",
     "slippageAutoAdjustedTitle": "滑點已自動調整",
-    "slippageAutoAdjustedBody": "由於價格影響較大或流動性較低，此交易的預設滑點已上調。"
+    "slippageAutoAdjustedBody": "由於價格影響較大或流動性較低，此交易的預設滑點已上調。",
+    "amountTooSmallForSlippage": "金額太小，無法以此滑點進行兌換。請增加金額或降低滑點。"
   },
   "walletSelect": {
     "gettingStarted": "入門",

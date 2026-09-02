@@ -952,6 +952,11 @@ export const ReviewOrder = observer(function ReviewOrder({
                   </span>
                 </label>
               )}
+              {isSlippageBoundZeroOnChain && (
+                <p className="caption w-full pt-2 text-rust-400">
+                  {t("swap.amountTooSmallForSlippage")}
+                </p>
+              )}
               {!diffGteSlippage && (
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button

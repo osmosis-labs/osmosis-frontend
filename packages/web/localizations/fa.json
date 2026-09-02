@@ -796,7 +796,8 @@
     "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش",
     "extremeDisparityAcknowledgement": "می‌دانم که ارزشی به‌مراتب کمتر از آنچه ارسال می‌کنم دریافت می‌کنم.",
     "slippageAutoAdjustedTitle": "لغزش به‌طور خودکار تنظیم شد",
-    "slippageAutoAdjustedBody": "لغزش پیش‌فرض این معامله به دلیل تأثیر قیمتی بالا یا نقدینگی کم افزایش یافته است."
+    "slippageAutoAdjustedBody": "لغزش پیش‌فرض این معامله به دلیل تأثیر قیمتی بالا یا نقدینگی کم افزایش یافته است.",
+    "amountTooSmallForSlippage": "مقدار برای سواپ با این لغزش بسیار کم است. مقدار را افزایش دهید یا لغزش را کاهش دهید."
   },
   "walletSelect": {
     "gettingStarted": "شروع شدن",
