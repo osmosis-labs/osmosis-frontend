@@ -338,6 +338,29 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     }
   });
 
+  it("does not restart a recovery refetch that is still in flight", () => {
+    // A query stays isError while its recovery refetch runs; calling
+    // refetch() again would cancel the active request (cancelRefetch
+    // defaults to true), so a response slower than the backoff delay
+    // could never complete.
+    jest.useFakeTimers();
+    try {
+      const refetch = jest.fn();
+      mockQueryResults = [
+        { ...errorResult, isFetching: true, refetch },
+        successResult(),
+      ];
+
+      renderSupportedAssets();
+
+      jest.advanceTimersByTime(5_000);
+      jest.advanceTimersByTime(10_000);
+      expect(refetch).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("does not schedule re-polls when no query is failing", () => {
     jest.useFakeTimers();
     try {

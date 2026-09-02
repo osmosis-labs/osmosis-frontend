@@ -170,7 +170,12 @@ export const useBridgesSupportedAssets = ({
       attempt++;
       timeoutId = setTimeout(() => {
         resultsRef.current.forEach((result) => {
-          if (!isNil(result) && result.isError) result.refetch();
+          // !isFetching: a query stays isError while its recovery refetch
+          // is in flight, and refetch()'s default cancelRefetch would
+          // cancel that active request, so a response slower than the
+          // backoff delay could never complete.
+          if (!isNil(result) && result.isError && !result.isFetching)
+            result.refetch();
         });
         schedule();
       }, delay);
