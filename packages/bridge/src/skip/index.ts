@@ -448,6 +448,23 @@ export class SkipBridgeProvider implements BridgeProvider {
       // * CCTP variants
       // * EVM swappable variants
 
+      // An empty result for an asset that IS in Skip's scoped registry means
+      // both variant loops starved. That can only come from the unscoped
+      // registry data, so log its breadth to distinguish a genuinely
+      // route-less asset from a degraded PARTIAL all-chains response that
+      // passed the non-empty cache guard.
+      if (foundVariants.assets.length === 0) {
+        console.warn(
+          `[Skip] supported-assets empty: ${asset.address} on ${
+            chain.chainId
+          }; unscoped registry chains=${
+            Object.keys(assets).length
+          }, chain list=${skipChains.length}, counterparties=${
+            counterparties.length
+          }`
+        );
+      }
+
       return foundVariants.assets;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
