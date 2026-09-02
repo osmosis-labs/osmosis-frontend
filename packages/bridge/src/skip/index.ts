@@ -287,8 +287,21 @@ export class SkipBridgeProvider implements BridgeProvider {
     // a miss legitimately means "no route for this asset".
     const chainAsset = await this.getAsset(chain, asset);
     // Asset not in Skip's registry: unsupported by this provider, not an
-    // outage — resolve empty so other transfer options can render.
-    if (!chainAsset) return [];
+    // outage — resolve empty so other transfer options can render. Logged
+    // unconditionally (production included) because a miss for an asset the
+    // app offers is exceptional: it is either a real registry gap or a
+    // degraded PARTIAL upstream response, which the cache guard cannot see
+    // when the list is populated. The registry size in the log line is what
+    // disambiguates the two.
+    if (!chainAsset) {
+      const registry = await this.getAssets(chain.chainId.toString());
+      const registrySize =
+        registry?.[chain.chainId.toString()]?.assets?.length ?? 0;
+      console.warn(
+        `[Skip] supported-assets miss: ${asset.address} not in ${chain.chainId} registry of ${registrySize} assets`
+      );
+      return [];
+    }
 
     // find variants
     const [assets, skipChains] = await Promise.all([
