@@ -78,6 +78,10 @@ export const useBridgesSupportedAssets = ({
             // quoting. Bounded so a provider that is truly down still
             // settles within a few seconds.
             retry: 2,
+            // Refocus refetches would re-trigger the fetching hold below
+            // (a brief skeleton) on assets with no in-app routes; supported
+            // chains change rarely, so mount refetches are enough.
+            refetchOnWindowFocus: false,
             // NOTE: no refetchInterval — react-query v4 never interval-
             // refetches a query that settled into an error without data
             // (verified against the installed version), so the self-heal
@@ -102,15 +106,27 @@ export const useBridgesSupportedAssets = ({
       supportedAssetsResults.some(
         (data) =>
           isNil(data) ||
-          // First fetches only: a query re-polling after failures also
-          // reports isLoading (it has never had data), but must not drop
-          // the whole modal back to a skeleton when other providers already
-          // returned usable chains. errorUpdateCount is the discriminator:
-          // unlike failureCount, which react-query resets to 0 at the start
-          // of every fetch, it increments on each settled error and never
-          // resets, so a re-poll after an error is always distinguishable
-          // from a first fetch. Failing queries are handled below.
-          (data.isLoading && data.errorUpdateCount === 0)
+          // isFetching (not isLoading): background refetches of already-
+          // settled data must also count. The query cache is persisted to
+          // localStorage, so a previous session's results (including a
+          // degraded success-with-empty) hydrate as settled truth and
+          // immediately refetch on mount; treating that refetch as "not
+          // fetching" let the modal commit a default chain from stale data
+          // before the fresh response corrected it (observed as USDC
+          // defaulting to Wormhole's Solana suggestion). Note the hold this
+          // feeds is still released the moment any provider shows an in-app
+          // route, so healthy hydrated data still renders instantly.
+          //
+          // errorUpdateCount === 0 restricts this to first fetches: a query
+          // re-polling after failures also reports isFetching, but must not
+          // drop the whole modal back to a skeleton when other providers
+          // already returned usable chains. errorUpdateCount is the
+          // discriminator: unlike failureCount, which react-query resets to
+          // 0 at the start of every fetch, it increments on each settled
+          // error and never resets, so a re-poll after an error is always
+          // distinguishable from a first fetch. Failing queries are handled
+          // below.
+          (data.isFetching && data.errorUpdateCount === 0)
       ),
     [supportedAssetsResults]
   );

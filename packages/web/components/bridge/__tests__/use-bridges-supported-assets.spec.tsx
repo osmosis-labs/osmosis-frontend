@@ -58,6 +58,7 @@ const successResult = ({
 } = {}) => ({
   isSuccess: true,
   isLoading: false,
+  isFetching: false,
   isError: false,
   errorUpdateCount: 0,
   data: {
@@ -73,6 +74,7 @@ const successResult = ({
 const errorResult = {
   isSuccess: false,
   isLoading: false,
+  isFetching: false,
   isError: true,
   errorUpdateCount: 1,
   refetch: jest.fn(),
@@ -82,6 +84,7 @@ const errorResult = {
 const loadingResult = {
   isSuccess: false,
   isLoading: true,
+  isFetching: true,
   isError: false,
   errorUpdateCount: 0,
   data: undefined,
@@ -92,10 +95,20 @@ const loadingResult = {
 const retryingResult = {
   isSuccess: false,
   isLoading: true,
+  isFetching: true,
   isError: false,
   errorUpdateCount: 1,
   data: undefined,
 };
+/** Hydrated-stale: data restored from the persisted (localStorage) query
+ *  cache, background refetch in flight. isLoading is false because data
+ *  exists; isFetching is what reveals the refetch. */
+const refetchingResult = (
+  overrides: Parameters<typeof successResult>[0] = {}
+) => ({
+  ...successResult(overrides),
+  isFetching: true,
+});
 
 describe("useBridgesSupportedAssets loading and error state", () => {
   it("is loading while any provider query is in flight", () => {
@@ -211,6 +224,59 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     const { result } = renderSupportedAssets();
 
     expect(result.current.isLoading).toBe(true);
+  });
+
+  it("holds the loading state while hydrated results refetch and no in-app routes were found", () => {
+    // The query cache is persisted to localStorage, so a previous session's
+    // results hydrate as settled data and refetch on mount. A hydrated
+    // success-with-empty (e.g. one persisted from a degraded provider
+    // response) plus an external-url-only suggestion must not release the
+    // hold mid-refetch, or the modal commits a default chain (observed:
+    // Solana via Wormhole) from stale data before the fresh response lands.
+    mockQueryResults = [
+      refetchingResult(),
+      refetchingResult({
+        providerName: "Wormhole",
+        availableChains: [
+          { chainId: "solana", chainType: "solana", prettyName: "Solana" },
+        ],
+        assetsByChainId: {
+          solana: [
+            {
+              chainId: "solana",
+              chainType: "solana",
+              address: "solanaUSDCaddress",
+              denom: "USDC",
+              decimals: 6,
+              transferTypes: ["external-url"],
+            },
+          ],
+        },
+      }),
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it("renders instantly from hydrated results that contain an in-app route", () => {
+    // Healthy persisted data must not skeleton behind its own mount
+    // refetch: the hold releases as soon as any provider shows an in-app
+    // route.
+    mockQueryResults = [
+      refetchingResult({
+        providerName: "Squid",
+        availableChains: [ethereumChain],
+        assetsByChainId: ethereumAssetsByChainId,
+      }),
+      loadingResult,
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.supportedChains).toHaveLength(1);
   });
 
   it("re-polls errored queries with backoff (5s, 10s, 20s, then 30s) while a provider is failing", () => {
