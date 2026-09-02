@@ -449,14 +449,18 @@ export class SkipBridgeProvider implements BridgeProvider {
       // a bug or malformed registry data, never a normal condition. Log it
       // in production too: a silent catch here hid the counterparty
       // mutation bug as unexplainable empty results for months.
+      // Uses the already-resolved assets/skipChains from above: re-awaiting
+      // the cachified getters here could itself throw (evicted entry plus a
+      // failed refresh), which would escape this catch and turn the
+      // intended empty-result degradation into a rejection.
       console.warn(
         `[Skip] supported-assets lookup threw for ${asset.address} on ${
           chain.chainId
         }: ${
           e instanceof Error ? e.message : String(e)
         }; unscoped registry chains=${
-          Object.keys((await this.getAssets()) ?? {}).length
-        }, chain list=${(await this.getChains())?.length ?? 0}`
+          Object.keys(assets ?? {}).length
+        }, chain list=${skipChains?.length ?? 0}`
       );
       return [];
     }
