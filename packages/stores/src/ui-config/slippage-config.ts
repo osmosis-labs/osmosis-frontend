@@ -66,9 +66,11 @@ export class ObservableSlippageConfig {
       str = "0" + str;
     }
 
-    // within bound
+    // within bound: strictly below 100%. A 100% tolerance produces a zero
+    // token_out_min_amount, which chain-side ValidateBasic rejects as
+    // non-positive, so such a swap can never execute.
     const strDec = new Dec(str);
-    if (strDec.gt(new Dec(100)) || strDec.lt(new Dec(0))) return;
+    if (strDec.gte(new Dec(100)) || strDec.lt(new Dec(0))) return;
 
     this._isManualSlippage = true;
     this._manualSlippage = str;

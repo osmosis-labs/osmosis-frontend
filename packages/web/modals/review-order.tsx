@@ -33,7 +33,7 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
-import { DefaultSlippage, ExtremeValueDisparityThreshold } from "~/config/swap";
+import { DefaultSlippage } from "~/config/swap";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -53,6 +53,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { requiresValueDisparityAcknowledgement } from "~/utils/slippage";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -197,29 +198,25 @@ export const ReviewOrder = observer(function ReviewOrder({
 
   // For out-given-in: compare minimum output against input sent.
   // For in-given-out: compare fixed output received against maximum input paid.
-  const inputUsdNum =
-    quoteType === "in-given-out"
-      ? Number(fiatAmountWithSlippage?.toDec().toString() ?? "0")
-      : Number(inAmountFiat?.toDec().toString() ?? "0");
-  const minimumOutputUsdNum =
-    quoteType === "in-given-out"
-      ? Number(expectedOutputFiat?.toDec().toString() ?? "0")
-      : Number(fiatAmountWithSlippage?.toDec().toString() ?? "0");
-  // For out-given-in: fiatAmountWithSlippage is undefined when no quote is
-  // available, so the !== undefined guard naturally covers the loading state.
-  // A zero minimum output (e.g. 100% slippage) is the most extreme disparity
-  // possible and MUST stay gated, so no > 0 check on this side.
-  // For in-given-out: tokenOutFiatValue falls back to $0 (never undefined), so
-  // we must also require minimumOutputUsdNum > 0 to avoid a false positive
-  // while the output asset's spot price is still loading; the output amount
-  // itself is fixed by the user, so a real zero cannot occur on this side.
-  const isExtremeValueDisparity =
-    inputUsdNum > 1 &&
-    (quoteType !== "in-given-out" || minimumOutputUsdNum > 0) &&
-    (quoteType === "in-given-out"
-      ? expectedOutputFiat
-      : fiatAmountWithSlippage) !== undefined &&
-    minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
+  // The decision itself (thresholds, loading states, the fiat-independent
+  // zero-min-out gate) lives in requiresValueDisparityAcknowledgement.
+  const usdNum = (value?: PricePretty) =>
+    value === undefined ? undefined : Number(value.toDec().toString());
+  const isExtremeValueDisparity = requiresValueDisparityAcknowledgement({
+    quoteType: quoteType ?? "out-given-in",
+    inputUsd:
+      quoteType === "in-given-out"
+        ? usdNum(fiatAmountWithSlippage)
+        : usdNum(inAmountFiat),
+    minimumOutputUsd:
+      quoteType === "in-given-out"
+        ? usdNum(expectedOutputFiat)
+        : usdNum(fiatAmountWithSlippage),
+    minimumOutputTokenIsZero:
+      quoteType !== "in-given-out" &&
+      amountWithSlippage !== undefined &&
+      amountWithSlippage.toDec().isZero(),
+  });
 
   useEffect(() => {
     if (!isExtremeValueDisparity) setHasAcknowledgedDisparity(false);
@@ -304,8 +301,10 @@ export const ReviewOrder = observer(function ReviewOrder({
       const dotIndex = value.indexOf(".");
       if (dotIndex !== -1 && value.length - dotIndex > 2) return;
 
-      // Cap at 100%
-      const effectiveValue = +value > 100 ? "100" : value;
+      // Cap at 99.9%: the config rejects 100% and above outright, since a
+      // 100% tolerance yields a zero min-out the chain cannot accept, and a
+      // silently rejected write would let the field and the store diverge.
+      const effectiveValue = +value > 99.9 ? "99.9" : value;
       setManualSlippage(effectiveValue);
       // Guard against bare "." or other non-numeric intermediates before
       // committing to slippageConfig; wait until the user finishes typing.
