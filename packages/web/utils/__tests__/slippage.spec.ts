@@ -1,7 +1,10 @@
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 
 import { DefaultSlippage, DYNAMIC_SLIPPAGE_TIERS } from "~/config/swap";
-import { computeSuggestedSlippage } from "~/utils/slippage";
+import {
+  computeSuggestedSlippage,
+  requiresValueDisparityAcknowledgement,
+} from "~/utils/slippage";
 
 /** Adverse price impact is negative in SQS quotes; pass the signed value. */
 const impactQuote = (signedImpact: string) => ({
@@ -119,5 +122,131 @@ describe("computeSuggestedSlippage", () => {
     expect(computeSuggestedSlippage(impactQuote("-0.05"))).toBe("2.0");
     // liquidity without impact metadata
     expect(computeSuggestedSlippage(liquidityQuote("500"))).toBe("2.0");
+  });
+});
+
+describe("requiresValueDisparityAcknowledgement", () => {
+  const exactIn = "out-given-in" as const;
+  const exactOut = "in-given-out" as const;
+
+  it("gates a zero minimum output regardless of fiat pricing (exact-in)", () => {
+    // Unpriced input asset: no fiat values at all, min-out token amount zero.
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactIn,
+        inputUsd: undefined,
+        minimumOutputUsd: undefined,
+        minimumOutputTokenIsZero: true,
+      })
+    ).toBe(true);
+    // Priced trade whose min-out truncated to zero.
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactIn,
+        inputUsd: 100,
+        minimumOutputUsd: 0,
+        minimumOutputTokenIsZero: true,
+      })
+    ).toBe(true);
+  });
+
+  it("does not gate unpriced trades with a nonzero minimum output", () => {
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactIn,
+        inputUsd: undefined,
+        minimumOutputUsd: undefined,
+        minimumOutputTokenIsZero: false,
+      })
+    ).toBe(false);
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactIn,
+        inputUsd: 100,
+        minimumOutputUsd: undefined,
+        minimumOutputTokenIsZero: false,
+      })
+    ).toBe(false);
+  });
+
+  it("gates exact-in when the minimum output falls below 75% of input", () => {
+    const base = { quoteType: exactIn, minimumOutputTokenIsZero: false };
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 50,
+      })
+    ).toBe(true);
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 74.99,
+      })
+    ).toBe(true);
+    // Threshold is strict less-than.
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 75,
+      })
+    ).toBe(false);
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 80,
+      })
+    ).toBe(false);
+  });
+
+  it("exempts sub-$1 trades from the fiat comparison", () => {
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactIn,
+        inputUsd: 1,
+        minimumOutputUsd: 0.1,
+        minimumOutputTokenIsZero: false,
+      })
+    ).toBe(false);
+  });
+
+  it("treats exact-out's $0 output as loading, but gates real disparity", () => {
+    const base = { quoteType: exactOut, minimumOutputTokenIsZero: false };
+    // Fixed output shows $0 while its spot price loads: not a disparity.
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 0,
+      })
+    ).toBe(false);
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 50,
+      })
+    ).toBe(true);
+    expect(
+      requiresValueDisparityAcknowledgement({
+        ...base,
+        inputUsd: 100,
+        minimumOutputUsd: 80,
+      })
+    ).toBe(false);
+  });
+
+  it("ignores the zero-token flag for exact-out (it describes max input there)", () => {
+    expect(
+      requiresValueDisparityAcknowledgement({
+        quoteType: exactOut,
+        inputUsd: undefined,
+        minimumOutputUsd: undefined,
+        minimumOutputTokenIsZero: true,
+      })
+    ).toBe(false);
   });
 });
