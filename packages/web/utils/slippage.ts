@@ -1,4 +1,4 @@
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 
 import {
   DefaultSlippage,
@@ -10,6 +10,21 @@ import {
 export interface SuggestedSlippageQuote {
   priceImpactTokenOut?: { toDec(): Dec };
   tokens?: { liquidity_cap: string }[];
+}
+
+/** Mirrors getSwapTxParameters' chain-unit serialization: scales a display
+ *  amount by the asset's decimals and truncates. A true result means the
+ *  transaction's slippage bound (exact-in's minimum output, exact-out's
+ *  maximum input) would serialize to zero, which chain-side ValidateBasic
+ *  rejects as non-positive, so the transaction could only fail. */
+export function slippageBoundTruncatesToZero(
+  displayAmount: Dec,
+  coinDecimals: number
+): boolean {
+  return displayAmount
+    .mul(DecUtils.getTenExponentNInPrecisionRange(coinDecimals))
+    .truncate()
+    .isZero();
 }
 
 /** Decides whether the swap review must demand an explicit high-loss
