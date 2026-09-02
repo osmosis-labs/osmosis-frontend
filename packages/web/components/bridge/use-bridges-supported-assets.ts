@@ -117,16 +117,20 @@ export const useBridgesSupportedAssets = ({
           // feeds is still released the moment any provider shows an in-app
           // route, so healthy hydrated data still renders instantly.
           //
-          // errorUpdateCount === 0 restricts this to first fetches: a query
-          // re-polling after failures also reports isFetching, but must not
-          // drop the whole modal back to a skeleton when other providers
-          // already returned usable chains. errorUpdateCount is the
-          // discriminator: unlike failureCount, which react-query resets to
-          // 0 at the start of every fetch, it increments on each settled
-          // error and never resets, so a re-poll after an error is always
-          // distinguishable from a first fetch. Failing queries are handled
+          // Dataless re-polls are excluded: a query re-polling after
+          // failures also reports isFetching, but must not drop the whole
+          // modal back to a skeleton on every poll cycle when other
+          // providers already returned usable chains. errorUpdateCount is
+          // the discriminator for those: unlike failureCount, which
+          // react-query resets to 0 at the start of every fetch, it
+          // increments on each settled error and never resets. A refetch
+          // that HAS data still counts even after past errors (a query that
+          // errored, then recovered with empty data, refetches with
+          // errorUpdateCount > 0, and its stale empty result must not
+          // settle the modal mid-refetch). Failing queries are handled
           // below.
-          (data.isFetching && data.errorUpdateCount === 0)
+          (data.isFetching &&
+            (data.errorUpdateCount === 0 || !isNil(data.data)))
       ),
     [supportedAssetsResults]
   );

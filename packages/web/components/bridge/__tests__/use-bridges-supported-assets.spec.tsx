@@ -260,6 +260,39 @@ describe("useBridgesSupportedAssets loading and error state", () => {
     expect(result.current.isLoading).toBe(true);
   });
 
+  it("holds the loading state while an error-recovered empty result refetches", () => {
+    // A query that errored, recovered with empty data, and is refetching
+    // carries errorUpdateCount > 0. The dataless-re-poll exclusion must not
+    // apply to it: it has (possibly stale-empty) data in hand, so settling
+    // the modal mid-refetch would commit the external-only view before the
+    // fresh result lands.
+    mockQueryResults = [
+      { ...refetchingResult(), errorUpdateCount: 1 },
+      successResult({
+        providerName: "Wormhole",
+        availableChains: [
+          { chainId: "solana", chainType: "solana", prettyName: "Solana" },
+        ],
+        assetsByChainId: {
+          solana: [
+            {
+              chainId: "solana",
+              chainType: "solana",
+              address: "solanaUSDCaddress",
+              denom: "USDC",
+              decimals: 6,
+              transferTypes: ["external-url"],
+            },
+          ],
+        },
+      }),
+    ];
+
+    const { result } = renderSupportedAssets();
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
   it("renders instantly from hydrated results that contain an in-app route", () => {
     // Healthy persisted data must not skeleton behind its own mount
     // refetch: the hold releases as soon as any provider shows an in-app
