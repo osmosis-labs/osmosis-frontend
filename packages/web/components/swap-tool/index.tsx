@@ -51,10 +51,10 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useDynamicSlippageFromQuote } from "~/hooks/use-dynamic-slippage-from-quote";
 import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
-  useDynamicSlippageFromQuote,
   useSwap,
 } from "~/hooks/use-swap";
 import { AddFundsModal } from "~/modals/add-funds";
