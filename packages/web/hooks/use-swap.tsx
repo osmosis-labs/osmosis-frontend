@@ -42,7 +42,7 @@ import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { DefaultSlippage } from "~/config/swap";
+import { DefaultSlippage, DYNAMIC_SLIPPAGE_TIERS } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
@@ -62,6 +62,7 @@ import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
+import { computeSuggestedSlippage } from "~/utils/slippage";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -1712,46 +1713,6 @@ export function useAmountWithSlippage({
   };
 }
 
-// Single source of truth for all slippage tiers.
-// Values are used to populate selectableSlippages and to compute suggested slippage.
-export const DYNAMIC_SLIPPAGE_TIERS = [
-  {
-    slippage: "0.2",
-    minPriceImpact: new Dec(0.003),
-    maxLiquidityCap: new Dec(50000),
-  },
-  {
-    slippage: "0.3",
-    minPriceImpact: new Dec(0.006),
-    maxLiquidityCap: new Dec(25000),
-  },
-  {
-    slippage: "0.5",
-    minPriceImpact: new Dec(0.01),
-    maxLiquidityCap: new Dec(10000),
-  },
-  {
-    slippage: "1.0",
-    minPriceImpact: new Dec(0.03),
-    maxLiquidityCap: new Dec(3000),
-  },
-  {
-    slippage: "2.0",
-    minPriceImpact: new Dec(0.05),
-    maxLiquidityCap: new Dec(1000),
-  },
-  {
-    slippage: "3.0",
-    minPriceImpact: new Dec(0.1),
-    maxLiquidityCap: new Dec(300),
-  },
-  {
-    slippage: "5.0",
-    minPriceImpact: new Dec(0.2),
-    maxLiquidityCap: new Dec(100),
-  },
-];
-
 /** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
 export function useDynamicSlippageConfig({
   slippageConfig,
@@ -1809,39 +1770,6 @@ export function useDynamicSlippageConfig({
       }
     }
   }, [feeError, slippageConfig, quoteType]);
-}
-
-/** Computes the suggested slippage tier from a quote (pure, no side effects). */
-function computeSuggestedSlippage(quote: SwapState["quote"]): string {
-  if (!quote) return DefaultSlippage;
-
-  const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
-  // SQS computes priceImpact as (effectiveOutOverIn / spotOutOverIn) - 1 for
-  // both quote directions. Adverse trades always yield a negative value:
-  //   out-given-in: user receives less out than spot → ratio < 1 → negative
-  //   in-given-out: buyer receives less out per in than spot → ratio < 1 → negative
-  // Clamp favorable (positive) values to zero so they don't inflate the tier.
-  const priceImpact = rawImpact.isNegative() ? rawImpact.abs() : new Dec(0);
-  const tokens = quote.tokens;
-  const lowestLiquidityCap =
-    tokens && tokens.length > 0
-      ? tokens.slice(1).reduce((min, t) => {
-          const cap = new Dec(t.liquidity_cap);
-          return cap.lt(min) ? cap : min;
-        }, new Dec(tokens[0].liquidity_cap))
-      : undefined;
-
-  for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
-    if (
-      priceImpact.gte(tier.minPriceImpact) ||
-      (lowestLiquidityCap !== undefined &&
-        lowestLiquidityCap.lte(tier.maxLiquidityCap))
-    ) {
-      return tier.slippage;
-    }
-  }
-
-  return DefaultSlippage;
 }
 
 /** Proactively adjusts slippage based on price impact and liquidity cap from the quote. */
