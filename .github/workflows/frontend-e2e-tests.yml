@@ -342,10 +342,15 @@ jobs:
           path: packages/e2e/playwright-report
 
   preview-pools-and-select-pair-tests:
-    # 15, matching the other long suites. This job runs 15 tests (3 pools + 12
-    # select-pair) and never had real headroom under 10: its best passing run
-    # finished in 9m17s. It has since drifted past the limit and now cancels at
-    # 10m every time, mid-suite, with no test having failed.
+    # 15, matching the other long suites. What pushed this job past 10 was the
+    # two pool tests that hung once the Noble pools were renamed (fixed in this
+    # PR): two tests times two attempts times a 90s timeout is six minutes of
+    # dead time, which is almost exactly the gap between the 11m09s failing run
+    # and the 5m42s it takes with them passing.
+    #
+    # Kept at 15 rather than restored to 10, because the margin was already too
+    # thin before any of that: the last consistently passing runs, on 26 August,
+    # ranged from 5m31s to 9m17s, leaving 43 seconds under a 10 minute cap.
     timeout-minutes: 15
     needs: wait-for-deployment
     runs-on: ubuntu-latest
