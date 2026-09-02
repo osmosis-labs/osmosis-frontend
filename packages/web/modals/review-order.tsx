@@ -53,7 +53,10 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
-import { requiresValueDisparityAcknowledgement } from "~/utils/slippage";
+import {
+  requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
+} from "~/utils/slippage";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -221,6 +224,23 @@ export const ReviewOrder = observer(function ReviewOrder({
   useEffect(() => {
     if (!isExtremeValueDisparity) setHasAcknowledgedDisparity(false);
   }, [isExtremeValueDisparity]);
+
+  // The transaction serializes the slippage bound (exact-in's minimum output,
+  // exact-out's maximum input) by scaling to chain units and truncating
+  // (getSwapTxParameters), so a display amount that is nonzero here can still
+  // truncate to zero there, and the chain rejects a non-positive bound in
+  // ValidateBasic. Hard-disable confirmation in that case; acknowledging
+  // cannot make the transaction valid. Limit orders serialize differently and
+  // are exempt.
+  const slippageBoundAsset = quoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    orderType === "market" &&
+    amountWithSlippage !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero(
+      amountWithSlippage.toDec(),
+      slippageBoundAsset.coinDecimals
+    );
 
   // Frozen at mount; serves as the initial baseline for the slippage drift check.
   // Also reset whenever the modal re-opens so a stale baseline from a previous
@@ -943,6 +963,7 @@ export const ReviewOrder = observer(function ReviewOrder({
                       isConfirmationDisabled ||
                       wouldExceedSpendLimit ||
                       hasInsufficientFeeTokens ||
+                      isSlippageBoundZeroOnChain ||
                       (isExtremeValueDisparity && !hasAcknowledgedDisparity)
                     }
                     className="body2 sm:caption !rounded-2xl"

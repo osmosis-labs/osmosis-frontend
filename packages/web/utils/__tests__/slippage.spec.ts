@@ -4,6 +4,7 @@ import { DefaultSlippage, DYNAMIC_SLIPPAGE_TIERS } from "~/config/swap";
 import {
   computeSuggestedSlippage,
   requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
 } from "~/utils/slippage";
 
 /** Adverse price impact is negative in SQS quotes; pass the signed value. */
@@ -249,4 +250,33 @@ describe("requiresValueDisparityAcknowledgement", () => {
       })
     ).toBe(false);
   });
+});
+
+describe("slippageBoundTruncatesToZero", () => {
+  // Mirrors getSwapTxParameters: displayAmount * 10^decimals, truncated.
+  it.each([
+    // [display amount, decimals, expected]
+    ["0", 6, true],
+    // 0.1 minimal unit: nonzero display value, zero on chain
+    ["0.0000001", 6, true],
+    // 0.97 minimal units: the dust-truncation case from review
+    ["0.00000097", 6, true],
+    // exactly 1 minimal unit
+    ["0.000001", 6, false],
+    // 1.5 minimal units truncates to 1, still valid
+    ["0.0000015", 6, false],
+    ["999999", 6, false],
+    // zero-decimal asset: sub-unit display amounts serialize to zero
+    ["0.5", 0, true],
+    ["1", 0, false],
+    // 18-decimal asset at exactly 1 minimal unit
+    ["0.000000000000000001", 18, false],
+  ])(
+    "display %s with %s decimals -> serializes to zero: %s",
+    (displayAmount, decimals, expected) => {
+      expect(
+        slippageBoundTruncatesToZero(new Dec(displayAmount), Number(decimals))
+      ).toBe(expected);
+    }
+  );
 });
