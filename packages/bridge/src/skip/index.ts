@@ -287,21 +287,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     // a miss legitimately means "no route for this asset".
     const chainAsset = await this.getAsset(chain, asset);
     // Asset not in Skip's registry: unsupported by this provider, not an
-    // outage — resolve empty so other transfer options can render. Logged
-    // unconditionally (production included) because a miss for an asset the
-    // app offers is exceptional: it is either a real registry gap or a
-    // degraded PARTIAL upstream response, which the cache guard cannot see
-    // when the list is populated. The registry size in the log line is what
-    // disambiguates the two.
-    if (!chainAsset) {
-      const registry = await this.getAssets(chain.chainId.toString());
-      const registrySize =
-        registry?.[chain.chainId.toString()]?.assets?.length ?? 0;
-      console.warn(
-        `[Skip] supported-assets miss: ${asset.address} not in ${chain.chainId} registry of ${registrySize} assets`
-      );
-      return [];
-    }
+    // outage. Resolve empty so other transfer options can render. This is a
+    // normal condition (every provider is asked about every asset), so it is
+    // deliberately not logged.
+    if (!chainAsset) return [];
 
     // find variants
     const [assets, skipChains] = await Promise.all([
@@ -453,31 +442,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       // * CCTP variants
       // * EVM swappable variants
 
-      // An empty result for an asset that IS in Skip's scoped registry means
-      // both variant loops starved. That can only come from the unscoped
-      // registry data, so log its breadth to distinguish a genuinely
-      // route-less asset from a degraded PARTIAL all-chains response that
-      // passed the non-empty cache guard.
-      if (foundVariants.assets.length === 0) {
-        console.warn(
-          `[Skip] supported-assets empty: ${asset.address} on ${
-            chain.chainId
-          }; unscoped registry chains=${
-            Object.keys(assets).length
-          }, chain list=${skipChains.length}, counterparties=${
-            counterparties.length
-          }`
-        );
-      }
-
       return foundVariants.assets;
     } catch (e) {
       // Only pure lookup over already-fetched registry data can land here
-      // (infra failures reject above, before the try). A throw therefore
-      // means the cached registry data is malformed, which the size-based
-      // cache guards cannot see, so log it in production too: a silent
-      // catch here turns a 30-minute poisoned cache entry into an
-      // unexplainable empty result.
+      // (infra failures reject above, before the try), so a throw is always
+      // a bug or malformed registry data, never a normal condition. Log it
+      // in production too: a silent catch here hid the counterparty
+      // mutation bug as unexplainable empty results for months.
       console.warn(
         `[Skip] supported-assets lookup threw for ${asset.address} on ${
           chain.chainId
