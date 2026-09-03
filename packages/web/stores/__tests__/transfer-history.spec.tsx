@@ -323,6 +323,33 @@ describe("TransferHistoryStore multi-tx entries", () => {
     expect(entry?.pendingStep).toBeUndefined();
   });
 
+  it("persistNow keeps entries that exist only in storage", async () => {
+    // A tab opened before another tab started a transfer must not erase
+    // that transfer's entry when it later persists its own (stale, full)
+    // array.
+    const { store, kvStore } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ sendTxHash: "0xmine" }));
+    const otherTabsEntry = makeSnapshot({
+      sendTxHash: "0xtheirs",
+      firstStepTxHash: "0xtheirs",
+      // fresh enough to be within the expiry window
+      createdAtUnix: dayjs().unix(),
+      pendingStep,
+    });
+    kvStore.get.mockResolvedValue([otherTabsEntry]);
+
+    await store.persistNow();
+
+    const written = kvStore.set.mock.calls.at(-1)?.[1] as TxSnapshot[];
+    expect(written.some((s: TxSnapshot) => s.sendTxHash === "0xtheirs")).toBe(
+      true
+    );
+    expect(written.some((s: TxSnapshot) => s.sendTxHash === "0xmine")).toBe(
+      true
+    );
+  });
+
   it("syncPendingStepFromStorage leaves an unadvanced entry resumable", async () => {
     const { store, statusProvider, kvStore } = makeStore();
 

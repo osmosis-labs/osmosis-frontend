@@ -236,6 +236,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // further updates are keyed on the final step's hash
     toast.dismiss(prevSendTxHash);
 
+    // keep the immutable correlation key even for entries created before
+    // firstStepTxHash existed, so other sessions can match the advance
+    snapshot.firstStepTxHash = snapshot.firstStepTxHash ?? prevSendTxHash;
     snapshot.pendingStep = undefined;
     snapshot.sendTxHash = finalSendTxHash;
     snapshot.trackingChainId = trackingChainId;
@@ -421,17 +424,16 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * concurrent writers cannot interleave.
    */
   protected async persistSnapshots(snapshots: TxSnapshot[]): Promise<void> {
+    const keyOf = (snapshot: TxSnapshot) =>
+      snapshot.firstStepTxHash ?? snapshot.sendTxHash;
     const write = async () => {
       const stored =
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
         [];
       const merged = snapshots.map((local) => {
         if (!local.pendingStep) return local;
-        const key = local.firstStepTxHash ?? local.sendTxHash;
-        const storedTwin = stored.find(
-          (snapshot) =>
-            (snapshot.firstStepTxHash ?? snapshot.sendTxHash) === key
-        );
+        const key = keyOf(local);
+        const storedTwin = stored.find((snapshot) => keyOf(snapshot) === key);
         if (!storedTwin) return local;
         // the stored copy is further along: advanced past the step, or
         // marked stale — keep it over the local regression
@@ -443,6 +445,17 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         }
         return local;
       });
+      // Union, not replacement: entries that exist only in storage (created
+      // by another session after this one loaded) must survive this
+      // session's write, or a stale tab persisting an unrelated change
+      // would erase another tab's resumable entry. Expired entries are
+      // still pruned rather than resurrected.
+      const mergedKeys = new Set(merged.map(keyOf));
+      for (const storedOnly of stored) {
+        if (!mergedKeys.has(keyOf(storedOnly)) && this.isLive(storedOnly)) {
+          merged.push(storedOnly);
+        }
+      }
       await this.kvStore.set(TRANSFER_HISTORY_STORE_KEY, merged);
     };
     if (typeof navigator !== "undefined" && navigator.locks) {
@@ -460,6 +473,26 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    */
   async persistNow(): Promise<void> {
     await this.persistSnapshots(toJS(this.snapshots));
+  }
+
+  /**
+   * Whether a snapshot should still be kept. UNRESOLVED mid-flow multi-tx
+   * entries (still pending, step not stale) never expire: their Continue
+   * action is the only recovery path for funds on the intermediate chain.
+   * Everything else — terminal statuses included, even with a leftover
+   * pending step — expires after `historyExpireDays`.
+   */
+  protected isLive(snapshot: TxSnapshot): boolean {
+    if (
+      snapshot.status === "pending" &&
+      snapshot.pendingStep &&
+      !snapshot.pendingStep.stale
+    ) {
+      return true;
+    }
+    return dayjs
+      .unix(snapshot.createdAtUnix)
+      .isAfter(dayjs().subtract(this.historyExpireDays, "day"));
   }
 
   /**
@@ -495,7 +528,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         snapshot.firstStepTxHash === firstStepHash ||
         snapshot.sendTxHash === firstStepHash
     );
-    if (!storedSnapshot) return "missing";
+    if (!storedSnapshot) {
+      // Storage no longer knows this entry (cleared elsewhere, or an
+      // uncorrelatable legacy advance): nothing can verify the step wasn't
+      // signed, so it must never be signed from here. Mark it stale so the
+      // row shows needs-attention instead of a silently dead Continue.
+      this.markPendingStepStale(sendTxHash);
+      return "missing";
+    }
 
     if (storedSnapshot.pendingStep?.stale) {
       this.markPendingStepStale(sendTxHash);
@@ -530,16 +570,17 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
 
     // Drop expired snapshots (they are pruned from storage on the next
-    // persist) — EXCEPT resumable mid-flow multi-tx entries: their Continue
-    // action is the only recovery path for funds sitting on the
-    // intermediate chain, so they persist until resolved (or marked stale,
-    // after which expiry clears them).
-    const expiryCutoffUnix = dayjs().subtract(this.historyExpireDays, "day");
-    const liveSnapshots = storedSnapshots.filter(
-      (snapshot) =>
-        (snapshot.pendingStep && !snapshot.pendingStep.stale) ||
-        dayjs.unix(snapshot.createdAtUnix).isAfter(expiryCutoffUnix)
-    );
+    // persist); see `isLive` for the multi-tx exemption. Legacy mid-flow
+    // entries persisted before `firstStepTxHash` existed are stamped so
+    // cross-session correlation works for them too (pre-advance,
+    // sendTxHash is still the first step's hash).
+    const liveSnapshots = storedSnapshots
+      .filter((snapshot) => this.isLive(snapshot))
+      .map((snapshot) =>
+        snapshot.pendingStep && !snapshot.firstStepTxHash
+          ? { ...snapshot, firstStepTxHash: snapshot.sendTxHash }
+          : snapshot
+      );
 
     liveSnapshots.forEach(async (snapshot) => {
       const statusSource = this.transferStatusProviders.find((source) =>
