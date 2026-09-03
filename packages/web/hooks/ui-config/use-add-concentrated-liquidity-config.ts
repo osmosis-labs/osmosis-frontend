@@ -105,6 +105,8 @@ export function useAddConcentratedLiquidityConfig(
     config.setPrices(baseDepositPrice, quoteDepositPrice);
   }
 
+  // 7-day fetch — drives the legacy moderate/aggressive presets via
+  // `_minHistoricalPrice`/`_maxHistoricalPrice`. Behavior unchanged.
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
       {
@@ -122,6 +124,26 @@ export function useAddConcentratedLiquidityConfig(
       historicalPriceData.min,
       historicalPriceData.max
     );
+
+  // 1-year fetch — drives the advanced sliders + backtest. The lookback
+  // slider filters this dataset client-side so the user can pick an
+  // arbitrary window without triggering new fetches.
+  const { data: longHistoricalPriceData } =
+    api.edge.assets.getAssetPairHistoricalPrice.useQuery(
+      {
+        poolId,
+        baseCoinMinimalDenom:
+          pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
+        quoteCoinMinimalDenom:
+          pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
+        timeDuration: "1y",
+      },
+      { enabled: isPoolFetched }
+    );
+  useEffect(() => {
+    if (longHistoricalPriceData)
+      config.setHistoricalPrices(longHistoricalPriceData.prices);
+  }, [config, longHistoricalPriceData]);
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
@@ -279,6 +301,12 @@ export function useAddConcentratedLiquidityConfig(
 const MODERATE_STRATEGY_MULTIPLIER = 0.25;
 const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
+/** Default lookback in days for the sliders-driven range strategy. Matches
+ *  the legacy 7-day window. */
+const DEFAULT_LOOKBACK_DAYS = 7;
+
+const MS_PER_DAY = 86_400_000;
+
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
 export class ObservableAddConcentratedLiquidityConfig {
@@ -332,6 +360,16 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @observable
   protected _maxHistoricalPrice: number | null = null;
+
+  /** Full 1-year historical price series. The lookback slider filters this
+   *  client-side so the user can pick any window without triggering new
+   *  fetches. */
+  @observable.ref
+  protected _allHistoricalPrices: { time: number; close: number }[] = [];
+
+  /** Lookback in days the sliders-driven range strategy optimizes against. */
+  @observable
+  protected _lookbackDays: number = DEFAULT_LOOKBACK_DAYS;
 
   @computed
   get pool() {
@@ -534,6 +572,48 @@ export class ObservableAddConcentratedLiquidityConfig {
         this.tickDivisor
       ),
     ];
+  }
+
+  get lookbackDays(): number {
+    return this._lookbackDays;
+  }
+
+  /** Subset of `_allHistoricalPrices` covering the active lookback window. */
+  @computed
+  get historicalPrices(): { time: number; close: number }[] {
+    if (this._allHistoricalPrices.length === 0) return [];
+    const cutoff = Date.now() - this._lookbackDays * MS_PER_DAY;
+    return this._allHistoricalPrices.filter((p) => p.time >= cutoff);
+  }
+
+  /** Full unfiltered 1-year price series. The backtest panel filters this
+   *  with its own independent timescale slider. */
+  get allHistoricalPrices(): { time: number; close: number }[] {
+    return this._allHistoricalPrices;
+  }
+
+  /** Same series as Dec closes, in DISPLAY units, directly comparable
+   *  against `rangeWithCurrencyDecimals` and `currentPriceWithDecimals`.
+   *  The data service already returns display prices (see the 7d min/max
+   *  handling above: those are converted with `removeCurrencyDecimals`
+   *  because the preset/tick strategy space is RAW). Converting here too
+   *  double-shifted the series by 10^(baseDecimals - quoteDecimals) on
+   *  pairs with unequal exponents (100x on an 8/6 pair like BTC/USDC),
+   *  which pinned the backtest's time-in-range at 0%. */
+  @computed
+  get allHistoricalPricesInDisplayUnits(): { time: number; close: Dec }[] {
+    return this._allHistoricalPrices.map((p) => ({
+      time: p.time,
+      close: new Dec(p.close),
+    }));
+  }
+
+  get minHistoricalPrice(): number | null {
+    return this._minHistoricalPrice;
+  }
+
+  get maxHistoricalPrice(): number | null {
+    return this._maxHistoricalPrice;
   }
 
   /** Used to ensure ticks are cleanly divisible by. */
@@ -1221,6 +1301,18 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
     if (min !== Infinity) this._minHistoricalPrice = min;
     if (max !== Infinity) this._maxHistoricalPrice = max;
+  };
+
+  @action
+  readonly setHistoricalPrices = (
+    prices: { time: number; close: number }[]
+  ) => {
+    this._allHistoricalPrices = prices;
+  };
+
+  @action
+  readonly setLookbackDays = (days: number) => {
+    this._lookbackDays = Math.max(0, days);
   };
 
   @action
