@@ -42,7 +42,11 @@
       "valueOut": "Giden değer",
       "totalCost": "Toplam maliyet",
       "totalCostWarning": "Bu yatırmanın toplam maliyeti {totalCost} olup fiyat etkisi ve takas ücretlerini içerir; bu da pozisyonunuza ulaşan değeri azaltır.",
-      "quoteLoading": "En iyi takas bulunuyor…"
+      "quoteLoading": "En iyi takas bulunuyor…",
+      "estimatedTotalReceive": "Tahmini toplam alınacak tutar",
+      "existingBalanceCaution": "Fiyat kayma toleransınızın ötesine geçerse, mevcut bakiyenizden {amount} kadarı takasa dahil edilebilir.",
+      "poolDataUnavailable": "Seçilen oran için gereken havuz verileri kullanılamıyor. Standart çekim için kaydırıcıyı başlangıç konumuna geri getirin.",
+      "mixedOwnPoolRoute": "Bu teklif kısmen pozisyonun kendi havuzundan geçtiği için güvenli bir minimum hesaplanamıyor. Yeni teklif bekleniyor; farklı bir tutar veya oran da rotayı değiştirebilir."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "havuza git #{poolId}",
     "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin.",
     "noPositions": "Hiçbir pozisyon bulunamadı.",
-    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın."
+    "noPositionsDescription": "Spread ödülleri kazanmaya başlamak için bir havuza yoğunlaştırılmış likidite sağlayın.",
+    "receiveAs": "Olarak al",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) {outDenom} ile takas edilecektir."
   },
   "copied": "Kopyalandı!",
   "app": {

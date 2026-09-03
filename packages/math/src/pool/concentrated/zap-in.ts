@@ -197,7 +197,24 @@ export function calcMarginalPriceImpact({
  * rather than understated — callers using this for minima should envelope
  * against the pre-swap price, see `calcZapInPositionMinima`).
  */
-export function estimateSqrtPriceAfterSwapIn({
+export function estimateSqrtPriceAfterSwapIn(params: {
+  tokenInAmount: Int;
+  inputSide: ZapInInputSide;
+  currentSqrtPrice: BigDec;
+  liquidityDepths: ActiveLiquidityDepth[];
+}): BigDec {
+  return simulateSwapOverDepths(params).sqrtPriceAfter;
+}
+
+/**
+ * Full result of walking a swap over the pool's active-liquidity tick ranges:
+ * the final sqrt price AND the accumulated output amount. Semantics and
+ * caveats are identical to `estimateSqrtPriceAfterSwapIn` (which is a thin
+ * wrapper): fees must be deducted from `tokenInAmount` by the caller, and
+ * exhausted depths return the furthest boundary with the output accumulated
+ * up to that point (i.e. output is understated, never overstated).
+ */
+export function simulateSwapOverDepths({
   tokenInAmount,
   inputSide,
   currentSqrtPrice,
@@ -207,9 +224,13 @@ export function estimateSqrtPriceAfterSwapIn({
   inputSide: ZapInInputSide;
   currentSqrtPrice: BigDec;
   liquidityDepths: ActiveLiquidityDepth[];
-}): BigDec {
+}): { sqrtPriceAfter: BigDec; amountOut: Int } {
+  const noSwap = {
+    sqrtPriceAfter: currentSqrtPrice,
+    amountOut: new Int(0),
+  };
   if (tokenInAmount.lte(new Int(0)) || liquidityDepths.length === 0)
-    return currentSqrtPrice;
+    return noSwap;
 
   // Sorted copies with sqrt price bounds. Walk direction: token0 in moves the
   // price down through descending ranges; token1 in moves it up.
@@ -223,6 +244,7 @@ export function estimateSqrtPriceAfterSwapIn({
 
   let remaining = new BigDec(tokenInAmount);
   let sqrtPrice = currentSqrtPrice;
+  let amountOut = new BigDec(0);
 
   if (inputSide === "base") {
     for (let i = ranges.length - 1; i >= 0; i--) {
@@ -240,13 +262,19 @@ export function estimateSqrtPriceAfterSwapIn({
         .mul(from.sub(lowerSqrt))
         .quo(from.mul(lowerSqrt));
       if (remaining.lte(capacity)) {
-        // Pt = L·Pc / (L + Δ0·Pc)
-        return liquidity.mul(from).quo(liquidity.add(remaining.mul(from)));
+        // Pt = L·Pc / (L + Δ0·Pc); token1 out over the move = L·(Pc − Pt)
+        const target = liquidity
+          .mul(from)
+          .quo(liquidity.add(remaining.mul(from)));
+        amountOut = amountOut.add(liquidity.mul(from.sub(target)));
+        return { sqrtPriceAfter: target, amountOut: amountOut.truncate() };
       }
       remaining = remaining.sub(capacity);
+      amountOut = amountOut.add(liquidity.mul(from.sub(lowerSqrt)));
       sqrtPrice = lowerSqrt;
     }
-    return sqrtPrice; // depths exhausted: furthest reached boundary
+    // depths exhausted: furthest reached boundary, output accumulated so far
+    return { sqrtPriceAfter: sqrtPrice, amountOut: amountOut.truncate() };
   }
 
   for (const { lowerSqrt, upperSqrt, liquidity } of ranges) {
@@ -260,13 +288,20 @@ export function estimateSqrtPriceAfterSwapIn({
     // token1 capacity of this range from `from` up to its upper bound
     const capacity = liquidity.mul(upperSqrt.sub(from));
     if (remaining.lte(capacity)) {
-      // Pt = Pc + Δ1/L
-      return from.add(remaining.quo(liquidity));
+      // Pt = Pc + Δ1/L; token0 out over the move = L·(Pt − Pc)/(Pc·Pt)
+      const target = from.add(remaining.quo(liquidity));
+      amountOut = amountOut.add(
+        liquidity.mul(target.sub(from)).quo(from.mul(target))
+      );
+      return { sqrtPriceAfter: target, amountOut: amountOut.truncate() };
     }
     remaining = remaining.sub(capacity);
+    amountOut = amountOut.add(
+      liquidity.mul(upperSqrt.sub(from)).quo(from.mul(upperSqrt))
+    );
     sqrtPrice = upperSqrt;
   }
-  return sqrtPrice;
+  return { sqrtPriceAfter: sqrtPrice, amountOut: amountOut.truncate() };
 }
 
 /**

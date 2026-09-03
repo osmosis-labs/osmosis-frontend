@@ -42,7 +42,11 @@
       "valueOut": "Valoare ieșire",
       "totalCost": "Cost total",
       "totalCostWarning": "Costul total al acestui depozit este {totalCost}, incluzând impactul asupra prețului și comisioanele de schimb, ceea ce reduce valoarea care ajunge în poziția ta.",
-      "quoteLoading": "Se caută cea mai bună schimbare…"
+      "quoteLoading": "Se caută cea mai bună schimbare…",
+      "estimatedTotalReceive": "Total estimat de primit",
+      "existingBalanceCaution": "Dacă prețul depășește toleranța ta de derapaj, până la {amount} din soldul tău existent poate fi inclus în schimb.",
+      "poolDataUnavailable": "Datele pool-ului necesare pentru mixul selectat nu sunt disponibile. Mută glisorul înapoi la poziția inițială pentru o retragere standard.",
+      "mixedOwnPoolRoute": "Această cotație trece parțial prin pool-ul propriu al poziției, deci nu se poate calcula un minim sigur. Se așteaptă o cotație nouă; o sumă sau un mix diferit poate schimba de asemenea ruta."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "Mergi la piscina #{poolId}",
     "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența.",
     "noPositions": "Nu s-au găsit poziții",
-    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread."
+    "noPositionsDescription": "Furnizați lichiditate concentrată unui grup pentru a începe să câștigați recompense de tip spread.",
+    "receiveAs": "Primești ca",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) vor fi schimbați în {outDenom}."
   },
   "copied": "Copiat!",
   "app": {

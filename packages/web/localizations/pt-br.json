@@ -42,7 +42,11 @@
       "valueOut": "Valor de saída",
       "totalCost": "Custo total",
       "totalCostWarning": "O custo total deste depósito é {totalCost}, incluindo o impacto no preço e as taxas de troca, o que reduz o valor que chega à sua posição.",
-      "quoteLoading": "Encontrando a melhor troca…"
+      "quoteLoading": "Encontrando a melhor troca…",
+      "estimatedTotalReceive": "Total estimado a receber",
+      "existingBalanceCaution": "Se o preço se mover além da sua tolerância de slippage, até {amount} do seu saldo existente pode ser incluído na troca.",
+      "poolDataUnavailable": "Os dados do pool necessários para a proporção selecionada estão indisponíveis. Mova o controle deslizante de volta à posição inicial para um saque padrão.",
+      "mixedOwnPoolRoute": "Esta cotação passa parcialmente pelo próprio pool da posição, então um mínimo seguro não pode ser calculado. Aguardando nova cotação; outro valor ou proporção também pode mudar a rota."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "Vá para a piscina #{poolId}",
     "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte.",
     "noPositions": "Nenhuma posição encontrada",
-    "noPositionsDescription": "Forneça liquidez concentrada a um pool para começar a ganhar recompensas de spread."
+    "noPositionsDescription": "Forneça liquidez concentrada a um pool para começar a ganhar recompensas de spread.",
+    "receiveAs": "Receber como",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) serão trocados para {outDenom}."
   },
   "copied": "Copiado!",
   "app": {
