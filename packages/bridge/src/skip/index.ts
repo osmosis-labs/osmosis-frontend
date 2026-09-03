@@ -720,6 +720,14 @@ export class SkipBridgeProvider implements BridgeProvider {
           return skipAsset;
         }
       }
+
+      // Other chain types (e.g. Solana): match by denom exactly. Base58
+      // addresses are case-sensitive, so no case folding here.
+      if (chain.chainType !== "cosmos" && chain.chainType !== "evm") {
+        if (asset.address === skipAsset.denom) {
+          return skipAsset;
+        }
+      }
     }
   }
 
