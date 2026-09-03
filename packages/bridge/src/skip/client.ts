@@ -23,6 +23,8 @@ export class SkipApiClient {
 
     url.searchParams.append("include_evm_assets", "true");
     url.searchParams.append("include_cw20_assets", "true");
+    // SPL assets (e.g. Solana USDC), for in-app withdrawals to Solana
+    url.searchParams.append("include_svm_assets", "true");
 
     if (chainID) {
       url.searchParams.set("chain_id", chainID);
@@ -43,6 +45,8 @@ export class SkipApiClient {
     const url = new URL("/v2/info/chains", this.baseUrl);
 
     url.searchParams.append("include_evm", "true");
+    // Solana (chain_type "svm"), for in-app withdrawals to Solana
+    url.searchParams.append("include_svm", "true");
 
     if (this.env === "testnet") {
       url.searchParams.append("only_testnets", "true");
