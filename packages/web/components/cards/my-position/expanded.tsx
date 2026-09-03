@@ -33,8 +33,10 @@ import {
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
+import { usePositionMigrationForPosition } from "~/hooks/use-position-migration-for-position";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
+import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
 import {
@@ -105,6 +107,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       isPoolSuperfluid,
       superfluidApr,
       superfluidData,
+      isUnbonding,
+      isSuperfluidStaked,
+      isSuperfluidUnstaking,
     } = positionDetails ?? {};
 
     const {
@@ -120,8 +125,19 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const router = useRouter();
 
     const [activeModal, setActiveModal] = useState<
-      "increase" | "remove" | null
+      "increase" | "remove" | "migrate" | null
     >(null);
+
+    // Offered only for positions the fe-content map pairs with a
+    // spread-matched destination pool, and only when that pairing still holds
+    // against live pool state. An absent map means the action never appears.
+    const { migration: eligibleMigration, minAmountTolerance } =
+      usePositionMigrationForPosition({
+        poolId,
+        isUnbonding: Boolean(isUnbonding),
+        isSuperfluidStaked: Boolean(isSuperfluidStaked),
+        isSuperfluidUnstaking: Boolean(isSuperfluidUnstaking),
+      });
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const {
@@ -410,6 +426,16 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             </PositionButton>
           </Tooltip>
 
+          {eligibleMigration && (
+            <PositionButton
+              disabled={Boolean(account?.txTypeInProgress) || !Boolean(account)}
+              onClick={useCallback(() => setActiveModal("migrate"), [])}
+              isLoading={isLoadingPositionDetails}
+            >
+              {t("clPositions.migrateLiquidity")}
+            </PositionButton>
+          )}
+
           {activeModal === "increase" && !!status && (
             <IncreaseConcentratedLiquidityModal
               isOpen={true}
@@ -419,6 +445,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               onRequestClose={() => setActiveModal(null)}
             />
           )}
+          {activeModal === "migrate" &&
+            eligibleMigration &&
+            minAmountTolerance !== undefined && (
+              <MigrateConcentratedPositionModal
+                isOpen={true}
+                position={position}
+                toPoolId={eligibleMigration.toPoolId.toString()}
+                minAmountTolerance={minAmountTolerance}
+                onRequestClose={() => setActiveModal(null)}
+              />
+            )}
           {activeModal === "remove" && !!status && claimableRewardCoins && (
             <RemoveConcentratedLiquidityModal
               isOpen={true}

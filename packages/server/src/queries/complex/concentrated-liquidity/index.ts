@@ -501,6 +501,13 @@ export async function mapGetUserPositionDetails({
         currentPrice,
         currentValue,
         status,
+        // Surfaced individually as well as via `status`: `calcPositionStatus`
+        // collapses these into one value through a precedence chain, so a
+        // consumer that needs to know whether a position can be withdrawn
+        // (rather than what to label it) must read the flags themselves.
+        isUnbonding,
+        isSuperfluidStaked,
+        isSuperfluidUnstaking,
         rangeApr: totalRangeApr,
         unbondEndTime: periodLock
           ? new Date(periodLock.locks.end_time)

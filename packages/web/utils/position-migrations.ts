@@ -1,0 +1,286 @@
+import { Dec, Int } from "@osmosis-labs/unit";
+
+/**
+ * A curated 1:1 link from a `USDC.noble`-paired concentrated liquidity pool to
+ * its alloyed-`USDC` equivalent, as authored in the osmosis-labs/fe-content
+ * repo. Presence in the map is what makes the migrate action available, so an
+ * absent or empty list turns the feature off entirely.
+ * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/position-migrations.json
+ */
+export interface PositionMigration {
+  fromPoolId: number;
+  toPoolId: number;
+  /**
+   * The spread factor both pools are expected to share, as the decimal string
+   * the chain reports. Authoring intent only: always re-checked against live
+   * pool state, since a stale value here must never be able to authorize a
+   * migration onto a different fee tier.
+   */
+  spreadFactor: string;
+  /** The tick spacing both pools are expected to share. Re-checked live. */
+  tickSpacing: number;
+  /** Why this destination was chosen. Never shown in the UI. */
+  note?: string;
+  /** Defaults to true when omitted. */
+  enabled?: boolean;
+}
+
+export interface PositionMigrationsResponse {
+  /**
+   * Maximum allowed difference, in percent, between the source and
+   * destination pool prices.
+   */
+  priceDivergenceTolerance: number;
+  /**
+   * Tolerance, in percent, for deriving `tokenMinAmount0/1` from the
+   * simulated deposit amounts.
+   */
+  minAmountTolerance: number;
+  migrations: PositionMigration[];
+}
+
+/** Pool fields the eligibility checks need, from either pool. */
+export interface MigrationPoolState {
+  id: string;
+  /** `"concentrated"` for every pool this flow can touch. */
+  type: string;
+  token0: string;
+  token1: string;
+  spreadFactor: string;
+  tickSpacing: number;
+  currentSqrtPrice: Dec;
+}
+
+/**
+ * Why a migration is unavailable. Each value is a distinct user-facing
+ * message, and every one of them is a refusal: there is no case where the
+ * flow proceeds with an adjustment or a warning.
+ */
+export type MigrationIneligibilityReason =
+  /** No entry in the CMS map, or the entry is explicitly disabled. */
+  | "notMapped"
+  /** One or both pools are not concentrated liquidity. */
+  | "notConcentrated"
+  /**
+   * Tick spacing differs, so the source ticks cannot be copied as raw
+   * integers. Re-deriving them through price is deliberately not implemented.
+   */
+  | "tickSpacingMismatch"
+  /**
+   * Fee tier differs. This is a like-for-like move, so a differing spread
+   * factor means a different pool, not the same pool with a disclosure.
+   */
+  | "spreadFactorMismatch"
+  /**
+   * The pools order their denoms oppositely, so identical tick integers would
+   * describe an inverted price range.
+   */
+  | "denomOrderFlipped"
+  /** Destination price is further from the source than the tolerance allows. */
+  | "priceDivergence"
+  /** Locked, superfluid-staked, or unbonding positions cannot be withdrawn. */
+  | "positionLocked"
+  /**
+   * A pool does not hold the USDC denom the migration is defined in terms of,
+   * or the two pools' non-USDC assets are different denoms. Indicates a
+   * mis-authored map entry rather than anything the user can act on.
+   */
+  | "unexpectedDenoms";
+
+export type MigrationEligibility =
+  | { isEligible: true; migration: PositionMigration; divergencePercent: Dec }
+  | {
+      isEligible: false;
+      reason: MigrationIneligibilityReason;
+      /** Present when the refusal is a price divergence. */
+      divergencePercent?: Dec;
+    };
+
+/**
+ * Lock state as derived per position by the concentrated-liquidity queries.
+ *
+ * Read these three booleans rather than the collapsed `PositionStatus`:
+ * `calcPositionStatus` resolves to a single value through a precedence chain,
+ * so a full-range superfluid position reports only `"superfluidStaked"` and a
+ * status check would silently depend on that ordering.
+ */
+export interface PositionLockState {
+  isUnbonding: boolean;
+  isSuperfluidStaked: boolean;
+  isSuperfluidUnstaking: boolean;
+}
+
+export const isPositionUnlocked = ({
+  isUnbonding,
+  isSuperfluidStaked,
+  isSuperfluidUnstaking,
+}: PositionLockState) =>
+  !isUnbonding && !isSuperfluidStaked && !isSuperfluidUnstaking;
+
+/** Finds the enabled mapping for a source pool, if any. */
+export const findMigration = ({
+  migrations,
+  fromPoolId,
+}: {
+  migrations: PositionMigration[] | undefined;
+  fromPoolId: string;
+}) =>
+  migrations?.find(
+    (migration) =>
+      migration.fromPoolId.toString() === fromPoolId &&
+      migration.enabled !== false
+  );
+
+/**
+ * Which side of a pool holds the given denom, or `undefined` if neither does.
+ * Matched on the full minimal denom so an `ibc/HASH` is never conflated with
+ * another asset that happens to share a symbol.
+ */
+const getUsdcIndex = (pool: MigrationPoolState, usdcDenom: string) => {
+  if (pool.token0 === usdcDenom) return 0;
+  if (pool.token1 === usdcDenom) return 1;
+  return undefined;
+};
+
+/**
+ * Difference between the two pools' current prices, as a percentage of the
+ * source price. Price is `sqrtPrice²`, and comparing prices rather than ticks
+ * keeps this independent of tick spacing.
+ */
+export const getPriceDivergencePercent = ({
+  fromPool,
+  toPool,
+}: {
+  fromPool: MigrationPoolState;
+  toPool: MigrationPoolState;
+}) => {
+  const fromPrice = fromPool.currentSqrtPrice.mul(fromPool.currentSqrtPrice);
+  const toPrice = toPool.currentSqrtPrice.mul(toPool.currentSqrtPrice);
+
+  // A zero source price would make the ratio meaningless. Treat it as maximal
+  // divergence so the caller refuses rather than dividing by zero.
+  if (fromPrice.isZero()) return new Dec(Number.MAX_SAFE_INTEGER);
+
+  const difference = toPrice.sub(fromPrice);
+  return (difference.isNegative() ? difference.neg() : difference)
+    .quo(fromPrice)
+    .mul(new Dec(100));
+};
+
+/**
+ * Decides whether one position may migrate, checking every condition that
+ * must hold rather than short-circuiting on the first: the pinned CMS values
+ * are treated as intent and re-verified against live pool state, because a
+ * stale entry must not be able to authorize a migration onto a different fee
+ * tier or tick spacing.
+ */
+export const getMigrationEligibility = ({
+  migrations,
+  priceDivergenceTolerance,
+  fromPool,
+  toPool,
+  lockState,
+  fromUsdcDenom,
+  toUsdcDenom,
+}: {
+  migrations: PositionMigration[] | undefined;
+  priceDivergenceTolerance: number;
+  fromPool: MigrationPoolState;
+  toPool: MigrationPoolState | undefined;
+  lockState: PositionLockState;
+  /** The USDC denom expected in the source pool, e.g. `USDC.noble`. */
+  fromUsdcDenom: string;
+  /** The USDC denom expected in the destination pool, i.e. the alloy. */
+  toUsdcDenom: string;
+}): MigrationEligibility => {
+  const migration = findMigration({ migrations, fromPoolId: fromPool.id });
+  if (!migration) return { isEligible: false, reason: "notMapped" };
+
+  // The destination pool must resolve to the mapped id; a map pointing at a
+  // pool we cannot load is not a usable migration.
+  if (!toPool || toPool.id !== migration.toPoolId.toString())
+    return { isEligible: false, reason: "notMapped" };
+
+  if (!isPositionUnlocked(lockState))
+    return { isEligible: false, reason: "positionLocked" };
+
+  if (fromPool.type !== "concentrated" || toPool.type !== "concentrated")
+    return { isEligible: false, reason: "notConcentrated" };
+
+  // Ticks are copied as raw integers, which is only meaningful at identical
+  // spacing. Checked against live state and against the pinned value, so a
+  // CMS entry that has drifted from the chain refuses instead of proceeding.
+  if (
+    fromPool.tickSpacing !== toPool.tickSpacing ||
+    fromPool.tickSpacing !== migration.tickSpacing
+  )
+    return { isEligible: false, reason: "tickSpacingMismatch" };
+
+  if (
+    fromPool.spreadFactor !== toPool.spreadFactor ||
+    fromPool.spreadFactor !== migration.spreadFactor
+  )
+    return { isEligible: false, reason: "spreadFactorMismatch" };
+
+  // Identical tick integers only describe the same price range when both
+  // pools order their denoms the same way. The USDC side is the one that
+  // changes, so locate it by denom in each pool and require the other
+  // (shared) asset to occupy the same index on both sides.
+  const fromUsdcIndex = getUsdcIndex(fromPool, fromUsdcDenom);
+  const toUsdcIndex = getUsdcIndex(toPool, toUsdcDenom);
+  if (fromUsdcIndex === undefined || toUsdcIndex === undefined)
+    return { isEligible: false, reason: "unexpectedDenoms" };
+  if (fromUsdcIndex !== toUsdcIndex)
+    return { isEligible: false, reason: "denomOrderFlipped" };
+
+  // The non-USDC asset must be literally the same denom, matched in full so
+  // an IBC hash is never conflated with another asset sharing its symbol.
+  const fromSharedDenom =
+    fromUsdcIndex === 0 ? fromPool.token1 : fromPool.token0;
+  const toSharedDenom = toUsdcIndex === 0 ? toPool.token1 : toPool.token0;
+  if (fromSharedDenom !== toSharedDenom)
+    return { isEligible: false, reason: "unexpectedDenoms" };
+
+  const divergencePercent = getPriceDivergencePercent({ fromPool, toPool });
+  if (divergencePercent.gt(new Dec(priceDivergenceTolerance.toString())))
+    return { isEligible: false, reason: "priceDivergence", divergencePercent };
+
+  return { isEligible: true, migration, divergencePercent };
+};
+
+/**
+ * Floors a simulated deposit amount into the `tokenMinAmount` the create
+ * message carries.
+ *
+ * These minimums are the only onchain protection: with them the create fails
+ * and the batched withdraw reverts with it, leaving the original position
+ * untouched, while at zero a mispriced create succeeds silently. They are
+ * derived from simulated amounts rather than from the price tolerance because
+ * the two are different quantities: for a fixed tick range an adverse price
+ * move reduces one side's required amount while raising the other's, so a
+ * single percentage of price would be too tight on one side and too loose on
+ * the other.
+ *
+ * The tolerance is therefore looser than the price gate on purpose. It only
+ * absorbs pool state moving between simulation and broadcast; the gate is
+ * what judges whether the destination is soundly priced.
+ */
+export const deriveTokenMinAmount = ({
+  simulatedAmount,
+  minAmountTolerance,
+}: {
+  simulatedAmount: Int;
+  minAmountTolerance: number;
+}) => {
+  if (!simulatedAmount.isPositive()) return new Int(0);
+
+  const kept = new Dec(simulatedAmount).mul(
+    new Dec(1).sub(new Dec(minAmountTolerance.toString()).quo(new Dec(100)))
+  );
+
+  // Never round up to more than was simulated, which would revert on the
+  // nose, and never return 0 for a position that did deposit something: a
+  // zero minimum is exactly the silent-success case these guard against.
+  const floored = kept.truncate();
+  return floored.isPositive() ? floored : new Int(1);
+};

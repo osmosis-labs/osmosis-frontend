@@ -1579,6 +1579,41 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   /**
+   * Simulates a position migration and returns the coins the account would
+   * spend, used to derive the create-position message's minimum amounts.
+   *
+   * Distinct from `estimateFee`, which returns only gas and fee: this needs
+   * the spent-coin totals from the simulation, and the gas route is on the
+   * path of every transaction in the app.
+   */
+  public async simulatePositionMigration({
+    chainId,
+    messages,
+    bech32Address,
+  }: {
+    chainId: string;
+    messages: readonly EncodeObject[];
+    bech32Address: string;
+  }): Promise<{
+    gasUsed: number;
+    coinsSpent: { denom: string; amount: string }[];
+  }> {
+    const registry = await this.getRegistry();
+    const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
+
+    return await apiClient<{
+      gasUsed: number;
+      coinsSpent: { denom: string; amount: string }[];
+    }>("/api/simulate-position-migration", {
+      data: {
+        chainId,
+        messages: encodedMessages.map(encodeAnyBase64),
+        bech32Address,
+      },
+    });
+  }
+
+  /**
    * Determines if a transaction should be signed using one-click trading based on various conditions.
    */
   async shouldBeSignedWithOneClickTrading({

@@ -926,6 +926,126 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Migrates a concentrated liquidity position to an equivalent pool,
+   * preserving its tick range, by withdrawing the full position in one
+   * message and creating the new position in another.
+   *
+   * Both messages share one transaction, so a failing create reverts the
+   * withdraw with it and the user keeps their original position. That
+   * guarantee only holds because `tokenMinAmount0/1` are set: at zero, a
+   * create on unexpectedly bad terms succeeds instead of reverting. The
+   * minimums come from simulating this exact message pair and taking the
+   * coins the account would spend, rather than from recomputing liquidity
+   * math client-side where a rounding disagreement with the chain would
+   * either revert every honest migration or floor at a useless value.
+   *
+   * @param positionId Position to migrate.
+   * @param toPoolId Destination pool. Must share the source pool's tick
+   * spacing and spread factor; the caller is responsible for verifying that
+   * against live pool state before calling.
+   * @param lowerTick Lower tick, copied verbatim from the source position.
+   * @param upperTick Upper tick, copied verbatim from the source position.
+   * @param minAmountTolerancePercent Tolerance applied to the simulated
+   * amounts when deriving the minimums. Deliberately looser than the price
+   * divergence gate: it absorbs pool state moving between simulation and
+   * broadcast, not mispricing.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendMigrateConcentratedLiquidityPositionMsg(
+    positionId: string,
+    toPoolId: string,
+    lowerTick: Int,
+    upperTick: Int,
+    minAmountTolerancePercent: number,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const fullLiquidityAmount = queryPosition.liquidity;
+    const baseAsset = queryPosition.baseAsset;
+    const quoteAsset = queryPosition.quoteAsset;
+
+    if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
+    if (!baseAsset || !quoteAsset)
+      throw new Error("No assets found in position");
+
+    const withdrawPositionMsg = await makeWithdrawPositionMsg({
+      positionId: BigInt(positionId),
+      sender: this.address,
+      liquidityAmount: fullLiquidityAmount.toString(),
+    });
+
+    // Denom-sorted, as the chain expects for tokens provided.
+    const tokensProvided = [baseAsset.toCoin(), quoteAsset.toCoin()].sort(
+      (a, b) => a.denom.localeCompare(b.denom)
+    );
+
+    // Simulate with zeroed minimums purely to learn what the create would
+    // actually consume. This message pair is never broadcast.
+    const simulationCreateMsg = await makeCreatePositionMsg({
+      poolId: BigInt(toPoolId),
+      lowerTick: BigInt(lowerTick.toString()),
+      upperTick: BigInt(upperTick.toString()),
+      sender: this.address,
+      tokenMinAmount0: "0",
+      tokenMinAmount1: "0",
+      tokensProvided,
+    });
+
+    const { coinsSpent } = await this.base.simulatePositionMigration({
+      chainId: this.chainId,
+      messages: [withdrawPositionMsg, simulationCreateMsg],
+      bech32Address: this.address,
+    });
+
+    const toMinAmount = (denom: string) => {
+      const spent = coinsSpent.find((coin) => coin.denom === denom);
+      if (!spent) return "0";
+
+      const kept = new Dec(spent.amount).mul(
+        new Dec(1).sub(new Dec(minAmountTolerancePercent).quo(new Dec(100)))
+      );
+      const floored = kept.truncate();
+
+      // A zero minimum on a side that does get deposited is exactly the
+      // silent-success case these guard against, so floor at one base unit.
+      return floored.isPositive() ? floored.toString() : "1";
+    };
+
+    const createPositionMsg = await makeCreatePositionMsg({
+      poolId: BigInt(toPoolId),
+      lowerTick: BigInt(lowerTick.toString()),
+      upperTick: BigInt(upperTick.toString()),
+      sender: this.address,
+      tokenMinAmount0: toMinAmount(tokensProvided[0].denom),
+      tokenMinAmount1: toMinAmount(tokensProvided[1].denom),
+      tokensProvided,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clMigratePosition",
+      [withdrawPositionMsg, createPositionMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          queryPosition.waitFreshResponse();
+          this.queries?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
    * Adds to a concentrated liquidity position, if successful replacing the old position with a new position and ID.
    * Handles a superfluid staked position.
    *
