@@ -78,69 +78,102 @@ export const useMultiTxFinalStep = () => {
       onBroadcastFailed?: () => void;
       onFulfilled?: () => void;
     }) => {
-      const { transactionStep } =
-        await apiUtils.bridgeTransfer.getTransactionStepByBridge.fetch({
-          ...quoteParams,
-          bridge,
-          route: routeData,
-          step: { chainId: stepChainId, senderAddress },
-        });
+      const signExclusively = async () => {
+        // Authoritative replay check INSIDE the exclusive section: the
+        // persisted history is the cross-session truth for whether this
+        // step was already signed. Any session that signed it persisted
+        // the advance durably before releasing the lock below.
+        const storageState =
+          await transferHistoryStore.syncPendingStepFromStorage(
+            priorStepTxHash
+          );
+        if (storageState !== "resumable") return undefined;
 
-      const gasFee = transactionStep.gasFee;
-      return accountStore.signAndBroadcast(
-        stepChainId,
-        `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
-        transactionStep.msgs,
-        "",
-        gasFee
-          ? {
-              gas: gasFee.gas,
-              amount: [
-                {
-                  denom: gasFee.denom,
-                  amount: gasFee.amount,
-                },
-              ],
-            }
-          : undefined,
-        {
-          preferNoSetFee: Boolean(gasFee),
-        },
-        {
-          onBroadcastFailed,
-          // Advance the history entry the moment the final tx broadcasts:
-          // waiting for fulfillment leaves a window where closing the app
-          // forgets this step was ever sent, and Continue could then sign
-          // and send it a second time.
-          onBroadcasted: (txHash: Uint8Array) => {
-            transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
-              finalSendTxHash: Buffer.from(txHash)
-                .toString("hex")
-                .toUpperCase(),
-              trackingChainId: stepChainId,
-              estimatedArrivalUnix: dayjs().unix() + 60,
-            });
-            onBroadcasted?.();
+        const { transactionStep } =
+          await apiUtils.bridgeTransfer.getTransactionStepByBridge.fetch({
+            ...quoteParams,
+            bridge,
+            route: routeData,
+            step: { chainId: stepChainId, senderAddress },
+          });
+
+        const gasFee = transactionStep.gasFee;
+        const result = await accountStore.signAndBroadcast(
+          stepChainId,
+          `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
+          transactionStep.msgs,
+          "",
+          gasFee
+            ? {
+                gas: gasFee.gas,
+                amount: [
+                  {
+                    denom: gasFee.denom,
+                    amount: gasFee.amount,
+                  },
+                ],
+              }
+            : undefined,
+          {
+            preferNoSetFee: Boolean(gasFee),
           },
-          onFulfill: (tx: DeliverTxResponse) => {
-            if (tx.code == null || tx.code === 0) {
-              onFulfilled?.();
-            } else {
-              // included on-chain but failed: reflect it on the (already
-              // advanced) history entry, now keyed by the final tx's hash.
-              // Uppercased to match the broadcast-time key: the account
-              // store reports DeliverTxResponse hashes in lowercase, and
-              // the snapshot lookup is strict equality.
-              transferHistoryStore.receiveNewTxStatus(
-                tx.transactionHash.toUpperCase(),
-                "failed",
-                undefined
-              );
-              onBroadcastFailed?.();
-            }
-          },
-        }
-      );
+          {
+            onBroadcastFailed,
+            // Advance the history entry the moment the final tx broadcasts:
+            // waiting for fulfillment leaves a window where closing the app
+            // forgets this step was ever sent, and Continue could then sign
+            // and send it a second time.
+            onBroadcasted: (txHash: Uint8Array) => {
+              transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
+                finalSendTxHash: Buffer.from(txHash)
+                  .toString("hex")
+                  .toUpperCase(),
+                trackingChainId: stepChainId,
+                estimatedArrivalUnix: dayjs().unix() + 60,
+              });
+              onBroadcasted?.();
+            },
+            onFulfill: (tx: DeliverTxResponse) => {
+              if (tx.code == null || tx.code === 0) {
+                onFulfilled?.();
+              } else {
+                // included on-chain but failed: reflect it on the (already
+                // advanced) history entry, now keyed by the final tx's hash.
+                // Uppercased to match the broadcast-time key: the account
+                // store reports DeliverTxResponse hashes in lowercase, and
+                // the snapshot lookup is strict equality.
+                transferHistoryStore.receiveNewTxStatus(
+                  tx.transactionHash.toUpperCase(),
+                  "failed",
+                  undefined
+                );
+                onBroadcastFailed?.();
+              }
+            },
+          }
+        );
+        // Make the broadcast-time advance durable BEFORE releasing the
+        // lock, so the next lock holder's storage check sees it.
+        await transferHistoryStore.persistNow();
+        return result;
+      };
+
+      // The final step must be signed at most once across every session of
+      // this browser: hold a cross-tab exclusive lock for the whole
+      // critical section (storage recheck -> sign -> durable persist), so
+      // two sessions cannot both pass the check before either broadcasts.
+      // ifAvailable: a session finding the lock taken simply yields — the
+      // holder is actively signing this very step. Where Web Locks are
+      // unavailable, the storage recheck alone remains as (non-atomic)
+      // best effort.
+      if (typeof navigator !== "undefined" && navigator.locks) {
+        return navigator.locks.request(
+          `multi-tx-step-${priorStepTxHash}`,
+          { ifAvailable: true },
+          async (lock) => (lock ? signExclusively() : undefined)
+        );
+      }
+      return signExclusively();
     },
     [accountStore, apiUtils, transferHistoryStore]
   );

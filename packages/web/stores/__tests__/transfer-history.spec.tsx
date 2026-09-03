@@ -296,6 +296,33 @@ describe("TransferHistoryStore multi-tx entries", () => {
     );
   });
 
+  it("persistNow never regresses an entry another session advanced", async () => {
+    // Full-array persistence from a session with a stale in-memory copy
+    // must not clobber the advanced entry another session wrote at
+    // final-step broadcast.
+    const { store, kvStore } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    // what the OTHER session persisted after signing the final step
+    kvStore.get.mockResolvedValue([
+      makeSnapshot({
+        sendTxHash: "COSMOS_TX_2",
+        firstStepTxHash: "0xtx1",
+        trackingChainId: "noble-1",
+        pendingStep: undefined,
+      }),
+    ]);
+
+    await store.persistNow();
+
+    const written = kvStore.set.mock.calls.at(-1)?.[1] as TxSnapshot[];
+    const entry = written.find(
+      (s: TxSnapshot) => (s.firstStepTxHash ?? s.sendTxHash) === "0xtx1"
+    );
+    expect(entry?.sendTxHash).toBe("COSMOS_TX_2");
+    expect(entry?.pendingStep).toBeUndefined();
+  });
+
   it("syncPendingStepFromStorage leaves an unadvanced entry resumable", async () => {
     const { store, statusProvider, kvStore } = makeStore();
 

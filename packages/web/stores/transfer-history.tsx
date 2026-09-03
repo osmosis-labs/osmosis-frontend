@@ -61,10 +61,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     makeObservable(this);
 
-    // persist snapshots on change
+    // persist snapshots on change (merged against storage, so a session
+    // holding a stale in-memory copy can never regress an entry another
+    // session already advanced)
     autorun(() => {
       if (this.isRestoredFromIndexedDB) {
-        this.kvStore.set(TRANSFER_HISTORY_STORE_KEY, toJS(this.snapshots));
+        // toJS inside the autorun so deep snapshot changes are tracked
+        void this.persistSnapshots(toJS(this.snapshots));
       }
     });
 
@@ -410,11 +413,63 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 
   /**
+   * Durably write the given snapshots, merged against what storage already
+   * holds: a full-array write from a session with a stale in-memory copy
+   * must never regress a multi-tx entry that another session has advanced
+   * past its pending step (or marked stale). The read-merge-write cycle is
+   * serialized cross-tab via the Web Locks API where available so
+   * concurrent writers cannot interleave.
+   */
+  protected async persistSnapshots(snapshots: TxSnapshot[]): Promise<void> {
+    const write = async () => {
+      const stored =
+        (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
+        [];
+      const merged = snapshots.map((local) => {
+        if (!local.pendingStep) return local;
+        const key = local.firstStepTxHash ?? local.sendTxHash;
+        const storedTwin = stored.find(
+          (snapshot) =>
+            (snapshot.firstStepTxHash ?? snapshot.sendTxHash) === key
+        );
+        if (!storedTwin) return local;
+        // the stored copy is further along: advanced past the step, or
+        // marked stale — keep it over the local regression
+        if (
+          !storedTwin.pendingStep ||
+          (storedTwin.pendingStep.stale && !local.pendingStep.stale)
+        ) {
+          return storedTwin;
+        }
+        return local;
+      });
+      await this.kvStore.set(TRANSFER_HISTORY_STORE_KEY, merged);
+    };
+    if (typeof navigator !== "undefined" && navigator.locks) {
+      await navigator.locks.request("transfer-history-persist", write);
+    } else {
+      await write();
+    }
+  }
+
+  /**
+   * Awaitable durable persistence of the current snapshots, for callers
+   * that must not proceed until state is written — e.g. the final-step
+   * signing lock is only released after the broadcast advance is durable,
+   * so the next lock holder's storage check sees it.
+   */
+  async persistNow(): Promise<void> {
+    await this.persistSnapshots(toJS(this.snapshots));
+  }
+
+  /**
    * Cross-session replay guard for resuming a multi-tx transfer: the
    * persisted history is the shared truth between sessions of this browser
    * profile (the signing session writes the advance at final-step
    * broadcast), so a session holding a stale in-memory entry must re-read
-   * it before signing. Correlates via the immutable `firstStepTxHash`,
+   * it before signing. Called INSIDE the cross-tab signing lock by
+   * `signFinalStep`, which is what makes the check-then-sign atomic.
+   * Correlates via the immutable `firstStepTxHash`,
    * since an advanced entry's `sendTxHash` has been reassigned.
    *
    * Applies whatever the storage knows to the local entry, and reports:
@@ -475,11 +530,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
 
     // Drop expired snapshots (they are pruned from storage on the next
-    // persist). This is also what eventually clears stale multi-tx entries,
-    // which deliberately never auto-resolve.
+    // persist) — EXCEPT resumable mid-flow multi-tx entries: their Continue
+    // action is the only recovery path for funds sitting on the
+    // intermediate chain, so they persist until resolved (or marked stale,
+    // after which expiry clears them).
     const expiryCutoffUnix = dayjs().subtract(this.historyExpireDays, "day");
-    const liveSnapshots = storedSnapshots.filter((snapshot) =>
-      dayjs.unix(snapshot.createdAtUnix).isAfter(expiryCutoffUnix)
+    const liveSnapshots = storedSnapshots.filter(
+      (snapshot) =>
+        (snapshot.pendingStep && !snapshot.pendingStep.stale) ||
+        dayjs.unix(snapshot.createdAtUnix).isAfter(expiryCutoffUnix)
     );
 
     liveSnapshots.forEach(async (snapshot) => {

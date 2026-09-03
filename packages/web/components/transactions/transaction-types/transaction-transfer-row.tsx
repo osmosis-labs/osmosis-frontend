@@ -8,11 +8,11 @@ import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { useMultiTxResume } from "~/components/bridge/use-multi-tx-step";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { Tooltip } from "~/components/tooltip";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
-import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
