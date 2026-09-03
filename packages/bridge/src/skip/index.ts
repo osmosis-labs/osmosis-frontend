@@ -435,12 +435,23 @@ export class SkipBridgeProvider implements BridgeProvider {
       const asset = chainAssets?.[chainId]?.assets.find(
         (a) => a.denom === step.gasFee!.denom
       );
+      // Never guess decimals for money: valuing a minimal-denom fee with
+      // made-up precision misprices it by orders of magnitude (a 20000
+      // uusdc fee read with 0 decimals displays as 20,000 USDC). If the
+      // fee asset can't be resolved, fail the quote rather than mislead.
+      if (!asset || asset.decimals == null) {
+        throw new BridgeQuoteError({
+          bridgeId: SkipBridgeProvider.ID,
+          errorType: "CreateCosmosTxError",
+          message: `Cannot resolve metadata for intermediate fee asset ${step.gasFee.denom} on ${chainId}`,
+        });
+      }
       fees.push({
         amount: step.gasFee.amount,
-        denom: asset?.symbol ?? step.gasFee.denom,
+        denom: asset.symbol ?? step.gasFee.denom,
         address: step.gasFee.denom,
-        decimals: asset?.decimals ?? 0,
-        coinGeckoId: asset?.coingecko_id,
+        decimals: asset.decimals,
+        coinGeckoId: asset.coingecko_id,
       });
     }
     return fees;

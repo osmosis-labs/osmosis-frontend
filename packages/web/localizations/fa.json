@@ -924,6 +924,8 @@
     "multiTxContinue": "ادامه انتقال",
     "multiTxWrongAccountTitle": "عدم تطابق حساب کیف پول",
     "multiTxWrongAccount": "حساب {chain} کیف پول شما با این مسیر مطابقت ندارد. انتقال پیش از جابه‌جایی وجوه لغو شد.",
+    "multiTxFundsMissingTitle": "وجوه مورد انتظار یافت نشد",
+    "multiTxFundsMissing": "وجوه مورد انتظار دیگر در حساب {chain} شما نیست. این انتقال ممکن است قبلاً از نشست دیگری کامل شده باشد.",
     "multiTxStillInTransit": "وجوه هنوز در راه است",
     "assetSelectScreen": {
       "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",

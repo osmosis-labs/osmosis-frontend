@@ -924,6 +924,8 @@
     "multiTxContinue": "ट्रांसफ़र जारी रखें",
     "multiTxWrongAccountTitle": "वॉलेट खाता मेल नहीं खाता",
     "multiTxWrongAccount": "आपके वॉलेट का {chain} खाता इस रूट से मेल नहीं खाता। धनराशि स्थानांतरित होने से पहले ट्रांसफ़र रद्द कर दिया गया।",
+    "multiTxFundsMissingTitle": "अपेक्षित धनराशि नहीं मिली",
+    "multiTxFundsMissing": "अपेक्षित धनराशि अब आपके {chain} खाते में नहीं है। यह ट्रांसफ़र संभवतः किसी अन्य सत्र से पहले ही पूरा हो चुका है।",
     "multiTxStillInTransit": "धनराशि अभी भी रास्ते में है",
     "assetSelectScreen": {
       "titleDeposit": "जमा करने के लिए एक परिसंपत्ति का चयन करें",

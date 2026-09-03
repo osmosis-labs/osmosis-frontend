@@ -186,16 +186,31 @@ export const useMultiTxFinalStep = () => {
         },
         {
           onBroadcastFailed,
-          onBroadcasted,
+          // Advance the history entry the moment the final tx broadcasts:
+          // waiting for fulfillment leaves a window where closing the app
+          // forgets this step was ever sent, and Continue could then sign
+          // and send it a second time.
+          onBroadcasted: (txHash: Uint8Array) => {
+            transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
+              finalSendTxHash: Buffer.from(txHash)
+                .toString("hex")
+                .toUpperCase(),
+              trackingChainId: stepChainId,
+              estimatedArrivalUnix: dayjs().unix() + 60,
+            });
+            onBroadcasted?.();
+          },
           onFulfill: (tx: DeliverTxResponse) => {
             if (tx.code == null || tx.code === 0) {
-              transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
-                finalSendTxHash: tx.transactionHash,
-                trackingChainId: stepChainId,
-                estimatedArrivalUnix: dayjs().unix() + 60,
-              });
               onFulfilled?.();
             } else {
+              // included on-chain but failed: reflect it on the (already
+              // advanced) history entry, now keyed by the final tx's hash
+              transferHistoryStore.receiveNewTxStatus(
+                tx.transactionHash,
+                "failed",
+                undefined
+              );
               onBroadcastFailed?.();
             }
           },
@@ -267,6 +282,55 @@ export const useMultiTxResume = () => {
           throw new Error(
             "No wallet account available on " + pendingStep.chainId
           );
+        }
+
+        // The step must be signed from the account the first transaction
+        // routed funds to. A different connected account either fails or,
+        // if it happens to hold enough of the denom, spends unrelated funds.
+        if (
+          pendingStep.intermediateAddress &&
+          senderAddress !== pendingStep.intermediateAddress
+        ) {
+          displayToast(
+            {
+              titleTranslationKey: "transfer.multiTxWrongAccountTitle",
+              captionTranslationKey: [
+                "transfer.multiTxWrongAccount",
+                { chain: pendingStep.prettyName },
+              ],
+            },
+            ToastType.ERROR
+          );
+          return;
+        }
+
+        // The expected funds must still be there: a transfer already
+        // completed from another session (or moved funds) must not be
+        // signed again against whatever else the account holds. A definite
+        // shortfall blocks; an unreadable balance (LCD down) does not, as
+        // the transaction itself still fails without sufficient funds.
+        if (pendingStep.expectedArrival) {
+          const balance = await getChainBalance({
+            chainId: pendingStep.chainId,
+            address: senderAddress,
+            denom: pendingStep.expectedArrival.denom,
+          });
+          if (
+            balance !== undefined &&
+            balance < BigInt(pendingStep.expectedArrival.amount)
+          ) {
+            displayToast(
+              {
+                titleTranslationKey: "transfer.multiTxFundsMissingTitle",
+                captionTranslationKey: [
+                  "transfer.multiTxFundsMissing",
+                  { chain: pendingStep.prettyName },
+                ],
+              },
+              ToastType.ERROR
+            );
+            return;
+          }
         }
 
         await signFinalStep({

@@ -924,6 +924,8 @@
     "multiTxContinue": "전송 계속하기",
     "multiTxWrongAccountTitle": "지갑 계정 불일치",
     "multiTxWrongAccount": "지갑의 {chain} 계정이 이 경로와 일치하지 않습니다. 자금이 이동하기 전에 전송이 취소되었습니다.",
+    "multiTxFundsMissingTitle": "예상 자금을 찾을 수 없음",
+    "multiTxFundsMissing": "예상 자금이 더 이상 {chain} 계정에 없습니다. 이 전송은 다른 세션에서 이미 완료되었을 수 있습니다.",
     "multiTxStillInTransit": "자금이 아직 이동 중입니다",
     "assetSelectScreen": {
       "titleDeposit": "입금할 자산을 선택하세요",

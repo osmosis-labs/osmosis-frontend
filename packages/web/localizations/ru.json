@@ -924,6 +924,8 @@
     "multiTxContinue": "Продолжить перевод",
     "multiTxWrongAccountTitle": "Аккаунт кошелька не совпадает",
     "multiTxWrongAccount": "Аккаунт {chain} в вашем кошельке не соответствует этому маршруту. Перевод был отменён до перемещения средств.",
+    "multiTxFundsMissingTitle": "Ожидаемые средства не найдены",
+    "multiTxFundsMissing": "Ожидаемых средств больше нет на вашем счёте {chain}. Возможно, этот перевод уже был завершён в другой сессии.",
     "multiTxStillInTransit": "Средства ещё в пути",
     "assetSelectScreen": {
       "titleDeposit": "Выберите актив для депозита",

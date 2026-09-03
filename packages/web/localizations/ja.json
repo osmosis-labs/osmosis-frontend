@@ -924,6 +924,8 @@
     "multiTxContinue": "送金を続行",
     "multiTxWrongAccountTitle": "ウォレットのアカウント不一致",
     "multiTxWrongAccount": "ウォレットの{chain}アカウントがこのルートと一致しません。資金が移動する前に送金はキャンセルされました。",
+    "multiTxFundsMissingTitle": "予定された資金が見つかりません",
+    "multiTxFundsMissing": "予定された資金は {chain} アカウントにありません。この送金は別のセッションで既に完了している可能性があります。",
     "multiTxStillInTransit": "資金はまだ移動中です",
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",

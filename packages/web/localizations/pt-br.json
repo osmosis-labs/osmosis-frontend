@@ -924,6 +924,8 @@
     "multiTxContinue": "Continuar transferência",
     "multiTxWrongAccountTitle": "Conta da carteira não corresponde",
     "multiTxWrongAccount": "A conta {chain} da sua carteira não corresponde a esta rota. A transferência foi cancelada antes de qualquer movimentação de fundos.",
+    "multiTxFundsMissingTitle": "Fundos esperados não encontrados",
+    "multiTxFundsMissing": "Os fundos esperados não estão mais na sua conta {chain}. Esta transferência pode já ter sido concluída em outra sessão.",
     "multiTxStillInTransit": "Os fundos ainda estão em trânsito",
     "assetSelectScreen": {
       "titleDeposit": "Selecione um ativo para depositar",

@@ -924,6 +924,8 @@
     "multiTxContinue": "继续转账",
     "multiTxWrongAccountTitle": "钱包账户不匹配",
     "multiTxWrongAccount": "您钱包的 {chain} 账户与此路径不匹配。转账已在资金移动前取消。",
+    "multiTxFundsMissingTitle": "未找到预期资金",
+    "multiTxFundsMissing": "预期资金已不在您的 {chain} 账户中。此转账可能已在其他会话中完成。",
     "multiTxStillInTransit": "资金仍在途中",
     "assetSelectScreen": {
       "titleDeposit": "选择要存入的资产",

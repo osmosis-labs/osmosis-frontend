@@ -1354,6 +1354,32 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(quote.transactionSteps).toHaveLength(2);
   });
 
+  it("rejects the quote when an intermediate fee asset cannot be resolved", async () => {
+    // Financial precision must come from metadata: an unresolved fee asset
+    // must fail the quote rather than being valued with guessed decimals
+    // (20000 uusdc read with 0 decimals displays as 20,000 USDC).
+    const strippedAssets = {
+      ...SkipAssets,
+      chain_to_assets_map: {
+        ...SkipAssets.chain_to_assets_map,
+        "noble-1": {
+          assets: SkipAssets.chain_to_assets_map["noble-1"].assets.filter(
+            (a) => a.denom !== "uusdc"
+          ),
+        },
+      },
+    };
+    server.use(
+      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
+        res(ctx.json(strippedAssets))
+      )
+    );
+
+    await expect(
+      provider.getQuote({ ...multiTxQuoteParams, allowMultiTx: true })
+    ).rejects.toThrow("Cannot resolve metadata for intermediate fee asset");
+  });
+
   it("refuses a multi-tx route via an intermediate chain with non-118 key derivation", async () => {
     // e.g. Injective: ethsecp256k1 / coin type 60 — a bech32-converted
     // address there is NOT the user's account, and the first tx would

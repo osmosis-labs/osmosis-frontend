@@ -924,6 +924,8 @@
     "multiTxContinue": "Transfer fortsetzen",
     "multiTxWrongAccountTitle": "Wallet-Konto stimmt nicht überein",
     "multiTxWrongAccount": "Das {chain}-Konto Ihrer Wallet passt nicht zu dieser Route. Die Übertragung wurde abgebrochen, bevor Gelder bewegt wurden.",
+    "multiTxFundsMissingTitle": "Erwartete Gelder nicht gefunden",
+    "multiTxFundsMissing": "Die erwarteten Gelder befinden sich nicht mehr auf Ihrem {chain}-Konto. Diese Übertragung wurde möglicherweise bereits in einer anderen Sitzung abgeschlossen.",
     "multiTxStillInTransit": "Die Gelder sind noch unterwegs",
     "assetSelectScreen": {
       "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",

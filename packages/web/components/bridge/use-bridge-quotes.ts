@@ -738,7 +738,10 @@ export const useBridgeQuotes = ({
   /** Signs and broadcasts an EVM bridge tx — including any required ERC20
    *  approval — resolving with the tx hash once it's included in a block. */
   const sendEvmBridgeTx = async (
-    transactionRequest: EvmBridgeTransactionRequest
+    transactionRequest: EvmBridgeTransactionRequest,
+    /** Called with the tx hash as soon as the wallet broadcasts, before the
+     *  receipt is awaited. */
+    onBroadcast?: (txHash: Address) => void
   ): Promise<Address> => {
     if (!isEvmWalletConnected || !evmAddress || !evmConnector)
       throw new Error("No ETH wallet account is connected");
@@ -797,6 +800,11 @@ export const useBridgeQuotes = ({
         ? BigInt(transactionRequest.maxPriorityFeePerGas)
         : undefined,
     });
+
+    // The tx is on its way the moment the wallet returns a hash: give the
+    // caller the chance to persist it BEFORE waiting on the receipt, so
+    // closing the app during confirmation can't lose the record.
+    onBroadcast?.(sendTxHash);
 
     setIsBroadcastingTx(true);
 
@@ -938,24 +946,40 @@ export const useBridgeQuotes = ({
         }
       }
 
-      // ---- Step 1: the EVM transaction ----
-      const sendTxHash = await sendEvmBridgeTx(firstStep);
-      setIsBroadcastingTx(false);
+      // The funds this step will move on the intermediate chain, for the
+      // resume-time balance check.
+      const draftToken = (
+        finalStep.msgs[0]?.value as
+          | { token?: { denom?: string; amount?: string } }
+          | undefined
+      )?.token;
 
-      // persist mid-flow (with the quoted route, so the final step can be
-      // rebuilt after a reload) so an interrupted transfer can be resumed
-      trackTransferStatus({
-        quote,
-        sendTxHash,
-        pendingStep: {
-          chainId: finalStepChainId,
-          prettyName: finalStepPrettyName,
-          stepIndex: 2,
-          totalSteps: transactionSteps.length,
-          priorStepTxHash: sendTxHash,
-          routeData: quote.multiTxRouteData,
-        },
-      });
+      // ---- Step 1: the EVM transaction ----
+      // Persist the resumable entry (with the quoted route, so the final
+      // step can be rebuilt after a reload) the moment the wallet returns a
+      // hash: the funds are en route from broadcast, so waiting for the
+      // receipt to record it would lose the resume record if the app
+      // closes during confirmation.
+      const sendTxHash = await sendEvmBridgeTx(firstStep, (broadcastHash) =>
+        trackTransferStatus({
+          quote,
+          sendTxHash: broadcastHash,
+          pendingStep: {
+            chainId: finalStepChainId,
+            prettyName: finalStepPrettyName,
+            stepIndex: 2,
+            totalSteps: transactionSteps.length,
+            priorStepTxHash: broadcastHash,
+            routeData: quote.multiTxRouteData,
+            intermediateAddress: senderAddress,
+            expectedArrival:
+              draftToken?.denom && draftToken?.amount
+                ? { denom: draftToken.denom, amount: draftToken.amount }
+                : undefined,
+          },
+        })
+      );
+      setIsBroadcastingTx(false);
 
       setMultiTxPhase("waiting-arrival");
       const arrival = await waitForSkipStepArrival({

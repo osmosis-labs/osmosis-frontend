@@ -717,6 +717,25 @@ const txSnapshotSchema = z.object({
       priorStepTxHash: z.string(),
       /** The quote's `multiTxRouteData`, for rebuilding this step on resume. */
       routeData: z.unknown().optional(),
+      /**
+       * The intermediate-chain account the first transaction routed funds
+       * to (the account this step must be signed from). Resume compares
+       * the connected wallet against it so a switched account can't sign
+       * for funds it doesn't hold.
+       */
+      intermediateAddress: z.string().optional(),
+      /**
+       * The funds this step is expected to move (minimal denom units on
+       * the intermediate chain). Resume checks the account still holds at
+       * least this much before signing, so a transfer already completed
+       * elsewhere (or moved funds) isn't signed again.
+       */
+      expectedArrival: z
+        .object({
+          denom: z.string(),
+          amount: z.string(),
+        })
+        .optional(),
     })
     .optional(),
 });

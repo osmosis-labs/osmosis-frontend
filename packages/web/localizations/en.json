@@ -924,6 +924,8 @@
     "multiTxContinue": "Continue transfer",
     "multiTxWrongAccountTitle": "Wallet account mismatch",
     "multiTxWrongAccount": "Your wallet's {chain} account doesn't match this route. The transfer was canceled before any funds moved.",
+    "multiTxFundsMissingTitle": "Expected funds not found",
+    "multiTxFundsMissing": "The expected funds are no longer in your {chain} account. This transfer may already have been completed from another session.",
     "multiTxStillInTransit": "Funds are still in transit",
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",
