@@ -1212,14 +1212,15 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     ]);
   });
 
-  it("prefers a single-tx route when one exists", async () => {
+  it("keeps a comparable single-tx route when multi-tx is allowed", async () => {
     const routeBodies: Record<string, unknown>[] = [];
     server.use(
       rest.post(
         "https://api.skip.money/v2/fungible/route",
         async (req, res, ctx) => {
           routeBodies.push(await req.json());
-          // a single-tx route exists for this pair
+          // the same single-tx route exists with and without multi-tx
+          // permission for this pair
           return res(ctx.json(ETH_EthereumToOsmosis_Route));
         }
       ),
@@ -1244,11 +1245,90 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       allowMultiTx: true,
     });
 
-    // one request, never escalated to multi-tx
-    expect(routeBodies).toHaveLength(1);
-    expect(routeBodies[0]).not.toHaveProperty("allow_multi_tx");
+    // both variants quoted in parallel, single-tx kept
+    expect(routeBodies).toHaveLength(2);
+    expect(routeBodies.filter((b) => b.allow_multi_tx === true)).toHaveLength(
+      1
+    );
     expect(quote.transactionSteps).toBeUndefined();
     expect(quote.multiTxRouteData).toBeUndefined();
+  });
+
+  it("prefers a meaningfully better multi-tx route over a lossy single-tx route", async () => {
+    // Mirrors the live Avalanche USDC case: a single-tx axelar+swap route
+    // exists but pays far less than the multi-tx CCTP route.
+    const lossySingleTxRoute = {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      txs_required: 1,
+      amount_out: "790000000", // 21% below the multi-tx route's 999960000
+    };
+    server.use(
+      rest.post(
+        "https://api.skip.money/v2/fungible/route",
+        async (req, res, ctx) => {
+          const body = await req.json();
+          return res(
+            ctx.json(
+              body.allow_multi_tx
+                ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+                : lossySingleTxRoute
+            )
+          );
+        }
+      ),
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs))
+      )
+    );
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transactionSteps).toHaveLength(2);
+    expect(quote.expectedOutput.amount).toBe(
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.amount_out
+    );
+  });
+
+  it("keeps the single-tx route when the multi-tx route is only marginally better", async () => {
+    const marginalSingleTxRoute = {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      txs_required: 1,
+      amount_out: "999000000", // ~0.1% below multi's 999960000: inside the 0.5% threshold
+    };
+    server.use(
+      rest.post(
+        "https://api.skip.money/v2/fungible/route",
+        async (req, res, ctx) => {
+          const body = await req.json();
+          return res(
+            ctx.json(
+              body.allow_multi_tx
+                ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+                : marginalSingleTxRoute
+            )
+          );
+        }
+      ),
+      // a real single-tx route returns a single message
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(
+          ctx.json({
+            msgs: USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs.slice(0, 1),
+          })
+        )
+      )
+    );
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transactionSteps).toBeUndefined();
+    expect(quote.expectedOutput.amount).toBe("999000000");
   });
 
   it("falls back to multi-tx only when no single-tx route exists (and only when enabled)", async () => {
@@ -1262,14 +1342,15 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(routeBodies).toHaveLength(1);
     expect(routeBodies[0]).not.toHaveProperty("allow_multi_tx");
 
-    // enabled: retried with allow_multi_tx after the single-tx refusal
+    // enabled: both variants quoted in parallel, only multi-tx succeeds
     const quote = await provider.getQuote({
       ...multiTxQuoteParams,
       allowMultiTx: true,
     });
     expect(routeBodies).toHaveLength(3);
-    expect(routeBodies[1]).not.toHaveProperty("allow_multi_tx");
-    expect(routeBodies[2]).toHaveProperty("allow_multi_tx", true);
+    expect(
+      routeBodies.slice(1).filter((b) => b.allow_multi_tx === true)
+    ).toHaveLength(1);
     expect(quote.transactionSteps).toHaveLength(2);
   });
 

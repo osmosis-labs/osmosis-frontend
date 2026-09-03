@@ -168,20 +168,58 @@ export class SkipBridgeProvider implements BridgeProvider {
               throw e;
             });
 
-        // Single-tx routes always win: only when Skip reports that no
-        // single-tx route exists do we ask again allowing multi-tx routes,
-        // so an available one-signature route is never degraded to a
-        // multi-step flow.
-        const route = await fetchRoute(false).catch((e) => {
-          if (
-            allowMultiTx &&
-            e instanceof BridgeQuoteError &&
-            e.message.includes("no single-tx routes found")
-          ) {
-            return fetchRoute(true);
+        // Single-tx routes are preferred for UX (one signature), but not at
+        // any price: a lossy single-tx path (observed live: Avalanche USDC
+        // via axelar + swap paying ~21% less than the multi-tx CCTP route)
+        // must not win against a multi-tx route that pays meaningfully
+        // more. When multi-tx is allowed, both routes are quoted in
+        // parallel and the single-tx route is kept unless the multi-tx
+        // route's output beats it by more than this threshold.
+        const MULTI_TX_MIN_IMPROVEMENT_BPS = BigInt(50); // 0.5%
+
+        let route: Awaited<ReturnType<typeof fetchRoute>>;
+        if (!allowMultiTx) {
+          route = await fetchRoute(false);
+        } else {
+          const [singleResult, multiResult] = await Promise.allSettled([
+            fetchRoute(false),
+            fetchRoute(true),
+          ]);
+          const single =
+            singleResult.status === "fulfilled"
+              ? singleResult.value
+              : undefined;
+          const multi =
+            multiResult.status === "fulfilled" ? multiResult.value : undefined;
+
+          if (single && multi) {
+            const singleOut = BigInt(single.amount_out);
+            const multiOut = BigInt(multi.amount_out);
+            // allow_multi_tx is permission, not preference: the
+            // multi-permitted route can itself be single-tx, in which case
+            // the better output simply wins with no threshold.
+            route =
+              multi.txs_required <= 1
+                ? multiOut > singleOut
+                  ? multi
+                  : single
+                : multiOut * BigInt(10_000) >
+                  singleOut * (BigInt(10_000) + MULTI_TX_MIN_IMPROVEMENT_BPS)
+                ? multi
+                : single;
+          } else if (single || multi) {
+            route = (single ?? multi)!;
+          } else {
+            // Both failed. The single-tx "no single-tx routes found"
+            // refusal is less informative than whatever stopped the
+            // multi-tx attempt, so prefer the multi-tx error in that case.
+            const singleReason = (singleResult as PromiseRejectedResult).reason;
+            throw singleReason instanceof BridgeQuoteError &&
+              singleReason.message.includes("no single-tx routes found")
+              ? (multiResult as PromiseRejectedResult).reason
+              : singleReason;
           }
-          throw e;
-        });
+        }
 
         if (route.txs_required > 1) {
           // Quote-time messages derive intermediate-chain addresses by
