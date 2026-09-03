@@ -278,6 +278,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
+    direction,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -335,7 +336,35 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       for (const counterparty of counterparties) {
         // check if supported by skip
-        if (!("chainId" in counterparty)) continue;
+        // Solana counterparties carry no chainId (NonCosmosCounterparty).
+        // Skip routes SPL assets natively (e.g. allUSDC -> Solana USDC as a
+        // single-tx CCTP route through Noble), but only WITHDRAWALS are
+        // supported in-app: the user signs one Osmosis transaction and the
+        // destination is a pasted Solana address, while a deposit's first
+        // transaction would need an SVM wallet to sign on Solana.
+        if (!("chainId" in counterparty)) {
+          if (
+            direction === "withdraw" &&
+            counterparty.chainName === "solana" &&
+            "sourceDenom" in counterparty
+          ) {
+            const skipSplAsset = assets["solana"]?.assets.find(
+              (a) => a.denom === counterparty.sourceDenom
+            );
+            if (skipSplAsset) {
+              foundVariants.setAsset("solana", counterparty.sourceDenom, {
+                transferTypes: ["quote"],
+                chainId: "solana",
+                chainType: "solana",
+                address: counterparty.sourceDenom,
+                denom: counterparty.symbol,
+                decimals: counterparty.decimals,
+                coinGeckoId: skipSplAsset.coingecko_id,
+              });
+            }
+          }
+          continue;
+        }
         const address =
           "address" in counterparty
             ? counterparty.address
@@ -789,6 +818,30 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain.chainType === "evm"
       ) {
         addressList.push(toAddress);
+      }
+
+      // Endpoint chains that are neither cosmos nor EVM (e.g. Solana,
+      // chain_type "svm"): their addresses cannot be derived from anything,
+      // so the given endpoint address is used verbatim.
+      if (
+        chain.chain_type !== "cosmos" &&
+        chain.chain_type !== "evm" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType !== "cosmos" &&
+        fromChain.chainType !== "evm"
+      ) {
+        addressList.push(fromAddress);
+        continue;
+      }
+      if (
+        chain.chain_type !== "cosmos" &&
+        chain.chain_type !== "evm" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType !== "cosmos" &&
+        toChain.chainType !== "evm"
+      ) {
+        addressList.push(toAddress);
+        continue;
       }
 
       if (

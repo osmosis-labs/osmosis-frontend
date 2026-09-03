@@ -100,6 +100,50 @@ export const SkipAssets = {
           coingecko_id: "osmosis",
           recommended_symbol: "OSMO",
         },
+        {
+          // solana.USDT.pica in the mock asset list: its counterparty list
+          // carries a solana (NonCosmosCounterparty) entry, exercising the
+          // SPL withdrawal path
+          denom:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          chain_id: "osmosis-1",
+          origin_denom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          origin_chain_id: "solana",
+          trace: "transfer/channel-1279",
+          is_cw20: false,
+          is_evm: false,
+          is_svm: false,
+          symbol: "USDT",
+          name: "Solana USDT",
+          logo_uri:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/solana.usdt.pica.png",
+          decimals: 6,
+          description: "Tether USD bridged from Solana",
+          coingecko_id: "tether",
+          recommended_symbol: "USDT.sol",
+        },
+      ],
+    },
+    solana: {
+      assets: [
+        {
+          denom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          chain_id: "solana",
+          origin_denom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+          origin_chain_id: "solana",
+          trace: "",
+          is_cw20: false,
+          is_evm: false,
+          is_svm: true,
+          symbol: "USDT",
+          name: "USDT",
+          logo_uri:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.png",
+          decimals: 6,
+          description: "Tether USD on Solana",
+          coingecko_id: "tether",
+          recommended_symbol: "USDT",
+        },
       ],
     },
     "agoric-3": {
@@ -174,6 +218,25 @@ export const SkipAssets = {
 
 export const SkipChains = {
   chains: [
+    {
+      chain_name: "solana",
+      chain_id: "solana",
+      pfm_enabled: false,
+      cosmos_module_support: { authz: false, feegrant: false },
+      supports_memo: false,
+      logo_uri:
+        "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+      bech32_prefix: "",
+      fee_assets: [],
+      chain_type: "svm",
+      ibc_capabilities: {
+        cosmos_pfm: false,
+        cosmos_ibc_hooks: false,
+        cosmos_memo: false,
+        cosmos_autopilot: false,
+      },
+      is_testnet: false,
+    },
     {
       chain_name: "Ethereum",
       chain_id: "1",

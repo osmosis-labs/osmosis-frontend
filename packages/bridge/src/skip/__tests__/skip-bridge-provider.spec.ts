@@ -844,6 +844,70 @@ describe("SkipBridgeProvider", () => {
       expect(last).toEqual(first);
     });
 
+    it("returns Solana as an in-app quote chain for withdrawals of SPL-counterparty assets", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "withdraw",
+      });
+
+      expect(sourceVariants).toContainEqual({
+        transferTypes: ["quote"],
+        chainId: "solana",
+        chainType: "solana",
+        address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        denom: "USDT",
+        decimals: 6,
+        coinGeckoId: "tether",
+      });
+    });
+
+    it("does not offer Solana for deposits (no SVM wallet to sign the first tx)", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "deposit",
+      });
+
+      expect(
+        sourceVariants.some((variant) => variant.chainId === "solana")
+      ).toBe(false);
+    });
+
+    it("uses the destination address verbatim for a Solana endpoint", async () => {
+      const addressList = await provider.getAddressList(
+        ["osmosis-1", "noble-1", "solana"],
+        "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        { chainId: "osmosis-1", chainName: "osmosis", chainType: "cosmos" },
+        { chainId: "solana", chainName: "Solana", chainType: "solana" }
+      );
+
+      expect(addressList).toEqual([
+        "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        // derived for the intermediate hop from the cosmos-side address
+        "noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96",
+        // the pasted Solana destination, used verbatim
+        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+      ]);
+    });
+
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
         rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
