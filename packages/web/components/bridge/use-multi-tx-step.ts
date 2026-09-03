@@ -266,10 +266,19 @@ export const useMultiTxResume = () => {
             address: senderAddress,
             denom: pendingStep.expectedArrival.denom,
           });
+          // Fail closed on an unreadable balance too: unreadable does not
+          // mean absent, and if the funds were already moved, an account
+          // holding enough unrelated funds would let the step spend those.
+          // The entry stays resumable for a retry once the LCD responds.
+          if (balance === undefined) {
+            throw new Error(
+              "Could not verify the intermediate account balance"
+            );
+          }
           const required =
             BigInt(pendingStep.expectedArrival.amount) +
             BigInt(pendingStep.preArrivalBalance);
-          if (balance !== undefined && balance < required) {
+          if (balance < required) {
             transferHistoryStore.markPendingStepStale(snapshot.sendTxHash);
             displayToast(
               {
