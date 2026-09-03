@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "Se recomienda una menor tolerancia al deslizamiento.",
     "tryHigherSlippage": "Pruebe con una tolerancia máxima de deslizamiento más alta.",
     "reviewTrade": "Revisar el comercio",
+    "highPriceImpact": {
+      "title": "El impacto en el precio es alto",
+      "description": "Esta operación mueve el precio de mercado un {impact}, por lo que podría recibir mucho menos que el importe mostrado."
+    },
+    "lossAcknowledgement": "Sí, entiendo que esta operación podría causar una pérdida significativa de valor y deseo continuar.",
     "errors": {
       "noAssetAvailable": "No tienes fondos {coinName} en Osmosis para operar. Elija una opción para continuar.",
       "tradeMayResultInLossOfValue": "Su operación puede resultar en una pérdida significativa de valor",

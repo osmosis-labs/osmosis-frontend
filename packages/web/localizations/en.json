@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "A lower slippage tolerance is recommended.",
     "tryHigherSlippage": "Try a higher maximum slippage tolerance.",
     "reviewTrade": "Review trade",
+    "highPriceImpact": {
+      "title": "Price impact is high",
+      "description": "This trade moves the market price by {impact}, so you may receive far less than the amount shown."
+    },
+    "lossAcknowledgement": "Yes, I understand this trade may lose a significant amount of value and I wish to proceed.",
     "errors": {
       "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue.",
       "tradeMayResultInLossOfValue": "Your trade may result in significant loss of value",

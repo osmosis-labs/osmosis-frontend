@@ -1,12 +1,12 @@
 import { Dec } from "@osmosis-labs/unit";
 
 import {
-  deriveMemoFlags,
+  deriveBridgeMemoFlags,
   hasActiveWarning,
   needsAcknowledgement,
   normalizePriceImpact,
   shouldResetAcknowledgement,
-} from "~/components/bridge/loss-acknowledgement";
+} from "~/components/loss-acknowledgement";
 import {
   AckReArmTolerance,
   HighPriceImpactGate,
@@ -39,7 +39,7 @@ describe("normalizePriceImpact", () => {
   });
 
   it("does not trip the gate for a small negative impact", () => {
-    const raw = HighPriceImpactGate.sub(new Dec(0.05)).neg();
+    const raw = HighPriceImpactGate.quo(new Dec(2)).neg();
 
     expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(false);
   });
@@ -74,19 +74,17 @@ describe("shouldResetAcknowledgement", () => {
     );
   });
 
-  describe("transfer identity changes", () => {
-    it.each([
-      ["provider", { providerId: "Wormhole" as const }],
-      ["from chain", { fromChainId: "osmosis-2" }],
-      ["to chain", { toChainId: "dogecoin" }],
-      ["from asset", { fromAssetAddress: "other-denom" }],
-      ["to asset", { toAssetAddress: "other-denom" }],
-      ["input amount", { inputAmount: "200000000" }],
-    ])("resets when the %s changes", (_, overrides) => {
-      expect(
-        shouldResetAcknowledgement(baseFigures(), baseFigures(overrides))
-      ).toBe(true);
-    });
+  // Identity is compared as one opaque key, so this is a single string compare
+  // rather than the per-field matrix it replaced. What still matters is that it
+  // admits no tolerance: a different operation re-arms even when every loss
+  // figure is identical.
+  it("resets when the identity key changes, with figures unchanged", () => {
+    expect(
+      shouldResetAcknowledgement(
+        baseFigures(),
+        baseFigures({ identityKey: "Wormhole|osmosis-1|bitcoin|allBTC|sat|1" })
+      )
+    ).toBe(true);
   });
 
   describe("newly active warning types", () => {
@@ -200,20 +198,20 @@ describe("needsAcknowledgement", () => {
   });
 });
 
-describe("deriveMemoFlags", () => {
+describe("deriveBridgeMemoFlags", () => {
   it("is undefined when nothing was acknowledged", () => {
-    expect(deriveMemoFlags(null)).toBeUndefined();
+    expect(deriveBridgeMemoFlags(null)).toBeUndefined();
   });
 
-  it("stamps only the slippage figure when only the total-loss warning fired", () => {
-    const flags = deriveMemoFlags(baseFigures());
-    expect(flags?.slippage).toEqual(warnedSlippage);
+  it("stamps only the total-loss figure when only the total-loss warning fired", () => {
+    const flags = deriveBridgeMemoFlags(baseFigures());
+    expect(flags?.totalLoss).toEqual(warnedSlippage);
     expect(flags?.priceImpact).toBeUndefined();
   });
 
   it("stamps only the price-impact figure when only its warning fired", () => {
     const impact = new Dec("0.124");
-    const flags = deriveMemoFlags(
+    const flags = deriveBridgeMemoFlags(
       baseFigures({
         warnSlippage: false,
         warnPriceImpact: true,
@@ -221,21 +219,21 @@ describe("deriveMemoFlags", () => {
       })
     );
     expect(flags?.priceImpact).toEqual(impact);
-    expect(flags?.slippage).toBeUndefined();
+    expect(flags?.totalLoss).toBeUndefined();
   });
 
   it("stamps both acknowledged figures when both warnings fired", () => {
     const impact = new Dec("0.124");
-    const flags = deriveMemoFlags(
+    const flags = deriveBridgeMemoFlags(
       baseFigures({ warnPriceImpact: true, priceImpact: impact })
     );
-    expect(flags?.slippage).toEqual(warnedSlippage);
+    expect(flags?.totalLoss).toEqual(warnedSlippage);
     expect(flags?.priceImpact).toEqual(impact);
   });
 
   it("yields no flags for an unknown-impact-only acknowledgement (no figure to stamp)", () => {
     expect(
-      deriveMemoFlags(
+      deriveBridgeMemoFlags(
         baseFigures({
           warnSlippage: false,
           warnPriceImpact: false,

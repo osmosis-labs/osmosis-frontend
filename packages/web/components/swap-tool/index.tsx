@@ -1,6 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
+import {
+  InsufficientBalanceForFeeError,
+  TxFeMemoFlags,
+} from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -29,6 +32,7 @@ import {
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
+import { normalizePriceImpact } from "~/components/loss-acknowledgement";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import {
   AmountPresetFraction,
@@ -41,6 +45,7 @@ import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -171,8 +176,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .abs()
       .gt(new Dec(0.05));
 
-    const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.05)) ?? false;
+    const quotedPriceImpact = swapState.quote?.priceImpactTokenOut;
+
+    // Same constant and same comparison as the acknowledgement gate in the
+    // review modal, so this button label and that checkbox can never disagree
+    // about what counts as high impact — including at the boundary, which the
+    // previous `lt(new Dec(-0.05))` form got wrong by one tick.
+    const showPriceImpactWarning = quotedPriceImpact
+      ? normalizePriceImpact(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
+      : false;
 
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
@@ -229,78 +241,86 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
-    const sendSwapTx = useCallback(() => {
-      if (!swapState.inAmountInput.amount) return;
+    const sendSwapTx = useCallback(
+      (opts?: { warnFlags?: TxFeMemoFlags }) => {
+        if (!swapState.inAmountInput.amount) return;
 
-      let valueUsd = Number(
-        swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-      );
+        let valueUsd = Number(
+          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+        );
 
-      // Protect our data from outliers
-      // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
-        valueUsd = 0;
-      }
+        // Protect our data from outliers
+        // Perhaps from upstream issues with price data providers
+        if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+          valueUsd = 0;
+        }
 
-      const baseEvent = {
-        fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
-        toToken: swapState.toAsset?.coinDenom,
-        isOnHome: page === "Swap Page",
-        isMultiHop: swapState.quote?.split.some(
-          ({ pools }) => pools.length !== 1
-        ),
-        isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-        valueUsd,
-        feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
+        const baseEvent = {
+          fromToken: swapState.fromAsset?.coinDenom,
+          tokenAmount: Number(
+            swapState.inAmountInput.amount.toDec().toString()
+          ),
+          toToken: swapState.toAsset?.coinDenom,
+          isOnHome: page === "Swap Page",
+          isMultiHop: swapState.quote?.split.some(
+            ({ pools }) => pools.length !== 1
+          ),
+          isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
+          valueUsd,
+          feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
+          page,
+          quoteTimeMilliseconds: swapState.quote?.timeMs,
+          swapSource: "swap" as "swap" | "market",
+        };
+        logEvent([EventName.Swap.swapStarted, baseEvent]);
+        setIsSendingTx(true);
+        swapState
+          .sendTradeTokenInTx(opts?.warnFlags)
+          .then((result) => {
+            // onFullfill
+            logEvent([
+              EventName.Swap.swapCompleted,
+              {
+                ...baseEvent,
+                isMultiHop: result === "multihop",
+              },
+            ]);
+
+            if (swapState.toAsset && swapState.fromAsset) {
+              onSwapSuccess?.({
+                outTokenDenom: swapState.toAsset.coinMinimalDenom,
+                sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
+              });
+            }
+
+            resetSlippage();
+          })
+          .catch((error) => {
+            console.error("swap failed", error);
+            if (
+              error instanceof Error &&
+              error.message === "Request rejected"
+            ) {
+              // don't log when the user rejects in wallet
+              return;
+            }
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
+          })
+          .finally(() => {
+            setIsSendingTx(false);
+            onRequestModalClose?.();
+            setShowSwapReviewModal(false);
+          });
+      },
+      [
+        swapState,
         page,
-        quoteTimeMilliseconds: swapState.quote?.timeMs,
-        swapSource: "swap" as "swap" | "market",
-      };
-      logEvent([EventName.Swap.swapStarted, baseEvent]);
-      setIsSendingTx(true);
-      swapState
-        .sendTradeTokenInTx()
-        .then((result) => {
-          // onFullfill
-          logEvent([
-            EventName.Swap.swapCompleted,
-            {
-              ...baseEvent,
-              isMultiHop: result === "multihop",
-            },
-          ]);
-
-          if (swapState.toAsset && swapState.fromAsset) {
-            onSwapSuccess?.({
-              outTokenDenom: swapState.toAsset.coinMinimalDenom,
-              sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
-            });
-          }
-
-          resetSlippage();
-        })
-        .catch((error) => {
-          console.error("swap failed", error);
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
-          }
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
-        })
-        .finally(() => {
-          setIsSendingTx(false);
-          onRequestModalClose?.();
-          setShowSwapReviewModal(false);
-        });
-    }, [
-      swapState,
-      page,
-      logEvent,
-      resetSlippage,
-      onSwapSuccess,
-      onRequestModalClose,
-    ]);
+        logEvent,
+        resetSlippage,
+        onSwapSuccess,
+        onRequestModalClose,
+      ]
+    );
 
     const isSwapToolLoading =
       isWalletLoading ||
@@ -877,6 +897,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           gasError={swapState.networkFeeError}
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
+          priceImpactTokenOut={swapState.quote?.priceImpactTokenOut}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

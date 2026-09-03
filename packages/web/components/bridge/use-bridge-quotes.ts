@@ -23,12 +23,12 @@ import { BaseError } from "wagmi";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import {
-  deriveMemoFlags,
+  deriveBridgeMemoFlags,
   LossFigures,
   needsAcknowledgement,
   normalizePriceImpact,
-} from "~/components/bridge/loss-acknowledgement";
-import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
+} from "~/components/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
@@ -345,17 +345,23 @@ export const useBridgeQuotes = ({
 
   /**
    * Live loss figures for the selected quote — the input to the frozen-basis
-   * acknowledgement model. See `loss-acknowledgement.ts`.
+   * acknowledgement model. See `~/components/loss-acknowledgement`.
+   *
+   * The identity key is every field that makes this a different transfer rather
+   * than a re-quote of the same one: change the provider, either chain, either
+   * asset or the amount and the acknowledgement re-arms with no tolerance.
    */
   const currentLossFigures: LossFigures | undefined = useMemo(() => {
     if (!selectedQuote) return undefined;
     return {
-      providerId: selectedQuote.provider.id,
-      fromChainId: fromChain?.chainId,
-      toChainId: toChain?.chainId,
-      fromAssetAddress: fromAsset?.address,
-      toAssetAddress: toAsset?.address,
-      inputAmount: inputAmount.toString(),
+      identityKey: [
+        selectedQuote.provider.id,
+        fromChain?.chainId,
+        toChain?.chainId,
+        fromAsset?.address,
+        toAsset?.address,
+        inputAmount.toString(),
+      ].join("|"),
       slippage: selectedQuote.transferSlippage,
       priceImpact: selectedQuote.priceImpact.toDec(),
       warnSlippage: selectedQuote.isSlippageTooHigh,
@@ -800,7 +806,7 @@ export const useBridgeQuotes = ({
     // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
     // frozen acknowledged basis — the sign-time guard in `onTransfer` has
     // already ensured the basis is fresh for the quote being signed.
-    const memoFlags = deriveMemoFlags(acknowledgedBasis);
+    const memoFlags = deriveBridgeMemoFlags(acknowledgedBasis);
 
     return accountStore.signAndBroadcast(
       fromChain.chainId,

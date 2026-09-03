@@ -9,10 +9,12 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { normalizePriceImpact } from "~/components/loss-acknowledgement";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   UseDisclosureReturn,
@@ -64,10 +66,23 @@ export const TradeDetails = observer(
 
     const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
+    // Same constant and same comparison as the acknowledgement gate, so the red
+    // icon and the checkbox can never disagree about what counts as high impact
+    // — including at the boundary, which a `lt(gate.neg())` form would get
+    // wrong by one tick.
     const isPriceImpactHigh = useMemo(
-      () => priceImpact?.toDec().lt(new Dec(-0.1)),
+      () =>
+        priceImpact
+          ? normalizePriceImpact(priceImpact.toDec()).gte(HighPriceImpactGate)
+          : undefined,
       [priceImpact]
     );
+
+    // Green is reserved for an impact genuinely in the user's favour. A
+    // negative impact under the gate is neutral, not green: colouring a loss
+    // the same as a gain reads as an endorsement of it, and did so directly
+    // beneath a rust output-difference figure describing the same trade.
+    const isPriceImpactPositive = priceImpact?.toDec().isPositive() ?? false;
 
     const limitTotalFees = useMemo(() => {
       if (!makerFee || makerFee.isZero()) return;
@@ -202,7 +217,10 @@ export const TradeDetails = observer(
                             <span
                               className={classNames({
                                 "text-rust-400": isPriceImpactHigh,
-                                "text-bullish-400": !isPriceImpactHigh,
+                                "text-bullish-400":
+                                  !isPriceImpactHigh && isPriceImpactPositive,
+                                "text-osmoverse-100":
+                                  !isPriceImpactHigh && !isPriceImpactPositive,
                               })}
                             >
                               {formatPretty(priceImpact ?? new Dec(0))}
