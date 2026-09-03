@@ -924,6 +924,7 @@
     "multiTxContinue": "Continuați transferul",
     "multiTxWrongAccountTitle": "Contul portofelului nu corespunde",
     "multiTxWrongAccount": "Contul {chain} din portofelul dvs. nu corespunde acestei rute. Transferul a fost anulat înainte de mutarea fondurilor.",
+    "multiTxResumeWrongAccount": "Portofelul dvs. este conectat la un alt cont {chain} decât cel care deține fondurile acestui transfer. Reveniți la contul original în portofel, apoi încercați din nou.",
     "multiTxFundsMissingTitle": "Fondurile așteptate nu au fost găsite",
     "multiTxFundsMissing": "Fondurile așteptate nu se mai află în contul dvs. {chain}. Este posibil ca acest transfer să fi fost deja finalizat dintr-o altă sesiune.",
     "multiTxStillInTransit": "Fondurile sunt încă în tranzit",

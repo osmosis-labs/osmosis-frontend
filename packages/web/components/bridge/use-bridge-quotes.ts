@@ -981,13 +981,29 @@ export const useBridgeQuotes = ({
       )?.token;
       // Balance BEFORE the funds arrive, so the resume check can require
       // the arrived delta rather than the (replayable) total balance.
-      const preArrivalBalance = draftToken?.denom
-        ? await getChainBalance({
-            chainId: finalStepChainId,
-            address: senderAddress,
-            denom: draftToken.denom,
-          })
-        : undefined;
+      const preArrivalBalance =
+        draftToken?.denom && draftToken?.amount
+          ? await getChainBalance({
+              chainId: finalStepChainId,
+              address: senderAddress,
+              denom: draftToken.denom,
+            })
+          : undefined;
+      // Fail closed: without the draft token and the baseline, the resume
+      // replay protection cannot work (a missing baseline would degrade to
+      // the replayable total-balance check). Nothing irreversible has been
+      // signed yet, so refuse and let the user retry, rather than
+      // broadcasting a first transaction whose recovery record is weak.
+      if (preArrivalBalance === undefined) {
+        displayToast(
+          {
+            titleTranslationKey: "transfer.somethingIsntWorking",
+            captionTranslationKey: "transfer.sorryForTheInconvenience",
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
 
       // ---- Step 1: the EVM transaction ----
       // Persist the resumable entry (with the quoted route, so the final
@@ -1011,7 +1027,7 @@ export const useBridgeQuotes = ({
               draftToken?.denom && draftToken?.amount
                 ? { denom: draftToken.denom, amount: draftToken.amount }
                 : undefined,
-            preArrivalBalance: preArrivalBalance?.toString(),
+            preArrivalBalance: preArrivalBalance.toString(),
           },
         })
       );

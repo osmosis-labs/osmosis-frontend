@@ -294,7 +294,11 @@ export const TransactionTransferRow = ({
   // it right from history (re-checks arrival, connects the intermediate
   // chain's wallet, and prompts the final signature).
   const continueButton =
-    simplifiedStatus === "pending" && transaction.pendingStep ? (
+    // stale steps must not offer Continue: the expected funds left the
+    // intermediate account, so signing again could spend unrelated funds
+    simplifiedStatus === "pending" &&
+    transaction.pendingStep &&
+    !transaction.pendingStep.stale ? (
       <Button
         key="continue-step"
         size="sm"

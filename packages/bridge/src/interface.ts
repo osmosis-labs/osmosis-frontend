@@ -745,6 +745,16 @@ const txSnapshotSchema = z.object({
        * another session.
        */
       preArrivalBalance: z.string().optional(),
+      /**
+       * Set when the expected funds were found missing from the
+       * intermediate account: the step was most likely completed from
+       * another session, but that cannot be proven, so the step must never
+       * be signed again AND the transfer must not be auto-resolved (the
+       * first leg's success only proves arrival on the intermediate chain,
+       * not delivery to the destination). A stale entry stops offering
+       * Continue and expires with the snapshot.
+       */
+      stale: z.boolean().optional(),
     })
     .optional(),
 });

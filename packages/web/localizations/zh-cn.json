@@ -924,6 +924,7 @@
     "multiTxContinue": "继续转账",
     "multiTxWrongAccountTitle": "钱包账户不匹配",
     "multiTxWrongAccount": "您钱包的 {chain} 账户与此路径不匹配。转账已在资金移动前取消。",
+    "multiTxResumeWrongAccount": "您的钱包连接的 {chain} 账户与持有此转账资金的账户不同。请在钱包中切换回原账户，然后重试。",
     "multiTxFundsMissingTitle": "未找到预期资金",
     "multiTxFundsMissing": "预期资金已不在您的 {chain} 账户中。此转账可能已在其他会话中完成。",
     "multiTxStillInTransit": "资金仍在途中",

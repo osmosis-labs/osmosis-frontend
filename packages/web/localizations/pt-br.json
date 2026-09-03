@@ -924,6 +924,7 @@
     "multiTxContinue": "Continuar transferência",
     "multiTxWrongAccountTitle": "Conta da carteira não corresponde",
     "multiTxWrongAccount": "A conta {chain} da sua carteira não corresponde a esta rota. A transferência foi cancelada antes de qualquer movimentação de fundos.",
+    "multiTxResumeWrongAccount": "Sua carteira está conectada a uma conta {chain} diferente daquela que contém os fundos desta transferência. Volte para a conta original na sua carteira e tente novamente.",
     "multiTxFundsMissingTitle": "Fundos esperados não encontrados",
     "multiTxFundsMissing": "Os fundos esperados não estão mais na sua conta {chain}. Esta transferência pode já ter sido concluída em outra sessão.",
     "multiTxStillInTransit": "Os fundos ainda estão em trânsito",

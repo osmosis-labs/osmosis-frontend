@@ -386,37 +386,40 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 
   /**
-   * A mid-flow multi-tx entry whose next step was completed elsewhere (a
-   * duplicate tab, another device on a synced profile) must stop offering
-   * Continue: clear the pending step and hand the entry to provider
-   * tracking to resolve its terminal status from the first leg.
+   * A mid-flow multi-tx entry whose expected funds are no longer on the
+   * intermediate account must stop offering Continue: signing again could
+   * spend unrelated funds. It must NOT be handed to first-leg tracking
+   * either — tx1 success only proves arrival on the intermediate chain, so
+   * tracking it would report a completed deposit that may never have
+   * reached the destination. The entry keeps its pending step, marked
+   * stale, and expires with the snapshot.
    */
   @action
-  resolveStalePendingStep(sendTxHash: string) {
+  markPendingStepStale(sendTxHash: string) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
     if (!snapshot?.pendingStep) return;
 
-    snapshot.pendingStep = undefined;
-
-    const statusSource = this.transferStatusProviders.find((source) =>
-      snapshot.provider.startsWith(source.providerId)
-    );
-    statusSource?.trackTxStatus(toJS(snapshot));
+    snapshot.pendingStep.stale = true;
   }
 
   /**
    * Background self-heal for a restored mid-flow multi-tx entry: when the
    * first leg has arrived but the expected funds are no longer on the
    * intermediate account (on top of what it held before the first tx), the
-   * final step was almost certainly signed elsewhere, so resolve the entry
-   * instead of leaving a stale Continue. Only acts on definitive signals;
-   * any unreadable state leaves the entry untouched.
+   * final step was almost certainly signed elsewhere, so mark the entry
+   * stale instead of leaving a Continue that could double-sign. Only acts
+   * on definitive signals; any unreadable state leaves the entry untouched.
    */
   protected async validatePendingStep(snapshot: TxSnapshot) {
     const { pendingStep } = snapshot;
-    if (!pendingStep?.expectedArrival || !pendingStep.intermediateAddress)
+    if (
+      !pendingStep?.expectedArrival ||
+      !pendingStep.intermediateAddress ||
+      pendingStep.preArrivalBalance === undefined ||
+      pendingStep.stale
+    )
       return;
 
     const arrival = await waitForSkipStepArrival({
@@ -435,9 +438,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const required =
       BigInt(pendingStep.expectedArrival.amount) +
-      BigInt(pendingStep.preArrivalBalance ?? "0");
+      BigInt(pendingStep.preArrivalBalance);
     if (balance < required) {
-      this.resolveStalePendingStep(snapshot.sendTxHash);
+      this.markPendingStepStale(snapshot.sendTxHash);
     }
   }
 

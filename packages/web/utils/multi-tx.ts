@@ -40,6 +40,11 @@ export async function waitForSkipStepArrival({
       );
       if (response.ok) {
         const { state } = (await response.json()) as { state?: string };
+        // Re-check liveness AFTER the await: the caller may have unmounted
+        // during the request, and returning a terminal state then would let
+        // the flow continue (e.g. prompt a wallet signature on a closed
+        // modal) instead of leaving the resumable history entry.
+        if (!isActive()) return "aborted";
         if (state === "STATE_COMPLETED_SUCCESS") return "success";
         if (state === "STATE_COMPLETED_ERROR" || state === "STATE_ABANDONED")
           return "failed";

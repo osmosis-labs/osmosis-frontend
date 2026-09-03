@@ -245,4 +245,21 @@ describe("TransferHistoryStore multi-tx entries", () => {
       })
     );
   });
+
+  it("markPendingStepStale keeps the entry unresolved and out of tracking", () => {
+    // A stale step (expected funds gone from the intermediate account) must
+    // neither be signable again nor hand the entry to first-leg tracking:
+    // tx1 success only proves arrival on the intermediate chain, so
+    // tracking it would report a completed deposit that may never have
+    // reached the destination.
+    const { store, statusProvider } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    store.markPendingStepStale("0xtx1");
+
+    const snapshot = store.snapshots.find((s) => s.sendTxHash === "0xtx1");
+    expect(snapshot?.pendingStep?.stale).toBe(true);
+    expect(snapshot?.status).toBe("pending");
+    expect(statusProvider.trackTxStatus).not.toHaveBeenCalled();
+  });
 });

@@ -167,7 +167,14 @@ export const useMultiTxResume = () => {
   const resume = useCallback(
     async (snapshot: TxSnapshot) => {
       const { pendingStep } = snapshot;
-      if (!pendingStep || resumingRef.current.has(snapshot.sendTxHash)) return;
+      if (
+        !pendingStep ||
+        // marked stale: the expected funds left the intermediate account,
+        // so this step must never be signed again
+        pendingStep.stale ||
+        resumingRef.current.has(snapshot.sendTxHash)
+      )
+        return;
       resumingRef.current.add(snapshot.sendTxHash);
 
       setResumingTxHashes((prev) => new Set(prev).add(snapshot.sendTxHash));
@@ -216,7 +223,9 @@ export const useMultiTxResume = () => {
 
         // The step must be signed from the account the first transaction
         // routed funds to. A different connected account either fails or,
-        // if it happens to hold enough of the denom, spends unrelated funds.
+        // if it happens to hold enough of the denom, spends unrelated
+        // funds. Distinct copy from the preflight mismatch: here the funds
+        // HAVE already moved and sit on the original account.
         if (
           pendingStep.intermediateAddress &&
           senderAddress !== pendingStep.intermediateAddress
@@ -225,7 +234,7 @@ export const useMultiTxResume = () => {
             {
               titleTranslationKey: "transfer.multiTxWrongAccountTitle",
               captionTranslationKey: [
-                "transfer.multiTxWrongAccount",
+                "transfer.multiTxResumeWrongAccount",
                 { chain: pendingStep.prettyName },
               ],
             },
@@ -245,6 +254,13 @@ export const useMultiTxResume = () => {
         // does not block, as the transaction itself still fails without
         // sufficient funds.
         if (pendingStep.expectedArrival) {
+          // Fail closed on a missing baseline: without it the check would
+          // degrade to the replayable total-balance comparison.
+          if (pendingStep.preArrivalBalance === undefined) {
+            throw new Error(
+              "Missing pre-arrival balance baseline on pending transfer"
+            );
+          }
           const balance = await getChainBalance({
             chainId: pendingStep.chainId,
             address: senderAddress,
@@ -252,9 +268,9 @@ export const useMultiTxResume = () => {
           });
           const required =
             BigInt(pendingStep.expectedArrival.amount) +
-            BigInt(pendingStep.preArrivalBalance ?? "0");
+            BigInt(pendingStep.preArrivalBalance);
           if (balance !== undefined && balance < required) {
-            transferHistoryStore.resolveStalePendingStep(snapshot.sendTxHash);
+            transferHistoryStore.markPendingStepStale(snapshot.sendTxHash);
             displayToast(
               {
                 titleTranslationKey: "transfer.multiTxFundsMissingTitle",

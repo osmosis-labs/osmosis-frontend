@@ -924,6 +924,7 @@
     "multiTxContinue": "Poursuivre le transfert",
     "multiTxWrongAccountTitle": "Compte du portefeuille non concordant",
     "multiTxWrongAccount": "Le compte {chain} de votre portefeuille ne correspond pas à cette route. Le transfert a été annulé avant tout mouvement de fonds.",
+    "multiTxResumeWrongAccount": "Votre portefeuille est connecté avec un compte {chain} différent de celui qui détient les fonds de ce transfert. Revenez au compte d'origine dans votre portefeuille, puis réessayez.",
     "multiTxFundsMissingTitle": "Fonds attendus introuvables",
     "multiTxFundsMissing": "Les fonds attendus ne sont plus sur votre compte {chain}. Ce transfert a peut-être déjà été effectué depuis une autre session.",
     "multiTxStillInTransit": "Les fonds sont encore en transit",
