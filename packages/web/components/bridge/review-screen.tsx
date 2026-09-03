@@ -237,18 +237,26 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         </div>
       )}
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
-        {!quote.isTxPending && (
-          <Button
-            className="w-full md:h-12"
-            variant="secondary"
-            onClick={onCancel}
-            disabled={quote.isTxPending}
-          >
-            <div className="md:subtitle1 text-h6 font-h6">
-              {t("transfer.cancel")}
-            </div>
-          </Button>
-        )}
+        {/* A multi-tx flow must not offer an exit mid-flow: after the first
+            transaction broadcasts, leaving this screen only strands the user
+            between steps (the transfer itself continues). isTxPending covers
+            the wallet-prompt/broadcast window; multiTxPhase covers the
+            arrival wait and the second signature; approval is part of the
+            same commitment. */}
+        {!quote.isTxPending &&
+          !quote.isApprovingToken &&
+          !quote.multiTxPhase && (
+            <Button
+              className="w-full md:h-12"
+              variant="secondary"
+              onClick={onCancel}
+              disabled={quote.isTxPending}
+            >
+              <div className="md:subtitle1 text-h6 font-h6">
+                {t("transfer.cancel")}
+              </div>
+            </Button>
+          )}
         <Button
           className="w-full md:h-12"
           variant={hasLossWarning ? "destructive" : "default"}

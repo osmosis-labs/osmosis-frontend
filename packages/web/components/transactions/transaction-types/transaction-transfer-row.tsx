@@ -97,7 +97,10 @@ export const TransactionTransferRow = ({
         transaction?.direction === "deposit" && (
           <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
         )}
-      <div className="h-8 w-8 overflow-hidden rounded-full">
+      {/* center, not just clip: the pending state renders the image at 24px
+          inside this 32px circle (to make room for the spinner ring), and
+          without centering it sits in the top-left corner */}
+      <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full">
         <EntityImage
           logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
           name={fromAsset.denom}
@@ -180,7 +183,9 @@ export const TransactionTransferRow = ({
           transaction?.direction === "deposit" && (
             <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
           )}
-        <div className="h-8 w-8 overflow-hidden rounded-full">
+        {/* center, not just clip: pending renders the image at 24px inside
+            this 32px circle, and without centering it sits top-left */}
+        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full">
           <EntityImage
             logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
             name={fromAsset.denom}

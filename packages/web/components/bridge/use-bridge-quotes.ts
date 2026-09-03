@@ -117,12 +117,14 @@ export const useBridgeQuotes = ({
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
   /**
    * Phase of an in-flight multi-transaction transfer:
+   * - "preflight": validating the intermediate signer (may pop wallet
+   *   prompts) before anything irreversible
    * - "waiting-arrival": first tx sent; polling until the funds reach the
    *   intermediate chain
    * - "step2-signing": prompting the wallet for the final step
    */
   const [multiTxPhase, setMultiTxPhase] = useState<
-    "waiting-arrival" | "step2-signing" | undefined
+    "preflight" | "waiting-arrival" | "step2-signing" | undefined
   >();
   const isMountedRef = useRef(true);
   useUnmount(() => {
@@ -896,6 +898,10 @@ export const useBridgeQuotes = ({
 
     try {
       // ---- Preflight the intermediate signer; nothing irreversible yet ----
+      // Enter the flow state immediately: the preflight can pop wallet
+      // prompts (chain connect), and the review screen hides its exit and
+      // disables Confirm while a phase is set.
+      setMultiTxPhase("preflight");
       const senderAddress = await getIntermediateAccount(finalStepChainId);
       // The quote's transactions were built against a derived intermediate
       // address. If the wallet can't provide an account there, or provides a
@@ -1383,7 +1389,7 @@ export const useBridgeQuotes = ({
     txButtonText = t("transfer.multiTxWaitingForFunds", {
       chain: multiTx?.intermediatePrettyName ?? "",
     });
-  } else if (multiTxPhase === "step2-signing") {
+  } else if (multiTxPhase === "step2-signing" || multiTxPhase === "preflight") {
     txButtonText = t("assets.transfer.approveInWallet");
   } else if (isBroadcastingTx) {
     txButtonText = t("assets.transfer.sending");
