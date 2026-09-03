@@ -126,6 +126,10 @@ export const useBridgeQuotes = ({
   const [multiTxPhase, setMultiTxPhase] = useState<
     "preflight" | "waiting-arrival" | "step2-signing" | undefined
   >();
+  // Synchronous re-entry guard for the multi-tx flow: multiTxPhase only
+  // commits on the next render, so two rapid confirms could both pass a
+  // state-based check and broadcast the first transaction twice.
+  const multiTxInFlightRef = useRef(false);
   const isMountedRef = useRef(true);
   useUnmount(() => {
     isMountedRef.current = false;
@@ -267,6 +271,7 @@ export const useBridgeQuotes = ({
           select: ({ quote }) => {
             const {
               estimatedGasFee,
+              intermediateGasFees,
               transferFee,
               estimatedTime,
               expectedOutput,
@@ -277,6 +282,20 @@ export const useBridgeQuotes = ({
               input,
               totalFeeFiatValue,
             } = quote;
+
+            // The network fee shown must cover every transaction the user
+            // signs, not just the first: fold the intermediate steps' fees
+            // (e.g. uusdc on noble-1 for a multi-tx route) into the fiat
+            // total and expose their coin amounts for the fee breakdown.
+            let gasCostFiat = estimatedGasFee?.fiatValue;
+            for (const fee of intermediateGasFees ?? []) {
+              if (fee.fiatValue) {
+                gasCostFiat = gasCostFiat?.add(fee.fiatValue) ?? fee.fiatValue;
+              }
+            }
+            const intermediateGasCosts = (intermediateGasFees ?? []).map(
+              (fee) => fee.amount.maxDecimals(8)
+            );
 
             // Nomic, whose quotes bundle an Osmosis swap, reports price impact
             // as a negative fraction, Squid as positive.
@@ -325,6 +344,7 @@ export const useBridgeQuotes = ({
 
             return {
               gasCost: estimatedGasFee?.amount.maxDecimals(8),
+              intermediateGasCosts,
               transferFee: transferFee.amount.maxDecimals(8),
               // fee charged on top of the input amount, so max-amount
               // inputs must leave room for it in the user's balance
@@ -332,7 +352,7 @@ export const useBridgeQuotes = ({
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
-              gasCostFiat: estimatedGasFee?.fiatValue,
+              gasCostFiat,
               estimatedTime: dayjs.duration({
                 seconds: estimatedTime,
               }),
@@ -959,6 +979,15 @@ export const useBridgeQuotes = ({
           | { token?: { denom?: string; amount?: string } }
           | undefined
       )?.token;
+      // Balance BEFORE the funds arrive, so the resume check can require
+      // the arrived delta rather than the (replayable) total balance.
+      const preArrivalBalance = draftToken?.denom
+        ? await getChainBalance({
+            chainId: finalStepChainId,
+            address: senderAddress,
+            denom: draftToken.denom,
+          })
+        : undefined;
 
       // ---- Step 1: the EVM transaction ----
       // Persist the resumable entry (with the quoted route, so the final
@@ -982,6 +1011,7 @@ export const useBridgeQuotes = ({
               draftToken?.denom && draftToken?.amount
                 ? { denom: draftToken.denom, amount: draftToken.amount }
                 : undefined,
+            preArrivalBalance: preArrivalBalance?.toString(),
           },
         })
       );
@@ -1166,11 +1196,16 @@ export const useBridgeQuotes = ({
     // multi-transaction route: step-through flow with its own error handling
     const transactionSteps = quote.transactionSteps;
     if (transactionSteps && transactionSteps.length > 1) {
-      if (multiTxPhase) return; // already mid-flow
-      await signAndBroadcastMultiTx(quote, transactionSteps).catch((e) => {
-        console.error("multi-tx transfer failed", e);
-        throw e;
-      });
+      if (multiTxPhase || multiTxInFlightRef.current) return; // already mid-flow
+      multiTxInFlightRef.current = true;
+      try {
+        await signAndBroadcastMultiTx(quote, transactionSteps).catch((e) => {
+          console.error("multi-tx transfer failed", e);
+          throw e;
+        });
+      } finally {
+        multiTxInFlightRef.current = false;
+      }
       return;
     }
 

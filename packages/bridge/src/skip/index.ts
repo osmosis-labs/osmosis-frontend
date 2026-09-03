@@ -221,16 +221,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           }
         }
 
-        if (route.txs_required > 1) {
-          // Quote-time messages derive intermediate-chain addresses by
-          // bech32-converting the destination address. That's only the
-          // user's own account on chains with standard 118 key derivation —
-          // on e.g. Injective (ethsecp256k1, coin type 60) the converted
-          // address is one the user does NOT control, and the first tx
-          // would route funds through it. Refuse rather than build one.
-          this.assertControlledIntermediates(route, fromChain, toChain);
-        }
-
         const addressList = await this.getAddressList(
           // required_chain_addresses is the authoritative list for /msgs: it
           // can repeat a chain (multi-tx routes), so chain_ids would misalign.
@@ -309,6 +299,16 @@ export class SkipBridgeProvider implements BridgeProvider {
         let multiTxRouteData: SkipMultiTxRouteData | undefined;
         let intermediateGasFees: BridgeQuote["intermediateGasFees"];
         if (isMultiTx) {
+          // Quote-time messages derive intermediate-chain addresses by
+          // bech32-converting the destination address. That's only the
+          // user's own account on chains with standard 118 key derivation —
+          // on e.g. Injective (ethsecp256k1, coin type 60) the converted
+          // address is one the user does NOT control, and the first tx
+          // would route funds through it. Refuse rather than build one.
+          // Gated on isMultiTx (not just txs_required) so a route that
+          // reports one tx but returns multiple messages is checked too.
+          this.assertControlledIntermediates(route, fromChain, toChain);
+
           transactionSteps = await this.createTransactionSteps(
             fromAddress as Address,
             msgs

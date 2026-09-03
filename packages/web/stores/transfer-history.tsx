@@ -26,6 +26,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
+import { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
@@ -384,6 +385,62 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }
   }
 
+  /**
+   * A mid-flow multi-tx entry whose next step was completed elsewhere (a
+   * duplicate tab, another device on a synced profile) must stop offering
+   * Continue: clear the pending step and hand the entry to provider
+   * tracking to resolve its terminal status from the first leg.
+   */
+  @action
+  resolveStalePendingStep(sendTxHash: string) {
+    const snapshot = this.snapshots.find(
+      (snapshot) => snapshot.sendTxHash === sendTxHash
+    );
+    if (!snapshot?.pendingStep) return;
+
+    snapshot.pendingStep = undefined;
+
+    const statusSource = this.transferStatusProviders.find((source) =>
+      snapshot.provider.startsWith(source.providerId)
+    );
+    statusSource?.trackTxStatus(toJS(snapshot));
+  }
+
+  /**
+   * Background self-heal for a restored mid-flow multi-tx entry: when the
+   * first leg has arrived but the expected funds are no longer on the
+   * intermediate account (on top of what it held before the first tx), the
+   * final step was almost certainly signed elsewhere, so resolve the entry
+   * instead of leaving a stale Continue. Only acts on definitive signals;
+   * any unreadable state leaves the entry untouched.
+   */
+  protected async validatePendingStep(snapshot: TxSnapshot) {
+    const { pendingStep } = snapshot;
+    if (!pendingStep?.expectedArrival || !pendingStep.intermediateAddress)
+      return;
+
+    const arrival = await waitForSkipStepArrival({
+      chainId: String(snapshot.fromChain.chainId),
+      txHash: pendingStep.priorStepTxHash,
+      maxAttempts: 1,
+    });
+    if (arrival !== "success") return;
+
+    const balance = await getChainBalance({
+      chainId: pendingStep.chainId,
+      address: pendingStep.intermediateAddress,
+      denom: pendingStep.expectedArrival.denom,
+    });
+    if (balance === undefined) return;
+
+    const required =
+      BigInt(pendingStep.expectedArrival.amount) +
+      BigInt(pendingStep.preArrivalBalance ?? "0");
+    if (balance < required) {
+      this.resolveStalePendingStep(snapshot.sendTxHash);
+    }
+  }
+
   /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
    *  Removes expired snapshots.
    */
@@ -408,6 +465,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         !snapshot.pendingStep
       ) {
         statusSource.trackTxStatus(snapshot);
+      } else if (snapshot.status === "pending" && snapshot.pendingStep) {
+        // fire-and-forget: resolves the entry if its step was completed
+        // from another session, so a stale Continue isn't offered
+        this.validatePendingStep(snapshot).catch(() => undefined);
       } else if (
         snapshot.status !== "pending" &&
         snapshot.status !== "connection-error"

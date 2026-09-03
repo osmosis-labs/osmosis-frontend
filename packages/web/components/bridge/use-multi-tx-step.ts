@@ -1,14 +1,17 @@
 import { TxSnapshot } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { IS_TESTNET } from "~/config";
-import { ChainList } from "~/config/generated/chain-list";
 import { useStore } from "~/stores";
+import { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
 import { api, RouterInputs } from "~/utils/trpc";
+
+// re-exported for existing consumers; the implementations live in a
+// store-free util module so the transfer-history store can use them too
+export { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
 
 /** Quote parameters needed to rebuild a multi-tx step, minus the step
  *  itself. All of them are also persisted on a transfer's `TxSnapshot`,
@@ -17,87 +20,6 @@ export type MultiTxStepQuoteParams = Omit<
   RouterInputs["bridgeTransfer"]["getTransactionStepByBridge"],
   "bridge" | "step" | "route"
 >;
-
-/**
- * Polls Skip until the given tx's own route (the first leg of a multi-tx
- * transfer) completes, i.e. the funds have reached the intermediate chain.
- * `isActive` aborts the loop (e.g. on unmount); `maxAttempts` caps it for
- * one-shot resume checks.
- */
-export async function waitForSkipStepArrival({
-  chainId,
-  txHash,
-  isActive = () => true,
-  maxAttempts,
-  intervalMs = 10_000,
-}: {
-  chainId: string;
-  txHash: string;
-  isActive?: () => boolean;
-  maxAttempts?: number;
-  intervalMs?: number;
-}): Promise<"success" | "failed" | "pending" | "aborted"> {
-  const env = IS_TESTNET ? "testnet" : "mainnet";
-  // prompt Skip to index the tx; the polling below tolerates failures
-  await fetch(
-    `/api/skip-track-tx?chainID=${chainId}&txHash=${txHash}&env=${env}`
-  ).catch(() => undefined);
-
-  for (let attempt = 0; !maxAttempts || attempt < maxAttempts; attempt++) {
-    if (!isActive()) return "aborted";
-    try {
-      const response = await fetch(
-        `/api/skip-tx-status?chainID=${chainId}&txHash=${txHash}&env=${env}`
-      );
-      if (response.ok) {
-        const { state } = (await response.json()) as { state?: string };
-        if (state === "STATE_COMPLETED_SUCCESS") return "success";
-        if (state === "STATE_COMPLETED_ERROR" || state === "STATE_ABANDONED")
-          return "failed";
-      }
-    } catch {
-      // transient errors: keep polling
-    }
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
-  }
-  return "pending";
-}
-
-/**
- * Balance of `denom` held by `address` on a cosmos chain, queried via the
- * chain's registry LCD. Returns undefined when it can't be determined, so
- * callers can choose to fail open or closed.
- */
-export async function getChainBalance({
-  chainId,
-  address,
-  denom,
-}: {
-  chainId: string;
-  address: string;
-  denom: string;
-}): Promise<bigint | undefined> {
-  const chain = ChainList.find((c) => c.chain_id === chainId);
-  const rest = chain?.apis?.rest?.[0]?.address;
-  if (!rest) return undefined;
-  try {
-    const response = await fetch(
-      `${rest.replace(
-        /\/$/,
-        ""
-      )}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${encodeURIComponent(
-        denom
-      )}`
-    );
-    if (!response.ok) return undefined;
-    const { balance } = (await response.json()) as {
-      balance?: { amount?: string };
-    };
-    return BigInt(balance?.amount ?? "0");
-  } catch {
-    return undefined;
-  }
-}
 
 /**
  * Shared machinery for the final user-signed step of a multi-tx bridge
@@ -205,9 +127,12 @@ export const useMultiTxFinalStep = () => {
               onFulfilled?.();
             } else {
               // included on-chain but failed: reflect it on the (already
-              // advanced) history entry, now keyed by the final tx's hash
+              // advanced) history entry, now keyed by the final tx's hash.
+              // Uppercased to match the broadcast-time key: the account
+              // store reports DeliverTxResponse hashes in lowercase, and
+              // the snapshot lookup is strict equality.
               transferHistoryStore.receiveNewTxStatus(
-                tx.transactionHash,
+                tx.transactionHash.toUpperCase(),
                 "failed",
                 undefined
               );
@@ -234,11 +159,16 @@ export const useMultiTxResume = () => {
   const [resumingTxHashes, setResumingTxHashes] = useState<ReadonlySet<string>>(
     new Set()
   );
+  // Synchronous re-entry guard: the state set above only updates on the
+  // next render, so two Continue clicks in the same frame would both pass
+  // a state-based check and sign the final step twice.
+  const resumingRef = useRef<Set<string>>(new Set());
 
   const resume = useCallback(
     async (snapshot: TxSnapshot) => {
       const { pendingStep } = snapshot;
-      if (!pendingStep || resumingTxHashes.has(snapshot.sendTxHash)) return;
+      if (!pendingStep || resumingRef.current.has(snapshot.sendTxHash)) return;
+      resumingRef.current.add(snapshot.sendTxHash);
 
       setResumingTxHashes((prev) => new Set(prev).add(snapshot.sendTxHash));
       try {
@@ -304,21 +234,27 @@ export const useMultiTxResume = () => {
           return;
         }
 
-        // The expected funds must still be there: a transfer already
-        // completed from another session (or moved funds) must not be
-        // signed again against whatever else the account holds. A definite
-        // shortfall blocks; an unreadable balance (LCD down) does not, as
-        // the transaction itself still fails without sufficient funds.
+        // The expected funds must still be there ON TOP of whatever the
+        // account held before the first transaction: comparing against the
+        // total balance alone is not replay-proof (an account that already
+        // held enough of the denom would pass after the step was completed
+        // from another session, and signing would spend unrelated funds).
+        // A definite shortfall means the step was completed elsewhere or
+        // the funds were moved, so the entry is resolved rather than left
+        // offering a duplicate Continue. An unreadable balance (LCD down)
+        // does not block, as the transaction itself still fails without
+        // sufficient funds.
         if (pendingStep.expectedArrival) {
           const balance = await getChainBalance({
             chainId: pendingStep.chainId,
             address: senderAddress,
             denom: pendingStep.expectedArrival.denom,
           });
-          if (
-            balance !== undefined &&
-            balance < BigInt(pendingStep.expectedArrival.amount)
-          ) {
+          const required =
+            BigInt(pendingStep.expectedArrival.amount) +
+            BigInt(pendingStep.preArrivalBalance ?? "0");
+          if (balance !== undefined && balance < required) {
+            transferHistoryStore.resolveStalePendingStep(snapshot.sendTxHash);
             displayToast(
               {
                 titleTranslationKey: "transfer.multiTxFundsMissingTitle",
@@ -369,6 +305,7 @@ export const useMultiTxResume = () => {
           ToastType.ERROR
         );
       } finally {
+        resumingRef.current.delete(snapshot.sendTxHash);
         setResumingTxHashes((prev) => {
           const next = new Set(prev);
           next.delete(snapshot.sendTxHash);
@@ -376,12 +313,7 @@ export const useMultiTxResume = () => {
         });
       }
     },
-    [
-      getIntermediateAccount,
-      resumingTxHashes,
-      signFinalStep,
-      transferHistoryStore,
-    ]
+    [getIntermediateAccount, signFinalStep, transferHistoryStore]
   );
 
   const isResuming = useCallback(
