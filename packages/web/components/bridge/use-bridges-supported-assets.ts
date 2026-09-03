@@ -5,7 +5,7 @@ import type {
 } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -70,13 +70,22 @@ export const useBridgesSupportedAssets = ({
             enabled: !isNil(assets),
             staleTime: 30_000,
             cacheTime: 30_000,
-            // Disable retries, as useQueries
-            // will block successful queries from being returned
-            // if failed queries are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // query that the user can use.
-            retry: false,
+            // Retry transient provider failures a couple of times. While
+            // retries run, the query counts as loading, so the modal keeps
+            // its loading state instead of settling into the external-only
+            // fallback screen: a single provider hiccup (e.g. a rate-limited
+            // Skip response) must not make an asset look unsupported for
+            // quoting. Bounded so a provider that is truly down still
+            // settles within a few seconds.
+            retry: 2,
+            // Refocus refetches would re-trigger the fetching hold below
+            // (a brief skeleton) on assets with no in-app routes; supported
+            // chains change rarely, so mount refetches are enough.
+            refetchOnWindowFocus: false,
+            // NOTE: no refetchInterval — react-query v4 never interval-
+            // refetches a query that settled into an error without data
+            // (verified against the installed version), so the self-heal
+            // re-poll of failed queries is driven manually below.
           }
         )
       )
@@ -92,9 +101,111 @@ export const useBridgesSupportedAssets = ({
     [supportedAssetsResults]
   );
 
-  const isLoading = useMemo(
-    () => supportedAssetsResults.some((data) => isNil(data) || data.isLoading),
+  const isFetchingAny = useMemo(
+    () =>
+      supportedAssetsResults.some(
+        (data) =>
+          isNil(data) ||
+          // isFetching (not isLoading): background refetches of already-
+          // settled data must also count. The query cache is persisted to
+          // localStorage, so a previous session's results (including a
+          // degraded success-with-empty) hydrate as settled truth and
+          // immediately refetch on mount; treating that refetch as "not
+          // fetching" let the modal commit a default chain from stale data
+          // before the fresh response corrected it (observed as USDC
+          // defaulting to Wormhole's Solana suggestion). Note the hold this
+          // feeds is still released the moment any provider shows an in-app
+          // route, so healthy hydrated data still renders instantly.
+          //
+          // Dataless re-polls are excluded: a query re-polling after
+          // failures also reports isFetching, but must not drop the whole
+          // modal back to a skeleton on every poll cycle when other
+          // providers already returned usable chains. errorUpdateCount is
+          // the discriminator for those: unlike failureCount, which
+          // react-query resets to 0 at the start of every fetch, it
+          // increments on each settled error and never resets. A refetch
+          // that HAS data still counts even after past errors (a query that
+          // errored, then recovered with empty data, refetches with
+          // errorUpdateCount > 0, and its stale empty result must not
+          // settle the modal mid-refetch). Failing queries are handled
+          // below.
+          (data.isFetching &&
+            (data.errorUpdateCount === 0 || !isNil(data.data)))
+      ),
     [supportedAssetsResults]
+  );
+
+  /** A provider's query failed (retries exhausted) or is re-attempting
+   *  after failures. Remote providers (Skip, Squid) reject on
+   *  infrastructure failures rather than returning an empty result, so
+   *  this is the "provider down" signal. */
+  const hasFailingQueries = useMemo(
+    () =>
+      supportedAssetsResults.some(
+        (data) =>
+          !isNil(data) &&
+          (data.isError || (data.isLoading && data.errorUpdateCount > 0))
+      ),
+    [supportedAssetsResults]
+  );
+
+  // Self-heal: while any provider query is failing, re-ask the errored ones
+  // on a gentle backoff (5s, 10s, 20s, then every 30s) so a short blip
+  // doesn't cost the user half a minute of skeleton, while a sustained
+  // outage isn't hammered (the original failure mode was a rate-limited
+  // upstream). Driven manually because react-query v4 never interval-
+  // refetches a query that settled into an error without data. The results
+  // ref keeps the timer chain stable across render-to-render result churn;
+  // the chain resets to the short delays whenever failures clear and later
+  // reappear.
+  const resultsRef = useRef(supportedAssetsResults);
+  resultsRef.current = supportedAssetsResults;
+  useEffect(() => {
+    if (!hasFailingQueries) return;
+    const delaysMs = [5_000, 10_000, 20_000];
+    let attempt = 0;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      const delay = delaysMs[attempt] ?? 30_000;
+      attempt++;
+      timeoutId = setTimeout(() => {
+        resultsRef.current.forEach((result) => {
+          // !isFetching: a query stays isError while its recovery refetch
+          // is in flight, and refetch()'s default cancelRefetch would
+          // cancel that active request, so a response slower than the
+          // backoff delay could never complete.
+          if (!isNil(result) && result.isError && !result.isFetching)
+            result.refetch();
+        });
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(timeoutId);
+  }, [hasFailingQueries]);
+
+  /**
+   * Whether any successful provider returned a chain the app itself can
+   * transfer through (a quote or deposit-address route). External-url-only
+   * results (e.g. Wormhole's Solana suggestion) don't count: they exist for
+   * assets that ALSO have in-app routes, and must not release the failing-
+   * provider hold below — otherwise a Skip outage on a Skip-only asset
+   * settles the modal on the external-url chain (observed as a withdraw
+   * "defaulting to Solana" and landing on the external-providers view).
+   */
+  const hasInAppTransferSupport = useMemo(
+    () =>
+      successfulQueries.some(({ data }) =>
+        Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
+          (assets) =>
+            assets.some((asset) =>
+              asset.transferTypes.some(
+                (type) => type === "quote" || type === "deposit-address"
+              )
+            )
+        )
+      ),
+    [successfulQueries]
   );
 
   /**
@@ -392,6 +503,28 @@ export const useBridgesSupportedAssets = ({
       ).values()
     );
   }, [successfulQueries, direction, assets, variantAssets]);
+
+  /**
+   * Loading until any provider has produced a chain the app itself can
+   * transfer through. While that's missing, both first fetches and failing
+   * providers hold the state: a failing provider must not be mistaken for
+   * "asset unsupported for quoting", which would settle the modal onto its
+   * external-providers fallback. Once ANY in-app route is available, the
+   * flow proceeds with it immediately — one provider's slow first fetch or
+   * retries must not hide another provider's usable route. The manual
+   * re-poll above keeps re-asking failed providers, so a held state
+   * resolves either into supported chains or a genuine all-settled empty
+   * result.
+   *
+   * By design, a full outage of every quote-capable provider holds this
+   * screen in its loading state indefinitely (re-polling with backoff)
+   * rather than degrading to the external-providers view: misrepresenting
+   * a quotable asset as external-only routes users to third-party sites
+   * for transfers the app itself supports, which is worse than a visible
+   * wait.
+   */
+  const isLoading =
+    (isFetchingAny || hasFailingQueries) && !hasInAppTransferSupport;
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };

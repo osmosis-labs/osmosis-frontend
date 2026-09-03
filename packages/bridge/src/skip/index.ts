@@ -420,19 +420,27 @@ export class SkipBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    try {
-      const chainAsset = await this.getAsset(chain, asset);
-      if (!chainAsset) throw new Error("Asset not found: " + asset.address);
+    // Registry fetches live OUTSIDE the try/catch: their failures (registry
+    // down, rate limited) must reject so the client's query retries and
+    // re-polls. Everything below is pure lookup over the fetched data, where
+    // a miss legitimately means "no route for this asset".
+    const chainAsset = await this.getAsset(chain, asset);
+    // Asset not in Skip's registry: unsupported by this provider, not an
+    // outage. Resolve empty so other transfer options can render. This is a
+    // normal condition (every provider is asked about every asset), so it is
+    // deliberately not logged.
+    if (!chainAsset) return [];
 
+    // find variants
+    const [assets, skipChains] = await Promise.all([
+      this.getAssets(),
+      this.getChains(),
+    ]);
+
+    try {
       // Use of toLowerCase is advised due to registry (Skip + others) differences
       // in casing of asset addresses. May be somewhat unsafe.
       // See original usage in `getAsset` method.
-
-      // find variants
-      const [assets, skipChains] = await Promise.all([
-        this.getAssets(),
-        this.getChains(),
-      ]);
       const foundVariants = new BridgeAssetMap<
         BridgeChain & BridgeSupportedAsset
       >();
@@ -445,7 +453,12 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      const counterparties = assetListAsset?.counterparty ?? [];
+      // Copy, never alias: assetLists is module-static and shared across
+      // requests, and variantAssets below includes assetListAsset itself, so
+      // pushing into the original array doubles it on every request until
+      // the spread blows the argument limit ("Maximum call stack size
+      // exceeded") and this provider returns empty until instance recycle.
+      const counterparties = [...(assetListAsset?.counterparty ?? [])];
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
@@ -570,14 +583,24 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return foundVariants.assets;
     } catch (e) {
-      // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV !== "production") {
-        console.error(
-          SkipBridgeProvider.ID,
-          "failed to get supported assets:",
-          e
-        );
-      }
+      // Only pure lookup over already-fetched registry data can land here
+      // (infra failures reject above, before the try), so a throw is always
+      // a bug or malformed registry data, never a normal condition. Log it
+      // in production too: a silent catch here hid the counterparty
+      // mutation bug as unexplainable empty results for months.
+      // Uses the already-resolved assets/skipChains from above: re-awaiting
+      // the cachified getters here could itself throw (evicted entry plus a
+      // failed refresh), which would escape this catch and turn the
+      // intended empty-result degradation into a rejection.
+      console.warn(
+        `[Skip] supported-assets lookup threw for ${asset.address} on ${
+          chain.chainId
+        }: ${
+          e instanceof Error ? e.message : String(e)
+        }; unscoped registry chains=${
+          Object.keys(assets ?? {}).length
+        }, chain list=${skipChains?.length ?? 0}`
+      );
       return [];
     }
   }
@@ -959,7 +982,11 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const chainAssets = await this.getAssets(chainID);
 
-    for (const skipAsset of chainAssets[chainID].assets) {
+    // A registry response that omits the requested chain is a lookup miss
+    // ("no assets on this chain"), not an outage: guard it so callers see
+    // "asset not found" rather than a TypeError rejection that clients
+    // would classify as a provider failure and retry forever.
+    for (const skipAsset of chainAssets[chainID]?.assets ?? []) {
       if (chain.chainType === "evm") {
         // For the chain's native EVM token, only match assets without token_contract.
         // For Ethereum specifically, Skip may have two ETH entries: one with token_contract
@@ -994,10 +1021,33 @@ export class SkipBridgeProvider implements BridgeProvider {
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + `_assets_${chainID}`,
       ttl: 1000 * 60 * 30, // 30 minutes
+      // A degraded registry response (e.g. a rate-limited 200 with an empty
+      // body) must not be cached as 30 minutes of truth: an empty registry
+      // reads as "asset unsupported" downstream, which silently bypasses the
+      // client's retry and re-poll machinery (observed in QA as a Skip-only
+      // asset intermittently rendering external-only). Failing the check
+      // makes cachified throw instead, so it propagates as a provider
+      // failure the client retries.
       getFreshValue: () =>
         this.skipClient.assets({
           chainID,
         }),
+      checkValue: (value) => {
+        // cachified types the checked value as {}; it is the fresh/cached
+        // return of skipClient.assets. A scoped request must return the
+        // requested chain with a POPULATED asset list: a genuinely
+        // unsupported asset is a denom absent from a populated registry,
+        // while a missing or empty chain entry is the degraded shape
+        // (observed cached from a rate-limited upstream, reproducing the
+        // success-with-empty bug). Unscoped requests must be non-empty.
+        const registry = value as Awaited<ReturnType<SkipApiClient["assets"]>>;
+        return (
+          (chainID
+            ? Boolean(registry?.[chainID]?.assets?.length)
+            : Object.keys(registry ?? {}).length > 0) ||
+          "degraded or empty Skip asset registry response"
+        );
+      },
     });
   }
 
@@ -1007,6 +1057,11 @@ export class SkipBridgeProvider implements BridgeProvider {
       key: SkipBridgeProvider.ID + "_chains",
       ttl: 1000 * 60 * 30, // 30 minutes
       getFreshValue: () => this.skipClient.chains(),
+      // see getAssets: never cache a degraded/empty registry response
+      checkValue: (value) => {
+        const chains = value as Awaited<ReturnType<SkipApiClient["chains"]>>;
+        return (chains?.length ?? 0) > 0 || "empty Skip chains response";
+      },
     });
   }
 
