@@ -98,64 +98,75 @@ export const useMultiTxFinalStep = () => {
           });
 
         const gasFee = transactionStep.gasFee;
-        const result = await accountStore.signAndBroadcast(
-          stepChainId,
-          `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
-          transactionStep.msgs,
-          "",
-          gasFee
-            ? {
-                gas: gasFee.gas,
-                amount: [
-                  {
-                    denom: gasFee.denom,
-                    amount: gasFee.amount,
-                  },
-                ],
-              }
-            : undefined,
-          {
-            preferNoSetFee: Boolean(gasFee),
-          },
-          {
-            onBroadcastFailed,
-            // Advance the history entry the moment the final tx broadcasts:
-            // waiting for fulfillment leaves a window where closing the app
-            // forgets this step was ever sent, and Continue could then sign
-            // and send it a second time.
-            onBroadcasted: (txHash: Uint8Array) => {
-              transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
-                finalSendTxHash: Buffer.from(txHash)
-                  .toString("hex")
-                  .toUpperCase(),
-                trackingChainId: stepChainId,
-                estimatedArrivalUnix: dayjs().unix() + 60,
-              });
-              onBroadcasted?.();
+        // Whether the tx actually left the wallet: signAndBroadcast can
+        // reject AFTER broadcasting (e.g. a tx-tracing RPC failure), and
+        // the durable persist below must run on those paths too, or the
+        // lock would be released while storage still says the step is
+        // resumable and another session could sign it again.
+        let broadcasted = false;
+        try {
+          return await accountStore.signAndBroadcast(
+            stepChainId,
+            `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
+            transactionStep.msgs,
+            "",
+            gasFee
+              ? {
+                  gas: gasFee.gas,
+                  amount: [
+                    {
+                      denom: gasFee.denom,
+                      amount: gasFee.amount,
+                    },
+                  ],
+                }
+              : undefined,
+            {
+              preferNoSetFee: Boolean(gasFee),
             },
-            onFulfill: (tx: DeliverTxResponse) => {
-              if (tx.code == null || tx.code === 0) {
-                onFulfilled?.();
-              } else {
-                // included on-chain but failed: reflect it on the (already
-                // advanced) history entry, now keyed by the final tx's hash.
-                // Uppercased to match the broadcast-time key: the account
-                // store reports DeliverTxResponse hashes in lowercase, and
-                // the snapshot lookup is strict equality.
-                transferHistoryStore.receiveNewTxStatus(
-                  tx.transactionHash.toUpperCase(),
-                  "failed",
-                  undefined
-                );
-                onBroadcastFailed?.();
-              }
-            },
-          }
-        );
-        // Make the broadcast-time advance durable BEFORE releasing the
-        // lock, so the next lock holder's storage check sees it.
-        await transferHistoryStore.persistNow();
-        return result;
+            {
+              onBroadcastFailed,
+              // Advance the history entry the moment the final tx broadcasts:
+              // waiting for fulfillment leaves a window where closing the app
+              // forgets this step was ever sent, and Continue could then sign
+              // and send it a second time.
+              onBroadcasted: (txHash: Uint8Array) => {
+                broadcasted = true;
+                transferHistoryStore.advanceMultiTxStep(priorStepTxHash, {
+                  finalSendTxHash: Buffer.from(txHash)
+                    .toString("hex")
+                    .toUpperCase(),
+                  trackingChainId: stepChainId,
+                  estimatedArrivalUnix: dayjs().unix() + 60,
+                });
+                onBroadcasted?.();
+              },
+              onFulfill: (tx: DeliverTxResponse) => {
+                if (tx.code == null || tx.code === 0) {
+                  onFulfilled?.();
+                } else {
+                  // included on-chain but failed: reflect it on the (already
+                  // advanced) history entry, now keyed by the final tx's hash.
+                  // Uppercased to match the broadcast-time key: the account
+                  // store reports DeliverTxResponse hashes in lowercase, and
+                  // the snapshot lookup is strict equality.
+                  transferHistoryStore.receiveNewTxStatus(
+                    tx.transactionHash.toUpperCase(),
+                    "failed",
+                    undefined
+                  );
+                  onBroadcastFailed?.();
+                }
+              },
+            }
+          );
+        } finally {
+          // Make the broadcast-time advance durable BEFORE releasing the
+          // lock, so the next lock holder's storage check sees it — on
+          // EVERY path where the tx was broadcast, including rejections
+          // after broadcast (the autorun write alone is fire-and-forget).
+          if (broadcasted) await transferHistoryStore.persistNow();
+        }
       };
 
       // The final step must be signed at most once across every session of
