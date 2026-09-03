@@ -15,7 +15,7 @@ import {
   GetBridgeQuoteParams,
 } from "../../interface";
 import { SkipBridgeProvider } from "..";
-import { SkipMsg } from "../types";
+import { SkipMsg, SkipMsgsRequest } from "../types";
 import {
   ETH_EthereumToOsmosis_Msgs,
   ETH_EthereumToOsmosis_Route,
@@ -129,7 +129,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote).toBeDefined();
@@ -241,7 +241,7 @@ describe("SkipBridgeProvider", () => {
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote).toBeDefined();
@@ -348,7 +348,7 @@ describe("SkipBridgeProvider", () => {
     fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
     toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
     fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-    slippage: 0.01,
+    slippage: 1,
   };
 
   const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
@@ -457,7 +457,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote.transferFee.isAdditive).toBe(false);
@@ -484,7 +484,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0xabc",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     await expect(provider.getQuote(params)).rejects.toThrow(
@@ -535,7 +535,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0xabc",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     const txData: BridgeTransactionRequest = {
@@ -587,7 +587,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo1ABC123",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     const txData: BridgeTransactionRequest = {
@@ -945,6 +945,80 @@ describe("SkipBridgeProvider", () => {
         denom: "USDC",
         transferTypes: ["quote"],
       });
+    });
+  });
+
+  describe("slippage tolerance", () => {
+    const osmosisToEthereumQuoteParams: GetBridgeQuoteParams = {
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    };
+
+    /**
+     * The tolerance only exists in the outgoing request — Skip echoes none of
+     * it back, and the returned quote reports `route.amount_out` either way, so
+     * a test that inspects the quote cannot see this bug at all.
+     */
+    const captureMsgsRequest = () => {
+      const captured: { body?: SkipMsgsRequest } = {};
+
+      server.use(
+        rest.post(
+          "https://api.skip.money/v2/fungible/route",
+          (_req, res, ctx) => res(ctx.json(ETH_OsmosisToEthereum_Route))
+        ),
+        rest.post(
+          "https://api.skip.money/v2/fungible/msgs",
+          async (req, res, ctx) => {
+            captured.body = await req.json();
+            return res(ctx.json(ETH_OsmosisToEthereum_Msgs));
+          }
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
+
+      return captured;
+    };
+
+    it("sends the default tolerance when no caller supplies one", async () => {
+      const captured = captureMsgsRequest();
+
+      await provider.getQuote(osmosisToEthereumQuoteParams);
+
+      expect(captured.body?.slippage_tolerance_percent).toBe("0.5");
+    });
+
+    it("prefers an explicit caller tolerance over the default", async () => {
+      const captured = captureMsgsRequest();
+
+      await provider.getQuote({
+        ...osmosisToEthereumQuoteParams,
+        slippage: 1.5,
+      });
+
+      expect(captured.body?.slippage_tolerance_percent).toBe("1.5");
     });
   });
 });

@@ -63,7 +63,17 @@ export class SkipBridgeProvider implements BridgeProvider {
       toChain,
       fromAddress,
       toAddress,
-      slippage,
+      /**
+       * Percent, per `getBridgeQuoteSchema`. No caller supplies this today, so
+       * the default is what every real request uses. Skip splits the tolerance
+       * across the route's swap legs rather than applying it to each, so
+       * end-to-end exposure equals this number. 0.5% clears the 0.02%-0.14%
+       * quote-time margins measured on Osmosis to EVM stable routes and sits
+       * inside the app's own 2% and 6% gates. Deliberately tighter than Squid's
+       * 1%: Skip has no recommended value to defer to, and its tolerance
+       * reaches a swap on Osmosis rather than only the vendor's own route.
+       */
+      slippage = 0.5,
     } = params;
 
     return cachified({
@@ -219,6 +229,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           amount_in: route.amount_in,
           amount_out: route.amount_out,
           operations: route.operations,
+          slippage_tolerance_percent: slippage.toString(),
         });
 
         const transactionRequest = await this.createTransaction(
