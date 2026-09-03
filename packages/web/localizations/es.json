@@ -915,6 +915,20 @@
         "continueTo": "Continuar a {provider}"
       }
     },
+    "multiTxTitle": "Esta transferencia requiere {steps} transacciones",
+    "multiTxBadge": "{steps} transacciones",
+    "multiTxDescription": "Cuando se confirme la primera transacción, se te pedirá firmar una transferencia final en {chain}.",
+    "multiTxWaitingForFunds": "Esperando la llegada de los fondos a {chain}…",
+    "multiTxSignFinal": "Firma la transferencia final en {chain} en tu monedero para completar la transferencia.",
+    "multiTxGasWarning": "El último paso paga su comisión de red en {denom} en {chain}. Asegúrate de que tu cuenta de {chain} tenga {denom}.",
+    "multiTxContinue": "Continuar transferencia",
+    "multiTxWrongAccountTitle": "La cuenta del monedero no coincide",
+    "multiTxWrongAccount": "La cuenta de {chain} de tu monedero no coincide con esta ruta. La transferencia se canceló antes de mover fondos.",
+    "multiTxResumeWrongAccount": "Su billetera está conectada con una cuenta de {chain} distinta de la que contiene los fondos de esta transferencia. Vuelva a la cuenta original en su billetera e inténtelo de nuevo.",
+    "multiTxNeedsAttention": "Requiere atención",
+    "multiTxFundsMissingTitle": "No se encontraron los fondos esperados",
+    "multiTxFundsMissing": "Los fondos esperados ya no están en su cuenta de {chain}. Es posible que esta transferencia ya se haya completado desde otra sesión.",
+    "multiTxStillInTransit": "Los fondos siguen en tránsito",
     "assetSelectScreen": {
       "titleDeposit": "Seleccione un activo para depositar",
       "titleWithdraw": "Seleccione un activo para retirar",

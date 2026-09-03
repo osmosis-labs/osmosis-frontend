@@ -915,6 +915,20 @@
         "continueTo": "{provider} પર ચાલુ રાખો"
       }
     },
+    "multiTxTitle": "આ ટ્રાન્સફર માટે {steps} વ્યવહારો જરૂરી છે",
+    "multiTxBadge": "{steps} વ્યવહારો",
+    "multiTxDescription": "પહેલો વ્યવહાર કન્ફર્મ થયા પછી, તમને {chain} પર અંતિમ ટ્રાન્સફર સહી કરવા કહેવામાં આવશે.",
+    "multiTxWaitingForFunds": "{chain} પર ભંડોળ આવવાની રાહ જોવાઈ રહી છે…",
+    "multiTxSignFinal": "ટ્રાન્સફર પૂર્ણ કરવા માટે તમારા વૉલેટમાં {chain} પર અંતિમ ટ્રાન્સફર સહી કરો.",
+    "multiTxGasWarning": "અંતિમ પગલું {chain} પર {denom} માં નેટવર્ક ફી ચૂકવે છે. ખાતરી કરો કે તમારા {chain} ખાતામાં {denom} છે.",
+    "multiTxContinue": "ટ્રાન્સફર ચાલુ રાખો",
+    "multiTxWrongAccountTitle": "વૉલેટ ખાતું મેળ ખાતું નથી",
+    "multiTxWrongAccount": "તમારા વૉલેટનું {chain} ખાતું આ રૂટ સાથે મેળ ખાતું નથી. ભંડોળ ખસેડાય તે પહેલાં ટ્રાન્સફર રદ કરવામાં આવ્યું.",
+    "multiTxResumeWrongAccount": "તમારું વૉલેટ આ ટ્રાન્સફરના ભંડોળ ધરાવતા ખાતા કરતાં અલગ {chain} ખાતા સાથે જોડાયેલું છે. તમારા વૉલેટમાં મૂળ ખાતામાં પાછા જાઓ અને ફરી પ્રયાસ કરો.",
+    "multiTxNeedsAttention": "ધ્યાન જરૂરી છે",
+    "multiTxFundsMissingTitle": "અપેક્ષિત ભંડોળ મળ્યું નથી",
+    "multiTxFundsMissing": "અપેક્ષિત ભંડોળ હવે તમારા {chain} ખાતામાં નથી. આ ટ્રાન્સફર કદાચ બીજા સત્રમાંથી પહેલેથી પૂર્ણ થઈ ગયું હોઈ શકે.",
+    "multiTxStillInTransit": "ભંડોળ હજી માર્ગમાં છે",
     "assetSelectScreen": {
       "titleDeposit": "જમા કરવા માટે સંપત્તિ પસંદ કરો",
       "titleWithdraw": "ઉપાડવા માટે સંપત્તિ પસંદ કરો",

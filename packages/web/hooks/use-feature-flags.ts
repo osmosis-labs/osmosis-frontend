@@ -38,6 +38,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   swapped: true,
   onrampmoney: true,
   polarisBanner: false,
+  multiTxBridgeRoutes: true,
 };
 
 export function useFeatureFlags() {

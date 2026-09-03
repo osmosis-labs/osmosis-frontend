@@ -915,6 +915,20 @@
         "continueTo": "ادامه به {provider}"
       }
     },
+    "multiTxTitle": "این انتقال به {steps} تراکنش نیاز دارد",
+    "multiTxBadge": "{steps} تراکنش",
+    "multiTxDescription": "پس از تأیید تراکنش اول، از شما خواسته می‌شود انتقال نهایی را در {chain} امضا کنید.",
+    "multiTxWaitingForFunds": "در انتظار رسیدن وجوه به {chain}…",
+    "multiTxSignFinal": "برای تکمیل انتقال، انتقال نهایی را در {chain} در کیف پول خود امضا کنید.",
+    "multiTxGasWarning": "مرحله آخر کارمزد شبکه خود را با {denom} در {chain} پرداخت می‌کند. مطمئن شوید حساب {chain} شما {denom} دارد.",
+    "multiTxContinue": "ادامه انتقال",
+    "multiTxWrongAccountTitle": "عدم تطابق حساب کیف پول",
+    "multiTxWrongAccount": "حساب {chain} کیف پول شما با این مسیر مطابقت ندارد. انتقال پیش از جابه‌جایی وجوه لغو شد.",
+    "multiTxResumeWrongAccount": "کیف پول شما با حساب {chain} متفاوتی از حسابی که وجوه این انتقال را نگه می‌دارد متصل است. در کیف پول خود به حساب اصلی برگردید و دوباره تلاش کنید.",
+    "multiTxNeedsAttention": "نیاز به بررسی دارد",
+    "multiTxFundsMissingTitle": "وجوه مورد انتظار یافت نشد",
+    "multiTxFundsMissing": "وجوه مورد انتظار دیگر در حساب {chain} شما نیست. این انتقال ممکن است قبلاً از نشست دیگری کامل شده باشد.",
+    "multiTxStillInTransit": "وجوه هنوز در راه است",
     "assetSelectScreen": {
       "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",
       "titleWithdraw": "دارایی را برای برداشت انتخاب کنید",

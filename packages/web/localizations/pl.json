@@ -915,6 +915,20 @@
         "continueTo": "Przejdź do {provider}"
       }
     },
+    "multiTxTitle": "Ten transfer wymaga {steps} transakcji",
+    "multiTxBadge": "{steps} transakcje",
+    "multiTxDescription": "Po zatwierdzeniu pierwszej transakcji zostaniesz poproszony o podpisanie końcowego transferu na {chain}.",
+    "multiTxWaitingForFunds": "Oczekiwanie na dotarcie środków na {chain}…",
+    "multiTxSignFinal": "Podpisz końcowy transfer na {chain} w swoim portfelu, aby dokończyć przelew.",
+    "multiTxGasWarning": "Ostatni krok opłaca prowizję sieciową w {denom} na {chain}. Upewnij się, że Twoje konto na {chain} posiada {denom}.",
+    "multiTxContinue": "Kontynuuj transfer",
+    "multiTxWrongAccountTitle": "Konto portfela nie pasuje",
+    "multiTxWrongAccount": "Konto {chain} w Twoim portfelu nie pasuje do tej trasy. Transfer anulowano, zanim środki zostały przeniesione.",
+    "multiTxResumeWrongAccount": "Twój portfel jest połączony z innym kontem {chain} niż to, na którym znajdują się środki tego transferu. Przełącz się w portfelu na pierwotne konto i spróbuj ponownie.",
+    "multiTxNeedsAttention": "Wymaga uwagi",
+    "multiTxFundsMissingTitle": "Nie znaleziono oczekiwanych środków",
+    "multiTxFundsMissing": "Oczekiwanych środków nie ma już na Twoim koncie {chain}. Ten transfer mógł już zostać ukończony w innej sesji.",
+    "multiTxStillInTransit": "Środki są wciąż w drodze",
     "assetSelectScreen": {
       "titleDeposit": "Wybierz zasób do zdeponowania",
       "titleWithdraw": "Wybierz zasób do wypłaty",

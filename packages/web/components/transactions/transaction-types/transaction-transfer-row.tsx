@@ -6,11 +6,14 @@ import React from "react";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { useMultiTxResume } from "~/components/bridge/use-multi-tx-step";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { Tooltip } from "~/components/tooltip";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
@@ -36,6 +39,7 @@ export const TransactionTransferRow = ({
 }: TransactionTransferRowProps) => {
   const { t } = useTranslation();
   const { isMobile, width } = useWindowSize();
+  const { resume, isResuming } = useMultiTxResume();
 
   const size = isMobile ? "sm" : sizeProp;
 
@@ -94,7 +98,10 @@ export const TransactionTransferRow = ({
         transaction?.direction === "deposit" && (
           <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
         )}
-      <div className="h-8 w-8 overflow-hidden rounded-full">
+      {/* center, not just clip: the pending state renders the image at 24px
+          inside this 32px circle (to make room for the spinner ring), and
+          without centering it sits in the top-left corner */}
+      <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full">
         <EntityImage
           logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
           name={fromAsset.denom}
@@ -177,7 +184,9 @@ export const TransactionTransferRow = ({
           transaction?.direction === "deposit" && (
             <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
           )}
-        <div className="h-8 w-8 overflow-hidden rounded-full">
+        {/* center, not just clip: pending renders the image at 24px inside
+            this 32px circle, and without centering it sits top-left */}
+        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full">
           <EntityImage
             logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
             name={fromAsset.denom}
@@ -282,18 +291,68 @@ export const TransactionTransferRow = ({
     </div>,
   ];
 
+  // A multi-tx transfer awaiting its next user-signed step: offer to resume
+  // it right from history (re-checks arrival, connects the intermediate
+  // chain's wallet, and prompts the final signature).
+  const continueButton =
+    // stale steps must not offer Continue: the expected funds left the
+    // intermediate account, so signing again could spend unrelated funds
+    simplifiedStatus === "pending" &&
+    transaction.pendingStep &&
+    !transaction.pendingStep.stale ? (
+      <Button
+        key="continue-step"
+        size="sm"
+        className="!h-8 shrink-0 !px-3"
+        disabled={isResuming(transaction.sendTxHash)}
+        onClick={(e) => {
+          e.stopPropagation();
+          resume(transaction);
+        }}
+      >
+        {isResuming(transaction.sendTxHash) ? (
+          <Spinner className="!h-4 !w-4" />
+        ) : (
+          t("transfer.multiTxContinue")
+        )}
+      </Button>
+    ) : null;
+
+  // A stale step (expected funds no longer on the intermediate account,
+  // most likely continued from another session) has no safe action left:
+  // show what happened instead of an unexplained pending row. The entry
+  // drops off with history expiry.
+  const staleNotice =
+    simplifiedStatus === "pending" && transaction.pendingStep?.stale ? (
+      <Tooltip
+        key="stale-step"
+        content={t("transfer.multiTxFundsMissing", {
+          chain: transaction.pendingStep.prettyName,
+        })}
+      >
+        <div className="body2 flex shrink-0 items-center gap-1 text-rust-300">
+          <Icon id="alert-triangle" className="h-4 w-4" />
+          {t("transfer.multiTxNeedsAttention")}
+        </div>
+      </Tooltip>
+    ) : null;
+
   const rightComponent =
     size === "lg" ? (
       <div className="w-2/3 justify-end gap-4 flex items-center">
         {transaction?.direction === "withdraw"
           ? rightLargeComponentList
           : rightLargeComponentList.reverse()}
+        {continueButton}
+        {staleNotice}
       </div>
     ) : (
       <>
         {transaction?.direction === "withdraw"
           ? rightSmallComponentList
           : rightSmallComponentList.reverse()}
+        {continueButton}
+        {staleNotice}
       </>
     );
 

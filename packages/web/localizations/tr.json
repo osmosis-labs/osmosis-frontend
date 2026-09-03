@@ -915,6 +915,20 @@
         "continueTo": "{provider} ile devam et"
       }
     },
+    "multiTxTitle": "Bu transfer {steps} işlem gerektirir",
+    "multiTxBadge": "{steps} işlem",
+    "multiTxDescription": "İlk işlem onaylandıktan sonra {chain} üzerinde son bir transferi imzalamanız istenecektir.",
+    "multiTxWaitingForFunds": "Fonların {chain} ağına ulaşması bekleniyor…",
+    "multiTxSignFinal": "Transferi tamamlamak için cüzdanınızda {chain} üzerindeki son transferi imzalayın.",
+    "multiTxGasWarning": "Son adım, ağ ücretini {chain} üzerinde {denom} olarak öder. {chain} hesabınızda {denom} bulunduğundan emin olun.",
+    "multiTxContinue": "Transfere devam et",
+    "multiTxWrongAccountTitle": "Cüzdan hesabı eşleşmiyor",
+    "multiTxWrongAccount": "Cüzdanınızın {chain} hesabı bu rotayla eşleşmiyor. Fonlar taşınmadan önce transfer iptal edildi.",
+    "multiTxResumeWrongAccount": "Cüzdanınız, bu transferin fonlarını tutan hesaptan farklı bir {chain} hesabına bağlı. Cüzdanınızda özgün hesaba geri dönün ve tekrar deneyin.",
+    "multiTxNeedsAttention": "Dikkat gerekli",
+    "multiTxFundsMissingTitle": "Beklenen fonlar bulunamadı",
+    "multiTxFundsMissing": "Beklenen fonlar artık {chain} hesabınızda değil. Bu transfer başka bir oturumda zaten tamamlanmış olabilir.",
+    "multiTxStillInTransit": "Fonlar hâlâ yolda",
     "assetSelectScreen": {
       "titleDeposit": "Yatırılacak bir varlık seçin",
       "titleWithdraw": "Çekilecek bir varlık seçin",

@@ -120,20 +120,32 @@ export const NetworkFeeRow: FunctionComponent<{
             : selectedQuote.gasCost?.maxDecimals(6).toString()}
           {selectedQuote.gasCostFiat && selectedQuote.gasCost ? (
             <span
-              title={selectedQuote.gasCost.maxDecimals(6).toString()}
+              title={[
+                selectedQuote.gasCost,
+                ...(selectedQuote.intermediateGasCosts ?? []),
+              ]
+                .map((cost) => cost.maxDecimals(6).toString())
+                .join(" + ")}
               className="text-osmoverse-300"
             >
               {" "}
               (
-              {trimPlaceholderZeros(
-                selectedQuote.gasCost.hideDenom(true).maxDecimals(6).toString()
-              )}{" "}
-              <span>
-                {shorten(selectedQuote.gasCost.denom, {
-                  prefixLength: 8,
-                  suffixLength: 3,
-                })}
-              </span>
+              {/* multi-tx routes pay gas on more than one chain; list every
+                  fee the combined fiat value above is made of */}
+              {[
+                selectedQuote.gasCost,
+                ...(selectedQuote.intermediateGasCosts ?? []),
+              ]
+                .map(
+                  (cost) =>
+                    `${trimPlaceholderZeros(
+                      cost.hideDenom(true).maxDecimals(6).toString()
+                    )} ${shorten(cost.denom, {
+                      prefixLength: 8,
+                      suffixLength: 3,
+                    })}`
+                )
+                .join(" + ")}
               )
             </span>
           ) : (

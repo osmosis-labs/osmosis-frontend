@@ -6,6 +6,7 @@ import {
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
   getBridgeSupportedAssetsParams,
+  getBridgeTransactionStepSchema,
   getDepositAddressParamsSchema,
 } from "@osmosis-labs/bridge";
 import {
@@ -320,11 +321,46 @@ export const bridgeTransferRouter = createTRPCRouter({
           }
         : undefined;
 
+      // Multi-tx routes: price the later steps' network fees (paid on the
+      // intermediate chain, e.g. uusdc on noble-1) so the fee total below
+      // reflects every transaction the user signs, not just the first.
+      const intermediateGasFees = await Promise.all(
+        (quote.intermediateGasFees ?? []).map(async (fee) => {
+          const price = await getAssetPrice({
+            ...ctx,
+            asset: {
+              coinMinimalDenom: fee.address,
+              sourceDenom: fee.address,
+              address: fee.address,
+              coinGeckoId: fee.coinGeckoId,
+            },
+          }).catch(() => undefined);
+          return {
+            amount: new CoinPretty(
+              {
+                coinDecimals: fee.decimals,
+                coinDenom: fee.denom,
+                coinMinimalDenom: fee.address,
+              },
+              fee.amount
+            ),
+            fiatValue: price ? priceFromBridgeCoin(fee, price) : undefined,
+          };
+        })
+      );
+
       let totalFeeFiatValue = estimatedGasFee?.fiatValue;
       if (transferFee?.fiatValue) {
         totalFeeFiatValue =
           totalFeeFiatValue?.add(transferFee.fiatValue) ??
           transferFee.fiatValue;
+      }
+      for (const intermediateFee of intermediateGasFees) {
+        if (intermediateFee.fiatValue) {
+          totalFeeFiatValue =
+            totalFeeFiatValue?.add(intermediateFee.fiatValue) ??
+            intermediateFee.fiatValue;
+        }
       }
 
       return {
@@ -368,6 +404,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           },
           transferFee,
           estimatedGasFee,
+          intermediateGasFees,
           totalFeeFiatValue,
         },
       };
@@ -572,6 +609,44 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...quote,
         },
       };
+    }),
+
+  /**
+   * Rebuild one intermediate-chain step of a multi-transaction route for
+   * signing: the wallet's real account on that chain as sender, fresh
+   * timeout, fresh gas estimate.
+   */
+  getTransactionStepByBridge: publicProcedure
+    .input(getBridgeTransactionStepSchema.extend({ bridge: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+        }
+      );
+
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
+
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id: " + input.bridge);
+      }
+
+      if (!("getTransactionStep" in bridgeProvider)) {
+        throw new Error(
+          "Bridge does not support multi-transaction steps: " + input.bridge
+        );
+      }
+
+      const transactionStep = await bridgeProvider.getTransactionStep(input);
+
+      return { transactionStep };
     }),
 
   getExternalUrls: publicProcedure

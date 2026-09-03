@@ -100,6 +100,25 @@ export const SkipAssets = {
           coingecko_id: "osmosis",
           recommended_symbol: "OSMO",
         },
+        {
+          denom:
+            "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+          chain_id: "osmosis-1",
+          origin_denom:
+            "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+          origin_chain_id: "osmosis-1",
+          trace: "",
+          is_cw20: false,
+          is_evm: false,
+          is_svm: false,
+          symbol: "USDC",
+          name: "Alloyed USDC",
+          logo_uri:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+          decimals: 6,
+          coingecko_id: "usd-coin",
+          recommended_symbol: "USDC",
+        },
       ],
     },
     "agoric-3": {
@@ -556,6 +575,108 @@ export const ETH_EthereumToOsmosis_Msgs = {
       origin_asset: null,
       chain_id: "",
       tx_index: 0,
+    },
+  ],
+};
+
+/**
+ * Multi-transaction route: Ethereum USDC -> Osmosis alloyed USDC via CCTP to
+ * Noble. Two user-signed txs: the EVM burn, then an IBC transfer signed on
+ * noble-1 whose memo swaps into the alloy on Osmosis. Mirrors the live API's
+ * shape: `required_chain_addresses` repeats osmosis-1 and is longer than
+ * `chain_ids`.
+ */
+export const USDC_EthereumToOsmosisAlloy_MultiTxRoute = {
+  source_asset_denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  source_asset_chain_id: "1",
+  dest_asset_denom:
+    "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+  dest_asset_chain_id: "osmosis-1",
+  amount_in: "1000000000",
+  amount_out: "999960000",
+  operations: [
+    {
+      cctp_transfer: {
+        from_chain_id: "1",
+        to_chain_id: "noble-1",
+        burn_token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        bridge_id: "CCTP",
+        smart_relay: true,
+      },
+      tx_index: 0,
+      amount_in: "1000000000",
+      amount_out: "999980000",
+    },
+    {
+      transfer: {
+        port: "transfer",
+        channel: "channel-1",
+        chain_id: "noble-1",
+        pfm_enabled: true,
+        dest_denom:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        supports_memo: true,
+      },
+      tx_index: 1,
+      amount_in: "999980000",
+      amount_out: "999980000",
+    },
+    {
+      swap: {
+        swap_in: {
+          swap_venue: { name: "osmosis-poolmanager", chain_id: "osmosis-1" },
+          swap_operations: [
+            {
+              pool: "3497",
+              denom_in:
+                "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+              denom_out:
+                "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+            },
+          ],
+        },
+      },
+      tx_index: 1,
+      amount_in: "999980000",
+      amount_out: "999960000",
+    },
+  ],
+  chain_ids: ["1", "noble-1", "osmosis-1"],
+  does_swap: true,
+  estimated_amount_out: "999960000",
+  swap_venues: [],
+  txs_required: 2,
+  usd_amount_in: "999.94",
+  usd_amount_out: "999.90",
+  estimated_fees: [],
+  required_chain_addresses: ["1", "noble-1", "osmosis-1", "osmosis-1"],
+  estimated_route_duration_seconds: 120,
+};
+
+export const USDC_EthereumToOsmosisAlloy_MultiTxMsgs = {
+  msgs: [
+    {
+      evm_tx: {
+        chain_id: "1",
+        to: "0xBd3fa81B58Ba92a82136038B25aDec7066af3155",
+        value: "0",
+        data: "6fd3504e0000000000000000000000000000000000000000000000000000000000000001",
+        required_erc20_approvals: [
+          {
+            token_contract: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            spender: "0xBd3fa81B58Ba92a82136038B25aDec7066af3155",
+            amount: "1000000000",
+          },
+        ],
+      },
+    },
+    {
+      multi_chain_msg: {
+        chain_id: "noble-1",
+        path: ["noble-1", "osmosis-1"],
+        msg: '{"source_port":"transfer","source_channel":"channel-1","token":{"denom":"uusdc","amount":"999980000"},"sender":"noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96","receiver":"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u","timeout_height":{},"timeout_timestamp":1787928465392504852,"memo":"{\\"wasm\\":{\\"contract\\":\\"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u\\",\\"msg\\":{\\"swap_and_action\\":{}}}}"}',
+        msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+      },
     },
   ],
 };

@@ -915,6 +915,20 @@
         "continueTo": "繼續前往 {provider}"
       }
     },
+    "multiTxTitle": "此轉賬需要 {steps} 筆交易",
+    "multiTxBadge": "{steps} 筆交易",
+    "multiTxDescription": "首筆交易確認後，系統將要求您在 {chain} 上簽署最後一筆轉賬。",
+    "multiTxWaitingForFunds": "等待資金到達 {chain}…",
+    "multiTxSignFinal": "請在錢包中簽署 {chain} 上的最後一筆轉賬以完成轉賬。",
+    "multiTxGasWarning": "最後一步將在 {chain} 上以 {denom} 支付網絡費用。請確保您的 {chain} 賬戶持有 {denom}。",
+    "multiTxContinue": "繼續轉賬",
+    "multiTxWrongAccountTitle": "錢包賬戶不匹配",
+    "multiTxWrongAccount": "您錢包的 {chain} 賬戶與此路徑不匹配。轉賬已在資金移動前取消。",
+    "multiTxResumeWrongAccount": "您的錢包連接的 {chain} 帳戶與持有此轉賬資金的帳戶不同。請在錢包中切換回原帳戶，然後重試。",
+    "multiTxNeedsAttention": "需要處理",
+    "multiTxFundsMissingTitle": "找不到預期資金",
+    "multiTxFundsMissing": "預期資金已不在您的 {chain} 帳戶中。此轉賬可能已在其他工作階段完成。",
+    "multiTxStillInTransit": "資金仍在途中",
     "assetSelectScreen": {
       "titleDeposit": "選擇要存入的資產",
       "titleWithdraw": "選擇要提取的資產",

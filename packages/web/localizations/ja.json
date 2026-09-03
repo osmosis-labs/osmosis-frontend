@@ -915,6 +915,20 @@
         "continueTo": "{provider}に進む"
       }
     },
+    "multiTxTitle": "この送金には{steps}件のトランザクションが必要です",
+    "multiTxBadge": "トランザクション{steps}件",
+    "multiTxDescription": "最初のトランザクションが確定すると、{chain}で最後の送金への署名を求められます。",
+    "multiTxWaitingForFunds": "{chain}への資金の到着を待っています…",
+    "multiTxSignFinal": "送金を完了するには、ウォレットで{chain}上の最後の送金に署名してください。",
+    "multiTxGasWarning": "最後のステップでは{chain}上のネットワーク手数料を{denom}で支払います。{chain}のアカウントに{denom}があることを確認してください。",
+    "multiTxContinue": "送金を続行",
+    "multiTxWrongAccountTitle": "ウォレットのアカウント不一致",
+    "multiTxWrongAccount": "ウォレットの{chain}アカウントがこのルートと一致しません。資金が移動する前に送金はキャンセルされました。",
+    "multiTxResumeWrongAccount": "ウォレットが、この送金の資金を保有している {chain} アカウントとは別のアカウントに接続されています。ウォレットで元のアカウントに切り替えてから、もう一度お試しください。",
+    "multiTxNeedsAttention": "要確認",
+    "multiTxFundsMissingTitle": "予定された資金が見つかりません",
+    "multiTxFundsMissing": "予定された資金は {chain} アカウントにありません。この送金は別のセッションで既に完了している可能性があります。",
+    "multiTxStillInTransit": "資金はまだ移動中です",
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
       "titleWithdraw": "引き出す資産を選択してください",

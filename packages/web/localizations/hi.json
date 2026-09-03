@@ -915,6 +915,20 @@
         "continueTo": "{provider} पर जारी रखें"
       }
     },
+    "multiTxTitle": "इस ट्रांसफ़र के लिए {steps} लेनदेन आवश्यक हैं",
+    "multiTxBadge": "{steps} लेनदेन",
+    "multiTxDescription": "पहला लेनदेन कन्फ़र्म होने के बाद, आपसे {chain} पर अंतिम ट्रांसफ़र साइन करने के लिए कहा जाएगा।",
+    "multiTxWaitingForFunds": "{chain} पर धनराशि आने की प्रतीक्षा हो रही है…",
+    "multiTxSignFinal": "ट्रांसफ़र पूरा करने के लिए अपने वॉलेट में {chain} पर अंतिम ट्रांसफ़र साइन करें।",
+    "multiTxGasWarning": "अंतिम चरण {chain} पर {denom} में नेटवर्क शुल्क देता है। सुनिश्चित करें कि आपके {chain} खाते में {denom} है।",
+    "multiTxContinue": "ट्रांसफ़र जारी रखें",
+    "multiTxWrongAccountTitle": "वॉलेट खाता मेल नहीं खाता",
+    "multiTxWrongAccount": "आपके वॉलेट का {chain} खाता इस रूट से मेल नहीं खाता। धनराशि स्थानांतरित होने से पहले ट्रांसफ़र रद्द कर दिया गया।",
+    "multiTxResumeWrongAccount": "आपका वॉलेट उस {chain} खाते से अलग खाते से जुड़ा है जिसमें इस ट्रांसफ़र की धनराशि है। अपने वॉलेट में मूल खाते पर वापस जाएँ और फिर से प्रयास करें।",
+    "multiTxNeedsAttention": "ध्यान देने की आवश्यकता",
+    "multiTxFundsMissingTitle": "अपेक्षित धनराशि नहीं मिली",
+    "multiTxFundsMissing": "अपेक्षित धनराशि अब आपके {chain} खाते में नहीं है। यह ट्रांसफ़र संभवतः किसी अन्य सत्र से पहले ही पूरा हो चुका है।",
+    "multiTxStillInTransit": "धनराशि अभी भी रास्ते में है",
     "assetSelectScreen": {
       "titleDeposit": "जमा करने के लिए एक परिसंपत्ति का चयन करें",
       "titleWithdraw": "निकासी के लिए एक परिसंपत्ति का चयन करें",
