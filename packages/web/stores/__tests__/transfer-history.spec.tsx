@@ -1,3 +1,4 @@
+import { TxSnapshot } from "@osmosis-labs/bridge";
 import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
 import React from "react";
@@ -201,7 +202,7 @@ describe("TransferHistoryStore multi-tx entries", () => {
       [statusProvider],
       3
     );
-    return { store, statusProvider };
+    return { store, statusProvider, kvStore };
   };
 
   beforeEach(() => {
@@ -257,9 +258,55 @@ describe("TransferHistoryStore multi-tx entries", () => {
     store.pushTxNow(makeSnapshot({ pendingStep }));
     store.markPendingStepStale("0xtx1");
 
-    const snapshot = store.snapshots.find((s) => s.sendTxHash === "0xtx1");
+    const snapshot = (
+      store as unknown as { snapshots: TxSnapshot[] }
+    ).snapshots.find((s: TxSnapshot) => s.sendTxHash === "0xtx1");
     expect(snapshot?.pendingStep?.stale).toBe(true);
     expect(snapshot?.status).toBe("pending");
+    expect(statusProvider.trackTxStatus).not.toHaveBeenCalled();
+  });
+
+  it("syncPendingStepFromStorage mirrors an advance made by another session", async () => {
+    // The persisted history is the cross-session replay guard: when another
+    // session already signed the final step (persisting the advanced
+    // entry), a stale session's resume must observe that, update its own
+    // entry, and refuse to sign again.
+    const { store, statusProvider, kvStore } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    // what the OTHER session persisted after broadcasting tx2
+    kvStore.get.mockResolvedValue([
+      makeSnapshot({
+        sendTxHash: "COSMOS_TX_2",
+        firstStepTxHash: "0xtx1",
+        trackingChainId: "noble-1",
+        pendingStep: undefined,
+      }),
+    ]);
+
+    const result = await store.syncPendingStepFromStorage("0xtx1");
+
+    expect(result).toBe("advanced");
+    const snapshot = (
+      store as unknown as { snapshots: TxSnapshot[] }
+    ).snapshots.find((s: TxSnapshot) => s.sendTxHash === "COSMOS_TX_2");
+    expect(snapshot?.pendingStep).toBeUndefined();
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ sendTxHash: "COSMOS_TX_2" })
+    );
+  });
+
+  it("syncPendingStepFromStorage leaves an unadvanced entry resumable", async () => {
+    const { store, statusProvider, kvStore } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    kvStore.get.mockResolvedValue([
+      makeSnapshot({ pendingStep, firstStepTxHash: "0xtx1" }),
+    ]);
+
+    const result = await store.syncPendingStepFromStorage("0xtx1");
+
+    expect(result).toBe("resumable");
     expect(statusProvider.trackTxStatus).not.toHaveBeenCalled();
   });
 });

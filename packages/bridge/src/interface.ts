@@ -744,7 +744,6 @@ const txSnapshotSchema = z.object({
        * the denom can't pass the check after the step was completed from
        * another session.
        */
-      preArrivalBalance: z.string().optional(),
       /**
        * Set when the expected funds were found missing from the
        * intermediate account: the step was most likely completed from
@@ -757,6 +756,14 @@ const txSnapshotSchema = z.object({
       stale: z.boolean().optional(),
     })
     .optional(),
+  /**
+   * For multi-tx transfers: the FIRST step's tx hash, immutable across the
+   * snapshot's lifecycle. `sendTxHash` is reassigned to the final step's
+   * hash when the transfer advances, so this is what lets a session
+   * correlate its (possibly stale) in-memory entry with the persisted one
+   * when checking whether another session already signed the next step.
+   */
+  firstStepTxHash: z.string().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

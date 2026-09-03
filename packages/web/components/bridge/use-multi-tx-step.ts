@@ -184,6 +184,17 @@ export const useMultiTxResume = () => {
           throw new Error("Missing route data on pending transfer");
         }
 
+        // Cross-session replay guard: re-read the persisted history (the
+        // shared truth between this browser's sessions, written by the
+        // signing session at final-step broadcast) before anything is
+        // signed. A stale tab resuming a transfer another session already
+        // continued gets its entry updated instead of signing again.
+        const storageState =
+          await transferHistoryStore.syncPendingStepFromStorage(
+            snapshot.sendTxHash
+          );
+        if (storageState !== "resumable") return;
+
         const arrival = await waitForSkipStepArrival({
           chainId: String(snapshot.fromChain.chainId),
           txHash: pendingStep.priorStepTxHash,
@@ -243,42 +254,25 @@ export const useMultiTxResume = () => {
           return;
         }
 
-        // The expected funds must still be there ON TOP of whatever the
-        // account held before the first transaction: comparing against the
-        // total balance alone is not replay-proof (an account that already
-        // held enough of the denom would pass after the step was completed
-        // from another session, and signing would spend unrelated funds).
-        // A definite shortfall means the step was completed elsewhere or
-        // the funds were moved, so the entry is resolved rather than left
-        // offering a duplicate Continue. An unreadable balance (LCD down)
-        // does not block, as the transaction itself still fails without
-        // sufficient funds.
+        // Sanity check, not replay protection (that is the storage sync
+        // above; an aggregate balance is shared state that moves for
+        // unrelated reasons): the account must still hold at least the
+        // arrived amount, or the step's transfer cannot succeed. A definite
+        // shortfall means the funds were moved away, so mark the step stale
+        // rather than leaving a Continue that can never work. Fail closed
+        // on an unreadable balance (retryable; the entry stays resumable).
         if (pendingStep.expectedArrival) {
-          // Fail closed on a missing baseline: without it the check would
-          // degrade to the replayable total-balance comparison.
-          if (pendingStep.preArrivalBalance === undefined) {
-            throw new Error(
-              "Missing pre-arrival balance baseline on pending transfer"
-            );
-          }
           const balance = await getChainBalance({
             chainId: pendingStep.chainId,
             address: senderAddress,
             denom: pendingStep.expectedArrival.denom,
           });
-          // Fail closed on an unreadable balance too: unreadable does not
-          // mean absent, and if the funds were already moved, an account
-          // holding enough unrelated funds would let the step spend those.
-          // The entry stays resumable for a retry once the LCD responds.
           if (balance === undefined) {
             throw new Error(
               "Could not verify the intermediate account balance"
             );
           }
-          const required =
-            BigInt(pendingStep.expectedArrival.amount) +
-            BigInt(pendingStep.preArrivalBalance);
-          if (balance < required) {
+          if (balance < BigInt(pendingStep.expectedArrival.amount)) {
             transferHistoryStore.markPendingStepStale(snapshot.sendTxHash);
             displayToast(
               {

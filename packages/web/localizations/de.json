@@ -925,6 +925,7 @@
     "multiTxWrongAccountTitle": "Wallet-Konto stimmt nicht überein",
     "multiTxWrongAccount": "Das {chain}-Konto Ihrer Wallet passt nicht zu dieser Route. Die Übertragung wurde abgebrochen, bevor Gelder bewegt wurden.",
     "multiTxResumeWrongAccount": "Ihre Wallet ist mit einem anderen {chain}-Konto verbunden als dem, auf dem sich die Gelder dieser Übertragung befinden. Wechseln Sie in Ihrer Wallet zum ursprünglichen Konto zurück und versuchen Sie es erneut.",
+    "multiTxNeedsAttention": "Erfordert Aufmerksamkeit",
     "multiTxFundsMissingTitle": "Erwartete Gelder nicht gefunden",
     "multiTxFundsMissing": "Die erwarteten Gelder befinden sich nicht mehr auf Ihrem {chain}-Konto. Diese Übertragung wurde möglicherweise bereits in einer anderen Sitzung abgeschlossen.",
     "multiTxStillInTransit": "Die Gelder sind noch unterwegs",

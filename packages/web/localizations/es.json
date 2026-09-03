@@ -925,6 +925,7 @@
     "multiTxWrongAccountTitle": "La cuenta del monedero no coincide",
     "multiTxWrongAccount": "La cuenta de {chain} de tu monedero no coincide con esta ruta. La transferencia se canceló antes de mover fondos.",
     "multiTxResumeWrongAccount": "Su billetera está conectada con una cuenta de {chain} distinta de la que contiene los fondos de esta transferencia. Vuelva a la cuenta original en su billetera e inténtelo de nuevo.",
+    "multiTxNeedsAttention": "Requiere atención",
     "multiTxFundsMissingTitle": "No se encontraron los fondos esperados",
     "multiTxFundsMissing": "Los fondos esperados ya no están en su cuenta de {chain}. Es posible que esta transferencia ya se haya completado desde otra sesión.",
     "multiTxStillInTransit": "Los fondos siguen en tránsito",

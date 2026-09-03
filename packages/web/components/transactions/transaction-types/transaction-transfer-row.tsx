@@ -12,6 +12,7 @@ import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
@@ -317,6 +318,25 @@ export const TransactionTransferRow = ({
       </Button>
     ) : null;
 
+  // A stale step (expected funds no longer on the intermediate account,
+  // most likely continued from another session) has no safe action left:
+  // show what happened instead of an unexplained pending row. The entry
+  // drops off with history expiry.
+  const staleNotice =
+    simplifiedStatus === "pending" && transaction.pendingStep?.stale ? (
+      <Tooltip
+        key="stale-step"
+        content={t("transfer.multiTxFundsMissing", {
+          chain: transaction.pendingStep.prettyName,
+        })}
+      >
+        <div className="body2 flex shrink-0 items-center gap-1 text-rust-300">
+          <Icon id="alert-triangle" className="h-4 w-4" />
+          {t("transfer.multiTxNeedsAttention")}
+        </div>
+      </Tooltip>
+    ) : null;
+
   const rightComponent =
     size === "lg" ? (
       <div className="w-2/3 justify-end gap-4 flex items-center">
@@ -324,6 +344,7 @@ export const TransactionTransferRow = ({
           ? rightLargeComponentList
           : rightLargeComponentList.reverse()}
         {continueButton}
+        {staleNotice}
       </div>
     ) : (
       <>
@@ -331,6 +352,7 @@ export const TransactionTransferRow = ({
           ? rightSmallComponentList
           : rightSmallComponentList.reverse()}
         {continueButton}
+        {staleNotice}
       </>
     );
 

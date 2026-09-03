@@ -26,7 +26,6 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
-import { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
@@ -121,6 +120,12 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    */
   @action
   pushTxNow(snapshot: TxSnapshot) {
+    // For multi-tx entries, pin the immutable first-step hash: sendTxHash
+    // is reassigned when the transfer advances, and the first-step hash is
+    // what lets a stale session correlate its entry with the persisted one.
+    if (snapshot.pendingStep && !snapshot.firstStepTxHash) {
+      snapshot.firstStepTxHash = snapshot.sendTxHash;
+    }
     const {
       sendTxHash,
       estimatedArrivalUnix,
@@ -405,43 +410,61 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 
   /**
-   * Background self-heal for a restored mid-flow multi-tx entry: when the
-   * first leg has arrived but the expected funds are no longer on the
-   * intermediate account (on top of what it held before the first tx), the
-   * final step was almost certainly signed elsewhere, so mark the entry
-   * stale instead of leaving a Continue that could double-sign. Only acts
-   * on definitive signals; any unreadable state leaves the entry untouched.
+   * Cross-session replay guard for resuming a multi-tx transfer: the
+   * persisted history is the shared truth between sessions of this browser
+   * profile (the signing session writes the advance at final-step
+   * broadcast), so a session holding a stale in-memory entry must re-read
+   * it before signing. Correlates via the immutable `firstStepTxHash`,
+   * since an advanced entry's `sendTxHash` has been reassigned.
+   *
+   * Applies whatever the storage knows to the local entry, and reports:
+   * - "resumable": storage agrees the step is still pending and not stale
+   * - "advanced": another session already signed the step (local entry
+   *   updated from storage, tracking started if still pending)
+   * - "stale": storage has the step marked stale (mirrored locally)
+   * - "missing": storage no longer has the entry; do not sign
    */
-  protected async validatePendingStep(snapshot: TxSnapshot) {
-    const { pendingStep } = snapshot;
-    if (
-      !pendingStep?.expectedArrival ||
-      !pendingStep.intermediateAddress ||
-      pendingStep.preArrivalBalance === undefined ||
-      pendingStep.stale
-    )
-      return;
+  async syncPendingStepFromStorage(
+    sendTxHash: string
+  ): Promise<"resumable" | "advanced" | "stale" | "missing"> {
+    const local = this.snapshots.find(
+      (snapshot) => snapshot.sendTxHash === sendTxHash
+    );
+    if (!local?.pendingStep) return "missing";
+    const firstStepHash = local.firstStepTxHash ?? sendTxHash;
 
-    const arrival = await waitForSkipStepArrival({
-      chainId: String(snapshot.fromChain.chainId),
-      txHash: pendingStep.priorStepTxHash,
-      maxAttempts: 1,
-    });
-    if (arrival !== "success") return;
+    const stored =
+      (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
+    const storedSnapshot = stored.find(
+      (snapshot) =>
+        snapshot.firstStepTxHash === firstStepHash ||
+        snapshot.sendTxHash === firstStepHash
+    );
+    if (!storedSnapshot) return "missing";
 
-    const balance = await getChainBalance({
-      chainId: pendingStep.chainId,
-      address: pendingStep.intermediateAddress,
-      denom: pendingStep.expectedArrival.denom,
-    });
-    if (balance === undefined) return;
-
-    const required =
-      BigInt(pendingStep.expectedArrival.amount) +
-      BigInt(pendingStep.preArrivalBalance);
-    if (balance < required) {
-      this.markPendingStepStale(snapshot.sendTxHash);
+    if (storedSnapshot.pendingStep?.stale) {
+      this.markPendingStepStale(sendTxHash);
+      return "stale";
     }
+    if (storedSnapshot.pendingStep) return "resumable";
+
+    // Advanced elsewhere: mirror the persisted state so this session's row
+    // stops offering Continue, and pick up tracking if still pending.
+    runInAction(() => {
+      toast.dismiss(local.sendTxHash);
+      local.pendingStep = undefined;
+      local.sendTxHash = storedSnapshot.sendTxHash;
+      local.trackingChainId = storedSnapshot.trackingChainId;
+      local.estimatedArrivalUnix = storedSnapshot.estimatedArrivalUnix;
+      local.status = storedSnapshot.status;
+    });
+    if (local.status === "pending") {
+      const statusSource = this.transferStatusProviders.find((source) =>
+        local.provider.startsWith(source.providerId)
+      );
+      statusSource?.trackTxStatus(toJS(local));
+    }
+    return "advanced";
   }
 
   /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
@@ -451,7 +474,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     const storedSnapshots =
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
 
-    storedSnapshots.forEach(async (snapshot) => {
+    // Drop expired snapshots (they are pruned from storage on the next
+    // persist). This is also what eventually clears stale multi-tx entries,
+    // which deliberately never auto-resolve.
+    const expiryCutoffUnix = dayjs().subtract(this.historyExpireDays, "day");
+    const liveSnapshots = storedSnapshots.filter((snapshot) =>
+      dayjs.unix(snapshot.createdAtUnix).isAfter(expiryCutoffUnix)
+    );
+
+    liveSnapshots.forEach(async (snapshot) => {
       const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.provider.startsWith(source.providerId)
       );
@@ -468,10 +499,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         !snapshot.pendingStep
       ) {
         statusSource.trackTxStatus(snapshot);
-      } else if (snapshot.status === "pending" && snapshot.pendingStep) {
-        // fire-and-forget: resolves the entry if its step was completed
-        // from another session, so a stale Continue isn't offered
-        this.validatePendingStep(snapshot).catch(() => undefined);
       } else if (
         snapshot.status !== "pending" &&
         snapshot.status !== "connection-error"
