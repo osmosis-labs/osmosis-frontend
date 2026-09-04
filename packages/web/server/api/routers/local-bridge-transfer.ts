@@ -118,7 +118,10 @@ export const localBridgeTransferRouter = createTRPCRouter({
           createAssetObject("evm", UserEvmAddressSchema),
           createAssetObject("cosmos", UserCosmosAddressSchema),
           createAssetObject("bitcoin", z.object({})),
-          createAssetObject("solana", z.object({})),
+          createAssetObject(
+            "solana",
+            z.object({ userSolanaAddress: z.string().optional() })
+          ),
           createAssetObject("tron", z.object({})),
           createAssetObject("penumbra", z.object({})),
           createAssetObject("doge", z.object({})),
@@ -170,6 +173,64 @@ export const localBridgeTransferRouter = createTRPCRouter({
                *
                * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
                */
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: Object.keys(asset.supportedVariants)[0],
+                amount: decAmount,
+              }).catch((e) => captureErrorAndReturn(e, undefined));
+
+              return {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  decAmount
+                ),
+                usdValue: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  usdValue ?? new Dec(0)
+                ),
+              };
+            })
+        );
+      } else if (input.source.type === "solana") {
+        const solanaAddress = input.source.userSolanaAddress;
+        return Promise.all(
+          input.source.assets
+            .filter(
+              (
+                asset
+              ): asset is Extract<typeof asset, { chainType: "solana" }> =>
+                asset.chainType === "solana"
+            )
+            .map(async (asset) => {
+              const emptyBalance = {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  0
+                ),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+              };
+
+              if (!solanaAddress) return emptyBalance;
+
+              const balance = await getSolanaTokenBalance({
+                owner: solanaAddress,
+                mint: asset.address,
+              }).catch(() => undefined);
+
+              if (balance === undefined) return emptyBalance;
+
+              const decAmount = new Dec(balance.toString());
+              // Price via the Osmosis-side variant, mirroring the EVM branch
               const usdValue = await calcAssetValue({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
@@ -327,3 +388,70 @@ export const localBridgeTransferRouter = createTRPCRouter({
       }
     }),
 });
+
+// The official endpoint first: publicnode rejects indexed queries like
+// getTokenAccountsOwner-by-mint for well-populated owners ("Indexed
+// requests require a personal token"), verified 2026-09-04.
+const SOLANA_RPCS = [
+  "https://api.mainnet-beta.solana.com",
+  "https://solana-rpc.publicnode.com",
+];
+
+/**
+ * Total SPL token balance (minimal units) of `mint` held by `owner`, summed
+ * across the owner's token accounts. Throws when no RPC gives an answer, so
+ * the caller degrades to an empty balance rather than caching a false zero.
+ */
+async function getSolanaTokenBalance({
+  owner,
+  mint,
+}: {
+  owner: string;
+  mint: string;
+}): Promise<bigint> {
+  let lastError: unknown;
+  for (const rpc of SOLANA_RPCS) {
+    try {
+      const response = await fetch(rpc, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getTokenAccountsByOwner",
+          params: [owner, { mint }, { encoding: "jsonParsed" }],
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Solana RPC error: ${response.status}`);
+      }
+      const json = (await response.json()) as {
+        error?: { message?: string };
+        result?: {
+          value?: {
+            account?: {
+              data?: {
+                parsed?: { info?: { tokenAmount?: { amount?: string } } };
+              };
+            };
+          }[];
+        };
+      };
+      if (json.error) {
+        throw new Error(`Solana RPC error: ${json.error.message}`);
+      }
+      return (json.result?.value ?? []).reduce(
+        (sum, tokenAccount) =>
+          sum +
+          BigInt(
+            tokenAccount?.account?.data?.parsed?.info?.tokenAmount?.amount ??
+              "0"
+          ),
+        BigInt(0)
+      );
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError;
+}
