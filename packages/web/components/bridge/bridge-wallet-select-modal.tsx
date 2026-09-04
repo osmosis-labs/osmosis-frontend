@@ -610,17 +610,6 @@ const SendToAnotherAddressForm: FunctionComponent<
 
   return (
     <section className="flex flex-col gap-4 pt-8">
-      {toChain.chainType === "solana" && (
-        <Button
-          variant="secondary"
-          className="w-full md:h-12"
-          onClick={connectPhantom}
-        >
-          {phantomDetected
-            ? t("transfer.wormholeRedeem.connectPhantom")
-            : t("transfer.wormholeRedeem.installPhantomWallet")}
-        </Button>
-      )}
       <div className="flex gap-2 rounded-2xl bg-osmoverse-900 p-4">
         <Icon
           id="alert-triangle"
@@ -632,6 +621,24 @@ const SendToAnotherAddressForm: FunctionComponent<
           {t("transfer.verifyAddressWarning")}
         </p>
       </div>
+      {toChain.chainType === "solana" && (
+        <Button
+          variant="secondary"
+          className="flex w-full items-center gap-2 md:h-12"
+          onClick={connectPhantom}
+        >
+          <img
+            src="/wallets/phantom.svg"
+            width={24}
+            height={24}
+            className="rounded-md"
+            alt="Phantom logo"
+          />
+          {phantomDetected
+            ? t("transfer.fillFromPhantom")
+            : t("transfer.wormholeRedeem.installPhantomWallet")}
+        </Button>
+      )}
       <div className="flex flex-col gap-1">
         <label
           className="body2 text-osmoverse-300"
@@ -691,7 +698,11 @@ const SendToAnotherAddressForm: FunctionComponent<
           placeholder={t("transfer.enterAddress")}
           className="w-full"
           classes={{
-            textarea: isInvalidAddress ? "text-rust-200" : undefined,
+            // text-sm so typical addresses (Solana base58, bech32, EVM hex)
+            // fit on a single line at this modal width
+            textarea: classNames("text-sm", {
+              "text-rust-200": isInvalidAddress,
+            }),
           }}
           trailingSymbol={
             <ChainLogo
@@ -700,7 +711,9 @@ const SendToAnotherAddressForm: FunctionComponent<
               prettyName={toChain.prettyName}
             />
           }
-          rows={2}
+          // single line normally; grow for the few chains whose addresses
+          // are long enough to wrap, so the user can verify all of it
+          rows={address.length > 50 ? 2 : 1}
         />
         {isInvalidAddress && (
           <p className="body2 text-rust-400">
