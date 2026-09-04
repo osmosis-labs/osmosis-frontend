@@ -189,7 +189,17 @@ export type SkipMsgsResponse = {
 
 export type SkipMsg =
   | { multi_chain_msg: SkipMultiChainMsg }
-  | { evm_tx: SkipEvmTx };
+  | { evm_tx: SkipEvmTx }
+  | { svm_tx: SkipSvmTx };
+
+/** A complete Solana transaction built by Skip, for the user's wallet to
+ *  sign and send. */
+export interface SkipSvmTx {
+  chain_id: string;
+  /** Base64-encoded transaction. */
+  tx: string;
+  signer_address: string;
+}
 
 export type SkipMultiChainMsg = {
   chain_id: string;

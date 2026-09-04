@@ -338,15 +338,21 @@ export class SkipBridgeProvider implements BridgeProvider {
         // check if supported by skip
         // Solana counterparties carry no chainId (NonCosmosCounterparty).
         // Skip routes SPL assets natively (e.g. allUSDC -> Solana USDC as a
-        // single-tx CCTP route through Noble), but only WITHDRAWALS are
-        // supported in-app: the user signs one Osmosis transaction and the
-        // destination is a pasted Solana address, while a deposit's first
-        // transaction would need an SVM wallet to sign on Solana.
+        // single-tx CCTP route through Noble).
+        // - Withdrawals: always in-app (one Osmosis signature; destination
+        //   is a Solana address).
+        // - Deposits: only when the receiving variant is Noble-native USDC,
+        //   which CCTP auto-forwards to Osmosis in a single Solana
+        //   transaction (signed by the user's SVM wallet). Other variants
+        //   (e.g. an alloy, which needs an Osmosis swap Noble forwarding
+        //   cannot carry) would require a second user-signed step and stay
+        //   off until the multi-tx flow supports an SVM first step.
         if (!("chainId" in counterparty)) {
           if (
-            direction === "withdraw" &&
             counterparty.chainName === "solana" &&
-            "sourceDenom" in counterparty
+            "sourceDenom" in counterparty &&
+            (direction === "withdraw" ||
+              chainAsset.origin_chain_id === "noble-1")
           ) {
             const skipSplAsset = assets["solana"]?.assets.find(
               (a) => a.denom === counterparty.sourceDenom
@@ -532,6 +538,17 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if ("multi_chain_msg" in message) {
         return await this.createCosmosTransaction(message.multi_chain_msg);
+      }
+
+      if ("svm_tx" in message) {
+        // Skip builds the complete Solana transaction; the user's SVM
+        // wallet (e.g. Phantom) signs and sends it as-is.
+        return {
+          type: "solana" as const,
+          chainId: message.svm_tx.chain_id,
+          txBase64: message.svm_tx.tx,
+          signerAddress: message.svm_tx.signer_address,
+        };
       }
     }
   }
@@ -939,6 +956,11 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
+    // Solana fees are set inside the Skip-built transaction itself and are
+    // a fraction of a cent; there is no estimation path here, so the quote
+    // simply shows no source-side gas figure.
+    if (txData.type === "solana") return undefined;
+
     if (txData.type === "evm") {
       const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId

@@ -5,6 +5,7 @@ import {
   BridgeError,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  SolanaBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
@@ -33,6 +34,10 @@ import { IS_TESTNET } from "~/config";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
+import {
+  getPhantomProvider,
+  usePhantomWallet,
+} from "~/hooks/use-phantom-wallet";
 import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -41,6 +46,10 @@ import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
+
+// Same public RPC the Wormhole redeem flow uses; only needed as a fallback
+// when the Phantom provider lacks signAndSendTransaction.
+const SOLANA_RPC = "https://solana-rpc.publicnode.com";
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
@@ -105,6 +114,7 @@ export const useBridgeQuotes = ({
   } = useEvmWalletAccount();
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
+  const { address: phantomAddress } = usePhantomWallet();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
 
@@ -184,6 +194,8 @@ export const useBridgeQuotes = ({
       );
     } else if (fromChain.chainType === "evm") {
       return isEthTxPending || isBroadcastingTx;
+    } else if (fromChain.chainType === "solana") {
+      return isBroadcastingTx;
     }
     return false;
   })();
@@ -786,6 +798,72 @@ export const useBridgeQuotes = ({
     }
   };
 
+  const signAndBroadcastSolanaTx = async (
+    quote: NonNullable<typeof selectedQuote>["quote"]
+  ) => {
+    const transactionRequest =
+      quote.transactionRequest as SolanaBridgeTransactionRequest;
+    try {
+      const phantom = getPhantomProvider();
+      if (!phantom || !phantomAddress) {
+        throw new Error("No Phantom wallet connected");
+      }
+      // The Skip-built transaction is bound to a specific signer. If the
+      // user switched Phantom accounts after this quote was built, the
+      // refreshed quote (keyed on fromAddress) replaces it momentarily;
+      // never ask the wrong account to sign.
+      if (transactionRequest.signerAddress !== phantomAddress) {
+        throw new Error(
+          "Connected Phantom account does not match the quoted signer"
+        );
+      }
+
+      setIsBroadcastingTx(true);
+      const { Connection, Transaction, VersionedTransaction } = await import(
+        "@solana/web3.js"
+      );
+      const txBytes = Buffer.from(transactionRequest.txBase64, "base64");
+      let solanaTx: unknown;
+      try {
+        solanaTx = VersionedTransaction.deserialize(txBytes);
+      } catch {
+        solanaTx = Transaction.from(txBytes);
+      }
+
+      let signature: string;
+      if (phantom.signAndSendTransaction) {
+        ({ signature } = await phantom.signAndSendTransaction(solanaTx));
+      } else if (phantom.signTransaction) {
+        const signed = (await phantom.signTransaction(solanaTx)) as {
+          serialize: () => Uint8Array;
+        };
+        const connection = new Connection(SOLANA_RPC, "confirmed");
+        signature = await connection.sendRawTransaction(signed.serialize());
+      } else {
+        throw new Error("Phantom provider cannot sign transactions");
+      }
+
+      trackTransferStatus({
+        quote,
+        sendTxHash: signature,
+      });
+
+      onTransferProp?.();
+      setTransferInitiated(true);
+    } catch (e) {
+      console.error("Solana transaction failed", e);
+      displayToast(
+        {
+          titleTranslationKey: "transfer.somethingIsntWorking",
+          captionTranslationKey: "transfer.sorryForTheInconvenience",
+        },
+        ToastType.ERROR
+      );
+    } finally {
+      setIsBroadcastingTx(false);
+    }
+  };
+
   const signAndBroadcastCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
@@ -914,6 +992,8 @@ export const useBridgeQuotes = ({
     const tx =
       transactionRequest.type === "evm"
         ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
+        : transactionRequest.type === "solana"
+        ? signAndBroadcastSolanaTx({ ...quote, transactionRequest })
         : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
 
     await tx.catch((e) => {

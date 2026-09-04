@@ -127,6 +127,24 @@ export const SkipAssets = {
     solana: {
       assets: [
         {
+          denom: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          chain_id: "solana",
+          origin_denom: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          origin_chain_id: "solana",
+          trace: "",
+          is_cw20: false,
+          is_evm: false,
+          is_svm: true,
+          symbol: "USDC",
+          name: "USDC",
+          logo_uri:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+          decimals: 6,
+          description: "USDC on Solana",
+          coingecko_id: "usd-coin",
+          recommended_symbol: "USDC",
+        },
+        {
           denom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
           chain_id: "solana",
           origin_denom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
