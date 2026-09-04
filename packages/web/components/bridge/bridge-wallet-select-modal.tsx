@@ -9,6 +9,7 @@ import {
   isSolanaAddressValid,
   isTonAddressValid,
   isXrplAddressValid,
+  shorten,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -40,6 +41,10 @@ import {
   useEvmWalletAccount,
   useSwitchEvmChain,
 } from "~/hooks/evm-wallet";
+import {
+  getPhantomProvider,
+  usePhantomWallet,
+} from "~/hooks/use-phantom-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
@@ -241,6 +246,12 @@ const BridgeWalletSelectScreens: FunctionComponent<
           />
         </div>
       );
+    }
+
+    // Solana deposits connect Phantom directly: an SVM source chain has no
+    // cosmos/EVM wallet list to offer.
+    if (direction === "deposit" && fromChain.chainType === "solana") {
+      return <PhantomConnectSection onDone={onClose} />;
     }
 
     const showEvmWallets = !isNil(evmChain) && !isNil(evmWallets);
@@ -506,14 +517,59 @@ interface SendToAnotherAddressFormProps {
   toChain: BridgeChainWithDisplayInfo;
 }
 
-/** Minimal Phantom (window.phantom.solana) surface used to fetch the
- *  user's Solana address. Same detection pattern as the Wormhole redeem
- *  flow. */
-type PhantomProvider = {
-  connect: () => Promise<{ publicKey?: { toBase58: () => string } }>;
-};
+/** Phantom connect/connected state for Solana-source deposits. */
+const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
+  onDone,
+}) => {
+  const { t } = useTranslation();
+  const { address, connect, disconnect } = usePhantomWallet();
+  const [phantomDetected, setPhantomDetected] = useState(false);
+  useEffect(() => {
+    setPhantomDetected(Boolean(getPhantomProvider()));
+  }, []);
 
-const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
+  return (
+    <section className="flex flex-col gap-4 py-8">
+      {address ? (
+        <>
+          <div className="flex items-center justify-between rounded-2xl bg-osmoverse-900 p-4">
+            <p className="body2 text-osmoverse-300">
+              {shorten(address, { prefixLength: 8, suffixLength: 6 })}
+            </p>
+            <Button
+              variant="link"
+              className="!h-fit !px-0 !py-0 text-wosmongton-200"
+              onClick={() => disconnect().catch(() => undefined)}
+            >
+              {t("walletSelect.disconnect")}
+            </Button>
+          </div>
+          <Button className="w-full md:h-12" onClick={onDone}>
+            {t("walletSelect.done")}
+          </Button>
+        </>
+      ) : (
+        <Button
+          variant="secondary"
+          className="w-full md:h-12"
+          onClick={async () => {
+            try {
+              // opens the install page itself when the extension is absent
+              const connected = await connect();
+              if (connected) onDone();
+            } catch {
+              // user rejected the connect prompt
+            }
+          }}
+        >
+          {phantomDetected
+            ? t("transfer.wormholeRedeem.connectPhantom")
+            : t("transfer.wormholeRedeem.installPhantomWallet")}
+        </Button>
+      )}
+    </section>
+  );
+};
 
 const SendToAnotherAddressForm: FunctionComponent<
   SendToAnotherAddressFormProps
@@ -526,22 +582,17 @@ const SendToAnotherAddressForm: FunctionComponent<
   // Solana destinations offer a wallet-connect autofill: Phantom provides
   // the address, the user still reviews and confirms it through the same
   // acknowledged-address flow as a pasted one.
-  const [phantom, setPhantom] = useState<PhantomProvider | null>(null);
+  const { connect: connectPhantomWallet } = usePhantomWallet();
+  const [phantomDetected, setPhantomDetected] = useState(false);
   useEffect(() => {
     if (toChain.chainType !== "solana") return;
-    setPhantom(
-      (window as any).phantom?.solana ?? (window as any).solana ?? null
-    );
+    setPhantomDetected(Boolean(getPhantomProvider()));
   }, [toChain.chainType]);
 
   const connectPhantom = async () => {
-    if (!phantom) {
-      window.open(PHANTOM_DOWNLOAD_URL, "_blank", "noopener");
-      return;
-    }
     try {
-      const resp = await phantom.connect();
-      const phantomAddress = resp?.publicKey?.toBase58();
+      // opens the install page itself when the extension is absent
+      const phantomAddress = await connectPhantomWallet();
       if (phantomAddress) {
         setAddress(phantomAddress);
         setIsInvalidAddress(!isSolanaAddressValid({ address: phantomAddress }));
@@ -565,7 +616,7 @@ const SendToAnotherAddressForm: FunctionComponent<
           className="w-full md:h-12"
           onClick={connectPhantom}
         >
-          {phantom
+          {phantomDetected
             ? t("transfer.wormholeRedeem.connectPhantom")
             : t("transfer.wormholeRedeem.installPhantomWallet")}
         </Button>

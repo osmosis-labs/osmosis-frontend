@@ -777,6 +777,15 @@ describe("SkipBridgeProvider", () => {
 
       expect(sourceVariants).toEqual([
         {
+          transferTypes: ["quote"],
+          chainId: "solana",
+          chainType: "solana",
+          address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          denom: "USDC",
+          decimals: 6,
+          coinGeckoId: "usd-coin",
+        },
+        {
           address: "uusdc",
           chainId: "noble-1",
           chainType: "cosmos",
@@ -946,6 +955,15 @@ describe("SkipBridgeProvider", () => {
 
       expect(sourceVariants).toEqual([
         {
+          transferTypes: ["quote"],
+          chainId: "solana",
+          chainType: "solana",
+          address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          denom: "USDC",
+          decimals: 6,
+          coinGeckoId: "usd-coin",
+        },
+        {
           address: "uusdc",
           chainId: "noble-1",
           chainType: "cosmos",
@@ -982,7 +1000,7 @@ describe("SkipBridgeProvider", () => {
       });
 
       // makes sure that the first variants are sourced from counterparty array
-      expect(sourceVariants[0]).toEqual({
+      expect(sourceVariants[1]).toEqual({
         address: "uusdc",
         chainId: "noble-1",
         chainType: "cosmos",
@@ -1009,7 +1027,7 @@ describe("SkipBridgeProvider", () => {
       });
 
       // makes sure that the first variants are sourced from counterparty array
-      expect(sourceVariants[1]).toEqual({
+      expect(sourceVariants[2]).toEqual({
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         chainId: 1,
         chainType: "evm",

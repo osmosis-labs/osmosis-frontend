@@ -508,9 +508,22 @@ export interface CosmosBridgeTransactionRequest {
   };
 }
 
+export interface SolanaBridgeTransactionRequest {
+  type: "solana";
+  /** e.g. `solana` */
+  chainId: string;
+  /** The full transaction to sign, base64-encoded (Skip `svm_tx.tx`). The
+   *  provider builds it complete; the wallet only signs and sends it. */
+  txBase64: string;
+  /** The Solana account expected to sign, base58. Callers must verify the
+   *  connected wallet matches before signing. */
+  signerAddress: string;
+}
+
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest;
+  | CosmosBridgeTransactionRequest
+  | SolanaBridgeTransactionRequest;
 
 /**
  * One user-signed transaction of a multi-transaction route, tagged with the
@@ -520,6 +533,7 @@ export type BridgeTransactionRequest =
 export type BridgeTransactionStep = BridgeTransactionRequest & {
   chainId: number | string;
 };
+
 /**
  * Bridge asset with raw base amount (without decimals).
  */
