@@ -954,6 +954,7 @@
     "feesReserved": "Toplam {assetName} bakiyenizin küçük bir kısmı {networkName} ücretlerini ödemek için ayrıldı.",
     "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
     "recipientAddress": "{chain} üzerindeki alıcı adresi",
+    "fillFromPhantom": "Phantom Cüzdanından doldur",
     "enterAddress": "Bir adres girin",
     "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",

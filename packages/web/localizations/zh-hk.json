@@ -954,6 +954,7 @@
     "feesReserved": "您的{assetName}總餘額中的一小部分已被保留用於支付{networkName}費用。",
     "verifyAddressWarning": "驗證您要提取資金的地址。提供不正確的地址將導致資金損失。",
     "recipientAddress": "{chain}上的收件者地址",
+    "fillFromPhantom": "從 Phantom 錢包填入",
     "enterAddress": "輸入地址",
     "sendToAnotherAddress": "發送到另一個地址",
     "invalidAddress": "無效的{chain}地址",

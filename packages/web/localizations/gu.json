@@ -954,6 +954,7 @@
     "feesReserved": "તમારા કુલ {assetName} બેલેન્સની થોડી રકમ {networkName} પર ફી ચૂકવવા માટે આરક્ષિત કરવામાં આવી છે.",
     "verifyAddressWarning": "તમે જે સરનામે તમારું ભંડોળ ઉપાડો છો તેની ચકાસણી કરો. ખોટું સરનામું આપવાથી ભંડોળની ખોટ થશે.",
     "recipientAddress": "{chain} પર પ્રાપ્તકર્તાનું સરનામું",
+    "fillFromPhantom": "Phantom Wallet માંથી ભરો",
     "enterAddress": "સરનામું દાખલ કરો",
     "sendToAnotherAddress": "બીજા સરનામે મોકલો",
     "invalidAddress": "અમાન્ય {chain} સરનામું",

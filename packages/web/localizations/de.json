@@ -954,6 +954,7 @@
     "feesReserved": "Ein kleiner Betrag Ihres gesamten {assetName} Guthabens wurde für die Zahlung von Gebühren für {networkName} reserviert.",
     "verifyAddressWarning": "Überprüfen Sie die Adresse, an die Sie Ihr Geld abheben. Die Angabe einer falschen Adresse führt zum Verlust des Geldes.",
     "recipientAddress": "Empfängeradresse auf {chain}",
+    "fillFromPhantom": "Aus Phantom Wallet übernehmen",
     "enterAddress": "Gib eine Adresse ein",
     "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",

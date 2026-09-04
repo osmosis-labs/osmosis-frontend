@@ -954,6 +954,7 @@
     "feesReserved": "Небольшая сумма вашего общего баланса {assetName} зарезервирована для оплаты комиссий по {networkName} .",
     "verifyAddressWarning": "Подтвердите адрес, на который вы выводите свои средства. Указание неверного адреса приведет к потере средств.",
     "recipientAddress": "Адрес получателя в {chain}",
+    "fillFromPhantom": "Заполнить из кошелька Phantom",
     "enterAddress": "Введите адрес",
     "sendToAnotherAddress": "Отправить на другой адрес",
     "invalidAddress": "Неверный адрес {chain}",

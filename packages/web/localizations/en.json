@@ -954,6 +954,7 @@
     "feesReserved": "A small amount of your total {assetName} balance has been reserved to pay fees on {networkName}.",
     "verifyAddressWarning": "Verify the address you are withdrawing your funds to. Providing an incorrect address will result in loss of funds.",
     "recipientAddress": "Recipient address on {chain}",
+    "fillFromPhantom": "Fill from Phantom Wallet",
     "enterAddress": "Enter an address",
     "sendToAnotherAddress": "Send to another address",
     "invalidAddress": "Invalid {chain} address",

@@ -954,6 +954,7 @@
     "feesReserved": "Niewielka część Twojego całkowitego salda {assetName} została zarezerwowana na pokrycie opłat za usługę {networkName} .",
     "verifyAddressWarning": "Sprawdź adres, na który wypłacasz środki. Podanie błędnego adresu skutkować będzie utratą środków.",
     "recipientAddress": "Adres odbiorcy w {chain}",
+    "fillFromPhantom": "Uzupełnij z portfela Phantom",
     "enterAddress": "Podaj adres",
     "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",

@@ -954,6 +954,7 @@
     "feesReserved": "आपके कुल {assetName} शेष राशि की एक छोटी राशि {networkName} पर शुल्क का भुगतान करने के लिए आरक्षित कर दी गई है।",
     "verifyAddressWarning": "जिस पते पर आप अपनी धनराशि निकाल रहे हैं, उसे सत्यापित करें। गलत पता देने पर धनराशि खो जाएगी।",
     "recipientAddress": "{chain} पर प्राप्तकर्ता का पता",
+    "fillFromPhantom": "Phantom Wallet से भरें",
     "enterAddress": "पता दर्ज करें",
     "sendToAnotherAddress": "दूसरे पते पर भेजें",
     "invalidAddress": "अमान्य {chain} पता",

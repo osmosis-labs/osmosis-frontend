@@ -954,6 +954,7 @@
     "feesReserved": "Se ha reservado una pequeña cantidad de su saldo total de {assetName} para pagar tarifas en {networkName} .",
     "verifyAddressWarning": "Verifique la dirección a la que está retirando sus fondos. Proporcionar una dirección incorrecta resultará en la pérdida de fondos.",
     "recipientAddress": "Dirección del destinatario en {chain}",
+    "fillFromPhantom": "Rellenar desde Phantom Wallet",
     "enterAddress": "Introduce una direccion",
     "sendToAnotherAddress": "Enviar a otra dirección",
     "invalidAddress": "Dirección {chain} no válida",

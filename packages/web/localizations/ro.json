@@ -954,6 +954,7 @@
     "feesReserved": "O mică parte din soldul dvs. total {assetName} a fost rezervată pentru a plăti taxe pentru {networkName} .",
     "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",
     "recipientAddress": "Adresa destinatarului pe {chain}",
+    "fillFromPhantom": "Completați din Phantom Wallet",
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",

@@ -954,6 +954,7 @@
     "feesReserved": "合計{assetName}残高の少額{networkName}の手数料の支払い用に確保されています。",
     "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",
     "recipientAddress": "{chain}の受信者アドレス",
+    "fillFromPhantom": "Phantom ウォレットから入力",
     "enterAddress": "住所を入力してください",
     "sendToAnotherAddress": "別のアドレスに送信",
     "invalidAddress": "無効な{chain}アドレス",
