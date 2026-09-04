@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 export const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
@@ -52,6 +52,26 @@ const subscribe = (callback: () => void) => {
   };
 };
 
+// One-time silent reconnect: Phantom remembers site approval, so a page
+// reload can restore the session without prompting. `onlyIfTrusted`
+// resolves only when the site was previously approved and rejects
+// silently otherwise.
+let attemptedEagerConnect = false;
+const eagerConnect = () => {
+  if (attemptedEagerConnect) return;
+  attemptedEagerConnect = true;
+  const provider = getPhantomProvider();
+  if (!provider) return;
+  wireProviderEvents(provider);
+  provider
+    .connect({ onlyIfTrusted: true })
+    .then((response) => {
+      phantomAddress = response?.publicKey?.toBase58?.();
+      emit();
+    })
+    .catch(() => undefined);
+};
+
 /**
  * Shared Phantom (Solana) wallet session. `connect` opens the Phantom
  * prompt (or the install page when the extension is absent) and the
@@ -64,6 +84,9 @@ export const usePhantomWallet = () => {
     () => phantomAddress,
     () => undefined
   );
+
+  // restore a previously approved session across page loads
+  useEffect(eagerConnect, []);
 
   const connect = useCallback(async (): Promise<string | undefined> => {
     const provider = getPhantomProvider();
