@@ -533,9 +533,18 @@ const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
       {address ? (
         <>
           <div className="flex items-center justify-between rounded-2xl bg-osmoverse-900 p-4">
-            <p className="body2 text-osmoverse-300">
-              {shorten(address, { prefixLength: 8, suffixLength: 6 })}
-            </p>
+            <div className="flex items-center gap-2">
+              <img
+                src="/wallets/phantom.svg"
+                width={24}
+                height={24}
+                className="rounded-md"
+                alt="Phantom logo"
+              />
+              <p className="body2 text-osmoverse-300">
+                {shorten(address, { prefixLength: 8, suffixLength: 6 })}
+              </p>
+            </div>
             <Button
               variant="link"
               className="!h-fit !px-0 !py-0 text-wosmongton-200"
@@ -551,7 +560,7 @@ const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
       ) : (
         <Button
           variant="secondary"
-          className="w-full md:h-12"
+          className="flex w-full items-center gap-2 md:h-12"
           onClick={async () => {
             try {
               // opens the install page itself when the extension is absent
@@ -562,6 +571,13 @@ const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
             }
           }}
         >
+          <img
+            src="/wallets/phantom.svg"
+            width={24}
+            height={24}
+            className="rounded-md"
+            alt="Phantom logo"
+          />
           {phantomDetected
             ? t("transfer.wormholeRedeem.connectPhantom")
             : t("transfer.wormholeRedeem.installPhantomWallet")}
