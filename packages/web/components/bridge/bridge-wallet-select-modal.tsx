@@ -506,6 +506,15 @@ interface SendToAnotherAddressFormProps {
   toChain: BridgeChainWithDisplayInfo;
 }
 
+/** Minimal Phantom (window.phantom.solana) surface used to fetch the
+ *  user's Solana address. Same detection pattern as the Wormhole redeem
+ *  flow. */
+type PhantomProvider = {
+  connect: () => Promise<{ publicKey?: { toBase58: () => string } }>;
+};
+
+const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
+
 const SendToAnotherAddressForm: FunctionComponent<
   SendToAnotherAddressFormProps
 > = ({ initialManualAddress, onConfirm, toChain }) => {
@@ -513,6 +522,34 @@ const SendToAnotherAddressForm: FunctionComponent<
   const [isInvalidAddress, setIsInvalidAddress] = useState(false);
   const [address, setAddress] = useState(initialManualAddress ?? "");
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+
+  // Solana destinations offer a wallet-connect autofill: Phantom provides
+  // the address, the user still reviews and confirms it through the same
+  // acknowledged-address flow as a pasted one.
+  const [phantom, setPhantom] = useState<PhantomProvider | null>(null);
+  useEffect(() => {
+    if (toChain.chainType !== "solana") return;
+    setPhantom(
+      (window as any).phantom?.solana ?? (window as any).solana ?? null
+    );
+  }, [toChain.chainType]);
+
+  const connectPhantom = async () => {
+    if (!phantom) {
+      window.open(PHANTOM_DOWNLOAD_URL, "_blank", "noopener");
+      return;
+    }
+    try {
+      const resp = await phantom.connect();
+      const phantomAddress = resp?.publicKey?.toBase58();
+      if (phantomAddress) {
+        setAddress(phantomAddress);
+        setIsInvalidAddress(!isSolanaAddressValid({ address: phantomAddress }));
+      }
+    } catch {
+      // user rejected the connect prompt: leave the form as-is
+    }
+  };
 
   const handleConfirm = () => {
     if (isAcknowledged) {
@@ -522,6 +559,17 @@ const SendToAnotherAddressForm: FunctionComponent<
 
   return (
     <section className="flex flex-col gap-4 pt-8">
+      {toChain.chainType === "solana" && (
+        <Button
+          variant="secondary"
+          className="w-full md:h-12"
+          onClick={connectPhantom}
+        >
+          {phantom
+            ? t("transfer.wormholeRedeem.connectPhantom")
+            : t("transfer.wormholeRedeem.installPhantomWallet")}
+        </Button>
+      )}
       <div className="flex gap-2 rounded-2xl bg-osmoverse-900 p-4">
         <Icon
           id="alert-triangle"
