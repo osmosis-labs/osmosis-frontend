@@ -16363,6 +16363,16 @@ export const MockAssetLists: AssetList[] = [
         ],
         counterparty: [
           {
+            chainName: "solana",
+            sourceDenom: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            chainType: "non-cosmos",
+            symbol: "USDC",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+            },
+          },
+          {
             chainName: "noble",
             sourceDenom: "uusdc",
             chainType: "cosmos",

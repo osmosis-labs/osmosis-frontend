@@ -46,6 +46,7 @@ import {
 import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
+import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import {
@@ -210,6 +211,7 @@ export const AmountScreen = observer(
       isConnecting,
     } = useEvmWalletAccount();
     const { switchChain: switchEvmChain } = useSwitchEvmChain();
+    const { address: phantomAddress } = usePhantomWallet();
 
     const fromCosmosCounterpartyAccount =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
@@ -240,6 +242,16 @@ export const AmountScreen = observer(
         return isEvmWalletConnected;
       }
 
+      // Solana deposits sign with Phantom; withdrawals to Solana still go
+      // through the manual-address flow below (the address can be
+      // autofilled from Phantom there, but must be confirmed).
+      if (
+        direction === "deposit" &&
+        chainThatNeedsWalletConnection.chainType === "solana"
+      ) {
+        return !isNil(phantomAddress);
+      }
+
       if (chainThatNeedsConnectionIsManual) {
         return !isNil(manualToAddress);
       }
@@ -248,8 +260,10 @@ export const AmountScreen = observer(
     }, [
       cosmosAccountRequiringConnection?.address,
       chainThatNeedsWalletConnection,
+      direction,
       isEvmWalletConnected,
       manualToAddress,
+      phantomAddress,
       chainThatNeedsConnectionIsManual,
     ]);
 
