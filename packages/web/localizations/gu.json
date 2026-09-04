@@ -793,7 +793,11 @@
     "noRoutes": "કોઈ રૂટ મળ્યા નથી",
     "route": "માર્ગ",
     "routes": "માર્ગો",
-    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ"
+    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ",
+    "extremeDisparityAcknowledgement": "હું સમજું છું કે હું મોકલું છું તેના કરતાં નોંધપાત્ર રીતે ઓછું મૂલ્ય મેળવી રહ્યો છું.",
+    "slippageAutoAdjustedTitle": "સ્લિપેજ આપમેળે સમાયોજિત",
+    "slippageAutoAdjustedBody": "ઊંચા ભાવ પ્રભાવ અથવા ઓછી તરલતાને કારણે આ ટ્રેડની ડિફોલ્ટ સ્લિપેજ વધારવામાં આવી છે.",
+    "amountTooSmallForSlippage": "આ સ્લિપેજ સાથે સ્વેપ કરવા માટે રકમ ખૂબ નાની છે. રકમ વધારો અથવા સ્લિપેજ ઘટાડો."
   },
   "walletSelect": {
     "gettingStarted": "શરૂઆત કરવી",
