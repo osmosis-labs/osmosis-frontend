@@ -527,6 +527,7 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "solana" }
             >[],
+            userSolanaAddress: phantomAddress,
           };
         default:
           return {
