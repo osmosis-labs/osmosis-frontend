@@ -27,11 +27,11 @@ import { api } from "~/utils/trpc";
 export function useAmountInput({
   currency,
   inputDebounceMs = 200,
-  gasAmount,
+  gasAmount, swapFeeAmount,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
-  gasAmount?: CoinPretty;
+  gasAmount?: CoinPretty; swapFeeAmount?: CoinPretty;
 }) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
@@ -95,7 +95,7 @@ export function useAmountInput({
       gasAmount?.currency.coinMinimalDenom === currency?.coinMinimalDenom &&
       gasAmount
     ) {
-      const valueWithGas = balance.sub(gasAmount);
+      const valueWithGas = balance.sub(gasAmount).sub(swapFeeAmount ?? new CoinPretty(currency, 0));
       if (valueWithGas.toDec().gte(new Dec(0))) {
         maxValue = valueWithGas;
       } else {
@@ -104,7 +104,7 @@ export function useAmountInput({
     }
 
     return maxValue;
-  }, [balance, gasAmount, currency]);
+  }, [balance, gasAmount, swapFeeAmount, currency]);
 
   /** Amount derived from user input or from a fraction of the user’s balance. */
   const amount = useMemo(() => {
