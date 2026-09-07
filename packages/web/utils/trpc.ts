@@ -100,7 +100,10 @@ export const api = createTRPCNext<AppRouter>({
       // and data respecting the new model is fetched from the server.
       // Otherwise, the old data will be served from cache
       // and unexpected data structures will be run through the app.
-      buster: "v2",
+      // v3: drop caches that may hold poisoned success-with-empty
+      // supported-assets results persisted before the Skip counterparty
+      // mutation fix.
+      buster: "v3",
     });
 
     return {

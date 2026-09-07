@@ -37,9 +37,22 @@ export class PoolsPage extends BasePage {
   }
 
   async viewPool(id: number, pair: string) {
-    await this.page
-      .locator(`//table//td/a[@href="/pool/${id}"]//span[.="${pair}"]`)
-      .click()
+    // The pool id is the stable identity, so pin the row on the href and treat
+    // the pair only as a guard that we are clicking the pool we meant to.
+    // Matching the label exactly is what broke here: the USDC identity handover
+    // renamed the Noble-backed pools from "ATOM/USDC" to "ATOM/USDC.noble",
+    // because plain "USDC" now denotes the alloy, and an exact-text locator
+    // simply never resolved — the click waited out the whole test timeout
+    // rather than failing with something readable. A substring match spans both
+    // sides of the handover, so this does not need revisiting when the rest of
+    // the rename lands.
+    const poolLink = this.page
+      .locator(`//table//td/a[@href="/pool/${id}"]`)
+      .filter({ hasText: pair })
+    // Bounded so a row that never resolves fails here, naming the pool, instead
+    // of stalling the click until the 90s test timeout with nothing to read.
+    await poolLink.waitFor({ timeout: 10000 })
+    await poolLink.click()
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000)
     await super.printUrl()

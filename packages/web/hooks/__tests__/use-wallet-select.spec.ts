@@ -100,6 +100,18 @@ describe("installPrevSessionWallet", () => {
       expect(localStorage.getItem(WALLET_KEY)).toBeNull();
       expect(localStorage.getItem(ACCOUNTS_KEY)).toBeNull();
     });
+
+    it("clears storage for a returning Cosmostation user after the sunset", async () => {
+      localStorage.setItem(ACCOUNTS_KEY, FAKE_ACCOUNTS);
+      localStorage.setItem(WALLET_KEY, "cosmostation-extension");
+
+      const deps = makeDeps({ walletRegistry: [] });
+      await installPrevSessionWallet(deps);
+
+      expect(localStorage.getItem(WALLET_KEY)).toBeNull();
+      expect(localStorage.getItem(ACCOUNTS_KEY)).toBeNull();
+      expect(deps.addWallet).not.toHaveBeenCalled();
+    });
   });
 
   describe("when the persisted wallet is in the registry", () => {

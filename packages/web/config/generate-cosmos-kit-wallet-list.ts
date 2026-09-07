@@ -4,7 +4,6 @@ import path from "node:path";
 
 import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
-import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
@@ -31,7 +30,6 @@ const CosmosKitWalletList: Wallet[] = [
   okxWalletExtensionInfo,
   trustExtensionInfo,
   xdefiExtensionInfo,
-  cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
 ];

@@ -5,8 +5,8 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
+  getQuotePrice,
   queryPrices,
-  QUOTE_COIN_MINIMAL_DENOM,
 } from "../../../../../queries/sidecar/prices";
 import { EdgeDataLoader } from "../../../../../utils/batching";
 import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
@@ -35,8 +35,15 @@ function getBatchLoader() {
           queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
             coinMinimalDenoms.map((baseCoinMinimalDenom) => {
               try {
-                const price =
-                  priceMap[baseCoinMinimalDenom][QUOTE_COIN_MINIMAL_DENOM];
+                // Accepts the current or legacy quote key: sidecar flips its
+                // quote denom on restart, independently of this deploy.
+                const price = getQuotePrice(priceMap[baseCoinMinimalDenom]);
+
+                if (isNil(price)) {
+                  return new Error(
+                    `No SQS price result for ${baseCoinMinimalDenom} and USDC`
+                  );
+                }
 
                 // trim to 18 decimals to silence Dec warnings
                 const p = price.replace(/(\.\d{18})\d*/, "$1");

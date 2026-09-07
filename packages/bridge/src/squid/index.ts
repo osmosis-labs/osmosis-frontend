@@ -319,21 +319,27 @@ export class SquidBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
+    // Registry fetches live OUTSIDE the try/catch: their failures (registry
+    // down, rate limited) must reject so the client's query retries and
+    // re-polls. Everything below is pure lookup over the fetched data, where
+    // a miss legitimately means "no route for this asset".
+    const [tokens, chains] = await Promise.all([
+      this.getTokens(),
+      this.getChains(),
+    ]);
+    const token = tokens.find(
+      (t) =>
+        (t.address.toLowerCase() === asset.address.toLowerCase() ||
+          t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
+        // squid uses canonical chain IDs (numerical and string)
+        String(t.chainId) === String(chain.chainId)
+    );
+
+    // Token not in Squid's registry: unsupported by this provider, not an
+    // outage — resolve empty so other transfer options can render.
+    if (!token) return [];
+
     try {
-      const [tokens, chains] = await Promise.all([
-        this.getTokens(),
-        this.getChains(),
-      ]);
-      const token = tokens.find(
-        (t) =>
-          (t.address.toLowerCase() === asset.address.toLowerCase() ||
-            t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
-          // squid uses canonical chain IDs (numerical and string)
-          String(t.chainId) === String(chain.chainId)
-      );
-
-      if (!token) throw new Error("Token not found: " + asset.address);
-
       const foundVariants = new BridgeAssetMap<
         BridgeChain & BridgeSupportedAsset
       >();
@@ -437,7 +443,6 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       return foundVariants.assets;
     } catch (e) {
-      // Avoid returning options if there's an unexpected error, such as the provider being down
       if (process.env.NODE_ENV !== "production") {
         console.error(
           SquidBridgeProvider.ID,
@@ -445,6 +450,10 @@ export class SquidBridgeProvider implements BridgeProvider {
           e
         );
       }
+      // Only pure lookup over already-fetched registry data can land here
+      // (infra failures reject above, before the try), so degrade to "no
+      // options from this provider" rather than an error the client would
+      // retry forever.
       return [];
     }
   }
@@ -673,6 +682,16 @@ export class SquidBridgeProvider implements BridgeProvider {
           throw error.data;
         }
       },
+      // A degraded registry response (e.g. a rate-limited 200 with an empty
+      // body) must not be cached as 30 minutes of truth: an empty registry
+      // reads as "asset unsupported" downstream, which silently bypasses
+      // the client's retry and re-poll machinery. Failing the check makes
+      // cachified throw instead, so it propagates as a provider failure
+      // the client retries. (cachified types the checked value as {}.)
+      checkValue: (value) => {
+        const chains = value as ChainsResponse["chains"];
+        return (chains?.length ?? 0) > 0 || "empty Squid chains response";
+      },
     });
   }
 
@@ -696,6 +715,13 @@ export class SquidBridgeProvider implements BridgeProvider {
           const error = e as ApiClientError;
           throw error.data;
         }
+      },
+      // see getChains: never cache a degraded/empty registry response
+      checkValue: (value) => {
+        const tokens = value as TokensResponse["tokens"];
+        return (
+          (tokens?.length ?? 0) > 0 || "empty Squid token registry response"
+        );
       },
     });
   }

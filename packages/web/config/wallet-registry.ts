@@ -206,19 +206,6 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     features: [],
   },
   {
-    ...CosmosKitWalletList["cosmostation-extension"],
-    logo: "/wallets/cosmostation.png",
-    mobileDisabled: false,
-    lazyInstall: () =>
-      import("@cosmos-kit/cosmostation-extension").then(
-        (m) => m.CosmostationExtensionWallet
-      ),
-    windowPropertyName: "cosmostation",
-    stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
-    governanceUrl: "https://cosmos.leapwallet.io/gov",
-    features: ["notifications"],
-  },
-  {
     ...CosmosKitWalletList["station-extension"],
     mobileDisabled: true,
     logo: "/wallets/station.svg",
