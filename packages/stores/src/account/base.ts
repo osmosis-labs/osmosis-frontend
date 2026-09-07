@@ -86,6 +86,7 @@ import {
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
+  runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -641,14 +642,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
-      if (this.options.preTxEvents?.onSign) {
-        await this.options.preTxEvents.onSign();
-      }
-
-      if (onSign) {
-        await onSign();
-      }
-
       // Pre-probe REST endpoints to find a working one for broadcast.
       // Falls back to the wallet's default endpoint if probe fails.
       let restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
@@ -665,6 +658,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         } catch {
           // Pre-probe failed; use wallet default
         }
+      }
+
+      // onSign runs after the (up to multi-second) endpoint probe so it sits
+      // immediately before the broadcast POST: callers use it for last-moment
+      // pre-broadcast checks (a throw here aborts the broadcast and discards
+      // the signed tx), so no other awaits may separate it from the POST.
+      if (this.options.preTxEvents?.onSign) {
+        await this.options.preTxEvents.onSign();
+      }
+
+      if (onSign) {
+        await onSign();
       }
 
       const res = await axios.post<{
@@ -691,6 +696,26 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const broadcasted = res.data.tx_response;
 
+      if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
+      }
+
+      // The POST returning code 0 IS acceptance: record it via onBroadcasted
+      // before any tracer setup, whose endpoint resolution can itself fail —
+      // callers persisting acceptance state (e.g. duplicate-creation guards)
+      // must learn the tx hash even when everything after this point throws.
+      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
+
+      // The per-call callback records acceptance and must not be skipped
+      // because the store-wide one (toasts, analytics) threw.
+      runBroadcastedCallbacks({
+        chainId: chainNameOrId,
+        txHash: txHashBuffer,
+        preTxEvent: this.options.preTxEvents?.onBroadcasted,
+        perCall: onBroadcasted,
+      });
+
       // Pass all RPC endpoints to TxTracer for WebSocket failover.
       const rpcUrls = this.getChainRpcUrls(wallet);
       let sortedRpcUrls: string[] =
@@ -715,21 +740,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
-
-      if (broadcasted.code) {
-        const { BroadcastTxError } = await import("@cosmjs/stargate");
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
-      }
-
-      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
-
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
 
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
