@@ -70,7 +70,7 @@
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "migrateLiquidity": "Migrate Liquidity",
-    "migrateDescription": "Move this position from pool {{fromPoolId}} to pool {{toPoolId}}, keeping the same price range and fee tier.",
+    "migrateDescription": "Move this position from pool {fromPoolId} to pool {toPoolId}, keeping the same price range and fee tier.",
     "migrateDustNotice": "Any amount that doesn't fit the new range is returned to your wallet.",
     "migrateIncentivesNotice": "Incentives that haven't met their minimum uptime are forfeited when the position is withdrawn.",
     "yourPositions": "Your Positions",

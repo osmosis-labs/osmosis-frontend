@@ -431,6 +431,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
           {eligibleMigration && (
             <PositionButton
+              variant="default"
               disabled={Boolean(account?.txTypeInProgress) || !Boolean(account)}
               onClick={useCallback(() => setActiveModal("migrate"), [])}
               isLoading={isLoadingPositionDetails}
