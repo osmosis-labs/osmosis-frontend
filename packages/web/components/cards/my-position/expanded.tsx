@@ -134,6 +134,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const { migration: eligibleMigration, minAmountTolerance } =
       usePositionMigrationForPosition({
         poolId,
+        // The divergence gate tightens with position size, so it needs the
+        // value being moved, not just the pool.
+        positionValueUsd: Number(currentValue?.toDec().toString() ?? "0"),
         isUnbonding: Boolean(isUnbonding),
         isSuperfluidStaked: Boolean(isSuperfluidStaked),
         isSuperfluidUnstaking: Boolean(isSuperfluidUnstaking),

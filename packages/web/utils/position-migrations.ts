@@ -25,12 +25,24 @@ export interface PositionMigration {
   enabled?: boolean;
 }
 
+/**
+ * One rung of the size-tiered divergence gate: positions worth strictly less
+ * than `upToUsd` gate at `tolerancePercent`. The final tier omits `upToUsd`
+ * and catches everything above.
+ */
+export interface DivergenceTier {
+  upToUsd?: number;
+  tolerancePercent: number;
+}
+
 export interface PositionMigrationsResponse {
   /**
    * Maximum allowed difference, in percent, between the source and
-   * destination pool prices.
+   * destination pool prices, tiered by the USD value of the position being
+   * migrated: a small position can tolerate more mispricing because the
+   * absolute loss is small, while a large one demands a tight price.
    */
-  priceDivergenceTolerance: number;
+  priceDivergenceTiers: DivergenceTier[];
   /**
    * Tolerance, in percent, for deriving `tokenMinAmount0/1` from the
    * simulated deposit amounts.
@@ -88,12 +100,19 @@ export type MigrationIneligibilityReason =
   | "unexpectedDenoms";
 
 export type MigrationEligibility =
-  | { isEligible: true; migration: PositionMigration; divergencePercent: Dec }
+  | {
+      isEligible: true;
+      migration: PositionMigration;
+      divergencePercent: Dec;
+      /** The tier tolerance this position was judged against. */
+      appliedTolerancePercent: number;
+    }
   | {
       isEligible: false;
       reason: MigrationIneligibilityReason;
       /** Present when the refusal is a price divergence. */
       divergencePercent?: Dec;
+      appliedTolerancePercent?: number;
     };
 
 /**
@@ -130,6 +149,25 @@ export const findMigration = ({
       migration.fromPoolId.toString() === fromPoolId &&
       migration.enabled !== false
   );
+
+/**
+ * The divergence tolerance a position of the given USD value gates at: the
+ * first tier whose bound exceeds the value, else the catch-all. Returns
+ * `undefined` for an empty or malformed tier list (no catch-all), which the
+ * caller must treat as "cannot evaluate the gate" and refuse - defaulting to
+ * any tolerance here would let a config mistake loosen the gate silently.
+ */
+export const toleranceForPositionSize = (
+  tiers: DivergenceTier[] | undefined,
+  positionValueUsd: number
+): number | undefined => {
+  if (!tiers?.length) return undefined;
+  for (const tier of tiers) {
+    if (tier.upToUsd === undefined) return tier.tolerancePercent;
+    if (positionValueUsd < tier.upToUsd) return tier.tolerancePercent;
+  }
+  return undefined;
+};
 
 /**
  * Which side of a pool holds the given denom, or `undefined` if neither does.
@@ -176,7 +214,8 @@ export const getPriceDivergencePercent = ({
  */
 export const getMigrationEligibility = ({
   migrations,
-  priceDivergenceTolerance,
+  priceDivergenceTiers,
+  positionValueUsd,
   fromPool,
   toPool,
   lockState,
@@ -184,7 +223,9 @@ export const getMigrationEligibility = ({
   toUsdcDenom,
 }: {
   migrations: PositionMigration[] | undefined;
-  priceDivergenceTolerance: number;
+  priceDivergenceTiers: DivergenceTier[] | undefined;
+  /** USD value of the position being migrated; selects the divergence tier. */
+  positionValueUsd: number;
   fromPool: MigrationPoolState;
   toPool: MigrationPoolState | undefined;
   lockState: PositionLockState;
@@ -241,11 +282,31 @@ export const getMigrationEligibility = ({
   if (fromSharedDenom !== toSharedDenom)
     return { isEligible: false, reason: "unexpectedDenoms" };
 
-  const divergencePercent = getPriceDivergencePercent({ fromPool, toPool });
-  if (divergencePercent.gt(new Dec(priceDivergenceTolerance.toString())))
-    return { isEligible: false, reason: "priceDivergence", divergencePercent };
+  // The gate tightens with position size. An unevaluable tier list (empty, or
+  // missing its catch-all) refuses rather than assuming a tolerance: a config
+  // mistake must never loosen the gate.
+  const tolerancePercent = toleranceForPositionSize(
+    priceDivergenceTiers,
+    positionValueUsd
+  );
+  if (tolerancePercent === undefined)
+    return { isEligible: false, reason: "priceDivergence" };
 
-  return { isEligible: true, migration, divergencePercent };
+  const divergencePercent = getPriceDivergencePercent({ fromPool, toPool });
+  if (divergencePercent.gt(new Dec(tolerancePercent.toString())))
+    return {
+      isEligible: false,
+      reason: "priceDivergence",
+      divergencePercent,
+      appliedTolerancePercent: tolerancePercent,
+    };
+
+  return {
+    isEligible: true,
+    migration,
+    divergencePercent,
+    appliedTolerancePercent: tolerancePercent,
+  };
 };
 
 /**

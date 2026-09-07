@@ -35,7 +35,7 @@ export const usePositionMigrations = () => {
 
   return {
     migrations: data?.migrations,
-    priceDivergenceTolerance: data?.priceDivergenceTolerance,
+    priceDivergenceTiers: data?.priceDivergenceTiers,
     minAmountTolerance: data?.minAmountTolerance,
     isLoading,
   };

@@ -2,12 +2,14 @@ import { Dec, Int } from "@osmosis-labs/unit";
 
 import {
   deriveTokenMinAmount,
+  DivergenceTier,
   findMigration,
   getMigrationEligibility,
   getPriceDivergencePercent,
   isPositionUnlocked,
   MigrationPoolState,
   PositionMigration,
+  toleranceForPositionSize,
 } from "../position-migrations";
 
 const USDC_NOBLE =
@@ -53,16 +55,25 @@ const unlocked = {
   isSuperfluidUnstaking: false,
 };
 
+const TIERS: DivergenceTier[] = [
+  { upToUsd: 100, tolerancePercent: 0.5 },
+  { upToUsd: 500, tolerancePercent: 0.3 },
+  { upToUsd: 1000, tolerancePercent: 0.2 },
+  { tolerancePercent: 0.1 },
+];
+
 const check = (args: {
   from?: Partial<MigrationPoolState>;
   to?: Partial<MigrationPoolState>;
   lockState?: typeof unlocked;
   migrations?: PositionMigration[];
-  tolerance?: number;
+  tiers?: DivergenceTier[];
+  positionValueUsd?: number;
 }) =>
   getMigrationEligibility({
     migrations: args.migrations ?? [MIGRATION],
-    priceDivergenceTolerance: args.tolerance ?? 0.1,
+    priceDivergenceTiers: args.tiers ?? TIERS,
+    positionValueUsd: args.positionValueUsd ?? 5000,
     fromPool: fromPool(args.from),
     toPool: toPool(args.to),
     lockState: args.lockState ?? unlocked,
@@ -192,6 +203,52 @@ describe("getMigrationEligibility", () => {
     expect(result).toMatchObject({ isEligible: false, reason: "notMapped" });
   });
 
+  describe("size-tiered price divergence", () => {
+    // sqrtPrice 0.001 -> price 1e-6; 0.0010019 -> ~0.38% divergence: allowed
+    // for a small position, refused for a large one.
+    const drifted = { currentSqrtPrice: new Dec("0.0010019") };
+
+    it("lets a small position through a divergence a large one refuses", () => {
+      expect(check({ to: drifted, positionValueUsd: 50 }).isEligible).toBe(
+        true
+      );
+      const large = check({ to: drifted, positionValueUsd: 5000 });
+      expect(large).toMatchObject({
+        isEligible: false,
+        reason: "priceDivergence",
+        appliedTolerancePercent: 0.1,
+      });
+    });
+
+    it("applies the tier boundary as strictly-less-than", () => {
+      // exactly $100 falls into the $100-500 tier (0.3%), not the 0.5% one
+      const mid = check({ to: drifted, positionValueUsd: 100 });
+      expect(mid).toMatchObject({
+        isEligible: false,
+        appliedTolerancePercent: 0.3,
+      });
+    });
+
+    it("refuses when the tier list is empty rather than assuming a tolerance", () => {
+      const result = check({ tiers: [], positionValueUsd: 50 });
+      expect(result).toMatchObject({
+        isEligible: false,
+        reason: "priceDivergence",
+      });
+    });
+
+    it("refuses when no catch-all exists and the value exceeds every bound", () => {
+      const result = check({
+        tiers: [{ upToUsd: 100, tolerancePercent: 0.5 }],
+        positionValueUsd: 5000,
+      });
+      expect(result).toMatchObject({
+        isEligible: false,
+        reason: "priceDivergence",
+      });
+    });
+  });
+
   describe("price divergence", () => {
     // sqrtPrice 0.001 -> price 1e-6; 0.0010005 -> ~1.001e-6, i.e. ~0.1%.
     it("allows divergence within tolerance", () => {
@@ -222,6 +279,26 @@ describe("getMigrationEligibility", () => {
         reason: "priceDivergence",
       });
     });
+  });
+});
+
+describe("toleranceForPositionSize", () => {
+  it("selects the first tier whose bound exceeds the value", () => {
+    expect(toleranceForPositionSize(TIERS, 50)).toBe(0.5);
+    expect(toleranceForPositionSize(TIERS, 100)).toBe(0.3);
+    expect(toleranceForPositionSize(TIERS, 499)).toBe(0.3);
+    expect(toleranceForPositionSize(TIERS, 500)).toBe(0.2);
+    expect(toleranceForPositionSize(TIERS, 999.99)).toBe(0.2);
+    expect(toleranceForPositionSize(TIERS, 1000)).toBe(0.1);
+    expect(toleranceForPositionSize(TIERS, 2_500_000)).toBe(0.1);
+  });
+
+  it("returns undefined for empty or catch-all-less tiers", () => {
+    expect(toleranceForPositionSize(undefined, 50)).toBeUndefined();
+    expect(toleranceForPositionSize([], 50)).toBeUndefined();
+    expect(
+      toleranceForPositionSize([{ upToUsd: 100, tolerancePercent: 0.5 }], 200)
+    ).toBeUndefined();
   });
 });
 

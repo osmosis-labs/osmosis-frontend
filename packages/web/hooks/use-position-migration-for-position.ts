@@ -25,16 +25,19 @@ import { api } from "~/utils/trpc";
  */
 export const usePositionMigrationForPosition = ({
   poolId,
+  positionValueUsd,
   isUnbonding,
   isSuperfluidStaked,
   isSuperfluidUnstaking,
 }: {
   poolId: string;
+  /** USD value of the position; the divergence gate tightens with size. */
+  positionValueUsd: number;
   isUnbonding: boolean;
   isSuperfluidStaked: boolean;
   isSuperfluidUnstaking: boolean;
 }) => {
-  const { migrations, priceDivergenceTolerance, minAmountTolerance } =
+  const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
 
   // Only the mapped source pools ever reach the destination query, so an
@@ -52,7 +55,7 @@ export const usePositionMigrationForPosition = ({
 
   if (
     !mapped ||
-    priceDivergenceTolerance === undefined ||
+    priceDivergenceTiers === undefined ||
     minAmountTolerance === undefined ||
     !fromPoolData ||
     !toPoolData
@@ -70,7 +73,8 @@ export const usePositionMigrationForPosition = ({
 
   const eligibility: MigrationEligibility = getMigrationEligibility({
     migrations,
-    priceDivergenceTolerance,
+    priceDivergenceTiers,
+    positionValueUsd,
     fromPool,
     toPool,
     lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
