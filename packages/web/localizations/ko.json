@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "허용 가격 차이",
     "migrateRevalidationFailed": "열려 있는 동안 가격이 변동해 마이그레이션이 더 이상 검사를 통과하지 못합니다. 닫고 다시 시도하세요.",
     "migrateReason": "이동 과정에서 USDC.noble은 트랜스뮤터를 통해 1:1로 USDC로 변환됩니다.",
-    "migrateRiskNotice": "하나의 원자적 트랜잭션: 서명 시 가격 차이가 허용치를 초과하거나 어떤 결과든 시뮬레이션보다 {minTolerance}% 넘게 낮으면 되돌려집니다.",
+    "migrateRiskNotice": "하나의 원자적 트랜잭션: 가격 차이는 지갑 확인 직전에 다시 검사되며, 어떤 결과든 시뮬레이션보다 {minTolerance}% 넘게 낮으면 되돌려집니다. 마지막 순간에 가격이 움직이면 소액의 부족분이 지갑에 이미 있는 {baseSymbol} 또는 {fromUsdcSymbol}(으)로 충당될 수 있으며, 인출에서 나온 동등한 잉여분은 지갑으로 반환됩니다.",
     "yourPositions": "당신의 위치",
     "yourPosition": "너의 위치",
     "yourPositionsDesc": "자산을 작동시키고 모든 스왑에서 스프레드를 얻으십시오.",

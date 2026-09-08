@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Dozwolona różnica cen",
     "migrateRevalidationFailed": "Ceny zmieniły się, gdy to okno było otwarte, i migracja nie przechodzi już swoich kontroli. Zamknij i spróbuj ponownie.",
     "migrateReason": "USDC.noble jest w trakcie przenoszenia wymieniane 1:1 na USDC przez transmuter.",
-    "migrateRiskNotice": "Jedna atomowa transakcja: cofa się, jeśli w chwili podpisu różnica cen przekracza limit lub jakikolwiek wynik wypadnie ponad {minTolerance}% poniżej swojej symulacji.",
+    "migrateRiskNotice": "Jedna atomowa transakcja: różnica cen jest ponownie sprawdzana tuż przed monitem portfela, a transakcja cofa się, jeśli jakikolwiek wynik wypadnie ponad {minTolerance}% poniżej swojej symulacji. Jeśli ceny zmienią się w ostatnich chwilach, drobny niedobór może zostać pokryty z {baseSymbol} lub {fromUsdcSymbol} już znajdujących się w portfelu, a równoważna nadwyżka z wypłaty do niego wróci.",
     "yourPositions": "Twoje pozycje",
     "yourPosition": "Twoje stanowisko",
     "yourPositionsDesc": "Wykorzystaj swoje aktywa do pracy i zarabiaj spread na każdej zamianie.",

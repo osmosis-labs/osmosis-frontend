@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Allowed price difference",
     "migrateRevalidationFailed": "Prices moved while this was open and the migration no longer clears its checks. Close and try again.",
     "migrateReason": "USDC.noble converts 1:1 to USDC through the transmuter as part of the move.",
-    "migrateRiskNotice": "One atomic transaction: it reverts if the price difference is above the allowance when you sign, or if any output lands more than {minTolerance}% under its simulation.",
+    "migrateRiskNotice": "One atomic transaction: the price difference is re-checked right before your wallet prompt, and it reverts if any output lands more than {minTolerance}% under its simulation. If prices shift in the final moments, a small shortfall may be covered from {baseSymbol} or {fromUsdcSymbol} already in your wallet, with the equivalent surplus from the withdrawal returned to it.",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",

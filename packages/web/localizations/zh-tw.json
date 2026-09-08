@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "允許的價格差",
     "migrateRevalidationFailed": "打開期間價格發生變動，遷移已無法通過檢查。請關閉後重試。",
     "migrateReason": "遷移過程中，USDC.noble 通過轉換器按 1:1 兌換為 USDC。",
-    "migrateRiskNotice": "一筆原子交易：若簽名時價格差超過允許值，或任一輸出比其模擬結果低超過 {minTolerance}%，交易將回滾。",
+    "migrateRiskNotice": "一筆原子交易：價格差會在錢包確認前再次檢查，若任一輸出比其模擬結果低超過 {minTolerance}%，交易將回滾。若價格在最後時刻變動，小額缺口可能由錢包中已有的 {baseSymbol} 或 {fromUsdcSymbol} 補足，提取產生的等值盈餘將返回錢包。",
     "yourPositions": "您的職位",
     "yourPosition": "你的職位",
     "yourPositionsDesc": "讓您的資產發揮作用，並在每次掉期中賺取點差。",

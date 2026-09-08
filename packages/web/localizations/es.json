@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Diferencia de precio permitida",
     "migrateRevalidationFailed": "Los precios se movieron mientras esto estaba abierto y la migración ya no pasa sus comprobaciones. Cierra e inténtalo de nuevo.",
     "migrateReason": "USDC.noble se convierte 1:1 a USDC a través del transmuter como parte del traslado.",
-    "migrateRiskNotice": "Una transacción atómica: se revierte si la diferencia de precio supera el límite al firmar o si algún resultado queda más de un {minTolerance}% por debajo de su simulación.",
+    "migrateRiskNotice": "Una transacción atómica: la diferencia de precio se vuelve a comprobar justo antes de la solicitud de tu wallet, y se revierte si algún resultado queda más de un {minTolerance}% por debajo de su simulación. Si los precios se mueven en los últimos instantes, un pequeño déficit puede cubrirse con {baseSymbol} o {fromUsdcSymbol} que ya estén en tu wallet, devolviéndose a ella el excedente equivalente del retiro.",
     "yourPositions": "Tus Posiciones",
     "yourPosition": "Tu posición",
     "yourPositionsDesc": "Ponga sus activos a trabajar y gane un margen en cada intercambio.",

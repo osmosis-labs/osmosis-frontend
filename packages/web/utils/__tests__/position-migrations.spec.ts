@@ -1,6 +1,7 @@
 import { Dec, Int } from "@osmosis-labs/unit";
 
 import {
+  ChainConcentratedPoolResponse,
   deriveTokenMinAmount,
   DivergenceTier,
   findMigration,
@@ -8,6 +9,7 @@ import {
   getPriceDivergencePercent,
   isPositionUnlocked,
   MigrationPoolState,
+  poolStateFromChainResponse,
   PositionMigration,
   toleranceForPositionSize,
 } from "../position-migrations";
@@ -389,5 +391,56 @@ describe("isPositionUnlocked / findMigration", () => {
     expect(
       findMigration({ migrations: undefined, fromPoolId: "1926" })
     ).toBeUndefined();
+  });
+});
+
+describe("poolStateFromChainResponse", () => {
+  // Shaped like the live LCD response for pool 3504, including the
+  // 36-decimal big-dec sqrt price the chain reports.
+  const CHAIN_POOL: ChainConcentratedPoolResponse = {
+    "@type": "/osmosis.concentratedliquidity.v1beta1.Pool",
+    id: "3504",
+    token0: "allBTC",
+    token1: ALL_USDC,
+    current_sqrt_price: "28.026618367609847378304796955893838320",
+    tick_spacing: "100",
+    spread_factor: "0.001000000000000000",
+  };
+
+  it("maps a concentrated pool, truncating the sqrt price to Dec precision", () => {
+    const state = poolStateFromChainResponse(CHAIN_POOL);
+    expect(state).toBeDefined();
+    expect(state?.id).toBe("3504");
+    expect(state?.type).toBe("concentrated");
+    expect(state?.tickSpacing).toBe(100);
+    expect(state?.spreadFactor).toBe("0.001000000000000000");
+    // 36 fractional digits would throw in Dec's constructor; the mapper must
+    // keep exactly the first 18.
+    expect(state?.currentSqrtPrice.toString()).toBe("28.026618367609847378");
+  });
+
+  it("keeps an 18-or-fewer-decimal sqrt price verbatim", () => {
+    expect(
+      poolStateFromChainResponse({
+        ...CHAIN_POOL,
+        current_sqrt_price: "1.5",
+      })?.currentSqrtPrice.toString()
+    ).toBe("1.500000000000000000");
+  });
+
+  it("refuses any other pool type", () => {
+    expect(
+      poolStateFromChainResponse({
+        ...CHAIN_POOL,
+        "@type": "/osmosis.gamm.v1beta1.Pool",
+      })
+    ).toBeUndefined();
+  });
+
+  it("refuses a pool missing a needed field, and an absent pool", () => {
+    expect(
+      poolStateFromChainResponse({ ...CHAIN_POOL, spread_factor: undefined })
+    ).toBeUndefined();
+    expect(poolStateFromChainResponse(undefined)).toBeUndefined();
   });
 });

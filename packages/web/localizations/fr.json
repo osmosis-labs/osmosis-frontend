@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Écart de prix autorisé",
     "migrateRevalidationFailed": "Les prix ont bougé pendant que ceci était ouvert et la migration ne passe plus ses contrôles. Fermez et réessayez.",
     "migrateReason": "Le USDC.noble est converti à 1:1 en USDC via le transmuter lors du transfert.",
-    "migrateRiskNotice": "Une transaction atomique : elle est annulée si l'écart de prix dépasse la limite au moment de signer ou si un résultat tombe plus de {minTolerance}% sous sa simulation.",
+    "migrateRiskNotice": "Une transaction atomique : l'écart de prix est revérifié juste avant la demande de votre portefeuille, et elle est annulée si un résultat tombe plus de {minTolerance}% sous sa simulation. Si les prix bougent dans les derniers instants, un léger manque peut être couvert par des {baseSymbol} ou {fromUsdcSymbol} déjà présents dans votre portefeuille, le surplus équivalent du retrait y étant reversé.",
     "yourPositions": "Vos postes",
     "yourPosition": "Ta position",
     "yourPositionsDesc": "Faites travailler vos actifs et gagnez un spread sur chaque swap.",

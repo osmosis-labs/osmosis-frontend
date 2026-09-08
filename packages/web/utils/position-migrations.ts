@@ -345,3 +345,62 @@ export const deriveTokenMinAmount = ({
   const floored = kept.truncate();
   return floored.isPositive() ? floored : new Int(1);
 };
+
+/**
+ * Pool fields as the chain's own LCD returns them from
+ * `/osmosis/poolmanager/v1beta1/pools/{id}` - the uncached source the final
+ * pre-broadcast safety check reads, bypassing every cache between this app
+ * and the chain.
+ */
+export interface ChainConcentratedPoolResponse {
+  "@type"?: string;
+  id?: string;
+  token0?: string;
+  token1?: string;
+  current_sqrt_price?: string;
+  tick_spacing?: string;
+  spread_factor?: string;
+}
+
+const CONCENTRATED_POOL_TYPE_URL =
+  "/osmosis.concentratedliquidity.v1beta1.Pool";
+
+/**
+ * Narrows a raw chain pool response into the state the eligibility checks
+ * take, or `undefined` when it is not a concentrated pool carrying every
+ * needed field - which callers must treat as "cannot evaluate" and refuse.
+ *
+ * The chain reports `current_sqrt_price` as a 36-decimal big-dec string,
+ * which the 18-decimal `Dec` refuses to parse, so the fraction is truncated
+ * to 18 digits: sub-attoprecision cannot move a percentage-scale gate.
+ */
+export const poolStateFromChainResponse = (
+  pool: ChainConcentratedPoolResponse | undefined
+): MigrationPoolState | undefined => {
+  if (
+    !pool ||
+    pool["@type"] !== CONCENTRATED_POOL_TYPE_URL ||
+    !pool.id ||
+    !pool.token0 ||
+    !pool.token1 ||
+    !pool.current_sqrt_price ||
+    !pool.tick_spacing ||
+    !pool.spread_factor
+  )
+    return undefined;
+
+  const [whole, fraction = ""] = pool.current_sqrt_price.split(".");
+  const sqrtPrice = fraction
+    ? `${whole}.${fraction.slice(0, 18)}`
+    : pool.current_sqrt_price;
+
+  return {
+    id: pool.id,
+    type: "concentrated",
+    token0: pool.token0,
+    token1: pool.token1,
+    spreadFactor: pool.spread_factor,
+    tickSpacing: Number(pool.tick_spacing),
+    currentSqrtPrice: new Dec(sqrtPrice),
+  };
+};

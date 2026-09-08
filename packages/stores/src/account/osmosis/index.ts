@@ -935,10 +935,10 @@ export class OsmosisAccountImpl {
    * withdraw with it and the user keeps their original position. That
    * guarantee only holds because `tokenMinAmount0/1` are set: at zero, a
    * create on unexpectedly bad terms succeeds instead of reverting. The
-   * minimums come from simulating this exact message pair and taking the
-   * coins the account would spend, rather than from recomputing liquidity
-   * math client-side where a rounding disagreement with the chain would
-   * either revert every honest migration or floor at a useless value.
+   * minimums come from simulating the exact message batch and reading the
+   * create's own event amounts, rather than from recomputing liquidity math
+   * client-side where a rounding disagreement with the chain would either
+   * revert every honest migration or floor at a useless value.
    *
    * @param positionId Position to migrate.
    * @param toPoolId Destination pool. Must share the source pool's tick
@@ -967,6 +967,15 @@ export class OsmosisAccountImpl {
       /** Transmuter pool converting between them at 1:1. */
       transmuterPoolId: string;
     },
+    /**
+     * Final gate, invoked after the sizing simulations and immediately before
+     * the transaction is signed - as close to broadcast as a client can get.
+     * Throwing here aborts the migration with nothing signed. Callers use it
+     * to re-verify price divergence against uncached chain state, because
+     * everything above this point takes real time and a check that ran when
+     * the flow opened says nothing about the block this lands in.
+     */
+    preBroadcastCheck?: () => Promise<void>,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -1025,7 +1034,20 @@ export class OsmosisAccountImpl {
     /* The position's amounts drift with price between simulation and the block
        this lands in, so everything downstream of the withdraw is sized 0.5%
        under the simulated outputs. Whatever the buffer leaves over stays in
-       the wallet, which is the flow's dust policy anyway. */
+       the wallet, which is the flow's dust policy anyway.
+
+       These amounts are fixed at signing, and no Cosmos message spends "only
+       what this transaction received": if the withdraw under-delivers one
+       side, the swap or create covers the shortfall from tokens already in
+       the wallet. Three properties keep that sound. The alloyed side cannot
+       over-draw at all, because the swap's min out is exactly what the create
+       provides. A shortfall the wallet cannot cover fails the transfer and
+       reverts the whole transaction, position included. And a shortfall it
+       can cover is matched by the surplus the withdraw pays out on the other
+       side, which stays in the wallet - the mix of denoms shifts, the value
+       does not, beyond the tolerances already enforced by the minimums. The
+       pre-broadcast check below and the transaction's timeout height bound
+       how much drift can accumulate before any of this matters. */
     const buffer = (amount: Int, bps: number) =>
       new Int(
         (
@@ -1111,6 +1133,13 @@ export class OsmosisAccountImpl {
       toMinAmount(probeDeposits.amount0),
       toMinAmount(probeDeposits.amount1)
     );
+
+    /* Two simulations have passed since the caller last checked eligibility.
+       Re-run their gate now, so it holds immediately before signing; past
+       this point the protections are onchain (the create minimums, the
+       swap's min out) plus the timeout height capping how long the signed
+       transaction stays includable. */
+    if (preBroadcastCheck) await preBroadcastCheck();
 
     await this.base.signAndBroadcast(
       this.chainId,

@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "İzin verilen fiyat farkı",
     "migrateRevalidationFailed": "Bu açıkken fiyatlar değişti ve taşıma artık kontrollerini geçemiyor. Kapatıp yeniden deneyin.",
     "migrateReason": "Taşıma sırasında USDC.noble, transmuter üzerinden 1:1 USDC'ye dönüştürülür.",
-    "migrateRiskNotice": "Tek bir atomik işlem: imzalarken fiyat farkı izin verilenin üzerindeyse veya herhangi bir çıktı simülasyonunun %{minTolerance} altına düşerse geri alınır.",
+    "migrateRiskNotice": "Tek bir atomik işlem: fiyat farkı cüzdan onayından hemen önce yeniden kontrol edilir ve herhangi bir çıktı simülasyonunun %{minTolerance} altına düşerse işlem geri alınır. Son anlarda fiyatlar hareket ederse, küçük bir eksik cüzdanınızda zaten bulunan {baseSymbol} veya {fromUsdcSymbol} ile karşılanabilir; çekimden gelen eşdeğer fazlalık cüzdana geri döner.",
     "yourPositions": "Pozisyonlarınız",
     "yourPosition": "Senin pozisyonun",
     "yourPositionsDesc": "Varlıklarınızı çalıştırın ve her takasta spread kazanın.",

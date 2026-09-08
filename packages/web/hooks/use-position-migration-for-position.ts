@@ -2,18 +2,47 @@ import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback } from "react";
 
+import { ChainList } from "~/config/generated/chain-list";
 import {
   USDC_ALLOYED_DENOM,
   USDC_NOBLE_DENOM,
 } from "~/config/position-migration";
 import { usePositionMigrations } from "~/hooks/use-position-migrations";
 import {
+  ChainConcentratedPoolResponse,
   findMigration,
   getMigrationEligibility,
   MigrationEligibility,
   MigrationPoolState,
+  poolStateFromChainResponse,
 } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
+
+/**
+ * Reads one pool straight from the chain's LCD, bypassing both react-query's
+ * client cache and the server's short-lived pool cache: `staleTime: 0` only
+ * defeats the former, and a safety recheck served from any cache is not a
+ * recheck. Any failure resolves to `undefined`, which callers treat as
+ * ineligible rather than falling back to cached state.
+ */
+const fetchChainPoolState = async (
+  poolId: string
+): Promise<MigrationPoolState | undefined> => {
+  const rest = ChainList[0].apis?.rest[0]?.address;
+  if (!rest) return undefined;
+  try {
+    const response = await fetch(
+      `${rest.replace(/\/$/, "")}/osmosis/poolmanager/v1beta1/pools/${poolId}`
+    );
+    if (!response.ok) return undefined;
+    const { pool } = (await response.json()) as {
+      pool?: ChainConcentratedPoolResponse;
+    };
+    return poolStateFromChainResponse(pool);
+  } catch {
+    return undefined;
+  }
+};
 
 /**
  * Resolves whether one concentrated liquidity position may migrate to its
@@ -47,16 +76,17 @@ export const usePositionMigrationForPosition = ({
 }) => {
   const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
-  const apiUtils = api.useUtils();
 
   // Only the mapped source pools ever reach the destination query, so an
   // unmapped position costs no extra request.
   const mapped = findMigration({ migrations, fromPoolId: poolId });
 
   /**
-   * Re-runs the full eligibility check against freshly fetched pool state.
-   * The render-time result below can be minutes old by the time the user
-   * confirms; the transaction must not be built against it. Returns
+   * Re-runs the full eligibility check against pool state read directly from
+   * the chain's LCD, uncached. The render-time result below can be minutes
+   * old by the time the user confirms, and even a "fresh" fetch through the
+   * app's own pool query can be served by a short-lived server-side cache;
+   * the transaction must not be built, or signed, against either. Returns
    * undefined when anything needed is missing, which callers must treat as
    * ineligible.
    */
@@ -70,15 +100,10 @@ export const usePositionMigrationForPosition = ({
       minAmountTolerance === undefined
     )
       return undefined;
-    const [freshFrom, freshTo] = await Promise.all([
-      apiUtils.local.pools.getPool.fetch({ poolId }, { staleTime: 0 }),
-      apiUtils.local.pools.getPool.fetch(
-        { poolId: mapped.toPoolId.toString() },
-        { staleTime: 0 }
-      ),
+    const [fromPool, toPool] = await Promise.all([
+      fetchChainPoolState(poolId),
+      fetchChainPoolState(mapped.toPoolId.toString()),
     ]);
-    const fromPool = toMigrationPoolState(freshFrom);
-    const toPool = toMigrationPoolState(freshTo);
     if (!fromPool || !toPool) return undefined;
     return getMigrationEligibility({
       migrations,
@@ -101,7 +126,6 @@ export const usePositionMigrationForPosition = ({
     isUnbonding,
     isSuperfluidStaked,
     isSuperfluidUnstaking,
-    apiUtils,
   ]);
 
   const { data: fromPoolData } = api.local.pools.getPool.useQuery(

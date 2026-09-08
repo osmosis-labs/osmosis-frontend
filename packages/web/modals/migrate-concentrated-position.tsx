@@ -1,10 +1,10 @@
 import type { UserPosition } from "@osmosis-labs/server";
-import type { PoolAssetInfo } from "~/components/assets/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
+import type { PoolAssetInfo } from "~/components/assets/types";
 import {
   USDC_ALLOYED_DENOM,
   USDC_CANONICAL_SYMBOL,
@@ -120,9 +120,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
 
     try {
       /* The eligibility that opened this modal is stale by now. Re-check
-         against fresh pool state so the divergence gate is enforced at the
-         moment of signing, not at the moment of rendering: without this, the
-         sizing simulations would just accept the drifted state as baseline. */
+         against uncached chain state before doing anything else: without
+         this, the sizing simulations would just accept the drifted state as
+         their baseline. The same check runs once more inside the send, right
+         before the transaction is signed, because the simulations themselves
+         take seconds. */
       const fresh = await revalidate();
       if (!fresh?.isEligible) {
         setError(t("clPositions.migrateRevalidationFailed"));
@@ -139,6 +141,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           fromDenom: USDC_NOBLE_DENOM,
           toDenom: USDC_ALLOYED_DENOM,
           transmuterPoolId: USDC_TRANSMUTER_POOL_ID,
+        },
+        async () => {
+          const finalCheck = await revalidate();
+          if (!finalCheck?.isEligible)
+            throw new Error(t("clPositions.migrateRevalidationFailed"));
         },
         undefined,
         (tx) => {
@@ -225,6 +232,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           <span className="caption text-osmoverse-300">
             {t("clPositions.migrateRiskNotice", {
               minTolerance: minAmountTolerance.toString(),
+              baseSymbol,
+              fromUsdcSymbol,
             })}
           </span>
         </div>
