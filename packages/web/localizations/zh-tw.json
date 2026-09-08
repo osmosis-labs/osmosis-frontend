@@ -73,6 +73,7 @@
     "migrateDescription": "將您在池 {fromPoolId} 中的 {baseSymbol}/{fromUsdcSymbol} 倉位遷移到池 {toPoolId} 中的 {baseSymbol}/{toUsdcSymbol}，保持相同的價格區間和費率等級。",
     "migrateDustNotice": "無法放入新區間的金額將退回到您的錢包。",
     "migrateIncentivesNotice": "未達到最短持有時間的獎勵將在提取倉位時被沒收。",
+    "migrateImpactNotice": "兩個池當前價格相差 {divergence}%。您因價格最多損失倉位的 {maxImpact}%；更差的結果將使整筆交易回滾。",
     "migrateReason": "此池與橋接的 USDC.noble 配對；目標是規範 USDC（合金）上的同一交易對。遷移過程中，您的 USDC.noble 會通過轉換器按 1:1 兌換。",
     "migrateRiskNotice": "所有操作在一筆交易中完成，最低輸出設定在模擬結果約 1% 以下：若確認前價格波動超過該幅度，整筆交易將回滾，您的倉位保持不變。少量緩衝金額（最多約佔倉位的 1.5%）可能留在您的錢包中而非新倉位。",
     "yourPositions": "您的職位",

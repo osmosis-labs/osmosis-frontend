@@ -73,6 +73,7 @@
     "migrateDescription": "Przenieś swoją pozycję {baseSymbol}/{fromUsdcSymbol} z puli {fromPoolId} do {baseSymbol}/{toUsdcSymbol} w puli {toPoolId}, zachowując ten sam zakres cen i poziom opłat.",
     "migrateDustNotice": "Każda kwota, która nie mieści się w nowym zakresie, wraca do Twojego portfela.",
     "migrateIncentivesNotice": "Zachęty, które nie osiągnęły minimalnego czasu, przepadają przy wycofaniu pozycji.",
+    "migrateImpactNotice": "Pule różnią się obecnie ceną o {divergence}%. Z powodu cen możesz stracić najwyżej {maxImpact}% pozycji; gorszy wynik cofa całą transakcję.",
     "migrateReason": "Ta pula jest sparowana z mostkowanym USDC.noble; cel to ta sama para na kanonicznym USDC (stopowym). Twoje USDC.noble jest w trakcie przenoszenia wymieniane 1:1 przez transmuter.",
     "migrateRiskNotice": "Wszystko odbywa się w jednej transakcji z minimalnymi wyjściami ustawionymi około 1% poniżej wyniku symulacji: jeśli ceny zmienią się bardziej przed jej zatwierdzeniem, cała transakcja zostaje cofnięta, a Twoja pozycja pozostaje nietknięta. Niewielkie kwoty buforowe (do około 1,5% pozycji) mogą trafić do portfela zamiast do nowej pozycji.",
     "yourPositions": "Twoje pozycje",

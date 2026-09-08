@@ -73,6 +73,7 @@
     "migrateDescription": "Déplacez votre position {baseSymbol}/{fromUsdcSymbol} du pool {fromPoolId} vers {baseSymbol}/{toUsdcSymbol} dans le pool {toPoolId}, en conservant la même fourchette de prix et le même niveau de frais.",
     "migrateDustNotice": "Tout montant qui ne rentre pas dans la nouvelle fourchette est renvoyé vers votre portefeuille.",
     "migrateIncentivesNotice": "Les incitations n'ayant pas atteint leur durée minimale sont perdues lors du retrait de la position.",
+    "migrateImpactNotice": "Les pools affichent actuellement un écart de prix de {divergence}%. Vous ne pouvez pas perdre plus de {maxImpact}% de la position à cause des prix; un résultat pire annule toute la transaction.",
     "migrateReason": "Ce pool est apparié au USDC.noble ponté; la destination est la même paire sur l'USDC canonique (allié). Votre USDC.noble est converti à 1:1 via le transmuter lors du transfert.",
     "migrateRiskNotice": "Tout se passe en une seule transaction avec des sorties minimales fixées environ 1% sous le résultat simulé: si les prix bougent davantage avant sa confirmation, la transaction entière est annulée et votre position reste intacte. De petits montants de marge (jusqu'à environ 1,5% de la position) peuvent rester dans votre portefeuille plutôt que dans la nouvelle position.",
     "yourPositions": "Vos postes",

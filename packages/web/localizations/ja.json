@@ -73,6 +73,7 @@
     "migrateDescription": "プール{fromPoolId}の{baseSymbol}/{fromUsdcSymbol}ポジションを、同じ価格帯と手数料水準を維持したまま、プール{toPoolId}の{baseSymbol}/{toUsdcSymbol}へ移動します。",
     "migrateDustNotice": "新しい価格帯に収まらない金額はウォレットに返却されます。",
     "migrateIncentivesNotice": "最低稼働時間に達していないインセンティブは、ポジションの引き出し時に失効します。",
+    "migrateImpactNotice": "現在、2つのプールの価格差は{divergence}%です。価格による損失は最大でポジションの{maxImpact}%であり、それを超える結果になる場合はトランザクション全体が取り消されます。",
     "migrateReason": "このプールはブリッジされたUSDC.nobleとペアになっています。移行先は正規のUSDC（アロイ）での同じペアです。移行の過程でUSDC.nobleはトランスミューターを通じて1:1で変換されます。",
     "migrateRiskNotice": "すべては1つのトランザクションで行われ、最低出力はシミュレーション結果の約1%下に設定されます。確定前に価格がそれ以上動いた場合、トランザクション全体が取り消され、ポジションはそのまま残ります。バッファ分の少額（ポジションの約1.5%まで）が新しいポジションではなくウォレットに残ることがあります。",
     "yourPositions": "あなたのポジション",

@@ -131,16 +131,19 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     // Offered only for positions the fe-content map pairs with a
     // spread-matched destination pool, and only when that pairing still holds
     // against live pool state. An absent map means the action never appears.
-    const { migration: eligibleMigration, minAmountTolerance } =
-      usePositionMigrationForPosition({
-        poolId,
-        // The divergence gate tightens with position size, so it needs the
-        // value being moved, not just the pool.
-        positionValueUsd: Number(currentValue?.toDec().toString() ?? "0"),
-        isUnbonding: Boolean(isUnbonding),
-        isSuperfluidStaked: Boolean(isSuperfluidStaked),
-        isSuperfluidUnstaking: Boolean(isSuperfluidUnstaking),
-      });
+    const {
+      migration: eligibleMigration,
+      eligibility: migrationEligibility,
+      minAmountTolerance,
+    } = usePositionMigrationForPosition({
+      poolId,
+      // The divergence gate tightens with position size, so it needs the
+      // value being moved, not just the pool.
+      positionValueUsd: Number(currentValue?.toDec().toString() ?? "0"),
+      isUnbonding: Boolean(isUnbonding),
+      isSuperfluidStaked: Boolean(isSuperfluidStaked),
+      isSuperfluidUnstaking: Boolean(isSuperfluidUnstaking),
+    });
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const {
@@ -451,12 +454,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           )}
           {activeModal === "migrate" &&
             eligibleMigration &&
+            migrationEligibility?.isEligible &&
             minAmountTolerance !== undefined && (
               <MigrateConcentratedPositionModal
                 isOpen={true}
                 position={position}
                 toPoolId={eligibleMigration.toPoolId.toString()}
                 minAmountTolerance={minAmountTolerance}
+                divergencePercent={migrationEligibility.divergencePercent}
+                appliedTolerancePercent={
+                  migrationEligibility.appliedTolerancePercent
+                }
                 onRequestClose={() => setActiveModal(null)}
               />
             )}

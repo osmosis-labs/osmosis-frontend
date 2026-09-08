@@ -73,6 +73,7 @@
     "migrateDescription": "Mova sua posição {baseSymbol}/{fromUsdcSymbol} do pool {fromPoolId} para {baseSymbol}/{toUsdcSymbol} no pool {toPoolId}, mantendo a mesma faixa de preço e nível de taxa.",
     "migrateDustNotice": "Qualquer valor que não caiba na nova faixa é devolvido à sua carteira.",
     "migrateIncentivesNotice": "Incentivos que não cumpriram o tempo mínimo são perdidos ao retirar a posição.",
+    "migrateImpactNotice": "Os pools atualmente diferem {divergence}% no preço. O máximo que você pode perder por preços é {maxImpact}% da posição; um resultado pior reverte a transação inteira.",
     "migrateReason": "Este pool está pareado com USDC.noble em ponte; o destino é o mesmo par no USDC canônico (liga). Seu USDC.noble é convertido 1:1 pelo transmuter durante a mudança.",
     "migrateRiskNotice": "Tudo acontece em uma única transação com saídas mínimas cerca de 1% abaixo do resultado simulado: se os preços se moverem além disso antes da confirmação, a transação inteira é revertida e sua posição fica intacta. Pequenos valores de folga (até cerca de 1,5% da posição) podem ficar na sua carteira em vez da nova posição.",
     "yourPositions": "Suas Posições",

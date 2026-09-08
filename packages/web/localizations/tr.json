@@ -73,6 +73,7 @@
     "migrateDescription": "{fromPoolId} havuzundaki {baseSymbol}/{fromUsdcSymbol} pozisyonunuzu, aynı fiyat aralığı ve ücret seviyesini koruyarak {toPoolId} havuzundaki {baseSymbol}/{toUsdcSymbol} çiftine taşıyın.",
     "migrateDustNotice": "Yeni aralığa sığmayan tutarlar cüzdanınıza iade edilir.",
     "migrateIncentivesNotice": "Minimum süreyi doldurmayan teşvikler pozisyon çekilirken kaybedilir.",
+    "migrateImpactNotice": "Havuzlar şu anda fiyat olarak %{divergence} farklı. Fiyatlar nedeniyle en fazla pozisyonun %{maxImpact} kadarını kaybedebilirsiniz; daha kötü bir sonuç işlemin tamamını geri alır.",
     "migrateReason": "Bu havuz köprülenmiş USDC.noble ile eşleştirilmiş; hedef, kanonik USDC (alaşım) üzerindeki aynı çift. USDC.noble varlığınız taşıma sırasında transmuter üzerinden 1:1 dönüştürülür.",
     "migrateRiskNotice": "Her şey tek bir işlemde gerçekleşir ve minimum çıktılar simüle edilen sonucun yaklaşık %1 altına ayarlanır: işlem onaylanmadan önce fiyatlar bundan fazla hareket ederse işlemin tamamı geri alınır ve pozisyonunuz olduğu gibi kalır. Küçük tampon tutarlar (pozisyonun yaklaşık %1,5'ine kadar) yeni pozisyon yerine cüzdanınızda kalabilir.",
     "yourPositions": "Pozisyonlarınız",

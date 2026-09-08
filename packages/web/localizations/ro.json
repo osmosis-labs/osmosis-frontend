@@ -73,6 +73,7 @@
     "migrateDescription": "Mută poziția ta {baseSymbol}/{fromUsdcSymbol} din pool-ul {fromPoolId} în {baseSymbol}/{toUsdcSymbol} în pool-ul {toPoolId}, păstrând același interval de preț și nivel de comision.",
     "migrateDustNotice": "Orice sumă care nu încape în noul interval este returnată în portofelul tău.",
     "migrateIncentivesNotice": "Stimulentele care nu au atins durata minimă se pierd la retragerea poziției.",
+    "migrateImpactNotice": "Pool-urile diferă în prezent cu {divergence}% la preț. Cel mult {maxImpact}% din poziție poate fi pierdut din cauza prețurilor; un rezultat mai rău anulează întreaga tranzacție.",
     "migrateReason": "Acest pool este pereche cu USDC.noble prin punte; destinația este aceeași pereche pe USDC canonic (aliaj). USDC.noble al tău este convertit 1:1 prin transmuter în cadrul mutării.",
     "migrateRiskNotice": "Totul se întâmplă într-o singură tranzacție, cu ieșiri minime stabilite la circa 1% sub rezultatul simulat: dacă prețurile se mișcă mai mult înainte de confirmare, întreaga tranzacție este anulată și poziția ta rămâne neatinsă. Sume mici de rezervă (până la circa 1,5% din poziție) pot ajunge în portofel în locul noii poziții.",
     "yourPositions": "Pozițiile voastre",

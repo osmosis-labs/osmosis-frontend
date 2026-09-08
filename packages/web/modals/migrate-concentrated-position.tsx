@@ -1,5 +1,5 @@
 import type { UserPosition } from "@osmosis-labs/server";
-import { Int } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 
@@ -29,9 +29,28 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     position: UserPosition;
     toPoolId: string;
     minAmountTolerance: number;
+    /** Live price difference between the pools when the modal opened. */
+    divergencePercent: Dec;
+    /** The size-tier tolerance this position was judged against. */
+    appliedTolerancePercent: number;
   } & ModalBaseProps
 > = observer((props) => {
-  const { position, toPoolId, minAmountTolerance } = props;
+  const {
+    position,
+    toPoolId,
+    minAmountTolerance,
+    divergencePercent,
+    appliedTolerancePercent,
+  } = props;
+
+  /* The most pricing can cost before something refuses: the pools may sit up
+     to the tier tolerance apart when offered, and the on-chain minimums allow
+     fills up to minAmountTolerance under the simulated result. Beyond their
+     sum the transaction reverts, so it is an actual bound, not an estimate. */
+  const maxImpactPercent = (
+    appliedTolerancePercent + minAmountTolerance
+  ).toFixed(1);
+  const currentDivergence = divergencePercent.toString(3);
   const {
     id: positionId,
     poolId,
@@ -140,6 +159,12 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           </span>
           <span className="caption text-osmoverse-300">
             {t("clPositions.migrateIncentivesNotice")}
+          </span>
+          <span className="caption text-osmoverse-300">
+            {t("clPositions.migrateImpactNotice", {
+              divergence: currentDivergence,
+              maxImpact: maxImpactPercent,
+            })}
           </span>
           <span className="caption text-osmoverse-300">
             {t("clPositions.migrateRiskNotice")}
