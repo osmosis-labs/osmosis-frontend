@@ -59,7 +59,9 @@ export default async function handler(
       (e) => e.type === "withdraw_position" || e.type === "token_swapped"
     );
 
-    return res.status(200).json({ gasUsed, coinsSpent, events: relevantEvents });
+    return res
+      .status(200)
+      .json({ gasUsed, coinsSpent, events: relevantEvents });
   } catch (e) {
     // A failed simulation is a legitimate outcome here, not just an error to
     // log: it is how the flow learns the migration would not succeed. Forward
