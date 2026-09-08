@@ -70,7 +70,7 @@
     "removeLiquidity": "Удалить ликвидность",
     "increaseLiquidity": "Увеличение ликвидности",
     "migrateLiquidity": "Перенести ликвидность",
-    "migrateDescription": "Переместите эту позицию из пула {fromPoolId} в пул {toPoolId}, сохранив тот же ценовой диапазон и уровень комиссии.",
+    "migrateDescription": "Переместите свою позицию {baseSymbol}/{fromUsdcSymbol} из пула {fromPoolId} в {baseSymbol}/{toUsdcSymbol} в пуле {toPoolId}, сохранив тот же ценовой диапазон и уровень комиссии.",
     "migrateDustNotice": "Сумма, не поместившаяся в новый диапазон, возвращается в ваш кошелёк.",
     "migrateIncentivesNotice": "Стимулы, не достигшие минимального времени, сгорают при выводе позиции.",
     "migrateReason": "Этот пул сопряжён с мостовым USDC.noble; назначение — та же пара на каноническом USDC (сплав). Ваш USDC.noble конвертируется 1:1 через трансмьютер в процессе переноса.",

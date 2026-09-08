@@ -70,7 +70,7 @@
     "removeLiquidity": "Usuń płynność",
     "increaseLiquidity": "Zwiększ płynność",
     "migrateLiquidity": "Migruj płynność",
-    "migrateDescription": "Przenieś tę pozycję z puli {fromPoolId} do puli {toPoolId}, zachowując ten sam zakres cen i poziom opłat.",
+    "migrateDescription": "Przenieś swoją pozycję {baseSymbol}/{fromUsdcSymbol} z puli {fromPoolId} do {baseSymbol}/{toUsdcSymbol} w puli {toPoolId}, zachowując ten sam zakres cen i poziom opłat.",
     "migrateDustNotice": "Każda kwota, która nie mieści się w nowym zakresie, wraca do Twojego portfela.",
     "migrateIncentivesNotice": "Zachęty, które nie osiągnęły minimalnego czasu, przepadają przy wycofaniu pozycji.",
     "migrateReason": "Ta pula jest sparowana z mostkowanym USDC.noble; cel to ta sama para na kanonicznym USDC (stopowym). Twoje USDC.noble jest w trakcie przenoszenia wymieniane 1:1 przez transmuter.",

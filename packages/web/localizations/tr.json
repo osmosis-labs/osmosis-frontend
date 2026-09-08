@@ -70,7 +70,7 @@
     "removeLiquidity": "Likiditeyi Kaldır",
     "increaseLiquidity": "Likiditeyi Artırın",
     "migrateLiquidity": "Likiditeyi Taşı",
-    "migrateDescription": "Bu pozisyonu {fromPoolId} havuzundan {toPoolId} havuzuna, aynı fiyat aralığı ve ücret seviyesini koruyarak taşıyın.",
+    "migrateDescription": "{fromPoolId} havuzundaki {baseSymbol}/{fromUsdcSymbol} pozisyonunuzu, aynı fiyat aralığı ve ücret seviyesini koruyarak {toPoolId} havuzundaki {baseSymbol}/{toUsdcSymbol} çiftine taşıyın.",
     "migrateDustNotice": "Yeni aralığa sığmayan tutarlar cüzdanınıza iade edilir.",
     "migrateIncentivesNotice": "Minimum süreyi doldurmayan teşvikler pozisyon çekilirken kaybedilir.",
     "migrateReason": "Bu havuz köprülenmiş USDC.noble ile eşleştirilmiş; hedef, kanonik USDC (alaşım) üzerindeki aynı çift. USDC.noble varlığınız taşıma sırasında transmuter üzerinden 1:1 dönüştürülür.",

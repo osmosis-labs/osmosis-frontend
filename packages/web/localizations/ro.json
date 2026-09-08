@@ -70,7 +70,7 @@
     "removeLiquidity": "Eliminați lichiditatea",
     "increaseLiquidity": "Creșteți lichiditatea",
     "migrateLiquidity": "Migrează lichiditatea",
-    "migrateDescription": "Mută această poziție din pool-ul {fromPoolId} în pool-ul {toPoolId}, păstrând același interval de preț și nivel de comision.",
+    "migrateDescription": "Mută poziția ta {baseSymbol}/{fromUsdcSymbol} din pool-ul {fromPoolId} în {baseSymbol}/{toUsdcSymbol} în pool-ul {toPoolId}, păstrând același interval de preț și nivel de comision.",
     "migrateDustNotice": "Orice sumă care nu încape în noul interval este returnată în portofelul tău.",
     "migrateIncentivesNotice": "Stimulentele care nu au atins durata minimă se pierd la retragerea poziției.",
     "migrateReason": "Acest pool este pereche cu USDC.noble prin punte; destinația este aceeași pereche pe USDC canonic (aliaj). USDC.noble al tău este convertit 1:1 prin transmuter în cadrul mutării.",

@@ -70,7 +70,7 @@
     "removeLiquidity": "લિક્વિડિટી દૂર કરો",
     "increaseLiquidity": "પ્રવાહિતા વધારો",
     "migrateLiquidity": "લિક્વિડિટી સ્થાનાંતરિત કરો",
-    "migrateDescription": "આ પોઝિશનને પૂલ {fromPoolId} થી પૂલ {toPoolId} માં ખસેડો, સમાન ભાવ શ્રેણી અને ફી સ્તર જાળવીને.",
+    "migrateDescription": "તમારી {baseSymbol}/{fromUsdcSymbol} પોઝિશનને પૂલ {fromPoolId} થી પૂલ {toPoolId} માં {baseSymbol}/{toUsdcSymbol} માં ખસેડો, સમાન ભાવ શ્રેણી અને ફી સ્તર જાળવીને.",
     "migrateDustNotice": "નવી શ્રેણીમાં ન બેસે તેવી કોઈપણ રકમ તમારા વૉલેટમાં પાછી આપવામાં આવે છે.",
     "migrateIncentivesNotice": "લઘુત્તમ સમય પૂર્ણ ન કરનાર પ્રોત્સાહનો પોઝિશન પાછી ખેંચતી વખતે જપ્ત થાય છે.",
     "migrateReason": "આ પૂલ બ્રિજ કરેલા USDC.noble સાથે જોડાયેલો છે; ગંતવ્ય એ જ જોડી કેનોનિકલ USDC (એલોય) પર છે. તમારું USDC.noble સ્થાનાંતરણ દરમિયાન ટ્રાન્સમ્યુટર દ્વારા 1:1 રૂપાંતરિત થાય છે.",

@@ -70,7 +70,7 @@
     "removeLiquidity": "消除流動性",
     "increaseLiquidity": "增加流動性",
     "migrateLiquidity": "遷移流動性",
-    "migrateDescription": "將此倉位從池 {fromPoolId} 遷移到池 {toPoolId}，保持相同的價格區間和費率等級。",
+    "migrateDescription": "將您在池 {fromPoolId} 中的 {baseSymbol}/{fromUsdcSymbol} 倉位遷移到池 {toPoolId} 中的 {baseSymbol}/{toUsdcSymbol}，保持相同的價格區間和費率等級。",
     "migrateDustNotice": "無法放入新區間的金額將退回到您的錢包。",
     "migrateIncentivesNotice": "未達到最短持有時間的獎勵將在提取倉位時被沒收。",
     "migrateReason": "此池與橋接的 USDC.noble 配對；目標是規範 USDC（合金）上的同一交易對。遷移過程中，您的 USDC.noble 會通過轉換器按 1:1 兌換。",

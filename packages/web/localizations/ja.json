@@ -70,7 +70,7 @@
     "removeLiquidity": "流動性の除去",
     "increaseLiquidity": "流動性の向上",
     "migrateLiquidity": "流動性を移行",
-    "migrateDescription": "このポジションをプール{fromPoolId}からプール{toPoolId}へ、同じ価格帯と手数料水準を維持したまま移動します。",
+    "migrateDescription": "プール{fromPoolId}の{baseSymbol}/{fromUsdcSymbol}ポジションを、同じ価格帯と手数料水準を維持したまま、プール{toPoolId}の{baseSymbol}/{toUsdcSymbol}へ移動します。",
     "migrateDustNotice": "新しい価格帯に収まらない金額はウォレットに返却されます。",
     "migrateIncentivesNotice": "最低稼働時間に達していないインセンティブは、ポジションの引き出し時に失効します。",
     "migrateReason": "このプールはブリッジされたUSDC.nobleとペアになっています。移行先は正規のUSDC（アロイ）での同じペアです。移行の過程でUSDC.nobleはトランスミューターを通じて1:1で変換されます。",

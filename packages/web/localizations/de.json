@@ -70,7 +70,7 @@
     "removeLiquidity": "Liquidität entfernen",
     "increaseLiquidity": "Erhöhen Sie die Liquidität",
     "migrateLiquidity": "Liquidität migrieren",
-    "migrateDescription": "Verschiebe diese Position von Pool {fromPoolId} zu Pool {toPoolId}, mit gleicher Preisspanne und Gebührenstufe.",
+    "migrateDescription": "Verschiebe deine {baseSymbol}/{fromUsdcSymbol}-Position in Pool {fromPoolId} nach {baseSymbol}/{toUsdcSymbol} in Pool {toPoolId}, mit gleicher Preisspanne und Gebührenstufe.",
     "migrateDustNotice": "Beträge, die nicht in die neue Spanne passen, werden an deine Wallet zurückgegeben.",
     "migrateIncentivesNotice": "Incentives, die ihre Mindestlaufzeit noch nicht erreicht haben, verfallen beim Abheben der Position.",
     "migrateReason": "Dieser Pool ist gegen gebrücktes USDC.noble gepaart; das Ziel ist dasselbe Paar auf kanonischem USDC (Alloy). Dein USDC.noble wird dabei 1:1 über den Transmuter umgewandelt.",

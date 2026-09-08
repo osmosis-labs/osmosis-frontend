@@ -6,6 +6,7 @@ import { FunctionComponent, useCallback, useState } from "react";
 import { Icon } from "~/components/assets";
 import {
   USDC_ALLOYED_DENOM,
+  USDC_CANONICAL_SYMBOL,
   USDC_NOBLE_DENOM,
   USDC_TRANSMUTER_POOL_ID,
 } from "~/config/position-migration";
@@ -34,8 +35,21 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const {
     id: positionId,
     poolId,
+    currentCoins,
     position: { position: rawPosition },
   } = position;
+
+  // Name the movement in pair symbols: the source side as the assetlist
+  // renders it (USDC.noble), the destination as the canonical USDC, the same
+  // presentation the variant-to-alloy converter uses.
+  const nobleCoin = currentCoins?.find(
+    (coin) => coin.currency.coinMinimalDenom === USDC_NOBLE_DENOM
+  );
+  const baseCoin = currentCoins?.find(
+    (coin) => coin.currency.coinMinimalDenom !== USDC_NOBLE_DENOM
+  );
+  const baseSymbol = baseCoin?.currency.coinDenom ?? "";
+  const fromUsdcSymbol = nobleCoin?.currency.coinDenom ?? "USDC.noble";
 
   const { t } = useTranslation();
   const { chainStore, accountStore } = useStore();
@@ -111,6 +125,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         <div className="flex flex-col gap-3">
           <span className="body2 text-osmoverse-200">
             {t("clPositions.migrateDescription", {
+              baseSymbol,
+              fromUsdcSymbol,
+              toUsdcSymbol: USDC_CANONICAL_SYMBOL,
               fromPoolId: poolId,
               toPoolId,
             })}

@@ -19,3 +19,10 @@ export const USDC_ALLOYED_DENOM =
  * The migration transaction routes its conversion leg through it.
  */
 export const USDC_TRANSMUTER_POOL_ID = "3497";
+
+/**
+ * The canonical symbol the destination side is presented as, matching how the
+ * variant-to-alloy converter names the alloy. The source side's symbol comes
+ * from the position's own coins (the assetlist renders it as USDC.noble).
+ */
+export const USDC_CANONICAL_SYMBOL = "USDC";

@@ -70,7 +70,7 @@
     "removeLiquidity": "유동성 제거",
     "increaseLiquidity": "유동성 증가",
     "migrateLiquidity": "유동성 마이그레이션",
-    "migrateDescription": "이 포지션을 풀 {fromPoolId}에서 풀 {toPoolId}(으)로 동일한 가격 범위와 수수료 등급을 유지한 채 이동합니다.",
+    "migrateDescription": "풀 {fromPoolId}의 {baseSymbol}/{fromUsdcSymbol} 포지션을 동일한 가격 범위와 수수료 등급을 유지한 채 풀 {toPoolId}의 {baseSymbol}/{toUsdcSymbol}(으)로 이동합니다.",
     "migrateDustNotice": "새 범위에 맞지 않는 금액은 지갑으로 반환됩니다.",
     "migrateIncentivesNotice": "최소 유지 시간을 채우지 못한 인센티브는 포지션 인출 시 소멸됩니다.",
     "migrateReason": "이 풀은 브리지된 USDC.noble과 페어링되어 있으며, 목적지는 정식 USDC(알로이)의 동일한 페어입니다. 이동 과정에서 USDC.noble은 트랜스뮤터를 통해 1:1로 변환됩니다.",

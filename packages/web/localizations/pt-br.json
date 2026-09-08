@@ -70,7 +70,7 @@
     "removeLiquidity": "Remover Liquidez",
     "increaseLiquidity": "Aumentar Liquidez",
     "migrateLiquidity": "Migrar liquidez",
-    "migrateDescription": "Mova esta posição do pool {fromPoolId} para o pool {toPoolId}, mantendo a mesma faixa de preço e nível de taxa.",
+    "migrateDescription": "Mova sua posição {baseSymbol}/{fromUsdcSymbol} do pool {fromPoolId} para {baseSymbol}/{toUsdcSymbol} no pool {toPoolId}, mantendo a mesma faixa de preço e nível de taxa.",
     "migrateDustNotice": "Qualquer valor que não caiba na nova faixa é devolvido à sua carteira.",
     "migrateIncentivesNotice": "Incentivos que não cumpriram o tempo mínimo são perdidos ao retirar a posição.",
     "migrateReason": "Este pool está pareado com USDC.noble em ponte; o destino é o mesmo par no USDC canônico (liga). Seu USDC.noble é convertido 1:1 pelo transmuter durante a mudança.",

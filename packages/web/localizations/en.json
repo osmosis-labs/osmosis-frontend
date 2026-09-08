@@ -70,7 +70,7 @@
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "migrateLiquidity": "Migrate Liquidity",
-    "migrateDescription": "Move this position from pool {fromPoolId} to pool {toPoolId}, keeping the same price range and fee tier.",
+    "migrateDescription": "Move your {baseSymbol}/{fromUsdcSymbol} position in pool {fromPoolId} to {baseSymbol}/{toUsdcSymbol} in pool {toPoolId}, keeping the same price range and fee tier.",
     "migrateDustNotice": "Any amount that doesn't fit the new range is returned to your wallet.",
     "migrateIncentivesNotice": "Incentives that haven't met their minimum uptime are forfeited when the position is withdrawn.",
     "migrateReason": "This pool pairs against bridged USDC.noble; the destination is the same pair on canonical USDC (alloyed). Your USDC.noble converts 1:1 through the transmuter as part of the move.",

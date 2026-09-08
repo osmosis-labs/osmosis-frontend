@@ -70,7 +70,7 @@
     "removeLiquidity": "Supprimer la liquidité",
     "increaseLiquidity": "Augmenter la liquidité",
     "migrateLiquidity": "Migrer la liquidité",
-    "migrateDescription": "Déplacez cette position du pool {fromPoolId} vers le pool {toPoolId}, en conservant la même fourchette de prix et le même niveau de frais.",
+    "migrateDescription": "Déplacez votre position {baseSymbol}/{fromUsdcSymbol} du pool {fromPoolId} vers {baseSymbol}/{toUsdcSymbol} dans le pool {toPoolId}, en conservant la même fourchette de prix et le même niveau de frais.",
     "migrateDustNotice": "Tout montant qui ne rentre pas dans la nouvelle fourchette est renvoyé vers votre portefeuille.",
     "migrateIncentivesNotice": "Les incitations n'ayant pas atteint leur durée minimale sont perdues lors du retrait de la position.",
     "migrateReason": "Ce pool est apparié au USDC.noble ponté; la destination est la même paire sur l'USDC canonique (allié). Votre USDC.noble est converti à 1:1 via le transmuter lors du transfert.",

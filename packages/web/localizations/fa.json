@@ -70,7 +70,7 @@
     "removeLiquidity": "حذف نقدینگی",
     "increaseLiquidity": "افزایش نقدینگی",
     "migrateLiquidity": "انتقال نقدینگی",
-    "migrateDescription": "این موقعیت را از استخر {fromPoolId} به استخر {toPoolId} منتقل کنید، با حفظ همان محدوده قیمت و سطح کارمزد.",
+    "migrateDescription": "موقعیت {baseSymbol}/{fromUsdcSymbol} خود را از استخر {fromPoolId} به {baseSymbol}/{toUsdcSymbol} در استخر {toPoolId} منتقل کنید، با حفظ همان محدوده قیمت و سطح کارمزد.",
     "migrateDustNotice": "هر مقداری که در محدوده جدید جا نشود به کیف پول شما بازگردانده می‌شود.",
     "migrateIncentivesNotice": "پاداش‌هایی که حداقل زمان لازم را نگذرانده‌اند هنگام برداشت موقعیت از بین می‌روند.",
     "migrateReason": "این استخر با USDC.noble پل‌شده جفت شده است؛ مقصد همان جفت روی USDC استاندارد (آلیاژی) است. USDC.noble شما در جریان انتقال به نسبت ۱:۱ از طریق ترنسمیوتر تبدیل می‌شود.",
