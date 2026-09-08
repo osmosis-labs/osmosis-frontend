@@ -46,14 +46,20 @@ export default async function handler(
   try {
     const decodedMessages = messages.map(decodeAnyBase64);
 
-    const { gasUsed, coinsSpent } = await simulateCosmosTxBody({
+    const { gasUsed, coinsSpent, events } = await simulateCosmosTxBody({
       chainId,
       chainList: ChainList,
       body: { messages: decodedMessages },
       bech32Address,
     });
 
-    return res.status(200).json({ gasUsed, coinsSpent });
+    // Only the event types the migration sizing reads; the full event list of a
+    // three-message transaction is large and mostly bank noise.
+    const relevantEvents = events.filter(
+      (e) => e.type === "withdraw_position" || e.type === "token_swapped"
+    );
+
+    return res.status(200).json({ gasUsed, coinsSpent, events: relevantEvents });
   } catch (e) {
     // A failed simulation is a legitimate outcome here, not just an error to
     // log: it is how the flow learns the migration would not succeed. Forward

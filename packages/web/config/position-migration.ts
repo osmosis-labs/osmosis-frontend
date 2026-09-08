@@ -13,3 +13,9 @@ export const USDC_NOBLE_DENOM =
 
 export const USDC_ALLOYED_DENOM =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+
+/**
+ * The allUSDC transmuter pool, converting USDC.noble to the alloy at 1:1.
+ * The migration transaction routes its conversion leg through it.
+ */
+export const USDC_TRANSMUTER_POOL_ID = "3497";

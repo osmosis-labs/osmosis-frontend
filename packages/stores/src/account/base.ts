@@ -1597,6 +1597,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }): Promise<{
     gasUsed: number;
     coinsSpent: { denom: string; amount: string }[];
+    events: { type: string; attributes: { key: string; value: string }[] }[];
   }> {
     const registry = await this.getRegistry();
     const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
@@ -1604,6 +1605,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return await apiClient<{
       gasUsed: number;
       coinsSpent: { denom: string; amount: string }[];
+      events: { type: string; attributes: { key: string; value: string }[] }[];
     }>("/api/simulate-position-migration", {
       data: {
         chainId,

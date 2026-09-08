@@ -4,6 +4,11 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import {
+  USDC_ALLOYED_DENOM,
+  USDC_NOBLE_DENOM,
+  USDC_TRANSMUTER_POOL_ID,
+} from "~/config/position-migration";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -54,6 +59,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         new Int(rawPosition.lower_tick),
         new Int(rawPosition.upper_tick),
         minAmountTolerance,
+        {
+          fromDenom: USDC_NOBLE_DENOM,
+          toDenom: USDC_ALLOYED_DENOM,
+          transmuterPoolId: USDC_TRANSMUTER_POOL_ID,
+        },
         undefined,
         (tx) => {
           if (!tx.code) {
@@ -106,10 +116,16 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             })}
           </span>
           <span className="caption text-osmoverse-300">
+            {t("clPositions.migrateReason")}
+          </span>
+          <span className="caption text-osmoverse-300">
             {t("clPositions.migrateDustNotice")}
           </span>
           <span className="caption text-osmoverse-300">
             {t("clPositions.migrateIncentivesNotice")}
+          </span>
+          <span className="caption text-osmoverse-300">
+            {t("clPositions.migrateRiskNotice")}
           </span>
         </div>
 

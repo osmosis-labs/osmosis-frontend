@@ -958,6 +958,14 @@ export class OsmosisAccountImpl {
     lowerTick: Int,
     upperTick: Int,
     minAmountTolerancePercent: number,
+    usdcConversion: {
+      /** USDC denom the source pool pairs against (bridged, e.g. USDC.noble). */
+      fromDenom: string;
+      /** USDC denom the destination pool pairs against (the alloy). */
+      toDenom: string;
+      /** Transmuter pool converting between them at 1:1. */
+      transmuterPoolId: string;
+    },
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -979,31 +987,122 @@ export class OsmosisAccountImpl {
       liquidityAmount: fullLiquidityAmount.toString(),
     });
 
-    // Denom-sorted, as the chain expects for tokens provided.
-    const tokensProvided = [baseAsset.toCoin(), quoteAsset.toCoin()].sort(
-      (a, b) => a.denom.localeCompare(b.denom)
-    );
+    // The withdraw pays out the SOURCE pool's denoms, one of which is the
+    // bridged USDC the destination pool does not hold, so its exact outputs
+    // size both the conversion swap and the create.
+    const withdrawSim = await this.base.simulatePositionMigration({
+      chainId: this.chainId,
+      messages: [withdrawPositionMsg],
+      bech32Address: this.address,
+    });
+    const withdrawEvent = withdrawSim.events
+      .filter((e) => e.type === "withdraw_position")
+      .pop();
+    if (!withdrawEvent)
+      throw new Error(
+        "Withdraw simulation produced no withdraw_position event"
+      );
+    const eventAttr = (name: string) => {
+      const attrs = withdrawEvent.attributes ?? [];
+      const plain = attrs.find((at) => at.key === name);
+      if (plain) return plain.value;
+      // some gateways base64-encode attributes; detect by the KEY, never by
+      // guessing at values (plain amounts are valid base64 alphabet)
+      const enc = attrs.find((at) => {
+        try {
+          return Buffer.from(at.key, "base64").toString() === name;
+        } catch {
+          return false;
+        }
+      });
+      return enc ? Buffer.from(enc.value, "base64").toString() : undefined;
+    };
+    const withdrawn = new Map<string, Int>([
+      [
+        baseAsset.currency.coinMinimalDenom,
+        new Int((eventAttr("amount0") ?? "0").replace(/^-/, "")),
+      ],
+      [
+        quoteAsset.currency.coinMinimalDenom,
+        new Int((eventAttr("amount1") ?? "0").replace(/^-/, "")),
+      ],
+    ]);
 
-    // Simulate with zeroed minimums purely to learn what the create would
-    // actually consume. This message pair is never broadcast.
-    const simulationCreateMsg = await makeCreatePositionMsg({
-      poolId: BigInt(toPoolId),
-      lowerTick: BigInt(lowerTick.toString()),
-      upperTick: BigInt(upperTick.toString()),
-      sender: this.address,
-      tokenMinAmount0: "0",
-      tokenMinAmount1: "0",
-      tokensProvided,
+    const bridgedUsdcOut = withdrawn.get(usdcConversion.fromDenom);
+    const assetDenom = [
+      baseAsset.currency.coinMinimalDenom,
+      quoteAsset.currency.coinMinimalDenom,
+    ].find((d) => d !== usdcConversion.fromDenom);
+    const assetOut = assetDenom ? withdrawn.get(assetDenom) : undefined;
+    if (!bridgedUsdcOut || !assetDenom || !assetOut)
+      throw new Error(
+        `Position does not pay out ${usdcConversion.fromDenom}; refusing to migrate`
+      );
+
+    /* The position's amounts drift with price between simulation and the block
+       this lands in, so everything downstream of the withdraw is sized 0.5%
+       under the simulated outputs. Whatever the buffer leaves over stays in
+       the wallet, which is the flow's dust policy anyway. */
+    const buffer = (amount: Int, bps: number) =>
+      new Int(
+        (
+          (BigInt(amount.toString()) * BigInt(10_000 - bps)) /
+          BigInt(10_000)
+        ).toString()
+      );
+    const swapIn = buffer(bridgedUsdcOut, 50);
+    const assetProvide = buffer(assetOut, 50);
+    // the transmuter converts 1:1; 20bps headroom covers any taker fee
+    const alloyedUsdcMin = buffer(swapIn, 20);
+    if (!swapIn.isPositive() || !assetProvide.isPositive())
+      throw new Error("Withdrawn amounts too small to migrate");
+
+    const convertMsg = await makeSwapExactAmountInMsg({
+      pools: [
+        {
+          id: usdcConversion.transmuterPoolId,
+          tokenOutDenom: usdcConversion.toDenom,
+        },
+      ],
+      tokenIn: {
+        coinMinimalDenom: usdcConversion.fromDenom,
+        amount: swapIn.toString(),
+      },
+      tokenOutMinAmount: alloyedUsdcMin.toString(),
+      userOsmoAddress: this.address,
     });
 
-    const { coinsSpent } = await this.base.simulatePositionMigration({
+    const tokensProvided = [
+      { denom: assetDenom, amount: assetProvide.toString() },
+      { denom: usdcConversion.toDenom, amount: alloyedUsdcMin.toString() },
+    ].sort((a, b) => a.denom.localeCompare(b.denom));
+
+    const mkCreateMsg = (min0: string, min1: string) =>
+      makeCreatePositionMsg({
+        poolId: BigInt(toPoolId),
+        lowerTick: BigInt(lowerTick.toString()),
+        upperTick: BigInt(upperTick.toString()),
+        sender: this.address,
+        tokenMinAmount0: min0,
+        tokenMinAmount1: min1,
+        tokensProvided,
+      });
+
+    /* Simulate the full three-message transaction with zeroed create minimums
+       purely to learn what the create would consume; that pair is never
+       broadcast. The real minimums floor 1% under those amounts: with them a
+       create on worse terms fails and the whole transaction, withdraw and
+       conversion included, reverts. */
+    const probeSim = await this.base.simulatePositionMigration({
       chainId: this.chainId,
-      messages: [withdrawPositionMsg, simulationCreateMsg],
+      messages: [withdrawPositionMsg, convertMsg, await mkCreateMsg("0", "0")],
       bech32Address: this.address,
     });
 
     const toMinAmount = (denom: string) => {
-      const spent = coinsSpent.find((coin) => coin.denom === denom);
+      // the create is the only message spending the asset and the alloy, so
+      // the account's spend of each IS the create deposit
+      const spent = probeSim.coinsSpent.find((coin) => coin.denom === denom);
       if (!spent) return "0";
 
       const kept = new Dec(spent.amount).mul(
@@ -1016,20 +1115,15 @@ export class OsmosisAccountImpl {
       return floored.isPositive() ? floored.toString() : "1";
     };
 
-    const createPositionMsg = await makeCreatePositionMsg({
-      poolId: BigInt(toPoolId),
-      lowerTick: BigInt(lowerTick.toString()),
-      upperTick: BigInt(upperTick.toString()),
-      sender: this.address,
-      tokenMinAmount0: toMinAmount(tokensProvided[0].denom),
-      tokenMinAmount1: toMinAmount(tokensProvided[1].denom),
-      tokensProvided,
-    });
+    const createPositionMsg = await mkCreateMsg(
+      toMinAmount(tokensProvided[0].denom),
+      toMinAmount(tokensProvided[1].denom)
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
       "clMigratePosition",
-      [withdrawPositionMsg, createPositionMsg],
+      [withdrawPositionMsg, convertMsg, createPositionMsg],
       memo,
       undefined,
       undefined,

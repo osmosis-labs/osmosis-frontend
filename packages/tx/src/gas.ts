@@ -265,6 +265,8 @@ export async function simulateCosmosTxBody({
   /** Coins that left the account at the given address.
    *  Useful for subtracting from amount input if it gas tokens are included. */
   coinsSpent: { denom: string; amount: string }[];
+  /** Raw events emitted by the simulated execution. */
+  events: { type: string; attributes: { key: string; value: string }[] }[];
 }> {
   const { unsignedTx } = await generateCosmosUnsignedTx({
     chainId,
@@ -290,7 +292,7 @@ export async function simulateCosmosTxBody({
       simulation.result?.events ?? []
     );
 
-    return { gasUsed, coinsSpent };
+    return { gasUsed, coinsSpent, events: simulation.result?.events ?? [] };
   } catch (e) {
     if (e instanceof ApiClientError) {
       const apiClientError = e as ApiClientError<{

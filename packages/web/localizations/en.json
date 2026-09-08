@@ -73,6 +73,8 @@
     "migrateDescription": "Move this position from pool {fromPoolId} to pool {toPoolId}, keeping the same price range and fee tier.",
     "migrateDustNotice": "Any amount that doesn't fit the new range is returned to your wallet.",
     "migrateIncentivesNotice": "Incentives that haven't met their minimum uptime are forfeited when the position is withdrawn.",
+    "migrateReason": "This pool pairs against bridged USDC.noble; the destination is the same pair on canonical USDC (alloyed). Your USDC.noble converts 1:1 through the transmuter as part of the move.",
+    "migrateRiskNotice": "Everything happens in one transaction with minimum outputs set about 1% under the simulated result: if prices move beyond that before it lands, the whole transaction reverts and your position is untouched. Small buffered amounts (up to about 1.5% of the position) may end up in your wallet instead of the new position.",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",
