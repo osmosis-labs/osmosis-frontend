@@ -56,7 +56,10 @@ export default async function handler(
     // Only the event types the migration sizing reads; the full event list of a
     // three-message transaction is large and mostly bank noise.
     const relevantEvents = events.filter(
-      (e) => e.type === "withdraw_position" || e.type === "token_swapped"
+      (e) =>
+        e.type === "withdraw_position" ||
+        e.type === "token_swapped" ||
+        e.type === "create_position"
     );
 
     return res

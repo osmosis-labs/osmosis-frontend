@@ -1,4 +1,9 @@
-import { getSumTotalSpenderCoinsSpent, matchRawCoinValue } from "../events";
+import {
+  getEventAttributeValue,
+  getLastPositionEventAmounts,
+  getSumTotalSpenderCoinsSpent,
+  matchRawCoinValue,
+} from "../events";
 
 describe("getSumTotalSpenderCoinsSpent", () => {
   it("should sum the event coins spent by a spender", () => {
@@ -343,3 +348,114 @@ const mockTokenSwapEvents = [
     ],
   },
 ];
+
+describe("getLastPositionEventAmounts", () => {
+  const b64 = (x: string) => Buffer.from(x).toString("base64");
+  /** A migration's event stream: withdraw, transmuter swap, create. */
+  const threeMessageStream = [
+    {
+      type: "withdraw_position",
+      attributes: [
+        { key: "amount0", value: "-241143212" },
+        { key: "amount1", value: "-18722581" },
+      ],
+    },
+    {
+      type: "token_swapped",
+      attributes: [
+        { key: "tokens_in", value: "18628968ibc/NOBLE" },
+        { key: "tokens_out", value: "18628968factory/ALLUSDC" },
+      ],
+    },
+    {
+      type: "create_position",
+      attributes: [
+        { key: "amount0", value: "239937496" },
+        { key: "amount1", value: "18591722" },
+      ],
+    },
+  ];
+
+  it("extracts the create amounts from a stream that also swaps", () => {
+    const amounts = getLastPositionEventAmounts(
+      threeMessageStream,
+      "create_position"
+    );
+    expect(amounts?.amount0.toString()).toBe("239937496");
+    expect(amounts?.amount1.toString()).toBe("18591722");
+  });
+
+  it("extracts withdraw amounts, stripping the sign", () => {
+    const amounts = getLastPositionEventAmounts(
+      threeMessageStream,
+      "withdraw_position"
+    );
+    expect(amounts?.amount0.toString()).toBe("241143212");
+    expect(amounts?.amount1.toString()).toBe("18722581");
+  });
+
+  it("takes the LAST event of the type", () => {
+    const amounts = getLastPositionEventAmounts(
+      [
+        {
+          type: "create_position",
+          attributes: [
+            { key: "amount0", value: "1" },
+            { key: "amount1", value: "2" },
+          ],
+        },
+        ...threeMessageStream,
+      ],
+      "create_position"
+    );
+    expect(amounts?.amount0.toString()).toBe("239937496");
+  });
+
+  it("reads base64-encoded attributes by KEY, never by value shape", () => {
+    const amounts = getLastPositionEventAmounts(
+      [
+        {
+          type: "create_position",
+          attributes: [
+            { key: b64("amount0"), value: b64("239937496") },
+            { key: b64("amount1"), value: b64("18591722") },
+          ],
+        },
+      ],
+      "create_position"
+    );
+    expect(amounts?.amount0.toString()).toBe("239937496");
+  });
+
+  it("returns undefined when the event or an amount is missing", () => {
+    expect(getLastPositionEventAmounts([], "create_position")).toBeUndefined();
+    expect(
+      getLastPositionEventAmounts(
+        [{ type: "create_position", attributes: [] }],
+        "create_position"
+      )
+    ).toBeUndefined();
+  });
+
+  it("documents why coinsSpent must not size deposits: a swap short-circuits it", () => {
+    const coinsSpent = getSumTotalSpenderCoinsSpent(
+      "osmo1address",
+      threeMessageStream
+    );
+    // only the swap's tokens_in survives; the create's deposits are absent
+    expect(coinsSpent).toEqual([{ denom: "ibc/NOBLE", amount: "18628968" }]);
+  });
+});
+
+describe("getEventAttributeValue", () => {
+  it("prefers a plain key even when the value looks like base64", () => {
+    // "1234ibc/HASH" is entirely base64 alphabet; guessing from the value
+    // decodes plain amounts into garbage
+    expect(
+      getEventAttributeValue(
+        [{ key: "tokens_out", value: "1234ibc/HASH" }],
+        "tokens_out"
+      )
+    ).toBe("1234ibc/HASH");
+  });
+});

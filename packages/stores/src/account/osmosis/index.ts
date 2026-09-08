@@ -9,6 +9,7 @@ import {
 import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import {
+  getLastPositionEventAmounts,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
   makeAddToPositionMsg,
@@ -995,37 +996,19 @@ export class OsmosisAccountImpl {
       messages: [withdrawPositionMsg],
       bech32Address: this.address,
     });
-    const withdrawEvent = withdrawSim.events
-      .filter((e) => e.type === "withdraw_position")
-      .pop();
-    if (!withdrawEvent)
+    const withdrawAmounts = getLastPositionEventAmounts(
+      withdrawSim.events,
+      "withdraw_position"
+    );
+    if (!withdrawAmounts)
       throw new Error(
         "Withdraw simulation produced no withdraw_position event"
       );
-    const eventAttr = (name: string) => {
-      const attrs = withdrawEvent.attributes ?? [];
-      const plain = attrs.find((at) => at.key === name);
-      if (plain) return plain.value;
-      // some gateways base64-encode attributes; detect by the KEY, never by
-      // guessing at values (plain amounts are valid base64 alphabet)
-      const enc = attrs.find((at) => {
-        try {
-          return Buffer.from(at.key, "base64").toString() === name;
-        } catch {
-          return false;
-        }
-      });
-      return enc ? Buffer.from(enc.value, "base64").toString() : undefined;
-    };
+    // withdraw_position amount0/amount1 are indexed by the SOURCE pool's
+    // token0/token1; the position query's base/quote follow the same order.
     const withdrawn = new Map<string, Int>([
-      [
-        baseAsset.currency.coinMinimalDenom,
-        new Int((eventAttr("amount0") ?? "0").replace(/^-/, "")),
-      ],
-      [
-        quoteAsset.currency.coinMinimalDenom,
-        new Int((eventAttr("amount1") ?? "0").replace(/^-/, "")),
-      ],
+      [baseAsset.currency.coinMinimalDenom, withdrawAmounts.amount0],
+      [quoteAsset.currency.coinMinimalDenom, withdrawAmounts.amount1],
     ]);
 
     const bridgedUsdcOut = withdrawn.get(usdcConversion.fromDenom);
@@ -1099,25 +1082,34 @@ export class OsmosisAccountImpl {
       bech32Address: this.address,
     });
 
-    const toMinAmount = (denom: string) => {
-      // the create is the only message spending the asset and the alloy, so
-      // the account's spend of each IS the create deposit
-      const spent = probeSim.coinsSpent.find((coin) => coin.denom === denom);
-      if (!spent) return "0";
+    /* The create's own deposits come from the probe's create_position event,
+       whose amount0/amount1 are indexed by the DESTINATION pool's token0 and
+       token1 - exactly what tokenMinAmount0/1 expect, so no denom mapping.
+       Never derive these from coinsSpent: for any transaction containing a
+       swap, getSumTotalSpenderCoinsSpent short-circuits to the swap's
+       tokens_in and drops the create's deposits entirely, which would zero
+       both minimums and disable the only onchain price protection. */
+    const probeDeposits = getLastPositionEventAmounts(
+      probeSim.events,
+      "create_position"
+    );
+    if (!probeDeposits)
+      throw new Error("Simulation produced no create_position event");
 
-      const kept = new Dec(spent.amount).mul(
+    const toMinAmount = (deposited: Int) => {
+      if (!deposited.isPositive()) return "0";
+      const kept = new Dec(deposited.toString()).mul(
         new Dec(1).sub(new Dec(minAmountTolerancePercent).quo(new Dec(100)))
       );
       const floored = kept.truncate();
-
       // A zero minimum on a side that does get deposited is exactly the
       // silent-success case these guard against, so floor at one base unit.
       return floored.isPositive() ? floored.toString() : "1";
     };
 
     const createPositionMsg = await mkCreateMsg(
-      toMinAmount(tokensProvided[0].denom),
-      toMinAmount(tokensProvided[1].denom)
+      toMinAmount(probeDeposits.amount0),
+      toMinAmount(probeDeposits.amount1)
     );
 
     await this.base.signAndBroadcast(

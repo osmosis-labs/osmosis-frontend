@@ -135,15 +135,22 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       migration: eligibleMigration,
       eligibility: migrationEligibility,
       minAmountTolerance,
+      revalidate: revalidateMigration,
     } = usePositionMigrationForPosition({
       poolId,
       // The divergence gate tightens with position size, so it needs the
       // value being moved, not just the pool.
       positionValueUsd: Number(currentValue?.toDec().toString() ?? "0"),
+      // Missing or errored details must read as locked, never as unlocked.
+      lockStateKnown: positionDetails !== undefined && !hasPositionDetailsError,
       isUnbonding: Boolean(isUnbonding),
       isSuperfluidStaked: Boolean(isSuperfluidStaked),
       isSuperfluidUnstaking: Boolean(isSuperfluidUnstaking),
     });
+
+    // Unconditional: this component's hook count must not depend on the
+    // asynchronous eligibility result.
+    const openMigrateModal = useCallback(() => setActiveModal("migrate"), []);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const {
@@ -436,7 +443,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               variant="default"
               disabled={Boolean(account?.txTypeInProgress) || !Boolean(account)}
-              onClick={useCallback(() => setActiveModal("migrate"), [])}
+              onClick={openMigrateModal}
               isLoading={isLoadingPositionDetails}
             >
               {t("clPositions.migrateLiquidity")}
@@ -465,6 +472,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 appliedTolerancePercent={
                   migrationEligibility.appliedTolerancePercent
                 }
+                revalidate={revalidateMigration}
                 onRequestClose={() => setActiveModal(null)}
               />
             )}

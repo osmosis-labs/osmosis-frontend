@@ -18,7 +18,7 @@ import { PositionMigrationsResponse } from "~/utils/position-migrations";
 export const usePositionMigrations = () => {
   const { positionMigration } = useFeatureFlags();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["osmosis-position-migrations"],
     queryFn: () =>
       queryOsmosisCMS<PositionMigrationsResponse>({
@@ -29,9 +29,11 @@ export const usePositionMigrations = () => {
     enabled: positionMigration,
   });
 
-  // Ignore cached data the moment the flag flips off: react-query's `enabled`
-  // stops fetching but keeps whatever it already holds.
-  if (!positionMigration) return { migrations: undefined, isLoading: false };
+  // Ignore cached data the moment the flag flips off or the map becomes
+  // unreachable: react-query keeps stale data through both, and the map is
+  // the kill switch, so it must fail closed rather than serve from cache.
+  if (!positionMigration || isError)
+    return { migrations: undefined, isLoading: false };
 
   return {
     migrations: data?.migrations,

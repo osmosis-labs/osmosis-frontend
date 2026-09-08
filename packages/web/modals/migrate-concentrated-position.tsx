@@ -14,6 +14,7 @@ import {
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { MigrationEligibility } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
 /**
@@ -34,6 +35,13 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     divergencePercent: Dec;
     /** The size-tier tolerance this position was judged against. */
     appliedTolerancePercent: number;
+    /**
+     * Re-runs the full eligibility check against freshly fetched pool state.
+     * Called at confirm time: the render-time eligibility can be minutes old,
+     * and the simulations that size the transaction would otherwise accept
+     * whatever the pools have drifted to as their baseline.
+     */
+    revalidate: () => Promise<MigrationEligibility | undefined>;
   } & ModalBaseProps
 > = observer((props) => {
   const {
@@ -42,15 +50,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     minAmountTolerance,
     divergencePercent,
     appliedTolerancePercent,
+    revalidate,
   } = props;
 
-  /* The most pricing can cost before something refuses: the pools may sit up
-     to the tier tolerance apart when offered, and the on-chain minimums allow
-     fills up to minAmountTolerance under the simulated result. Beyond their
-     sum the transaction reverts, so it is an actual bound, not an estimate. */
-  const maxImpactPercent = (
-    appliedTolerancePercent + minAmountTolerance
-  ).toFixed(1);
   const currentDivergence = divergencePercent.toString(3);
   const {
     id: positionId,
@@ -117,6 +119,16 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     setError(undefined);
 
     try {
+      /* The eligibility that opened this modal is stale by now. Re-check
+         against fresh pool state so the divergence gate is enforced at the
+         moment of signing, not at the moment of rendering: without this, the
+         sizing simulations would just accept the drifted state as baseline. */
+      const fresh = await revalidate();
+      if (!fresh?.isEligible) {
+        setError(t("clPositions.migrateRevalidationFailed"));
+        return;
+      }
+
       await account.osmosis.sendMigrateConcentratedLiquidityPositionMsg(
         positionId,
         toPoolId,
@@ -147,6 +159,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     }
   }, [
     account,
+    revalidate,
+    t,
     positionId,
     toPoolId,
     rawPosition.lower_tick,
@@ -209,7 +223,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             {t("clPositions.migrateIncentivesNotice")}
           </span>
           <span className="caption text-osmoverse-300">
-            {t("clPositions.migrateRiskNotice")}
+            {t("clPositions.migrateRiskNotice", {
+              minTolerance: minAmountTolerance.toString(),
+            })}
           </span>
         </div>
 
@@ -231,9 +247,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           </div>
           <div className="flex items-center justify-between">
             <span className="body2 text-osmoverse-300">
-              {t("clPositions.migrateMaxImpact")}
+              {t("clPositions.migrateAllowedDifference")}
             </span>
-            <span className="subtitle1 text-rust-200">{maxImpactPercent}%</span>
+            <span className="subtitle1 text-white-full">
+              {appliedTolerancePercent}%
+            </span>
           </div>
         </div>
 

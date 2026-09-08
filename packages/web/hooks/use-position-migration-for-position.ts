@@ -1,5 +1,6 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
+import { useCallback } from "react";
 
 import {
   USDC_ALLOYED_DENOM,
@@ -26,6 +27,7 @@ import { api } from "~/utils/trpc";
 export const usePositionMigrationForPosition = ({
   poolId,
   positionValueUsd,
+  lockStateKnown,
   isUnbonding,
   isSuperfluidStaked,
   isSuperfluidUnstaking,
@@ -33,16 +35,74 @@ export const usePositionMigrationForPosition = ({
   poolId: string;
   /** USD value of the position; the divergence gate tightens with size. */
   positionValueUsd: number;
+  /**
+   * Whether the lock flags below come from successfully loaded position
+   * details. While they are missing or errored, nothing is offered: a locked
+   * position must never look migratable because its details failed to load.
+   */
+  lockStateKnown: boolean;
   isUnbonding: boolean;
   isSuperfluidStaked: boolean;
   isSuperfluidUnstaking: boolean;
 }) => {
   const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
+  const apiUtils = api.useUtils();
 
   // Only the mapped source pools ever reach the destination query, so an
   // unmapped position costs no extra request.
   const mapped = findMigration({ migrations, fromPoolId: poolId });
+
+  /**
+   * Re-runs the full eligibility check against freshly fetched pool state.
+   * The render-time result below can be minutes old by the time the user
+   * confirms; the transaction must not be built against it. Returns
+   * undefined when anything needed is missing, which callers must treat as
+   * ineligible.
+   */
+  const revalidate = useCallback(async (): Promise<
+    MigrationEligibility | undefined
+  > => {
+    if (
+      !mapped ||
+      !lockStateKnown ||
+      priceDivergenceTiers === undefined ||
+      minAmountTolerance === undefined
+    )
+      return undefined;
+    const [freshFrom, freshTo] = await Promise.all([
+      apiUtils.local.pools.getPool.fetch({ poolId }, { staleTime: 0 }),
+      apiUtils.local.pools.getPool.fetch(
+        { poolId: mapped.toPoolId.toString() },
+        { staleTime: 0 }
+      ),
+    ]);
+    const fromPool = toMigrationPoolState(freshFrom);
+    const toPool = toMigrationPoolState(freshTo);
+    if (!fromPool || !toPool) return undefined;
+    return getMigrationEligibility({
+      migrations,
+      priceDivergenceTiers,
+      positionValueUsd,
+      fromPool,
+      toPool,
+      lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
+      fromUsdcDenom: USDC_NOBLE_DENOM,
+      toUsdcDenom: USDC_ALLOYED_DENOM,
+    });
+  }, [
+    mapped,
+    lockStateKnown,
+    migrations,
+    priceDivergenceTiers,
+    minAmountTolerance,
+    positionValueUsd,
+    poolId,
+    isUnbonding,
+    isSuperfluidStaked,
+    isSuperfluidUnstaking,
+    apiUtils,
+  ]);
 
   const { data: fromPoolData } = api.local.pools.getPool.useQuery(
     { poolId },
@@ -55,12 +115,13 @@ export const usePositionMigrationForPosition = ({
 
   if (
     !mapped ||
+    !lockStateKnown ||
     priceDivergenceTiers === undefined ||
     minAmountTolerance === undefined ||
     !fromPoolData ||
     !toPoolData
   ) {
-    return { migration: undefined, eligibility: undefined };
+    return { migration: undefined, eligibility: undefined, revalidate };
   }
 
   const fromPool = toMigrationPoolState(fromPoolData);
@@ -69,7 +130,7 @@ export const usePositionMigrationForPosition = ({
   // A pool whose raw payload lacks the concentrated fields cannot be checked,
   // so it is not offered rather than being checked against defaults.
   if (!fromPool || !toPool)
-    return { migration: undefined, eligibility: undefined };
+    return { migration: undefined, eligibility: undefined, revalidate };
 
   const eligibility: MigrationEligibility = getMigrationEligibility({
     migrations,
@@ -87,6 +148,7 @@ export const usePositionMigrationForPosition = ({
     eligibility,
     minAmountTolerance,
     toPool,
+    revalidate,
   };
 };
 
