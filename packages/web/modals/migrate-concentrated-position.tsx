@@ -1,9 +1,10 @@
 import type { UserPosition } from "@osmosis-labs/server";
+import type { PoolAssetInfo } from "~/components/assets/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 
-import { Icon } from "~/components/assets";
+import { Icon, PoolAssetsIcon } from "~/components/assets";
 import {
   USDC_ALLOYED_DENOM,
   USDC_CANONICAL_SYMBOL,
@@ -69,6 +70,36 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   );
   const baseSymbol = baseCoin?.currency.coinDenom ?? "";
   const fromUsdcSymbol = nobleCoin?.currency.coinDenom ?? "USDC.noble";
+
+  const { data: toPoolData } = api.local.pools.getPool.useQuery({
+    poolId: toPoolId,
+  });
+  const toCoin = (predicate: (denom: string) => boolean) =>
+    toPoolData?.reserveCoins.find((coin) =>
+      predicate(coin.currency.coinMinimalDenom)
+    )?.currency;
+  const toUsdcCurrency = toCoin((d) => d === USDC_ALLOYED_DENOM);
+  const toBaseCurrency = toCoin((d) => d !== USDC_ALLOYED_DENOM);
+
+  const asIcon = (c?: {
+    coinDenom: string;
+    coinMinimalDenom: string;
+    coinImageUrl?: string;
+  }) =>
+    c
+      ? {
+          coinDenom: c.coinDenom,
+          coinMinimalDenom: c.coinMinimalDenom,
+          coinImageUrl: c.coinImageUrl,
+        }
+      : undefined;
+  const fromAssets = [
+    asIcon(baseCoin?.currency),
+    asIcon(nobleCoin?.currency),
+  ].filter(Boolean) as PoolAssetInfo[];
+  const toAssets = [asIcon(toBaseCurrency), asIcon(toUsdcCurrency)].filter(
+    Boolean
+  ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
   const { chainStore, accountStore } = useStore();
@@ -141,6 +172,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       title={t("clPositions.migrateLiquidity")}
     >
       <div className="flex flex-col gap-6 pt-8">
+        {fromAssets.length === 2 && toAssets.length === 2 && (
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <PoolAssetsIcon size="sm" assets={fromAssets} />
+              <span className="subtitle1 text-osmoverse-100">
+                {baseSymbol}/{fromUsdcSymbol}
+              </span>
+            </div>
+            <Icon id="arrow-right" height={20} width={20} />
+            <div className="flex items-center gap-2">
+              <PoolAssetsIcon size="sm" assets={toAssets} />
+              <span className="subtitle1 text-osmoverse-100">
+                {baseSymbol}/{USDC_CANONICAL_SYMBOL}
+              </span>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col gap-3">
           <span className="body2 text-osmoverse-200">
             {t("clPositions.migrateDescription", {
@@ -161,12 +209,6 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             {t("clPositions.migrateIncentivesNotice")}
           </span>
           <span className="caption text-osmoverse-300">
-            {t("clPositions.migrateImpactNotice", {
-              divergence: currentDivergence,
-              maxImpact: maxImpactPercent,
-            })}
-          </span>
-          <span className="caption text-osmoverse-300">
             {t("clPositions.migrateRiskNotice")}
           </span>
         </div>
@@ -177,6 +219,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             <span className="caption text-rust-300">{error}</span>
           </div>
         )}
+
+        <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-900 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <span className="body2 text-osmoverse-300">
+              {t("clPositions.migrateCurrentDifference")}
+            </span>
+            <span className="subtitle1 text-white-full">
+              {currentDivergence}%
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="body2 text-osmoverse-300">
+              {t("clPositions.migrateMaxImpact")}
+            </span>
+            <span className="subtitle1 text-rust-200">{maxImpactPercent}%</span>
+          </div>
+        </div>
 
         {accountActionButton}
       </div>
