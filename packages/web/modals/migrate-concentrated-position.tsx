@@ -14,6 +14,7 @@ import {
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 import { MigrationEligibility } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
@@ -232,8 +233,6 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           <span className="caption text-osmoverse-300">
             {t("clPositions.migrateRiskNotice", {
               minTolerance: minAmountTolerance.toString(),
-              baseSymbol,
-              fromUsdcSymbol,
             })}
           </span>
         </div>
@@ -262,6 +261,22 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               {appliedTolerancePercent}%
             </span>
           </div>
+          {baseCoin && nobleCoin && (
+            <div className="flex items-center justify-between">
+              <span className="body2 text-osmoverse-300">
+                {t("clPositions.migrateMaxWalletDraw")}
+              </span>
+              {/* The worst case per side is that side's full sized amount,
+                  which the position's own composition caps: the risk notice
+                  points here instead of calling the draw small. Only one
+                  side can fall short in a given move, so this reads as
+                  either/or. */}
+              <span className="subtitle1 text-white-full">
+                {formatPretty(baseCoin, { maxDecimals: 6 })} /{" "}
+                {formatPretty(nobleCoin, { maxDecimals: 2 })}
+              </span>
+            </div>
+          )}
         </div>
 
         {accountActionButton}

@@ -1,5 +1,9 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
+import {
+  createMultiEndpointClient,
+  MultiEndpointClient,
+} from "@osmosis-labs/utils";
 import { useCallback } from "react";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -19,25 +23,40 @@ import {
 import { api } from "~/utils/trpc";
 
 /**
- * Reads one pool straight from the chain's LCD, bypassing both react-query's
- * client cache and the server's short-lived pool cache: `staleTime: 0` only
- * defeats the former, and a safety recheck served from any cache is not a
- * recheck. Any failure resolves to `undefined`, which callers treat as
+ * Hedged client over every configured Osmosis LCD, so the safety recheck is
+ * neither stuck behind one hanging endpoint nor dependent on one healthy one.
+ * Built lazily: the chain list is static, but the constructor throws on an
+ * empty endpoint set, which must read as "cannot check", not as a crash.
+ */
+let lcdClient: MultiEndpointClient | undefined;
+const getLcdClient = () => {
+  if (lcdClient) return lcdClient;
+  const endpoints = (ChainList[0].apis?.rest ?? []).map(({ address }) => ({
+    address: address.replace(/\/+$/, ""),
+  }));
+  if (endpoints.length === 0) return undefined;
+  lcdClient = createMultiEndpointClient(endpoints);
+  return lcdClient;
+};
+
+/**
+ * Reads one pool straight from the chain's LCD, bypassing react-query's
+ * client cache, the server's short-lived pool cache, and (via `no-store`)
+ * the browser's own HTTP cache: a safety recheck served from any cache is
+ * not a recheck. The client hedges across every configured endpoint with
+ * per-attempt timeouts, so one dead LCD neither blocks confirmation nor
+ * fails it. Any failure resolves to `undefined`, which callers treat as
  * ineligible rather than falling back to cached state.
  */
 const fetchChainPoolState = async (
   poolId: string
 ): Promise<MigrationPoolState | undefined> => {
-  const rest = ChainList[0].apis?.rest[0]?.address;
-  if (!rest) return undefined;
+  const client = getLcdClient();
+  if (!client) return undefined;
   try {
-    const response = await fetch(
-      `${rest.replace(/\/$/, "")}/osmosis/poolmanager/v1beta1/pools/${poolId}`
-    );
-    if (!response.ok) return undefined;
-    const { pool } = (await response.json()) as {
+    const { pool } = await client.fetch<{
       pool?: ChainConcentratedPoolResponse;
-    };
+    }>(`/osmosis/poolmanager/v1beta1/pools/${poolId}`, { cache: "no-store" });
     return poolStateFromChainResponse(pool);
   } catch {
     return undefined;

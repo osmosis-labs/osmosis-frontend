@@ -968,12 +968,15 @@ export class OsmosisAccountImpl {
       transmuterPoolId: string;
     },
     /**
-     * Final gate, invoked after the sizing simulations and immediately before
-     * the transaction is signed - as close to broadcast as a client can get.
-     * Throwing here aborts the migration with nothing signed. Callers use it
-     * to re-verify price divergence against uncached chain state, because
-     * everything above this point takes real time and a check that ran when
-     * the flow opened says nothing about the block this lands in.
+     * Final gate, invoked twice: after the sizing simulations before the
+     * wallet is asked to sign (so a stale flow never reaches a prompt), and
+     * again after the wallet approves, immediately before the signed bytes
+     * are broadcast. The second run is the one that matters: a user can hold
+     * the wallet prompt open indefinitely, and a direct-sign transaction
+     * carries no timeout height, so only a post-approval check bounds the
+     * drift window to broadcast plus inclusion. Throwing at either point
+     * aborts the migration with nothing broadcast. Callers use it to
+     * re-verify price divergence against uncached chain state.
      */
     preBroadcastCheck?: () => Promise<void>,
     memo: string = "",
@@ -1039,15 +1042,21 @@ export class OsmosisAccountImpl {
        These amounts are fixed at signing, and no Cosmos message spends "only
        what this transaction received": if the withdraw under-delivers one
        side, the swap or create covers the shortfall from tokens already in
-       the wallet. Three properties keep that sound. The alloyed side cannot
+       the wallet. Two properties are structural. The alloyed side cannot
        over-draw at all, because the swap's min out is exactly what the create
-       provides. A shortfall the wallet cannot cover fails the transfer and
-       reverts the whole transaction, position included. And a shortfall it
-       can cover is matched by the surplus the withdraw pays out on the other
-       side, which stays in the wallet - the mix of denoms shifts, the value
-       does not, beyond the tolerances already enforced by the minimums. The
-       pre-broadcast check below and the transaction's timeout height bound
-       how much drift can accumulate before any of this matters. */
+       provides. And a shortfall the wallet cannot cover fails the transfer
+       and reverts the whole transaction, position included. What is NOT
+       enforced onchain: the create minimums constrain the destination
+       deposits, never the withdraw's own outputs, so a covered shortfall can
+       reach the full sized amount of one side - a bound the UI discloses as
+       concrete amounts rather than calling small - and the surplus the
+       withdraw returns on the other side is valued at whatever the source
+       pool traded at in that block, not guaranteed equivalent at the
+       destination's price. What keeps that window to seconds is timing: the
+       eligibility recheck runs again via the signing callback below, after
+       wallet approval and immediately before broadcast, precisely because a
+       user can hold the prompt open indefinitely and direct signing carries
+       no timeout height. */
     const buffer = (amount: Int, bps: number) =>
       new Int(
         (
@@ -1135,10 +1144,8 @@ export class OsmosisAccountImpl {
     );
 
     /* Two simulations have passed since the caller last checked eligibility.
-       Re-run their gate now, so it holds immediately before signing; past
-       this point the protections are onchain (the create minimums, the
-       swap's min out) plus the timeout height capping how long the signed
-       transaction stays includable. */
+       Re-run their gate before involving the wallet at all, so a flow that
+       has already gone stale never reaches a prompt. */
     if (preBroadcastCheck) await preBroadcastCheck();
 
     await this.base.signAndBroadcast(
@@ -1148,14 +1155,23 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          queryPosition.waitFreshResponse();
-          this.queries?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
+      {
+        /* The decisive run of the gate: after the user approves in the
+           wallet - a wait only they control - and immediately before the
+           signed bytes are broadcast. Throwing here discards the signed
+           transaction; past here the remaining drift window is broadcast
+           plus inclusion, seconds rather than however long the prompt sat
+           open. */
+        onSign: preBroadcastCheck,
+        onFulfill: (tx) => {
+          if (!tx.code) {
+            queryPosition.waitFreshResponse();
+            this.queries?.queryAccountsPositions
+              .get(this.address)
+              .waitFreshResponse();
+          }
+          onFulfill?.(tx);
+        },
       }
     );
   }
