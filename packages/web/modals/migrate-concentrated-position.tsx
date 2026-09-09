@@ -1,7 +1,7 @@
 import type { UserPosition } from "@osmosis-labs/server";
-import { Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import type { PoolAssetInfo } from "~/components/assets/types";
@@ -15,7 +15,10 @@ import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { MigrationEligibility } from "~/utils/position-migrations";
+import {
+  getRangeMaxWithdrawAmounts,
+  MigrationEligibility,
+} from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
 /**
@@ -59,7 +62,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     id: positionId,
     poolId,
     currentCoins,
-    position: { position: rawPosition },
+    position: { position: rawPosition, asset0, asset1 },
   } = position;
 
   // Name the movement in pair symbols: the source side as the assetlist
@@ -73,6 +76,47 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   );
   const baseSymbol = baseCoin?.currency.coinDenom ?? "";
   const fromUsdcSymbol = nobleCoin?.currency.coinDenom ?? "USDC.noble";
+
+  /* The disclosed maximum wallet draw. A snapshot of the position's current
+     composition would understate it - both pools can move together without
+     tripping the divergence gate, and the transaction is sized from a fresh
+     simulation taken later - so this uses the range-edge maxima instead:
+     amounts a full withdrawal can never exceed at any price, and therefore a
+     true ceiling on the sized spends. */
+  const maxWalletDraw = useMemo(() => {
+    const amounts = getRangeMaxWithdrawAmounts({
+      liquidity: rawPosition.liquidity,
+      lowerTick: new Int(rawPosition.lower_tick),
+      upperTick: new Int(rawPosition.upper_tick),
+    });
+    if (!amounts) return undefined;
+    const currencyFor = (denom: string) =>
+      currentCoins?.find((coin) => coin.currency.coinMinimalDenom === denom)
+        ?.currency;
+    const sides = [
+      { currency: currencyFor(asset0.denom), amount: amounts.maxAmount0 },
+      { currency: currencyFor(asset1.denom), amount: amounts.maxAmount1 },
+    ];
+    if (sides.some((side) => !side.currency)) return undefined;
+    const coins = sides.map(
+      (side) => new CoinPretty(side.currency!, side.amount)
+    );
+    const noble = coins.find(
+      (coin) => coin.currency.coinMinimalDenom === USDC_NOBLE_DENOM
+    );
+    const base = coins.find(
+      (coin) => coin.currency.coinMinimalDenom !== USDC_NOBLE_DENOM
+    );
+    if (!noble || !base) return undefined;
+    return { base, noble };
+  }, [
+    rawPosition.liquidity,
+    rawPosition.lower_tick,
+    rawPosition.upper_tick,
+    asset0.denom,
+    asset1.denom,
+    currentCoins,
+  ]);
 
   const { data: toPoolData } = api.local.pools.getPool.useQuery({
     poolId: toPoolId,
@@ -261,19 +305,18 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               {appliedTolerancePercent}%
             </span>
           </div>
-          {baseCoin && nobleCoin && (
+          {maxWalletDraw && (
             <div className="flex items-center justify-between">
               <span className="body2 text-osmoverse-300">
                 {t("clPositions.migrateMaxWalletDraw")}
               </span>
-              {/* The worst case per side is that side's full sized amount,
-                  which the position's own composition caps: the risk notice
-                  points here instead of calling the draw small. Only one
-                  side can fall short in a given move, so this reads as
-                  either/or. */}
+              {/* Range-edge maxima, not the position's current composition:
+                  the risk notice points here instead of calling the draw
+                  small. Only one side can fall short in a given move, so
+                  this reads as either/or. */}
               <span className="subtitle1 text-white-full">
-                {formatPretty(baseCoin, { maxDecimals: 6 })} /{" "}
-                {formatPretty(nobleCoin, { maxDecimals: 2 })}
+                {formatPretty(maxWalletDraw.base, { maxDecimals: 6 })} /{" "}
+                {formatPretty(maxWalletDraw.noble, { maxDecimals: 2 })}
               </span>
             </div>
           )}

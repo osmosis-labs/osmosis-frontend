@@ -1,3 +1,4 @@
+import { tickToSqrtPrice } from "@osmosis-labs/math";
 import { Dec, Int } from "@osmosis-labs/unit";
 
 /**
@@ -344,6 +345,60 @@ export const deriveTokenMinAmount = ({
   // zero minimum is exactly the silent-success case these guard against.
   const floored = kept.truncate();
   return floored.isPositive() ? floored : new Int(1);
+};
+
+/**
+ * The most a full withdrawal of the position can pay out per side at ANY
+ * price: all of token0 with the price at the range's lower edge
+ * (`L·(1/√pl − 1/√pu)`), all of token1 at the upper edge (`L·(√pu − √pl)`).
+ *
+ * The migration sizes its swap and create 0.5% under a fresh withdrawal
+ * simulation, so these edge amounts are a true ceiling on what the
+ * transaction can spend of each denom - and therefore on what it could draw
+ * from the wallet if the withdrawal under-delivers - independent of where
+ * prices move between simulation and inclusion. A snapshot of the position's
+ * current composition is NOT such a ceiling: both pools can move together
+ * without tripping the divergence gate, pushing one side's sized amount past
+ * what the snapshot showed. Rounded up, because a disclosed cap must never
+ * understate. Returns `undefined` for a malformed position, which callers
+ * must treat as "cannot disclose" rather than showing nothing silently.
+ */
+export const getRangeMaxWithdrawAmounts = ({
+  liquidity,
+  lowerTick,
+  upperTick,
+}: {
+  /** The position's liquidity, as the chain reports it (decimal string). */
+  liquidity: string;
+  lowerTick: Int;
+  upperTick: Int;
+}): { maxAmount0: Int; maxAmount1: Int } | undefined => {
+  let liquidityDec: Dec;
+  try {
+    liquidityDec = new Dec(liquidity);
+  } catch {
+    return undefined;
+  }
+  if (!liquidityDec.isPositive() || !lowerTick.lt(upperTick)) return undefined;
+
+  const sqrtPriceLower = tickToSqrtPrice(lowerTick);
+  const sqrtPriceUpper = tickToSqrtPrice(upperTick);
+  if (!sqrtPriceLower.isPositive() || !sqrtPriceUpper.isPositive())
+    return undefined;
+
+  const ceil = (d: Dec) => {
+    const truncated = d.truncate();
+    return new Dec(truncated).equals(d) ? truncated : truncated.add(new Int(1));
+  };
+
+  return {
+    maxAmount0: ceil(
+      liquidityDec.mul(
+        new Dec(1).quo(sqrtPriceLower).sub(new Dec(1).quo(sqrtPriceUpper))
+      )
+    ),
+    maxAmount1: ceil(liquidityDec.mul(sqrtPriceUpper.sub(sqrtPriceLower))),
+  };
 };
 
 /**

@@ -630,6 +630,36 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
+      // Pre-probe REST endpoints to find a working one for broadcast.
+      // Falls back to the wallet's default endpoint if probe fails.
+      // Started before signing and resolved before the onSign gates below, so
+      // the wallet wait absorbs the probe's latency and nothing between an
+      // onSign check and the actual broadcast can take a probe's worth of
+      // time.
+      const restEndpointPromise = (async () => {
+        let restEndpoint = getEndpointString(
+          await wallet.getRestEndpoint(true)
+        );
+        const restUrls = this.getChainRestUrls(wallet);
+        if (restUrls.length > 1) {
+          try {
+            const client = createMultiEndpointClient(
+              restUrls.map((url) => ({ address: url }))
+            );
+            const { endpointAddress } = await client.fetchWithEndpoint(
+              "/cosmos/base/node/v1beta1/config"
+            );
+            restEndpoint = endpointAddress;
+          } catch {
+            // Pre-probe failed; use wallet default
+          }
+        }
+        return restEndpoint;
+      })();
+      // If signing throws before this is awaited, the rejection must not
+      // surface as unhandled; awaiting below still rethrows the real error.
+      restEndpointPromise.catch(() => {});
+
       const txRaw = await this.sign({
         wallet,
         fee,
@@ -641,30 +671,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
+      const restEndpoint = await restEndpointPromise;
+
       if (this.options.preTxEvents?.onSign) {
         await this.options.preTxEvents.onSign();
       }
 
       if (onSign) {
         await onSign();
-      }
-
-      // Pre-probe REST endpoints to find a working one for broadcast.
-      // Falls back to the wallet's default endpoint if probe fails.
-      let restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
-      const restUrls = this.getChainRestUrls(wallet);
-      if (restUrls.length > 1) {
-        try {
-          const client = createMultiEndpointClient(
-            restUrls.map((url) => ({ address: url }))
-          );
-          const { endpointAddress } = await client.fetchWithEndpoint(
-            "/cosmos/base/node/v1beta1/config"
-          );
-          restEndpoint = endpointAddress;
-        } catch {
-          // Pre-probe failed; use wallet default
-        }
       }
 
       const res = await axios.post<{
@@ -1324,11 +1338,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // any warn-accept flags the user acknowledged.
     memo = appendFeMemoTag(memo, FeMemoTag, memoFlags);
 
+    // Expiry-bind the transaction like the amino path already does: without
+    // this a direct-signed transaction stays broadcastable forever, so state
+    // checked before broadcast could precede an arbitrarily late submission.
+    // getTimeoutHeight returns 0 (no expiry) if the height lookup fails.
+    const timeoutHeight = await this.getTimeoutHeight(chainId);
+
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
         messages: messages,
         memo: memo,
+        timeoutHeight,
       },
     };
 

@@ -7,6 +7,7 @@ import {
   findMigration,
   getMigrationEligibility,
   getPriceDivergencePercent,
+  getRangeMaxWithdrawAmounts,
   isPositionUnlocked,
   MigrationPoolState,
   poolStateFromChainResponse,
@@ -390,6 +391,48 @@ describe("isPositionUnlocked / findMigration", () => {
   it("returns undefined for an absent map", () => {
     expect(
       findMigration({ migrations: undefined, fromPoolId: "1926" })
+    ).toBeUndefined();
+  });
+});
+
+describe("getRangeMaxWithdrawAmounts", () => {
+  // Ticks 0 and 9,000,000 span prices 1 to 10 exactly, so the edge maxima
+  // have hand-computable values: max1 = L·(√10 − 1), max0 = L·(1 − 1/√10).
+  it("returns the range-edge maxima, rounded up", () => {
+    const amounts = getRangeMaxWithdrawAmounts({
+      liquidity: "100",
+      lowerTick: new Int(0),
+      upperTick: new Int(9_000_000),
+    });
+    expect(amounts?.maxAmount0.toString()).toBe("69"); // ceil(68.377…)
+    expect(amounts?.maxAmount1.toString()).toBe("217"); // ceil(216.227…)
+  });
+
+  it("handles negative ticks (prices below 1)", () => {
+    // Ticks −9,000,000 and 0 span prices 0.1 to 1.
+    const amounts = getRangeMaxWithdrawAmounts({
+      liquidity: "1000",
+      lowerTick: new Int(-9_000_000),
+      upperTick: new Int(0),
+    });
+    expect(amounts?.maxAmount0.toString()).toBe("2163"); // ceil(2162.277…)
+    expect(amounts?.maxAmount1.toString()).toBe("684"); // ceil(683.772…)
+  });
+
+  it("refuses malformed or degenerate positions", () => {
+    const base = { lowerTick: new Int(0), upperTick: new Int(100) };
+    expect(
+      getRangeMaxWithdrawAmounts({ ...base, liquidity: "not-a-number" })
+    ).toBeUndefined();
+    expect(
+      getRangeMaxWithdrawAmounts({ ...base, liquidity: "0" })
+    ).toBeUndefined();
+    expect(
+      getRangeMaxWithdrawAmounts({
+        liquidity: "100",
+        lowerTick: new Int(100),
+        upperTick: new Int(100),
+      })
     ).toBeUndefined();
   });
 });
