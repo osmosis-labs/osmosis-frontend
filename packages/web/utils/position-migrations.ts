@@ -484,3 +484,22 @@ export const ceilCoinToDisplayDecimals = (
   const ceiledQuotient = amount.sub(new Int(1)).div(step).add(new Int(1));
   return new CoinPretty(coin.currency, ceiledQuotient.mul(step));
 };
+
+/**
+ * Renders the disclosed wallet-draw cap: ceiled to the display precision,
+ * then formatted with nothing that can drop a significant digit.
+ *
+ * Deliberately NOT `formatPretty`, which enables `shrink` - a mode that
+ * sheds fractional digits as the integer part grows, so 1,234.56 renders as
+ * 1,234 and understates the cap the ceiling just protected. Here
+ * `maxDecimals` is lossless because the amount is already an exact multiple
+ * of the display precision, and `trim` only removes trailing zeros.
+ */
+export const formatWalletDrawCap = (
+  coin: CoinPretty,
+  displayDecimals: number
+) =>
+  ceilCoinToDisplayDecimals(coin, displayDecimals)
+    .maxDecimals(displayDecimals)
+    .trim(true)
+    .toString();

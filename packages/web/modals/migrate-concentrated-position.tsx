@@ -14,9 +14,8 @@ import {
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 import {
-  ceilCoinToDisplayDecimals,
+  formatWalletDrawCap,
   getRangeMaxWithdrawAmounts,
   MigrationEligibility,
 } from "~/utils/position-migrations";
@@ -314,21 +313,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               {/* Range-edge maxima, not the position's current composition:
                   the risk notice points here instead of calling the draw
                   small. Only one side can fall short in a given move, so
-                  this reads as either/or. Ceiled to the display precision
-                  first, because the formatter truncates and a truncated cap
-                  understates. */}
+                  this reads as either/or. Rendered by a formatter that can
+                  only round this cap up, never truncate or shrink it down. */}
               <span className="subtitle1 text-white-full">
-                {formatPretty(
-                  ceilCoinToDisplayDecimals(maxWalletDraw.base, 6),
-                  {
-                    maxDecimals: 6,
-                  }
-                )}{" "}
-                /{" "}
-                {formatPretty(
-                  ceilCoinToDisplayDecimals(maxWalletDraw.noble, 2),
-                  { maxDecimals: 2 }
-                )}
+                {formatWalletDrawCap(maxWalletDraw.base, 6)} /{" "}
+                {formatWalletDrawCap(maxWalletDraw.noble, 2)}
               </span>
             </div>
           )}

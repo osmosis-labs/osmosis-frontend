@@ -6,6 +6,7 @@ import {
   deriveTokenMinAmount,
   DivergenceTier,
   findMigration,
+  formatWalletDrawCap,
   getMigrationEligibility,
   getPriceDivergencePercent,
   getRangeMaxWithdrawAmounts,
@@ -480,6 +481,27 @@ describe("ceilCoinToDisplayDecimals", () => {
 
   it("returns a zero amount unchanged", () => {
     expect(ceilCoinToDisplayDecimals(coin("0"), 2).toCoin().amount).toBe("0");
+  });
+
+  // These assert the exact strings the modal renders, because the generic
+  // formatter has TWO ways to understate: maxDecimals truncates, and shrink
+  // sheds fractional digits as the integer part grows (1,234.56 -> 1,234).
+  // The cap's formatter must be immune to both.
+  describe("formatWalletDrawCap (the production formatting path)", () => {
+    it("keeps fractional digits on large values instead of shrinking them", () => {
+      // 1,234.56 is already exact at two decimals; a shrinking formatter
+      // renders it as 1,234, understating by 0.56.
+      expect(formatWalletDrawCap(coin("1234560000"), 2)).toBe("1,234.56 USDC");
+    });
+
+    it("rounds a sub-precision cap up, never down", () => {
+      expect(formatWalletDrawCap(coin("9999"), 2)).toBe("0.01 USDC");
+    });
+
+    it("only ever trims zeros, which drops nothing", () => {
+      expect(formatWalletDrawCap(coin("1234500000"), 2)).toBe("1,234.5 USDC");
+      expect(formatWalletDrawCap(coin("50000000000"), 2)).toBe("50,000 USDC");
+    });
   });
 });
 
