@@ -1,6 +1,7 @@
-import { Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 import {
+  ceilCoinToDisplayDecimals,
   ChainConcentratedPoolResponse,
   deriveTokenMinAmount,
   DivergenceTier,
@@ -434,6 +435,51 @@ describe("getRangeMaxWithdrawAmounts", () => {
         upperTick: new Int(100),
       })
     ).toBeUndefined();
+  });
+});
+
+describe("ceilCoinToDisplayDecimals", () => {
+  const USDC_CURRENCY = {
+    coinDenom: "USDC",
+    coinMinimalDenom: "uusdc",
+    coinDecimals: 6,
+  };
+  const coin = (baseAmount: string) =>
+    new CoinPretty(USDC_CURRENCY, baseAmount);
+
+  it("never lets a truncating display understate the cap", () => {
+    // The review's boundary case: a 0.009999 USDC cap shown at two decimals
+    // truncates to 0.0099 while the buffered transaction can spend 0.009949.
+    // Ceiled first, the display becomes 0.01, which covers the spend.
+    const ceiled = ceilCoinToDisplayDecimals(coin("9999"), 2);
+    expect(ceiled.toCoin().amount).toBe("10000"); // 0.01 exactly
+    // Truncating the ceiled value at the display precision drops nothing.
+    expect(ceiled.maxDecimals(2).hideDenom(true).locale(false).toString()).toBe(
+      "0.01"
+    );
+    // The rendered maximum stays at or above both the true cap...
+    expect(new Int(ceiled.toCoin().amount).gte(new Int("9999"))).toBe(true);
+    // ...and any spend the buffers allow under that cap.
+    expect(new Int(ceiled.toCoin().amount).gte(new Int("9949"))).toBe(true);
+  });
+
+  it("keeps an amount already exact at the display precision", () => {
+    expect(ceilCoinToDisplayDecimals(coin("10000"), 2).toCoin().amount).toBe(
+      "10000"
+    );
+  });
+
+  it("returns the coin unchanged when the display shows every decimal", () => {
+    expect(ceilCoinToDisplayDecimals(coin("9999"), 6).toCoin().amount).toBe(
+      "9999"
+    );
+    expect(ceilCoinToDisplayDecimals(coin("9999"), 8).toCoin().amount).toBe(
+      "9999"
+    );
+  });
+
+  it("returns a zero amount unchanged", () => {
+    expect(ceilCoinToDisplayDecimals(coin("0"), 2).toCoin().amount).toBe("0");
   });
 });
 

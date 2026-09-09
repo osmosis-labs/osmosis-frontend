@@ -16,6 +16,7 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import {
+  ceilCoinToDisplayDecimals,
   getRangeMaxWithdrawAmounts,
   MigrationEligibility,
 } from "~/utils/position-migrations";
@@ -313,10 +314,21 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               {/* Range-edge maxima, not the position's current composition:
                   the risk notice points here instead of calling the draw
                   small. Only one side can fall short in a given move, so
-                  this reads as either/or. */}
+                  this reads as either/or. Ceiled to the display precision
+                  first, because the formatter truncates and a truncated cap
+                  understates. */}
               <span className="subtitle1 text-white-full">
-                {formatPretty(maxWalletDraw.base, { maxDecimals: 6 })} /{" "}
-                {formatPretty(maxWalletDraw.noble, { maxDecimals: 2 })}
+                {formatPretty(
+                  ceilCoinToDisplayDecimals(maxWalletDraw.base, 6),
+                  {
+                    maxDecimals: 6,
+                  }
+                )}{" "}
+                /{" "}
+                {formatPretty(
+                  ceilCoinToDisplayDecimals(maxWalletDraw.noble, 2),
+                  { maxDecimals: 2 }
+                )}
               </span>
             </div>
           )}

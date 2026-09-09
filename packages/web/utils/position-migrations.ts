@@ -1,5 +1,5 @@
 import { tickToSqrtPrice } from "@osmosis-labs/math";
-import { Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 /**
  * A curated 1:1 link from a `USDC.noble`-paired concentrated liquidity pool to
@@ -458,4 +458,29 @@ export const poolStateFromChainResponse = (
     tickSpacing: Number(pool.tick_spacing),
     currentSqrtPrice: new Dec(sqrtPrice),
   };
+};
+
+/**
+ * Rounds a coin UP to the given number of display decimals, so a truncating
+ * formatter can never show less than the true amount: 0.009999 USDC rendered
+ * at two decimals truncates to 0.0099, understating a cap it is meant to
+ * disclose, while ceiled first it renders as 0.01. A coin whose currency has
+ * no more decimals than the display, or a non-positive amount, is returned
+ * unchanged - there is nothing a truncation could drop.
+ */
+export const ceilCoinToDisplayDecimals = (
+  coin: CoinPretty,
+  displayDecimals: number
+): CoinPretty => {
+  const droppedDecimals = coin.currency.coinDecimals - displayDecimals;
+  if (droppedDecimals <= 0) return coin;
+
+  const amount = new Int(coin.toCoin().amount);
+  if (!amount.isPositive()) return coin;
+
+  // Ceiling division on positive integers: (a - 1) / step + 1, then scaled
+  // back up so the amount is an exact multiple of the displayed precision.
+  const step = new Int("1" + "0".repeat(droppedDecimals));
+  const ceiledQuotient = amount.sub(new Int(1)).div(step).add(new Int(1));
+  return new CoinPretty(coin.currency, ceiledQuotient.mul(step));
 };
