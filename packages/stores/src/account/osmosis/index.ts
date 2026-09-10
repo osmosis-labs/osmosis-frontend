@@ -972,9 +972,10 @@ export class OsmosisAccountImpl {
      * wallet is asked to sign (so a stale flow never reaches a prompt), and
      * again after the wallet approves, immediately before the signed bytes
      * are broadcast. The second run is the one that matters: a user can hold
-     * the wallet prompt open indefinitely, and a direct-sign transaction
-     * carries no timeout height, so only a post-approval check bounds the
-     * drift window to broadcast plus inclusion. Throwing at either point
+     * the wallet prompt open indefinitely, and while this transaction's
+     * timeout height eventually kills a stale signature, only a
+     * post-approval check bounds the drift window of a fresh one to
+     * broadcast plus inclusion. Throwing at either point
      * aborts the migration with nothing broadcast. Callers use it to
      * re-verify price divergence against uncached chain state.
      */
@@ -1054,9 +1055,9 @@ export class OsmosisAccountImpl {
        pool traded at in that block, not guaranteed equivalent at the
        destination's price. What keeps that window to seconds is timing: the
        eligibility recheck runs again via the signing callback below, after
-       wallet approval and immediately before broadcast, precisely because a
-       user can hold the prompt open indefinitely and direct signing carries
-       no timeout height. */
+       wallet approval and immediately before broadcast (a prompt can be held
+       open indefinitely), and this transaction opts into a timeout height so
+       a signature that does sit stale expires instead of executing late. */
     const buffer = (amount: Int, bps: number) =>
       new Int(
         (
@@ -1172,7 +1173,11 @@ export class OsmosisAccountImpl {
           }
           onFulfill?.(tx);
         },
-      }
+      },
+      undefined,
+      /* useTimeoutHeight: this flow's safety model needs the signed
+         transaction to expire rather than stay broadcastable forever. */
+      true
     );
   }
 

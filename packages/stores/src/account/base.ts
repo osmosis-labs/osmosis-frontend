@@ -560,7 +560,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onFulfill?: (tx: DeliverTxResponse) => void;
           onSign?: () => Promise<void> | void;
         },
-    memoFlags?: TxFeMemoFlags
+    memoFlags?: TxFeMemoFlags,
+    /** Expiry-bind a direct-signed transaction; see {@link sign}. */
+    useTimeoutHeight?: boolean
   ) {
     runInAction(() => {
       this.txTypeInProgressByChain.set(chainNameOrId, type);
@@ -667,6 +669,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         messages: msgs,
         signOptions: mergedSignOptions,
         memoFlags,
+        useTimeoutHeight,
       });
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
@@ -842,6 +845,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo,
     signOptions,
     memoFlags,
+    useTimeoutHeight,
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
@@ -849,6 +853,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string;
     signOptions?: SignOptions;
     memoFlags?: TxFeMemoFlags;
+    /**
+     * Expiry-bind a direct-signed transaction with the standard timeout
+     * height offset. Opt-in per flow rather than app-wide: the amino path
+     * has always set it, but changing every direct-signed transaction's
+     * behavior is its own decision, so only flows whose safety model needs
+     * a bounded broadcast window (the CL migration) pass true.
+     */
+    useTimeoutHeight?: boolean;
   }): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
@@ -964,6 +976,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signerData,
           signOptions,
           memoFlags,
+          useTimeoutHeight,
         });
   }
 
@@ -1277,6 +1290,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signerData: { accountNumber, sequence, chainId },
     signOptions,
     memoFlags,
+    useTimeoutHeight,
   }: {
     wallet: AccountStoreWallet;
     signerAddress: string;
@@ -1286,6 +1300,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signerData: SignerData;
     signOptions?: SignOptions;
     memoFlags?: TxFeMemoFlags;
+    useTimeoutHeight?: boolean;
   }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -1338,11 +1353,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // any warn-accept flags the user acknowledged.
     memo = appendFeMemoTag(memo, FeMemoTag, memoFlags);
 
-    // Expiry-bind the transaction like the amino path already does: without
-    // this a direct-signed transaction stays broadcastable forever, so state
-    // checked before broadcast could precede an arbitrarily late submission.
-    // getTimeoutHeight returns 0 (no expiry) if the height lookup fails.
-    const timeoutHeight = await this.getTimeoutHeight(chainId);
+    // Expiry-bind the transaction like the amino path always has, but only
+    // when the flow opts in: without a timeout height a direct-signed
+    // transaction stays broadcastable forever, so state checked before
+    // broadcast could precede an arbitrarily late submission. Zero means no
+    // expiry (proto3 omits it from the encoded body), which is also the
+    // fallback when the height lookup fails.
+    const timeoutHeight = useTimeoutHeight
+      ? await this.getTimeoutHeight(chainId)
+      : BigInt(0);
 
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",

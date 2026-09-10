@@ -1,6 +1,7 @@
 import type { UserPosition } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
@@ -163,33 +164,64 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const apiUtils = api.useUtils();
 
   /* The draw on pre-existing funds is further capped by what the wallet
-     holds right now: a shortfall the balance cannot cover reverts the whole
+     holds: a shortfall the balance cannot cover reverts the whole
      transaction rather than drawing it, so the honest disclosure is the
-     smaller of the range-edge maximum and the current balance. Reactive
-     under observer, so the row tracks the wallet; a balance that grows
-     mid-flow raises the true cap with it. The gas token's side includes the
-     gas reserve - the bank module does not fence it. */
-  const walletBalances = account?.address
-    ? queriesStore
-        .get(chainId)
-        .queryBalances.getQueryBech32Address(account.address)
-    : undefined;
+     smaller of the range-edge maximum and the balance. Polled on the same
+     cadence as the pools so an incoming deposit raises the shown cap within
+     one tick, and gated on readiness below: an unloaded balance reads as
+     zero, which would understate the cap while leaving the action live, so
+     until this query has data the row shows a placeholder and the confirm
+     is held. The gas token's side includes the gas reserve - the bank
+     module does not fence it. */
+  const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: account?.address ?? "" },
+    { enabled: Boolean(account?.address), refetchInterval: 15_000 }
+  );
+  const balancesReady = walletBalances !== undefined;
   const clampToBalance = (cap: CoinPretty) => {
-    const balance = walletBalances?.getBalanceFromCurrency(cap.currency);
-    if (!balance) return cap;
-    return new Int(balance.toCoin().amount).lt(new Int(cap.toCoin().amount))
-      ? balance
+    const balance = walletBalances?.find(
+      (bal) => bal.denom === cap.currency.coinMinimalDenom
+    )?.amount;
+    // Absent from a loaded balance list means the wallet holds none: the
+    // transaction cannot draw pre-existing funds at all on that side.
+    if (balance === undefined) return new CoinPretty(cap.currency, new Int(0));
+    return new Int(balance).lt(new Int(cap.toCoin().amount))
+      ? new CoinPretty(cap.currency, balance)
       : cap;
   };
 
   const [isMigrating, setIsMigrating] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  const router = useRouter();
+
+  /* Post-migration routing: stay wherever the user is, except when they are
+     looking at the source pool's own page and this was their last position
+     in it - an emptied pool page is a dead end, so return to the pools page
+     and its positions/pools sections. Checked against a fresh positions
+     fetch rather than inferred, and any failure to decide simply stays put:
+     navigation is a convenience and must never read as a migration error. */
+  const routeAwayIfPoolEmptied = useCallback(async () => {
+    if (router.pathname !== "/pool/[id]" || router.query.id !== poolId) return;
+    const address = account?.address;
+    if (!address) return;
+    try {
+      const positions =
+        await apiUtils.local.concentratedLiquidity.getUserPositions.fetch(
+          { userOsmoAddress: address, forPoolId: poolId },
+          { staleTime: 0 }
+        );
+      if (Array.isArray(positions) && positions.length === 0)
+        router.push("/pools");
+    } catch {
+      // Stay put.
+    }
+  }, [router, poolId, account?.address, apiUtils]);
 
   const migrate = useCallback(async () => {
     if (!account) return;
@@ -232,6 +264,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             // Both pools' tick data and the user's position list change.
             apiUtils.local.concentratedLiquidity.invalidate();
             props.onRequestClose();
+            void routeAwayIfPoolEmptied();
           }
         }
       );
@@ -254,6 +287,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     minAmountTolerance,
     apiUtils,
     props,
+    routeAwayIfPoolEmptied,
   ]);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -261,11 +295,13 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       disabled:
         isMigrating ||
         Boolean(account?.txTypeInProgress) ||
-        // Held while the divergence sits outside the allowance or the polled
-        // pool data is mid-refetch; both states resolve on their own and the
-        // stat block explains which one the user is looking at.
+        // Held while the divergence sits outside the allowance, the polled
+        // pool data is mid-refetch, or the balances backing the disclosed
+        // draw cap have not loaded; all three resolve on their own and the
+        // stat block shows which one the user is looking at.
         !isEligible ||
-        isPoolDataRefetching,
+        isPoolDataRefetching ||
+        !balancesReady,
       onClick: migrate,
       children: t("clPositions.migrateLiquidity"),
     },
@@ -363,16 +399,18 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                   formatter that can only round this cap up, never truncate
                   or shrink it down. */}
               <span className="subtitle1 text-white-full">
-                {t("clPositions.migrateMaxWalletDrawValue", {
-                  base: formatWalletDrawCap(
-                    clampToBalance(maxWalletDraw.base),
-                    6
-                  ),
-                  noble: formatWalletDrawCap(
-                    clampToBalance(maxWalletDraw.noble),
-                    2
-                  ),
-                })}
+                {balancesReady
+                  ? t("clPositions.migrateMaxWalletDrawValue", {
+                      base: formatWalletDrawCap(
+                        clampToBalance(maxWalletDraw.base),
+                        6
+                      ),
+                      noble: formatWalletDrawCap(
+                        clampToBalance(maxWalletDraw.noble),
+                        2
+                      ),
+                    })
+                  : "..."}
               </span>
             </div>
           )}
