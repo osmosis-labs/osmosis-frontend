@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "許容される価格差",
     "migrateRevalidationFailed": "開いている間に価格が変動し、移行がチェックを通過しなくなりました。閉じて再試行してください。",
     "migrateReason": "移行の過程でUSDC.nobleはトランスミューターを通じて1:1でUSDCに変換されます。",
-    "migrateRiskNotice": "移行は1つのトランザクションで行われます。価格が動いた場合、不足分はウォレット残高から（最大で下記の金額まで）補われ、もう一方の余剰はウォレットに戻ります。",
+    "migrateRiskNotice": "移行は1つのトランザクションで行われます。価格が動いた場合、不足分はウォレット残高から（保有額を超えることはなく、最大で下記の金額まで）補われ、もう一方の余剰はウォレットに戻ります。",
     "migrateMaxWalletDraw": "残高からの最大額（価格がレンジ端の場合）",
     "migrateMaxWalletDrawValue": "{base} または {noble}",
     "yourPositions": "あなたのポジション",

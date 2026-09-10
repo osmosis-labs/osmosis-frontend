@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Diferența de preț permisă",
     "migrateRevalidationFailed": "Prețurile s-au mișcat cât timp aceasta era deschisă și migrarea nu își mai trece verificările. Închide și încearcă din nou.",
     "migrateReason": "USDC.noble este convertit 1:1 în USDC prin transmuter în cadrul mutării.",
-    "migrateRiskNotice": "Migrarea se realizează într-o singură tranzacție. Dacă prețurile se mișcă, un deficit poate fi acoperit din soldul portofelului, cel mult sumele afișate mai jos, iar surplusul celeilalte părți revine în portofel.",
+    "migrateRiskNotice": "Migrarea se realizează într-o singură tranzacție. Dacă prețurile se mișcă, un deficit poate fi acoperit din soldul portofelului, niciodată mai mult decât conține și cel mult sumele afișate mai jos, iar surplusul celeilalte părți revine în portofel.",
     "migrateMaxWalletDraw": "Max din sold (preț la marginea intervalului)",
     "migrateMaxWalletDrawValue": "{base} sau {noble}",
     "yourPositions": "Pozițiile voastre",

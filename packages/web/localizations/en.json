@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Allowed price difference",
     "migrateRevalidationFailed": "Prices moved while this was open and the migration no longer clears its checks. Close and try again.",
     "migrateReason": "USDC.noble converts 1:1 to USDC through the transmuter as part of the move.",
-    "migrateRiskNotice": "Migration is performed in a single transaction. If prices move, a shortfall may be covered from your wallet balance, at most the amounts shown below, while the other side's surplus is returned to it.",
+    "migrateRiskNotice": "Migration is performed in a single transaction. If prices move, a shortfall may be covered from your wallet balance, never more than it holds and at most the amounts shown below, while the other side's surplus is returned to it.",
     "migrateMaxWalletDraw": "Max from balance (price at range edge)",
     "migrateMaxWalletDrawValue": "{base} or {noble}",
     "yourPositions": "Your Positions",

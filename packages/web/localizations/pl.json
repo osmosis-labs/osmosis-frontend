@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Dozwolona różnica cen",
     "migrateRevalidationFailed": "Ceny zmieniły się, gdy to okno było otwarte, i migracja nie przechodzi już swoich kontroli. Zamknij i spróbuj ponownie.",
     "migrateReason": "USDC.noble jest w trakcie przenoszenia wymieniane 1:1 na USDC przez transmuter.",
-    "migrateRiskNotice": "Migracja odbywa się w jednej transakcji. Jeśli ceny się zmienią, niedobór może zostać pokryty z salda portfela, najwyżej kwoty pokazane poniżej, a nadwyżka drugiej strony do niego wróci.",
+    "migrateRiskNotice": "Migracja odbywa się w jednej transakcji. Jeśli ceny się zmienią, niedobór może zostać pokryty z salda portfela, nigdy więcej niż ono zawiera i najwyżej kwoty pokazane poniżej, a nadwyżka drugiej strony do niego wróci.",
     "migrateMaxWalletDraw": "Maks. z salda (cena na krawędzi zakresu)",
     "migrateMaxWalletDrawValue": "{base} lub {noble}",
     "yourPositions": "Twoje pozycje",

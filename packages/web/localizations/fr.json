@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Écart de prix autorisé",
     "migrateRevalidationFailed": "Les prix ont bougé pendant que ceci était ouvert et la migration ne passe plus ses contrôles. Fermez et réessayez.",
     "migrateReason": "Le USDC.noble est converti à 1:1 en USDC via le transmuter lors du transfert.",
-    "migrateRiskNotice": "La migration s'effectue en une seule transaction. Si les prix bougent, un manque peut être couvert par votre solde, au plus les montants indiqués ci-dessous, tandis que le surplus de l'autre côté y est reversé.",
+    "migrateRiskNotice": "La migration s'effectue en une seule transaction. Si les prix bougent, un manque peut être couvert par votre solde, jamais plus qu'il ne contient et au plus les montants indiqués ci-dessous, tandis que le surplus de l'autre côté y est reversé.",
     "migrateMaxWalletDraw": "Max du solde (prix en bord de plage)",
     "migrateMaxWalletDrawValue": "{base} ou {noble}",
     "yourPositions": "Vos postes",

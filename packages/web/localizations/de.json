@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "Erlaubte Preisdifferenz",
     "migrateRevalidationFailed": "Die Preise haben sich bewegt und die Migration besteht ihre Prüfungen nicht mehr. Schließen und erneut versuchen.",
     "migrateReason": "USDC.noble wird dabei 1:1 über den Transmuter in USDC umgewandelt.",
-    "migrateRiskNotice": "Die Migration erfolgt in einer einzigen Transaktion. Bewegen sich die Preise, kann ein Fehlbetrag aus Ihrem Wallet-Guthaben gedeckt werden, höchstens die unten gezeigten Beträge, während der Überschuss der anderen Seite ins Wallet zurückfließt.",
+    "migrateRiskNotice": "Die Migration erfolgt in einer einzigen Transaktion. Bewegen sich die Preise, kann ein Fehlbetrag aus Ihrem Wallet-Guthaben gedeckt werden, nie mehr als es enthält und höchstens die unten gezeigten Beträge, während der Überschuss der anderen Seite ins Wallet zurückfließt.",
     "migrateMaxWalletDraw": "Max. aus Guthaben (Preis am Bereichsrand)",
     "migrateMaxWalletDrawValue": "{base} oder {noble}",
     "yourPositions": "Ihre Positionen",

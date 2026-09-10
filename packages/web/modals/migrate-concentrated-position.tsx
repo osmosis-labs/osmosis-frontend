@@ -169,33 +169,6 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const account = accountStore.getWallet(chainId);
   const apiUtils = api.useUtils();
 
-  /* The draw on pre-existing funds is further capped by what the wallet
-     holds: a shortfall the balance cannot cover reverts the whole
-     transaction rather than drawing it, so the honest disclosure is the
-     smaller of the range-edge maximum and the balance. Polled on the same
-     cadence as the pools so an incoming deposit raises the shown cap within
-     one tick, and gated on readiness below: an unloaded balance reads as
-     zero, which would understate the cap while leaving the action live, so
-     until this query has data the row shows a placeholder and the confirm
-     is held. The gas token's side includes the gas reserve - the bank
-     module does not fence it. */
-  const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
-    { bech32Address: account?.address ?? "" },
-    { enabled: Boolean(account?.address), refetchInterval: 15_000 }
-  );
-  const balancesReady = walletBalances !== undefined;
-  const clampToBalance = (cap: CoinPretty) => {
-    const balance = walletBalances?.find(
-      (bal) => bal.denom === cap.currency.coinMinimalDenom
-    )?.amount;
-    // Absent from a loaded balance list means the wallet holds none: the
-    // transaction cannot draw pre-existing funds at all on that side.
-    if (balance === undefined) return new CoinPretty(cap.currency, new Int(0));
-    return new Int(balance).lt(new Int(cap.toCoin().amount))
-      ? new CoinPretty(cap.currency, balance)
-      : cap;
-  };
-
   const [isMigrating, setIsMigrating] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const router = useRouter();
@@ -217,7 +190,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           { staleTime: 0 }
         );
       if (Array.isArray(positions) && positions.length === 0)
-        router.push("/pools");
+        // Awaited so a rejected navigation lands in this catch instead of
+        // escaping as an unhandled rejection.
+        await router.push("/pools");
     } catch {
       // Stay put.
     }
@@ -300,8 +275,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         // draw cap have not loaded; all three resolve on their own and the
         // stat block shows which one the user is looking at.
         !isEligible ||
-        isPoolDataRefetching ||
-        !balancesReady,
+        isPoolDataRefetching,
       onClick: migrate,
       children: t("clPositions.migrateLiquidity"),
     },
@@ -391,26 +365,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               <span className="body2 text-osmoverse-300">
                 {t("clPositions.migrateMaxWalletDraw")}
               </span>
-              {/* Range-edge maxima clamped to current balances, not the
-                  position's composition: the risk notice points here instead
-                  of calling the draw small. Joined with a localized "or",
-                  never a slash - a slash reads as a pool pair, and only one
-                  side can fall short in a given move. Rendered by a
-                  formatter that can only round this cap up, never truncate
-                  or shrink it down. */}
+              {/* Range-edge maxima, deliberately NOT clamped to a wallet
+                  balance: a polled balance is only ever a snapshot, and
+                  funds arriving after it would let the transaction cover a
+                  larger shortfall than a clamped figure promised. The two
+                  bounds that hold without trust are these maxima (the sized
+                  spends cannot exceed them at any price) and, worded in the
+                  risk notice, that the draw can never exceed what the wallet
+                  actually holds at execution - the bank module enforces that
+                  one. Joined with a localized "or", never a slash - a slash
+                  reads as a pool pair, and only one side can fall short in a
+                  given move. Rendered by a formatter that can only round
+                  this cap up, never truncate or shrink it down. */}
               <span className="subtitle1 text-white-full">
-                {balancesReady
-                  ? t("clPositions.migrateMaxWalletDrawValue", {
-                      base: formatWalletDrawCap(
-                        clampToBalance(maxWalletDraw.base),
-                        6
-                      ),
-                      noble: formatWalletDrawCap(
-                        clampToBalance(maxWalletDraw.noble),
-                        2
-                      ),
-                    })
-                  : "..."}
+                {t("clPositions.migrateMaxWalletDrawValue", {
+                  base: formatWalletDrawCap(maxWalletDraw.base, 6),
+                  noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
+                })}
               </span>
             </div>
           )}

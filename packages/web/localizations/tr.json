@@ -77,7 +77,7 @@
     "migrateAllowedDifference": "İzin verilen fiyat farkı",
     "migrateRevalidationFailed": "Bu açıkken fiyatlar değişti ve taşıma artık kontrollerini geçemiyor. Kapatıp yeniden deneyin.",
     "migrateReason": "Taşıma sırasında USDC.noble, transmuter üzerinden 1:1 USDC'ye dönüştürülür.",
-    "migrateRiskNotice": "Taşıma tek bir işlemle gerçekleştirilir. Fiyatlar hareket ederse, eksik cüzdan bakiyenizden karşılanabilir, en fazla aşağıda gösterilen tutarlar; diğer tarafın fazlası ise cüzdana geri döner.",
+    "migrateRiskNotice": "Taşıma tek bir işlemle gerçekleştirilir. Fiyatlar hareket ederse, eksik cüzdan bakiyenizden karşılanabilir, hiçbir zaman içindekinden fazla olmadan ve en fazla aşağıda gösterilen tutarlar; diğer tarafın fazlası ise cüzdana geri döner.",
     "migrateMaxWalletDraw": "Bakiyeden en fazla (fiyat aralık kenarında)",
     "migrateMaxWalletDrawValue": "{base} veya {noble}",
     "yourPositions": "Pozisyonlarınız",
