@@ -408,6 +408,37 @@ describe("getRangeMaxWithdrawAmounts", () => {
     });
     expect(amounts?.maxAmount0.toString()).toBe("69"); // ceil(68.377…)
     expect(amounts?.maxAmount1.toString()).toBe("217"); // ceil(216.227…)
+    expect(amounts?.isInformative).toBe(true);
+  });
+
+  it("marks ultra-wide and full ranges as uninformative", () => {
+    // A full-range position spans prices 1e-12 to 1e38; its edge maxima are
+    // astronomical noise, so the UI must fall back to the bank-enforced
+    // wallet-balance wording rather than display them.
+    expect(
+      getRangeMaxWithdrawAmounts({
+        liquidity: "100",
+        lowerTick: new Int(-108_000_000),
+        upperTick: new Int(342_000_000),
+      })?.isInformative
+    ).toBe(false);
+    // Exactly 100x between the bounds (sqrt ratio 10) is the last width that
+    // still shows numbers…
+    expect(
+      getRangeMaxWithdrawAmounts({
+        liquidity: "100",
+        lowerTick: new Int(0),
+        upperTick: new Int(18_000_000),
+      })?.isInformative
+    ).toBe(true);
+    // …and anything wider does not.
+    expect(
+      getRangeMaxWithdrawAmounts({
+        liquidity: "100",
+        lowerTick: new Int(0),
+        upperTick: new Int(18_000_100),
+      })?.isInformative
+    ).toBe(false);
   });
 
   it("handles negative ticks (prices below 1)", () => {

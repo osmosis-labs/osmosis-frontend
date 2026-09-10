@@ -372,7 +372,9 @@ export const getRangeMaxWithdrawAmounts = ({
   liquidity: string;
   lowerTick: Int;
   upperTick: Int;
-}): { maxAmount0: Int; maxAmount1: Int } | undefined => {
+}):
+  | { maxAmount0: Int; maxAmount1: Int; isInformative: boolean }
+  | undefined => {
   let liquidityDec: Dec;
   try {
     liquidityDec = new Dec(liquidity);
@@ -398,6 +400,13 @@ export const getRangeMaxWithdrawAmounts = ({
       )
     ),
     maxAmount1: ceil(liquidityDec.mul(sqrtPriceUpper.sub(sqrtPriceLower))),
+    /* The edge maxima are only worth displaying for ranges the price could
+       plausibly traverse. For a full-range position the edges sit at 10^-12
+       and 10^38, so the "maximums" come out at astronomically meaningless
+       figures (billions of OSMO on a $50 position); there the bank-enforced
+       wallet-balance bound is the one worth words. Wider than 100x between
+       the bounds (sqrt ratio > 10) is treated as uninformative. */
+    isInformative: sqrtPriceUpper.quo(sqrtPriceLower).lte(new Dec(10)),
   };
 };
 

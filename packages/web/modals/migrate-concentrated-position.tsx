@@ -123,7 +123,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       (coin) => coin.currency.coinMinimalDenom !== USDC_NOBLE_DENOM
     );
     if (!noble || !base) return undefined;
-    return { base, noble };
+    return { base, noble, isInformative: amounts.isInformative };
   }, [
     rawPosition.liquidity,
     rawPosition.lower_tick,
@@ -378,10 +378,15 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                   given move. Rendered by a formatter that can only round
                   this cap up, never truncate or shrink it down. */}
               <span className="subtitle1 text-white-full">
-                {t("clPositions.migrateMaxWalletDrawValue", {
-                  base: formatWalletDrawCap(maxWalletDraw.base, 6),
-                  noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
-                })}
+                {maxWalletDraw.isInformative
+                  ? t("clPositions.migrateMaxWalletDrawValue", {
+                      base: formatWalletDrawCap(maxWalletDraw.base, 6),
+                      noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
+                    })
+                  : // A full-range or ultra-wide position makes the edge
+                    // maxima astronomical noise; the bound worth stating is
+                    // the bank-enforced one.
+                    t("clPositions.migrateMaxWalletDrawWideRange")}
               </span>
             </div>
           )}
