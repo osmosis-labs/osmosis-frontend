@@ -147,14 +147,27 @@ export const usePositionMigrationForPosition = ({
     isSuperfluidUnstaking,
   ]);
 
-  const { data: fromPoolData } = api.local.pools.getPool.useQuery(
-    { poolId },
-    { enabled: Boolean(mapped) }
-  );
-  const { data: toPoolData } = api.local.pools.getPool.useQuery(
-    { poolId: mapped?.toPoolId.toString() ?? "" },
-    { enabled: Boolean(mapped) }
-  );
+  /* Poll while a mapped position's card is expanded, so the displayed
+     divergence and the Migrate button's presence track the market instead of
+     freezing at whatever the pools looked like on mount. Display only: the
+     transaction path never trusts these - the confirm-time and pre-broadcast
+     rechecks read the chain uncached. */
+  const POOL_REFETCH_INTERVAL_MS = 15_000;
+  const { data: fromPoolData, isFetching: isFetchingFromPool } =
+    api.local.pools.getPool.useQuery(
+      { poolId },
+      { enabled: Boolean(mapped), refetchInterval: POOL_REFETCH_INTERVAL_MS }
+    );
+  const { data: toPoolData, isFetching: isFetchingToPool } =
+    api.local.pools.getPool.useQuery(
+      { poolId: mapped?.toPoolId.toString() ?? "" },
+      { enabled: Boolean(mapped), refetchInterval: POOL_REFETCH_INTERVAL_MS }
+    );
+
+  /* True while either pool is being refetched: the displayed eligibility may
+     be about to change, so callers disable the migrate actions rather than
+     letting the user act on a number mid-update. */
+  const isPoolDataRefetching = isFetchingFromPool || isFetchingToPool;
 
   if (
     !mapped ||
@@ -164,7 +177,13 @@ export const usePositionMigrationForPosition = ({
     !fromPoolData ||
     !toPoolData
   ) {
-    return { migration: undefined, eligibility: undefined, revalidate };
+    return {
+      migration: undefined,
+      mappedMigration: mapped,
+      eligibility: undefined,
+      revalidate,
+      isPoolDataRefetching,
+    };
   }
 
   const fromPool = toMigrationPoolState(fromPoolData);
@@ -173,7 +192,13 @@ export const usePositionMigrationForPosition = ({
   // A pool whose raw payload lacks the concentrated fields cannot be checked,
   // so it is not offered rather than being checked against defaults.
   if (!fromPool || !toPool)
-    return { migration: undefined, eligibility: undefined, revalidate };
+    return {
+      migration: undefined,
+      mappedMigration: mapped,
+      eligibility: undefined,
+      revalidate,
+      isPoolDataRefetching,
+    };
 
   const eligibility: MigrationEligibility = getMigrationEligibility({
     migrations,
@@ -188,10 +213,18 @@ export const usePositionMigrationForPosition = ({
 
   return {
     migration: eligibility.isEligible ? eligibility.migration : undefined,
+    /**
+     * The map entry regardless of live eligibility. An open modal mounts on
+     * this rather than on `migration`, so a divergence drifting out of
+     * tolerance mid-flow disables the action instead of unmounting the modal
+     * under the user - potentially mid-signing.
+     */
+    mappedMigration: mapped,
     eligibility,
     minAmountTolerance,
     toPool,
     revalidate,
+    isPoolDataRefetching,
   };
 };
 

@@ -133,9 +133,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     // against live pool state. An absent map means the action never appears.
     const {
       migration: eligibleMigration,
+      mappedMigration,
       eligibility: migrationEligibility,
       minAmountTolerance,
       revalidate: revalidateMigration,
+      isPoolDataRefetching,
     } = usePositionMigrationForPosition({
       poolId,
       // The divergence gate tightens with position size, so it needs the
@@ -442,7 +444,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           {eligibleMigration && (
             <PositionButton
               variant="default"
-              disabled={Boolean(account?.txTypeInProgress) || !Boolean(account)}
+              // Also held while the polled pool data is mid-refetch, so the
+              // action cannot be taken on an eligibility that is about to
+              // change.
+              disabled={
+                Boolean(account?.txTypeInProgress) ||
+                !Boolean(account) ||
+                isPoolDataRefetching
+              }
               onClick={openMigrateModal}
               isLoading={isLoadingPositionDetails}
             >
@@ -459,19 +468,29 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               onRequestClose={() => setActiveModal(null)}
             />
           )}
+          {/* Mounted on the map entry, not on live eligibility: the pool data
+              polls, and a divergence drifting out of tolerance must disable
+              the confirm inside the open modal rather than unmount it under
+              the user - potentially mid-signing. Only the reasons that carry
+              a divergence keep it mounted (eligible, or priceDivergence);
+              anything else - the map entry pulled, config broken - is the
+              kill switch and rightly closes it. */}
           {activeModal === "migrate" &&
-            eligibleMigration &&
-            migrationEligibility?.isEligible &&
+            mappedMigration &&
+            migrationEligibility?.divergencePercent !== undefined &&
+            migrationEligibility.appliedTolerancePercent !== undefined &&
             minAmountTolerance !== undefined && (
               <MigrateConcentratedPositionModal
                 isOpen={true}
                 position={position}
-                toPoolId={eligibleMigration.toPoolId.toString()}
+                toPoolId={mappedMigration.toPoolId.toString()}
                 minAmountTolerance={minAmountTolerance}
                 divergencePercent={migrationEligibility.divergencePercent}
                 appliedTolerancePercent={
                   migrationEligibility.appliedTolerancePercent
                 }
+                isEligible={migrationEligibility.isEligible}
+                isPoolDataRefetching={isPoolDataRefetching}
                 revalidate={revalidateMigration}
                 onRequestClose={() => setActiveModal(null)}
               />

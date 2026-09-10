@@ -40,6 +40,18 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     /** The size-tier tolerance this position was judged against. */
     appliedTolerancePercent: number;
     /**
+     * Live eligibility as the polled pool data sees it. The modal stays
+     * mounted when this flips false mid-flow (only the divergence can drift;
+     * anything structural unmounts it upstream), so the confirm is held
+     * instead of the modal vanishing under the user.
+     */
+    isEligible: boolean;
+    /**
+     * True while the polled pool data is mid-refetch: the numbers shown are
+     * about to change, so the confirm is held until they settle.
+     */
+    isPoolDataRefetching: boolean;
+    /**
      * Re-runs the full eligibility check against freshly fetched pool state.
      * Called at confirm time: the render-time eligibility can be minutes old,
      * and the simulations that size the transaction would otherwise accept
@@ -54,6 +66,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     minAmountTolerance,
     divergencePercent,
     appliedTolerancePercent,
+    isEligible,
+    isPoolDataRefetching,
     revalidate,
   } = props;
 
@@ -149,10 +163,30 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const apiUtils = api.useUtils();
+
+  /* The draw on pre-existing funds is further capped by what the wallet
+     holds right now: a shortfall the balance cannot cover reverts the whole
+     transaction rather than drawing it, so the honest disclosure is the
+     smaller of the range-edge maximum and the current balance. Reactive
+     under observer, so the row tracks the wallet; a balance that grows
+     mid-flow raises the true cap with it. The gas token's side includes the
+     gas reserve - the bank module does not fence it. */
+  const walletBalances = account?.address
+    ? queriesStore
+        .get(chainId)
+        .queryBalances.getQueryBech32Address(account.address)
+    : undefined;
+  const clampToBalance = (cap: CoinPretty) => {
+    const balance = walletBalances?.getBalanceFromCurrency(cap.currency);
+    if (!balance) return cap;
+    return new Int(balance.toCoin().amount).lt(new Int(cap.toCoin().amount))
+      ? balance
+      : cap;
+  };
 
   const [isMigrating, setIsMigrating] = useState(false);
   const [error, setError] = useState<string | undefined>();
@@ -224,7 +258,14 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: isMigrating || Boolean(account?.txTypeInProgress),
+      disabled:
+        isMigrating ||
+        Boolean(account?.txTypeInProgress) ||
+        // Held while the divergence sits outside the allowance or the polled
+        // pool data is mid-refetch; both states resolve on their own and the
+        // stat block explains which one the user is looking at.
+        !isEligible ||
+        isPoolDataRefetching,
       onClick: migrate,
       children: t("clPositions.migrateLiquidity"),
     },
@@ -275,9 +316,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             {t("clPositions.migrateIncentivesNotice")}
           </span>
           <span className="caption text-osmoverse-300">
-            {t("clPositions.migrateRiskNotice", {
-              minTolerance: minAmountTolerance.toString(),
-            })}
+            {t("clPositions.migrateRiskNotice")}
           </span>
         </div>
 
@@ -293,7 +332,13 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             <span className="body2 text-osmoverse-300">
               {t("clPositions.migrateCurrentDifference")}
             </span>
-            <span className="subtitle1 text-white-full">
+            <span
+              className={
+                isEligible
+                  ? "subtitle1 text-white-full"
+                  : "subtitle1 text-rust-300"
+              }
+            >
               {currentDivergence}%
             </span>
           </div>
@@ -310,14 +355,24 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
               <span className="body2 text-osmoverse-300">
                 {t("clPositions.migrateMaxWalletDraw")}
               </span>
-              {/* Range-edge maxima, not the position's current composition:
-                  the risk notice points here instead of calling the draw
-                  small. Only one side can fall short in a given move, so
-                  this reads as either/or. Rendered by a formatter that can
-                  only round this cap up, never truncate or shrink it down. */}
+              {/* Range-edge maxima clamped to current balances, not the
+                  position's composition: the risk notice points here instead
+                  of calling the draw small. Joined with a localized "or",
+                  never a slash - a slash reads as a pool pair, and only one
+                  side can fall short in a given move. Rendered by a
+                  formatter that can only round this cap up, never truncate
+                  or shrink it down. */}
               <span className="subtitle1 text-white-full">
-                {formatWalletDrawCap(maxWalletDraw.base, 6)} /{" "}
-                {formatWalletDrawCap(maxWalletDraw.noble, 2)}
+                {t("clPositions.migrateMaxWalletDrawValue", {
+                  base: formatWalletDrawCap(
+                    clampToBalance(maxWalletDraw.base),
+                    6
+                  ),
+                  noble: formatWalletDrawCap(
+                    clampToBalance(maxWalletDraw.noble),
+                    2
+                  ),
+                })}
               </span>
             </div>
           )}
