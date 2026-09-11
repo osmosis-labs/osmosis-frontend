@@ -76,7 +76,13 @@ export default async function pools(req: Request) {
   const response: Response = { pools, totalNumberOfPools };
 
   if (pools) {
-    return new Response(JSON.stringify(response), { status: 200 });
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers:
+        pools.length > 0
+          ? { "Cache-Control": "public, s-maxage=60" }
+          : undefined,
+    });
   }
   return new Response("", { status: 500 });
 }

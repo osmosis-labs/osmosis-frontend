@@ -1,7 +1,6 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import {
@@ -11,38 +10,37 @@ import {
 } from "~/components/pool-detail";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { TradeTokens } from "~/modals";
 import { api } from "~/utils/trpc";
 
-interface Props {
-  id: string;
-}
-
-const Pool: FunctionComponent<Props> = ({
-  poolId,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Pool: FunctionComponent = () => {
   const router = useRouter();
+  const poolId = typeof router.query.id === "string" ? router.query.id : "";
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
+  const isValidPoolId = Boolean(poolId && !isNaN(+poolId));
 
   const {
     data: pool,
     isError,
     error,
-  } = api.local.pools.getPool.useQuery({ poolId });
+  } = api.local.pools.getPool.useQuery(
+    { poolId },
+    { enabled: router.isReady && isValidPoolId }
+  );
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 
-  const isValidPoolId = Boolean(
-    poolId && typeof poolId === "string" && Boolean(poolId) && !isNaN(+poolId)
-  );
-
   useNavBar(
-    useConst({
-      title: t("pool.title", { id: poolId ?? "" }),
-      ctas: [{ label: t("pool.swap"), onClick: () => setShowTradeModal(true) }],
-    })
+    useMemo(
+      () => ({
+        title: t("pool.title", { id: poolId }),
+        ctas: [
+          { label: t("pool.swap"), onClick: () => setShowTradeModal(true) },
+        ],
+      }),
+      [poolId, t]
+    )
   );
 
   // Redirects
@@ -119,13 +117,6 @@ const Pool: FunctionComponent<Props> = ({
       )}
     </>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async ({
-  resolvedUrl,
-}) => {
-  const splitUrl = resolvedUrl.split("/");
-  return { props: { poolId: splitUrl.pop() ?? "-" } };
 };
 
 export default Pool;
