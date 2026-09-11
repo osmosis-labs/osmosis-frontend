@@ -9,6 +9,7 @@ import {
 import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import {
+  getLastPositionEventAmounts,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
   makeAddToPositionMsg,
@@ -922,6 +923,261 @@ export class OsmosisAccountImpl {
         }
         onFulfill?.(tx);
       }
+    );
+  }
+
+  /**
+   * Migrates a concentrated liquidity position to an equivalent pool,
+   * preserving its tick range, by withdrawing the full position in one
+   * message and creating the new position in another.
+   *
+   * Both messages share one transaction, so a failing create reverts the
+   * withdraw with it and the user keeps their original position. That
+   * guarantee only holds because `tokenMinAmount0/1` are set: at zero, a
+   * create on unexpectedly bad terms succeeds instead of reverting. The
+   * minimums come from simulating the exact message batch and reading the
+   * create's own event amounts, rather than from recomputing liquidity math
+   * client-side where a rounding disagreement with the chain would either
+   * revert every honest migration or floor at a useless value.
+   *
+   * @param positionId Position to migrate.
+   * @param toPoolId Destination pool. Must share the source pool's tick
+   * spacing and spread factor; the caller is responsible for verifying that
+   * against live pool state before calling.
+   * @param lowerTick Lower tick, copied verbatim from the source position.
+   * @param upperTick Upper tick, copied verbatim from the source position.
+   * @param minAmountTolerancePercent Tolerance applied to the simulated
+   * amounts when deriving the minimums. Deliberately looser than the price
+   * divergence gate: it absorbs pool state moving between simulation and
+   * broadcast, not mispricing.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendMigrateConcentratedLiquidityPositionMsg(
+    positionId: string,
+    toPoolId: string,
+    lowerTick: Int,
+    upperTick: Int,
+    minAmountTolerancePercent: number,
+    usdcConversion: {
+      /** USDC denom the source pool pairs against (bridged, e.g. USDC.noble). */
+      fromDenom: string;
+      /** USDC denom the destination pool pairs against (the alloy). */
+      toDenom: string;
+      /** Transmuter pool converting between them at 1:1. */
+      transmuterPoolId: string;
+    },
+    /**
+     * Final gate, invoked twice: after the sizing simulations before the
+     * wallet is asked to sign (so a stale flow never reaches a prompt), and
+     * again after the wallet approves, immediately before the signed bytes
+     * are broadcast. The second run is the one that matters: a user can hold
+     * the wallet prompt open indefinitely, and while this transaction's
+     * timeout height eventually kills a stale signature, only a
+     * post-approval check bounds the drift window of a fresh one to
+     * broadcast plus inclusion. Throwing at either point
+     * aborts the migration with nothing broadcast. Callers use it to
+     * re-verify price divergence against uncached chain state.
+     */
+    preBroadcastCheck?: () => Promise<void>,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const fullLiquidityAmount = queryPosition.liquidity;
+    const baseAsset = queryPosition.baseAsset;
+    const quoteAsset = queryPosition.quoteAsset;
+
+    if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
+    if (!baseAsset || !quoteAsset)
+      throw new Error("No assets found in position");
+
+    const withdrawPositionMsg = await makeWithdrawPositionMsg({
+      positionId: BigInt(positionId),
+      sender: this.address,
+      liquidityAmount: fullLiquidityAmount.toString(),
+    });
+
+    // The withdraw pays out the SOURCE pool's denoms, one of which is the
+    // bridged USDC the destination pool does not hold, so its exact outputs
+    // size both the conversion swap and the create.
+    const withdrawSim = await this.base.simulatePositionMigration({
+      chainId: this.chainId,
+      messages: [withdrawPositionMsg],
+      bech32Address: this.address,
+    });
+    const withdrawAmounts = getLastPositionEventAmounts(
+      withdrawSim.events,
+      "withdraw_position"
+    );
+    if (!withdrawAmounts)
+      throw new Error(
+        "Withdraw simulation produced no withdraw_position event"
+      );
+    // withdraw_position amount0/amount1 are indexed by the SOURCE pool's
+    // token0/token1; the position query's base/quote follow the same order.
+    const withdrawn = new Map<string, Int>([
+      [baseAsset.currency.coinMinimalDenom, withdrawAmounts.amount0],
+      [quoteAsset.currency.coinMinimalDenom, withdrawAmounts.amount1],
+    ]);
+
+    const bridgedUsdcOut = withdrawn.get(usdcConversion.fromDenom);
+    const assetDenom = [
+      baseAsset.currency.coinMinimalDenom,
+      quoteAsset.currency.coinMinimalDenom,
+    ].find((d) => d !== usdcConversion.fromDenom);
+    const assetOut = assetDenom ? withdrawn.get(assetDenom) : undefined;
+    if (!bridgedUsdcOut || !assetDenom || !assetOut)
+      throw new Error(
+        `Position does not pay out ${usdcConversion.fromDenom}; refusing to migrate`
+      );
+
+    /* The position's amounts drift with price between simulation and the block
+       this lands in, so everything downstream of the withdraw is sized 0.5%
+       under the simulated outputs. Whatever the buffer leaves over stays in
+       the wallet, which is the flow's dust policy anyway.
+
+       These amounts are fixed at signing, and no Cosmos message spends "only
+       what this transaction received": if the withdraw under-delivers one
+       side, the swap or create covers the shortfall from tokens already in
+       the wallet. Two properties are structural. The alloyed side cannot
+       over-draw at all, because the swap's min out is exactly what the create
+       provides. And a shortfall the wallet cannot cover fails the transfer
+       and reverts the whole transaction, position included. What is NOT
+       enforced onchain: the create minimums constrain the destination
+       deposits, never the withdraw's own outputs, so a covered shortfall can
+       reach the full sized amount of one side - a bound the UI discloses as
+       concrete amounts rather than calling small - and the surplus the
+       withdraw returns on the other side is valued at whatever the source
+       pool traded at in that block, not guaranteed equivalent at the
+       destination's price. What keeps that window to seconds is timing: the
+       eligibility recheck runs again via the signing callback below, after
+       wallet approval and immediately before broadcast (a prompt can be held
+       open indefinitely), and this transaction opts into a timeout height so
+       a signature that does sit stale expires instead of executing late. */
+    const buffer = (amount: Int, bps: number) =>
+      new Int(
+        (
+          (BigInt(amount.toString()) * BigInt(10_000 - bps)) /
+          BigInt(10_000)
+        ).toString()
+      );
+    const swapIn = buffer(bridgedUsdcOut, 50);
+    const assetProvide = buffer(assetOut, 50);
+    // the transmuter converts 1:1; 20bps headroom covers any taker fee
+    const alloyedUsdcMin = buffer(swapIn, 20);
+    if (!swapIn.isPositive() || !assetProvide.isPositive())
+      throw new Error("Withdrawn amounts too small to migrate");
+
+    const convertMsg = await makeSwapExactAmountInMsg({
+      pools: [
+        {
+          id: usdcConversion.transmuterPoolId,
+          tokenOutDenom: usdcConversion.toDenom,
+        },
+      ],
+      tokenIn: {
+        coinMinimalDenom: usdcConversion.fromDenom,
+        amount: swapIn.toString(),
+      },
+      tokenOutMinAmount: alloyedUsdcMin.toString(),
+      userOsmoAddress: this.address,
+    });
+
+    const tokensProvided = [
+      { denom: assetDenom, amount: assetProvide.toString() },
+      { denom: usdcConversion.toDenom, amount: alloyedUsdcMin.toString() },
+    ].sort((a, b) => a.denom.localeCompare(b.denom));
+
+    const mkCreateMsg = (min0: string, min1: string) =>
+      makeCreatePositionMsg({
+        poolId: BigInt(toPoolId),
+        lowerTick: BigInt(lowerTick.toString()),
+        upperTick: BigInt(upperTick.toString()),
+        sender: this.address,
+        tokenMinAmount0: min0,
+        tokenMinAmount1: min1,
+        tokensProvided,
+      });
+
+    /* Simulate the full three-message transaction with zeroed create minimums
+       purely to learn what the create would consume; that pair is never
+       broadcast. The real minimums floor 1% under those amounts: with them a
+       create on worse terms fails and the whole transaction, withdraw and
+       conversion included, reverts. */
+    const probeSim = await this.base.simulatePositionMigration({
+      chainId: this.chainId,
+      messages: [withdrawPositionMsg, convertMsg, await mkCreateMsg("0", "0")],
+      bech32Address: this.address,
+    });
+
+    /* The create's own deposits come from the probe's create_position event,
+       whose amount0/amount1 are indexed by the DESTINATION pool's token0 and
+       token1 - exactly what tokenMinAmount0/1 expect, so no denom mapping.
+       Never derive these from coinsSpent: for any transaction containing a
+       swap, getSumTotalSpenderCoinsSpent short-circuits to the swap's
+       tokens_in and drops the create's deposits entirely, which would zero
+       both minimums and disable the only onchain price protection. */
+    const probeDeposits = getLastPositionEventAmounts(
+      probeSim.events,
+      "create_position"
+    );
+    if (!probeDeposits)
+      throw new Error("Simulation produced no create_position event");
+
+    const toMinAmount = (deposited: Int) => {
+      if (!deposited.isPositive()) return "0";
+      const kept = new Dec(deposited.toString()).mul(
+        new Dec(1).sub(new Dec(minAmountTolerancePercent).quo(new Dec(100)))
+      );
+      const floored = kept.truncate();
+      // A zero minimum on a side that does get deposited is exactly the
+      // silent-success case these guard against, so floor at one base unit.
+      return floored.isPositive() ? floored.toString() : "1";
+    };
+
+    const createPositionMsg = await mkCreateMsg(
+      toMinAmount(probeDeposits.amount0),
+      toMinAmount(probeDeposits.amount1)
+    );
+
+    /* Two simulations have passed since the caller last checked eligibility.
+       Re-run their gate before involving the wallet at all, so a flow that
+       has already gone stale never reaches a prompt. */
+    if (preBroadcastCheck) await preBroadcastCheck();
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clMigratePosition",
+      [withdrawPositionMsg, convertMsg, createPositionMsg],
+      memo,
+      undefined,
+      undefined,
+      {
+        /* The decisive run of the gate: after the user approves in the
+           wallet - a wait only they control - and immediately before the
+           signed bytes are broadcast. Throwing here discards the signed
+           transaction; past here the remaining drift window is broadcast
+           plus inclusion, seconds rather than however long the prompt sat
+           open. */
+        onSign: preBroadcastCheck,
+        onFulfill: (tx) => {
+          if (!tx.code) {
+            queryPosition.waitFreshResponse();
+            this.queries?.queryAccountsPositions
+              .get(this.address)
+              .waitFreshResponse();
+          }
+          onFulfill?.(tx);
+        },
+      },
+      undefined,
+      /* useTimeoutHeight: this flow's safety model needs the signed
+         transaction to expire rather than stay broadcastable forever. */
+      true
     );
   }
 

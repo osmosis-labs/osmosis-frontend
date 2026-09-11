@@ -560,7 +560,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onFulfill?: (tx: DeliverTxResponse) => void;
           onSign?: () => Promise<void> | void;
         },
-    memoFlags?: TxFeMemoFlags
+    memoFlags?: TxFeMemoFlags,
+    /** Expiry-bind a direct-signed transaction; see {@link sign}. */
+    useTimeoutHeight?: boolean
   ) {
     runInAction(() => {
       this.txTypeInProgressByChain.set(chainNameOrId, type);
@@ -630,6 +632,36 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
+      // Pre-probe REST endpoints to find a working one for broadcast.
+      // Falls back to the wallet's default endpoint if probe fails.
+      // Started before signing and resolved before the onSign gates below, so
+      // the wallet wait absorbs the probe's latency and nothing between an
+      // onSign check and the actual broadcast can take a probe's worth of
+      // time.
+      const restEndpointPromise = (async () => {
+        let restEndpoint = getEndpointString(
+          await wallet.getRestEndpoint(true)
+        );
+        const restUrls = this.getChainRestUrls(wallet);
+        if (restUrls.length > 1) {
+          try {
+            const client = createMultiEndpointClient(
+              restUrls.map((url) => ({ address: url }))
+            );
+            const { endpointAddress } = await client.fetchWithEndpoint(
+              "/cosmos/base/node/v1beta1/config"
+            );
+            restEndpoint = endpointAddress;
+          } catch {
+            // Pre-probe failed; use wallet default
+          }
+        }
+        return restEndpoint;
+      })();
+      // If signing throws before this is awaited, the rejection must not
+      // surface as unhandled; awaiting below still rethrows the real error.
+      restEndpointPromise.catch(() => {});
+
       const txRaw = await this.sign({
         wallet,
         fee,
@@ -637,9 +669,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         messages: msgs,
         signOptions: mergedSignOptions,
         memoFlags,
+        useTimeoutHeight,
       });
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
+
+      const restEndpoint = await restEndpointPromise;
 
       if (this.options.preTxEvents?.onSign) {
         await this.options.preTxEvents.onSign();
@@ -647,24 +682,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       if (onSign) {
         await onSign();
-      }
-
-      // Pre-probe REST endpoints to find a working one for broadcast.
-      // Falls back to the wallet's default endpoint if probe fails.
-      let restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
-      const restUrls = this.getChainRestUrls(wallet);
-      if (restUrls.length > 1) {
-        try {
-          const client = createMultiEndpointClient(
-            restUrls.map((url) => ({ address: url }))
-          );
-          const { endpointAddress } = await client.fetchWithEndpoint(
-            "/cosmos/base/node/v1beta1/config"
-          );
-          restEndpoint = endpointAddress;
-        } catch {
-          // Pre-probe failed; use wallet default
-        }
       }
 
       const res = await axios.post<{
@@ -828,6 +845,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo,
     signOptions,
     memoFlags,
+    useTimeoutHeight,
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
@@ -835,6 +853,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string;
     signOptions?: SignOptions;
     memoFlags?: TxFeMemoFlags;
+    /**
+     * Expiry-bind a direct-signed transaction with the standard timeout
+     * height offset. Opt-in per flow rather than app-wide: the amino path
+     * has always set it, but changing every direct-signed transaction's
+     * behavior is its own decision, so only flows whose safety model needs
+     * a bounded broadcast window (the CL migration) pass true.
+     */
+    useTimeoutHeight?: boolean;
   }): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
@@ -950,6 +976,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signerData,
           signOptions,
           memoFlags,
+          useTimeoutHeight,
         });
   }
 
@@ -1263,6 +1290,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signerData: { accountNumber, sequence, chainId },
     signOptions,
     memoFlags,
+    useTimeoutHeight,
   }: {
     wallet: AccountStoreWallet;
     signerAddress: string;
@@ -1272,6 +1300,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signerData: SignerData;
     signOptions?: SignOptions;
     memoFlags?: TxFeMemoFlags;
+    useTimeoutHeight?: boolean;
   }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
@@ -1324,11 +1353,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // any warn-accept flags the user acknowledged.
     memo = appendFeMemoTag(memo, FeMemoTag, memoFlags);
 
+    // Expiry-bind the transaction like the amino path always has, but only
+    // when the flow opts in: without a timeout height a direct-signed
+    // transaction stays broadcastable forever, so state checked before
+    // broadcast could precede an arbitrarily late submission. Zero means no
+    // expiry (proto3 omits it from the encoded body), which is also the
+    // fallback when the height lookup fails.
+    const timeoutHeight = useTimeoutHeight
+      ? await this.getTimeoutHeight(chainId)
+      : BigInt(0);
+
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
         messages: messages,
         memo: memo,
+        timeoutHeight,
       },
     };
 
@@ -1576,6 +1616,43 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       throw e;
     }
+  }
+
+  /**
+   * Simulates a position migration and returns the coins the account would
+   * spend, used to derive the create-position message's minimum amounts.
+   *
+   * Distinct from `estimateFee`, which returns only gas and fee: this needs
+   * the spent-coin totals from the simulation, and the gas route is on the
+   * path of every transaction in the app.
+   */
+  public async simulatePositionMigration({
+    chainId,
+    messages,
+    bech32Address,
+  }: {
+    chainId: string;
+    messages: readonly EncodeObject[];
+    bech32Address: string;
+  }): Promise<{
+    gasUsed: number;
+    coinsSpent: { denom: string; amount: string }[];
+    events: { type: string; attributes: { key: string; value: string }[] }[];
+  }> {
+    const registry = await this.getRegistry();
+    const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
+
+    return await apiClient<{
+      gasUsed: number;
+      coinsSpent: { denom: string; amount: string }[];
+      events: { type: string; attributes: { key: string; value: string }[] }[];
+    }>("/api/simulate-position-migration", {
+      data: {
+        chainId,
+        messages: encodedMessages.map(encodeAnyBase64),
+        bech32Address,
+      },
+    });
   }
 
   /**
