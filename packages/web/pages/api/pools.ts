@@ -78,9 +78,10 @@ export default async function pools(req: Request) {
   if (pools) {
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: {
-        "Cache-Control": "public, s-maxage=60",
-      },
+      headers:
+        pools.length > 0
+          ? { "Cache-Control": "public, s-maxage=60" }
+          : undefined,
     });
   }
   return new Response("", { status: 500 });
