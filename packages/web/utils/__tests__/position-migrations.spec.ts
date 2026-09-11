@@ -519,10 +519,18 @@ describe("ceilCoinToDisplayDecimals", () => {
   // sheds fractional digits as the integer part grows (1,234.56 -> 1,234).
   // The cap's formatter must be immune to both.
   describe("formatWalletDrawCap (the production formatting path)", () => {
-    it("keeps fractional digits on large values instead of shrinking them", () => {
-      // 1,234.56 is already exact at two decimals; a shrinking formatter
-      // renders it as 1,234, understating by 0.56.
-      expect(formatWalletDrawCap(coin("1234560000"), 2)).toBe("1,234.56 USDC");
+    it("shrinks precision with magnitude, always rounding up", () => {
+      // shrinkDecimals' rule (one decimal shed per integer digit past the
+      // first), but ceiled where shrink truncates: 1,234.56 at a two-decimal
+      // cap shows no decimals, and rounds UP to 1,235 where the shrink
+      // formatter rendered 1,234 and understated by 0.56.
+      expect(formatWalletDrawCap(coin("1234560000"), 2)).toBe("1,235 USDC");
+      // 5,329.268734 at a six-decimal cap: three decimals, ceiled.
+      expect(formatWalletDrawCap(coin("5329268734"), 6)).toBe("5,329.269 USDC");
+      // Nine whole digits: integer only, still ceiled.
+      expect(formatWalletDrawCap(coin("272389545146868"), 6)).toBe(
+        "272,389,546 USDC"
+      );
     });
 
     it("rounds a sub-precision cap up, never down", () => {
@@ -530,7 +538,8 @@ describe("ceilCoinToDisplayDecimals", () => {
     });
 
     it("only ever trims zeros, which drops nothing", () => {
-      expect(formatWalletDrawCap(coin("1234500000"), 2)).toBe("1,234.5 USDC");
+      // Values below 1 keep the full display precision.
+      expect(formatWalletDrawCap(coin("210000"), 6)).toBe("0.21 USDC");
       expect(formatWalletDrawCap(coin("50000000000"), 2)).toBe("50,000 USDC");
     });
   });

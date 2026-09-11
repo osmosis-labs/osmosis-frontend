@@ -498,17 +498,29 @@ export const ceilCoinToDisplayDecimals = (
  * Renders the disclosed wallet-draw cap: ceiled to the display precision,
  * then formatted with nothing that can drop a significant digit.
  *
- * Deliberately NOT `formatPretty`, which enables `shrink` - a mode that
- * sheds fractional digits as the integer part grows, so 1,234.56 renders as
- * 1,234 and understates the cap the ceiling just protected. Here
- * `maxDecimals` is lossless because the amount is already an exact multiple
- * of the display precision, and `trim` only removes trailing zeros.
+ * The precision rule is `CoinUtils.shrinkDecimals`'s own - shed one decimal
+ * per integer digit past the first, floor zero - so these figures shrink
+ * with magnitude exactly like every shrink-formatted amount in the app
+ * (5,329.268734 renders as 5,329.269 at a six-decimal cap, a nine-digit
+ * amount as a bare integer, values below 1 at full precision). What it
+ * deliberately does NOT reuse is shrink's rendering: `shrink`/`formatPretty`
+ * truncate the fraction downward, so 1,234.56 at two decimals became 1,234
+ * and understated the cap. Here the value is ceiled to the chosen precision
+ * first, making the truncation a no-op: a cap rounded UP at any precision
+ * can only overstate, never understate. `trim` only removes trailing zeros.
  */
 export const formatWalletDrawCap = (
   coin: CoinPretty,
-  displayDecimals: number
-) =>
-  ceilCoinToDisplayDecimals(coin, displayDecimals)
+  maxDisplayDecimals: number
+) => {
+  const whole = coin.toDec().truncate();
+  const wholeDigits = whole.isZero() ? 0 : whole.toString().length;
+  const displayDecimals = Math.max(
+    0,
+    Math.min(maxDisplayDecimals, maxDisplayDecimals - wholeDigits + 1)
+  );
+  return ceilCoinToDisplayDecimals(coin, displayDecimals)
     .maxDecimals(displayDecimals)
     .trim(true)
     .toString();
+};
