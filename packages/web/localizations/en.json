@@ -80,7 +80,7 @@
     "migrateRiskNotice": "Migration is performed in a single transaction. If prices move, a shortfall may be covered from your wallet balance, never more than it holds and at most the limit shown below, while the other side's surplus is returned to it.",
     "migrateMaxWalletDraw": "Max from balance (price at range edge)",
     "migrateMaxWalletDrawValue": "{base} or {noble}",
-    "migrateMaxWalletDrawWideRange": "Up to your wallet balance",
+    "migrateMaxWalletDrawWideRange": "{base} or {noble} (your current balance)",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",

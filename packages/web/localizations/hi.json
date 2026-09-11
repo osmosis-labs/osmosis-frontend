@@ -80,7 +80,7 @@
     "migrateRiskNotice": "माइग्रेशन एक ही ट्रांज़ैक्शन में होता है। कीमतें बदलने पर कमी आपके वॉलेट बैलेंस से पूरी की जा सकती है, कभी भी उसमें मौजूद राशि से अधिक नहीं और अधिकतम नीचे दिखाई गई सीमा, जबकि दूसरे पक्ष का अधिशेष वॉलेट में लौट आता है।",
     "migrateMaxWalletDraw": "बैलेंस से अधिकतम (रेंज किनारे पर मूल्य)",
     "migrateMaxWalletDrawValue": "{base} या {noble}",
-    "migrateMaxWalletDrawWideRange": "आपके वॉलेट बैलेंस तक",
+    "migrateMaxWalletDrawWideRange": "{base} या {noble} (आपका वर्तमान बैलेंस)",
     "yourPositions": "आपकी स्थिति",
     "yourPosition": "आपका मत",
     "yourPositionsDesc": "अपनी संपत्तियों को काम में लगाएं और प्रत्येक स्वैप पर स्प्रेड अर्जित करें।",

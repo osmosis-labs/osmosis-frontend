@@ -80,7 +80,7 @@
     "migrateRiskNotice": "A migração é realizada em uma única transação. Se os preços se moverem, uma falta pode ser coberta pelo saldo da sua carteira, nunca mais do que ela contém e no máximo o limite mostrado abaixo, enquanto o excedente do outro lado retorna a ela.",
     "migrateMaxWalletDraw": "Máx. do saldo (preço na borda da faixa)",
     "migrateMaxWalletDrawValue": "{base} ou {noble}",
-    "migrateMaxWalletDrawWideRange": "Até o saldo da sua carteira",
+    "migrateMaxWalletDrawWideRange": "{base} ou {noble} (seu saldo atual)",
     "yourPositions": "Suas Posições",
     "yourPosition": "Sua posição",
     "yourPositionsDesc": "Coloque seus ativos para trabalhar e ganhe spread em cada troca.",

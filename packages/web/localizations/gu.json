@@ -80,7 +80,7 @@
     "migrateRiskNotice": "સ્થળાંતર એક જ ટ્રાન્ઝેક્શનમાં થાય છે. ભાવ બદલાય તો ઘટ તમારા વોલેટ બેલેન્સમાંથી પુરાઈ શકે છે, ક્યારેય તેમાં હોય તેથી વધુ નહીં અને વધુમાં વધુ નીચે બતાવેલી મર્યાદા, જ્યારે બીજી બાજુનું વધારાનું વોલેટમાં પાછું આવે છે.",
     "migrateMaxWalletDraw": "બેલેન્સમાંથી મહત્તમ (રેન્જ કિનારે ભાવ)",
     "migrateMaxWalletDrawValue": "{base} અથવા {noble}",
-    "migrateMaxWalletDrawWideRange": "તમારા વોલેટ બેલેન્સ સુધી",
+    "migrateMaxWalletDrawWideRange": "{base} અથવા {noble} (તમારું વર્તમાન બેલેન્સ)",
     "yourPositions": "તમારી સ્થિતિઓ",
     "yourPosition": "તમારી સ્થિતિ",
     "yourPositionsDesc": "તમારી સંપત્તિઓને કામ કરવા માટે મૂકો અને દરેક સ્વેપ પર સ્પ્રેડ કમાઓ.",

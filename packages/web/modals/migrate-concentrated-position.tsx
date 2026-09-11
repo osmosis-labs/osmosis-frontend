@@ -169,6 +169,34 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const account = accountStore.getWallet(chainId);
   const apiUtils = api.useUtils();
 
+  /* For a full-range or ultra-wide position the range-edge maxima are
+     astronomical noise, so the risk figure shown is the wallet's own balance
+     of each denom instead: the draw cannot exceed what the wallet holds at
+     execution (bank-enforced), and a user needs a number to size their risk,
+     not a phrase. The figure is explicitly labeled as the CURRENT balance:
+     it polls on the same cadence as the pools, the row placeholders and the
+     confirm is held until it has loaded (an unloaded balance must never read
+     as a zero cap with a live action), and the one thing it cannot promise
+     against - funds the user deposits in the final seconds becoming
+     drawable - is covered by the notice's "never more than it holds", which
+     is the execution-time truth. */
+  const needsBalanceBound =
+    maxWalletDraw !== undefined && !maxWalletDraw.isInformative;
+  const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: account?.address ?? "" },
+    {
+      enabled: Boolean(account?.address) && needsBalanceBound,
+      refetchInterval: 15_000,
+    }
+  );
+  const balancesReady = !needsBalanceBound || walletBalances !== undefined;
+  const balanceCoin = (currency: CoinPretty["currency"]) =>
+    new CoinPretty(
+      currency,
+      walletBalances?.find((bal) => bal.denom === currency.coinMinimalDenom)
+        ?.amount ?? "0"
+    );
+
   const [isMigrating, setIsMigrating] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const router = useRouter();
@@ -275,7 +303,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         // draw cap have not loaded; all three resolve on their own and the
         // stat block shows which one the user is looking at.
         !isEligible ||
-        isPoolDataRefetching,
+        isPoolDataRefetching ||
+        !balancesReady,
       onClick: migrate,
       children: t("clPositions.migrateLiquidity"),
     },
@@ -384,9 +413,20 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                       noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
                     })
                   : // A full-range or ultra-wide position makes the edge
-                    // maxima astronomical noise; the bound worth stating is
-                    // the bank-enforced one.
-                    t("clPositions.migrateMaxWalletDrawWideRange")}
+                  // maxima astronomical noise; show the wallet's current
+                  // balances instead - the bank-enforced cap, quantified.
+                  balancesReady && walletBalances
+                  ? t("clPositions.migrateMaxWalletDrawWideRange", {
+                      base: formatWalletDrawCap(
+                        balanceCoin(maxWalletDraw.base.currency),
+                        6
+                      ),
+                      noble: formatWalletDrawCap(
+                        balanceCoin(maxWalletDraw.noble.currency),
+                        2
+                      ),
+                    })
+                  : "..."}
               </span>
             </div>
           )}

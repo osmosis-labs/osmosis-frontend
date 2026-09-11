@@ -80,7 +80,7 @@
     "migrateRiskNotice": "마이그레이션은 단일 트랜잭션으로 수행됩니다. 가격이 움직이면 부족분이 지갑 잔액에서 충당될 수 있으며(보유량을 넘지 않고, 최대 아래에 표시된 한도), 다른 쪽의 잉여분은 지갑으로 반환됩니다.",
     "migrateMaxWalletDraw": "잔액에서 최대 (가격이 범위 가장자리일 때)",
     "migrateMaxWalletDrawValue": "{base} 또는 {noble}",
-    "migrateMaxWalletDrawWideRange": "지갑 잔액까지",
+    "migrateMaxWalletDrawWideRange": "{base} 또는 {noble} (현재 잔액)",
     "yourPositions": "당신의 위치",
     "yourPosition": "너의 위치",
     "yourPositionsDesc": "자산을 작동시키고 모든 스왑에서 스프레드를 얻으십시오.",

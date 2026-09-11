@@ -80,7 +80,7 @@
     "migrateRiskNotice": "Die Migration erfolgt in einer einzigen Transaktion. Bewegen sich die Preise, kann ein Fehlbetrag aus Ihrem Wallet-Guthaben gedeckt werden, nie mehr als es enthält und höchstens die unten gezeigte Grenze, während der Überschuss der anderen Seite ins Wallet zurückfließt.",
     "migrateMaxWalletDraw": "Max. aus Guthaben (Preis am Bereichsrand)",
     "migrateMaxWalletDrawValue": "{base} oder {noble}",
-    "migrateMaxWalletDrawWideRange": "Bis zu Ihrem Wallet-Guthaben",
+    "migrateMaxWalletDrawWideRange": "{base} oder {noble} (Ihr aktuelles Guthaben)",
     "yourPositions": "Ihre Positionen",
     "yourPosition": "Dein Standpunkt",
     "yourPositionsDesc": "Setzen Sie Ihr Vermögen ein und verdienen Sie bei jedem Swap einen Spread.",

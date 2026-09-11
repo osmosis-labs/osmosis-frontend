@@ -80,7 +80,7 @@
     "migrateRiskNotice": "Migrarea se realizează într-o singură tranzacție. Dacă prețurile se mișcă, un deficit poate fi acoperit din soldul portofelului, niciodată mai mult decât conține și cel mult limita afișată mai jos, iar surplusul celeilalte părți revine în portofel.",
     "migrateMaxWalletDraw": "Max din sold (preț la marginea intervalului)",
     "migrateMaxWalletDrawValue": "{base} sau {noble}",
-    "migrateMaxWalletDrawWideRange": "Până la soldul portofelului",
+    "migrateMaxWalletDrawWideRange": "{base} sau {noble} (soldul dvs. actual)",
     "yourPositions": "Pozițiile voastre",
     "yourPosition": "Pozitia ta",
     "yourPositionsDesc": "Pune-ți activele la treabă și câștigă spread la fiecare swap.",
