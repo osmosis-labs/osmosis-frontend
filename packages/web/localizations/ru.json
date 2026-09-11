@@ -80,7 +80,7 @@
     "migrateRiskNotice": "Миграция выполняется одной транзакцией. Если цены сдвинутся, недостаток может быть покрыт из баланса кошелька, никогда не больше, чем в нём есть, и не более лимита, показанного ниже, а излишек другой стороны вернётся в него.",
     "migrateMaxWalletDraw": "Макс. из баланса (цена у края диапазона)",
     "migrateMaxWalletDrawValue": "{base} или {noble}",
-    "migrateMaxWalletDrawWideRange": "{base} или {noble} (ваш текущий баланс)",
+    "migrateMaxWalletDrawWideRange": "≈ {base} или {noble}",
     "yourPositions": "Ваши позиции",
     "yourPosition": "Твоя позиция",
     "yourPositionsDesc": "Заставьте свои активы работать и зарабатывайте спред от каждого свопа.",

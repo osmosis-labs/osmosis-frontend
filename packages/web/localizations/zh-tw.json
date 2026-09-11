@@ -80,7 +80,7 @@
     "migrateRiskNotice": "遷移在一筆交易中完成。若價格變動，缺口可能由您的錢包餘額補足（絕不超過餘額所持有的數額，且至多為下方顯示的上限），另一側的盈餘將返回錢包。",
     "migrateMaxWalletDraw": "餘額中最多動用（價格到達區間邊緣時）",
     "migrateMaxWalletDrawValue": "{base} 或 {noble}",
-    "migrateMaxWalletDrawWideRange": "{base} 或 {noble}（您當前的餘額）",
+    "migrateMaxWalletDrawWideRange": "≈ {base} 或 {noble}",
     "yourPositions": "您的職位",
     "yourPosition": "你的職位",
     "yourPositionsDesc": "讓您的資產發揮作用，並在每次掉期中賺取點差。",

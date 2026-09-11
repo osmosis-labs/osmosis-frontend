@@ -170,16 +170,12 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const apiUtils = api.useUtils();
 
   /* For a full-range or ultra-wide position the range-edge maxima are
-     astronomical noise, so the risk figure shown is the wallet's own balance
-     of each denom instead: the draw cannot exceed what the wallet holds at
-     execution (bank-enforced), and a user needs a number to size their risk,
-     not a phrase. The figure is explicitly labeled as the CURRENT balance:
-     it polls on the same cadence as the pools, the row placeholders and the
-     confirm is held until it has loaded (an unloaded balance must never read
-     as a zero cap with a live action), and the one thing it cannot promise
-     against - funds the user deposits in the final seconds becoming
-     drawable - is covered by the notice's "never more than it holds", which
-     is the execution-time truth. */
+     astronomical noise, so the risk figure shown is position-scaled instead
+     (see drawCapForWideRange below), clamped by the wallet balance of each
+     denom - the draw can never exceed what the wallet holds at execution
+     (bank-enforced). Balances poll on the same cadence as the pools, and the
+     row placeholders with the confirm held until they load: an unloaded
+     balance must never read as a zero cap with a live action. */
   const needsBalanceBound =
     maxWalletDraw !== undefined && !maxWalletDraw.isInformative;
   const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
@@ -196,6 +192,31 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       walletBalances?.find((bal) => bal.denom === currency.coinMinimalDenom)
         ?.amount ?? "0"
     );
+
+  /* The tightest true bound on the draw is the sized message amounts, which
+     are ~99.5% of the position's own sides at confirm time - a fixed ceiling
+     written into what the user signs, never exceeded. At render that is
+     approximated by the position's current sides plus 5% headroom for price
+     drift between the 15-second polls (a full-range position's side moves
+     only ~half as fast as price, so this covers ~10% moves), and clamped by
+     the wallet balance, which the draw can also never exceed. Shown as
+     approximate: an extreme move inside the final window can outrun the
+     headroom, and the notice's "never more than it holds" remains the hard
+     statement. */
+  const drawCapForWideRange = (side: CoinPretty | undefined) => {
+    if (!side) return undefined;
+    const padded = new CoinPretty(
+      side.currency,
+      new Int(side.toCoin().amount)
+        .mul(new Int(105))
+        .add(new Int(99))
+        .div(new Int(100))
+    );
+    const balance = balanceCoin(side.currency);
+    return new Int(balance.toCoin().amount).lt(new Int(padded.toCoin().amount))
+      ? balance
+      : padded;
+  };
 
   const [isMigrating, setIsMigrating] = useState(false);
   const [error, setError] = useState<string | undefined>();
@@ -413,16 +434,19 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                       noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
                     })
                   : // A full-range or ultra-wide position makes the edge
-                  // maxima astronomical noise; show the wallet's current
-                  // balances instead - the bank-enforced cap, quantified.
-                  balancesReady && walletBalances
+                  // maxima astronomical noise; show the position-scaled
+                  // bound instead: the sized message amounts are a fixed
+                  // ceiling at ~the position's own sides, approximated by
+                  // the polled composition plus drift headroom and clamped
+                  // by the wallet balance.
+                  balancesReady && walletBalances && baseCoin && nobleCoin
                   ? t("clPositions.migrateMaxWalletDrawWideRange", {
                       base: formatWalletDrawCap(
-                        balanceCoin(maxWalletDraw.base.currency),
+                        drawCapForWideRange(baseCoin)!,
                         6
                       ),
                       noble: formatWalletDrawCap(
-                        balanceCoin(maxWalletDraw.noble.currency),
+                        drawCapForWideRange(nobleCoin)!,
                         2
                       ),
                     })

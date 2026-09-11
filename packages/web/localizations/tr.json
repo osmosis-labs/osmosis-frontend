@@ -80,7 +80,7 @@
     "migrateRiskNotice": "Taşıma tek bir işlemle gerçekleştirilir. Fiyatlar hareket ederse, eksik cüzdan bakiyenizden karşılanabilir, hiçbir zaman içindekinden fazla olmadan ve en fazla aşağıda gösterilen sınır; diğer tarafın fazlası ise cüzdana geri döner.",
     "migrateMaxWalletDraw": "Bakiyeden en fazla (fiyat aralık kenarında)",
     "migrateMaxWalletDrawValue": "{base} veya {noble}",
-    "migrateMaxWalletDrawWideRange": "{base} veya {noble} (mevcut bakiyeniz)",
+    "migrateMaxWalletDrawWideRange": "≈ {base} veya {noble}",
     "yourPositions": "Pozisyonlarınız",
     "yourPosition": "Senin pozisyonun",
     "yourPositionsDesc": "Varlıklarınızı çalıştırın ve her takasta spread kazanın.",

@@ -80,7 +80,7 @@
     "migrateRiskNotice": "La migration s'effectue en une seule transaction. Si les prix bougent, un manque peut être couvert par votre solde, jamais plus qu'il ne contient et au plus la limite indiquée ci-dessous, tandis que le surplus de l'autre côté y est reversé.",
     "migrateMaxWalletDraw": "Max du solde (prix en bord de plage)",
     "migrateMaxWalletDrawValue": "{base} ou {noble}",
-    "migrateMaxWalletDrawWideRange": "{base} ou {noble} (votre solde actuel)",
+    "migrateMaxWalletDrawWideRange": "≈ {base} ou {noble}",
     "yourPositions": "Vos postes",
     "yourPosition": "Ta position",
     "yourPositionsDesc": "Faites travailler vos actifs et gagnez un spread sur chaque swap.",

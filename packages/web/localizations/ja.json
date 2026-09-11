@@ -80,7 +80,7 @@
     "migrateRiskNotice": "移行は1つのトランザクションで行われます。価格が動いた場合、不足分はウォレット残高から（保有額を超えることはなく、最大で下記の上限まで）補われ、もう一方の余剰はウォレットに戻ります。",
     "migrateMaxWalletDraw": "残高からの最大額（価格がレンジ端の場合）",
     "migrateMaxWalletDrawValue": "{base} または {noble}",
-    "migrateMaxWalletDrawWideRange": "{base} または {noble}（現在の残高）",
+    "migrateMaxWalletDrawWideRange": "≈ {base} または {noble}",
     "yourPositions": "あなたのポジション",
     "yourPosition": "あなたの位置",
     "yourPositionsDesc": "資産を活用して、スワップごとにスプレッドを獲得しましょう。",
