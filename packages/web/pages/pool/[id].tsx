@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import {
@@ -10,7 +10,6 @@ import {
 } from "~/components/pool-detail";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { TradeTokens } from "~/modals";
 import { api } from "~/utils/trpc";
 
@@ -33,10 +32,15 @@ const Pool: FunctionComponent = () => {
   const [showTradeModal, setShowTradeModal] = useState(false);
 
   useNavBar(
-    useConst({
-      title: t("pool.title", { id: poolId ?? "" }),
-      ctas: [{ label: t("pool.swap"), onClick: () => setShowTradeModal(true) }],
-    })
+    useMemo(
+      () => ({
+        title: t("pool.title", { id: poolId }),
+        ctas: [
+          { label: t("pool.swap"), onClick: () => setShowTradeModal(true) },
+        ],
+      }),
+      [poolId, t]
+    )
   );
 
   // Redirects
