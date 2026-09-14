@@ -1,4 +1,4 @@
-import type { BroadcastMode, Msg, StdFee, StdSignDoc } from "@cosmjs/launchpad";
+import type { AminoMsg, StdFee, StdSignDoc } from "@cosmjs/amino";
 import { isAddress } from "@ethersproject/address";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
 import {
@@ -484,7 +484,7 @@ export class CosmosAccountImpl {
 
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
 
-    const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+    const aminoMsgs: AminoMsg[] = msgs.aminoMsgs || [];
     const protoMsgs: Any[] = msgs.protoMsgs;
 
     if (protoMsgs.length === 0) {
@@ -600,7 +600,7 @@ export class CosmosAccountImpl {
       txHash: await keplr.sendTx(
         this.chainId,
         signedTx.tx,
-        mode as BroadcastMode
+        mode as Parameters<Keplr["sendTx"]>[2]
       ),
       signDoc: signedTx.signDoc,
     };

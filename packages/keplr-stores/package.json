@@ -31,7 +31,6 @@
   "dependencies": {
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "^0.24.0-alpha.25",
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/tendermint-rpc": "^0.24.1",
     "@ethersproject/address": "^5.6.0",
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
