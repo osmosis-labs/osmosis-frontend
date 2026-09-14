@@ -45,6 +45,20 @@ export class BasePage {
     await this.dismissVariantsPopupIfPresent()
   }
 
+  /**
+   * The trade widget is the real ready signal for `/`.
+   *
+   * Do not wait for a URL ending in assets.json: that was Next.js prefetching
+   * `_next/data/{buildId}/assets.json` for the Assets nav link, which stopped
+   * once `/pool/[id]` no longer used getServerSideProps.
+   */
+  async waitForTradeUi(timeout = 30_000) {
+    await expect(
+      this.page.getByTestId('token-in'),
+      'Trade UI did not load.',
+    ).toBeVisible({ timeout })
+  }
+
   async gotoPortfolio() {
     await this.portfolioLink.click()
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
