@@ -1,7 +1,7 @@
 import { RatePretty } from "@osmosis-labs/unit";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useState } from "react";
 
 import {
   CopyIcon,
@@ -24,10 +24,6 @@ import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { LinkButton } from "~/components/buttons/link-button";
 import { CheckboxSelect, StakeTab } from "~/components/control";
-import {
-  FilterContext,
-  FilterProvider,
-} from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
@@ -233,6 +229,7 @@ const RadiosShadcn = () => {
 };
 
 const RadiosWithOptions = () => {
+  const [rewardType, setRewardType] = useState("all");
   const rewardTypes = [
     {
       value: "all",
@@ -248,65 +245,45 @@ const RadiosWithOptions = () => {
     },
   ];
 
-  const RadiosWithOptionsWithContext = () => {
-    const { filters, setFilter } = useContext(FilterContext);
-
-    return (
-      <Card title="Radio with Options">
-        <Component title="Primary Small">
-          <RadioWithOptions
-            mode="primary"
-            variant="small"
-            value={filters?.rewardType || "all"}
-            onChange={(value) => setFilter("rewardType", value)}
-            options={rewardTypes}
-          />
-        </Component>
-        <Component title="Primary Large">
-          <RadioWithOptions
-            mode="primary"
-            variant="large"
-            value={filters?.rewardType || "all"}
-            onChange={(value) => setFilter("rewardType", value)}
-            options={rewardTypes}
-          />
-        </Component>
-        <Component title="Secondary Small">
-          <RadioWithOptions
-            mode="secondary"
-            variant="small"
-            value={filters?.rewardType || "all"}
-            onChange={(value) => setFilter("rewardType", value)}
-            options={rewardTypes}
-          />
-        </Component>
-        <Component title="Secondary Large">
-          <RadioWithOptions
-            mode="secondary"
-            variant="large"
-            value={filters?.rewardType || "all"}
-            onChange={(value) => setFilter("rewardType", value)}
-            options={rewardTypes}
-          />
-        </Component>
-      </Card>
-    );
-  };
-
   return (
-    <FilterProvider
-      defaultFilters={{
-        tokenHolder: "all",
-        strategyMethod: [{ label: "All", value: "" }],
-        platform: [{ label: "All", value: "" }],
-        lockDurationType: "all",
-        search: "",
-        specialTokens: [],
-        rewardType: "all",
-      }}
-    >
-      <RadiosWithOptionsWithContext />
-    </FilterProvider>
+    <Card title="Radio with Options">
+      <Component title="Primary Small">
+        <RadioWithOptions
+          mode="primary"
+          variant="small"
+          value={rewardType}
+          onChange={setRewardType}
+          options={rewardTypes}
+        />
+      </Component>
+      <Component title="Primary Large">
+        <RadioWithOptions
+          mode="primary"
+          variant="large"
+          value={rewardType}
+          onChange={setRewardType}
+          options={rewardTypes}
+        />
+      </Component>
+      <Component title="Secondary Small">
+        <RadioWithOptions
+          mode="secondary"
+          variant="small"
+          value={rewardType}
+          onChange={setRewardType}
+          options={rewardTypes}
+        />
+      </Component>
+      <Component title="Secondary Large">
+        <RadioWithOptions
+          mode="secondary"
+          variant="large"
+          value={rewardType}
+          onChange={setRewardType}
+          options={rewardTypes}
+        />
+      </Component>
+    </Card>
   );
 };
 
