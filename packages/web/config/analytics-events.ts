@@ -13,7 +13,6 @@ export type EventPage =
   | "Swap Page"
   | "Token Info Page"
   | "Pool Details Page"
-  | "Wormhole Page"
   | "Bridge Page";
 
 export type EventProperties = {
@@ -240,9 +239,6 @@ export const EventName = {
     transferClicked: "Transactions: Transfer clicked",
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
-  },
-  Wormhole: {
-    pageViewed: "Wormhole: Page viewed",
   },
   OneClickTrading: {
     startSession: "1CT: Start session",

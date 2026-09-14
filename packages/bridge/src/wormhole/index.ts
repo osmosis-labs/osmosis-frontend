@@ -66,39 +66,30 @@ export class WormholeBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    // Use local Wormhole Connect instead of Portal Bridge
-    const urlPath = "/wormhole";
-    const params = new URLSearchParams();
+    const url = new URL("https://portalbridge.com/");
 
     if (fromChain) {
-      params.set(
-        "from",
+      url.searchParams.set(
+        "sourceChain",
         fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
       );
     }
 
     if (toChain) {
-      params.set(
-        "to",
+      url.searchParams.set(
+        "targetChain",
         toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
       );
     }
 
-    // Use token symbol for the token parameter
-    const tokenSymbol = fromAsset?.denom || toAsset?.denom;
-    if (tokenSymbol) {
-      params.set("token", tokenSymbol);
+    // Portal deep-links take an asset key (SOL, USDC), not a mint address.
+    const assetKey = fromAsset?.denom || toAsset?.denom;
+    if (assetKey) {
+      url.searchParams.set("asset", assetKey);
     }
 
-    // Construct the final URL with query parameters
-    const queryString = params.toString();
-    const fullPath = queryString ? `${urlPath}?${queryString}` : urlPath;
-
-    // Create URL with proper relative path handling
-    const url = new URL(fullPath, "https://app.osmosis.zone");
-
     return {
-      urlProviderName: "Wormhole Connect",
+      urlProviderName: "Wormhole Portal",
       url,
     };
   }
