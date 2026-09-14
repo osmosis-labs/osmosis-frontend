@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "수량"
-      },
       "depositButton": "입금",
       "search": "검색",
       "withdrawButton": "출금",
@@ -315,9 +312,6 @@
     "startAgain": "다시 시작"
   },
   "estimated": "추정된",
-  "frontierMigration": {
-    "proceed": "진행"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "입금이 중단되었습니다. 주요 연결 도로가 폐쇄되었습니다.",

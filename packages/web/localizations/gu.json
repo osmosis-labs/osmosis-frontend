@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "સંતુલન"
-      },
       "depositButton": "જમા",
       "search": "શોધો",
       "withdrawButton": "ઉપાડો",
@@ -315,9 +312,6 @@
     "startAgain": "ફરી શરૂ કરો"
   },
   "estimated": "અંદાજિત",
-  "frontierMigration": {
-    "proceed": "આગળ વધો"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "થાપણો બંધ. મૂળ પુલનો માર્ગ બંધ છે.",

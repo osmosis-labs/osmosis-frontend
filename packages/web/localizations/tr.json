@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Bakiye"
-      },
       "depositButton": "Yatır",
       "search": "Arama",
       "withdrawButton": "Çek",
@@ -315,9 +312,6 @@
     "startAgain": "Tekrar başla"
   },
   "estimated": "Tahmini",
-  "frontierMigration": {
-    "proceed": "Devam et"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Para yatırma işlemleri durduruldu. Yerli köprü güzergahı kapalı.",

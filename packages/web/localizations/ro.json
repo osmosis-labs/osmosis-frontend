@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balanta"
-      },
       "depositButton": "Depoziteaza",
       "search": "Filtreaza dupa simbol",
       "withdrawButton": "Retrage",
@@ -315,9 +312,6 @@
     "startAgain": "Incepe din nou"
   },
   "estimated": "Estimată",
-  "frontierMigration": {
-    "proceed": "Continuați"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Depozitele au fost oprite. Traseul podului nativ este oprit.",

@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Solde"
-      },
       "depositButton": "Déposer",
       "search": "Chercher",
       "withdrawButton": "Retirer",
@@ -315,9 +312,6 @@
     "startAgain": "Recommencer"
   },
   "estimated": "Estimé",
-  "frontierMigration": {
-    "proceed": "Procéder"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Les dépôts sont interrompus. La voie d'accès au pont autochtone est coupée.",

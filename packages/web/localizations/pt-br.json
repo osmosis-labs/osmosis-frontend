@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Saldo"
-      },
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Sacar",
@@ -315,9 +312,6 @@
     "startAgain": "Comece de novo"
   },
   "estimated": "Estimado",
-  "frontierMigration": {
-    "proceed": "Prosseguir"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Depósitos interrompidos. Rota da ponte indígena interditada.",

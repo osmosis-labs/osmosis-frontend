@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "موجودی"
-      },
       "depositButton": "واریز",
       "search": "جستجو",
       "withdrawButton": "برداشت",
@@ -315,9 +312,6 @@
     "startAgain": "دوباره شروع کن"
   },
   "estimated": "تخمین زده",
-  "frontierMigration": {
-    "proceed": "ادامه دهید"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "واریزها متوقف شده است. مسیر پل بومی خراب است.",

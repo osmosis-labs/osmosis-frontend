@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Баланс"
-      },
       "depositButton": "Депозит",
       "search": "Поиск",
       "withdrawButton": "Вывод",
@@ -315,9 +312,6 @@
     "startAgain": "Начать заново"
   },
   "estimated": "Оцененный",
-  "frontierMigration": {
-    "proceed": "Продолжить"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Внесение депозитов приостановлено. Маршрут по местному мосту закрыт.",

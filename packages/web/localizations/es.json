@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balance"
-      },
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Retirar",
@@ -315,9 +312,6 @@
     "startAgain": "Empezar de nuevo"
   },
   "estimated": "Estimado",
-  "frontierMigration": {
-    "proceed": "Proceder"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Se han suspendido los depósitos. La ruta del puente indígena está cortada.",

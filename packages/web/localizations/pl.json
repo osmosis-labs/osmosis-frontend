@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Saldo"
-      },
       "depositButton": "Wpłać",
       "search": "Szukaj",
       "withdrawButton": "Wypłać",
@@ -315,9 +312,6 @@
     "startAgain": "Zacznij jeszcze raz"
   },
   "estimated": "Szacowany",
-  "frontierMigration": {
-    "proceed": "Kontynuuj"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Wstrzymano wydobycie. Trasa mostu rodzimego jest zamknięta.",

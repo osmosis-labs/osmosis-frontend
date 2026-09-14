@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "संतुलन"
-      },
       "depositButton": "जमा",
       "search": "खोज",
       "withdrawButton": "निकालना",
@@ -315,9 +312,6 @@
     "startAgain": "फिर से शुरू करें"
   },
   "estimated": "अनुमानित",
-  "frontierMigration": {
-    "proceed": "आगे बढ़ना"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "जमाव कार्य रोक दिया गया है। मूल निवासी पुल मार्ग बंद है।",

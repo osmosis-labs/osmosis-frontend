@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "結餘"
-      },
       "depositButton": "存入",
       "search": "搜索",
       "withdrawButton": "轉出",
@@ -315,9 +312,6 @@
     "startAgain": "重新開始"
   },
   "estimated": "估計的",
-  "frontierMigration": {
-    "proceed": "繼續"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "存款已停。原住民橋樑路線已中斷。",

@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Gleichgewicht"
-      },
       "depositButton": "Kaution",
       "search": "Suchen",
       "withdrawButton": "Zurückziehen",
@@ -315,9 +312,6 @@
     "startAgain": "Fang nochmal an"
   },
   "estimated": "Geschätzt",
-  "frontierMigration": {
-    "proceed": "Fortfahren"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Einzahlungen gestoppt. Die einheimische Brückenverbindung ist gesperrt.",

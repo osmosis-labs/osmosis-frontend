@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "バランス"
-      },
       "depositButton": "デポジット",
       "search": "検索",
       "withdrawButton": "撤回する",
@@ -315,9 +312,6 @@
     "startAgain": "再開する"
   },
   "estimated": "推定",
-  "frontierMigration": {
-    "proceed": "進む"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "預金の受け入れは停止されました。ネイティブブリッジのルートは通行止めです。",

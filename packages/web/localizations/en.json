@@ -129,9 +129,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balance"
-      },
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",
@@ -315,9 +312,6 @@
     "startAgain": "Start again"
   },
   "estimated": "Estimated",
-  "frontierMigration": {
-    "proceed": "Proceed"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Deposits halted. Native bridge route is down.",
