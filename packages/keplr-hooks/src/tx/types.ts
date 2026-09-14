@@ -1,22 +1,10 @@
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import type { StdFee } from "@cosmjs/launchpad";
-import { CoinPretty } from "@osmosis-labs/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
+import { CoinPretty } from "@osmosis-labs/unit";
 
 export interface ITxChainSetter {
   chainId: string;
   setChain(chainId: string): void;
-}
-
-export interface IGasConfig extends ITxChainSetter {
-  gas: number;
-  /*
-   The actual gas value from the input.
-   */
-  gasRaw: string;
-  setGas(gas: number | string): void;
-
-  error: Error | undefined;
 }
 
 export interface IFeeConfig extends ITxChainSetter {
@@ -24,19 +12,10 @@ export interface IFeeConfig extends ITxChainSetter {
   setFeeType(feeType: FeeType | undefined): void;
   feeCurrencies: Currency[];
   feeCurrency: Currency | undefined;
-  toStdFee(): StdFee;
   fee: CoinPretty | undefined;
   getFeeTypePretty(feeType: FeeType): CoinPretty;
   getFeePrimitive(): CoinPrimitive | undefined;
   isManual: boolean;
-  error: Error | undefined;
-}
-
-export interface IRecipientConfig extends ITxChainSetter {
-  recipient: string;
-  rawRecipient: string;
-  setRawRecipient(recipient: string): void;
-
   error: Error | undefined;
 }
 
@@ -83,15 +62,3 @@ export const DefaultGasPriceStep: {
 };
 
 export type FeeType = "high" | "average" | "low";
-
-export interface IGasSimulator {
-  enabled: boolean;
-  setEnabled(value: boolean): void;
-
-  isSimulating: boolean;
-
-  gasEstimated: number | undefined;
-  gasAdjustment: number;
-  gasAdjustmentRaw: string;
-  setGasAdjustment(gasAdjustment: string | number): void;
-}
