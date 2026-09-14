@@ -254,7 +254,6 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin",
       "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin.",
       "clickToActivate": "Etkinleştirmek için tıklayın"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
       "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
       "changeButton": "Ayarları düzenle"
-    },
-    "floatingBanner": {
-      "newPill": "Yeni"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Tıkla İşlem limiti",
@@ -1346,10 +1342,6 @@
     "newer": "Daha yeni"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Fiyatınızı seçin",
-      "tryLimitOrders": "Limit emirlerini deneyin"
-    },
     "historyTable": {
       "columns": {
         "order": "Emir",

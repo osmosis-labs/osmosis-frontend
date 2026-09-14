@@ -254,7 +254,6 @@
     },
     "searchTokens": "جستجو",
     "selectToken": {
-      "title": "انتخاب توکن",
       "unverifiedAsset": "این دارایی تأیید نشده است. با احتیاط ادامه دهید.",
       "clickToActivate": "برای فعال کردن کلیک کنید"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "شروع تجارت با 1 کلیک",
       "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
       "changeButton": "ویرایش تنظیمات"
-    },
-    "floatingBanner": {
-      "newPill": "جدید"
     },
     "reviewOrder": {
       "recapRowTitle": "1-روی محدودیت معاملاتی کلیک کنید",
@@ -1346,10 +1342,6 @@
     "newer": "جدیدتر"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "قیمت خود را انتخاب کنید",
-      "tryLimitOrders": "سفارشات محدود را امتحان کنید"
-    },
     "historyTable": {
       "columns": {
         "order": "سفارش",

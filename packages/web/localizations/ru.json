@@ -254,7 +254,6 @@
     },
     "searchTokens": "Поиск",
     "selectToken": {
-      "title": "Выберите токен",
       "unverifiedAsset": "Этот актив не проверен. Действуйте с осторожностью.",
       "clickToActivate": "Нажмите, чтобы активировать"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Начать торговлю в 1 клик",
       "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
       "changeButton": "Изменить настройки"
-    },
-    "floatingBanner": {
-      "newPill": "Новый"
     },
     "reviewOrder": {
       "recapRowTitle": "Лимит торговли в 1 клик",
@@ -1346,10 +1342,6 @@
     "newer": "Новее"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Выберите свою цену",
-      "tryLimitOrders": "Попробуйте лимитные ордера"
-    },
     "historyTable": {
       "columns": {
         "order": "Заказ",

@@ -254,7 +254,6 @@
     },
     "searchTokens": "खोज",
     "selectToken": {
-      "title": "एक टोकन चुनें",
       "unverifiedAsset": "यह संपत्ति सत्यापित नहीं है. सावधानी के साथ आगे बढ़ना।",
       "clickToActivate": "सक्रिय करने के लिए क्लिक करें"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
       "changeButton": "विन्यास बदलें"
-    },
-    "floatingBanner": {
-      "newPill": "नया"
     },
     "reviewOrder": {
       "recapRowTitle": "1-क्लिक ट्रेडिंग सीमा",
@@ -1346,10 +1342,6 @@
     "newer": "नई"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "अपना मूल्य चुनें",
-      "tryLimitOrders": "सीमा आदेश आज़माएँ"
-    },
     "historyTable": {
       "columns": {
         "order": "आदेश",

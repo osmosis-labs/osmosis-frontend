@@ -1,8 +1,7 @@
-import type { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import { RatePretty } from "@osmosis-labs/unit";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
-import { ReactNode, useCallback, useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 
 import {
   CopyIcon,
@@ -24,13 +23,7 @@ import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { LinkButton } from "~/components/buttons/link-button";
-import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
-import {
-  CheckboxSelect,
-  MenuDropdown,
-  Radio,
-  StakeTab,
-} from "~/components/control";
+import { CheckboxSelect, StakeTab } from "~/components/control";
 import {
   FilterContext,
   FilterProvider,
@@ -56,7 +49,6 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { Slider as SliderShadcn } from "~/components/ui/slider";
 import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
-import { useConst } from "~/hooks/use-const";
 
 const Card: React.FC<{
   title: string;
@@ -318,37 +310,6 @@ const RadiosWithOptions = () => {
   );
 };
 
-const Radios = () => {
-  const [radio, setRadio] = useState("a");
-
-  return (
-    <Card title="Radio">
-      <Component title="Regular">
-        <>
-          <Radio
-            value="a"
-            onSelectRadio={() => setRadio("a")}
-            groupValue={radio}
-          />
-          <Radio
-            value="b"
-            onSelectRadio={() => setRadio("b")}
-            groupValue={radio}
-          />
-        </>
-      </Component>
-      <Component title="Disabled">
-        <Radio
-          value="c"
-          onSelectRadio={() => setRadio("c")}
-          groupValue={radio}
-          disabled
-        />
-      </Component>
-    </Card>
-  );
-};
-
 const Buttons = () => {
   return (
     <Card title="Buttons (Shadcn)">
@@ -490,12 +451,6 @@ const CustomButtons = () => {
           Click
         </ShowMoreButton>
       </Component>
-      <Component title="Switch Wallet">
-        <SwitchWalletButton
-          selectedWalletIconUrl="wallets/keplr.svg"
-          onClick={() => console.log("clicked")}
-        />
-      </Component>
     </Card>
   );
 };
@@ -590,40 +545,6 @@ const StakeTabs = () => {
       >
         Unstake
       </StakeTab>
-    </Card>
-  );
-};
-
-const MenuDropdowns = () => {
-  const [selectedTimeFrame, setSelectedTimeFrame] =
-    useState<CommonPriceChartTimeFrame>("1D");
-
-  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
-  return (
-    <Card title="Menu Dropdown">
-      <div className="relative w-full">
-        <Button onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}>
-          Open Menu Dropdown
-        </Button>
-        <MenuDropdown
-          className="w-full"
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonPriceChartTimeFrame; display: string }[])}
-          selectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) => {
-              setSelectedTimeFrame(id as CommonPriceChartTimeFrame),
-                setIsMenuDropdownOpen(false);
-            },
-            [setSelectedTimeFrame]
-          )}
-          isOpen={isMenuDropdownOpen}
-        />
-      </div>
     </Card>
   );
 };
@@ -1095,7 +1016,6 @@ const Components: NextPage = () => {
       <Checkboxes />
 
       <RadiosShadcn />
-      <Radios />
 
       <InputsShadcn />
       <Inputs />
@@ -1113,7 +1033,6 @@ const Components: NextPage = () => {
 
       <RadiosWithOptions />
 
-      <MenuDropdowns />
       <CheckboxSelects />
       <StakeTabs />
       <QRCodes />

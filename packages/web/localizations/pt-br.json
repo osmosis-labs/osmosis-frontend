@@ -254,7 +254,6 @@
     },
     "searchTokens": "Procurar",
     "selectToken": {
-      "title": "Selecionar um token",
       "unverifiedAsset": "Este ativo não está verificado. Prossiga com cautela.",
       "clickToActivate": "Clique para ativar"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
       "changeButton": "Editar Configurações"
-    },
-    "floatingBanner": {
-      "newPill": "Novo"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de negociação de 1 clique",
@@ -1346,10 +1342,6 @@
     "newer": "Mais recente"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Escolha seu preço",
-      "tryLimitOrders": "Experimente ordens limitadas"
-    },
     "historyTable": {
       "columns": {
         "order": "Ordem",

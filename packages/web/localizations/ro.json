@@ -254,7 +254,6 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol",
       "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție.",
       "clickToActivate": "Faceți clic pentru a activa"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
       "changeButton": "Editeaza setarile"
-    },
-    "floatingBanner": {
-      "newPill": "Nou"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
@@ -1346,10 +1342,6 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Alege-ți prețul",
-      "tryLimitOrders": "Încercați comenzi limită"
-    },
     "historyTable": {
       "columns": {
         "order": "Ordin",

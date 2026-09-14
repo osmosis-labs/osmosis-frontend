@@ -254,7 +254,6 @@
     },
     "searchTokens": "検索",
     "selectToken": {
-      "title": "トークンを選択してください",
       "unverifiedAsset": "このアセットは検証されていません。慎重に作業を進めてください。",
       "clickToActivate": "クリックして有効化します"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "1-Click取引を開始する",
       "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
       "changeButton": "編集の設定"
-    },
-    "floatingBanner": {
-      "newPill": "新しい"
     },
     "reviewOrder": {
       "recapRowTitle": "1クリック取引制限",
@@ -1346,10 +1342,6 @@
     "newer": "新しい"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "価格を選択してください",
-      "tryLimitOrders": "指値注文を試す"
-    },
     "historyTable": {
       "columns": {
         "order": "注文",

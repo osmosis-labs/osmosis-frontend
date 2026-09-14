@@ -254,7 +254,6 @@
     },
     "searchTokens": "Chercher",
     "selectToken": {
-      "title": "Sélectionnez un jeton",
       "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence.",
       "clickToActivate": "Cliquez pour activer"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Commencez le trading en 1 clic",
       "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
       "changeButton": "Modifier les paramètres"
-    },
-    "floatingBanner": {
-      "newPill": "Nouveau"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de trading en 1 clic",
@@ -1346,10 +1342,6 @@
     "newer": "Plus récent"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Choisissez votre prix",
-      "tryLimitOrders": "Essayez les ordres limités"
-    },
     "historyTable": {
       "columns": {
         "order": "Commande",

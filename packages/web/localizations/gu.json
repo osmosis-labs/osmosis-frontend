@@ -254,7 +254,6 @@
     },
     "searchTokens": "શોધો",
     "selectToken": {
-      "title": "ટોકન પસંદ કરો",
       "unverifiedAsset": "આ સંપત્તિ ચકાસાયેલ નથી. સાવધાની સાથે આગળ વધો.",
       "clickToActivate": "સક્રિય કરવા માટે ક્લિક કરો"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
-    },
-    "floatingBanner": {
-      "newPill": "નવી"
     },
     "reviewOrder": {
       "recapRowTitle": "1-ક્લિક કરો ટ્રેડિંગ મર્યાદા",
@@ -1346,10 +1342,6 @@
     "newer": "નવું"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "તમારી કિંમત પસંદ કરો",
-      "tryLimitOrders": "મર્યાદા ઓર્ડરનો પ્રયાસ કરો"
-    },
     "historyTable": {
       "columns": {
         "order": "ઓર્ડર",
