@@ -106,7 +106,23 @@ export type SkipEstimatedFee = {
 export type SkipOperation =
   | { transfer: SkipTransfer }
   | { swap: SkipSwap }
+  | { evm_swap: SkipEvmSwap }
   | { axelar_transfer: SkipAxelarTransfer };
+
+/** A swap performed on the destination EVM chain by the Axelar GMP executor. */
+export type SkipEvmSwap = {
+  input_token: string;
+  /**
+   * What the executor's calldata spends. Skip fixes this at the untoleranced
+   * quote, so it does not move with `slippage_tolerance_percent`.
+   */
+  amount_in: string;
+  amount_out: string;
+  swap_calldata: string;
+  from_chain_id: string;
+  denom_in: string;
+  denom_out: string;
+};
 
 export type SkipTransfer = {
   port: string;
