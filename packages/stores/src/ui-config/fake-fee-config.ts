@@ -1,4 +1,3 @@
-import type { StdFee } from "@cosmjs/amino";
 import { Currency } from "@keplr-wallet/types";
 import {
   DefaultGasPriceStep,
@@ -129,14 +128,6 @@ export class FakeFeeConfig implements IFeeConfig {
 
   setFeeType(): void {
     // noop
-  }
-
-  toStdFee(): StdFee {
-    return {
-      gas: this.gas.toString(),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      amount: [this.getFeePrimitive()!],
-    };
   }
 
   isManual: boolean = false;

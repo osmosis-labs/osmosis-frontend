@@ -1,4 +1,3 @@
-import type { StdFee } from "@cosmjs/amino";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { CoinPretty } from "@osmosis-labs/unit";
@@ -13,7 +12,6 @@ export interface IFeeConfig extends ITxChainSetter {
   setFeeType(feeType: FeeType | undefined): void;
   feeCurrencies: Currency[];
   feeCurrency: Currency | undefined;
-  toStdFee(): StdFee;
   fee: CoinPretty | undefined;
   getFeeTypePretty(feeType: FeeType): CoinPretty;
   getFeePrimitive(): CoinPrimitive | undefined;
