@@ -190,13 +190,6 @@
     "strandedTokenDepositDisabled": "Este activo no se puede depositar porque la ruta a su cadena de origen ya no está activa",
     "strandedTokenWithdrawDisabled": "Este activo no se puede retirar porque la ruta a su cadena de origen ya no está activa"
   },
-  "cypherCard": {
-    "cypherSpend": "Pago por ósmosis",
-    "cypherOrder": "Pide tu tarjeta ahora",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "Tu OSMO, ahora aceptado en todas partes",
-    "newPill": "Nuevo"
-  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
@@ -230,7 +223,6 @@
     "last1y": "Último 1 año",
     "allTime": "Todo el tiempo",
     "trade": "Comercio",
-    "earn": "Ganar",
     "deposit": "Depósito",
     "withdraw": "Retirar",
     "convert": "Convertir"
@@ -1195,82 +1187,6 @@
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
     "seeWhatsNew": "Ver qué hay de nuevo"
-  },
-  "earnPage": {
-    "title": "Ganar",
-    "positions": "Posiciones",
-    "strategiesCount": "{number} estrategias",
-    "oneStrategy": "1 estrategia",
-    "discoverStrategies": "Descubra estrategias",
-    "myStrategies": "Tus estrategias",
-    "strategyPlatform": "Estrategia",
-    "apy": "ABR",
-    "reward": "Premio",
-    "lock": "Desvinculado",
-    "days": "días",
-    "day": "día",
-    "risk": "Riesgo",
-    "strategyMethod": "Tipos",
-    "allMethods": "Todos los tipos",
-    "platforms": "Plataformas",
-    "allPlatforms": "Todas las plataformas",
-    "allCategories": "Todas las categorias",
-    "filters": "Filtros",
-    "resetFilters": "Restablecer filtros",
-    "saveFilters": "Guardar filtros",
-    "rewards": "Recompensas",
-    "availableToClaim": "disponible para reclamar",
-    "claimAllRewards": "Reclama todas las recompensas",
-    "join": "Unirse",
-    "tokenFilterOptions": {
-      "my": "Tus activos",
-      "all": "Todos los activos"
-    },
-    "rewardTypes": {
-      "all": "Todo",
-      "single": "Soltero",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Valor total",
-    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
-    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
-    "loadingStrategies": "Cargando estrategias...",
-    "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
-    "sorryNoResultsWithAssets": "No se encontraron estrategias asociadas con sus activos.",
-    "sorryNoResults": "No se encontraron estrategias.",
-    "tryChangingFilters": "Prueba a cambiar filtros",
-    "retry": "Rever",
-    "manage": "Administrar",
-    "noLock": "Sin bloqueo",
-    "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
-    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
-    "instantUnbondOnly": "Solo desvinculación instantánea",
-    "tooltips": {
-      "apr": {
-        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
-      },
-      "tvl": {
-        "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
-      },
-      "reward": {
-        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
-      },
-      "lock": {
-        "description": "El período de tiempo que una posición está vinculada antes de que se pueda salir de ella. Nota: No todos los períodos de desvinculación de estrategias* tienen distribuciones de recompensas."
-      },
-      "strategy": {
-        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
-      },
-      "risk": {
-        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
-      }
-    },
-    "riskLabels": {
-      "low": "Bajo",
-      "medium": "Medio",
-      "high": "Alto",
-      "veryHigh": "Muy alto"
-    }
   },
   "remaining": "restantes",
   "timeUnits": {

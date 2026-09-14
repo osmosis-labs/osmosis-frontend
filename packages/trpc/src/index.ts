@@ -4,7 +4,6 @@ export * from "./balances";
 export * from "./chains";
 export * from "./cms";
 export * from "./concentrated-liquidity";
-export * from "./earn";
 export * from "./one-click-trading";
 export * from "./orderbook-router";
 export * from "./parameter-types";

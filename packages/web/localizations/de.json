@@ -190,13 +190,6 @@
     "strandedTokenDepositDisabled": "Dieses Asset kann nicht hinterlegt werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist.",
     "strandedTokenWithdrawDisabled": "Dieser Vermögenswert kann nicht abgehoben werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist."
   },
-  "cypherCard": {
-    "cypherSpend": "Osmose-Bezahlung",
-    "cypherOrder": "Bestellen Sie jetzt Ihre Karte",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "Ihr OSMO, jetzt überall akzeptiert",
-    "newPill": "Neu"
-  },
   "portfolio": {
     "buy": "Kaufen",
     "sell": "Verkaufen",
@@ -230,7 +223,6 @@
     "last1y": "Letztes 1 Jahr",
     "allTime": "Alle Zeit",
     "trade": "Handel",
-    "earn": "Verdienen",
     "deposit": "Kaution",
     "withdraw": "Zurückziehen",
     "convert": "Konvertieren"
@@ -1195,82 +1187,6 @@
   "osmosisUpdates": {
     "osmosisUpdates": "Osmose-Updates!",
     "seeWhatsNew": "Schau was neu ist"
-  },
-  "earnPage": {
-    "title": "Verdienen",
-    "positions": "Positionen",
-    "strategiesCount": "{number} Strategien",
-    "oneStrategy": "1 Strategie",
-    "discoverStrategies": "Entdecken Sie Strategien",
-    "myStrategies": "Ihre Strategien",
-    "strategyPlatform": "Strategie",
-    "apy": "APR",
-    "reward": "Belohnen",
-    "lock": "Bindung lösen",
-    "days": "Tage",
-    "day": "Tag",
-    "risk": "Risiko",
-    "strategyMethod": "Typen",
-    "allMethods": "Alle Arten",
-    "platforms": "Plattformen",
-    "allPlatforms": "Alle Plattformen",
-    "allCategories": "Alle Kategorien",
-    "filters": "Filter",
-    "resetFilters": "Filter zurücksetzen",
-    "saveFilters": "Filter speichern",
-    "rewards": "Belohnung",
-    "availableToClaim": "zur Inanspruchnahme verfügbar",
-    "claimAllRewards": "Fordern Sie alle Belohnungen an",
-    "join": "Verbinden",
-    "tokenFilterOptions": {
-      "my": "Ihr Vermögen",
-      "all": "Alle Vermögenswerte"
-    },
-    "rewardTypes": {
-      "all": "Alle",
-      "single": "Einzel",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Gesamtwert",
-    "lookBelow": "Schauen Sie unten nach und finden Sie die besten Strategien für Sie",
-    "startEarningDescription": "Schöpfen Sie Ihr volles Verdienstpotenzial aus. Nutzen Sie Ihr Vermögen mithilfe der vielen unten aufgeführten Strategien.",
-    "loadingStrategies": "Lade Strategien...",
-    "sorryErrorOccurred": "Entschuldigung, es ist ein Fehler aufgetreten.",
-    "sorryNoResultsWithAssets": "Es wurden keine mit Ihren Vermögenswerten verknüpften Strategien gefunden.",
-    "sorryNoResults": "Keine Strategien gefunden.",
-    "tryChangingFilters": "Versuchen Sie, die Filter zu wechseln",
-    "retry": "Wiederholen",
-    "manage": "Verwalten",
-    "noLock": "Kein Schloss",
-    "riskDisclaimer": "Das Risiko wird anhand einer Kombination von Kriterien für eine Strategie und die zugrunde liegenden Vermögenswerte berechnet.",
-    "strategyGeoblocked": "Leider ist diese Strategie in Ihrem Land nicht verfügbar.",
-    "instantUnbondOnly": "Nur sofortiges Lösen",
-    "tooltips": {
-      "apr": {
-        "description": "Der effektive Jahreszins (APR) bezieht sich auf die annualisierte prozentuale Rendite einer Strategie.\n\nHinweis: Die Rendite einer Strategie kann je nach Beteiligung und Performance schwanken.\n\nHaftungsausschluss: Diese APRs werden von den Projekten selbst gemeldet und können ungenau sein."
-      },
-      "tvl": {
-        "description": "Total Value Locked (TVL) bezieht sich auf den Gesamtwert der in die Strategie eingezahlten Vermögenswerte in US-Dollar."
-      },
-      "reward": {
-        "description": "Die Art der Vermögenswerte, die durch die Operationen und/oder Anreize der Strategie erzielt werden."
-      },
-      "lock": {
-        "description": "Der Zeitraum, für den eine Position gebunden ist, bevor sie veräußert werden kann. Hinweis: Nicht alle Strategie-Unbonding-Zeiträume* verfügen über Belohnungsverteilungen."
-      },
-      "strategy": {
-        "description": "Auf Osmosis sind Verdienstmöglichkeiten verschiedener Art verfügbar, die von verschiedenen Plattformen gehostet werden. Der Zugriff auf eine Strategie erfordert die Hinterlegung bestimmter Vermögenswerte."
-      },
-      "risk": {
-        "description": "Bei der Risikobewertung wird eine Kombination aus Kriterien berücksichtigt, die sich auf eine Strategie und die ihr zugrunde liegenden Vermögenswerte beziehen."
-      }
-    },
-    "riskLabels": {
-      "low": "Niedrig",
-      "medium": "Mittel",
-      "high": "Hoch",
-      "veryHigh": "Sehr hoch"
-    }
   },
   "remaining": "übrig",
   "timeUnits": {
