@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "送金ルートの有効期限切れ",
     "multiTxRouteExpired": "この送金の保存されたルートは有効期限が切れ、署名できなくなりました。資金は{chain}アカウントに安全に保管されています。",
     "multiTxFeeShortfall": "お客様の{chain}アカウントではこのステップのネットワーク手数料を支払えません。{chain}でガス用の資金を追加してから、もう一度続行を押してください。",
+    "multiTxStepFailedTitle": "最終送金が完了しませんでした",
+    "multiTxStepFailed": "{chain}での最終送金が完了しませんでした。資金は{chain}に安全に保管されています。取引履歴で続行を押して、もう一度お試しください。",
+    "multiTxRecordFailed": "この送金の進行状況を保存できなかったため、最終の{chain}ステップを提供できません。資金は{chain}に届きます。送金を完了するにはサポートにお問い合わせください。",
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
       "titleWithdraw": "引き出す資産を選択してください",

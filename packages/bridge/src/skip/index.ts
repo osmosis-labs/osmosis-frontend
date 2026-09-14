@@ -783,7 +783,8 @@ export class SkipBridgeProvider implements BridgeProvider {
    * even though the chain's minimum price fits. So when the safe-priced fee
    * exceeds the budget, it is repriced at the chain's minimum gas price and,
    * if still over, the gas limit is capped into the budget. A capped limit
-   * below what a real simulation measured cannot succeed, so that case
+   * without margin over what a real simulation measured cannot reliably
+   * succeed, so that case
    * throws (`BridgeFeeExceedsBudgetMessage`) instead of building a
    * transaction doomed to fail; a fallback-derived limit is a deliberate
    * overestimate and may be capped freely. Returns undefined only when the
@@ -862,14 +863,17 @@ export class SkipBridgeProvider implements BridgeProvider {
       return { gas: String(gasLimit), denom: feeDenom, amount: minPricedAmount };
     }
 
-    // Cap the gas limit into the budget at the floor price. A limit below a
-    // REAL simulation's measured gas guarantees an out-of-gas failure that
-    // still charges the fee, so refuse it; a fallback-derived limit is a
+    // Cap the gas limit into the budget at the floor price. A limit near or
+    // below a REAL simulation's measured gas guarantees an out-of-gas
+    // failure that still charges the fee, so require a margin over the
+    // measured use before accepting a cap; a fallback-derived limit is a
     // deliberate overestimate and capping it is safe.
     const cappedGas = Number(
       new Dec(feeBudget.amount).quo(minPrice).truncate().toString()
     );
-    if (cappedGas > 0 && (simulatedGas === undefined || cappedGas >= simulatedGas)) {
+    const minAcceptableGas =
+      simulatedGas === undefined ? 0 : Math.ceil(simulatedGas * 1.1);
+    if (cappedGas > 0 && cappedGas >= minAcceptableGas) {
       return {
         gas: String(cappedGas),
         denom: feeDenom,

@@ -1,3 +1,5 @@
+import { apiClient } from "@osmosis-labs/utils";
+
 import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 
@@ -80,7 +82,7 @@ export async function getChainBalance({
   const rest = chain?.apis?.rest?.[0]?.address;
   if (!rest) return undefined;
   try {
-    const response = await fetch(
+    const { balance } = await apiClient<{ balance?: { amount?: string } }>(
       `${rest.replace(
         /\/$/,
         ""
@@ -88,10 +90,6 @@ export async function getChainBalance({
         denom
       )}`
     );
-    if (!response.ok) return undefined;
-    const { balance } = (await response.json()) as {
-      balance?: { amount?: string };
-    };
     return BigInt(balance?.amount ?? "0");
   } catch {
     return undefined;

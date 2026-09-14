@@ -29,6 +29,11 @@ import { formatPretty } from "~/utils/formatter";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
+/** Long stop on the expiry exemption for unresolved mid-flow multi-tx
+ *  entries: far longer than any real recovery window, short enough that an
+ *  entry whose first transaction never landed doesn't live forever. */
+const MULTI_TX_RESUME_EXPIRE_DAYS = 30;
+
 /**
  * Stores and tracks status for bridge transfers.
  * NOTE: source keyPrefix values must be unique.
@@ -126,8 +131,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // For multi-tx entries, pin the immutable first-step hash: sendTxHash
     // is reassigned when the transfer advances, and the first-step hash is
     // what lets a stale session correlate its entry with the persisted one.
+    // Copy rather than mutate the caller's object.
     if (snapshot.pendingStep && !snapshot.firstStepTxHash) {
-      snapshot.firstStepTxHash = snapshot.sendTxHash;
+      snapshot = { ...snapshot, firstStepTxHash: snapshot.sendTxHash };
     }
     const {
       sendTxHash,
@@ -224,21 +230,34 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       estimatedArrivalUnix: number;
     }
   ) {
+    // Look up by the current key OR the immutable first-step hash: after a
+    // failed final step restores the pending step, the entry's sendTxHash
+    // is still the failed attempt's hash while the step being re-signed is
+    // keyed on the first step's hash.
     const snapshot = this.snapshots.find(
-      (snapshot) => snapshot.sendTxHash === prevSendTxHash
+      (snapshot) =>
+        snapshot.sendTxHash === prevSendTxHash ||
+        snapshot.firstStepTxHash === prevSendTxHash
     );
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when advancing multi-tx step");
       return;
     }
 
-    // the pending toast is keyed on the first step's hash; dismiss it since
-    // further updates are keyed on the final step's hash
-    toast.dismiss(prevSendTxHash);
+    // the pending toast is keyed on the entry's current hash; dismiss it
+    // since further updates are keyed on the final step's hash
+    toast.dismiss(snapshot.sendTxHash);
 
     // keep the immutable correlation key even for entries created before
     // firstStepTxHash existed, so other sessions can match the advance
     snapshot.firstStepTxHash = snapshot.firstStepTxHash ?? prevSendTxHash;
+    // Keep a copy of the step being advanced past: if the signed tx then
+    // fails on-chain (or its transfer times out and refunds), the funds are
+    // still on the intermediate chain and the step is restored from this.
+    snapshot.advancedStep = snapshot.pendingStep
+      ? toJS(snapshot.pendingStep)
+      : undefined;
+    snapshot.multiTxStepVersion = (snapshot.multiTxStepVersion ?? 0) + 1;
     snapshot.pendingStep = undefined;
     snapshot.sendTxHash = finalSendTxHash;
     snapshot.trackingChainId = trackingChainId;
@@ -362,6 +381,36 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         break;
       case "failed":
         if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
+        // A failed FINAL step of a multi-tx route is not terminal for the
+        // funds: an on-chain failure moved nothing and a timed-out transfer
+        // refunds, so they sit on the intermediate chain either way (and
+        // the resume-time balance check catches the exceptions). Restore
+        // the pending step so Continue is offered again, and say where the
+        // funds are, instead of leaving a dead "failed" row with copy that
+        // implies the deposit itself failed.
+        if (snapshot.advancedStep && snapshot.firstStepTxHash) {
+          snapshot.status = "pending";
+          snapshot.reason = undefined;
+          snapshot.pendingStep = toJS(snapshot.advancedStep);
+          snapshot.advancedStep = undefined;
+          snapshot.multiTxStepVersion =
+            (snapshot.multiTxStepVersion ?? 0) + 1;
+          displayToast(
+            {
+              titleTranslationKey: "transfer.multiTxStepFailedTitle",
+              captionTranslationKey: [
+                "transfer.multiTxStepFailed",
+                { chain: snapshot.pendingStep.prettyName },
+              ],
+            },
+            ToastType.ERROR,
+            { updateToastId: sendTxHash }
+          );
+          // make the restore durable before another session's storage
+          // check can mistake it for an already-advanced entry
+          await this.persistNow();
+          break;
+        }
         displayToast(
           {
             titleTranslationKey:
@@ -431,12 +480,21 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
         [];
       const merged = snapshots.map((local) => {
-        if (!local.pendingStep) return local;
         const key = keyOf(local);
         const storedTwin = stored.find((snapshot) => keyOf(snapshot) === key);
         if (!storedTwin) return local;
-        // the stored copy is further along: advanced past the step, or
-        // marked stale — keep it over the local regression
+        // The step version orders advances AND restores (a restored step
+        // has a pendingStep again but is NEWER than the advanced copy, so
+        // pendingStep presence alone can't order the two): the higher
+        // version is further along.
+        const localVersion = local.multiTxStepVersion ?? 0;
+        const storedVersion = storedTwin.multiTxStepVersion ?? 0;
+        if (storedVersion > localVersion) return storedTwin;
+        if (localVersion > storedVersion) return local;
+        // Same version: the stored copy is further along when it advanced
+        // past the step or marked it stale — keep it over the local
+        // regression.
+        if (!local.pendingStep) return local;
         if (
           !storedTwin.pendingStep ||
           (storedTwin.pendingStep.stale && !local.pendingStep.stale)
@@ -477,8 +535,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
   /**
    * Whether a snapshot should still be kept. UNRESOLVED mid-flow multi-tx
-   * entries (still pending, step not stale) never expire: their Continue
-   * action is the only recovery path for funds on the intermediate chain.
+   * entries (still pending, step not stale) outlive the normal expiry:
+   * their Continue action is the only recovery path for funds on the
+   * intermediate chain. Not forever, though — a first transaction that
+   * never actually landed (dropped or reverted) leaves an entry whose
+   * Continue can never work, so a long stop bounds the exemption.
    * Everything else — terminal statuses included, even with a leftover
    * pending step — expires after `historyExpireDays`.
    */
@@ -488,7 +549,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       snapshot.pendingStep &&
       !snapshot.pendingStep.stale
     ) {
-      return true;
+      return dayjs
+        .unix(snapshot.createdAtUnix)
+        .isAfter(dayjs().subtract(MULTI_TX_RESUME_EXPIRE_DAYS, "day"));
     }
     return dayjs
       .unix(snapshot.createdAtUnix)
@@ -535,6 +598,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       // row shows needs-attention instead of a silently dead Continue.
       this.markPendingStepStale(sendTxHash);
       return "missing";
+    }
+
+    // Local state newer than storage (a just-restored step whose persist
+    // hasn't landed yet): trust the newer local copy rather than regressing
+    // it to the stored advance.
+    if (
+      (local.multiTxStepVersion ?? 0) > (storedSnapshot.multiTxStepVersion ?? 0)
+    ) {
+      return local.pendingStep.stale ? "stale" : "resumable";
     }
 
     if (storedSnapshot.pendingStep?.stale) {

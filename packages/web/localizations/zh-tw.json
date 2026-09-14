@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "轉帳路徑已過期",
     "multiTxRouteExpired": "此轉帳保存的路徑已過期，無法再簽名。您的資金安全地保存在您的{chain}帳戶中。",
     "multiTxFeeShortfall": "您的{chain}帳戶無法支付此步驟的網路費用。請在{chain}上添加燃料資金，然後再次按繼續。",
+    "multiTxStepFailedTitle": "最終轉帳未完成",
+    "multiTxStepFailed": "{chain}上的最終轉帳未完成。您的資金安全地保存在{chain}上；請在交易歷史中按繼續以重試。",
+    "multiTxRecordFailed": "無法保存此轉帳的進度，因此無法提供最終的{chain}步驟。您的資金仍會到達{chain}；請聯絡支援以完成轉帳。",
     "assetSelectScreen": {
       "titleDeposit": "選擇要存入的資產",
       "titleWithdraw": "選擇要提取的資產",

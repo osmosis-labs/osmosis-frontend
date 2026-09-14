@@ -17,6 +17,44 @@ import { api, RouterInputs } from "~/utils/trpc";
 // store-free util module so the transfer-history store can use them too
 export { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
 
+/**
+ * Toast content for the NAMED multi-tx failures that have specific recovery
+ * copy — route expired (retrying won't help; funds are safe) and fee
+ * shortfall (top up the fee token, then Continue). Shared by the live flow
+ * and the resume flow so both surface the same actionable copy; returns
+ * undefined for everything else.
+ */
+export const getMultiTxErrorToastContent = (
+  e: unknown,
+  chainPrettyName: string
+):
+  | {
+      titleTranslationKey: string;
+      captionTranslationKey: [string, { chain: string }];
+    }
+  | undefined => {
+  const message = e instanceof Error ? e.message : "";
+  if (message.includes(BridgeRouteExpiredMessage)) {
+    return {
+      titleTranslationKey: "transfer.multiTxRouteExpiredTitle",
+      captionTranslationKey: [
+        "transfer.multiTxRouteExpired",
+        { chain: chainPrettyName },
+      ],
+    };
+  }
+  if (message.includes(BridgeFeeExceedsBudgetMessage)) {
+    return {
+      titleTranslationKey: "transfer.insufficientFundsForFees",
+      captionTranslationKey: [
+        "transfer.multiTxFeeShortfall",
+        { chain: chainPrettyName },
+      ],
+    };
+  }
+  return undefined;
+};
+
 /** Quote parameters needed to rebuild a multi-tx step, minus the step
  *  itself. All of them are also persisted on a transfer's `TxSnapshot`,
  *  so an interrupted transfer can be resumed from history. */
@@ -91,6 +129,17 @@ export const useMultiTxFinalStep = () => {
           await transferHistoryStore.syncPendingStepFromStorage(
             priorStepTxHash
           );
+        // No record to guard the signature (never persisted, or site data
+        // cleared mid-flow): the funds are on their way to the intermediate
+        // chain, but nothing can prove the step wasn't signed elsewhere, so
+        // it must not be signed. Throw so the caller surfaces it instead of
+        // the flow ending silently; "advanced"/"stale" stay quiet — the
+        // sync already updated the entry the UI shows.
+        if (storageState === "missing") {
+          throw new Error(
+            "Pending multi-tx transfer record is missing; the step cannot be signed safely"
+          );
+        }
         if (storageState !== "resumable") return undefined;
 
         const { transactionStep } =
@@ -371,34 +420,13 @@ export const useMultiTxResume = () => {
         });
       } catch (e) {
         console.error("Failed to resume multi-tx transfer", e);
-        // Named failures get specific copy. Route expired: the funds are
-        // safe on the intermediate chain, but this saved route can't build
-        // a signable transaction anymore, so retrying Continue won't help.
-        // Fee shortfall: the step's fee can't be paid from what the account
-        // holds — topping up the fee token there and pressing Continue
-        // again resolves it (the fee is re-sized against the live balance).
-        const message = e instanceof Error ? e.message : "";
+        // Named failures get specific recovery copy (route expired, fee
+        // shortfall); everything else falls back to the generic error.
         displayToast(
-          message.includes(BridgeRouteExpiredMessage)
-            ? {
-                titleTranslationKey: "transfer.multiTxRouteExpiredTitle",
-                captionTranslationKey: [
-                  "transfer.multiTxRouteExpired",
-                  { chain: pendingStep.prettyName },
-                ],
-              }
-            : message.includes(BridgeFeeExceedsBudgetMessage)
-            ? {
-                titleTranslationKey: "transfer.insufficientFundsForFees",
-                captionTranslationKey: [
-                  "transfer.multiTxFeeShortfall",
-                  { chain: pendingStep.prettyName },
-                ],
-              }
-            : {
-                titleTranslationKey: "transfer.somethingIsntWorking",
-                captionTranslationKey: "transfer.sorryForTheInconvenience",
-              },
+          getMultiTxErrorToastContent(e, pendingStep.prettyName) ?? {
+            titleTranslationKey: "transfer.somethingIsntWorking",
+            captionTranslationKey: "transfer.sorryForTheInconvenience",
+          },
           ToastType.ERROR
         );
       } finally {

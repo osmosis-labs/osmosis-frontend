@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "Transfer route expired",
     "multiTxRouteExpired": "This transfer's saved route has expired and can no longer be signed. Your funds are safe in your {chain} account.",
     "multiTxFeeShortfall": "Your {chain} account can't cover this step's network fee. Add funds for gas on {chain}, then press Continue again.",
+    "multiTxStepFailedTitle": "Final transfer didn't complete",
+    "multiTxStepFailed": "The final transfer on {chain} didn't complete. Your funds are safe on {chain}; press Continue in your transaction history to try again.",
+    "multiTxRecordFailed": "This transfer's progress couldn't be saved, so the final {chain} step can't be offered. Your funds will still arrive on {chain}; please contact support to complete the transfer.",
     "assetSelectScreen": {
       "titleDeposit": "Select an asset to deposit",
       "titleWithdraw": "Select an asset to withdraw",

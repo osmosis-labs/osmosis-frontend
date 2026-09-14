@@ -32,6 +32,7 @@ import {
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import {
   getChainBalance,
+  getMultiTxErrorToastContent,
   useMultiTxFinalStep,
   waitForSkipStepArrival,
 } from "~/components/bridge/use-multi-tx-step";
@@ -49,6 +50,21 @@ import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
+
+/** An EVM transaction that was mined but reverted: it definitively failed
+ *  on-chain, unlike a receipt timeout, where the tx may still land. */
+class EvmTxRevertedError extends Error {
+  constructor(readonly txHash: Address) {
+    super(`Transaction ${txHash} reverted on-chain`);
+  }
+}
+
+/** Display denom of a chain's fee token (e.g. USDC.n for uusdc on noble-1),
+ *  for user-facing copy; falls back to the minimal denom when unknown. */
+const displayFeeDenom = (chainId: string, minimalDenom: string) =>
+  ChainList.find((c) => c.chain_id === chainId)?.feeCurrencies.find(
+    (fc) => fc.coinMinimalDenom === minimalDenom
+  )?.coinDenom ?? minimalDenom;
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
@@ -148,6 +164,10 @@ export const useBridgeQuotes = ({
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
   const allowMultiTx =
     featureFlags.multiTxBridgeRoutes === true &&
+    // deposits only: the executor supports exactly an EVM first tx followed
+    // by one cosmos step, so a multi-tx withdraw route would quote (and
+    // render its steps badge) only to be refused at Confirm
+    !isWithdraw &&
     cosmosSideChain?.chainType === "cosmos" &&
     Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
 
@@ -674,7 +694,7 @@ export const useBridgeQuotes = ({
       nomicCheckpointIndex?: number;
       /** Set for multi-tx transfers still awaiting a later user-signed step. */
       pendingStep?: TxSnapshot["pendingStep"];
-    }) => {
+    }): boolean => {
       if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
         throw new Error(
           "Nomic checkpoint index is required. Skipping tracking."
@@ -729,7 +749,12 @@ export const useBridgeQuotes = ({
           nomicCheckpointIndex,
           pendingStep,
         });
+        return true;
       }
+      // Reports whether the entry was actually recorded: the multi-tx flow
+      // must know, since its final step refuses to sign without a persisted
+      // record to guard against double-signing.
+      return false;
     },
     [
       availableBalance,
@@ -794,9 +819,12 @@ export const useBridgeQuotes = ({
         }
       );
 
-      await waitForTransactionReceipt(publicClient, {
+      const approvalReceipt = await waitForTransactionReceipt(publicClient, {
         hash: approveTxHash,
       });
+      if (approvalReceipt.status === "reverted") {
+        throw new EvmTxRevertedError(approveTxHash);
+      }
 
       for (const quoteResult of quoteResults) {
         await quoteResult.refetch();
@@ -830,9 +858,16 @@ export const useBridgeQuotes = ({
 
     setIsBroadcastingTx(true);
 
-    await waitForTransactionReceipt(publicClient, {
+    // viem RETURNS (not throws) for a tx that reverted on-chain. A reverted
+    // first step must surface as a failure — for multi-tx transfers the
+    // entry was already persisted at broadcast, and without this it would
+    // sit "pending" forever with a Continue that can never work.
+    const receipt = await waitForTransactionReceipt(publicClient, {
       hash: sendTxHash,
     });
+    if (receipt.status === "reverted") {
+      throw new EvmTxRevertedError(sendTxHash);
+    }
 
     return sendTxHash;
   };
@@ -915,6 +950,9 @@ export const useBridgeQuotes = ({
     const finalStepPrettyName =
       ChainList.find((c) => c.chain_id === finalStepChainId)?.prettyName ??
       finalStepChainId;
+    // set the moment the first tx leaves the wallet: the error handling
+    // below must know whether an entry keyed on it was already persisted
+    let firstStepBroadcastHash: Address | undefined;
 
     try {
       // ---- Preflight the intermediate signer; nothing irreversible yet ----
@@ -963,13 +1001,29 @@ export const useBridgeQuotes = ({
           address: senderAddress,
           denom: stepGasFee.denom,
         });
-        if (balance !== undefined && balance < BigInt(stepGasFee.amount)) {
+        // Fail closed on an unreadable balance: this runs BEFORE anything
+        // irreversible and is cheap to retry, so not knowing whether the
+        // fee token is funded must block, not proceed.
+        if (balance === undefined) {
+          displayToast(
+            {
+              titleTranslationKey: "transfer.somethingIsntWorking",
+              captionTranslationKey: "transfer.sorryForTheInconvenience",
+            },
+            ToastType.ERROR
+          );
+          return;
+        }
+        if (balance < BigInt(stepGasFee.amount)) {
           displayToast(
             {
               titleTranslationKey: "transfer.insufficientFundsForFees",
               captionTranslationKey: [
                 "transfer.multiTxGasWarning",
-                { denom: stepGasFee.denom, chain: finalStepPrettyName },
+                {
+                  denom: displayFeeDenom(finalStepChainId, stepGasFee.denom),
+                  chain: finalStepPrettyName,
+                },
               ],
             },
             ToastType.ERROR
@@ -990,8 +1044,10 @@ export const useBridgeQuotes = ({
       // hash: the funds are en route from broadcast, so waiting for the
       // receipt to record it would lose the resume record if the app
       // closes during confirmation.
-      const sendTxHash = await sendEvmBridgeTx(firstStep, (broadcastHash) =>
-        trackTransferStatus({
+      let entryRecorded = false;
+      const sendTxHash = await sendEvmBridgeTx(firstStep, (broadcastHash) => {
+        firstStepBroadcastHash = broadcastHash;
+        entryRecorded = trackTransferStatus({
           quote,
           sendTxHash: broadcastHash,
           pendingStep: {
@@ -1007,9 +1063,27 @@ export const useBridgeQuotes = ({
                 ? { denom: draftToken.denom, amount: draftToken.amount }
                 : undefined,
           },
-        })
-      );
+        });
+      });
       setIsBroadcastingTx(false);
+
+      // The persisted entry is the replay guard the final step refuses to
+      // sign without, and the only recovery surface if this session ends:
+      // if it wasn't recorded, say so loudly instead of dead-ending later.
+      if (!entryRecorded) {
+        console.error("Multi-tx transfer entry was not recorded at broadcast");
+        displayToast(
+          {
+            titleTranslationKey: "transfer.somethingIsntWorking",
+            captionTranslationKey: [
+              "transfer.multiTxRecordFailed",
+              { chain: finalStepPrettyName },
+            ],
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
 
       setMultiTxPhase("waiting-arrival");
       const arrival = await waitForSkipStepArrival({
@@ -1048,13 +1122,29 @@ export const useBridgeQuotes = ({
         },
       });
     } catch (e) {
-      const error = e as BaseError;
-      const toastContent = getWagmiToastErrorMessage({
-        error,
-        t,
-        walletName: evmConnector?.name ?? "",
-      });
-      displayToast(toastContent, ToastType.ERROR);
+      // A first tx that reverted on-chain definitively failed: the entry
+      // persisted at broadcast must not stay "pending" with a Continue
+      // that can never work.
+      if (
+        e instanceof EvmTxRevertedError &&
+        e.txHash === firstStepBroadcastHash
+      ) {
+        transferHistoryStore.receiveNewTxStatus(e.txHash, "failed", undefined);
+      }
+      // Named multi-tx failures (route expired, fee shortfall) carry
+      // specific recovery copy shared with the resume flow; the funds are
+      // on the intermediate chain and the entry stays resumable from
+      // history. Everything else gets the wallet-error mapping.
+      const multiTxToast = getMultiTxErrorToastContent(e, finalStepPrettyName);
+      displayToast(
+        multiTxToast ??
+          getWagmiToastErrorMessage({
+            error: e as BaseError,
+            t,
+            walletName: evmConnector?.name ?? "",
+          }),
+        ToastType.ERROR
+      );
     } finally {
       setIsApprovingToken(false);
       setIsBroadcastingTx(false);
@@ -1257,10 +1347,14 @@ export const useBridgeQuotes = ({
         ChainList.find((c) => c.chain_id === chainId)?.prettyName ??
         chainId ??
         "",
-      /** Denom of the final step's network fee (e.g. uusdc on noble-1, inj
-       *  on injective-1), so surfaces can warn when the account there must
-       *  hold a different asset than the one being transferred. */
-      finalStepGasFeeDenom: gasFee?.denom,
+      /** DISPLAY denom of the final step's network fee (e.g. USDC.n on
+       *  noble-1, INJ on injective-1), so surfaces can warn when the
+       *  account there must hold a different asset than the one being
+       *  transferred. */
+      finalStepGasFeeDenom:
+        gasFee && chainId
+          ? displayFeeDenom(chainId, gasFee.denom)
+          : gasFee?.denom,
       /**
        * True when the final step's fee token differs from the token the
        * step itself moves — the arriving funds then can't pay the step's

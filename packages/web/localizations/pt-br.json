@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "Rota de transferência expirada",
     "multiTxRouteExpired": "A rota salva desta transferência expirou e não pode mais ser assinada. Seus fundos estão seguros na sua conta {chain}.",
     "multiTxFeeShortfall": "Sua conta {chain} não pode cobrir a taxa de rede desta etapa. Adicione fundos para gás na {chain} e pressione Continuar novamente.",
+    "multiTxStepFailedTitle": "A transferência final não foi concluída",
+    "multiTxStepFailed": "A transferência final na {chain} não foi concluída. Seus fundos estão seguros na {chain}; pressione Continuar no seu histórico de transações para tentar novamente.",
+    "multiTxRecordFailed": "O progresso desta transferência não pôde ser salvo, então a etapa final na {chain} não pode ser oferecida. Seus fundos ainda chegarão na {chain}; entre em contato com o suporte para concluir a transferência.",
     "assetSelectScreen": {
       "titleDeposit": "Selecione um ativo para depositar",
       "titleWithdraw": "Selecione um ativo para retirar",

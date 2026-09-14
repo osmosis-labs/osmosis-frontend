@@ -649,6 +649,50 @@ export type TransferFailureReason = z.infer<typeof transferFailureReasonSchema>;
 
 export type TransferStatus = z.infer<typeof transferStatusSchema>;
 
+/** A user-signed step of a multi-transaction route, as persisted on a
+ *  transfer's history snapshot. */
+const multiTxStepSchema = z.object({
+  /** Cosmos chain the user must sign the next step on (e.g. noble-1). */
+  chainId: z.string(),
+  prettyName: z.string(),
+  /** 1-based index of the next step to sign. */
+  stepIndex: z.number(),
+  totalSteps: z.number(),
+  /** Hash of the previously signed step's tx, whose arrival gates this step. */
+  priorStepTxHash: z.string(),
+  /** The quote's `multiTxRouteData`, for rebuilding this step on resume. */
+  routeData: z.unknown().optional(),
+  /**
+   * The intermediate-chain account the first transaction routed funds
+   * to (the account this step must be signed from). Resume compares
+   * the connected wallet against it so a switched account can't sign
+   * for funds it doesn't hold.
+   */
+  intermediateAddress: z.string().optional(),
+  /**
+   * The funds this step is expected to move (minimal denom units on
+   * the intermediate chain). Resume checks the account still holds at
+   * least this much before signing, so a transfer already completed
+   * elsewhere (or moved funds) isn't signed again.
+   */
+  expectedArrival: z
+    .object({
+      denom: z.string(),
+      amount: z.string(),
+    })
+    .optional(),
+  /**
+   * Set when the expected funds were found missing from the
+   * intermediate account: the step was most likely completed from
+   * another session, but that cannot be proven, so the step must never
+   * be signed again AND the transfer must not be auto-resolved (the
+   * first leg's success only proves arrival on the intermediate chain,
+   * not delivery to the destination). A stale entry stops offering
+   * Continue and expires with the snapshot.
+   */
+  stale: z.boolean().optional(),
+});
+
 const txSnapshotSchema = z.object({
   direction: z.enum(["deposit", "withdraw"]),
   createdAtUnix: z.number(),
@@ -705,49 +749,22 @@ const txSnapshotSchema = z.object({
    * The rest of the snapshot (assets, chains, addresses, amount) carries
    * everything needed to rebuild the step via `getTransactionStep`.
    */
-  pendingStep: z
-    .object({
-      /** Cosmos chain the user must sign the next step on (e.g. noble-1). */
-      chainId: z.string(),
-      prettyName: z.string(),
-      /** 1-based index of the next step to sign. */
-      stepIndex: z.number(),
-      totalSteps: z.number(),
-      /** Hash of the previously signed step's tx, whose arrival gates this step. */
-      priorStepTxHash: z.string(),
-      /** The quote's `multiTxRouteData`, for rebuilding this step on resume. */
-      routeData: z.unknown().optional(),
-      /**
-       * The intermediate-chain account the first transaction routed funds
-       * to (the account this step must be signed from). Resume compares
-       * the connected wallet against it so a switched account can't sign
-       * for funds it doesn't hold.
-       */
-      intermediateAddress: z.string().optional(),
-      /**
-       * The funds this step is expected to move (minimal denom units on
-       * the intermediate chain). Resume checks the account still holds at
-       * least this much before signing, so a transfer already completed
-       * elsewhere (or moved funds) isn't signed again.
-       */
-      expectedArrival: z
-        .object({
-          denom: z.string(),
-          amount: z.string(),
-        })
-        .optional(),
-      /**
-       * Set when the expected funds were found missing from the
-       * intermediate account: the step was most likely completed from
-       * another session, but that cannot be proven, so the step must never
-       * be signed again AND the transfer must not be auto-resolved (the
-       * first leg's success only proves arrival on the intermediate chain,
-       * not delivery to the destination). A stale entry stops offering
-       * Continue and expires with the snapshot.
-       */
-      stale: z.boolean().optional(),
-    })
-    .optional(),
+  pendingStep: multiTxStepSchema.optional(),
+  /**
+   * The step the transfer most recently advanced past (a copy of the
+   * cleared `pendingStep`). If the signed step then fails on-chain or its
+   * transfer times out, the funds are still on the intermediate chain, so
+   * the step is restored from here and offered for signing again instead
+   * of leaving a dead "failed" entry.
+   */
+  advancedStep: multiTxStepSchema.optional(),
+  /**
+   * Monotonic counter bumped every time the multi-tx step state moves
+   * forward (advanced past a step, or restored after a failed final step).
+   * The persistence merge keeps whichever copy has the higher version, so
+   * a restore isn't mistaken for a stale pre-advance entry and regressed.
+   */
+  multiTxStepVersion: z.number().optional(),
   /**
    * For multi-tx transfers: the FIRST step's tx hash, immutable across the
    * snapshot's lifecycle. `sendTxHash` is reassigned to the final step's

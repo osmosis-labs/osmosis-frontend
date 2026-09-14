@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "Transferroute abgelaufen",
     "multiTxRouteExpired": "Die gespeicherte Route dieses Transfers ist abgelaufen und kann nicht mehr signiert werden. Ihre Gelder sind sicher auf Ihrem {chain}-Konto.",
     "multiTxFeeShortfall": "Ihr {chain}-Konto kann die Netzwerkgebühr dieses Schritts nicht decken. Fügen Sie Gelder für Gas auf {chain} hinzu und drücken Sie dann erneut auf Fortsetzen.",
+    "multiTxStepFailedTitle": "Letzter Transfer nicht abgeschlossen",
+    "multiTxStepFailed": "Der letzte Transfer auf {chain} wurde nicht abgeschlossen. Ihre Gelder sind sicher auf {chain}; drücken Sie in Ihrem Transaktionsverlauf auf Fortsetzen, um es erneut zu versuchen.",
+    "multiTxRecordFailed": "Der Fortschritt dieses Transfers konnte nicht gespeichert werden, daher kann der letzte {chain}-Schritt nicht angeboten werden. Ihre Gelder kommen dennoch auf {chain} an; bitte kontaktieren Sie den Support, um den Transfer abzuschließen.",
     "assetSelectScreen": {
       "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
       "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",

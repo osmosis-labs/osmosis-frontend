@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "Ruta de transfer a expirat",
     "multiTxRouteExpired": "Ruta salvată a acestui transfer a expirat și nu mai poate fi semnată. Fondurile dvs. sunt în siguranță în contul dvs. {chain}.",
     "multiTxFeeShortfall": "Contul dvs. {chain} nu poate acoperi taxa de rețea a acestui pas. Adăugați fonduri pentru gaz pe {chain}, apoi apăsați din nou Continuați.",
+    "multiTxStepFailedTitle": "Transferul final nu s-a finalizat",
+    "multiTxStepFailed": "Transferul final pe {chain} nu s-a finalizat. Fondurile dvs. sunt în siguranță pe {chain}; apăsați Continuați în istoricul tranzacțiilor pentru a încerca din nou.",
+    "multiTxRecordFailed": "Progresul acestui transfer nu a putut fi salvat, deci pasul final pe {chain} nu poate fi oferit. Fondurile dvs. vor ajunge totuși pe {chain}; vă rugăm să contactați asistența pentru a finaliza transferul.",
     "assetSelectScreen": {
       "titleDeposit": "Selectați un activ de depus",
       "titleWithdraw": "Selectați un activ de retras",

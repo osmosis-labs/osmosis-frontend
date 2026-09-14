@@ -932,6 +932,9 @@
     "multiTxRouteExpiredTitle": "Itinéraire de transfert expiré",
     "multiTxRouteExpired": "L'itinéraire enregistré de ce transfert a expiré et ne peut plus être signé. Vos fonds sont en sécurité sur votre compte {chain}.",
     "multiTxFeeShortfall": "Votre compte {chain} ne peut pas couvrir les frais de réseau de cette étape. Ajoutez des fonds pour le gaz sur {chain}, puis appuyez à nouveau sur Continuer.",
+    "multiTxStepFailedTitle": "Le transfert final ne s'est pas terminé",
+    "multiTxStepFailed": "Le transfert final sur {chain} ne s'est pas terminé. Vos fonds sont en sécurité sur {chain} ; appuyez sur Continuer dans votre historique de transactions pour réessayer.",
+    "multiTxRecordFailed": "La progression de ce transfert n'a pas pu être enregistrée, l'étape finale sur {chain} ne peut donc pas être proposée. Vos fonds arriveront tout de même sur {chain} ; veuillez contacter le support pour terminer le transfert.",
     "assetSelectScreen": {
       "titleDeposit": "Sélectionnez un actif à déposer",
       "titleWithdraw": "Sélectionnez un actif à retirer",
