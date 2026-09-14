@@ -1,11 +1,12 @@
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
-  PoolRaw,
+  getPools,
+  PoolRawResponse,
+  queryNumPools,
   STABLE_POOL_TYPE,
   WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/pools/build/types";
-import { getPools, queryNumPools } from "@osmosis-labs/server";
+} from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 
@@ -14,7 +15,7 @@ import { ChainList } from "~/config/generated/chain-list";
 
 /** @deprecated */
 type Response = {
-  pools: PoolRaw[];
+  pools: PoolRawResponse[];
   totalNumberOfPools: string;
   pageInfo?: {
     hasNextPage: boolean;
@@ -69,7 +70,7 @@ export default async function pools(req: Request) {
           }
           return { ...pool.raw, ["@type"]: COSMWASM_POOL_TYPE };
         })
-        .filter((pool): pool is PoolRaw => Boolean(pool))
+        .filter((pool): pool is PoolRawResponse => Boolean(pool))
     ),
     queryNumPools({ chainList: ChainList }).then((r) => r.num_pools),
   ]);

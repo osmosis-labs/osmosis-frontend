@@ -1,9 +1,9 @@
-import { SplitTokenInQuote, SplitTokenOutQuote } from "@osmosis-labs/pools";
 import { AssetList } from "@osmosis-labs/types";
 import { CoinPretty, Int, RatePretty } from "@osmosis-labs/unit";
 import { z } from "zod";
 
 import { captureIfError } from "../../utils";
+import { SplitTokenInQuote, SplitTokenOutQuote } from "../sidecar/quote";
 import { getSidecarRouter } from "../sidecar/router";
 import { getAsset, getCosmwasmPoolTypeFromCodeId, Pool } from ".";
 
