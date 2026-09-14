@@ -142,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Saldo"
-      },
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Sacar",
@@ -203,13 +200,6 @@
     "strandedTokenDepositDisabled": "Este ativo não pode ser depositado porque a rota para sua cadeia de origem não está mais ativa.",
     "strandedTokenWithdrawDisabled": "Este ativo não pode ser retirado porque a rota para sua cadeia de origem não está mais ativa."
   },
-  "cypherCard": {
-    "cypherSpend": "Pagamento por osmose",
-    "cypherOrder": "Peça já o seu cartão",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "Seu OSMO, agora aceito em todos os lugares",
-    "newPill": "Novo"
-  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
@@ -243,7 +233,6 @@
     "last1y": "Último 1 ano",
     "allTime": "Todos os tempos",
     "trade": "Troca",
-    "earn": "Ganhar",
     "deposit": "Depósito",
     "withdraw": "Retirar",
     "convert": "Converter"
@@ -267,7 +256,6 @@
     },
     "searchTokens": "Procurar",
     "selectToken": {
-      "title": "Selecionar um token",
       "unverifiedAsset": "Este ativo não está verificado. Prossiga com cautela.",
       "clickToActivate": "Clique para ativar"
     },
@@ -337,9 +325,6 @@
     "startAgain": "Comece de novo"
   },
   "estimated": "Estimado",
-  "frontierMigration": {
-    "proceed": "Prosseguir"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Depósitos interrompidos. Rota da ponte indígena interditada.",
@@ -414,7 +399,6 @@
     "store": "Aplicativos",
     "vote": "Votar",
     "featureRequests": "Solicitações de recursos",
-    "trade": "Negociação profissional",
     "more": "Mais",
     "new": "NOVO",
     "settings": "Configurações"
@@ -441,9 +425,6 @@
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
       "changeButton": "Editar Configurações"
-    },
-    "floatingBanner": {
-      "newPill": "Novo"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de negociação de 1 clique",
@@ -1213,82 +1194,6 @@
     "osmosisUpdates": "Atualizações de osmose!",
     "seeWhatsNew": "Veja o que é novo"
   },
-  "earnPage": {
-    "title": "Ganhar",
-    "positions": "Posições",
-    "strategiesCount": "{number} estratégias",
-    "oneStrategy": "1 estratégia",
-    "discoverStrategies": "Descubra estratégias",
-    "myStrategies": "Suas estratégias",
-    "strategyPlatform": "Estratégia",
-    "apy": "ABRIL",
-    "reward": "Recompensa",
-    "lock": "Desvincular",
-    "days": "dias",
-    "day": "dia",
-    "risk": "Risco",
-    "strategyMethod": "Tipos",
-    "allMethods": "Todos os tipos",
-    "platforms": "Plataformas",
-    "allPlatforms": "Todas as plataformas",
-    "allCategories": "Todas as categorias",
-    "filters": "Filtros",
-    "resetFilters": "Redefinir filtros",
-    "saveFilters": "Salvar filtros",
-    "rewards": "Recompensas",
-    "availableToClaim": "disponível para reivindicar",
-    "claimAllRewards": "Reivindique todas as recompensas",
-    "join": "Juntar",
-    "tokenFilterOptions": {
-      "my": "Seus ativos",
-      "all": "Todos os ativos"
-    },
-    "rewardTypes": {
-      "all": "Todos",
-      "single": "Solteiro",
-      "multi": "Múltiplo"
-    },
-    "totalValueInvested": "Valor total",
-    "lookBelow": "Veja abaixo e encontre as melhores estratégias para você",
-    "startEarningDescription": "Desbloqueie todo o seu potencial de ganhos. Coloque seus ativos em ação por meio das diversas estratégias abaixo.",
-    "loadingStrategies": "Carregando estratégias...",
-    "sorryErrorOccurred": "Desculpe, ocorreu um erro.",
-    "sorryNoResultsWithAssets": "Nenhuma estratégia encontrada associada aos seus recursos.",
-    "sorryNoResults": "Nenhuma estratégia encontrada.",
-    "tryChangingFilters": "Tente alterar os filtros",
-    "retry": "Tentar novamente",
-    "manage": "Gerenciar",
-    "noLock": "Não feche",
-    "riskDisclaimer": "O risco é calculado com um conjunto combinado de critérios sobre uma estratégia e seus ativos subjacentes.",
-    "strategyGeoblocked": "Lamentamos, esta estratégia não está disponível no seu país.",
-    "instantUnbondOnly": "Somente desvinculação instantânea",
-    "tooltips": {
-      "apr": {
-        "description": "A Taxa Percentual Anual (APR) refere-se ao retorno percentual anualizado de uma estratégia.\n\nNota: O retorno de uma estratégia pode variar com base na participação e no desempenho.\n\nIsenção de responsabilidade: essas APRs são relatadas pelos próprios projetos e podem ser imprecisas."
-      },
-      "tvl": {
-        "description": "Valor Total Bloqueado (TVL) refere-se ao valor total em dólares americanos dos ativos depositados na estratégia."
-      },
-      "reward": {
-        "description": "O tipo de ativos obtidos através das operações e/ou incentivos da estratégia."
-      },
-      "lock": {
-        "description": "O período de tempo em que uma posição fica vinculada antes de poder ser encerrada. Nota: Nem todos os períodos de desvinculação da estratégia* têm distribuições de recompensas."
-      },
-      "strategy": {
-        "description": "Oportunidades de ganhos de vários tipos, hospedadas em diversas plataformas, estão disponíveis no Osmosis. O acesso a uma estratégia exige o depósito de ativos específicos."
-      },
-      "risk": {
-        "description": "A avaliação de risco envolve considerar uma combinação de critérios relacionados a uma estratégia e seus ativos subjacentes."
-      }
-    },
-    "riskLabels": {
-      "low": "Baixo",
-      "medium": "Médio",
-      "high": "Alto",
-      "veryHigh": "Muito alto"
-    }
-  },
   "remaining": "restante",
   "timeUnits": {
     "second": "segundo",
@@ -1359,10 +1264,6 @@
     "newer": "Mais recente"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Escolha seu preço",
-      "tryLimitOrders": "Experimente ordens limitadas"
-    },
     "historyTable": {
       "columns": {
         "order": "Ordem",

@@ -2,8 +2,7 @@ import type {
   AssetList as CosmologyAssetList,
   Chain as CosmologyChain,
 } from "@chain-registry/types";
-import { type OfflineAminoSigner } from "@cosmjs/amino";
-import type { StdFee } from "@cosmjs/launchpad";
+import { type OfflineAminoSigner, type StdFee } from "@cosmjs/amino";
 import {
   type EncodeObject,
   type OfflineDirectSigner,

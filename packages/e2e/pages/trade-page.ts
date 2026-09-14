@@ -6,6 +6,7 @@ import {
 } from "@playwright/test";
 
 import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
+import { unfoldWalletMsgYaml } from "../utils/wallet-msg";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage, waitForKeplrApproval } from "./keplr-helper";
 
@@ -78,13 +79,12 @@ export class TradePage extends BasePage {
   }
 
   /**
-   * Navigate to the app home and wait for tokens to load.
+   * Navigate to the app home and wait for the trade widget to mount.
    *
    * Retries with backoff because the EU/SG monitoring suites load the app
-   * through an HTTP CONNECT proxy where the initial page load / `assets.json`
-   * fetch can intermittently stall — previously this surfaced as a hard
-   * `beforeAll` timeout (e.g. the 180s monitoring.limit hook on EU) instead of
-   * a recoverable retry.
+   * through an HTTP CONNECT proxy where the initial page load can stall —
+   * previously this surfaced as a hard `beforeAll` timeout instead of a
+   * recoverable retry.
    */
   async goto(retries = 2) {
     let lastError: unknown;
@@ -93,18 +93,8 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
-        // Wait for the assets.json *response* (not just the request being
-        // issued) and assert it loaded successfully, so a stalled/failed load
-        // surfaces as a retryable error rather than a false "ready". Using
-        // Promise.all ties both promises together, so if goto() throws the
-        // waitForResponse promise is still handled (no unhandled rejection).
-        const [assetResponse] = await Promise.all([
-          this.page.waitForResponse("**/assets.json", { timeout: 30_000 }),
-          this.page.goto("/"),
-        ]);
-        expect(assetResponse.ok()).toBeTruthy();
-        // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-        await this.page.waitForTimeout(2000);
+        await this.page.goto("/", { timeout: 30_000 });
+        await this.waitForTradeUi();
         const currentUrl = this.page.url();
         console.log(`FE opened at: ${currentUrl}`);
         await this.dismissVariantsPopupIfPresent();
@@ -208,10 +198,11 @@ export class TradePage extends BasePage {
     await approvePage.waitForLoadState();
     const approveBtn = approvePage.getByRole("button", { name: "Approve" });
     await expect(approveBtn).toBeEnabled();
-    const msgContentAmount =
+    const msgContentAmount = unfoldWalletMsgYaml(
       (await approvePage
         .getByText("type: osmosis/poolmanager/")
-        .textContent()) ?? undefined;
+        .textContent()) ?? undefined
+    );
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     await approveBtn.click();
     return msgContentAmount;
@@ -515,9 +506,10 @@ export class TradePage extends BasePage {
           const msgTextLocator = limit
             ? "Execute contract"
             : "type: osmosis/poolmanager/";
-          msgContentAmount =
+          msgContentAmount = unfoldWalletMsgYaml(
             (await approvePage.getByText(msgTextLocator).textContent()) ??
-            undefined;
+              undefined
+          );
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           await approveBtn.click();
         } else {
@@ -658,9 +650,10 @@ export class TradePage extends BasePage {
           const msgTextLocator = limit
             ? "Execute contract"
             : "type: osmosis/poolmanager/";
-          msgContentAmount =
+          msgContentAmount = unfoldWalletMsgYaml(
             (await approvePage.getByText(msgTextLocator).textContent()) ??
-            undefined;
+              undefined
+          );
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           await approveBtn.click();
         } else {

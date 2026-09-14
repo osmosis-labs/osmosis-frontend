@@ -464,21 +464,10 @@ describe("SkipBridgeProvider", () => {
   });
 
   it("should handle unsupported asset error", async () => {
-    server.use(
-      rest.get(
-        "https://api.skip.money/v2/fungible/assets",
-        (_req, res, ctx) => {
-          return res(
-            ctx.json({
-              chain_to_assets_map: {
-                "1": { assets: [] },
-              },
-            })
-          );
-        }
-      )
-    );
-
+    // the global fixture serves a POPULATED chain-1 registry that simply
+    // lacks the requested asset: that is what "unsupported" means. (An
+    // empty chain asset list is the degraded-registry shape and is
+    // rejected by the cache guard instead.)
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -822,6 +811,39 @@ describe("SkipBridgeProvider", () => {
       ]);
     });
 
+    it("does not mutate the shared asset list when computing variants", async () => {
+      const request = {
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos" as const,
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit" as const,
+      };
+
+      const assetListAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((a) => a.coinMinimalDenom === request.asset.address)!;
+      const counterpartyCountBefore = assetListAsset.counterparty.length;
+
+      const first = await provider.getSupportedAssets(request);
+      // Aliasing the shared counterparty array previously doubled it on
+      // every call until the variant spread threw, permanently emptying
+      // results for the process.
+      for (let i = 0; i < 5; i++) {
+        await provider.getSupportedAssets(request);
+      }
+      const last = await provider.getSupportedAssets(request);
+
+      expect(assetListAsset.counterparty.length).toBe(counterpartyCountBefore);
+      expect(last).toEqual(first);
+    });
+
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
         rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
@@ -1018,5 +1040,179 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
 
     expect(result?.urlProviderName).toBe("Skip:Go");
     expect(result?.url.toString()).toBe(expectedUrl);
+  });
+});
+
+describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
+  it("rejects when the provider registry is unavailable", async () => {
+    server.use(
+      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ message: "registry unavailable" }))
+      )
+    );
+
+    const failingCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const failingProvider = new SkipBridgeProvider(failingCtx);
+
+    // A registry failure must reject rather than resolve to an empty list:
+    // an empty list means "asset unsupported", which the client settles on
+    // without retrying, while a rejected query is retried and re-polled.
+    await expect(
+      failingProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
+  });
+
+  it("resolves empty when the asset is not in the (healthy) registry", async () => {
+    // registry responds fine (global fixture handlers); the asset is simply
+    // not listed — an ordinary unsupported asset, NOT an outage, so the
+    // result must resolve to [] rather than reject (a rejection would make
+    // the client retry forever and never render other transfer options)
+    const healthyCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const healthyProvider = new SkipBridgeProvider(healthyCtx);
+
+    await expect(
+      healthyProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "FAKE",
+          address: "ibc/NOTINREGISTRY",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).resolves.toEqual([]);
+  });
+
+  it("rejects a scoped empty-chain response and recovers on the next populated one via the same cache", async () => {
+    // the degraded shape observed in production: a scoped request answered
+    // with the chain present but zero assets — it must be rejected (NOT
+    // cached for 30 minutes), so a later healthy response recovers
+    let assetRequests = 0;
+    server.use(
+      rest.get(
+        "https://api.skip.money/v2/fungible/assets",
+        (_req, res, ctx) => {
+          assetRequests++;
+          if (assetRequests === 1) {
+            return res(
+              ctx.json({
+                chain_to_assets_map: { "osmosis-1": { assets: [] } },
+              })
+            );
+          }
+          return res(ctx.json(SkipAssets));
+        }
+      )
+    );
+
+    const sharedCacheCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const sharedCacheProvider = new SkipBridgeProvider(sharedCacheCtx);
+
+    const request = {
+      chain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      asset: {
+        denom: "USDC",
+        address:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        decimals: 6,
+      },
+      direction: "deposit",
+    } as const;
+
+    await expect(
+      sharedCacheProvider.getSupportedAssets(request)
+    ).rejects.toThrow();
+
+    const recovered = await sharedCacheProvider.getSupportedAssets(request);
+    expect(recovered.length).toBeGreaterThan(0);
+  });
+
+  it("rejects (and does not cache) a degraded 200 registry response with an empty body", async () => {
+    // a rate-limited or degraded upstream can answer 200 with an empty map;
+    // treating that as truth would read as "asset unsupported" for the
+    // 30-minute cache lifetime, silently bypassing the client's retry and
+    // re-poll machinery
+    server.use(
+      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
+        res(ctx.json({ chain_to_assets_map: {} }))
+      )
+    );
+
+    const degradedCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const degradedProvider = new SkipBridgeProvider(degradedCtx);
+
+    await expect(
+      degradedProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
   });
 });

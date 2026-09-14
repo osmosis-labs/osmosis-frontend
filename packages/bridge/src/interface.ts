@@ -53,8 +53,12 @@ export interface BridgeProvider {
    * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
    * In practice, this can be used to offer a list of selectable assets for the user to choose from.
    *
-   * In general should avoid throwing errors, but return an empty array if no source assets are available with the given input.
-   * If an unexpected error occurs, perhaps if the provider is down, then no assets will be returned to prevent the user from selecting an asset that cannot be transferred.
+   * Return an empty array when no source assets are available for the given
+   * input — that means "this provider has no route for this asset".
+   * Providers backed by a remote registry (Skip, Squid) must instead THROW on
+   * infrastructure failures (registry down, rate limited): a swallowed error
+   * is indistinguishable from an unsupported asset, and the client relies on
+   * a rejected query to retry and re-poll until the provider recovers.
    *
    * @param params The parameters for the supported assets request.
    * @param params.chain The chain the asset is on.

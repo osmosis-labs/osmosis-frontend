@@ -24,7 +24,6 @@
     "postbuild": "next-sitemap"
   },
   "dependencies": {
-    "@amplitude/analytics-browser": "^1.2.3",
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
@@ -48,7 +47,6 @@
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/math": "^5.1.0",
-    "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/stores": "^5.1.0",
     "@osmosis-labs/trpc": "^1.0.0",
@@ -147,7 +145,6 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/react-input-autosize": "^2.2.1",
-    "@types/react-lottie": "^1.2.6",
     "@types/react-modal": "^3.13.1",
     "@types/sha.js": "^2.4.0",
     "autoprefixer": "^10.4.0",

@@ -206,10 +206,6 @@ export const NavBar: FunctionComponent<
       };
     }, [setVisibleBannerHeight]);
 
-    const handleTradeClicked = () => {
-      // logEvent(EventName.Topnav.tradeClicked);
-    };
-
     const title = navBarTitle || titleProp;
 
     return (
@@ -287,21 +283,6 @@ export const NavBar: FunctionComponent<
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-            {featureFlags.tfmProTradingNavbarButton && (
-              <div className="group">
-                <a href="https://pro.osmosis.zone">
-                  <Button
-                    className="subtitle2 group mr-0 flex !h-10 !w-40 transform items-center justify-center bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
-                    style={{ maxWidth: "180px" }}
-                    onClick={handleTradeClicked}
-                    variant="ghost"
-                  >
-                    {t("menu.trade")}
-                  </Button>
-                </a>
-              </div>
-            )}
-
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}

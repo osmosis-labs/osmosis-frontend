@@ -142,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balanta"
-      },
       "depositButton": "Depoziteaza",
       "search": "Filtreaza dupa simbol",
       "withdrawButton": "Retrage",
@@ -203,13 +200,6 @@
     "strandedTokenDepositDisabled": "Acest activ nu poate fi depus deoarece ruta către lanțul său de origine nu mai este activă.",
     "strandedTokenWithdrawDisabled": "Acest activ nu poate fi retras deoarece ruta către lanțul său de origine nu mai este activă."
   },
-  "cypherCard": {
-    "cypherSpend": "Plată osmoză",
-    "cypherOrder": "Comanda cardul tau acum",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "OSMO dvs., acum acceptat peste tot",
-    "newPill": "Nou"
-  },
   "portfolio": {
     "buy": "Cumpără",
     "sell": "Vinde",
@@ -243,7 +233,6 @@
     "last1y": "Ultimul 1 an",
     "allTime": "Tot timpul",
     "trade": "Comerț",
-    "earn": "Câştiga",
     "deposit": "Depozit",
     "withdraw": "Retrage",
     "convert": "Convertit"
@@ -267,7 +256,6 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol",
       "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție.",
       "clickToActivate": "Faceți clic pentru a activa"
     },
@@ -337,9 +325,6 @@
     "startAgain": "Incepe din nou"
   },
   "estimated": "Estimată",
-  "frontierMigration": {
-    "proceed": "Continuați"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Depozitele au fost oprite. Traseul podului nativ este oprit.",
@@ -414,7 +399,6 @@
     "store": "Aplicații",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
-    "trade": "Pro Trading",
     "more": "Mai mult",
     "new": "NOU",
     "settings": "Setări"
@@ -441,9 +425,6 @@
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
       "changeButton": "Editeaza setarile"
-    },
-    "floatingBanner": {
-      "newPill": "Nou"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
@@ -1213,82 +1194,6 @@
     "osmosisUpdates": "Actualizări pentru osmoză!",
     "seeWhatsNew": "Vezi ce este nou"
   },
-  "earnPage": {
-    "title": "Câştiga",
-    "positions": "Poziții",
-    "strategiesCount": "{number} strategii",
-    "oneStrategy": "1 strategie",
-    "discoverStrategies": "Descoperiți strategii",
-    "myStrategies": "Strategiile tale",
-    "strategyPlatform": "Strategie",
-    "apy": "APRILIE",
-    "reward": "Răsplată",
-    "lock": "Dezlegați",
-    "days": "zile",
-    "day": "zi",
-    "risk": "Risc",
-    "strategyMethod": "Tipuri",
-    "allMethods": "Toate tipurile",
-    "platforms": "Platforme",
-    "allPlatforms": "Toate platformele",
-    "allCategories": "Toate categoriile",
-    "filters": "Filtre",
-    "resetFilters": "Resetați filtrele",
-    "saveFilters": "Salvați filtrele",
-    "rewards": "Recompense",
-    "availableToClaim": "disponibil pentru revendicare",
-    "claimAllRewards": "Revendicați toate recompensele",
-    "join": "A te alatura",
-    "tokenFilterOptions": {
-      "my": "Activele tale",
-      "all": "Toate activele"
-    },
-    "rewardTypes": {
-      "all": "Toate",
-      "single": "Singur",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Valoarea totală",
-    "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine",
-    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru prin numeroasele strategii de mai jos.",
-    "loadingStrategies": "Se încarcă strategiile...",
-    "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
-    "sorryNoResultsWithAssets": "Nu s-au găsit strategii asociate cu activele dvs.",
-    "sorryNoResults": "Nu s-au găsit strategii.",
-    "tryChangingFilters": "Încercați să schimbați filtrele",
-    "retry": "Reîncercați",
-    "manage": "Administra",
-    "noLock": "Fără blocare",
-    "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
-    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
-    "instantUnbondOnly": "Dezlegarea instantanee numai",
-    "tooltips": {
-      "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
-      },
-      "tvl": {
-        "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
-      },
-      "reward": {
-        "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
-      },
-      "lock": {
-        "description": "Perioada de timp în care o poziție este legată înainte de a putea fi părăsită. Notă: nu toate perioadele de dezlegare a strategiilor* au distribuții de recompense."
-      },
-      "strategy": {
-        "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."
-      },
-      "risk": {
-        "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
-      }
-    },
-    "riskLabels": {
-      "low": "Scăzut",
-      "medium": "Mediu",
-      "high": "Înalt",
-      "veryHigh": "Foarte inalt"
-    }
-  },
   "remaining": "rămas",
   "timeUnits": {
     "second": "al doilea",
@@ -1359,10 +1264,6 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Alege-ți prețul",
-      "tryLimitOrders": "Încercați comenzi limită"
-    },
     "historyTable": {
       "columns": {
         "order": "Ordin",
