@@ -643,7 +643,7 @@ export class OsmosisAccountImpl {
       throw new Error(`Pool #${poolId} not found`);
     }
 
-    const type = queryPool.pool.type;
+    const type = queryPool.type;
     const clInfo = queryPool.concentratedLiquidityPoolInfo;
     if (type !== "concentrated" || !clInfo) {
       throw new Error("Must be concentrated pool");

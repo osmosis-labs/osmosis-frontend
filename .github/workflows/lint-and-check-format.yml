@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-        package: ["web", "utils", "server", "stores", "pools", "math", "bridge"]
+        package: ["web", "utils", "server", "stores", "math", "bridge"]
 
     steps:
       - name: Checkout Repo

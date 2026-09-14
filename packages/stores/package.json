@@ -65,7 +65,6 @@
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/math": "^5.1.0",
-    "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/tx": "^1.0.0",
