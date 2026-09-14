@@ -146,7 +146,6 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/react-input-autosize": "^2.2.1",
-    "@types/react-lottie": "^1.2.6",
     "@types/react-modal": "^3.13.1",
     "@types/sha.js": "^2.4.0",
     "autoprefixer": "^10.4.0",

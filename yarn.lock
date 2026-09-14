@@ -8039,13 +8039,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-lottie@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.npmjs.org/@types/react-lottie/-/react-lottie-1.2.6.tgz"
-  integrity sha512-fvGJHD7SeUdVESHo7f7erRnXkTWaa/6Mo5TB+R0/ieSftKoFspA4sMlF2qMH6BljXI7ehFJbBtrD5bzDxPCkGg==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-modal@^3.13.1":
   version "3.13.1"
   resolved "https://registry.npmjs.org/@types/react-modal/-/react-modal-3.13.1.tgz"
