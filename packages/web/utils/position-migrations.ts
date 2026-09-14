@@ -216,23 +216,23 @@ export const toleranceForPositionSize = (
  * fails closed (feature off) rather than weakening the gates:
  *
  * - tiers ascend strictly by bound, with exactly one catch-all, last;
- * - tolerances never increase down the list (an early catch-all or a loose
- *   large-position tier would override the strict ones);
- * - `minAmountTolerance` is a sane percentage - at or past 100 it would
- *   floor every onchain minimum to one base unit, disabling the only
- *   protection the transaction carries.
+ * - tolerances never increase down the list and stay within the CMS schema's
+ *   5% ceiling;
+ * - `minAmountTolerance` stays in the schema's `(0, 5]` safety range;
+ * - pool ids and tick spacing are positive integers, and optional kill-switch
+ *   values retain their declared types.
  */
 export const validatePositionMigrationsResponse = (
-  data: PositionMigrationsResponse | undefined
+  data: unknown
 ): PositionMigrationsResponse | undefined => {
-  if (!data || typeof data !== "object") return undefined;
+  if (!isRecord(data)) return undefined;
   const { migrations, priceDivergenceTiers: tiers, minAmountTolerance } = data;
 
   if (
     typeof minAmountTolerance !== "number" ||
     !Number.isFinite(minAmountTolerance) ||
-    minAmountTolerance < 0 ||
-    minAmountTolerance >= 100
+    minAmountTolerance <= 0 ||
+    minAmountTolerance > 5
   )
     return undefined;
 
@@ -241,8 +241,11 @@ export const validatePositionMigrationsResponse = (
   let previousTolerance = Infinity;
   for (const [index, tier] of tiers.entries()) {
     if (
-      typeof tier?.tolerancePercent !== "number" ||
+      !isRecord(tier) ||
+      typeof tier.tolerancePercent !== "number" ||
+      !Number.isFinite(tier.tolerancePercent) ||
       !(tier.tolerancePercent > 0) ||
+      tier.tolerancePercent > 5 ||
       tier.tolerancePercent > previousTolerance
     )
       return undefined;
@@ -250,7 +253,11 @@ export const validatePositionMigrationsResponse = (
     if (index === tiers.length - 1) {
       if (tier.upToUsd !== undefined) return undefined;
     } else {
-      if (typeof tier.upToUsd !== "number" || !(tier.upToUsd > previousBound))
+      if (
+        typeof tier.upToUsd !== "number" ||
+        !Number.isFinite(tier.upToUsd) ||
+        !(tier.upToUsd > previousBound)
+      )
         return undefined;
       previousBound = tier.upToUsd;
     }
@@ -259,16 +266,29 @@ export const validatePositionMigrationsResponse = (
   if (!Array.isArray(migrations)) return undefined;
   for (const migration of migrations) {
     if (
-      typeof migration?.fromPoolId !== "number" ||
-      typeof migration?.toPoolId !== "number" ||
+      !isRecord(migration) ||
+      typeof migration.fromPoolId !== "number" ||
+      !Number.isInteger(migration.fromPoolId) ||
+      migration.fromPoolId < 1 ||
+      typeof migration.toPoolId !== "number" ||
+      !Number.isInteger(migration.toPoolId) ||
+      migration.toPoolId < 1 ||
       typeof migration?.spreadFactor !== "string" ||
-      typeof migration?.tickSpacing !== "number"
+      typeof migration.tickSpacing !== "number" ||
+      !Number.isInteger(migration.tickSpacing) ||
+      migration.tickSpacing < 1 ||
+      (migration.note !== undefined && typeof migration.note !== "string") ||
+      (migration.enabled !== undefined &&
+        typeof migration.enabled !== "boolean")
     )
       return undefined;
   }
 
-  return data;
+  return data as unknown as PositionMigrationsResponse;
 };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
  * Which side of a pool holds the given denom, or `undefined` if neither does.

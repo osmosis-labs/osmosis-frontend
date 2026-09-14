@@ -373,9 +373,7 @@ describe("validatePositionMigrationsResponse", () => {
     expect(validatePositionMigrationsResponse(undefined)).toBeUndefined();
   });
 
-  // At or past 100 every simulated minimum collapses to one base unit,
-  // disabling the only onchain protection the transaction carries.
-  it.each([[100], [150], [-1], [NaN]])(
+  it.each([[0], [5.01], [100], [-1], [NaN]])(
     "refuses minAmountTolerance %p",
     (minAmountTolerance) => {
       expect(
@@ -423,6 +421,15 @@ describe("validatePositionMigrationsResponse", () => {
     ).toBeUndefined();
   });
 
+  it("refuses a divergence tolerance above the CMS safety ceiling", () => {
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [{ tolerancePercent: 5.01 }],
+      })
+    ).toBeUndefined();
+  });
+
   it("refuses a missing catch-all and empty tiers", () => {
     expect(
       validatePositionMigrationsResponse({
@@ -445,6 +452,21 @@ describe("validatePositionMigrationsResponse", () => {
         migrations: [{ ...MIGRATION, fromPoolId: "1926" as unknown as number }],
       })
     ).toBeUndefined();
+
+    for (const migration of [
+      { ...MIGRATION, fromPoolId: 0 },
+      { ...MIGRATION, toPoolId: 3501.5 },
+      { ...MIGRATION, tickSpacing: 0 },
+      { ...MIGRATION, enabled: "false" },
+      { ...MIGRATION, note: 123 },
+    ]) {
+      expect(
+        validatePositionMigrationsResponse({
+          ...VALID,
+          migrations: [migration],
+        })
+      ).toBeUndefined();
+    }
   });
 });
 
