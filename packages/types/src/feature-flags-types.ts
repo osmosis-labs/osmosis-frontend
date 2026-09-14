@@ -9,7 +9,6 @@ export type AvailableFlags =
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
   | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
   | "newDepositWithdrawFlow"

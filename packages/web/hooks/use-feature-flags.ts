@@ -15,7 +15,6 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
-  tfmProTradingNavbarButton: false,
   positionRoi: true,
   swapToolSimulateFee: true,
   newDepositWithdrawFlow: true,
