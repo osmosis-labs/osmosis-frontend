@@ -176,6 +176,36 @@ export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
     : defaultTimeoutHeightOffset
 );
 
+/**
+ * Runs the store-wide `preTxEvents.onBroadcasted` and the per-call
+ * `onBroadcasted` for an accepted transaction. The per-call callback is where
+ * callers record acceptance (e.g. the duplicate-creation guard persists the tx
+ * hash), so it must run even if the store-wide callback throws; the store-wide
+ * error is re-thrown afterwards so it still surfaces to the caller.
+ */
+export function runBroadcastedCallbacks({
+  chainId,
+  txHash,
+  preTxEvent,
+  perCall,
+}: {
+  chainId: string;
+  txHash: Uint8Array;
+  preTxEvent?: (chainId: string, txHash: Uint8Array) => void;
+  perCall?: (txHash: Uint8Array) => void;
+}) {
+  let preTxEventError: unknown;
+  let preTxEventThrew = false;
+  try {
+    preTxEvent?.(chainId, txHash);
+  } catch (e) {
+    preTxEventThrew = true;
+    preTxEventError = e;
+  }
+  perCall?.(txHash);
+  if (preTxEventThrew) throw preTxEventError;
+}
+
 export class AccountStoreNoBroadcastErrorEvent extends Error {
   constructor(message: string) {
     super(message);

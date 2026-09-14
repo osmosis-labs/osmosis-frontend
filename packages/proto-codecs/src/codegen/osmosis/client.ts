@@ -11,6 +11,8 @@ import * as osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxAmino from
 import * as osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxRegistry from "./concentratedliquidity/poolmodel/concentrated/v1beta1/tx.registry";
 import * as osmosisConcentratedliquidityV1beta1TxAmino from "./concentratedliquidity/v1beta1/tx.amino";
 import * as osmosisConcentratedliquidityV1beta1TxRegistry from "./concentratedliquidity/v1beta1/tx.registry";
+import * as osmosisCosmwasmpoolV1beta1TxAmino from "./cosmwasmpool/v1beta1/tx.amino";
+import * as osmosisCosmwasmpoolV1beta1TxRegistry from "./cosmwasmpool/v1beta1/tx.registry";
 import * as osmosisGammPoolmodelsBalancerV1beta1TxAmino from "./gamm/poolmodels/balancer/v1beta1/tx.amino";
 import * as osmosisGammPoolmodelsBalancerV1beta1TxRegistry from "./gamm/poolmodels/balancer/v1beta1/tx.registry";
 import * as osmosisGammPoolmodelsStableswapV1beta1TxAmino from "./gamm/poolmodels/stableswap/v1beta1/tx.amino";
@@ -30,6 +32,7 @@ import * as osmosisSuperfluidTxRegistry from "./superfluid/tx.registry";
 import * as osmosisValsetprefV1beta1TxAmino from "./valsetpref/v1beta1/tx.amino";
 import * as osmosisValsetprefV1beta1TxRegistry from "./valsetpref/v1beta1/tx.registry";
 export const osmosisAminoConverters = {
+  ...osmosisCosmwasmpoolV1beta1TxAmino.AminoConverter,
   ...osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxAmino.AminoConverter,
   ...osmosisConcentratedliquidityV1beta1TxAmino.AminoConverter,
   ...osmosisGammPoolmodelsBalancerV1beta1TxAmino.AminoConverter,
@@ -43,6 +46,7 @@ export const osmosisAminoConverters = {
   ...osmosisValsetprefV1beta1TxAmino.AminoConverter,
 };
 export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
+  ...osmosisCosmwasmpoolV1beta1TxRegistry.registry,
   ...osmosisConcentratedliquidityPoolmodelConcentratedV1beta1TxRegistry.registry,
   ...osmosisConcentratedliquidityV1beta1TxRegistry.registry,
   ...osmosisGammPoolmodelsBalancerV1beta1TxRegistry.registry,

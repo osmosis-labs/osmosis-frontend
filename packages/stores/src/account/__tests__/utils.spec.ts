@@ -1,6 +1,55 @@
 import type { StdFee } from "@cosmjs/stargate";
 
-import { makeSignDocAmino } from "../utils";
+import { makeSignDocAmino, runBroadcastedCallbacks } from "../utils";
+
+describe("runBroadcastedCallbacks", () => {
+  const txHash = new Uint8Array([1, 2, 3]);
+
+  it("runs the store-wide callback first, then the per-call one", () => {
+    const order: string[] = [];
+    runBroadcastedCallbacks({
+      chainId: "osmosis-1",
+      txHash,
+      preTxEvent: (chainId, hash) => {
+        expect(chainId).toBe("osmosis-1");
+        expect(hash).toBe(txHash);
+        order.push("pre");
+      },
+      perCall: (hash) => {
+        expect(hash).toBe(txHash);
+        order.push("perCall");
+      },
+    });
+    expect(order).toEqual(["pre", "perCall"]);
+  });
+
+  it("still runs the per-call callback when the store-wide one throws, then re-throws", () => {
+    const perCall = jest.fn();
+    expect(() =>
+      runBroadcastedCallbacks({
+        chainId: "osmosis-1",
+        txHash,
+        preTxEvent: () => {
+          throw new Error("toast exploded");
+        },
+        perCall,
+      })
+    ).toThrow("toast exploded");
+    expect(perCall).toHaveBeenCalledTimes(1);
+    expect(perCall).toHaveBeenCalledWith(txHash);
+  });
+
+  it("tolerates either callback being absent", () => {
+    const perCall = jest.fn();
+    expect(() =>
+      runBroadcastedCallbacks({ chainId: "osmosis-1", txHash, perCall })
+    ).not.toThrow();
+    expect(perCall).toHaveBeenCalledWith(txHash);
+    expect(() =>
+      runBroadcastedCallbacks({ chainId: "osmosis-1", txHash })
+    ).not.toThrow();
+  });
+});
 
 describe("makeSignDocAmino", () => {
   const fee: StdFee = { amount: [], gas: "200000" };

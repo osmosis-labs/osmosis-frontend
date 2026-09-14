@@ -1458,7 +1458,13 @@
       "filled": "Talep edilecek siparişler tamamlandı"
     },
     "priceReaches": "{denom} fiyatı {price} ulaşırsa",
-    "belowMinimumAmount": "{amount} minimum"
+    "belowMinimumAmount": "{amount} minimum",
+    "noOrderbookForPair": "{base}/{quote} için herhangi bir orderbook mevcut değil. Bu çift için limit orders'ı etkinleştirmek üzere bir tane oluşturun.",
+    "createOrderbook": "Orderbook Oluştur",
+    "noOrderbookExists": "{denom} için orderbook yok",
+    "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
+    "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
+    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
   },
   "tradeDetails": {
     "priceImpact": {
