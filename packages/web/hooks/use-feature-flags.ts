@@ -18,7 +18,6 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   tfmProTradingNavbarButton: false,
   positionRoi: true,
   swapToolSimulateFee: true,
-  displayDailyEarn: false,
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,

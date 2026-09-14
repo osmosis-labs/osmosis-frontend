@@ -12,7 +12,6 @@ export type AvailableFlags =
   | "tfmProTradingNavbarButton"
   | "positionRoi"
   | "swapToolSimulateFee"
-  | "displayDailyEarn"
   | "newDepositWithdrawFlow"
   | "oneClickTrading"
   | "limitOrders"

@@ -23,6 +23,7 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
+  QueriesExternalStore,
   type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
@@ -42,7 +43,6 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { QueriesExternalStore } from "~/stores/queries-external";
 
 import {
   TRANSFER_HISTORY_STORE_KEY,

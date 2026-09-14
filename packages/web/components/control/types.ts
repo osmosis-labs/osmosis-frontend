@@ -16,9 +16,3 @@ export interface MenuSelectProps {
   defaultSelectedOptionId?: string;
   onSelect: (optionId: string) => void;
 }
-
-export interface MenuDropdownIconItemProps {
-  value: string;
-  display: string;
-  iconUrl?: string;
-}
