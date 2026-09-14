@@ -254,7 +254,6 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token",
       "unverifiedAsset": "This asset is not verified. Proceed with caution.",
       "clickToActivate": "Click to activate"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
       "changeButton": "Edit settings"
-    },
-    "floatingBanner": {
-      "newPill": "New"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Click Trading limit",
@@ -1346,10 +1342,6 @@
     "newer": "Newer"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Pick your price",
-      "tryLimitOrders": "Try limit orders"
-    },
     "historyTable": {
       "columns": {
         "order": "Order",

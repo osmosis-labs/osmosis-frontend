@@ -254,7 +254,6 @@
     },
     "searchTokens": "Suchen",
     "selectToken": {
-      "title": "Wählen Sie einen Token aus",
       "unverifiedAsset": "Dieses Asset ist nicht verifiziert. Mit Vorsicht fortfahren.",
       "clickToActivate": "Klicken Sie zum Aktivieren"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
       "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
       "changeButton": "Einstellungen bearbeiten"
-    },
-    "floatingBanner": {
-      "newPill": "Neu"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Klick-Handelslimit",
@@ -1346,10 +1342,6 @@
     "newer": "Neuere"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Wählen Sie Ihren Preis",
-      "tryLimitOrders": "Versuchen Sie es mit Limit-Orders"
-    },
     "historyTable": {
       "columns": {
         "order": "Befehl",

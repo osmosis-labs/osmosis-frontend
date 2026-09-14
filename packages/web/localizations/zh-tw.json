@@ -254,7 +254,6 @@
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇代幣",
       "unverifiedAsset": "此資產未經驗證。請謹慎進行。",
       "clickToActivate": "點擊以啟動"
     },
@@ -428,9 +427,6 @@
       "startTradingButton": "開始一鍵交易",
       "defaultParameters": "預設為 1 小時，損失保護限額為 5,000 美元。",
       "changeButton": "編輯設定"
-    },
-    "floatingBanner": {
-      "newPill": "新的"
     },
     "reviewOrder": {
       "recapRowTitle": "一鍵交易限額",
@@ -1346,10 +1342,6 @@
     "newer": "較新"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "選擇您的價格",
-      "tryLimitOrders": "嘗試限價訂單"
-    },
     "historyTable": {
       "columns": {
         "order": "命令",
