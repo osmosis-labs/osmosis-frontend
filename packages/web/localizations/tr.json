@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "Beklenen fonlar bulunamadı",
     "multiTxFundsMissing": "Beklenen fonlar artık {chain} hesabınızda değil. Bu transfer başka bir oturumda zaten tamamlanmış olabilir.",
     "multiTxStillInTransit": "Fonlar hâlâ yolda",
+    "multiTxRouteExpiredTitle": "Transfer rotasının süresi doldu",
+    "multiTxRouteExpired": "Bu transferin kayıtlı rotasının süresi doldu ve artık imzalanamaz. Fonlarınız {chain} hesabınızda güvende.",
+    "multiTxFeeShortfall": "{chain} hesabınız bu adımın ağ ücretini karşılayamıyor. {chain} üzerinde gas için fon ekleyin, ardından tekrar Devam'a basın.",
     "assetSelectScreen": {
       "titleDeposit": "Yatırılacak bir varlık seçin",
       "titleWithdraw": "Çekilecek bir varlık seçin",
@@ -953,6 +956,7 @@
     "estimatedTime": "Tahmini süresi",
     "providerFees": "Sağlayıcı ücretleri",
     "networkFee": "{networkName} ağ ücreti",
+    "networkFees": "Ağ ücretleri",
     "totalFees": "Toplam ücretler",
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",

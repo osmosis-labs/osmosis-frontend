@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "予定された資金が見つかりません",
     "multiTxFundsMissing": "予定された資金は {chain} アカウントにありません。この送金は別のセッションで既に完了している可能性があります。",
     "multiTxStillInTransit": "資金はまだ移動中です",
+    "multiTxRouteExpiredTitle": "送金ルートの有効期限切れ",
+    "multiTxRouteExpired": "この送金の保存されたルートは有効期限が切れ、署名できなくなりました。資金は{chain}アカウントに安全に保管されています。",
+    "multiTxFeeShortfall": "お客様の{chain}アカウントではこのステップのネットワーク手数料を支払えません。{chain}でガス用の資金を追加してから、もう一度続行を押してください。",
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
       "titleWithdraw": "引き出す資産を選択してください",
@@ -953,6 +956,7 @@
     "estimatedTime": "予定時刻",
     "providerFees": "プロバイダー料金",
     "networkFee": "{networkName}ネットワーク料金",
+    "networkFees": "ネットワーク料金",
     "totalFees": "合計料金",
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",

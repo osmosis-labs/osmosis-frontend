@@ -11,7 +11,9 @@ import { ChainList } from "~/config/generated/chain-list";
  * Polls Skip until the given tx's own route (the first leg of a multi-tx
  * transfer) completes, i.e. the funds have reached the intermediate chain.
  * `isActive` aborts the loop (e.g. on unmount); `maxAttempts` caps it for
- * one-shot resume checks.
+ * one-shot resume checks. `onWaiting` fires once, before the first wait
+ * between polls, so callers can surface that the funds haven't arrived yet
+ * without waiting for the whole polling budget to run out.
  */
 export async function waitForSkipStepArrival({
   chainId,
@@ -19,12 +21,14 @@ export async function waitForSkipStepArrival({
   isActive = () => true,
   maxAttempts,
   intervalMs = 10_000,
+  onWaiting,
 }: {
   chainId: string;
   txHash: string;
   isActive?: () => boolean;
   maxAttempts?: number;
   intervalMs?: number;
+  onWaiting?: () => void;
 }): Promise<"success" | "failed" | "pending" | "aborted"> {
   const env = IS_TESTNET ? "testnet" : "mainnet";
   // prompt Skip to index the tx; the polling below tolerates failures
@@ -52,6 +56,7 @@ export async function waitForSkipStepArrival({
     } catch {
       // transient errors: keep polling
     }
+    if (attempt === 0) onWaiting?.();
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
   return "pending";

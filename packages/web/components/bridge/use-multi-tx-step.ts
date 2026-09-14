@@ -1,4 +1,8 @@
-import { TxSnapshot } from "@osmosis-labs/bridge";
+import {
+  BridgeFeeExceedsBudgetMessage,
+  BridgeRouteExpiredMessage,
+  TxSnapshot,
+} from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
@@ -239,22 +243,7 @@ export const useMultiTxResume = () => {
           );
         if (storageState !== "resumable") return;
 
-        const arrival = await waitForSkipStepArrival({
-          chainId: String(snapshot.fromChain.chainId),
-          txHash: pendingStep.priorStepTxHash,
-          // one-shot-ish check: don't poll forever from a history row
-          maxAttempts: 6,
-          intervalMs: 5_000,
-        });
-        if (arrival === "failed") {
-          transferHistoryStore.receiveNewTxStatus(
-            snapshot.sendTxHash,
-            "failed",
-            undefined
-          );
-          return;
-        }
-        if (arrival !== "success") {
+        const stillInTransitToast = () =>
           displayToast(
             {
               titleTranslationKey: "transfer.multiTxStillInTransit",
@@ -266,6 +255,28 @@ export const useMultiTxResume = () => {
             ToastType.LOADING,
             { autoClose: 5_000 }
           );
+
+        const arrival = await waitForSkipStepArrival({
+          chainId: String(snapshot.fromChain.chainId),
+          txHash: pendingStep.priorStepTxHash,
+          // one-shot-ish check: don't poll forever from a history row
+          maxAttempts: 6,
+          intervalMs: 5_000,
+          // the polling budget above runs ~30s: tell the user the funds
+          // haven't arrived yet as soon as the first check says so, not
+          // only after the whole budget is spent
+          onWaiting: stillInTransitToast,
+        });
+        if (arrival === "failed") {
+          transferHistoryStore.receiveNewTxStatus(
+            snapshot.sendTxHash,
+            "failed",
+            undefined
+          );
+          return;
+        }
+        if (arrival !== "success") {
+          stillInTransitToast();
           return;
         }
 
@@ -360,11 +371,34 @@ export const useMultiTxResume = () => {
         });
       } catch (e) {
         console.error("Failed to resume multi-tx transfer", e);
+        // Named failures get specific copy. Route expired: the funds are
+        // safe on the intermediate chain, but this saved route can't build
+        // a signable transaction anymore, so retrying Continue won't help.
+        // Fee shortfall: the step's fee can't be paid from what the account
+        // holds — topping up the fee token there and pressing Continue
+        // again resolves it (the fee is re-sized against the live balance).
+        const message = e instanceof Error ? e.message : "";
         displayToast(
-          {
-            titleTranslationKey: "transfer.somethingIsntWorking",
-            captionTranslationKey: "transfer.sorryForTheInconvenience",
-          },
+          message.includes(BridgeRouteExpiredMessage)
+            ? {
+                titleTranslationKey: "transfer.multiTxRouteExpiredTitle",
+                captionTranslationKey: [
+                  "transfer.multiTxRouteExpired",
+                  { chain: pendingStep.prettyName },
+                ],
+              }
+            : message.includes(BridgeFeeExceedsBudgetMessage)
+            ? {
+                titleTranslationKey: "transfer.insufficientFundsForFees",
+                captionTranslationKey: [
+                  "transfer.multiTxFeeShortfall",
+                  { chain: pendingStep.prettyName },
+                ],
+              }
+            : {
+                titleTranslationKey: "transfer.somethingIsntWorking",
+                captionTranslationKey: "transfer.sorryForTheInconvenience",
+              },
           ToastType.ERROR
         );
       } finally {

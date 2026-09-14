@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "No se encontraron los fondos esperados",
     "multiTxFundsMissing": "Los fondos esperados ya no están en su cuenta de {chain}. Es posible que esta transferencia ya se haya completado desde otra sesión.",
     "multiTxStillInTransit": "Los fondos siguen en tránsito",
+    "multiTxRouteExpiredTitle": "Ruta de transferencia expirada",
+    "multiTxRouteExpired": "La ruta guardada de esta transferencia ha expirado y ya no se puede firmar. Sus fondos están seguros en su cuenta de {chain}.",
+    "multiTxFeeShortfall": "Su cuenta de {chain} no puede cubrir la tarifa de red de este paso. Agregue fondos para gas en {chain} y luego presione Continuar de nuevo.",
     "assetSelectScreen": {
       "titleDeposit": "Seleccione un activo para depositar",
       "titleWithdraw": "Seleccione un activo para retirar",
@@ -953,6 +956,7 @@
     "estimatedTime": "Hora prevista",
     "providerFees": "Tarifas del proveedor",
     "networkFee": "{networkName} tarifa de red",
+    "networkFees": "Tarifas de red",
     "totalFees": "Tarifas totales",
     "estimatedAmountReceived": "Cantidad estimada recibida",
     "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",

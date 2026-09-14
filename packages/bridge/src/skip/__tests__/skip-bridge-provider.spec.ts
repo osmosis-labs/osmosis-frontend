@@ -1,4 +1,4 @@
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -7,6 +7,10 @@ import { createPublicClient } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
+import {
+  BridgeFeeExceedsBudgetMessage,
+  BridgeRouteExpiredMessage,
+} from "../../errors";
 import {
   BridgeChain,
   BridgeProviderContext,
@@ -47,6 +51,7 @@ jest.mock("viem", () => ({
 jest.mock("@osmosis-labs/tx", () => ({
   ...jest.requireActual("@osmosis-labs/tx"),
   estimateGasFee: jest.fn(),
+  simulateCosmosTxBody: jest.fn(),
 }));
 
 jest.mock("@cosmjs/proto-signing", () => ({
@@ -1124,12 +1129,26 @@ describe("SkipBridgeProvider multi-tx routes", () => {
         max: 500,
       }),
       assetLists: MockAssetLists,
-      // minimal chain registry data for the intermediate-chain key
-      // derivation gate: noble is standard coin type 118
+      // minimal chain registry data: the intermediate-chain key derivation
+      // gate (noble is standard coin type 118) plus the fee pricing the
+      // intermediate step's gas estimate reads (denom + price steps + LCD)
       chainList: [
-        { chain_id: "noble-1", slip44: 118 },
+        {
+          chain_id: "noble-1",
+          slip44: 118,
+          features: [],
+          feeCurrencies: [
+            {
+              coinDenom: "USDC.n",
+              coinMinimalDenom: "uusdc",
+              coinDecimals: 6,
+              gasPriceStep: { low: 0.1, average: 0.1, high: 0.2 },
+            },
+          ],
+          apis: { rpc: [], rest: [{ address: "https://noble-lcd.test" }] },
+        },
         { chain_id: "osmosis-1", slip44: 118 },
-      ] as BridgeProviderContext["chainList"],
+      ] as unknown as BridgeProviderContext["chainList"],
       getTimeoutHeight: jest.fn().mockResolvedValue({
         revisionNumber: "1",
         revisionHeight: "1000",
@@ -1144,16 +1163,24 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       )
     );
 
-    // Gas estimation for the intermediate (noble-1) cosmos step
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      gas: "200000",
-      amount: [
-        {
-          denom: "uusdc",
-          amount: "20000",
-        },
-      ],
+    // Gas simulation for the intermediate (noble-1) cosmos step: 120000
+    // used -> 180000 limit (x1.5). The registry's high price (0.2) exceeds
+    // the fixture's 20000 fee reserve, so the estimate reprices at the low
+    // step (0.1) -> 18000, which fits.
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 120000,
+      coinsSpent: [],
     });
+
+    // Live balance reads on the intermediate chain: default to an account
+    // holding nothing beyond the arriving funds, so the route's reserve
+    // stays the budget unless a test overrides this handler.
+    server.use(
+      rest.get(
+        "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
+        (_req, res, ctx) => res(ctx.json({ balance: { amount: "0" } }))
+      )
+    );
   });
 
   it("builds ordered transaction steps for a 2-tx route", async () => {
@@ -1178,7 +1205,10 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(step2).toMatchObject({
       type: "cosmos",
       chainId: "noble-1",
-      gasFee: { gas: "200000", denom: "uusdc", amount: "20000" },
+      // simulated 120000 x1.5 = 180000 gas; the safe-side high price (0.2)
+      // would cost 36000, over the route's 20000 fee reserve, so the fee is
+      // repriced at the chain's low step (0.1) to fit it
+      gasFee: { gas: "180000", denom: "uusdc", amount: "18000" },
     });
     if (step2.type !== "cosmos") throw new Error("expected cosmos step");
     expect(step2.msgs).toHaveLength(1);
@@ -1188,7 +1218,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(step2.msgs[0].value.sender).toBe(nobleAddress);
     expect(step2.msgs[0].value.token).toEqual({
       denom: "uusdc",
-      amount: "999980000",
+      amount: "999960000",
     });
 
     // the first step doubles as the plain transactionRequest so single-tx
@@ -1203,7 +1233,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     // resolved from Skip's asset registry
     expect(quote.intermediateGasFees).toEqual([
       {
-        amount: "20000",
+        amount: "18000",
         denom: "USDC",
         address: "uusdc",
         decimals: 6,
@@ -1397,6 +1427,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 
   it("rebuilds an intermediate step from the stored route with the wallet's address", async () => {
     let msgsBody: { address_list: string[] } | undefined;
+    let rawMsgsBody: string | undefined;
     let routeRequested = false;
     server.use(
       rest.post(
@@ -1410,6 +1441,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
         "https://api.skip.money/v2/fungible/msgs",
         async (req, res, ctx) => {
           msgsBody = await req.json();
+          rawMsgsBody = JSON.stringify(msgsBody);
           return res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs));
         }
       )
@@ -1436,10 +1468,130 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 
     expect(step.type).toBe("cosmos");
     expect(step.msgs[0].value.sender).toBe(nobleAddress);
+    // simulated 120000 x1.5 = 180000 gas, repriced at the low step (0.1) to
+    // fit the route's 20000 fee reserve
+    expect(step.gasFee).toEqual({
+      gas: "180000",
+      denom: "uusdc",
+      amount: "18000",
+    });
+
+    // the stored route's relay fee quote (expired long ago in the fixture)
+    // must not be replayed: Skip validates its expiration on submission
+    expect(rawMsgsBody).toBeDefined();
+    expect(rawMsgsBody).not.toContain("smart_relay_fee_quote");
+    // ...while everything else about the operations is preserved
+    expect(rawMsgsBody).toContain("cctp_transfer");
+  });
+
+  it("names an expired stored route so the UI can show recovery copy", async () => {
+    server.use(
+      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+        res(
+          ctx.status(500),
+          ctx.json({
+            code: 9,
+            message: "relay fee quote has expired",
+          })
+        )
+      )
+    );
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeRouteExpiredMessage);
+  });
+
+  it("caps the step's gas limit into the route's fee reserve", async () => {
+    // 160000 used -> 240000 limit; even at the low price (0.1) the fee
+    // (24000) exceeds the 20000 reserve, so the limit is capped to what the
+    // reserve buys at the low price: 200000 gas, still >= the simulated use
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 160000,
+      coinsSpent: [],
+    });
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
     expect(step.gasFee).toEqual({
       gas: "200000",
       denom: "uusdc",
       amount: "20000",
+    });
+  });
+
+  it("refuses a step whose simulated gas cannot fit the fee reserve", async () => {
+    // 250000 used: the reserve buys only 200000 gas at the low price, below
+    // what the simulation measured, so signing would fail out-of-gas while
+    // still charging the fee — refuse with the named message instead
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 250000,
+      coinsSpent: [],
+    });
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeFeeExceedsBudgetMessage);
+  });
+
+  it("caps a fallback-derived gas limit instead of refusing", async () => {
+    // simulation unavailable (e.g. the account isn't funded yet): the
+    // conservative fallback limit (250000 x1.5 = 375000) is a deliberate
+    // overestimate, so capping it into the reserve is safe, not an error
+    (simulateCosmosTxBody as jest.Mock).mockRejectedValue(
+      new Error("account not found")
+    );
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    expect(step.gasFee).toEqual({
+      gas: "200000",
+      denom: "uusdc",
+      amount: "20000",
+    });
+  });
+
+  it("raises the fee budget from the account's live balance", async () => {
+    // the account holds 30000 beyond what the step moves (a top-up), so the
+    // low-priced fee (24000) fits without capping the gas limit
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 160000,
+      coinsSpent: [],
+    });
+    server.use(
+      rest.get(
+        "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
+        (_req, res, ctx) =>
+          res(ctx.json({ balance: { amount: "999990000" } }))
+      )
+    );
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    expect(step.gasFee).toEqual({
+      gas: "240000",
+      denom: "uusdc",
+      amount: "24000",
     });
   });
 

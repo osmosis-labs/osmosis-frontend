@@ -943,15 +943,21 @@ export const useBridgeQuotes = ({
         );
         return;
       }
-      // When the final step's fee isn't paid from the arriving funds (e.g.
-      // INJ on Injective), the account there must already hold the fee token.
+      // The funds this step will move on the intermediate chain: the token
+      // of the drafted final msg (same chain and minimal denom as the fee).
+      const draftToken = (
+        finalStep.msgs[0]?.value as
+          | { token?: { denom?: string; amount?: string } }
+          | undefined
+      )?.token;
+
+      // When the final step's fee isn't paid from the arriving funds (fee
+      // denom differs from the token the step moves, e.g. INJ on
+      // Injective), the account there must already hold the fee token. When
+      // they match, no balance to check yet: the fee is sized to the
+      // route's fee reserve when the step is built for signing.
       const stepGasFee = finalStep.gasFee;
-      if (
-        stepGasFee &&
-        fromAsset &&
-        stepGasFee.denom.replace(/^u/, "").toLowerCase() !==
-          fromAsset.denom.toLowerCase()
-      ) {
+      if (stepGasFee && stepGasFee.denom !== draftToken?.denom) {
         const balance = await getChainBalance({
           chainId: finalStepChainId,
           address: senderAddress,
@@ -972,17 +978,11 @@ export const useBridgeQuotes = ({
         }
       }
 
-      // The funds this step will move on the intermediate chain, for the
-      // resume-time sanity check. Replay protection does NOT come from
-      // balances (shared state that changes for unrelated reasons): it
-      // comes from the persisted history store, which the signing session
-      // updates at final-step broadcast and any stale session re-reads
-      // before signing (syncPendingStepFromStorage).
-      const draftToken = (
-        finalStep.msgs[0]?.value as
-          | { token?: { denom?: string; amount?: string } }
-          | undefined
-      )?.token;
+      // draftToken also feeds the resume-time sanity check. Replay
+      // protection does NOT come from balances (shared state that changes
+      // for unrelated reasons): it comes from the persisted history store,
+      // which the signing session updates at final-step broadcast and any
+      // stale session re-reads before signing (syncPendingStepFromStorage).
 
       // ---- Step 1: the EVM transaction ----
       // Persist the resumable entry (with the quoted route, so the final
@@ -1240,6 +1240,16 @@ export const useBridgeQuotes = ({
     const chainId =
       typeof finalStep.chainId === "string" ? finalStep.chainId : undefined;
     const gasFee = finalStep.type === "cosmos" ? finalStep.gasFee : undefined;
+    // the token the final step's drafted msg moves, in the intermediate
+    // chain's own minimal denom (same denom space as the fee)
+    const draftDenom =
+      finalStep.type === "cosmos"
+        ? (
+            finalStep.msgs[0]?.value as
+              | { token?: { denom?: string } }
+              | undefined
+          )?.token?.denom
+        : undefined;
     return {
       totalSteps: multiTxSteps.length,
       intermediateChainId: chainId,
@@ -1252,19 +1262,14 @@ export const useBridgeQuotes = ({
        *  hold a different asset than the one being transferred. */
       finalStepGasFeeDenom: gasFee?.denom,
       /**
-       * True when the final step's fee token loosely differs from the
-       * transferred asset (uusdc vs USDC matches; inj vs USDC doesn't) — the
-       * arriving funds then can't pay the step's own gas, so the user's
-       * account on the intermediate chain must hold the fee token.
+       * True when the final step's fee token differs from the token the
+       * step itself moves — the arriving funds then can't pay the step's
+       * own gas, so the user's account on the intermediate chain must hold
+       * the fee token.
        */
-      finalStepGasWarning: Boolean(
-        gasFee &&
-          fromAsset &&
-          gasFee.denom.replace(/^u/, "").toLowerCase() !==
-            fromAsset.denom.toLowerCase()
-      ),
+      finalStepGasWarning: Boolean(gasFee && gasFee.denom !== draftDenom),
     };
-  }, [multiTxSteps, fromAsset]);
+  }, [multiTxSteps]);
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
   /**

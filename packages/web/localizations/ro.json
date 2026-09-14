@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "Fondurile așteptate nu au fost găsite",
     "multiTxFundsMissing": "Fondurile așteptate nu se mai află în contul dvs. {chain}. Este posibil ca acest transfer să fi fost deja finalizat dintr-o altă sesiune.",
     "multiTxStillInTransit": "Fondurile sunt încă în tranzit",
+    "multiTxRouteExpiredTitle": "Ruta de transfer a expirat",
+    "multiTxRouteExpired": "Ruta salvată a acestui transfer a expirat și nu mai poate fi semnată. Fondurile dvs. sunt în siguranță în contul dvs. {chain}.",
+    "multiTxFeeShortfall": "Contul dvs. {chain} nu poate acoperi taxa de rețea a acestui pas. Adăugați fonduri pentru gaz pe {chain}, apoi apăsați din nou Continuați.",
     "assetSelectScreen": {
       "titleDeposit": "Selectați un activ de depus",
       "titleWithdraw": "Selectați un activ de retras",
@@ -953,6 +956,7 @@
     "estimatedTime": "Timpul estimat",
     "providerFees": "Taxe de furnizor",
     "networkFee": "Taxa de rețea {networkName}",
+    "networkFees": "Taxe de rețea",
     "totalFees": "Taxele totale",
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",

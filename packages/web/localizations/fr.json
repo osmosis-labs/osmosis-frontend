@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "Fonds attendus introuvables",
     "multiTxFundsMissing": "Les fonds attendus ne sont plus sur votre compte {chain}. Ce transfert a peut-être déjà été effectué depuis une autre session.",
     "multiTxStillInTransit": "Les fonds sont encore en transit",
+    "multiTxRouteExpiredTitle": "Itinéraire de transfert expiré",
+    "multiTxRouteExpired": "L'itinéraire enregistré de ce transfert a expiré et ne peut plus être signé. Vos fonds sont en sécurité sur votre compte {chain}.",
+    "multiTxFeeShortfall": "Votre compte {chain} ne peut pas couvrir les frais de réseau de cette étape. Ajoutez des fonds pour le gaz sur {chain}, puis appuyez à nouveau sur Continuer.",
     "assetSelectScreen": {
       "titleDeposit": "Sélectionnez un actif à déposer",
       "titleWithdraw": "Sélectionnez un actif à retirer",
@@ -953,6 +956,7 @@
     "estimatedTime": "Temps estimé",
     "providerFees": "Frais du fournisseur",
     "networkFee": "{networkName} frais de réseau",
+    "networkFees": "Frais de réseau",
     "totalFees": "Total des frais",
     "estimatedAmountReceived": "Montant estimé reçu",
     "slippageWarning": "Le résultat attendu pour cette transaction est nettement inférieur au montant d'entrée, ce qui peut entraîner la réception d'un montant final différent de celui attendu.",

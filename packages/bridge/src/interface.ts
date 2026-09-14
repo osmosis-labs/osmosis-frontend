@@ -737,14 +737,6 @@ const txSnapshotSchema = z.object({
         })
         .optional(),
       /**
-       * `expectedArrival.denom` balance the intermediate account held
-       * BEFORE the first transaction (minimal denom units). Makes the
-       * resume balance check replay-proof: the arrived funds must be
-       * present on top of this, so an account that already held enough of
-       * the denom can't pass the check after the step was completed from
-       * another session.
-       */
-      /**
        * Set when the expected funds were found missing from the
        * intermediate account: the step was most likely completed from
        * another session, but that cannot be proven, so the step must never

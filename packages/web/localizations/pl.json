@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "Nie znaleziono oczekiwanych środków",
     "multiTxFundsMissing": "Oczekiwanych środków nie ma już na Twoim koncie {chain}. Ten transfer mógł już zostać ukończony w innej sesji.",
     "multiTxStillInTransit": "Środki są wciąż w drodze",
+    "multiTxRouteExpiredTitle": "Trasa transferu wygasła",
+    "multiTxRouteExpired": "Zapisana trasa tego transferu wygasła i nie można jej już podpisać. Twoje środki są bezpieczne na Twoim koncie {chain}.",
+    "multiTxFeeShortfall": "Twoje konto {chain} nie może pokryć opłaty sieciowej tego kroku. Dodaj środki na gaz na {chain}, a następnie ponownie naciśnij Kontynuuj.",
     "assetSelectScreen": {
       "titleDeposit": "Wybierz zasób do zdeponowania",
       "titleWithdraw": "Wybierz zasób do wypłaty",
@@ -953,6 +956,7 @@
     "estimatedTime": "Szacowany czas",
     "providerFees": "Opłaty dostawcy",
     "networkFee": "{networkName} opłata sieciowa",
+    "networkFees": "Opłaty sieciowe",
     "totalFees": "Wszystkie koszty",
     "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
     "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",

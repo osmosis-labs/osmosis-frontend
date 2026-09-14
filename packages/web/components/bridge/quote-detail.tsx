@@ -96,9 +96,15 @@ export const NetworkFeeRow: FunctionComponent<{
   fromChainName?: string;
 }> = ({ selectedQuote, isRefetchingQuote, fromChainName }) => (
   <QuoteDetailRow
-    label={t("transfer.networkFee", {
-      networkName: fromChainName ?? "",
-    })}
+    label={
+      // multi-tx routes pay gas on more than one chain, so the combined
+      // estimate can't be attributed to the origin network alone
+      selectedQuote.intermediateGasCosts?.length
+        ? t("transfer.networkFees")
+        : t("transfer.networkFee", {
+            networkName: fromChainName ?? "",
+          })
+    }
     isLoading={isRefetchingQuote}
   >
     <p className="text-osmoverse-100">

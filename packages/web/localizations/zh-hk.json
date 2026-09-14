@@ -929,6 +929,9 @@
     "multiTxFundsMissingTitle": "找不到預期資金",
     "multiTxFundsMissing": "預期資金已不在您的 {chain} 帳戶中。此轉賬可能已在其他工作階段完成。",
     "multiTxStillInTransit": "資金仍在途中",
+    "multiTxRouteExpiredTitle": "轉賬路徑已過期",
+    "multiTxRouteExpired": "此轉賬保存的路徑已過期，無法再簽名。您的資金安全地保存在您的{chain}賬戶中。",
+    "multiTxFeeShortfall": "您的{chain}賬戶無法支付此步驟的網絡費用。請在{chain}上添加燃料資金，然後再次按繼續。",
     "assetSelectScreen": {
       "titleDeposit": "選擇要存入的資產",
       "titleWithdraw": "選擇要提取的資產",
@@ -953,6 +956,7 @@
     "estimatedTime": "預計時間",
     "providerFees": "提供者費用",
     "networkFee": "{networkName}網路費用",
+    "networkFees": "網路費用",
     "totalFees": "總費用",
     "estimatedAmountReceived": "預計收到金額",
     "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",

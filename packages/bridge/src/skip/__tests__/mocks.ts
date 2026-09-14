@@ -602,6 +602,15 @@ export const USDC_EthereumToOsmosisAlloy_MultiTxRoute = {
         burn_token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         bridge_id: "CCTP",
         smart_relay: true,
+        // the live API attaches a short-lived relay fee quote to smart-relay
+        // operations; step rebuilds must strip it before replaying the route
+        smart_relay_fee_quote: {
+          fee_amount: "20000",
+          relayer_address: "noble1dyw0geqa2cy0ppdjcxfpzusjpwmq85r5a35hqe",
+          expiration: "2024-01-01T00:00:00Z",
+          fee_denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          fee_payment_address: "0xB19Ff56BD455C2515207BDbdEDC68B57fBA9A78D",
+        },
       },
       tx_index: 0,
       amount_in: "1000000000",
@@ -617,9 +626,10 @@ export const USDC_EthereumToOsmosisAlloy_MultiTxRoute = {
           "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         supports_memo: true,
       },
+      // the Noble tx moves 20000 less than arrived: the route's fee reserve
       tx_index: 1,
-      amount_in: "999980000",
-      amount_out: "999980000",
+      amount_in: "999960000",
+      amount_out: "999960000",
     },
     {
       swap: {
@@ -637,7 +647,7 @@ export const USDC_EthereumToOsmosisAlloy_MultiTxRoute = {
         },
       },
       tx_index: 1,
-      amount_in: "999980000",
+      amount_in: "999960000",
       amount_out: "999960000",
     },
   ],
@@ -674,7 +684,7 @@ export const USDC_EthereumToOsmosisAlloy_MultiTxMsgs = {
       multi_chain_msg: {
         chain_id: "noble-1",
         path: ["noble-1", "osmosis-1"],
-        msg: '{"source_port":"transfer","source_channel":"channel-1","token":{"denom":"uusdc","amount":"999980000"},"sender":"noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96","receiver":"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u","timeout_height":{},"timeout_timestamp":1787928465392504852,"memo":"{\\"wasm\\":{\\"contract\\":\\"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u\\",\\"msg\\":{\\"swap_and_action\\":{}}}}"}',
+        msg: '{"source_port":"transfer","source_channel":"channel-1","token":{"denom":"uusdc","amount":"999960000"},"sender":"noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96","receiver":"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u","timeout_height":{},"timeout_timestamp":1787928465392504852,"memo":"{\\"wasm\\":{\\"contract\\":\\"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u\\",\\"msg\\":{\\"swap_and_action\\":{}}}}"}',
         msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
       },
     },

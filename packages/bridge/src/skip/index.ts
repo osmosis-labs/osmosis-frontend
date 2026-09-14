@@ -1,11 +1,15 @@
 import type { Registry } from "@cosmjs/proto-signing";
 import {
   estimateGasFee,
+  getDefaultGasPrice,
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
+  simulateCosmosTxBody,
 } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import {
+  apiClient,
   EthereumChainInfo,
   getEvmRpcTransport,
   isNil,
@@ -23,7 +27,11 @@ import {
   numberToHex,
 } from "viem";
 
-import { BridgeQuoteError } from "../errors";
+import {
+  BridgeFeeExceedsBudgetMessage,
+  BridgeQuoteError,
+  BridgeRouteExpiredMessage,
+} from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
@@ -311,7 +319,8 @@ export class SkipBridgeProvider implements BridgeProvider {
 
           transactionSteps = await this.createTransactionSteps(
             fromAddress as Address,
-            msgs
+            msgs,
+            route.operations
           );
           // The first step is signed first on the from chain; expose it as
           // the plain transactionRequest so gas estimation and single-tx
@@ -704,7 +713,8 @@ export class SkipBridgeProvider implements BridgeProvider {
    */
   async createTransactionSteps(
     evmSenderAddress: Address,
-    messages: SkipMsg[]
+    messages: SkipMsg[],
+    operations?: unknown[]
   ): Promise<BridgeTransactionStep[]> {
     const steps: BridgeTransactionStep[] = [];
     for (const [index, message] of messages.entries()) {
@@ -722,6 +732,22 @@ export class SkipBridgeProvider implements BridgeProvider {
         const cosmosTx = await this.createCosmosTransaction(
           message.multi_chain_msg
         );
+        const messageData = JSON.parse(message.multi_chain_msg.msg);
+        // When the step pays fees in the asset the route delivers, the fee
+        // must fit what the route reserves for it (msgs are one per tx, so
+        // the msg's index is its tx_index in the operations).
+        const feeDenom = this.ctx.chainList.find(
+          (c) => c.chain_id === chainId
+        )?.feeCurrencies?.[0]?.coinMinimalDenom;
+        const feeBudget =
+          operations && feeDenom
+            ? this.getStepFeeBudget(
+                operations,
+                index,
+                this.getMsgSpend(messageData, feeDenom),
+                feeDenom
+              )
+            : undefined;
         // Estimate gas only for steps after the first: the first step's gas
         // is estimated by the caller through the regular quote path.
         const gasFee =
@@ -729,7 +755,8 @@ export class SkipBridgeProvider implements BridgeProvider {
             ? await this.estimateCosmosStepGasFee(
                 chainId,
                 cosmosTx,
-                JSON.parse(message.multi_chain_msg.msg).sender
+                messageData.sender,
+                feeBudget
               )
             : undefined;
         steps.push({
@@ -744,19 +771,36 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   /**
-   * Gas fee for an intermediate-chain cosmos step. The account may not exist
-   * or be funded yet (funds arrive with the prior step), so simulation
-   * failures fall back to the msg's fallback gas limit priced at the chain's
-   * default fee token. Returns undefined when no estimate is possible;
-   * signing then falls back to wallet-side estimation.
+   * Gas fee for an intermediate-chain cosmos step, sized to fit the funds
+   * available to pay it when a `feeBudget` is known.
+   *
+   * The account may not exist or be funded yet (funds arrive with the prior
+   * step), so simulation failures fall back to the msg's fallback gas limit.
+   * The fee is first priced at the chain's default (safe-side high) gas
+   * price; when the step's fee is paid from the arriving funds, the amount
+   * available for it is fixed (the route reserves a flat amount on the
+   * intermediate chain), and the safe-side price can exceed that reserve
+   * even though the chain's minimum price fits. So when the safe-priced fee
+   * exceeds the budget, it is repriced at the chain's minimum gas price and,
+   * if still over, the gas limit is capped into the budget. A capped limit
+   * below what a real simulation measured cannot succeed, so that case
+   * throws (`BridgeFeeExceedsBudgetMessage`) instead of building a
+   * transaction doomed to fail; a fallback-derived limit is a deliberate
+   * overestimate and may be capped freely. Returns undefined only when the
+   * chain's fee token can't be resolved; signing then falls back to
+   * wallet-side estimation.
    */
   async estimateCosmosStepGasFee(
     chainId: string,
     tx: CosmosBridgeTransactionRequest & { fallbackGasLimit?: number },
-    senderAddress: string
+    senderAddress: string,
+    feeBudget?: { denom: string; amount: string }
   ): Promise<CosmosBridgeTransactionRequest["gasFee"] | undefined> {
+    const gasMultiplier = 1.5;
+
+    let simulatedGas: number | undefined;
     try {
-      const txSimulation = await estimateGasFee({
+      const { gasUsed } = await simulateCosmosTxBody({
         chainId,
         chainList: this.ctx.chainList,
         body: {
@@ -767,18 +811,160 @@ export class SkipBridgeProvider implements BridgeProvider {
           ),
         },
         bech32Address: senderAddress,
-        fallbackGasLimit: tx.fallbackGasLimit,
-        // Price at the chain's default fee token without checking the
-        // account's balances, which don't hold the funds yet at quote time.
-        onlyDefaultFeeDenom: true,
       });
-      const gasFee = txSimulation.amount[0];
-      if (!gasFee) return undefined;
+      simulatedGas = gasUsed;
+    } catch {
+      // account not funded yet, LCD lagging the arrival, or simulation
+      // unavailable: fall back to the msg's conservative gas limit below
+    }
+    const baseGas = simulatedGas ?? tx.fallbackGasLimit;
+    if (!baseGas) return undefined;
+    const gasLimit = Math.round(baseGas * gasMultiplier);
+
+    // Price at the chain's default fee token without checking the account's
+    // balances, which don't hold the funds yet at quote time.
+    let feeDenom: string;
+    let safePrice: Dec;
+    try {
+      ({ feeDenom, gasPrice: safePrice } = await getDefaultGasPrice({
+        chainId,
+        chainList: this.ctx.chainList,
+      }));
+    } catch {
+      return undefined;
+    }
+
+    const priceGas = (gas: number, price: Dec) =>
+      price.mul(new Dec(gas)).roundUp().toString();
+
+    const safeFee = {
+      gas: String(gasLimit),
+      denom: feeDenom,
+      amount: priceGas(gasLimit, safePrice),
+    };
+    if (!feeBudget || feeBudget.denom !== feeDenom) return safeFee;
+
+    const budget = BigInt(feeBudget.amount);
+    if (BigInt(safeFee.amount) <= budget) return safeFee;
+
+    // The chain's minimum viable gas price: the registry's low step, except
+    // on fee-market chains where the current dynamic price is the floor.
+    const chain = this.ctx.chainList.find((c) => c.chain_id === chainId);
+    const hasFeeMarket = Boolean(chain?.features?.includes("osmosis-txfees"));
+    const lowStep = chain?.feeCurrencies?.find(
+      (fc) => fc.coinMinimalDenom === feeDenom
+    )?.gasPriceStep?.low;
+    const minPrice =
+      !hasFeeMarket && lowStep != null ? new Dec(String(lowStep)) : safePrice;
+
+    const minPricedAmount = priceGas(gasLimit, minPrice);
+    if (BigInt(minPricedAmount) <= budget) {
+      return { gas: String(gasLimit), denom: feeDenom, amount: minPricedAmount };
+    }
+
+    // Cap the gas limit into the budget at the floor price. A limit below a
+    // REAL simulation's measured gas guarantees an out-of-gas failure that
+    // still charges the fee, so refuse it; a fallback-derived limit is a
+    // deliberate overestimate and capping it is safe.
+    const cappedGas = Number(
+      new Dec(feeBudget.amount).quo(minPrice).truncate().toString()
+    );
+    if (cappedGas > 0 && (simulatedGas === undefined || cappedGas >= simulatedGas)) {
       return {
-        gas: txSimulation.gas,
-        denom: gasFee.denom,
-        amount: gasFee.amount,
+        gas: String(cappedGas),
+        denom: feeDenom,
+        amount: priceGas(cappedGas, minPrice),
       };
+    }
+
+    throw new BridgeQuoteError({
+      bridgeId: SkipBridgeProvider.ID,
+      errorType: "CreateCosmosTxError",
+      message: BridgeFeeExceedsBudgetMessage,
+    });
+  }
+
+  /**
+   * Funds available to pay an intermediate step's fee out of the assets the
+   * route itself delivers: the amount arriving on the step's chain (the
+   * previous transaction's final `amount_out`) minus what the step's built
+   * msg spends. Positive only when the route reserves something for fees
+   * (e.g. Skip holds back a flat amount on CCTP legs). Returns undefined
+   * when the step doesn't spend the fee token (fees then come from the
+   * account's own balance, checked elsewhere) or the route data doesn't
+   * carry the amounts — callers then leave the fee uncapped.
+   */
+  protected getStepFeeBudget(
+    operations: unknown[],
+    txIndex: number,
+    spend: { denom: string; amount: string } | undefined,
+    feeDenom: string
+  ): { denom: string; amount: string } | undefined {
+    if (!spend || spend.denom !== feeDenom || txIndex <= 0) return undefined;
+    let arrival: bigint | undefined;
+    for (const operation of operations) {
+      if (
+        operation &&
+        typeof operation === "object" &&
+        (operation as { tx_index?: number }).tx_index === txIndex - 1
+      ) {
+        const amountOut = (operation as { amount_out?: string }).amount_out;
+        if (typeof amountOut !== "string") continue;
+        try {
+          arrival = BigInt(amountOut);
+        } catch {
+          return undefined;
+        }
+      }
+    }
+    if (arrival === undefined) return undefined;
+    let budget: bigint;
+    try {
+      budget = arrival - BigInt(spend.amount);
+    } catch {
+      return undefined;
+    }
+    if (budget <= BigInt(0)) return undefined;
+    return { denom: spend.denom, amount: budget.toString() };
+  }
+
+  /** The amount a step's parsed msg spends in `feeDenom`, if any: the IBC
+   *  transfer token or the matching cosmwasm funds entry. */
+  protected getMsgSpend(
+    messageData: unknown,
+    feeDenom: string
+  ): { denom: string; amount: string } | undefined {
+    const data = messageData as {
+      token?: { denom?: string; amount?: string };
+      funds?: { denom?: string; amount?: string }[];
+    };
+    const candidates = data?.token ? [data.token] : data?.funds ?? [];
+    const spend = candidates.find((coin) => coin?.denom === feeDenom);
+    return spend?.denom && spend.amount
+      ? { denom: spend.denom, amount: spend.amount }
+      : undefined;
+  }
+
+  /** Balance of `denom` held by `address`, via the chain's registry LCD.
+   *  Returns undefined when it can't be determined. */
+  protected async getCosmosBalance(
+    chainId: string,
+    address: string,
+    denom: string
+  ): Promise<bigint | undefined> {
+    const rest = this.ctx.chainList.find((c) => c.chain_id === chainId)?.apis
+      ?.rest?.[0]?.address;
+    if (!rest) return undefined;
+    try {
+      const { balance } = await apiClient<{ balance?: { amount?: string } }>(
+        `${rest.replace(
+          /\/$/,
+          ""
+        )}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${encodeURIComponent(
+          denom
+        )}`
+      );
+      return BigInt(balance?.amount ?? "0");
     } catch {
       return undefined;
     }
@@ -825,16 +1011,37 @@ export class SkipBridgeProvider implements BridgeProvider {
       { [step.chainId]: step.senderAddress }
     );
 
-    const { msgs } = await this.skipClient.messages({
-      address_list: addressList,
-      source_asset_denom: routeData.source_asset_denom,
-      source_asset_chain_id: routeData.source_asset_chain_id,
-      dest_asset_denom: routeData.dest_asset_denom,
-      dest_asset_chain_id: routeData.dest_asset_chain_id,
-      amount_in: routeData.amount_in,
-      amount_out: routeData.amount_out,
-      operations: routeData.operations,
-    });
+    const { msgs } = await this.skipClient
+      .messages({
+        address_list: addressList,
+        source_asset_denom: routeData.source_asset_denom,
+        source_asset_chain_id: routeData.source_asset_chain_id,
+        dest_asset_denom: routeData.dest_asset_denom,
+        dest_asset_chain_id: routeData.dest_asset_chain_id,
+        amount_in: routeData.amount_in,
+        amount_out: routeData.amount_out,
+        // Stored routes embed relay fee quotes that expire ~30 minutes
+        // after quoting, and Skip rejects a msgs build whose submitted
+        // operations carry an expired one. Strip them so the rebuild works
+        // however long the funds took to arrive (see helper doc below).
+        operations: removeSmartRelayFeeQuotes(routeData.operations),
+      })
+      .catch((error) => {
+        // Backstop should Skip still deem the stored route expired: name
+        // the failure so the UI can show recovery copy instead of a
+        // generic error.
+        if (
+          error instanceof Error &&
+          /quote has expired/i.test(error.message)
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "CreateCosmosTxError",
+            message: BridgeRouteExpiredMessage,
+          });
+        }
+        throw error;
+      });
 
     const stepMsg = msgs.find(
       (msg): msg is { multi_chain_msg: SkipMultiChainMsg } =>
@@ -865,10 +1072,47 @@ export class SkipBridgeProvider implements BridgeProvider {
     const cosmosTx = await this.createCosmosTransaction(
       stepMsg.multi_chain_msg
     );
+
+    // Fee budget for this step: the route's reserved amount is the floor,
+    // improved by the account's live balance when that reads higher — the
+    // balance includes the arrived funds plus any top-ups the user made, so
+    // topping up the fee token genuinely raises what can be spent on fees.
+    // A short or failed balance read never shrinks the budget below the
+    // route's reserve (the read can lag the arrival).
+    const feeDenom = this.ctx.chainList.find(
+      (c) => c.chain_id === step.chainId
+    )?.feeCurrencies?.[0]?.coinMinimalDenom;
+    const spend = feeDenom
+      ? this.getMsgSpend(messageData, feeDenom)
+      : undefined;
+    let feeBudget =
+      feeDenom && spend
+        ? this.getStepFeeBudget(
+            routeData.operations,
+            msgs.indexOf(stepMsg),
+            spend,
+            feeDenom
+          )
+        : undefined;
+    if (feeDenom && spend) {
+      const balance = await this.getCosmosBalance(
+        step.chainId,
+        step.senderAddress,
+        feeDenom
+      );
+      if (balance !== undefined) {
+        const liveBudget = balance - BigInt(spend.amount);
+        if (liveBudget > BigInt(feeBudget?.amount ?? "0")) {
+          feeBudget = { denom: feeDenom, amount: liveBudget.toString() };
+        }
+      }
+    }
+
     const gasFee = await this.estimateCosmosStepGasFee(
       step.chainId,
       cosmosTx,
-      step.senderAddress
+      step.senderAddress,
+      feeBudget
     );
 
     return {
@@ -1486,6 +1730,32 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     return { urlProviderName: "Skip:Go", url };
   }
+}
+
+/**
+ * Removes every `smart_relay_fee_quote` field, at any depth, from a stored
+ * route's operations before they are replayed against the msgs endpoint.
+ *
+ * Skip attaches the quote (with an `expiration` roughly 30 minutes out) to
+ * operations its smart relay carries, and rejects any msgs request whose
+ * submitted operations hold an expired quote — even though the relay fee
+ * was already collected by the transaction that started the route.
+ * Submitting the same operations without the quote is accepted and yields
+ * identical msgs (verified against the live API), so rebuilt steps stay
+ * signable no matter how long the intermediate funds took to arrive.
+ */
+export function removeSmartRelayFeeQuotes<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(removeSmartRelayFeeQuotes) as T;
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([key]) => key !== "smart_relay_fee_quote")
+        .map(([key, entry]) => [key, removeSmartRelayFeeQuotes(entry)])
+    ) as T;
+  }
+  return value;
 }
 
 export * from "./client";
