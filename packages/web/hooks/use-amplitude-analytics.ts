@@ -27,38 +27,19 @@ export const logAmplitudeEvent = ([eventName, eventProperties]:
   if (DEBUG) {
     console.info({ name: eventName, props: eventProperties });
   }
-  // amplitudeLogEvent(eventName, eventProperties);
   useAmplitudeStore.getState().setLastEvent({ eventName, eventProperties });
 };
 
-const setUserAmplitudeProperty = (
-  _: keyof UserProperties,
-  __: UserProperties[keyof UserProperties]
-) => {
-  // const newIdentify = new Identify();
-  // newIdentify.set(key, value);
-  // identify(newIdentify);
-};
-
-/** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
+/** Do-it-all hook for logging custom events on page load or at any time. */
 export function useAmplitudeAnalytics({
   onLoadEvent,
-  init,
 }: {
   /** Log this event when the component mounts once. */
   onLoadEvent?: AmplitudeEvent;
-  /** Init analytics environment. Done once per user session. */
+  /** Kept for call-site compatibility. Amplitude init is gone. */
   init?: true;
 } = {}) {
   useEffect(() => {
-    if (init) {
-      if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
-        // amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
-        //   serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
-        // });
-      }
-    }
-
     if (onLoadEvent) {
       logAmplitudeEvent(onLoadEvent);
     }
@@ -73,7 +54,12 @@ export function useAmplitudeAnalytics({
 
   return {
     logEvent,
-    setUserProperty: setUserAmplitudeProperty,
+    setUserProperty: (
+      _: keyof UserProperties,
+      __: UserProperties[keyof UserProperties]
+    ) => {
+      // no-op: Amplitude identify was never wired back in
+    },
     getLastEvent,
   };
 }
