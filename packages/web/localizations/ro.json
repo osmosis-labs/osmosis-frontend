@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
     "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
     "reviewTrade": "Examinați comerțul",
+    "highPriceImpact": {
+      "title": "Impactul asupra prețului este ridicat",
+      "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
+    },
+    "lossAcknowledgement": "Da, înțeleg că această tranzacție ar putea cauza pierderi semnificative de valoare și doresc să continui.",
     "errors": {
       "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
       "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",

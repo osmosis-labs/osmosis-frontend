@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "Zalecana jest niższa tolerancja poślizgu.",
     "tryHigherSlippage": "Wypróbuj wyższą maksymalną tolerancję poślizgu.",
     "reviewTrade": "Przejrzyj handel",
+    "highPriceImpact": {
+      "title": "Wpływ na cenę jest wysoki",
+      "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
+    },
+    "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",

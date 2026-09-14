@@ -1412,6 +1412,11 @@
     "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
     "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
     "reviewTrade": "取引のレビュー",
+    "highPriceImpact": {
+      "title": "価格への影響が大きいです",
+      "description": "この取引は市場価格を{impact}変動させるため、表示された金額を大きく下回る額を受け取る可能性があります。"
+    },
+    "lossAcknowledgement": "はい、この取引により価値が大幅に損なわれる可能性があることを理解した上で続行します。",
     "errors": {
       "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
       "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",

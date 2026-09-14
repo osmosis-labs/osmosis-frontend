@@ -1,6 +1,6 @@
 import { Dec } from "@osmosis-labs/unit";
 
-import { LossFigures } from "~/components/bridge/loss-acknowledgement";
+import { LossFigures } from "~/components/loss-acknowledgement";
 import { HighSlippageGate } from "~/config/trade-warnings";
 
 /**
@@ -12,12 +12,7 @@ import { HighSlippageGate } from "~/config/trade-warnings";
 export const warnedSlippage = HighSlippageGate.add(new Dec(0.01));
 
 export const baseFigures = (overrides?: Partial<LossFigures>): LossFigures => ({
-  providerId: "Nomic",
-  fromChainId: "osmosis-1",
-  toChainId: "bitcoin",
-  fromAssetAddress: "factory/osmo1z.../alloyed/allBTC",
-  toAssetAddress: "sat",
-  inputAmount: "100000000",
+  identityKey: "Nomic|osmosis-1|bitcoin|allBTC|sat|100000000",
   slippage: warnedSlippage,
   priceImpact: new Dec(0),
   warnSlippage: true,

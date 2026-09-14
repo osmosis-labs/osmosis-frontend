@@ -2,8 +2,8 @@
 import { Dec } from "@osmosis-labs/unit";
 import { act, renderHook } from "@testing-library/react";
 
-import { LossFigures } from "~/components/bridge/loss-acknowledgement";
-import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
+import { LossFigures } from "~/components/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { AckReArmTolerance } from "~/config/trade-warnings";
 
 import { baseFigures as figures, warnedSlippage } from "./loss-figures.fixture";
@@ -81,14 +81,14 @@ describe("useLossAcknowledgement", () => {
     expect(result.current.warningNeedsAcknowledgement).toBe(false);
   });
 
-  it("re-arms when the provider changes", () => {
+  it("re-arms when the operation's identity changes", () => {
     const { result, rerender } = renderHook(
       ({ current }) => useLossAcknowledgement(current),
       { initialProps: { current: figures() } }
     );
 
     act(() => result.current.setLossAcknowledged(true));
-    rerender({ current: figures({ providerId: "Wormhole" }) });
+    rerender({ current: figures({ identityKey: "a-different-operation" }) });
 
     expect(result.current.hasAcknowledgedLoss).toBe(false);
   });

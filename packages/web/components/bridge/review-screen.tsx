@@ -12,6 +12,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { LossAcknowledgementCheckbox } from "~/components/loss-acknowledgement/checkbox";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -21,7 +22,6 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-import { LossAcknowledgementCheckbox } from "./loss-acknowledgement-checkbox";
 import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
@@ -193,6 +193,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
           {hasLossWarning && (
             <LossAcknowledgementCheckbox
+              label={t("transfer.lossAcknowledgement")}
               checked={quote.hasAcknowledgedLoss}
               onCheckedChange={quote.setLossAcknowledged}
             />

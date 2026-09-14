@@ -5,11 +5,11 @@ import {
   LossFigures,
   needsAcknowledgement,
   shouldResetAcknowledgement,
-} from "~/components/bridge/loss-acknowledgement";
+} from "~/components/loss-acknowledgement";
 
 /**
- * Snapshot + re-arm state around the frozen-basis model in
- * `loss-acknowledgement.ts`. Ticking snapshots the current figures as the
+ * Snapshot + re-arm state around the frozen-basis model in this directory's
+ * `index.ts`. Ticking snapshots the current figures as the
  * acknowledged basis; the basis is cleared (re-armed) whenever it goes stale
  * per `shouldResetAcknowledgement`, or when no warning is active at all — so
  * "basis exists" always means "an active warning was explicitly acknowledged
