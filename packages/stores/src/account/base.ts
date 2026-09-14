@@ -1266,9 +1266,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  // Gets the timeout height as the sum of the latest block height and an offset.
-  // If for any reason we fail to get the latest block height, we disable the timeout height by returning
-  // a string value of 0.
+  // Gets the timeout height as the sum of the latest block height and an
+  // offset. Returns 0 (no timeout) only when the chain or its RPC list is
+  // missing from the registry; a failed status query THROWS, which stops the
+  // calling transaction before signing rather than silently dropping the
+  // expiry it asked for.
   private async getTimeoutHeight(chainId: string): Promise<bigint> {
     const chain = getChain({ chainId, chainList: this.chains });
     if (!chain) return BigInt("0");
@@ -1356,9 +1358,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // Expiry-bind the transaction like the amino path always has, but only
     // when the flow opts in: without a timeout height a direct-signed
     // transaction stays broadcastable forever, so state checked before
-    // broadcast could precede an arbitrarily late submission. Zero means no
-    // expiry (proto3 omits it from the encoded body), which is also the
-    // fallback when the height lookup fails.
+    // broadcast could precede an arbitrarily late submission. Zero (the
+    // opt-out) means no expiry - proto3 omits it from the encoded body. A
+    // failed height lookup does NOT fall back to zero: getTimeoutHeight
+    // throws and the flow stops before anything is signed, which is the
+    // safe direction for a flow that opted into expiry.
     const timeoutHeight = useTimeoutHeight
       ? await this.getTimeoutHeight(chainId)
       : BigInt(0);

@@ -3,7 +3,6 @@ import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import {
   ceilCoinToDisplayDecimals,
   ChainConcentratedPoolResponse,
-  deriveTokenMinAmount,
   DivergenceTier,
   findMigration,
   formatWalletDrawCap,
@@ -15,6 +14,7 @@ import {
   poolStateFromChainResponse,
   PositionMigration,
   toleranceForPositionSize,
+  validatePositionMigrationsResponse,
 } from "../position-migrations";
 
 const USDC_NOBLE =
@@ -74,11 +74,21 @@ const check = (args: {
   migrations?: PositionMigration[];
   tiers?: DivergenceTier[];
   positionValueUsd?: number;
+  positionAmounts?: { amount0: string; amount1: string };
+  positionTicks?: { lowerTick: string; upperTick: string };
 }) =>
   getMigrationEligibility({
     migrations: args.migrations ?? [MIGRATION],
     priceDivergenceTiers: args.tiers ?? TIERS,
     positionValueUsd: args.positionValueUsd ?? 5000,
+    positionAmounts: args.positionAmounts ?? {
+      amount0: "1000000",
+      amount1: "1000000",
+    },
+    positionTicks: args.positionTicks ?? {
+      lowerTick: "-108000",
+      upperTick: "342000",
+    },
     fromPool: fromPool(args.from),
     toPool: toPool(args.to),
     lockState: args.lockState ?? unlocked,
@@ -208,6 +218,34 @@ describe("getMigrationEligibility", () => {
     expect(result).toMatchObject({ isEligible: false, reason: "notMapped" });
   });
 
+  // An out-of-range position pays out one asset only; the conversion and
+  // create legs both assume positive amounts, so offering the button would
+  // just fail after the sizing simulations with an opaque error.
+  it.each([
+    ["zero amount0", { amount0: "0", amount1: "1000000" }],
+    ["zero amount1", { amount0: "1000000", amount1: "0" }],
+    ["malformed amount", { amount0: "not-a-number", amount1: "1000000" }],
+  ])("refuses a single-sided position (%s)", (_label, positionAmounts) => {
+    expect(check({ positionAmounts })).toMatchObject({
+      isEligible: false,
+      reason: "singleSided",
+    });
+  });
+
+  // A literal zero tick would need the create flow's shift-by-one-spacing
+  // workaround, which would change the user's price range - the one promise
+  // this migration makes - so it is refused instead.
+  it.each([
+    ["zero lower tick", { lowerTick: "0", upperTick: "342000" }],
+    ["zero upper tick", { lowerTick: "-108000", upperTick: "0" }],
+    ["malformed tick", { lowerTick: "abc", upperTick: "342000" }],
+  ])("refuses a position with %s", (_label, positionTicks) => {
+    expect(check({ positionTicks })).toMatchObject({
+      isEligible: false,
+      reason: "zeroTick",
+    });
+  });
+
   describe("size-tiered price divergence", () => {
     // sqrtPrice 0.001 -> price 1e-6; 0.0010019 -> ~0.38% divergence: allowed
     // for a small position, refused for a large one.
@@ -305,6 +343,108 @@ describe("toleranceForPositionSize", () => {
       toleranceForPositionSize([{ upToUsd: 100, tolerancePercent: 0.5 }], 200)
     ).toBeUndefined();
   });
+
+  // The pricing pipeline quietly values unpriceable assets at zero, so a
+  // broken valuation must land in the STRICTEST tier, never the loosest.
+  it("gates a zero, negative, or non-finite value at the catch-all tier", () => {
+    expect(toleranceForPositionSize(TIERS, 0)).toBe(0.1);
+    expect(toleranceForPositionSize(TIERS, -5)).toBe(0.1);
+    expect(toleranceForPositionSize(TIERS, NaN)).toBe(0.1);
+    // still refusing when there is no catch-all to fall back on
+    expect(
+      toleranceForPositionSize([{ upToUsd: 100, tolerancePercent: 0.5 }], 0)
+    ).toBeUndefined();
+  });
+});
+
+describe("validatePositionMigrationsResponse", () => {
+  const VALID = {
+    priceDivergenceTiers: TIERS,
+    minAmountTolerance: 1,
+    migrations: [MIGRATION],
+  };
+
+  it("passes the shape fe-content actually publishes", () => {
+    expect(validatePositionMigrationsResponse(VALID)).toBe(VALID);
+  });
+
+  it("refuses undefined and non-objects", () => {
+    expect(validatePositionMigrationsResponse(undefined)).toBeUndefined();
+  });
+
+  // At or past 100 every simulated minimum collapses to one base unit,
+  // disabling the only onchain protection the transaction carries.
+  it.each([[100], [150], [-1], [NaN]])(
+    "refuses minAmountTolerance %p",
+    (minAmountTolerance) => {
+      expect(
+        validatePositionMigrationsResponse({ ...VALID, minAmountTolerance })
+      ).toBeUndefined();
+    }
+  );
+
+  it("refuses a catch-all tier that is not last", () => {
+    // The tier lookup walks in order: an early catch-all would gate every
+    // position at the loosest tolerance.
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [
+          { tolerancePercent: 0.5 },
+          { upToUsd: 100, tolerancePercent: 0.1 },
+        ],
+      })
+    ).toBeUndefined();
+  });
+
+  it("refuses unsorted tier bounds", () => {
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [
+          { upToUsd: 500, tolerancePercent: 0.5 },
+          { upToUsd: 100, tolerancePercent: 0.3 },
+          { tolerancePercent: 0.1 },
+        ],
+      })
+    ).toBeUndefined();
+  });
+
+  it("refuses tolerances that increase down the list", () => {
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [
+          { upToUsd: 100, tolerancePercent: 0.1 },
+          { tolerancePercent: 0.5 },
+        ],
+      })
+    ).toBeUndefined();
+  });
+
+  it("refuses a missing catch-all and empty tiers", () => {
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [{ upToUsd: 100, tolerancePercent: 0.5 }],
+      })
+    ).toBeUndefined();
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        priceDivergenceTiers: [],
+      })
+    ).toBeUndefined();
+  });
+
+  it("refuses malformed migration entries", () => {
+    expect(
+      validatePositionMigrationsResponse({
+        ...VALID,
+        migrations: [{ ...MIGRATION, fromPoolId: "1926" as unknown as number }],
+      })
+    ).toBeUndefined();
+  });
 });
 
 describe("getPriceDivergencePercent", () => {
@@ -323,55 +463,6 @@ describe("getPriceDivergencePercent", () => {
       toPool: toPool(),
     });
     expect(divergence.isZero()).toBe(true);
-  });
-});
-
-describe("deriveTokenMinAmount", () => {
-  it("floors the simulated amount by the tolerance", () => {
-    const min = deriveTokenMinAmount({
-      simulatedAmount: new Int(1_000_000),
-      minAmountTolerance: 1,
-    });
-    expect(min.toString()).toBe("990000");
-  });
-
-  it("never exceeds the simulated amount", () => {
-    const simulatedAmount = new Int(1_000_000);
-    const min = deriveTokenMinAmount({
-      simulatedAmount,
-      minAmountTolerance: 1,
-    });
-    expect(min.lte(simulatedAmount)).toBe(true);
-  });
-
-  // A zero minimum is the silent-success case: the create would succeed at
-  // any price rather than reverting the batched withdraw with it.
-  it("never returns zero for a positive deposit", () => {
-    const min = deriveTokenMinAmount({
-      simulatedAmount: new Int(1),
-      minAmountTolerance: 1,
-    });
-    expect(min.toString()).toBe("1");
-  });
-
-  it("returns zero only for a zero deposit", () => {
-    const min = deriveTokenMinAmount({
-      simulatedAmount: new Int(0),
-      minAmountTolerance: 1,
-    });
-    expect(min.toString()).toBe("0");
-  });
-
-  it("is looser for a larger tolerance", () => {
-    const tight = deriveTokenMinAmount({
-      simulatedAmount: new Int(1_000_000),
-      minAmountTolerance: 0.1,
-    });
-    const loose = deriveTokenMinAmount({
-      simulatedAmount: new Int(1_000_000),
-      minAmountTolerance: 5,
-    });
-    expect(loose.lt(tight)).toBe(true);
   });
 });
 
@@ -593,5 +684,25 @@ describe("poolStateFromChainResponse", () => {
       poolStateFromChainResponse({ ...CHAIN_POOL, spread_factor: undefined })
     ).toBeUndefined();
     expect(poolStateFromChainResponse(undefined)).toBeUndefined();
+  });
+
+  // A squared negative would masquerade as a valid price in the divergence
+  // check, and a malformed one must read as "cannot check", not throw.
+  it("refuses malformed, zero, and negative sqrt prices", () => {
+    expect(
+      poolStateFromChainResponse({
+        ...CHAIN_POOL,
+        current_sqrt_price: "not-a-price",
+      })
+    ).toBeUndefined();
+    expect(
+      poolStateFromChainResponse({ ...CHAIN_POOL, current_sqrt_price: "-1.5" })
+    ).toBeUndefined();
+    expect(
+      poolStateFromChainResponse({
+        ...CHAIN_POOL,
+        current_sqrt_price: "0.000000000000000000",
+      })
+    ).toBeUndefined();
   });
 });

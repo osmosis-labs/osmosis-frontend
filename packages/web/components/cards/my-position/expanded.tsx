@@ -141,8 +141,20 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     } = usePositionMigrationForPosition({
       poolId,
       // The divergence gate tightens with position size, so it needs the
-      // value being moved, not just the pool.
+      // value being moved, not just the pool. A zero here (which includes a
+      // broken price pipeline) gates at the strictest tier downstream.
       positionValueUsd: Number(currentValue?.toDec().toString() ?? "0"),
+      // Both sides and both ticks are checked: out-of-range (single-sided)
+      // positions and literal zero ticks are refused at eligibility rather
+      // than failing after the sizing simulations.
+      positionAmounts: {
+        amount0: position.position.asset0.amount,
+        amount1: position.position.asset1.amount,
+      },
+      positionTicks: {
+        lowerTick: position.position.position.lower_tick,
+        upperTick: position.position.position.upper_tick,
+      },
       // Missing or errored details must read as locked, never as unlocked.
       lockStateKnown: positionDetails !== undefined && !hasPositionDetailsError,
       isUnbonding: Boolean(isUnbonding),

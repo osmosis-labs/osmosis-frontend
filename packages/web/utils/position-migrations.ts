@@ -75,6 +75,19 @@ export type MigrationIneligibilityReason =
   /** One or both pools are not concentrated liquidity. */
   | "notConcentrated"
   /**
+   * The position holds only one of its two assets (price outside its range),
+   * so the conversion and create legs cannot both be sized. Migrating these
+   * needs a dedicated single-sided path; until then they are refused rather
+   * than failing after the sizing simulations.
+   */
+  | "singleSided"
+  /**
+   * A literal zero tick. The existing create flow dodges a zero-tick
+   * serialization quirk by shifting the tick one spacing, but shifting would
+   * break the identical-range promise this migration makes, so refuse.
+   */
+  | "zeroTick"
+  /**
    * Tick spacing differs, so the source ticks cannot be copied as raw
    * integers. Re-deriving them through price is deliberately not implemented.
    */
@@ -157,17 +170,86 @@ export const findMigration = ({
  * `undefined` for an empty or malformed tier list (no catch-all), which the
  * caller must treat as "cannot evaluate the gate" and refuse - defaulting to
  * any tolerance here would let a config mistake loosen the gate silently.
+ *
+ * A value that is zero, negative, or not finite gates at the CATCH-ALL
+ * (strictest) tier: the pricing pipeline quietly values unpriceable assets
+ * at zero, and a broken valuation must tighten the gate, not relax it into
+ * the small-position tier. Real positions worth fractions of a dollar still
+ * price above zero, so nothing legitimate lands here.
  */
 export const toleranceForPositionSize = (
   tiers: DivergenceTier[] | undefined,
   positionValueUsd: number
 ): number | undefined => {
   if (!tiers?.length) return undefined;
+  if (!(positionValueUsd > 0))
+    return tiers.find((tier) => tier.upToUsd === undefined)?.tolerancePercent;
   for (const tier of tiers) {
     if (tier.upToUsd === undefined) return tier.tolerancePercent;
     if (positionValueUsd < tier.upToUsd) return tier.tolerancePercent;
   }
   return undefined;
+};
+
+/**
+ * Validates the fe-content migrations file before anything trusts it. The
+ * file is edited live from `main` with no deploy step, so the invariants its
+ * own repo tests enforce are re-checked here at runtime and a violation
+ * fails closed (feature off) rather than weakening the gates:
+ *
+ * - tiers ascend strictly by bound, with exactly one catch-all, last;
+ * - tolerances never increase down the list (an early catch-all or a loose
+ *   large-position tier would override the strict ones);
+ * - `minAmountTolerance` is a sane percentage - at or past 100 it would
+ *   floor every onchain minimum to one base unit, disabling the only
+ *   protection the transaction carries.
+ */
+export const validatePositionMigrationsResponse = (
+  data: PositionMigrationsResponse | undefined
+): PositionMigrationsResponse | undefined => {
+  if (!data || typeof data !== "object") return undefined;
+  const { migrations, priceDivergenceTiers: tiers, minAmountTolerance } = data;
+
+  if (
+    typeof minAmountTolerance !== "number" ||
+    !Number.isFinite(minAmountTolerance) ||
+    minAmountTolerance < 0 ||
+    minAmountTolerance >= 100
+  )
+    return undefined;
+
+  if (!Array.isArray(tiers) || tiers.length === 0) return undefined;
+  let previousBound = 0;
+  let previousTolerance = Infinity;
+  for (const [index, tier] of tiers.entries()) {
+    if (
+      typeof tier?.tolerancePercent !== "number" ||
+      !(tier.tolerancePercent > 0) ||
+      tier.tolerancePercent > previousTolerance
+    )
+      return undefined;
+    previousTolerance = tier.tolerancePercent;
+    if (index === tiers.length - 1) {
+      if (tier.upToUsd !== undefined) return undefined;
+    } else {
+      if (typeof tier.upToUsd !== "number" || !(tier.upToUsd > previousBound))
+        return undefined;
+      previousBound = tier.upToUsd;
+    }
+  }
+
+  if (!Array.isArray(migrations)) return undefined;
+  for (const migration of migrations) {
+    if (
+      typeof migration?.fromPoolId !== "number" ||
+      typeof migration?.toPoolId !== "number" ||
+      typeof migration?.spreadFactor !== "string" ||
+      typeof migration?.tickSpacing !== "number"
+    )
+      return undefined;
+  }
+
+  return data;
 };
 
 /**
@@ -217,6 +299,8 @@ export const getMigrationEligibility = ({
   migrations,
   priceDivergenceTiers,
   positionValueUsd,
+  positionAmounts,
+  positionTicks,
   fromPool,
   toPool,
   lockState,
@@ -227,6 +311,14 @@ export const getMigrationEligibility = ({
   priceDivergenceTiers: DivergenceTier[] | undefined;
   /** USD value of the position being migrated; selects the divergence tier. */
   positionValueUsd: number;
+  /**
+   * Raw base-unit amounts each side of the position currently holds. A zero
+   * side means the price sits outside the position's range and a withdrawal
+   * pays out only one asset, which this flow cannot size.
+   */
+  positionAmounts: { amount0: string; amount1: string };
+  /** The position's raw ticks, refused when either is literally zero. */
+  positionTicks: { lowerTick: string; upperTick: string };
   fromPool: MigrationPoolState;
   toPool: MigrationPoolState | undefined;
   lockState: PositionLockState;
@@ -245,6 +337,41 @@ export const getMigrationEligibility = ({
 
   if (!isPositionUnlocked(lockState))
     return { isEligible: false, reason: "positionLocked" };
+
+  /* Both sides must be positive: an out-of-range position pays out one asset
+     only, and the conversion and create messages each assume a positive
+     amount for their side - offering the button would just fail after the
+     sizing simulations with an opaque error. A malformed amount refuses the
+     same way: an amount that cannot be verified positive is not positive. */
+  const isPositiveAmount = (amount: string) => {
+    try {
+      return new Int(amount).isPositive();
+    } catch {
+      return false;
+    }
+  };
+  if (
+    !isPositiveAmount(positionAmounts.amount0) ||
+    !isPositiveAmount(positionAmounts.amount1)
+  )
+    return { isEligible: false, reason: "singleSided" };
+
+  /* The existing create flow shifts a literal zero tick by one spacing to
+     dodge a serialization quirk; shifting would silently change the price
+     range, breaking the one promise this migration makes, so a zero tick is
+     refused instead. Unparsable ticks refuse the same way. */
+  const isZeroOrInvalidTick = (tick: string) => {
+    try {
+      return new Int(tick).isZero();
+    } catch {
+      return true;
+    }
+  };
+  if (
+    isZeroOrInvalidTick(positionTicks.lowerTick) ||
+    isZeroOrInvalidTick(positionTicks.upperTick)
+  )
+    return { isEligible: false, reason: "zeroTick" };
 
   if (fromPool.type !== "concentrated" || toPool.type !== "concentrated")
     return { isEligible: false, reason: "notConcentrated" };
@@ -308,43 +435,6 @@ export const getMigrationEligibility = ({
     divergencePercent,
     appliedTolerancePercent: tolerancePercent,
   };
-};
-
-/**
- * Floors a simulated deposit amount into the `tokenMinAmount` the create
- * message carries.
- *
- * These minimums are the only onchain protection: with them the create fails
- * and the batched withdraw reverts with it, leaving the original position
- * untouched, while at zero a mispriced create succeeds silently. They are
- * derived from simulated amounts rather than from the price tolerance because
- * the two are different quantities: for a fixed tick range an adverse price
- * move reduces one side's required amount while raising the other's, so a
- * single percentage of price would be too tight on one side and too loose on
- * the other.
- *
- * The tolerance is therefore looser than the price gate on purpose. It only
- * absorbs pool state moving between simulation and broadcast; the gate is
- * what judges whether the destination is soundly priced.
- */
-export const deriveTokenMinAmount = ({
-  simulatedAmount,
-  minAmountTolerance,
-}: {
-  simulatedAmount: Int;
-  minAmountTolerance: number;
-}) => {
-  if (!simulatedAmount.isPositive()) return new Int(0);
-
-  const kept = new Dec(simulatedAmount).mul(
-    new Dec(1).sub(new Dec(minAmountTolerance.toString()).quo(new Dec(100)))
-  );
-
-  // Never round up to more than was simulated, which would revert on the
-  // nose, and never return 0 for a position that did deposit something: a
-  // zero minimum is exactly the silent-success case these guard against.
-  const floored = kept.truncate();
-  return floored.isPositive() ? floored : new Int(1);
 };
 
 /**
@@ -434,9 +524,11 @@ const CONCENTRATED_POOL_TYPE_URL =
  * take, or `undefined` when it is not a concentrated pool carrying every
  * needed field - which callers must treat as "cannot evaluate" and refuse.
  *
- * The chain reports `current_sqrt_price` as a 36-decimal big-dec string,
- * which the 18-decimal `Dec` refuses to parse, so the fraction is truncated
- * to 18 digits: sub-attoprecision cannot move a percentage-scale gate.
+ * The chain reports `current_sqrt_price` as a 36-decimal big-dec string;
+ * `Dec` keeps the first 18 fractional digits and ignores the rest (see
+ * unit/decimal.ts), and sub-attoprecision cannot move a percentage-scale
+ * gate. An unparsable or non-positive price maps to `undefined`: a squared
+ * negative would masquerade as a valid price in the divergence check.
  */
 export const poolStateFromChainResponse = (
   pool: ChainConcentratedPoolResponse | undefined
@@ -453,10 +545,13 @@ export const poolStateFromChainResponse = (
   )
     return undefined;
 
-  const [whole, fraction = ""] = pool.current_sqrt_price.split(".");
-  const sqrtPrice = fraction
-    ? `${whole}.${fraction.slice(0, 18)}`
-    : pool.current_sqrt_price;
+  let currentSqrtPrice: Dec;
+  try {
+    currentSqrtPrice = new Dec(pool.current_sqrt_price);
+  } catch {
+    return undefined;
+  }
+  if (!currentSqrtPrice.isPositive()) return undefined;
 
   return {
     id: pool.id,
@@ -465,7 +560,7 @@ export const poolStateFromChainResponse = (
     token1: pool.token1,
     spreadFactor: pool.spread_factor,
     tickSpacing: Number(pool.tick_spacing),
-    currentSqrtPrice: new Dec(sqrtPrice),
+    currentSqrtPrice,
   };
 };
 

@@ -325,7 +325,11 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         // stat block shows which one the user is looking at.
         !isEligible ||
         isPoolDataRefetching ||
-        !balancesReady,
+        !balancesReady ||
+        // The disclosure row hides when the draw bound cannot be computed;
+        // per its contract, a bound that cannot be shown refuses the action
+        // rather than proceeding undisclosed.
+        !maxWalletDraw,
       onClick: migrate,
       children: t("clPositions.migrateLiquidity"),
     },
@@ -412,8 +416,15 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
           </div>
           {maxWalletDraw && (
             <div className="flex items-center justify-between">
+              {/* The ranged figure is a true maximum (range-edge ceiling);
+                  the wide-range figure is an estimate, and its label must
+                  not claim otherwise. */}
               <span className="body2 text-osmoverse-300">
-                {t("clPositions.migrateMaxWalletDraw")}
+                {t(
+                  maxWalletDraw.isInformative
+                    ? "clPositions.migrateMaxWalletDraw"
+                    : "clPositions.migrateMaxWalletDrawEstimate"
+                )}
               </span>
               {/* Range-edge maxima, deliberately NOT clamped to a wallet
                   balance: a polled balance is only ever a snapshot, and

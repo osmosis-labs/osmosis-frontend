@@ -1170,6 +1170,22 @@ export class OsmosisAccountImpl {
             this.queries?.queryAccountsPositions
               .get(this.address)
               .waitFreshResponse();
+            // The migration moves wallet funds too - buffered leftovers and
+            // dust return to it, and a drift shortfall draws from it - so
+            // refresh the involved denoms rather than leaving stale balances
+            // until something else refetches.
+            this.queriesStore
+              .get(this.chainId)
+              .queryBalances.getQueryBech32Address(this.address)
+              .balances.forEach((bal) => {
+                const denom = bal.currency.coinMinimalDenom;
+                if (
+                  denom === usdcConversion.fromDenom ||
+                  denom === usdcConversion.toDenom ||
+                  denom === assetDenom
+                )
+                  bal.waitFreshResponse();
+              });
           }
           onFulfill?.(tx);
         },

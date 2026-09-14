@@ -1,4 +1,5 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
+import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import {
   createMultiEndpointClient,
@@ -11,7 +12,10 @@ import {
   USDC_ALLOYED_DENOM,
   USDC_NOBLE_DENOM,
 } from "~/config/position-migration";
-import { usePositionMigrations } from "~/hooks/use-position-migrations";
+import {
+  POSITION_MIGRATIONS_FILE_PATH,
+  usePositionMigrations,
+} from "~/hooks/use-position-migrations";
 import {
   ChainConcentratedPoolResponse,
   findMigration,
@@ -19,6 +23,8 @@ import {
   MigrationEligibility,
   MigrationPoolState,
   poolStateFromChainResponse,
+  PositionMigrationsResponse,
+  validatePositionMigrationsResponse,
 } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
@@ -75,6 +81,8 @@ const fetchChainPoolState = async (
 export const usePositionMigrationForPosition = ({
   poolId,
   positionValueUsd,
+  positionAmounts,
+  positionTicks,
   lockStateKnown,
   isUnbonding,
   isSuperfluidStaked,
@@ -83,6 +91,13 @@ export const usePositionMigrationForPosition = ({
   poolId: string;
   /** USD value of the position; the divergence gate tightens with size. */
   positionValueUsd: number;
+  /**
+   * Raw base-unit amounts each side currently holds; a zero side means the
+   * position sits outside its range and is refused (single-sided).
+   */
+  positionAmounts: { amount0: string; amount1: string };
+  /** The position's raw ticks; a literal zero tick is refused. */
+  positionTicks: { lowerTick: string; upperTick: string };
   /**
    * Whether the lock flags below come from successfully loaded position
    * details. While they are missing or errored, nothing is offered: a locked
@@ -95,6 +110,11 @@ export const usePositionMigrationForPosition = ({
 }) => {
   const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
+
+  // Destructured to scalars so the object literals callers pass each render
+  // do not churn the revalidate callback's identity.
+  const { amount0, amount1 } = positionAmounts;
+  const { lowerTick, upperTick } = positionTicks;
 
   // Only the mapped source pools ever reach the destination query, so an
   // unmapped position costs no extra request.
@@ -112,22 +132,42 @@ export const usePositionMigrationForPosition = ({
   const revalidate = useCallback(async (): Promise<
     MigrationEligibility | undefined
   > => {
-    if (
-      !mapped ||
-      !lockStateKnown ||
-      priceDivergenceTiers === undefined ||
-      minAmountTolerance === undefined
-    )
+    if (!mapped || !lockStateKnown) return undefined;
+
+    /* The map is the kill switch and this runs right before real money
+       moves: read the config fresh rather than from the render cache, so a
+       pulled or corrupted entry stops a session already sitting in the
+       modal, not just the next page load. */
+    let freshConfig: PositionMigrationsResponse | undefined;
+    try {
+      freshConfig = validatePositionMigrationsResponse(
+        await queryOsmosisCMS<PositionMigrationsResponse>({
+          filePath: POSITION_MIGRATIONS_FILE_PATH,
+        })
+      );
+    } catch {
       return undefined;
+    }
+    if (!freshConfig) return undefined;
+    const freshMapped = findMigration({
+      migrations: freshConfig.migrations,
+      fromPoolId: poolId,
+    });
+    // The pairing this flow was opened for must still be the live pairing.
+    if (!freshMapped || freshMapped.toPoolId !== mapped.toPoolId)
+      return undefined;
+
     const [fromPool, toPool] = await Promise.all([
       fetchChainPoolState(poolId),
       fetchChainPoolState(mapped.toPoolId.toString()),
     ]);
     if (!fromPool || !toPool) return undefined;
     return getMigrationEligibility({
-      migrations,
-      priceDivergenceTiers,
+      migrations: freshConfig.migrations,
+      priceDivergenceTiers: freshConfig.priceDivergenceTiers,
       positionValueUsd,
+      positionAmounts: { amount0, amount1 },
+      positionTicks: { lowerTick, upperTick },
       fromPool,
       toPool,
       lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
@@ -137,10 +177,11 @@ export const usePositionMigrationForPosition = ({
   }, [
     mapped,
     lockStateKnown,
-    migrations,
-    priceDivergenceTiers,
-    minAmountTolerance,
     positionValueUsd,
+    amount0,
+    amount1,
+    lowerTick,
+    upperTick,
     poolId,
     isUnbonding,
     isSuperfluidStaked,
@@ -204,6 +245,8 @@ export const usePositionMigrationForPosition = ({
     migrations,
     priceDivergenceTiers,
     positionValueUsd,
+    positionAmounts: { amount0, amount1 },
+    positionTicks: { lowerTick, upperTick },
     fromPool,
     toPool,
     lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
@@ -248,6 +291,17 @@ const toMigrationPoolState = (pool: {
   )
     return undefined;
 
+  // A malformed price must read as "cannot check" rather than throw
+  // mid-render, and a non-positive one must not masquerade as valid once the
+  // divergence check squares it.
+  let currentSqrtPrice: Dec;
+  try {
+    currentSqrtPrice = new Dec(raw.current_sqrt_price);
+  } catch {
+    return undefined;
+  }
+  if (!currentSqrtPrice.isPositive()) return undefined;
+
   return {
     id: pool.id,
     type: pool.type,
@@ -257,6 +311,6 @@ const toMigrationPoolState = (pool: {
     // on how a formatter renders the rate.
     spreadFactor: raw.spread_factor,
     tickSpacing: Number(raw.tick_spacing),
-    currentSqrtPrice: new Dec(raw.current_sqrt_price),
+    currentSqrtPrice,
   };
 };
