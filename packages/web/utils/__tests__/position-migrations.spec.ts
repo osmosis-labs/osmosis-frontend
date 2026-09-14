@@ -9,6 +9,7 @@ import {
   getMigrationEligibility,
   getPriceDivergencePercent,
   getRangeMaxWithdrawAmounts,
+  isMigrationRevalidationCurrent,
   isPositionUnlocked,
   MigrationPoolState,
   poolStateFromChainResponse,
@@ -444,6 +445,40 @@ describe("validatePositionMigrationsResponse", () => {
         migrations: [{ ...MIGRATION, fromPoolId: "1926" as unknown as number }],
       })
     ).toBeUndefined();
+  });
+});
+
+describe("isMigrationRevalidationCurrent", () => {
+  const eligible = {
+    eligibility: {
+      isEligible: true,
+      migration: MIGRATION,
+      divergencePercent: new Dec(0),
+      appliedTolerancePercent: 0.1,
+    } as const,
+    minAmountTolerance: 1,
+  };
+
+  it("accepts the exact tolerance used to build the transaction", () => {
+    expect(isMigrationRevalidationCurrent(eligible, 1)).toBe(true);
+  });
+
+  it("refuses either a tighter or looser live tolerance", () => {
+    expect(isMigrationRevalidationCurrent(eligible, 0.5)).toBe(false);
+    expect(isMigrationRevalidationCurrent(eligible, 2)).toBe(false);
+  });
+
+  it("refuses a missing or ineligible final check", () => {
+    expect(isMigrationRevalidationCurrent(undefined, 1)).toBe(false);
+    expect(
+      isMigrationRevalidationCurrent(
+        {
+          eligibility: { isEligible: false, reason: "priceDivergence" },
+          minAmountTolerance: 1,
+        },
+        1
+      )
+    ).toBe(false);
   });
 });
 

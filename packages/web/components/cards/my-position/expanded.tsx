@@ -496,7 +496,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 isOpen={true}
                 position={position}
                 toPoolId={mappedMigration.toPoolId.toString()}
-                minAmountTolerance={minAmountTolerance}
                 divergencePercent={migrationEligibility.divergencePercent}
                 appliedTolerancePercent={
                   migrationEligibility.appliedTolerancePercent

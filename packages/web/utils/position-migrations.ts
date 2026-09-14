@@ -129,6 +129,24 @@ export type MigrationEligibility =
       appliedTolerancePercent?: number;
     };
 
+/** A fresh eligibility result and the safety value it was evaluated with. */
+export interface MigrationRevalidation {
+  eligibility: MigrationEligibility;
+  minAmountTolerance: number;
+}
+
+/**
+ * The message minimums are fixed before the wallet opens. A later safety
+ * check is current only when the migration is still eligible and the live CMS
+ * tolerance is exactly the value used to build those minimums.
+ */
+export const isMigrationRevalidationCurrent = (
+  revalidation: MigrationRevalidation | undefined,
+  expectedMinAmountTolerance: number
+) =>
+  revalidation?.eligibility.isEligible === true &&
+  revalidation.minAmountTolerance === expectedMinAmountTolerance;
+
 /**
  * Lock state as derived per position by the concentrated-liquidity queries.
  *

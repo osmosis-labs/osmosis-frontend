@@ -38,7 +38,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   swapped: true,
   onrampmoney: true,
   polarisBanner: false,
-  positionMigration: false,
+  positionMigration: true,
 };
 
 export function useFeatureFlags() {

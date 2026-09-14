@@ -1,5 +1,4 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import {
   createMultiEndpointClient,
@@ -13,7 +12,7 @@ import {
   USDC_NOBLE_DENOM,
 } from "~/config/position-migration";
 import {
-  POSITION_MIGRATIONS_FILE_PATH,
+  queryLatestPositionMigrations,
   usePositionMigrations,
 } from "~/hooks/use-position-migrations";
 import {
@@ -22,6 +21,7 @@ import {
   getMigrationEligibility,
   MigrationEligibility,
   MigrationPoolState,
+  MigrationRevalidation,
   poolStateFromChainResponse,
   PositionMigrationsResponse,
   validatePositionMigrationsResponse,
@@ -130,7 +130,7 @@ export const usePositionMigrationForPosition = ({
    * ineligible.
    */
   const revalidate = useCallback(async (): Promise<
-    MigrationEligibility | undefined
+    MigrationRevalidation | undefined
   > => {
     if (!mapped || !lockStateKnown) return undefined;
 
@@ -141,9 +141,7 @@ export const usePositionMigrationForPosition = ({
     let freshConfig: PositionMigrationsResponse | undefined;
     try {
       freshConfig = validatePositionMigrationsResponse(
-        await queryOsmosisCMS<PositionMigrationsResponse>({
-          filePath: POSITION_MIGRATIONS_FILE_PATH,
-        })
+        await queryLatestPositionMigrations()
       );
     } catch {
       return undefined;
@@ -162,7 +160,7 @@ export const usePositionMigrationForPosition = ({
       fetchChainPoolState(mapped.toPoolId.toString()),
     ]);
     if (!fromPool || !toPool) return undefined;
-    return getMigrationEligibility({
+    const eligibility: MigrationEligibility = getMigrationEligibility({
       migrations: freshConfig.migrations,
       priceDivergenceTiers: freshConfig.priceDivergenceTiers,
       positionValueUsd,
@@ -174,6 +172,10 @@ export const usePositionMigrationForPosition = ({
       fromUsdcDenom: USDC_NOBLE_DENOM,
       toUsdcDenom: USDC_ALLOYED_DENOM,
     });
+    return {
+      eligibility,
+      minAmountTolerance: freshConfig.minAmountTolerance,
+    };
   }, [
     mapped,
     lockStateKnown,

@@ -18,7 +18,8 @@ import { useStore } from "~/stores";
 import {
   formatWalletDrawCap,
   getRangeMaxWithdrawAmounts,
-  MigrationEligibility,
+  isMigrationRevalidationCurrent,
+  MigrationRevalidation,
 } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
@@ -35,7 +36,6 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   {
     position: UserPosition;
     toPoolId: string;
-    minAmountTolerance: number;
     /** Live price difference between the pools when the modal opened. */
     divergencePercent: Dec;
     /** The size-tier tolerance this position was judged against. */
@@ -58,13 +58,12 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
      * and the simulations that size the transaction would otherwise accept
      * whatever the pools have drifted to as their baseline.
      */
-    revalidate: () => Promise<MigrationEligibility | undefined>;
+    revalidate: () => Promise<MigrationRevalidation | undefined>;
   } & ModalBaseProps
 > = observer((props) => {
   const {
     position,
     toPoolId,
-    minAmountTolerance,
     divergencePercent,
     appliedTolerancePercent,
     isEligible,
@@ -261,17 +260,18 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
          before the transaction is signed, because the simulations themselves
          take seconds. */
       const fresh = await revalidate();
-      if (!fresh?.isEligible) {
+      if (!fresh?.eligibility.isEligible) {
         setError(t("clPositions.migrateRevalidationFailed"));
         return;
       }
+      const freshMinAmountTolerance = fresh.minAmountTolerance;
 
       await account.osmosis.sendMigrateConcentratedLiquidityPositionMsg(
         positionId,
         toPoolId,
         new Int(rawPosition.lower_tick),
         new Int(rawPosition.upper_tick),
-        minAmountTolerance,
+        freshMinAmountTolerance,
         {
           fromDenom: USDC_NOBLE_DENOM,
           toDenom: USDC_ALLOYED_DENOM,
@@ -279,7 +279,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
         },
         async () => {
           const finalCheck = await revalidate();
-          if (!finalCheck?.isEligible)
+          if (
+            !isMigrationRevalidationCurrent(finalCheck, freshMinAmountTolerance)
+          )
             throw new Error(t("clPositions.migrateRevalidationFailed"));
         },
         undefined,
@@ -308,7 +310,6 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     toPoolId,
     rawPosition.lower_tick,
     rawPosition.upper_tick,
-    minAmountTolerance,
     apiUtils,
     props,
     routeAwayIfPoolEmptied,
