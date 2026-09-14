@@ -1,4 +1,4 @@
-import type { StdFee } from "@cosmjs/launchpad";
+import type { StdFee } from "@cosmjs/amino";
 import { DenomHelper, toGenerator } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
