@@ -56,8 +56,70 @@ import {
   SkipMsg,
   SkipMultiChainMsg,
   SkipMultiTxRouteData,
+  SkipOperation,
   SkipRouteResponse,
 } from "./types";
+
+/**
+ * Restore the invariant that the Osmosis leg must produce at least what the
+ * destination swap is going to spend.
+ *
+ * Skip scales the Osmosis leg's `min_asset` down by the slippage tolerance, but
+ * pins the destination swap's `amount_in` to the untoleranced quote — it does
+ * not move with `slippage_tolerance_percent` at all. So a pool output anywhere
+ * in the gap between the two clears the Osmosis leg and still leaves the
+ * executor holding less than its calldata spends. The destination swap then
+ * cannot run, and the bridged token is refunded on the far chain in a wrapped
+ * denom most wallets do not display: the invisible refund MTN-252 exists to
+ * remove. Verified on chain 2026-09-14 — a 13-unit shortfall on the Osmosis leg
+ * was enough, against a destination bound with 0.34% to spare.
+ *
+ * Raising `min_asset` to `amount_in + fee_amount` is exactly the value Skip
+ * itself returns at zero tolerance, so the tolerance now reaches the
+ * destination bound only. An Osmosis leg that cannot cover the destination
+ * fails on Osmosis, visibly and with nothing bridged, instead of stranding a
+ * wrapped token the user has to be told how to find.
+ */
+export function raiseMinAssetToDestinationInput(
+  msgs: SkipMsg[],
+  operations: SkipOperation[]
+): SkipMsg[] {
+  const evmSwap = operations.find(
+    (operation): operation is Extract<SkipOperation, { evm_swap: unknown }> =>
+      "evm_swap" in operation
+  )?.evm_swap;
+  const axelarTransfer = operations.find(
+    (
+      operation
+    ): operation is Extract<SkipOperation, { axelar_transfer: unknown }> =>
+      "axelar_transfer" in operation
+  )?.axelar_transfer;
+
+  if (!evmSwap || !axelarTransfer) return msgs;
+
+  const required =
+    BigInt(evmSwap.amount_in) + BigInt(axelarTransfer.fee_amount);
+
+  return msgs.map((message) => {
+    if (!("multi_chain_msg" in message)) return message;
+
+    const parsed = JSON.parse(message.multi_chain_msg.msg);
+    const minAsset = parsed?.msg?.swap_and_action?.min_asset?.native;
+
+    if (!minAsset?.amount || BigInt(minAsset.amount) >= required) {
+      return message;
+    }
+
+    minAsset.amount = required.toString();
+
+    return {
+      multi_chain_msg: {
+        ...message.multi_chain_msg,
+        msg: JSON.stringify(parsed),
+      },
+    };
+  });
+}
 
 export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";
@@ -309,6 +371,11 @@ export class SkipBridgeProvider implements BridgeProvider {
           slippage_tolerance_percent: slippage.toString(),
         });
 
+        const raisedMsgs = raiseMinAssetToDestinationInput(
+          msgs,
+          route.operations
+        );
+
         const isMultiTx = route.txs_required > 1 || msgs.length > 1;
 
         let transactionRequest:
@@ -330,7 +397,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
           transactionSteps = await this.createTransactionSteps(
             fromAddress as Address,
-            msgs,
+            raisedMsgs,
             route.operations
           );
           // The first step is signed first on the from chain; expose it as
@@ -357,7 +424,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           transactionRequest = await this.createTransaction(
             fromChain.chainId.toString(),
             fromAddress as Address,
-            msgs
+            raisedMsgs
           );
         }
 

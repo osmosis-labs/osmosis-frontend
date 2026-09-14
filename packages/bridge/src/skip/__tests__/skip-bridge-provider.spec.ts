@@ -18,7 +18,7 @@ import {
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../../interface";
-import { SkipBridgeProvider } from "..";
+import { raiseMinAssetToDestinationInput, SkipBridgeProvider } from "..";
 import { SkipMsg, SkipMsgsRequest } from "../types";
 import {
   ETH_EthereumToOsmosis_Msgs,
@@ -1026,6 +1026,75 @@ describe("SkipBridgeProvider", () => {
 
       expect(captured.body?.slippage_tolerance_percent).toBe("1.5");
     });
+  });
+});
+
+/**
+ * Figures are the live Osmosis allUSDT -> Optimism USDT route measured on
+ * 2026-09-14 at a 0.5% tolerance. Skip's own zero-tolerance response for the
+ * same route returns a `min_asset` of exactly 59982717, which is what these
+ * assertions restore.
+ */
+describe("raiseMinAssetToDestinationInput", () => {
+  const DESTINATION_INPUT = "58897323";
+  const AXELAR_FEE = "1085394";
+  const REQUIRED = "59982717";
+
+  const operations = [
+    { swap: { swap_in: { swap_venue: {}, swap_operations: [] } } },
+    { axelar_transfer: { fee_amount: AXELAR_FEE } },
+    { evm_swap: { amount_in: DESTINATION_INPUT } },
+  ] as unknown as Parameters<typeof raiseMinAssetToDestinationInput>[1];
+
+  const makeMsgs = (minAssetAmount: string): SkipMsg[] => [
+    {
+      multi_chain_msg: {
+        chain_id: "osmosis-1",
+        path: ["osmosis-1", "10"],
+        msg_type_url: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        msg: JSON.stringify({
+          sender: "osmo1sender",
+          contract: "osmo1entrypoint",
+          msg: {
+            swap_and_action: {
+              min_asset: {
+                native: { denom: "ibc/USDC", amount: minAssetAmount },
+              },
+            },
+          },
+          funds: [],
+        }),
+      },
+    },
+  ];
+
+  const readMinAsset = (msgs: SkipMsg[]) =>
+    JSON.parse(
+      (msgs[0] as { multi_chain_msg: { msg: string } }).multi_chain_msg.msg
+    ).msg.swap_and_action.min_asset.native.amount;
+
+  it("raises a tolerance-reduced min_asset to what the destination swap spends", () => {
+    const raised = raiseMinAssetToDestinationInput(
+      makeMsgs("59892649"),
+      operations
+    );
+
+    expect(readMinAsset(raised)).toBe(REQUIRED);
+  });
+
+  it("leaves a min_asset that already covers the destination untouched", () => {
+    const msgs = makeMsgs(REQUIRED);
+
+    expect(raiseMinAssetToDestinationInput(msgs, operations)[0]).toBe(msgs[0]);
+  });
+
+  it("does not touch routes without a destination EVM swap", () => {
+    const msgs = makeMsgs("59892649");
+    const cosmosOnly = [
+      { axelar_transfer: { fee_amount: AXELAR_FEE } },
+    ] as unknown as typeof operations;
+
+    expect(raiseMinAssetToDestinationInput(msgs, cosmosOnly)).toBe(msgs);
   });
 });
 
