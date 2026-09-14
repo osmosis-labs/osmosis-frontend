@@ -1159,8 +1159,6 @@
       "all": "WSZYSTKO",
       "price": "Cena",
       "volume": "Tom",
-      "advanced": "Zaawansowany",
-      "simple": "Prosty",
       "lastUpdate": "Ostatnia aktualizacja: {time}"
     },
     "watchlist": "Lista obserwowanych",

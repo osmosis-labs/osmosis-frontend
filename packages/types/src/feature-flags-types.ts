@@ -13,7 +13,6 @@ export type AvailableFlags =
   | "newDepositWithdrawFlow"
   | "oneClickTrading"
   | "limitOrders"
-  | "advancedChart"
   | "inGivenOut"
   | "sqsActiveOrders"
   | "alloyedAssets"

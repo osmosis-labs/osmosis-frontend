@@ -19,7 +19,6 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,
-  advancedChart: false,
   inGivenOut: false,
   sqsActiveOrders: false,
   alloyedAssets: false,

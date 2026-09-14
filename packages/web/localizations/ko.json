@@ -1159,8 +1159,6 @@
       "all": "모두",
       "price": "가격",
       "volume": "용량",
-      "advanced": "고급의",
-      "simple": "단순한",
       "lastUpdate": "마지막 업데이트: {time}"
     },
     "watchlist": "관심 목록",

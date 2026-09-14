@@ -1159,8 +1159,6 @@
       "all": "TÜM",
       "price": "Fiyat",
       "volume": "Hacim",
-      "advanced": "Gelişmiş",
-      "simple": "Basit",
       "lastUpdate": "Son güncelleme: {time}"
     },
     "watchlist": "İzlenecekler listesi",

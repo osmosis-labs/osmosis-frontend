@@ -242,13 +242,6 @@ const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
 type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 
-const AssetChartModes = {
-  advanced: "advanced",
-  simple: "simple",
-} as const;
-
-type AssetChartMode = (typeof AssetChartModes)[keyof typeof AssetChartModes];
-
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
 
@@ -263,9 +256,6 @@ export class ObservableAssetInfoConfig {
 
   @observable
   protected _dataType: AssetChartDataType = "price";
-
-  @observable
-  protected _mode: AssetChartMode = "simple";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
@@ -407,11 +397,6 @@ export class ObservableAssetInfoConfig {
     return this._dataType;
   }
 
-  @computed
-  get mode(): AssetChartMode {
-    return this._mode;
-  }
-
   constructor(denom: string, coinMinimalDenom?: string) {
     makeObservable(this);
 
@@ -463,11 +448,6 @@ export class ObservableAssetInfoConfig {
   @action
   setDataType = (data: AssetChartDataType) => {
     this._dataType = data;
-  };
-
-  @action
-  setMode = (mode: AssetChartMode) => {
-    this._mode = mode;
   };
 
   dispose() {

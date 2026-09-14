@@ -13,7 +13,6 @@ import {
 } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
 import { FunctionComponent, useEffect, useMemo } from "react";
@@ -180,10 +179,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
 
     return (
       <AssetInfoViewProvider value={contextValue}>
-        <Script
-          src="/tradingview/charting_library.standalone.js"
-          strategy="afterInteractive"
-        />
         <NextSeo
           title={`${
             title ? `${title} (${asset.coinDenom})` : asset.coinDenom

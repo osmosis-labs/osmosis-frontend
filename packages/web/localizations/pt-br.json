@@ -1159,8 +1159,6 @@
       "all": "TODOS",
       "price": "Preço",
       "volume": "Volume",
-      "advanced": "Avançado",
-      "simple": "Simples",
       "lastUpdate": "Última atualização: {time}"
     },
     "watchlist": "Lista de observação",

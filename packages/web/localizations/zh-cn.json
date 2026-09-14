@@ -1159,8 +1159,6 @@
       "all": "全部",
       "price": "价格",
       "volume": "体积",
-      "advanced": "先进的",
-      "simple": "简单的",
       "lastUpdate": "最后更新: {time}"
     },
     "watchlist": "关注列表",

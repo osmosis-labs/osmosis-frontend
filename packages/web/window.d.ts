@@ -1,14 +1,8 @@
 import { Window as KeplrWindow } from "@keplr-wallet/types";
 
-import type { widget } from "~/public/tradingview";
-
 declare global {
   interface Window extends KeplrWindow {
     ethereum: EthereumProvider;
-  }
-
-  interface TradingView {
-    widget: typeof widget;
   }
 }
 

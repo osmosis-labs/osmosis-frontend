@@ -1159,8 +1159,6 @@
       "all": "TOATE",
       "price": "Preț",
       "volume": "Volum",
-      "advanced": "Avansat",
-      "simple": "Simplu",
       "lastUpdate": "Ultima actualizare: {time}"
     },
     "watchlist": "Lista de urmărire",
