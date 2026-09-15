@@ -96,9 +96,15 @@ export const NetworkFeeRow: FunctionComponent<{
   fromChainName?: string;
 }> = ({ selectedQuote, isRefetchingQuote, fromChainName }) => (
   <QuoteDetailRow
-    label={t("transfer.networkFee", {
-      networkName: fromChainName ?? "",
-    })}
+    label={
+      // multi-tx routes pay gas on more than one chain, so the combined
+      // estimate can't be attributed to the origin network alone
+      selectedQuote.intermediateGasCosts?.length
+        ? t("transfer.networkFees")
+        : t("transfer.networkFee", {
+            networkName: fromChainName ?? "",
+          })
+    }
     isLoading={isRefetchingQuote}
   >
     <p className="text-osmoverse-100">
@@ -120,20 +126,32 @@ export const NetworkFeeRow: FunctionComponent<{
             : selectedQuote.gasCost?.maxDecimals(6).toString()}
           {selectedQuote.gasCostFiat && selectedQuote.gasCost ? (
             <span
-              title={selectedQuote.gasCost.maxDecimals(6).toString()}
+              title={[
+                selectedQuote.gasCost,
+                ...(selectedQuote.intermediateGasCosts ?? []),
+              ]
+                .map((cost) => cost.maxDecimals(6).toString())
+                .join(" + ")}
               className="text-osmoverse-300"
             >
               {" "}
               (
-              {trimPlaceholderZeros(
-                selectedQuote.gasCost.hideDenom(true).maxDecimals(6).toString()
-              )}{" "}
-              <span>
-                {shorten(selectedQuote.gasCost.denom, {
-                  prefixLength: 8,
-                  suffixLength: 3,
-                })}
-              </span>
+              {/* multi-tx routes pay gas on more than one chain; list every
+                  fee the combined fiat value above is made of */}
+              {[
+                selectedQuote.gasCost,
+                ...(selectedQuote.intermediateGasCosts ?? []),
+              ]
+                .map(
+                  (cost) =>
+                    `${trimPlaceholderZeros(
+                      cost.hideDenom(true).maxDecimals(6).toString()
+                    )} ${shorten(cost.denom, {
+                      prefixLength: 8,
+                      suffixLength: 3,
+                    })}`
+                )
+                .join(" + ")}
               )
             </span>
           ) : (

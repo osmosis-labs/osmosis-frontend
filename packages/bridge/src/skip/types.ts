@@ -40,6 +40,13 @@ export type SkipRouteRequestBase = {
 
   cumulative_affiliate_fee_bps?: string;
   client_id?: string;
+  /**
+   * Allow routes requiring more than one user-signed transaction. Off by
+   * default: without it Skip errors with "no single-tx routes found" when
+   * only multi-tx routes exist (e.g. CCTP deposits ending in an Osmosis
+   * swap, where Noble's forwarding cannot carry the swap memo).
+   */
+  allow_multi_tx?: boolean;
   smart_swap_options?: {
     evm_swaps?: boolean;
     split_routes?: boolean;
@@ -70,6 +77,13 @@ export type SkipRouteResponse = {
 
   operations: SkipOperation[];
   chain_ids: string[];
+  /**
+   * Chains an address must be provided for in the `/msgs` address_list, in
+   * order. NOT the same as `chain_ids`: it can repeat a chain (e.g.
+   * ["42161","noble-1","osmosis-1","osmosis-1"] for a multi-tx route), so
+   * address lists must be built from this, not `chain_ids`.
+   */
+  required_chain_addresses?: string[];
 
   does_swap: boolean;
   estimated_amount_out?: string;
@@ -185,6 +199,22 @@ export type SkipAffiliate = {
 
 export type SkipMsgsResponse = {
   msgs: SkipMsg[];
+};
+
+/**
+ * The subset of a quoted multi-tx route needed to rebuild its later steps'
+ * msgs without re-routing. Serialized into quotes as `multiTxRouteData` and
+ * passed back verbatim to `getTransactionStep`.
+ */
+export type SkipMultiTxRouteData = {
+  source_asset_denom: string;
+  source_asset_chain_id: string;
+  dest_asset_denom: string;
+  dest_asset_chain_id: string;
+  amount_in: string;
+  amount_out: string;
+  operations: SkipOperation[];
+  required_chain_addresses: string[];
 };
 
 export type SkipMsg =
