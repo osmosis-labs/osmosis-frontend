@@ -5,6 +5,7 @@ import {
   expect,
 } from "@playwright/test";
 
+import { pollTxOnChain } from "../utils/tx-confirm";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage } from "./keplr-helper";
 
@@ -24,6 +25,9 @@ import { getKeplrPopupPage } from "./keplr-helper";
  *       Promise.race doesn't short-circuit on DOM state from a previous transaction.
  *     - Early listener registration: context.waitForEvent("page") is started BEFORE
  *       the click so fast-opening Keplr popups are never missed.
+ *
+ * Confirmation is proxy-safe. `startTxConfirmation()` races the WebSocket toast
+ * against a REST poll of the LCD, mirroring `TradePage.startTxConfirmation()`.
  */
 export class TransactionsPage extends BasePage {
   readonly transactionRow: Locator;
@@ -127,22 +131,16 @@ export class TransactionsPage extends BasePage {
       timeout: 30000,
     });
 
-    await this.page
-      .getByText("Transaction Successful")
-      .waitFor({ state: "hidden", timeout: 3000 })
-      .catch(() => {});
+    // Armed before the click so the broadcast response can't be missed; this
+    // also absorbs the stale-toast guard (see startTxConfirmation).
+    const successPromise = this.startTxConfirmation();
+    successPromise.catch(() => {});
 
     await cancelBtnLocator.click();
 
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({ timeout: 40000 });
-
     const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
       (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+        p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
@@ -170,6 +168,106 @@ export class TransactionsPage extends BasePage {
     }
   }
 
+  /**
+   * Capture the tx hash from the app's `/api/broadcast-transaction` response.
+   * Mirrors `TradePage.captureBroadcastHash()`; arm before the action click so
+   * a fast broadcast isn't missed.
+   */
+  private async captureBroadcastHash(timeout: number): Promise<string> {
+    const resp = await this.page.waitForResponse(
+      (r) =>
+        r.url().includes("/api/broadcast-transaction") &&
+        r.request().method() === "POST",
+      { timeout }
+    );
+    const body = (await resp.json()) as {
+      tx_response?: { txhash?: string; code?: number; raw_log?: string };
+      code?: number;
+      message?: string;
+    };
+    const hash = body?.tx_response?.txhash;
+    console.log(
+      `Broadcast response: httpStatus=${resp.status()} ` +
+        `code=${body?.tx_response?.code ?? body?.code ?? "?"} ` +
+        `txhash=${hash ?? "none"}` +
+        (body?.tx_response?.raw_log
+          ? ` raw_log=${body.tx_response.raw_log}`
+          : "")
+    );
+    if (!hash) {
+      throw new Error(
+        `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
+          `message=${body?.message ?? body?.tx_response?.raw_log ?? "none"})`
+      );
+    }
+    return String(hash).toLowerCase();
+  }
+
+  /**
+   * Confirm a just-submitted limit-order tx, resilient to WebSocket flakiness.
+   *
+   * Two signals race, mirroring `TradePage.startTxConfirmation()`:
+   *   1. Primary (WebSocket): the in-app "Transaction Successful" toast. Fast,
+   *      but driven by the app's WS `TxTracer`, which stalls over the EU/SG
+   *      HTTP CONNECT proxy and has also been seen dropping on unproxied
+   *      preview runs - failing a tx that was included on-chain.
+   *   2. Fallback (REST): capture the broadcast hash and poll the LCD from
+   *      Node, which does not go through the browser proxy.
+   *
+   * Whichever confirms first wins; the loser is aborted. Rejects only if BOTH
+   * fail, or if the REST poll sees the tx included with a non-zero code.
+   *
+   * Arm this BEFORE the action click so the broadcast response isn't missed.
+   */
+  private startTxConfirmation(timeout = 120_000): Promise<void> {
+    const controller = new AbortController();
+
+    // Confirm on THIS tx's toast, not a lingering one from a previous action
+    // (success toasts auto-close after ~7s). If a stale toast is up, wait for
+    // it to hide first; if it never clears, defer to the REST poll.
+    const toastPromise = (async () => {
+      const toast = this.page.getByText("Transaction Successful");
+      const stale = await toast.isVisible().catch(() => false);
+      if (stale) {
+        await toast.waitFor({ state: "hidden", timeout: 8_000 });
+      }
+      await toast.waitFor({ state: "visible", timeout });
+      return "WebSocket toast" as const;
+    })();
+
+    const restPromise = this.captureBroadcastHash(timeout).then((hash) => {
+      if (controller.signal.aborted) {
+        throw new Error(
+          "REST confirmation branch aborted before hash capture."
+        );
+      }
+      console.log(`Captured broadcast tx hash: ${hash}`);
+      return pollTxOnChain(hash, { timeout, signal: controller.signal }).then(
+        () => "REST LCD poll" as const
+      );
+    });
+
+    // The losing branch keeps running and eventually rejects; swallow that so
+    // it doesn't surface as an unhandled rejection in Playwright/Node.
+    toastPromise.catch(() => {});
+    restPromise.catch(() => {});
+
+    return Promise.any([toastPromise, restPromise])
+      .then((winner) => {
+        controller.abort();
+        console.log(`Transaction confirmed via ${winner}.`);
+      })
+      .catch((err: any) => {
+        controller.abort();
+        const detail = err?.errors
+          ? err.errors.map((e: any) => e?.message ?? String(e)).join(" | ")
+          : err?.message ?? String(err);
+        throw new Error(
+          `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
+        );
+      });
+  }
+
   async isFilledByLimitPrice(price: string | number) {
     const loc = `//td//span[.='Filled']/../../..//td//p[.='$${price}']`;
     console.log(`Use Limit Order locator: ${loc}`);
@@ -188,22 +286,14 @@ export class TransactionsPage extends BasePage {
       return;
     }
 
-    await this.page
-      .getByText("Transaction Successful")
-      .waitFor({ state: "hidden", timeout: 3000 })
-      .catch(() => {});
+    const successPromise = this.startTxConfirmation();
+    successPromise.catch(() => {});
 
     await this.claimAndClose.first().click();
 
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({ timeout: 40000 });
-
     const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
       (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+        p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
@@ -240,22 +330,14 @@ export class TransactionsPage extends BasePage {
   }
 
   async claimAll(context: BrowserContext) {
-    await this.page
-      .getByText("Transaction Successful")
-      .waitFor({ state: "hidden", timeout: 3000 })
-      .catch(() => {});
+    const successPromise = this.startTxConfirmation();
+    successPromise.catch(() => {});
 
     await this.claimAllBtn.click();
 
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({ timeout: 40000 });
-
     const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
       (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+        p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
@@ -272,9 +354,7 @@ export class TransactionsPage extends BasePage {
       await approveBtn.click();
       await successPromise;
     } else {
-      console.log(
-        "1CT or pre-approved; success toast received (claim all)."
-      );
+      console.log("1CT or pre-approved; success toast received (claim all).");
     }
   }
 
