@@ -194,6 +194,19 @@ export type SkipCctpTransfer = {
   denom_out: string;
   bridge_id: string;
   smart_relay: boolean;
+  /**
+   * Present when `smart_relay` is set, and Skip expects it back on the `/msgs`
+   * request: dropping it quotes a different relay fee to the one shown.
+   * Operations are passed through as received, so this is here to stop a typed
+   * reconstruction losing it.
+   */
+  smart_relay_fee_quote?: {
+    fee_amount: string;
+    fee_denom: string;
+    fee_payment_address: string;
+    relayer_address: string;
+    expiration: string;
+  };
 };
 
 export type SkipSwapExactCoinOut = {

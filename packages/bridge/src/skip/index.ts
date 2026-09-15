@@ -98,8 +98,10 @@ function findSwapAndAction(node: unknown): SkipSwapAndAction | undefined {
 
   const record = node as Record<string, unknown>;
 
-  if (record.swap_and_action)
-    return record.swap_and_action as SkipSwapAndAction;
+  // Only an action that actually carries a floor ends the search: returning a
+  // floorless one would short-circuit past a nested action that has one.
+  const action = record.swap_and_action as SkipSwapAndAction | undefined;
+  if (action?.min_asset?.native?.amount) return action;
 
   return (
     findSwapAndAction(record.wasm) ??
