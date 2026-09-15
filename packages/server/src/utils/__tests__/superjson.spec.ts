@@ -191,5 +191,7 @@ describe("superjson unit transformers", () => {
     };
     expect(parsed.priceChange24h).toBeInstanceOf(RatePretty);
     expect(typeof parsed.priceChange24h.toDec).toBe("function");
+    const rate = Number(parsed.priceChange24h.toDec().toString());
+    expect(Math.abs(rate)).toBeLessThan(1);
   });
 });

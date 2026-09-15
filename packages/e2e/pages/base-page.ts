@@ -28,7 +28,7 @@ export class BasePage {
     this.portfolioLink = page.getByText("Portfolio");
     this.poolsLink = page.getByText("Pools");
     this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]');
-    this.connectedWalletBtn = page.locator("//button/div/span[@title]");
+    this.connectedWalletBtn = page.getByRole("button", { name: /osmo1/i });
   }
 
   /**
@@ -103,12 +103,14 @@ export class BasePage {
   }
 
   async logOut() {
+    await this.page.keyboard.press("Escape");
+    await this.dismissVariantsPopupIfPresent();
     await this.dismissAllToasts();
     await expect(
       this.connectedWalletBtn,
       "Wallet should be connected."
     ).toBeVisible({ timeout: 4000 });
-    await this.connectedWalletBtn.click({ timeout: 2000 });
+    await this.connectedWalletBtn.click({ timeout: 5000 });
     const logoutBtn = this.page.locator('//button[@title="Log Out"]');
     await logoutBtn.click({ timeout: 2000 });
     await this.page.waitForTimeout(2000);

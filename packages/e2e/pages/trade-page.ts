@@ -250,59 +250,41 @@ export class TradePage extends BasePage {
     return msgContentAmount;
   }
 
+  private tokenRow(token: string) {
+    return this.page
+      .getByTestId("token-select-asset")
+      .filter({
+        has: this.page.locator("span", { hasText: new RegExp(`^${token}$`) }),
+      })
+      .first();
+  }
+
+  private async selectTokenFromModal(token: string) {
+    const search = this.page.getByPlaceholder(/search/i);
+    await search.waitFor({ state: "visible", timeout: 10_000 });
+    await this.page
+      .getByTestId("token-select-asset")
+      .first()
+      .waitFor({ state: "visible", timeout: 15_000 });
+    await search.fill(token);
+    const row = this.tokenRow(token);
+    await row.waitFor({ state: "visible", timeout: 10_000 });
+    await row.click({ timeout: 10_000 });
+  }
+
   async selectAsset(token: string) {
     const tokenLocator = "//div//button[@type]//img[@alt]";
     const fromToken = this.page.locator(tokenLocator).nth(0);
     await fromToken.click();
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
-    await this.page.getByPlaceholder("Search").fill(token);
-    const fromLocator = this.page.locator(
-      `//div/button[@data-testid='token-select-asset']//span[.='${token}']`
-    );
-    await fromLocator.click();
+    await this.selectTokenFromModal(token);
   }
 
   async selectPair(from: string, to: string) {
-    // Filter does not show already selected tokens
     console.log(`Select pair ${from} to ${to}`);
-    const fromToken = this.page.locator(
-      "//div//button[@data-testid='token-in']//img[@alt]"
-    );
-    const toToken = this.page.locator(
-      "//div//button[@data-testid='token-out']//img[@alt]"
-    );
-    // Select From Token
-    await fromToken.click({ timeout: 10000 });
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
-    await this.page.getByPlaceholder("Search").fill(from);
-    // Allow search to filter results
-    await this.page.waitForTimeout(500);
-    const fromLocator = this.page
-      .locator(
-        `//div/button[@data-testid='token-select-asset']//span[.='${from}']`
-      )
-      .first();
-    // Wait for token to be visible before clicking
-    await fromLocator.waitFor({ state: "visible", timeout: 10000 });
-    await fromLocator.click({ timeout: 10000 });
-    // Select To Token
-    await toToken.click({ timeout: 10000 });
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
-    await this.page.getByPlaceholder("Search").fill(to);
-    // Allow search to filter results
-    await this.page.waitForTimeout(500);
-    const toLocator = this.page
-      .locator(
-        `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
-      )
-      .first();
-    // Wait for token to be visible before clicking
-    await toLocator.waitFor({ state: "visible", timeout: 10000 });
-    await toLocator.click({ timeout: 10000 });
-    // we expect that after 2 seconds exchange rate is populated.
+    await this.page.getByTestId("token-in").click({ timeout: 10_000 });
+    await this.selectTokenFromModal(from);
+    await this.page.getByTestId("token-out").click({ timeout: 10_000 });
+    await this.selectTokenFromModal(to);
     await this.page.waitForTimeout(2000);
     expect(await this.getExchangeRate()).toContain(from);
     expect(await this.getExchangeRate()).toContain(to);
