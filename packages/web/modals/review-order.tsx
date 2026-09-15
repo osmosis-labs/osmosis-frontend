@@ -14,6 +14,7 @@ import {
 } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -26,11 +27,13 @@ import { OneClickTradingSettings } from "~/components/one-click-trading/one-clic
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
+import { DefaultSlippage } from "~/config/swap";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -50,6 +53,10 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import {
+  requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
+} from "~/utils/slippage";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -57,6 +64,7 @@ interface ReviewOrderProps {
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
+  autoAdjustedSlippage?: string;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;
@@ -81,12 +89,13 @@ interface ReviewOrderProps {
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
 }
 
-export function ReviewOrder({
+export const ReviewOrder = observer(function ReviewOrder({
   isOpen,
   onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
+  autoAdjustedSlippage,
   amountWithSlippage,
   fiatAmountWithSlippage,
   outputDifference,
@@ -114,6 +123,8 @@ export function ReviewOrder({
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
+  const [hasAcknowledgedDisparity, setHasAcknowledgedDisparity] =
+    useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const [showOneClickTradingSettings, setShowOneClickTradingSettings] =
@@ -157,55 +168,147 @@ export function ReviewOrder({
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
+  // autoAdjustedSlippage is computed synchronously from the quote in the parent
+  // (same render cycle as gas/quote updates), so the display stays in lock-step.
+  const isAutoAdjusted =
+    autoAdjustedSlippage !== undefined &&
+    autoAdjustedSlippage !== DefaultSlippage;
+
+  // When the error hook (useDynamicSlippageConfig) has called select(), isManualSlippage
+  // is false and the transaction uses the selected preset — show that value so the
+  // display stays consistent with what will actually be submitted.
+  const presetSlippagePct =
+    slippageConfig && !slippageConfig.isManualSlippage
+      ? String(parseFloat(slippageConfig.slippage.toDec().toString()) * 100)
+      : undefined;
+
+  const displayedSlippage =
+    manualSlippage !== ""
+      ? manualSlippage
+      : presetSlippagePct !== undefined
+      ? presetSlippagePct
+      : isAutoAdjusted && !isEditingSlippage
+      ? autoAdjustedSlippage!
+      : "";
+
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
-    (!manualSlippage &&
+    (!!displayedSlippage && parseFloat(displayedSlippage) > 25) ||
+    (!displayedSlippage &&
       !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
-  const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+      slippageConfig.slippage.toDec().gt(new Dec(0.25)));
+  const isManualSlippageTooLow =
+    displayedSlippage !== "" && +displayedSlippage < 0.1;
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  // For out-given-in: compare minimum output against input sent.
+  // For in-given-out: compare fixed output received against maximum input paid.
+  // The decision itself (thresholds, loading states, the fiat-independent
+  // zero-min-out gate) lives in requiresValueDisparityAcknowledgement.
+  const usdNum = (value?: PricePretty) =>
+    value === undefined ? undefined : Number(value.toDec().toString());
+  const isExtremeValueDisparity = requiresValueDisparityAcknowledgement({
+    quoteType: quoteType ?? "out-given-in",
+    inputUsd:
+      quoteType === "in-given-out"
+        ? usdNum(fiatAmountWithSlippage)
+        : usdNum(inAmountFiat),
+    minimumOutputUsd:
+      quoteType === "in-given-out"
+        ? usdNum(expectedOutputFiat)
+        : usdNum(fiatAmountWithSlippage),
+    minimumOutputTokenIsZero:
+      quoteType !== "in-given-out" &&
+      amountWithSlippage !== undefined &&
+      amountWithSlippage.toDec().isZero(),
+  });
+
+  useEffect(() => {
+    if (!isExtremeValueDisparity) setHasAcknowledgedDisparity(false);
+  }, [isExtremeValueDisparity]);
+
+  // The transaction serializes the slippage bound (exact-in's minimum output,
+  // exact-out's maximum input) by scaling to chain units and truncating
+  // (getSwapTxParameters), so a display amount that is nonzero here can still
+  // truncate to zero there, and the chain rejects a non-positive bound in
+  // ValidateBasic. Hard-disable confirmation in that case; acknowledging
+  // cannot make the transaction valid. Limit orders serialize differently and
+  // are exempt.
+  const slippageBoundAsset = quoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    orderType === "market" &&
+    amountWithSlippage !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero(
+      amountWithSlippage.toDec(),
+      slippageBoundAsset.coinDecimals
+    );
+
+  // Frozen at mount; serves as the initial baseline for the slippage drift check.
+  // Also reset whenever the modal re-opens so a stale baseline from a previous
+  // trade doesn't trigger a spurious "Quote Updated" warning on the next trade.
+  const [quoteBaseline, setQuoteBaseline] = useState<IntPretty>(
+    () => amountWithSlippage ?? new IntPretty(0)
   );
-
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      let originalValue = initialOutput;
-      return {
-        diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          originalValue = amountWithSlippage ?? new IntPretty(0);
-        },
-      };
-    },
-
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
+  useEffect(() => {
+    if (isOpen) {
+      // Reset quote baseline and the local slippage draft so each new trade
+      // opens with a clean state — ReactModal doesn't unmount on close.
+      setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
+      setManualSlippage("");
+      setHasAcknowledgedDisparity(false);
+      // An override typed during a previous review must not outlive it:
+      // with the local draft cleared, the display falls back to the auto
+      // tier while the config would still submit the stale override. Hand
+      // control back to the auto-adjust hook, mirroring the clear path in
+      // handleManualSlippageChange. Scoped to userOverrodeSlippage so an
+      // error-hook preset selection is left untouched.
+      if (slippageConfig?.userOverrodeSlippage) {
+        slippageConfig.clearUserOverride();
+        slippageConfig.setManualSlippage(
+          autoAdjustedSlippage ?? DefaultSlippage
+        );
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amountWithSlippage, slippageConfig]
-  );
+  }, [isOpen]);
+
+  /**
+   * True when the live quote has drifted beyond the slippage tolerance from the
+   * last accepted baseline (initially the quote at mount time).
+   *
+   * - out-given-in: amountWithSlippage = MIN OUTPUT. Smaller = worse.
+   *   Warn when (baseline − current) / baseline ≥ slippage.
+   * - in-given-out: amountWithSlippage = MAX INPUT. Larger = worse.
+   *   Warn when (current − baseline) / baseline ≥ slippage.
+   *
+   * The absolute diff is compared against (baseline × slippage) so the check
+   * is proportional — a raw decimal like 0.01 would otherwise fire on any
+   * sub-cent price tick regardless of trade size.
+   */
+  const diffGteSlippage = useMemo(() => {
+    if (!slippageConfig) return false;
+    const current = amountWithSlippage ?? new IntPretty(0);
+    const baselineDec = quoteBaseline.toDec();
+    if (baselineDec.isZero()) return false;
+    const absThreshold = baselineDec.mul(slippageConfig.slippage.toDec());
+    if (quoteType === "in-given-out") {
+      return current.sub(quoteBaseline).toDec().gte(absThreshold);
+    }
+    return quoteBaseline.sub(current).toDec().gte(absThreshold);
+  }, [amountWithSlippage, slippageConfig, quoteType, quoteBaseline]);
+
+  // Resets the baseline to the current live quote, dismissing the warning.
+  const restart = useCallback(() => {
+    setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
+  }, [amountWithSlippage]);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
-      if (value.length > 3) return;
-
       if (value === "") {
         setManualSlippage("");
+        // User cleared the field — hand control back to the auto-adjust hook
+        slippageConfig?.clearUserOverride();
         slippageConfig?.setManualSlippage(
-          slippageConfig?.defaultManualSlippage
+          autoAdjustedSlippage ?? DefaultSlippage
         );
         return;
       }
@@ -214,10 +317,25 @@ export function ReviewOrder({
         return;
       }
 
-      setManualSlippage(value);
-      slippageConfig?.setManualSlippage(new Dec(+value).toString());
+      // Allow at most 1 decimal place
+      const dotIndex = value.indexOf(".");
+      if (dotIndex !== -1 && value.length - dotIndex > 2) return;
+
+      // Cap at 99.9%: the config rejects 100% and above outright, since a
+      // 100% tolerance yields a zero min-out the chain cannot accept, and a
+      // silently rejected write would let the field and the store diverge.
+      const effectiveValue = +value > 99.9 ? "99.9" : value;
+      setManualSlippage(effectiveValue);
+      // Guard against bare "." or other non-numeric intermediates before
+      // committing to slippageConfig; wait until the user finishes typing.
+      const numericValue = parseFloat(effectiveValue);
+      if (isNaN(numericValue)) return;
+      // Mark as user override before writing so the auto-adjust hook won't
+      // overwrite the value even if it happens to equal the current tier string.
+      slippageConfig?.markUserOverride();
+      slippageConfig?.setManualSlippage(new Dec(numericValue).toString());
     },
-    [slippageConfig]
+    [slippageConfig, autoAdjustedSlippage]
   );
 
   useEffect(() => {
@@ -589,7 +707,20 @@ export function ReviewOrder({
                     <RecapRow
                       left={t("swap.settings.slippage")}
                       right={
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          {isAutoAdjusted && (
+                            <GenericDisclaimer
+                              title={t("swap.slippageAutoAdjustedTitle")}
+                              body={t("swap.slippageAutoAdjustedBody")}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                width={16}
+                                height={16}
+                                className="text-ammelia-400"
+                              />
+                            </GenericDisclaimer>
+                          )}
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
@@ -602,9 +733,9 @@ export function ReviewOrder({
                               type="text"
                               inputMode="decimal"
                               minWidth={30}
-                              placeholder={
-                                slippageConfig?.defaultManualSlippage + "%"
-                              }
+                              placeholder={`${
+                                autoAdjustedSlippage ?? DefaultSlippage
+                              }%`}
                               className="sm:caption w-fit bg-transparent px-0"
                               inputClassName={classNames(
                                 "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
@@ -613,20 +744,16 @@ export function ReviewOrder({
                                     isManualSlippageTooHigh,
                                 }
                               )}
-                              value={manualSlippage}
+                              value={displayedSlippage}
                               onFocus={() => {
-                                slippageConfig?.setIsManualSlippage(true);
+                                // Do NOT force isManualSlippage=true here — the error
+                                // hook may have called select() to correct slippage and
+                                // forcing manual mode would silently discard that
+                                // correction. Manual mode is set only when the user
+                                // actually types (handleManualSlippageChange).
                                 setIsEditingSlippage(true);
                               }}
                               onBlur={() => {
-                                if (
-                                  isManualSlippageTooHigh &&
-                                  +manualSlippage > 50
-                                ) {
-                                  handleManualSlippageChange(
-                                    (+manualSlippage).toString().split("")[0]
-                                  );
-                                }
                                 setIsEditingSlippage(false);
                               }}
                               onChange={(e) => {
@@ -645,7 +772,7 @@ export function ReviewOrder({
                                 ]);
                               }}
                             />
-                            {manualSlippage !== "" && (
+                            {displayedSlippage !== "" && (
                               <span
                                 className={classNames({
                                   "text-rust-400": isManualSlippageTooHigh,
@@ -807,6 +934,29 @@ export function ReviewOrder({
                   onParamsChange={() => setShowOneClickTradingSettings(true)}
                 />
               )}
+              {isExtremeValueDisparity && (
+                <label
+                  htmlFor="extreme-disparity-ack"
+                  className="flex cursor-pointer items-start gap-3 rounded-xl bg-rust-800 p-4"
+                >
+                  <Checkbox
+                    id="extreme-disparity-ack"
+                    className="mt-0.5 shrink-0"
+                    checked={hasAcknowledgedDisparity}
+                    onCheckedChange={(checked) =>
+                      setHasAcknowledgedDisparity(checked === true)
+                    }
+                  />
+                  <span className="text-sm text-rust-200">
+                    {t("swap.extremeDisparityAcknowledgement")}
+                  </span>
+                </label>
+              )}
+              {isSlippageBoundZeroOnChain && (
+                <p className="caption w-full pt-2 text-rust-400">
+                  {t("swap.amountTooSmallForSlippage")}
+                </p>
+              )}
               {!diffGteSlippage && (
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
@@ -817,7 +967,9 @@ export function ReviewOrder({
                     disabled={
                       isConfirmationDisabled ||
                       wouldExceedSpendLimit ||
-                      hasInsufficientFeeTokens
+                      hasInsufficientFeeTokens ||
+                      isSlippageBoundZeroOnChain ||
+                      (isExtremeValueDisparity && !hasAcknowledgedDisparity)
                     }
                     className="body2 sm:caption !rounded-2xl"
                   >
@@ -855,7 +1007,7 @@ export function ReviewOrder({
       )}
     </ModalBase>
   );
-}
+});
 
 const OneClickTradingPanel = ({
   t,

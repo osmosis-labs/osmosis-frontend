@@ -29,7 +29,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -42,7 +42,7 @@ import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { DefaultSlippage } from "~/config/swap";
+import { DefaultSlippage, DYNAMIC_SLIPPAGE_TIERS } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
@@ -67,7 +67,6 @@ import { api, RouterInputs } from "~/utils/trpc";
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -288,7 +287,7 @@ export function useSwap(
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
     let error =
-      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
+      quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
@@ -740,16 +739,39 @@ export function useSwap(
     ]
   );
 
-  const positivePrevQuote = usePreviousWhen(
-    quote,
-    useCallback(
-      () =>
-        Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
-    )
-  );
+  const activeQuoteError =
+    quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
+  const activeInputEmpty =
+    quoteType === "in-given-out"
+      ? outAmountInput.isEmpty
+      : inAmountInput.isEmpty;
+
+  // Cache the last accepted quote, but segregated by quoteType so that a
+  // stale out-given-in quote is never shown while an in-given-out quote is
+  // loading (or vice-versa). The ref is explicitly cleared on mode switch.
+  const positivePrevQuoteRef = useRef<typeof quote>(undefined);
+  const prevQuoteTypeForCacheRef = useRef<typeof quoteType>(quoteType);
+  useEffect(() => {
+    if (prevQuoteTypeForCacheRef.current !== quoteType) {
+      prevQuoteTypeForCacheRef.current = quoteType;
+      positivePrevQuoteRef.current = undefined;
+      return;
+    }
+    if (
+      quote?.amount.toDec().isPositive() &&
+      !activeQuoteError &&
+      !activeInputEmpty
+    ) {
+      positivePrevQuoteRef.current = quote;
+    }
+  });
+  // Only serve the cached quote when it belongs to the current mode.
+  // The effect above clears the ref after render; this guard covers the
+  // one-render gap before that effect fires on a quoteType switch.
+  const positivePrevQuote =
+    prevQuoteTypeForCacheRef.current === quoteType
+      ? positivePrevQuoteRef.current
+      : undefined;
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
@@ -855,9 +877,12 @@ export function useSwap(
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
-      isQuoteLoading || inAmountInput.isTyping
+      isQuoteLoading ||
+      (quoteType === "in-given-out"
+        ? outAmountInput.isTyping
+        : inAmountInput.isTyping)
         ? positivePrevQuote
-        : !quoteErrorMsg
+        : !activeQuoteError
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
@@ -1646,7 +1671,8 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage > balance && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) &&
+        !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 
@@ -1696,6 +1722,17 @@ export function useDynamicSlippageConfig({
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
+  // Populate selectable slippage tiers so getSmallestSlippage works for any
+  // consumer of this hook (e.g. place-limit-tool that doesn't call
+  // useDynamicSlippageFromQuote).
+  useEffect(() => {
+    slippageConfig.setSelectableSlippages(
+      DYNAMIC_SLIPPAGE_TIERS.map(({ slippage }) =>
+        new Dec(slippage).quo(DecUtils.getTenExponentN(2))
+      )
+    );
+  }, [slippageConfig]);
+
   useEffect(() => {
     if (feeError) {
       if (
@@ -1728,8 +1765,6 @@ export function useDynamicSlippageConfig({
               )
             );
           }
-        } else {
-          console.log("No amounts found");
         }
       }
     }
