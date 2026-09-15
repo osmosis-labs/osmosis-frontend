@@ -19,7 +19,7 @@ import {
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
+import { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";

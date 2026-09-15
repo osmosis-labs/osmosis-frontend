@@ -1,6 +1,6 @@
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
-import React, { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { useTranslation } from "~/hooks";

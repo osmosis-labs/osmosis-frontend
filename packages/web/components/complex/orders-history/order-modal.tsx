@@ -3,7 +3,7 @@ import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";

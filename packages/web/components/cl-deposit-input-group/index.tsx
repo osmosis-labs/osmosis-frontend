@@ -3,7 +3,7 @@ import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { InputBox } from "~/components/input";
 import { EntityImage } from "~/components/ui/entity-image";

@@ -2,6 +2,7 @@ import classNames from "classnames";
 import {
   Children,
   FunctionComponent,
+  isValidElement,
   PropsWithChildren,
   ReactElement,
   useEffect,
@@ -40,19 +41,12 @@ const [StepContextProvider, useStepContext] = createContext<{
 const Step = (
   props: PropsWithChildren<{
     className?: string;
-    /**
-     * Do not overwrite this property without modifying Stepper.
-     * It's needed to filter step elements in Stepper.
-     */
-    __TYPE?: string;
   }>
 ) => {
   const { activeStep, totalSteps, setActiveStep } = useStepperContext();
   const { index } = useStepContext();
 
   const isActive = activeStep === index;
-
-  const { __TYPE, ...rest } = props;
 
   useEffect(() => {
     if (index + 1 > totalSteps) {
@@ -62,7 +56,7 @@ const Step = (
 
   return (
     <div
-      {...rest}
+      {...props}
       className={classNames(
         {
           "pointer-events-auto relative z-10 opacity-100": isActive,
@@ -75,11 +69,9 @@ const Step = (
   );
 };
 
-Step.defaultProps = {
-  // @ts-ignore
-  // __TYPE is used to identify 'Step' components when filtering child components in the 'Stepper' component.
-  __TYPE: "Step",
-};
+function isStepElement(child: unknown): child is ReactElement {
+  return isValidElement(child) && child.type === Step;
+}
 
 export const StepsIndicator: FunctionComponent<{
   mode?: "pills" | "dots";
@@ -230,10 +222,7 @@ export const StepperLeftChevronNavigation: FunctionComponent<{
 const Stepper = (props: PropsWithChildren<StepsProps>) => {
   const { children, autoplay } = props;
 
-  const stepElements = Children.toArray(children).filter((child) => {
-    if (!child) return false;
-    return (child as ReactElement)?.props?.__TYPE === "Step";
-  });
+  const stepElements = Children.toArray(children).filter(isStepElement);
 
   const stepsContext = useSteps({ count: stepElements.length });
   const [isHovering, setIsHovering] = useState(false);
@@ -310,7 +299,7 @@ const Stepper = (props: PropsWithChildren<StepsProps>) => {
     () =>
       Children.toArray(children).reduce(
         (map: Map<number, number>, child, index) => {
-          if ((child as ReactElement)?.props?.__TYPE === "Step") {
+          if (isStepElement(child)) {
             return map.set(index, map.size);
           }
           return map;

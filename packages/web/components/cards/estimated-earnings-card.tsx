@@ -1,6 +1,6 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";

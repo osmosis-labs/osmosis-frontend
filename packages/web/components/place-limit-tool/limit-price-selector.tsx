@@ -1,7 +1,7 @@
 import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
 

@@ -6,7 +6,7 @@ import {
   Time,
   TimeChartOptions,
 } from "lightweight-charts";
-import React, { memo } from "react";
+import { memo } from "react";
 
 import { HistogramChartController } from "~/components/chart/light-weight-charts/histogram-chart";
 import { priceFormatter } from "~/components/chart/light-weight-charts/utils";

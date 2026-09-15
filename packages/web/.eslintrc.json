@@ -1,7 +1,13 @@
 {
   "extends": ["next/core-web-vitals", "prettier"],
   "plugins": ["unicorn", "simple-import-sort", "unused-imports", "import"],
-  "ignorePatterns": ["/e2e/keplr-extension"],
+  "ignorePatterns": [
+    "/e2e/keplr-extension",
+    ".next/",
+    "node_modules/",
+    "public/",
+    "config/generated/"
+  ],
   "rules": {
     "unicorn/filename-case": [
       "error",
@@ -38,7 +44,12 @@
   "overrides": [
     // Pages router, config files
     {
-      "files": ["pages/**/*", "playwright.config.ts"],
+      "files": [
+        "pages/**/*",
+        "playwright.config.ts",
+        "localizations/**",
+        "proxy.ts"
+      ],
       "rules": {
         "import/no-default-export": "off"
       }

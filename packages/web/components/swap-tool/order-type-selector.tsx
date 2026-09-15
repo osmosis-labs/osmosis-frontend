@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   ATOM_BASE_DENOM,

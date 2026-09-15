@@ -1,6 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { EntityImage } from "~/components/ui/entity-image";
