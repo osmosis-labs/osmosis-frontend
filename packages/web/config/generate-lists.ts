@@ -434,7 +434,7 @@ async function main() {
 
   if (isAssetListGenerateCached(mainLatestCommitHash)) {
     console.info(
-      "Asset list hash unchanged and generated files exist; skipping fetch"
+      "Asset list hash and network unchanged and generated files exist; skipping fetch"
     );
     return;
   }
