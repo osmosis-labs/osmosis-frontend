@@ -35,14 +35,14 @@ function hasFn(v: object, key: string): boolean {
   return typeof (v as Record<string, unknown>)[key] === "function";
 }
 
-function leakedDecToString(amount: unknown): string {
+function leakedDecToString(amount: unknown): string | undefined {
   if (typeof amount === "string" || typeof amount === "number") {
     return String(amount);
   }
   if (isRecord(amount) && typeof amount.int === "string") {
-    return new Dec(amount.int, 0).toString();
+    return new Dec(amount.int).quo(new Dec("1000000000000000000")).toString();
   }
-  throw new Error("Unknown leaked amount");
+  return undefined;
 }
 
 function isDecValue(v: unknown): v is Dec {
@@ -108,13 +108,14 @@ function reviveLeakedUnitValues(value: unknown): unknown {
     );
   }
   if (isRecord(value._currency) && "coinDenom" in value._currency) {
-    return new CoinPretty(
-      value._currency as unknown as Currency,
-      leakedDecToString(value.amount)
-    );
+    const amount = leakedDecToString(value.amount);
+    if (amount == null) return value;
+    return new CoinPretty(value._currency as unknown as Currency, amount);
   }
   if (isRecord(value._options) && "symbol" in value._options) {
-    return new RatePretty(leakedDecToString(value.amount));
+    const amount = leakedDecToString(value.amount);
+    if (amount == null) return value;
+    return new RatePretty(amount);
   }
 
   const out: Record<string, unknown> = {};

@@ -1,5 +1,5 @@
-import { type Locator, type Page, expect } from '@playwright/test'
-import { waitForKeplrApproval } from './keplr-helper'
+import { type Locator, type Page, expect } from "@playwright/test";
+import { waitForKeplrApproval } from "./keplr-helper";
 
 /**
  * Base page object shared by all E2E page classes.
@@ -11,24 +11,24 @@ import { waitForKeplrApproval } from './keplr-helper'
  *   treat TimeoutError as "auto-approved / 1CT active".
  */
 export class BasePage {
-  readonly page: Page
-  readonly connectWalletBtn: Locator
-  readonly kepltWalletBtn: Locator
-  readonly portfolioLink: Locator
-  readonly poolsLink: Locator
-  readonly walletBalance: Locator
-  readonly connectedWalletBtn: Locator
+  readonly page: Page;
+  readonly connectWalletBtn: Locator;
+  readonly kepltWalletBtn: Locator;
+  readonly portfolioLink: Locator;
+  readonly poolsLink: Locator;
+  readonly walletBalance: Locator;
+  readonly connectedWalletBtn: Locator;
 
   constructor(page: Page) {
-    this.page = page
+    this.page = page;
     this.connectWalletBtn = page
-      .getByRole('button', { name: 'Connect wallet', exact: true })
-      .first()
-    this.kepltWalletBtn = page.locator('button').filter({ hasText: /^Keplr$/ })
-    this.portfolioLink = page.getByText('Portfolio')
-    this.poolsLink = page.getByText('Pools')
-    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]')
-    this.connectedWalletBtn = page.locator('//button/div/span[@title]')
+      .getByRole("button", { name: "Connect wallet", exact: true })
+      .first();
+    this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
+    this.portfolioLink = page.getByText("Portfolio");
+    this.poolsLink = page.getByText("Pools");
+    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]');
+    this.connectedWalletBtn = page.locator("//button/div/span[@title]");
   }
 
   /**
@@ -37,14 +37,14 @@ export class BasePage {
    * or 1CT enabled), we continue without error.
    */
   async connectWallet() {
-    await this.connectWalletBtn.click()
-    await this.kepltWalletBtn.click()
-    await this.page.waitForTimeout(1000)
-    await waitForKeplrApproval(this.page.context())
+    await this.connectWalletBtn.click();
+    await this.kepltWalletBtn.click();
+    await this.page.waitForTimeout(1000);
+    await waitForKeplrApproval(this.page.context());
     // React 19 dialogs mark the rest of the page `inert`, so Playwright
     // treats wallet-balance as hidden until this modal is gone.
-    await this.dismissVariantsPopupIfPresent()
-    await this.getWalletBalance()
+    await this.dismissVariantsPopupIfPresent();
+    await this.getWalletBalance();
   }
 
   /**
@@ -56,60 +56,63 @@ export class BasePage {
    */
   async waitForTradeUi(timeout = 30_000) {
     await expect(
-      this.page.getByTestId('token-in'),
-      'Trade UI did not load.',
-    ).toBeVisible({ timeout })
+      this.page.getByTestId("token-in"),
+      "Trade UI did not load."
+    ).toBeVisible({ timeout });
   }
 
   async gotoPortfolio() {
-    await this.portfolioLink.click()
+    await this.portfolioLink.click();
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
-    await this.printUrl()
+    await this.page.waitForTimeout(2000);
+    await this.printUrl();
   }
 
   async gotoPools() {
-    await this.poolsLink.click()
+    await this.poolsLink.click();
   }
 
   async printUrl() {
-    const currentUrl = this.page.url()
-    console.log(`FE opened at: ${currentUrl}`)
+    const currentUrl = this.page.url();
+    console.log(`FE opened at: ${currentUrl}`);
   }
 
   async getWalletBalance() {
-    console.log('Wait for a wallet balance for 9s.')
-    await expect(this.walletBalance, 'Wallet should be connected.').toBeVisible(
-      { timeout: 9000 },
-    )
-    const balance = await this.walletBalance.textContent({ timeout: 2000 })
-    console.log(`Wallet balance: ${balance}`)
-    return balance
+    // OSMO navbar amount can be empty while the wallet is connected
+    // (empty span is not "visible" to Playwright). The profile button
+    // with the truncated address is the real connected signal.
+    await expect(
+      this.connectedWalletBtn,
+      "Wallet should be connected."
+    ).toBeVisible({ timeout: 9000 });
+    const balance = await this.walletBalance.textContent().catch(() => "");
+    console.log(`Wallet connected. Navbar OSMO amount: ${balance}`);
+    return balance;
   }
 
   /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
-      const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
-      await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
-      await dismissBtn.click()
-      console.log('Dismissed "Variants Detected" popup.')
+      const dismissBtn = this.page.getByRole("button", { name: "Dismiss" });
+      await dismissBtn.waitFor({ state: "visible", timeout: 4000 });
+      await dismissBtn.click();
+      console.log('Dismissed "Variants Detected" popup.');
     } catch {
       // Modal not present — continue normally
     }
   }
 
   async logOut() {
-    await this.dismissAllToasts()
+    await this.dismissAllToasts();
     await expect(
       this.connectedWalletBtn,
-      'Wallet should be connected.',
-    ).toBeVisible({ timeout: 4000 })
-    await this.connectedWalletBtn.click({ timeout: 2000 })
-    const logoutBtn = this.page.locator('//button[@title="Log Out"]')
-    await logoutBtn.click({ timeout: 2000 })
-    await this.page.waitForTimeout(2000)
-    await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
+      "Wallet should be connected."
+    ).toBeVisible({ timeout: 4000 });
+    await this.connectedWalletBtn.click({ timeout: 2000 });
+    const logoutBtn = this.page.locator('//button[@title="Log Out"]');
+    await logoutBtn.click({ timeout: 2000 });
+    await this.page.waitForTimeout(2000);
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 });
   }
 
   /**
@@ -122,9 +125,9 @@ export class BasePage {
     await this.page
       .evaluate(() => {
         document
-          .querySelectorAll('.Toastify__toast')
-          .forEach((el) => el.remove())
+          .querySelectorAll(".Toastify__toast")
+          .forEach((el) => el.remove());
       })
-      .catch(() => {})
+      .catch(() => {});
   }
 }
