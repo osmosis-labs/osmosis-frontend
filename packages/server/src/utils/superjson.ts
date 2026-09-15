@@ -83,7 +83,7 @@ function isRatePrettyValue(v: unknown): v is RatePretty {
   );
 }
 
-function reviveLeakedUnitValues(value: unknown): unknown {
+export function reviveLeakedUnitValues(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(reviveLeakedUnitValues);
   }
@@ -231,14 +231,17 @@ superjson.registerCustom<Buffer, string>(
   "Buffer"
 );
 
-const originalParse = superjson.parse.bind(superjson);
-const originalDeserialize = superjson.deserialize.bind(superjson);
+/**
+ * Export a wrapper so Turbopack cannot skip the revive by inlining the
+ * underlying superjson methods. tRPC uses serialize/deserialize from this
+ * object on both server and client.
+ */
+const superjsonTransformer = {
+  serialize: (value: unknown) => superjson.serialize(value),
+  deserialize: (value: Parameters<typeof superjson.deserialize>[0]) =>
+    reviveLeakedUnitValues(superjson.deserialize(value)),
+  stringify: (value: unknown) => superjson.stringify(value),
+  parse: (value: string) => reviveLeakedUnitValues(superjson.parse(value)),
+};
 
-superjson.parse = ((str: string) =>
-  reviveLeakedUnitValues(originalParse(str))) as typeof superjson.parse;
-superjson.deserialize = ((payload: Parameters<typeof originalDeserialize>[0]) =>
-  reviveLeakedUnitValues(
-    originalDeserialize(payload)
-  )) as typeof superjson.deserialize;
-
-export { superjson };
+export { superjsonTransformer as superjson };

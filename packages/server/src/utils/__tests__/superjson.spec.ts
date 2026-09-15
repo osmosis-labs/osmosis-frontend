@@ -175,4 +175,21 @@ describe("superjson unit transformers", () => {
     expect(parsed.currentPrice).toBeInstanceOf(PricePretty);
     expect(parsed.currentPrice.toDec().toString()).toContain("0.033");
   });
+
+  test("deserialize revives leaked RatePretty in a tRPC json envelope", () => {
+    const payload = {
+      json: {
+        priceChange24h: {
+          amount: { int: "-3235611700000000" },
+          _options: { separator: "", symbol: "%" },
+          intPretty: { dec: { int: "-3235611700000000" } },
+        },
+      },
+    };
+    const parsed = superjson.deserialize(payload as never) as {
+      priceChange24h: RatePretty;
+    };
+    expect(parsed.priceChange24h).toBeInstanceOf(RatePretty);
+    expect(typeof parsed.priceChange24h.toDec).toBe("function");
+  });
 });

@@ -21,11 +21,22 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
+import { reviveLeakedUnitValues } from "~/utils/revive-unit-values";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
   EdgeRouterKey,
 } from "~/utils/trpc-edge";
+
+const originalDeserialize = superjson.deserialize.bind(superjson);
+superjson.deserialize = ((data: Parameters<typeof superjson.deserialize>[0]) =>
+  reviveLeakedUnitValues(
+    originalDeserialize(data)
+  )) as typeof superjson.deserialize;
+
+const originalParse = superjson.parse.bind(superjson);
+superjson.parse = ((str: string) =>
+  reviveLeakedUnitValues(originalParse(str))) as typeof superjson.parse;
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
