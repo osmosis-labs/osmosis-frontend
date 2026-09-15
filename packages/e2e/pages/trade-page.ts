@@ -831,14 +831,31 @@ export class TradePage extends BasePage {
       }).then(() => "REST LCD poll" as const);
     });
 
+    // A non-zero on-chain code is deterministic: the tx is included and failed,
+    // so the toast will never arrive. Racing that rejection against the pair
+    // below surfaces the chain error immediately instead of letting the toast
+    // branch run out its budget (which exceeds Playwright's test timeout and
+    // would report a generic timeout instead of the real reason).
+    const chainFailure = restPromise.then(
+      () => new Promise<never>(() => {}),
+      (err: Error) => {
+        if (err?.message?.includes("failed on-chain")) throw err;
+        return new Promise<never>(() => {});
+      }
+    );
+
     // After Promise.any settles on the winner, the losing branch keeps running
     // and eventually rejects (the toast `waitFor` times out, or the REST poll
     // aborts). Attach no-op catches so that late rejection doesn't surface as
     // an unhandled promise rejection in Playwright/Node.
     toastPromise.catch(() => {});
     restPromise.catch(() => {});
+    chainFailure.catch(() => {});
 
-    return Promise.any([toastPromise, restPromise])
+    return Promise.race([
+      Promise.any([toastPromise, restPromise]),
+      chainFailure,
+    ])
       .then((winner) => {
         controller.abort();
         console.log(`Transaction confirmed via ${winner}.`);
