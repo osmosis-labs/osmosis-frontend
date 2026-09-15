@@ -34,7 +34,16 @@
     "low": "Düşük",
     "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun",
     "estimated": "Tahmini",
-    "estimatedInfo": "Bu, mevcut seçilmiş fiyatlara dayalı bir tahmindir. Gerçek APR değişebilir. Konum aralığın dışına çıkarsa APR %0 olacaktır."
+    "estimatedInfo": "Bu, mevcut seçilmiş fiyatlara dayalı bir tahmindir. Gerçek APR değişebilir. Konum aralığın dışına çıkarsa APR %0 olacaktır.",
+    "singleAsset": {
+      "splitBreakdown": "{inputAmount} {inputDenom} bakiyenizden {swapAmount} {inputDenom} ({swapPercent}), pozisyon oranını eşleştirmek için {outDenom} ile takas edilecektir.",
+      "noSwapNeeded": "Seçili aralık yalnızca {inputDenom} gerektiriyor, bu nedenle takas gerekli değildir.",
+      "valueIn": "Gelen değer",
+      "valueOut": "Giden değer",
+      "totalCost": "Toplam maliyet",
+      "totalCostWarning": "Bu yatırmanın toplam maliyeti {totalCost} olup fiyat etkisi ve takas ücretlerini içerir; bu da pozisyonunuza ulaşan değeri azaltır.",
+      "quoteLoading": "En iyi takas bulunuyor…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Supercharged Likidite Nedir?",

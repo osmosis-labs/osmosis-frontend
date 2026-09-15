@@ -34,7 +34,16 @@
     "low": "scăzut",
     "buttonCreateAndStake": "Creați poziție și miză",
     "estimated": "Estimată",
-    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%."
+    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Din {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) vor fi schimbați în {outDenom} pentru a se potrivi cu raportul poziției.",
+      "noSwapNeeded": "Gama selectată necesită doar {inputDenom}, deci nu este necesară vreo schimbare.",
+      "valueIn": "Valoare intrare",
+      "valueOut": "Valoare ieșire",
+      "totalCost": "Cost total",
+      "totalCostWarning": "Costul total al acestui depozit este {totalCost}, incluzând impactul asupra prețului și comisioanele de schimb, ceea ce reduce valoarea care ajunge în poziția ta.",
+      "quoteLoading": "Se caută cea mai bună schimbare…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
