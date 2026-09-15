@@ -136,4 +136,43 @@ describe("superjson unit transformers", () => {
     expect(parsed).toBeInstanceOf(Int);
     expect(parsed.toString()).toBe("42");
   });
+
+  test("revives a leaked PricePretty class-field dump", () => {
+    const leaked = {
+      _fiatCurrency: DEFAULT_VS_CURRENCY,
+      amount: 0.033288540369348626,
+      _options: {
+        separator: "",
+        upperCase: false,
+        lowerCase: false,
+        locale: "en-US",
+      },
+      intPretty: { dec: { int: "33288540369348626" } },
+    };
+    const parsed = superjson.parse(superjson.stringify(leaked)) as PricePretty;
+    expect(parsed).toBeInstanceOf(PricePretty);
+    expect(parsed.toDec().toString()).toContain("0.033");
+    expect(parsed.fiatCurrency.currency).toBe("usd");
+  });
+
+  test("revives a leaked PricePretty nested in a tRPC result", () => {
+    const payload = {
+      coinDenom: "OSMO",
+      currentPrice: {
+        _fiatCurrency: DEFAULT_VS_CURRENCY,
+        amount: 0.03349,
+        _options: {
+          separator: "",
+          upperCase: false,
+          lowerCase: false,
+          locale: "en-US",
+        },
+      },
+    };
+    const parsed = superjson.parse(superjson.stringify(payload)) as {
+      currentPrice: PricePretty;
+    };
+    expect(parsed.currentPrice).toBeInstanceOf(PricePretty);
+    expect(parsed.currentPrice.toDec().toString()).toContain("0.033");
+  });
 });

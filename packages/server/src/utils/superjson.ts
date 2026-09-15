@@ -23,9 +23,9 @@ dayjs.extend(duration);
 
 /**
  * Turbopack inlines workspace packages into multiple chunks, so `instanceof`
- * against `@osmosis-labs/unit` classes fails across the tRPC server/client
- * boundary even when the value is a real Dec/PricePretty/etc. Duck-type the
- * unique instance fields + methods, which survive duplicate class copies.
+ * against `@osmosis-labs/unit` classes fails. Values often reach superjson as
+ * class-field dumps (`_fiatCurrency`, `amount`, `intPretty`) with no methods.
+ * Match those shapes and revive them so client code can call `toDec()`.
  */
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
@@ -33,6 +33,16 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function hasFn(v: object, key: string): boolean {
   return typeof (v as Record<string, unknown>)[key] === "function";
+}
+
+function leakedDecToString(amount: unknown): string {
+  if (typeof amount === "string" || typeof amount === "number") {
+    return String(amount);
+  }
+  if (isRecord(amount) && typeof amount.int === "string") {
+    return new Dec(amount.int, 0).toString();
+  }
+  throw new Error("Unknown leaked amount");
 }
 
 function isDecValue(v: unknown): v is Dec {
@@ -71,6 +81,47 @@ function isRatePrettyValue(v: unknown): v is RatePretty {
       !("_currency" in v) &&
       hasFn(v, "toDec"))
   );
+}
+
+function reviveLeakedUnitValues(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(reviveLeakedUnitValues);
+  }
+  if (!isRecord(value)) {
+    return value;
+  }
+  if (
+    value instanceof Dec ||
+    value instanceof Int ||
+    value instanceof PricePretty ||
+    value instanceof CoinPretty ||
+    value instanceof RatePretty ||
+    hasFn(value, "toDec") ||
+    hasFn(value, "truncate")
+  ) {
+    return value;
+  }
+  if ("_fiatCurrency" in value && isRecord(value._fiatCurrency)) {
+    return new PricePretty(
+      value._fiatCurrency as unknown as FiatCurrency,
+      new Dec(String(value.amount))
+    );
+  }
+  if (isRecord(value._currency) && "coinDenom" in value._currency) {
+    return new CoinPretty(
+      value._currency as unknown as Currency,
+      leakedDecToString(value.amount)
+    );
+  }
+  if (isRecord(value._options) && "symbol" in value._options) {
+    return new RatePretty(leakedDecToString(value.amount));
+  }
+
+  const out: Record<string, unknown> = {};
+  for (const [key, nested] of Object.entries(value)) {
+    out[key] = reviveLeakedUnitValues(nested);
+  }
+  return out;
 }
 
 superjson.registerCustom<Dec, string>(
@@ -179,5 +230,15 @@ superjson.registerCustom<Buffer, string>(
   },
   "Buffer"
 );
+
+const originalParse = superjson.parse.bind(superjson);
+const originalDeserialize = superjson.deserialize.bind(superjson);
+
+superjson.parse = ((str: string) =>
+  reviveLeakedUnitValues(originalParse(str))) as typeof superjson.parse;
+superjson.deserialize = ((payload: Parameters<typeof originalDeserialize>[0]) =>
+  reviveLeakedUnitValues(
+    originalDeserialize(payload)
+  )) as typeof superjson.deserialize;
 
 export { superjson };
