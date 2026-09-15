@@ -87,7 +87,3 @@ export default async function pools(req: Request) {
   }
   return new Response("", { status: 500 });
 }
-
-export const config = {
-  runtime: "edge",
-};
