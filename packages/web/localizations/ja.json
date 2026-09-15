@@ -42,7 +42,11 @@
       "valueOut": "出金額",
       "totalCost": "総コスト",
       "totalCostWarning": "この入金の合計コストは{totalCost}で、価格インパクトとスワップ手数料が含まれ、ポジションに届く価値が減少します。",
-      "quoteLoading": "最適なスワップを検索中…"
+      "quoteLoading": "最適なスワップを検索中…",
+      "estimatedTotalReceive": "受取合計の見積もり",
+      "existingBalanceCaution": "価格がスリッページ許容度を超えて変動した場合、既存残高から最大{amount}がスワップに含まれる可能性があります。",
+      "poolDataUnavailable": "選択した比率に必要なプールデータを取得できません。標準の引き出しを行うには、スライダーを開始位置に戻してください。",
+      "mixedOwnPoolRoute": "この見積もりはポジション自身のプールを部分的に経由するため、安全な最小値を計算できません。新しい見積もりを待っています。金額や比率を変えるとルートが変わることもあります。"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "プール #{poolId}に移動します",
     "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。",
     "noPositions": "求人情報は見つかりませんでした。",
-    "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。"
+    "noPositionsDescription": "プールに集中的な流動性を提供することで、スプレッド報酬を獲得し始めることができます。",
+    "receiveAs": "受け取り通貨",
+    "swapBreakdown": "{swapAmount} {inDenom}({swapPercent})が{outDenom}にスワップされます。"
   },
   "copied": "コピーしました！",
   "app": {

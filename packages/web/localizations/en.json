@@ -42,7 +42,11 @@
       "valueOut": "Value out",
       "totalCost": "Total cost",
       "totalCostWarning": "The total cost of this deposit is {totalCost}, including price impact and swap fees, which reduces the value that reaches your position.",
-      "quoteLoading": "Finding the best swap…"
+      "quoteLoading": "Finding the best swap…",
+      "estimatedTotalReceive": "Estimated total received",
+      "existingBalanceCaution": "If the price moves beyond your slippage tolerance, up to {amount} of your existing balance may be included in the swap.",
+      "poolDataUnavailable": "Pool data needed for the selected mix is unavailable. Move the slider back to its starting position for a standard withdrawal.",
+      "mixedOwnPoolRoute": "This quote routes partly through the position's own pool, so a safe minimum can't be computed. Waiting for a new quote; a different amount or mix can also change the route."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -77,6 +81,8 @@
     "collectAllRewards": "Collect All Rewards",
     "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
+    "receiveAs": "Receive as",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) will be swapped to {outDenom}.",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",

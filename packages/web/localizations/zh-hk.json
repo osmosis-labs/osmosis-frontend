@@ -42,7 +42,11 @@
       "valueOut": "輸出價值",
       "totalCost": "總成本",
       "totalCostWarning": "此存入的總成本為 {totalCost}，包括價格影響和兌換費用，這會減少進入您倉位的價值。",
-      "quoteLoading": "尋找最佳兌換…"
+      "quoteLoading": "尋找最佳兌換…",
+      "estimatedTotalReceive": "預計總接收額",
+      "existingBalanceCaution": "如果價格波動超出您的滑點容差，您現有結餘中最多 {amount} 可能會被計入兌換。",
+      "poolDataUnavailable": "所選比例所需的資金池數據不可用。將滑桿移回起始位置以進行標準提取。",
+      "mixedOwnPoolRoute": "此報價部分經由該倉位自身的資金池，因此無法計算安全最小值。正在等待新報價；更改金額或比例也可能改變路由。"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "前往泳池 #{poolId}",
     "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。",
     "noPositions": "未找到職位",
-    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。"
+    "noPositionsDescription": "提供資金池集中流動性，即可開始賺取價差獎勵。",
+    "receiveAs": "接收為",
+    "swapBreakdown": "{swapAmount} {inDenom}（{swapPercent}）將被兌換為 {outDenom}。"
   },
   "copied": "複製了！",
   "app": {

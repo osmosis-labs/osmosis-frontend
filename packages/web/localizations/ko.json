@@ -42,7 +42,11 @@
       "valueOut": "출금액",
       "totalCost": "총 비용",
       "totalCostWarning": "이 예치의 총 비용은 {totalCost}이며, 가격 영향과 스왑 수수료가 포함되어 포지션에 도달하는 가치가 줄어듭니다.",
-      "quoteLoading": "최적 스왑을 찾는 중…"
+      "quoteLoading": "최적 스왑을 찾는 중…",
+      "estimatedTotalReceive": "예상 총 수령액",
+      "existingBalanceCaution": "가격이 슬리피지 허용 범위를 넘어 움직이면 기존 잔액에서 최대 {amount}가 스왑에 포함될 수 있습니다.",
+      "poolDataUnavailable": "선택한 비율에 필요한 풀 데이터를 사용할 수 없습니다. 표준 출금을 하려면 슬라이더를 시작 위치로 되돌리세요.",
+      "mixedOwnPoolRoute": "이 견적은 포지션 자체 풀을 부분적으로 경유하므로 안전한 최소값을 계산할 수 없습니다. 새 견적을 기다리는 중입니다. 금액이나 비율을 바꾸면 경로가 달라질 수 있습니다."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "풀 번호로 이동 #{poolId}",
     "errorFetchingPositions": "직책 세부 정보를 가져오지 못했습니다. 페이지를 새로 고침해 보세요. 문제가 지속되면 지원팀에 문의하세요.",
     "noPositions": "채용 공고를 찾을 수 없습니다.",
-    "noPositionsDescription": "스프레드 보상을 받으려면 특정 풀에 집중된 유동성을 제공하세요."
+    "noPositionsDescription": "스프레드 보상을 받으려면 특정 풀에 집중된 유동성을 제공하세요.",
+    "receiveAs": "수령액",
+    "swapBreakdown": "{swapAmount} {inDenom}({swapPercent})이 {outDenom}으로 스왑됩니다."
   },
   "copied": "복사되었습니다!",
   "app": {

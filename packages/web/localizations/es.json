@@ -42,7 +42,11 @@
       "valueOut": "Valor de salida",
       "totalCost": "Costo total",
       "totalCostWarning": "El costo total de este depósito es {totalCost}, incluyendo el impacto en el precio y las comisiones de intercambio, lo que reduce el valor que llega a tu posición.",
-      "quoteLoading": "Buscando el mejor intercambio…"
+      "quoteLoading": "Buscando el mejor intercambio…",
+      "estimatedTotalReceive": "Total estimado a recibir",
+      "existingBalanceCaution": "Si el precio se mueve más allá de tu tolerancia de deslizamiento, hasta {amount} de tu saldo existente puede incluirse en el intercambio.",
+      "poolDataUnavailable": "Los datos del pool necesarios para la mezcla seleccionada no están disponibles. Mueve el control deslizante a su posición inicial para un retiro estándar.",
+      "mixedOwnPoolRoute": "Esta cotización pasa parcialmente por el propio pool de la posición, por lo que no se puede calcular un mínimo seguro. Esperando una nueva cotización; otro monto u otra mezcla también puede cambiar la ruta."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "Ir a la piscina #{poolId}",
     "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia.",
     "noPositions": "No se encontraron puestos",
-    "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales."
+    "noPositionsDescription": "Proporcione liquidez concentrada a un fondo común para comenzar a obtener recompensas por diferenciales.",
+    "receiveAs": "Recibir como",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) se intercambiarán a {outDenom}."
   },
   "copied": "¡Copiado!",
   "app": {

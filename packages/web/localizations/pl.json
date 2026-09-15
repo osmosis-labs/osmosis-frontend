@@ -42,7 +42,11 @@
       "valueOut": "Wartość wyjściowa",
       "totalCost": "Koszt całkowity",
       "totalCostWarning": "Całkowity koszt tej wpłaty wynosi {totalCost}, wliczając wpływ na cenę i opłaty za wymianę, co zmniejsza wartość trafiającą do Twojej pozycji.",
-      "quoteLoading": "Szukanie najlepszej zamiany…"
+      "quoteLoading": "Szukanie najlepszej zamiany…",
+      "estimatedTotalReceive": "Szacowana łączna kwota otrzymana",
+      "existingBalanceCaution": "Jeśli cena przekroczy Twoją tolerancję poślizgu, do {amount} z Twojego istniejącego salda może zostać uwzględnione w wymianie.",
+      "poolDataUnavailable": "Dane puli potrzebne dla wybranej proporcji są niedostępne. Przesuń suwak z powrotem do pozycji początkowej, aby wykonać standardową wypłatę.",
+      "mixedOwnPoolRoute": "Ta wycena przechodzi częściowo przez pulę samej pozycji, więc nie można obliczyć bezpiecznego minimum. Oczekiwanie na nową wycenę; inna kwota lub proporcja może również zmienić trasę."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -99,7 +103,9 @@
     "goToPool": "Idź do basenu #{poolId}",
     "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.",
     "noPositions": "Nie znaleziono stanowisk",
-    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie."
+    "noPositionsDescription": "Zapewnij skoncentrowaną płynność puli, aby zacząć zarabiać na spreadzie.",
+    "receiveAs": "Otrzymaj jako",
+    "swapBreakdown": "{swapAmount} {inDenom} ({swapPercent}) zostanie zamienione na {outDenom}."
   },
   "copied": "Skopiowano!",
   "app": {
