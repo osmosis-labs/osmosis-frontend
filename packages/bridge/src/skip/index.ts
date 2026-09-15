@@ -866,17 +866,25 @@ export class SkipBridgeProvider implements BridgeProvider {
       };
     }
 
-    // Cap the gas limit into the budget at the floor price. A limit near or
-    // below a REAL simulation's measured gas guarantees an out-of-gas
-    // failure that still charges the fee, so require a margin over the
-    // measured use before accepting a cap; a fallback-derived limit is a
-    // deliberate overestimate and capping it is safe.
+    // Past here the budget cannot buy the full gas limit even at the floor
+    // price, so the only remaining option is to cap the limit into it.
+    //
+    // A SIMULATED limit must never be capped. Simulation under-reports what
+    // execution actually uses (measured 27% low on a live Noble step:
+    // 94,028 simulated against 119,829 used), which is exactly why the
+    // normal path applies `gasMultiplier`. Any cap below the full multiplied
+    // limit re-enters the range where the transaction can run out of gas,
+    // and an out-of-gas failure charges the fee, consumes the whole reserve,
+    // and strands the funds with nothing left to fund a retry. Refuse
+    // instead, with copy telling the user to top up the fee token.
+    //
+    // A FALLBACK limit has no simulation to under-report and is a
+    // deliberate overestimate of a known message shape, so capping it is
+    // safe and keeps quotes working when the account is not funded yet.
     const cappedGas = Number(
       new Dec(feeBudget.amount).quo(minPrice).truncate().toString()
     );
-    const minAcceptableGas =
-      simulatedGas === undefined ? 0 : Math.ceil(simulatedGas * 1.1);
-    if (cappedGas > 0 && cappedGas >= minAcceptableGas) {
+    if (simulatedGas === undefined && cappedGas > 0) {
       return {
         gas: String(cappedGas),
         denom: feeDenom,

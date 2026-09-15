@@ -1506,34 +1506,35 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     ).rejects.toThrow(BridgeRouteExpiredMessage);
   });
 
-  it("caps the step's gas limit into the route's fee reserve", async () => {
+  it("never caps a simulated gas limit below its full margin", async () => {
     // 160000 used -> 240000 limit; even at the low price (0.1) the fee
-    // (24000) exceeds the 20000 reserve, so the limit is capped to what the
-    // reserve buys at the low price: 200000 gas, still >= the simulated use
+    // (24000) exceeds the 20000 reserve. The reserve would buy 200000 gas,
+    // which is above the simulated use but BELOW the multiplied limit, and
+    // simulation under-reports real execution (measured 27% low live), so
+    // accepting that cap risks an out-of-gas failure that spends the whole
+    // reserve and strands the funds. Refuse instead.
     (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
       gasUsed: 160000,
       coinsSpent: [],
     });
 
-    const step = await provider.getTransactionStep({
-      ...multiTxQuoteParams,
-      route: multiTxRouteData,
-      step: { chainId: "noble-1", senderAddress: nobleAddress },
-    });
-
-    expect(step.gasFee).toEqual({
-      gas: "200000",
-      denom: "uusdc",
-      amount: "20000",
-    });
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeFeeExceedsBudgetMessage);
   });
 
-  it("refuses a step whose simulated gas cannot fit the fee reserve", async () => {
-    // 250000 used: the reserve buys only 200000 gas at the low price, below
-    // what the simulation measured, so signing would fail out-of-gas while
-    // still charging the fee — refuse with the named message instead
+  it("refuses even when the reserve covers the simulated gas itself", async () => {
+    // 190000 used: the reserve buys 200000 gas at the low price, which is
+    // MORE than the simulation measured and would have passed a thinner
+    // margin check. Real execution routinely exceeds simulation, so this is
+    // exactly the range that silently runs out of gas; the full multiplied
+    // limit (285000) is what the fee must cover.
     (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
-      gasUsed: 250000,
+      gasUsed: 190000,
       coinsSpent: [],
     });
 
