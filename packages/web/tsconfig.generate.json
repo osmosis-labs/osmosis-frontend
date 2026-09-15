@@ -8,7 +8,6 @@
       "@osmosis-labs/keplr-hooks": ["../keplr-hooks/src"],
       "@osmosis-labs/keplr-stores": ["../keplr-stores/src"],
       "@osmosis-labs/math": ["../math/src"],
-      "@osmosis-labs/pools": ["../pools/src"],
       "@osmosis-labs/proto-codecs": ["../proto-codecs/src"],
       "@osmosis-labs/proto-codecs/build/*": ["../proto-codecs/src/*"],
       "@osmosis-labs/server": ["../server/src"],

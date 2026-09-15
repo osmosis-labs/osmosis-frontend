@@ -7,7 +7,6 @@ const workspaceSrcPackages = [
   "keplr-hooks",
   "keplr-stores",
   "math",
-  "pools",
   "proto-codecs",
   "server",
   "stores",
