@@ -121,7 +121,8 @@ export type SkipOperation =
   | { transfer: SkipTransfer }
   | { swap: SkipSwap }
   | { evm_swap: SkipEvmSwap }
-  | { axelar_transfer: SkipAxelarTransfer };
+  | { axelar_transfer: SkipAxelarTransfer }
+  | { cctp_transfer: SkipCctpTransfer };
 
 /** A swap performed on the destination EVM chain by the Axelar GMP executor. */
 export type SkipEvmSwap = {
@@ -182,6 +183,17 @@ export type SkipAxelarTransfer = {
   fee_amount: string;
   fee_asset: SkipAsset;
   is_testnet: boolean;
+};
+
+/** A Circle CCTP burn-and-mint leg, used on the native USDC routes. */
+export type SkipCctpTransfer = {
+  from_chain_id: string;
+  to_chain_id: string;
+  burn_token: string;
+  denom_in: string;
+  denom_out: string;
+  bridge_id: string;
+  smart_relay: boolean;
 };
 
 export type SkipSwapExactCoinOut = {
