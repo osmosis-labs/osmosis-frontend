@@ -26,10 +26,15 @@ const config = {
   transpilePackages: workspaceSrcPackages.map(
     (name) => `@osmosis-labs/${name}`
   ),
-  outputFileTracingRoot: path.join(__dirname, "../.."),
   eslint: {
     // Lint runs in CI via `turbo lint`; skip the extra pass inside `next build`.
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Workspace packages are typechecked by their own `tsc` in CI. Next would
+    // otherwise typecheck sibling `src` under web's compiler options, or fail
+    // when lib `build/` dts are absent because web no longer waits on `^build`.
+    ignoreBuildErrors: true,
   },
   images: {
     remotePatterns: [
@@ -143,6 +148,7 @@ const config = {
     instrumentationHook: true,
     // Compile workspace `src` files that webpack aliases in from sibling packages.
     externalDir: true,
+    outputFileTracingRoot: path.join(__dirname, "../.."),
   },
 };
 

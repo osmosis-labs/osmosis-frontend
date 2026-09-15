@@ -59,7 +59,7 @@ function readStoredAssetListHash(): string | null {
   }
 }
 
-const generatedListFiles = ["asset-list.ts", "chain-list.ts"] as const;
+const generatedListFiles = ["asset-lists.ts", "chain-list.ts"] as const;
 
 /** True when generate-lists has already written outputs for this asset-list commit. */
 export function isAssetListGenerateCached(commitHash: string): boolean {
