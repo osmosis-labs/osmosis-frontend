@@ -16,6 +16,7 @@ import {
   poolStateFromChainResponse,
   PositionMigration,
   positionStateFromChainResponse,
+  rescalePositionValueUsd,
   toleranceForPositionSize,
   validatePositionMigrationsResponse,
 } from "../position-migrations";
@@ -820,5 +821,86 @@ describe("positionStateFromChainResponse", () => {
         "3513"
       )
     ).toBeUndefined();
+  });
+});
+
+describe("rescalePositionValueUsd", () => {
+  const rendered = { amount0: "1000000", amount1: "1000000" };
+
+  it("leaves an unchanged position at its rendered value", () => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 500,
+        renderedAmounts: rendered,
+        freshAmounts: rendered,
+      })
+    ).toBe(500);
+  });
+
+  // Tier selection must follow the amounts actually read, so a position that
+  // grew past a boundary gates at the tighter tolerance.
+  it("scales up when a side grew", () => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 500,
+        renderedAmounts: rendered,
+        freshAmounts: { amount0: "1000000", amount1: "3000000" },
+      })
+    ).toBe(1500);
+  });
+
+  // Taking the larger per-side ratio keeps the estimate high, which selects
+  // the tighter tier when the split between sides is unknown.
+  it("takes the larger side ratio when the sides diverge", () => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 100,
+        renderedAmounts: rendered,
+        freshAmounts: { amount0: "500000", amount1: "2000000" },
+      })
+    ).toBe(200);
+  });
+
+  // 0 is the strictest tier in toleranceForPositionSize, so every unusable
+  // input refuses to loosen the gate.
+  it.each([
+    ["zero value", 0, rendered],
+    ["negative value", -10, rendered],
+    ["non-finite value", NaN, rendered],
+  ])("returns 0 for %s", (_label, positionValueUsd, freshAmounts) => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd,
+        renderedAmounts: rendered,
+        freshAmounts,
+      })
+    ).toBe(0);
+  });
+
+  it("returns 0 for malformed or zeroed rendered amounts", () => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 500,
+        renderedAmounts: { amount0: "bad", amount1: "1000000" },
+        freshAmounts: rendered,
+      })
+    ).toBe(0);
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 500,
+        renderedAmounts: { amount0: "0", amount1: "0" },
+        freshAmounts: rendered,
+      })
+    ).toBe(0);
+  });
+
+  it("returns 0 when the position emptied out", () => {
+    expect(
+      rescalePositionValueUsd({
+        positionValueUsd: 500,
+        renderedAmounts: rendered,
+        freshAmounts: { amount0: "0", amount1: "0" },
+      })
+    ).toBe(0);
   });
 });

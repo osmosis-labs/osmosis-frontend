@@ -577,6 +577,63 @@ export interface ChainPositionResponse {
 }
 
 /**
+ * Rescales a position's USD value to freshly read amounts, so the size-tiered
+ * divergence gate selects its tier from what the position holds now rather
+ * than from the render-time snapshot.
+ *
+ * Value is linear in the amounts at fixed prices - the rendered value is
+ * `calcSumCoinsValue` over the two coins - so scaling by the amount ratio
+ * tracks a position that moved within its range without dragging the async
+ * pricing pipeline into the pre-broadcast path, where a new failure mode
+ * would be worse than the staleness it removes. Prices themselves can still
+ * drift between render and confirm; that is bounded by how briefly a modal
+ * stays open, and every unusable input here resolves to 0, which the tier
+ * lookup treats as the STRICTEST tier.
+ */
+export const rescalePositionValueUsd = ({
+  positionValueUsd,
+  renderedAmounts,
+  freshAmounts,
+}: {
+  positionValueUsd: number;
+  renderedAmounts: { amount0: string; amount1: string };
+  freshAmounts: { amount0: string; amount1: string };
+}): number => {
+  if (!Number.isFinite(positionValueUsd) || positionValueUsd <= 0) return 0;
+
+  const toDec = (amount: string) => {
+    try {
+      return new Dec(amount);
+    } catch {
+      return undefined;
+    }
+  };
+  const rendered0 = toDec(renderedAmounts.amount0);
+  const rendered1 = toDec(renderedAmounts.amount1);
+  const fresh0 = toDec(freshAmounts.amount0);
+  const fresh1 = toDec(freshAmounts.amount1);
+  if (!rendered0 || !rendered1 || !fresh0 || !fresh1) return 0;
+
+  /* Each side carries its share of the value, and the shares are unknown
+     without prices - but the total scales between the two extremes of "all
+     value on side 0" and "all on side 1". Taking the LARGER of the two
+     per-side ratios keeps the estimate on the high side, which selects the
+     tighter tier when it errs. */
+  const ratio = (fresh: Dec, rendered: Dec) =>
+    rendered.isPositive() ? fresh.quo(rendered) : undefined;
+  const ratio0 = ratio(fresh0, rendered0);
+  const ratio1 = ratio(fresh1, rendered1);
+  const scale =
+    ratio0 && ratio1 ? (ratio0.gt(ratio1) ? ratio0 : ratio1) : ratio0 ?? ratio1;
+  if (!scale || !scale.isPositive()) return 0;
+
+  const rescaled = Number(
+    new Dec(positionValueUsd.toString()).mul(scale).toString()
+  );
+  return Number.isFinite(rescaled) ? rescaled : 0;
+};
+
+/**
  * Narrows a raw chain position response into the amounts and ticks the
  * eligibility checks take, or `undefined` when any of them is missing - which
  * callers must treat as "cannot evaluate" and refuse. The pool id is checked

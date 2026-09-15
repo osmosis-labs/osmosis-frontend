@@ -15,6 +15,7 @@ import {
   queryLatestPositionMigrations,
   usePositionMigrations,
 } from "~/hooks/use-position-migrations";
+import { useStore } from "~/stores";
 import {
   ChainConcentratedPoolResponse,
   ChainPositionResponse,
@@ -26,6 +27,7 @@ import {
   poolStateFromChainResponse,
   PositionMigrationsResponse,
   positionStateFromChainResponse,
+  rescalePositionValueUsd,
   validatePositionMigrationsResponse,
 } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
@@ -117,8 +119,11 @@ export const usePositionMigrationForPosition = ({
   isSuperfluidUnstaking,
 }: {
   poolId: string;
-  /** Re-read from the chain at confirm time, so a range crossing while the
-   * modal sits open is caught before the transaction is built. */
+  /**
+   * Re-read from the chain at confirm time, so a range crossing or a lock
+   * applied while the modal sits open is caught before the transaction is
+   * built.
+   */
   positionId: string;
   /** USD value of the position; the divergence gate tightens with size. */
   positionValueUsd: number;
@@ -141,6 +146,10 @@ export const usePositionMigrationForPosition = ({
 }) => {
   const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
+  const apiUtils = api.useUtils();
+  const { accountStore, chainStore } = useStore();
+  const userOsmoAddress =
+    accountStore.getWallet(chainStore.osmosis.chainId)?.address ?? "";
 
   // Destructured to scalars so the object literals callers pass each render
   // do not churn the revalidate callback's identity.
@@ -190,21 +199,43 @@ export const usePositionMigrationForPosition = ({
        are a snapshot, and a price crossing out of the range while the modal
        sat open would otherwise pass the single-sided check here and fail
        later inside the sizing simulations. */
-    const [fromPool, toPool, freshPosition] = await Promise.all([
+    /* Lock state is re-read too: a position superfluid-staked or set
+       unbonding while the modal sat open would otherwise be judged on the
+       render-time flags. Fetched uncached, and any failure refuses - the
+       same fail-closed rule the render path applies to unknown lock state. */
+    const [fromPool, toPool, freshPosition, freshDetails] = await Promise.all([
       fetchChainPoolState(poolId),
       fetchChainPoolState(mapped.toPoolId.toString()),
       fetchChainPositionState(positionId, poolId),
+      userOsmoAddress
+        ? apiUtils.local.concentratedLiquidity.getPositionDetails
+            .fetch({ position: positionId, userOsmoAddress }, { staleTime: 0 })
+            .catch(() => undefined)
+        : undefined,
     ]);
-    if (!fromPool || !toPool || !freshPosition) return undefined;
+    if (!fromPool || !toPool || !freshPosition || !freshDetails)
+      return undefined;
+
     const eligibility: MigrationEligibility = getMigrationEligibility({
       migrations: freshConfig.migrations,
       priceDivergenceTiers: freshConfig.priceDivergenceTiers,
-      positionValueUsd,
+      /* Tiered by size, so the tier must follow the amounts just read rather
+         than the render-time snapshot; unusable inputs rescale to 0, which
+         the tier lookup treats as the strictest tier. */
+      positionValueUsd: rescalePositionValueUsd({
+        positionValueUsd,
+        renderedAmounts: { amount0, amount1 },
+        freshAmounts: freshPosition.positionAmounts,
+      }),
       positionAmounts: freshPosition.positionAmounts,
       positionTicks: freshPosition.positionTicks,
       fromPool,
       toPool,
-      lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
+      lockState: {
+        isUnbonding: Boolean(freshDetails.isUnbonding),
+        isSuperfluidStaked: Boolean(freshDetails.isSuperfluidStaked),
+        isSuperfluidUnstaking: Boolean(freshDetails.isSuperfluidUnstaking),
+      },
       fromUsdcDenom: USDC_NOBLE_DENOM,
       toUsdcDenom: USDC_ALLOYED_DENOM,
     });
@@ -216,11 +247,12 @@ export const usePositionMigrationForPosition = ({
     mapped,
     lockStateKnown,
     positionValueUsd,
+    amount0,
+    amount1,
     positionId,
     poolId,
-    isUnbonding,
-    isSuperfluidStaked,
-    isSuperfluidUnstaking,
+    userOsmoAddress,
+    apiUtils,
   ]);
 
   /* Poll while a mapped position's card is expanded, so the displayed
