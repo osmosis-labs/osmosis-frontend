@@ -48,7 +48,3 @@ export default async function pools(req: Request) {
   const response: Response = { pool: pool as PoolRawResponse };
   return new Response(JSON.stringify(response), { status: 200 });
 }
-
-export const config = {
-  runtime: "edge",
-};
