@@ -15,6 +15,7 @@ import {
   BridgeChain,
   BridgeProviderContext,
   BridgeTransactionRequest,
+  CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../../interface";
@@ -23,6 +24,8 @@ import { SkipMsg, SkipMsgsRequest } from "../types";
 import {
   ETH_EthereumToOsmosis_Msgs,
   ETH_EthereumToOsmosis_Route,
+  ETH_OsmosisToEthereum_DestinationSwap_Msgs,
+  ETH_OsmosisToEthereum_DestinationSwap_Route,
   ETH_OsmosisToEthereum_Msgs,
   ETH_OsmosisToEthereum_Route,
   SkipAssets,
@@ -1025,6 +1028,41 @@ describe("SkipBridgeProvider", () => {
       });
 
       expect(captured.body?.slippage_tolerance_percent).toBe("1.5");
+    });
+
+    /**
+     * The raise has its own unit tests, but nothing asserted it was still
+     * wired into `getQuote`: every other fixture routes without a destination
+     * swap, so the call could be deleted and leave the suite green.
+     */
+    it("raises the signed floor to cover a destination swap", async () => {
+      server.use(
+        rest.post(
+          "https://api.skip.money/v2/fungible/route",
+          (_req, res, ctx) =>
+            res(ctx.json(ETH_OsmosisToEthereum_DestinationSwap_Route))
+        ),
+        rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
+          res(ctx.json(ETH_OsmosisToEthereum_DestinationSwap_Msgs))
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
+
+      const quote = await provider.getQuote(osmosisToEthereumQuoteParams);
+
+      const { msgs } =
+        quote.transactionRequest as CosmosBridgeTransactionRequest;
+      const executed = JSON.parse(Buffer.from(msgs[0].value.msg).toString());
+
+      // evm_swap.amount_in + axelar_transfer.fee_amount, up from the 0.5%
+      // floor Skip signed at 9942313206615014490.
+      expect(executed.swap_and_action.min_asset.native.amount).toBe(
+        "9992274579512577377"
+      );
     });
   });
 });

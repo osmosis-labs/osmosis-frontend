@@ -690,3 +690,90 @@ export const USDC_EthereumToOsmosisAlloy_MultiTxMsgs = {
     },
   ],
 };
+
+/**
+ * The same Osmosis -> Ethereum pair, but routed through a destination swap:
+ * Skip swaps on Osmosis, bridges over Axelar, then swaps again on Ethereum.
+ * The destination leg spends a pinned `amount_in`, so the signed floor has to
+ * cover `evm_swap.amount_in + axelar_transfer.fee_amount` exactly — here
+ * 9984549159025154754 + 7725420487422623 = 9992274579512577377.
+ */
+export const ETH_OsmosisToEthereum_DestinationSwap_Route = {
+  ...ETH_OsmosisToEthereum_Route,
+  does_swap: true,
+  swap_venues: [{ name: "osmosis-poolmanager", chain_id: "osmosis-1" }],
+  operations: [
+    {
+      swap: {
+        swap_in: {
+          swap_venue: { name: "osmosis-poolmanager", chain_id: "osmosis-1" },
+          swap_operations: [
+            {
+              pool: "1263",
+              denom_in: "uosmo",
+              denom_out:
+                "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+            },
+          ],
+        },
+      },
+      tx_index: 0,
+      amount_in: "10000000000000000000",
+      amount_out: "9992274579512577377",
+    },
+    ...ETH_OsmosisToEthereum_Route.operations,
+    {
+      evm_swap: {
+        from_chain_id: "1",
+        denom_in: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        denom_out: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        amount_in: "9984549159025154754",
+        amount_out: "34844860000",
+      },
+      tx_index: 0,
+      amount_in: "9984549159025154754",
+      amount_out: "34844860000",
+    },
+  ],
+};
+
+/**
+ * The floor Skip signs for that route at a 0.5% tolerance — 0.5% under the
+ * destination requirement, which is the shortfall this PR raises away.
+ */
+export const ETH_OsmosisToEthereum_DestinationSwap_Msgs = {
+  msgs: [
+    {
+      multi_chain_msg: {
+        chain_id: "osmosis-1",
+        path: ["osmosis-1", "1"],
+        msg_type_url: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        msg: JSON.stringify({
+          sender: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+          contract:
+            "osmo1xzphwrcmzy3vfhkzhkjmqs5nfqfqhcqkxqxqmzqmzqmzqmzqmzqsqzqzqz",
+          msg: {
+            swap_and_action: {
+              min_asset: {
+                native: {
+                  denom:
+                    "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+                  amount: "9942313206615014490",
+                },
+              },
+            },
+          },
+          funds: [
+            {
+              denom:
+                "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+              amount: "10000000000000000000",
+            },
+          ],
+        }),
+      },
+    },
+  ],
+  txs: [],
+  estimated_fees: [],
+};
