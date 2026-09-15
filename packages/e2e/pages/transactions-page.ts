@@ -5,7 +5,7 @@ import {
   expect,
 } from "@playwright/test";
 
-import { pollTxOnChain } from "../utils/tx-confirm";
+import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage } from "./keplr-helper";
 
@@ -30,6 +30,9 @@ import { getKeplrPopupPage } from "./keplr-helper";
  * against a REST poll of the LCD, mirroring `TradePage.startTxConfirmation()`.
  */
 export class TransactionsPage extends BasePage {
+  /** Hash of the most recently confirmed limit-order tx, for callers whose
+   *  follow-up checks read the success toast (see `getLastTxUrl`). */
+  private lastTxHash?: string;
   readonly transactionRow: Locator;
   readonly viewExplorerLink: Locator;
   readonly closeTransactionBtn: Locator;
@@ -220,6 +223,8 @@ export class TransactionsPage extends BasePage {
    * Arm this BEFORE the action click so the broadcast response isn't missed.
    */
   private startTxConfirmation(timeout = 120_000): Promise<void> {
+    // Clear any hash from a previous action so getLastTxUrl can't reuse it.
+    this.lastTxHash = undefined;
     const controller = new AbortController();
 
     // Confirm on THIS tx's toast, not a lingering one from a previous action
@@ -241,18 +246,36 @@ export class TransactionsPage extends BasePage {
           "REST confirmation branch aborted before hash capture."
         );
       }
+      this.lastTxHash = hash;
       console.log(`Captured broadcast tx hash: ${hash}`);
       return pollTxOnChain(hash, { timeout, signal: controller.signal }).then(
         () => "REST LCD poll" as const
       );
     });
 
+    // A non-zero on-chain code is deterministic: the tx is included and failed,
+    // so the toast will never arrive. Racing that rejection against the pair
+    // below surfaces the chain error immediately instead of letting the toast
+    // branch run out its budget (which exceeds Playwright's test timeout and
+    // would report a generic timeout instead of the real reason).
+    const chainFailure = restPromise.then(
+      () => new Promise<never>(() => {}),
+      (err: Error) => {
+        if (err?.message?.includes("failed on-chain")) throw err;
+        return new Promise<never>(() => {});
+      }
+    );
+
     // The losing branch keeps running and eventually rejects; swallow that so
     // it doesn't surface as an unhandled rejection in Playwright/Node.
     toastPromise.catch(() => {});
     restPromise.catch(() => {});
+    chainFailure.catch(() => {});
 
-    return Promise.any([toastPromise, restPromise])
+    return Promise.race([
+      Promise.any([toastPromise, restPromise]),
+      chainFailure,
+    ])
       .then((winner) => {
         controller.abort();
         console.log(`Transaction confirmed via ${winner}.`);
@@ -266,6 +289,20 @@ export class TransactionsPage extends BasePage {
           `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
         );
       });
+  }
+
+  /**
+   * Explorer URL for the tx this page most recently confirmed, or undefined if
+   * none was captured.
+   *
+   * `TradePage.getTransactionUrl()` reads the "View explorer" link out of the
+   * success toast and falls back to its own captured hash. That hash is never
+   * set for actions driven from this page, so when REST confirms and the toast
+   * never renders, the follow-up check has nothing to fall back to. Tests that
+   * cancel or claim from here should prefer this value.
+   */
+  getLastTxUrl(): string | undefined {
+    return this.lastTxHash ? buildExplorerTxUrl(this.lastTxHash) : undefined;
   }
 
   async isFilledByLimitPrice(price: string | number) {
