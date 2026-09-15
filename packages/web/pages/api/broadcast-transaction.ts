@@ -96,6 +96,5 @@ export default async function broadcastTransactionHandler(req: Request) {
 }
 
 export const config = {
-  runtime: "edge",
   regions: ["cdg1"], // Only execute this function in the Paris region
 };

@@ -6,11 +6,6 @@ import { edgeRouter } from "~/server/api/edge-router";
 import { createEdgeTrpcContext } from "~/server/api/trpc";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
-// We're using the edge-runtime
-export const config = {
-  runtime: "edge",
-};
-
 /**
  * Create a separate api edge route for the pools edge server since its query is too expensive
  * and it's slowing the other queries down because of JS single threaded nature.

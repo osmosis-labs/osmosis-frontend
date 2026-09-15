@@ -6,11 +6,6 @@ import { edgeRouter } from "~/server/api/edge-router";
 import { createEdgeTrpcContext } from "~/server/api/trpc";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
-// We're using the edge-runtime
-export const config = {
-  runtime: "edge",
-};
-
 export default async function handler(req: NextRequest) {
   return fetchRequestHandler({
     endpoint: constructEdgeUrlPathname("main"),
