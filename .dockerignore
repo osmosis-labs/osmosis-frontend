@@ -1,0 +1,12 @@
+.git
+.github
+.turbo
+.vercel
+**/.next
+**/node_modules
+**/build
+**/coverage
+**/.env*
+packages/e2e
+*.md
+!packages/**/README.md

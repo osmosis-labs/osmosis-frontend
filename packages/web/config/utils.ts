@@ -59,6 +59,18 @@ function readStoredAssetListHash(): string | null {
   }
 }
 
+const generatedListFiles = ["asset-list.ts", "chain-list.ts"] as const;
+
+/** True when generate-lists has already written outputs for this asset-list commit. */
+export function isAssetListGenerateCached(commitHash: string): boolean {
+  if (readStoredAssetListHash() !== commitHash) {
+    return false;
+  }
+  return generatedListFiles.every((fileName) =>
+    fs.existsSync(path.join(codegenDir, fileName))
+  );
+}
+
 /**
  * Write the current asset list hash to the lock file.
  * @param hash The hash to store.

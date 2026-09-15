@@ -11,7 +11,7 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "yarn build"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@cosmjs/encoding": "0.32.3",

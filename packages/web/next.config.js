@@ -1,11 +1,36 @@
 // @ts-check
 const path = require("path");
 
+/** Workspace packages compiled from `src` by Next instead of waiting on `tsc` emit. */
+const workspaceSrcPackages = [
+  "bridge",
+  "keplr-hooks",
+  "keplr-stores",
+  "math",
+  "pools",
+  "proto-codecs",
+  "server",
+  "stores",
+  "trpc",
+  "tx",
+  "types",
+  "unit",
+  "utils",
+];
+
 /**
  * @type {import('next').NextConfig}
  **/
 const config = {
   reactStrictMode: true,
+  transpilePackages: workspaceSrcPackages.map(
+    (name) => `@osmosis-labs/${name}`
+  ),
+  outputFileTracingRoot: path.join(__dirname, "../.."),
+  eslint: {
+    // Lint runs in CI via `turbo lint`; skip the extra pass inside `next build`.
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -100,6 +125,15 @@ const config = {
           __dirname,
           "../../node_modules/@cosmjs/amino"
         ),
+        ...Object.fromEntries(
+          workspaceSrcPackages.flatMap((name) => {
+            const src = path.resolve(__dirname, "..", name, "src");
+            return [
+              [`@osmosis-labs/${name}$`, src],
+              [`@osmosis-labs/${name}/build`, src],
+            ];
+          })
+        ),
       },
     };
 
@@ -107,6 +141,8 @@ const config = {
   },
   experimental: {
     instrumentationHook: true,
+    // Compile workspace `src` files that webpack aliases in from sibling packages.
+    externalDir: true,
   },
 };
 
