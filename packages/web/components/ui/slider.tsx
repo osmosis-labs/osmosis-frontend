@@ -10,6 +10,7 @@ const sliderRangeVariants = cva("absolute h-full", {
     variant: {
       default: "bg-gradient-neutral",
       secondary: "bg-superfluid",
+      solid: "bg-wosmongton-500",
     },
   },
   defaultVariants: {

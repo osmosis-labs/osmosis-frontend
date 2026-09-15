@@ -11,7 +11,8 @@ type Response = {
   APR: number;
 };
 
-/** Queries Imperator for extrapolated APR of a given position's tick range. */
+/** Queries the historical-data service (Numia, via the osmosis data proxy)
+ *  for extrapolated APR of a given position's tick range. */
 export class ObservableQueryPriceRangeApr extends ObservableQueryExternalBase<Response> {
   constructor(
     kvStore: KVStore,
