@@ -289,6 +289,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       return;
     }
 
+    // Providers can deliver the same terminal status more than once. A hash
+    // that already resolved must not mutate the snapshot AT ALL: a late
+    // duplicate "failed" would otherwise clobber the pending step a
+    // failed-final-step restore just put back (and the status write happens
+    // before the toast dedup below).
+    if (this._resolvedTxStatusKeys.has(sendTxHash)) return;
+
     const {
       direction,
       toAsset,
@@ -355,7 +362,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         );
         break;
       case "success":
-        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         displayToast(
           {
             titleTranslationKey:
@@ -380,7 +386,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "failed":
-        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         // A failed FINAL step of a multi-tx route is not terminal for the
         // funds: an on-chain failure moved nothing and a timed-out transfer
         // refunds, so they sit on the intermediate chain either way (and
@@ -393,8 +398,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           snapshot.reason = undefined;
           snapshot.pendingStep = toJS(snapshot.advancedStep);
           snapshot.advancedStep = undefined;
-          snapshot.multiTxStepVersion =
-            (snapshot.multiTxStepVersion ?? 0) + 1;
+          snapshot.multiTxStepVersion = (snapshot.multiTxStepVersion ?? 0) + 1;
+          // The failed attempt's hash is fully handled: resolve it so a
+          // duplicate provider callback can't re-enter and overwrite the
+          // restore (a retry advances under a NEW final hash).
+          this._resolvedTxStatusKeys.add(sendTxHash);
           displayToast(
             {
               titleTranslationKey: "transfer.multiTxStepFailedTitle",
@@ -428,7 +436,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "connection-error":
-        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         displayToast(
           {
             titleTranslationKey: "transfer.connectionError",

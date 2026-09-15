@@ -1084,6 +1084,26 @@ export const useBridgeQuotes = ({
         );
         return;
       }
+      // ...and durable, not just in memory: the final step's signing guard
+      // reads PERSISTED storage, and storage is the only recovery surface
+      // if this session ends. The autorun persist is fire-and-forget, so
+      // await an explicit write before relying on it.
+      try {
+        await transferHistoryStore.persistNow();
+      } catch (e) {
+        console.error("Multi-tx transfer entry could not be persisted", e);
+        displayToast(
+          {
+            titleTranslationKey: "transfer.somethingIsntWorking",
+            captionTranslationKey: [
+              "transfer.multiTxRecordFailed",
+              { chain: finalStepPrettyName },
+            ],
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
 
       setMultiTxPhase("waiting-arrival");
       const arrival = await waitForSkipStepArrival({

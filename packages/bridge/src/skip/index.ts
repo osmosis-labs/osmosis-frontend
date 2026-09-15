@@ -736,9 +736,8 @@ export class SkipBridgeProvider implements BridgeProvider {
         // When the step pays fees in the asset the route delivers, the fee
         // must fit what the route reserves for it (msgs are one per tx, so
         // the msg's index is its tx_index in the operations).
-        const feeDenom = this.ctx.chainList.find(
-          (c) => c.chain_id === chainId
-        )?.feeCurrencies?.[0]?.coinMinimalDenom;
+        const feeDenom = this.ctx.chainList.find((c) => c.chain_id === chainId)
+          ?.feeCurrencies?.[0]?.coinMinimalDenom;
         const feeBudget =
           operations && feeDenom
             ? this.getStepFeeBudget(
@@ -860,7 +859,11 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const minPricedAmount = priceGas(gasLimit, minPrice);
     if (BigInt(minPricedAmount) <= budget) {
-      return { gas: String(gasLimit), denom: feeDenom, amount: minPricedAmount };
+      return {
+        gas: String(gasLimit),
+        denom: feeDenom,
+        amount: minPricedAmount,
+      };
     }
 
     // Cap the gas limit into the budget at the floor price. A limit near or
@@ -1083,9 +1086,8 @@ export class SkipBridgeProvider implements BridgeProvider {
     // topping up the fee token genuinely raises what can be spent on fees.
     // A short or failed balance read never shrinks the budget below the
     // route's reserve (the read can lag the arrival).
-    const feeDenom = this.ctx.chainList.find(
-      (c) => c.chain_id === step.chainId
-    )?.feeCurrencies?.[0]?.coinMinimalDenom;
+    const feeDenom = this.ctx.chainList.find((c) => c.chain_id === step.chainId)
+      ?.feeCurrencies?.[0]?.coinMinimalDenom;
     const spend = feeDenom
       ? this.getMsgSpend(messageData, feeDenom)
       : undefined;

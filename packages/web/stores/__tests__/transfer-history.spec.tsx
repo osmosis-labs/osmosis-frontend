@@ -405,6 +405,28 @@ describe("TransferHistoryStore multi-tx entries", () => {
     expect(snapshot?.pendingStep).toBeUndefined();
   });
 
+  it("ignores duplicate failed callbacks after a restore", async () => {
+    // Status providers can deliver the same terminal status more than once;
+    // a late duplicate for the failed attempt's hash must not clobber the
+    // pending step the restore just put back.
+    const { store } = makeStore();
+
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+    store.advanceMultiTxStep("0xtx1", {
+      finalSendTxHash: "COSMOS_TX_2",
+      trackingChainId: "noble-1",
+      estimatedArrivalUnix: 1700000700,
+    });
+    await store.receiveNewTxStatus("COSMOS_TX_2", "failed", undefined);
+    await store.receiveNewTxStatus("COSMOS_TX_2", "failed", undefined);
+
+    const snapshot = (
+      store as unknown as { snapshots: TxSnapshot[] }
+    ).snapshots.find((s: TxSnapshot) => s.firstStepTxHash === "0xtx1");
+    expect(snapshot?.status).toBe("pending");
+    expect(snapshot?.pendingStep?.priorStepTxHash).toBe("0xtx1");
+  });
+
   it("keeps a failed FIRST step terminal", async () => {
     // Before the entry advances there is nothing to restore: a failed first
     // transaction means no funds reached the intermediate chain.

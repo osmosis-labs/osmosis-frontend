@@ -1577,8 +1577,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     server.use(
       rest.get(
         "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
-        (_req, res, ctx) =>
-          res(ctx.json({ balance: { amount: "999990000" } }))
+        (_req, res, ctx) => res(ctx.json({ balance: { amount: "999990000" } }))
       )
     );
 
