@@ -44,7 +44,12 @@
   "overrides": [
     // Pages router, config files
     {
-      "files": ["pages/**/*", "playwright.config.ts"],
+      "files": [
+        "pages/**/*",
+        "playwright.config.ts",
+        "localizations/**",
+        "proxy.ts"
+      ],
       "rules": {
         "import/no-default-export": "off"
       }
