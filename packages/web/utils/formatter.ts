@@ -58,7 +58,7 @@ function asPricePretty(value: unknown): PricePretty | undefined {
     !hasFn(value, "toDec")
   ) {
     return new PricePretty(
-      value._fiatCurrency as PricePretty["fiatCurrency"],
+      value._fiatCurrency as unknown as PricePretty["fiatCurrency"],
       new Dec(String(value.amount))
     );
   }
@@ -89,6 +89,14 @@ function asRatePretty(value: unknown): RatePretty | undefined {
 
 function asDec(value: unknown): Dec | undefined {
   if (value instanceof Dec) return value;
+  if (
+    isRecord(value) &&
+    "int" in value &&
+    hasFn(value, "truncate") &&
+    hasFn(value, "toString")
+  ) {
+    return new Dec((value as { toString(): string }).toString());
+  }
   if (isRecord(value) && hasFn(value, "toDec")) {
     return (value as { toDec(): Dec }).toDec();
   }

@@ -173,4 +173,15 @@ describe("formatPretty", () => {
       "0.033"
     );
   });
+
+  it("formats a foreign Dec copy without instanceof or toDec", () => {
+    const real = new Dec("1.25");
+    const foreign = {
+      int: "int-from-other-bundle",
+      truncate: () => ({ toString: () => "1" }),
+      toString: () => real.toString(),
+    };
+    expect(foreign instanceof Dec).toBe(false);
+    expect(formatPretty(foreign as unknown as Dec, opts)).toContain("1.25");
+  });
 });
