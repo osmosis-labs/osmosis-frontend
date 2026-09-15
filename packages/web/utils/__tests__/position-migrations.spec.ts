@@ -3,6 +3,7 @@ import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import {
   ceilCoinToDisplayDecimals,
   ChainConcentratedPoolResponse,
+  ChainPositionResponse,
   DivergenceTier,
   findMigration,
   formatWalletDrawCap,
@@ -14,6 +15,7 @@ import {
   MigrationPoolState,
   poolStateFromChainResponse,
   PositionMigration,
+  positionStateFromChainResponse,
   toleranceForPositionSize,
   validatePositionMigrationsResponse,
 } from "../position-migrations";
@@ -760,6 +762,63 @@ describe("poolStateFromChainResponse", () => {
         ...CHAIN_POOL,
         current_sqrt_price: "0.000000000000000000",
       })
+    ).toBeUndefined();
+  });
+});
+
+describe("positionStateFromChainResponse", () => {
+  // Shaped like the live LCD response for position 15507161 in pool 3513.
+  const CHAIN_POSITION: ChainPositionResponse = {
+    position: {
+      position: {
+        pool_id: "3513",
+        lower_tick: "-15780400",
+        upper_tick: "-15269100",
+      },
+      asset0: { amount: "521075573", denom: "uosmo" },
+      asset1: { amount: "8614810", denom: ALL_USDC },
+    },
+  };
+
+  it("maps the amounts and ticks the eligibility checks take", () => {
+    expect(positionStateFromChainResponse(CHAIN_POSITION, "3513")).toEqual({
+      positionAmounts: { amount0: "521075573", amount1: "8614810" },
+      positionTicks: { lowerTick: "-15780400", upperTick: "-15269100" },
+    });
+  });
+
+  // A response for a different position must never authorize this one.
+  it("refuses a response from another pool", () => {
+    expect(
+      positionStateFromChainResponse(CHAIN_POSITION, "1464")
+    ).toBeUndefined();
+  });
+
+  it("keeps a zero side, which the single-sided check then refuses", () => {
+    const outOfRange = {
+      position: {
+        ...CHAIN_POSITION.position,
+        asset0: { amount: "0", denom: "uosmo" },
+      },
+    };
+    expect(
+      positionStateFromChainResponse(outOfRange, "3513")?.positionAmounts
+    ).toEqual({ amount0: "0", amount1: "8614810" });
+  });
+
+  it("refuses an absent, empty, or incomplete response", () => {
+    expect(positionStateFromChainResponse(undefined, "3513")).toBeUndefined();
+    expect(positionStateFromChainResponse({}, "3513")).toBeUndefined();
+    expect(
+      positionStateFromChainResponse(
+        {
+          position: {
+            ...CHAIN_POSITION.position,
+            asset1: { denom: ALL_USDC },
+          },
+        },
+        "3513"
+      )
     ).toBeUndefined();
   });
 });

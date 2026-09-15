@@ -17,6 +17,7 @@ import {
 } from "~/hooks/use-position-migrations";
 import {
   ChainConcentratedPoolResponse,
+  ChainPositionResponse,
   findMigration,
   getMigrationEligibility,
   MigrationEligibility,
@@ -24,6 +25,7 @@ import {
   MigrationRevalidation,
   poolStateFromChainResponse,
   PositionMigrationsResponse,
+  positionStateFromChainResponse,
   validatePositionMigrationsResponse,
 } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
@@ -70,6 +72,31 @@ const fetchChainPoolState = async (
 };
 
 /**
+ * Reads the position itself from the chain, uncached, the same way the pools
+ * are read. The render-time amounts are a snapshot: a price crossing out of
+ * the range while the modal sits open turns a two-sided position single-sided,
+ * which the sizing path cannot handle, and the position may also have been
+ * withdrawn or transferred. Any failure resolves to `undefined`, which callers
+ * treat as ineligible.
+ */
+const fetchChainPositionState = async (
+  positionId: string,
+  expectedPoolId: string
+) => {
+  const client = getLcdClient();
+  if (!client) return undefined;
+  try {
+    const response = await client.fetch<ChainPositionResponse>(
+      `/osmosis/concentratedliquidity/v1beta1/position_by_id?position_id=${positionId}`,
+      { cache: "no-store" }
+    );
+    return positionStateFromChainResponse(response, expectedPoolId);
+  } catch {
+    return undefined;
+  }
+};
+
+/**
  * Resolves whether one concentrated liquidity position may migrate to its
  * alloyed-`USDC` counterpart, fetching the destination pool only when the
  * fe-content map actually pairs this pool.
@@ -80,6 +107,7 @@ const fetchChainPoolState = async (
  */
 export const usePositionMigrationForPosition = ({
   poolId,
+  positionId,
   positionValueUsd,
   positionAmounts,
   positionTicks,
@@ -89,6 +117,9 @@ export const usePositionMigrationForPosition = ({
   isSuperfluidUnstaking,
 }: {
   poolId: string;
+  /** Re-read from the chain at confirm time, so a range crossing while the
+   * modal sits open is caught before the transaction is built. */
+  positionId: string;
   /** USD value of the position; the divergence gate tightens with size. */
   positionValueUsd: number;
   /**
@@ -155,17 +186,22 @@ export const usePositionMigrationForPosition = ({
     if (!freshMapped || freshMapped.toPoolId !== mapped.toPoolId)
       return undefined;
 
-    const [fromPool, toPool] = await Promise.all([
+    /* The position is re-read alongside the pools: its render-time amounts
+       are a snapshot, and a price crossing out of the range while the modal
+       sat open would otherwise pass the single-sided check here and fail
+       later inside the sizing simulations. */
+    const [fromPool, toPool, freshPosition] = await Promise.all([
       fetchChainPoolState(poolId),
       fetchChainPoolState(mapped.toPoolId.toString()),
+      fetchChainPositionState(positionId, poolId),
     ]);
-    if (!fromPool || !toPool) return undefined;
+    if (!fromPool || !toPool || !freshPosition) return undefined;
     const eligibility: MigrationEligibility = getMigrationEligibility({
       migrations: freshConfig.migrations,
       priceDivergenceTiers: freshConfig.priceDivergenceTiers,
       positionValueUsd,
-      positionAmounts: { amount0, amount1 },
-      positionTicks: { lowerTick, upperTick },
+      positionAmounts: freshPosition.positionAmounts,
+      positionTicks: freshPosition.positionTicks,
       fromPool,
       toPool,
       lockState: { isUnbonding, isSuperfluidStaked, isSuperfluidUnstaking },
@@ -180,10 +216,7 @@ export const usePositionMigrationForPosition = ({
     mapped,
     lockStateKnown,
     positionValueUsd,
-    amount0,
-    amount1,
-    lowerTick,
-    upperTick,
+    positionId,
     poolId,
     isUnbonding,
     isSuperfluidStaked,

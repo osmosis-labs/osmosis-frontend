@@ -558,6 +558,65 @@ const CONCENTRATED_POOL_TYPE_URL =
   "/osmosis.concentratedliquidity.v1beta1.Pool";
 
 /**
+ * The position as the chain's own LCD returns it from
+ * `/osmosis/concentratedliquidity/v1beta1/position_by_id` - the uncached
+ * source the pre-broadcast check reads, so a position that crossed out of
+ * its range (or was withdrawn) while the modal sat open is seen as it is
+ * now, not as it was at render.
+ */
+export interface ChainPositionResponse {
+  position?: {
+    position?: {
+      pool_id?: string;
+      lower_tick?: string;
+      upper_tick?: string;
+    };
+    asset0?: { amount?: string; denom?: string };
+    asset1?: { amount?: string; denom?: string };
+  };
+}
+
+/**
+ * Narrows a raw chain position response into the amounts and ticks the
+ * eligibility checks take, or `undefined` when any of them is missing - which
+ * callers must treat as "cannot evaluate" and refuse. The pool id is checked
+ * against the pool the flow was opened for, so a response for some other
+ * position can never authorize this one.
+ */
+export const positionStateFromChainResponse = (
+  response: ChainPositionResponse | undefined,
+  expectedPoolId: string
+):
+  | {
+      positionAmounts: { amount0: string; amount1: string };
+      positionTicks: { lowerTick: string; upperTick: string };
+    }
+  | undefined => {
+  const position = response?.position;
+  const raw = position?.position;
+  if (
+    !raw?.pool_id ||
+    raw.pool_id !== expectedPoolId ||
+    raw.lower_tick === undefined ||
+    raw.upper_tick === undefined ||
+    position?.asset0?.amount === undefined ||
+    position?.asset1?.amount === undefined
+  )
+    return undefined;
+
+  return {
+    positionAmounts: {
+      amount0: position.asset0.amount,
+      amount1: position.asset1.amount,
+    },
+    positionTicks: {
+      lowerTick: raw.lower_tick,
+      upperTick: raw.upper_tick,
+    },
+  };
+};
+
+/**
  * Narrows a raw chain pool response into the state the eligibility checks
  * take, or `undefined` when it is not a concentrated pool carrying every
  * needed field - which callers must treat as "cannot evaluate" and refuse.

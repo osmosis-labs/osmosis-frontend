@@ -140,6 +140,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       isPoolDataRefetching,
     } = usePositionMigrationForPosition({
       poolId,
+      positionId: position.position.position.position_id,
       // The divergence gate tightens with position size, so it needs the
       // value being moved, not just the pool. A zero here (which includes a
       // broken price pipeline) gates at the strictest tier downstream.
