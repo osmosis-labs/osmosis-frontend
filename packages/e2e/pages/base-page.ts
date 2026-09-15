@@ -41,8 +41,10 @@ export class BasePage {
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
     await waitForKeplrApproval(this.page.context())
-    await this.getWalletBalance()
+    // React 19 dialogs mark the rest of the page `inert`, so Playwright
+    // treats wallet-balance as hidden until this modal is gone.
     await this.dismissVariantsPopupIfPresent()
+    await this.getWalletBalance()
   }
 
   /**
