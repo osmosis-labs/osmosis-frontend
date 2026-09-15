@@ -1,8 +1,4 @@
-import {
-  BridgeFeeExceedsBudgetMessage,
-  BridgeRouteExpiredMessage,
-  TxSnapshot,
-} from "@osmosis-labs/bridge";
+import type { TxSnapshot } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
@@ -10,7 +6,12 @@ import { useCallback, useRef, useState } from "react";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { useStore } from "~/stores";
-import { getChainBalance, waitForSkipStepArrival } from "~/utils/multi-tx";
+import {
+  BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
+  BRIDGE_ROUTE_EXPIRED_MESSAGE,
+  getChainBalance,
+  waitForSkipStepArrival,
+} from "~/utils/multi-tx";
 import { api, RouterInputs } from "~/utils/trpc";
 
 // re-exported for existing consumers; the implementations live in a
@@ -34,7 +35,7 @@ export const getMultiTxErrorToastContent = (
     }
   | undefined => {
   const message = e instanceof Error ? e.message : "";
-  if (message.includes(BridgeRouteExpiredMessage)) {
+  if (message.includes(BRIDGE_ROUTE_EXPIRED_MESSAGE)) {
     return {
       titleTranslationKey: "transfer.multiTxRouteExpiredTitle",
       captionTranslationKey: [
@@ -43,7 +44,7 @@ export const getMultiTxErrorToastContent = (
       ],
     };
   }
-  if (message.includes(BridgeFeeExceedsBudgetMessage)) {
+  if (message.includes(BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE)) {
     return {
       titleTranslationKey: "transfer.insufficientFundsForFees",
       captionTranslationKey: [

@@ -10,6 +10,20 @@ import { ChainList } from "~/config/generated/chain-list";
  */
 
 /**
+ * Named provider failures the client maps to specific recovery copy. These
+ * mirror the exported constants in `@osmosis-labs/bridge`'s errors module,
+ * which is the source of truth; they are duplicated here because the error
+ * crosses tRPC as a plain message string, and importing a VALUE from
+ * `@osmosis-labs/bridge` in client code pulls the whole package (and its
+ * Node-only LaunchDarkly dependency) into the browser bundle. Type-only
+ * imports from that package stay fine. `multi-tx.spec.ts` asserts these
+ * stay identical to the bridge constants.
+ */
+export const BRIDGE_ROUTE_EXPIRED_MESSAGE = "saved multi-tx route has expired";
+export const BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE =
+  "step fee exceeds the funds available to pay it";
+
+/**
  * Polls Skip until the given tx's own route (the first leg of a multi-tx
  * transfer) completes, i.e. the funds have reached the intermediate chain.
  * `isActive` aborts the loop (e.g. on unmount); `maxAttempts` caps it for
