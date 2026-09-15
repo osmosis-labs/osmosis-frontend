@@ -1034,11 +1034,56 @@ describe("raiseMinAssetToDestinationInput", () => {
   const AXELAR_FEE = "1085394";
   const REQUIRED = "59982717";
 
+  const BRIDGED_ASSET = "0xaxlUSDC";
+
   const operations = [
     { swap: { swap_in: { swap_venue: {}, swap_operations: [] } } },
-    { axelar_transfer: { fee_amount: AXELAR_FEE } },
-    { evm_swap: { amount_in: DESTINATION_INPUT } },
+    {
+      axelar_transfer: {
+        fee_amount: AXELAR_FEE,
+        fee_asset: { denom: BRIDGED_ASSET },
+      },
+    },
+    { evm_swap: { amount_in: DESTINATION_INPUT, denom_in: BRIDGED_ASSET } },
   ] as unknown as Parameters<typeof raiseMinAssetToDestinationInput>[1];
+
+  /**
+   * The packet-forward shape: Skip returns a `MsgTransfer` and the floor rides
+   * in the memo, which is carried as a string.
+   */
+  const makeForwardedMsgs = (minAssetAmount: string): SkipMsg[] => [
+    {
+      multi_chain_msg: {
+        chain_id: "osmosis-1",
+        path: ["osmosis-1", "42161"],
+        msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+        msg: JSON.stringify({
+          source_port: "transfer",
+          source_channel: "channel-0",
+          token: { denom: "ibc/ATOM", amount: "5000000" },
+          sender: "osmo1sender",
+          receiver: "cosmos1receiver",
+          memo: JSON.stringify({
+            forward: {
+              channel: "channel-569",
+              next: {
+                wasm: {
+                  contract: "neutron1entrypoint",
+                  msg: {
+                    swap_and_action: {
+                      min_asset: {
+                        native: { denom: "ibc/USDC", amount: minAssetAmount },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        }),
+      },
+    },
+  ];
 
   const makeMsgs = (minAssetAmount: string): SkipMsg[] => [
     {
@@ -1089,6 +1134,61 @@ describe("raiseMinAssetToDestinationInput", () => {
     ] as unknown as typeof operations;
 
     expect(raiseMinAssetToDestinationInput(msgs, cosmosOnly)).toBe(msgs);
+  });
+
+  it("raises a floor carried inside a packet-forward memo", () => {
+    const raised = raiseMinAssetToDestinationInput(
+      makeForwardedMsgs("59892649"),
+      operations
+    );
+
+    const parsed = JSON.parse(
+      (raised[0] as { multi_chain_msg: { msg: string } }).multi_chain_msg.msg
+    );
+
+    // The memo has to go back as a string, or the edit is dropped on the wire.
+    expect(typeof parsed.memo).toBe("string");
+    expect(
+      JSON.parse(parsed.memo).forward.next.wasm.msg.swap_and_action.min_asset
+        .native.amount
+    ).toBe(REQUIRED);
+  });
+
+  it("leaves the floor alone when the fee is a different asset to the swap input", () => {
+    const msgs = makeMsgs("59892649");
+    const mismatched = [
+      {
+        axelar_transfer: {
+          fee_amount: AXELAR_FEE,
+          fee_asset: { denom: "ethereum-native" },
+        },
+      },
+      { evm_swap: { amount_in: DESTINATION_INPUT, denom_in: "0xWETH" } },
+    ] as unknown as typeof operations;
+
+    expect(raiseMinAssetToDestinationInput(msgs, mismatched)).toBe(msgs);
+  });
+
+  it("warns when a swapping route carries no floor to raise", () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const floorless = [
+      {
+        multi_chain_msg: {
+          chain_id: "osmosis-1",
+          path: ["osmosis-1", "10"],
+          msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+          msg: JSON.stringify({ token: {}, memo: "not json" }),
+        },
+      },
+    ] as SkipMsg[];
+
+    raiseMinAssetToDestinationInput(floorless, operations);
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("no min_asset found")
+    );
+
+    warn.mockRestore();
   });
 });
 

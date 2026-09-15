@@ -63,6 +63,47 @@ import { SkipEvmTx, SkipMsg, SkipMultiChainMsg, SkipOperation } from "./types";
  * fails on Osmosis, visibly and with nothing bridged, instead of stranding a
  * wrapped token the user has to be told how to find.
  */
+type SkipSwapAndAction = {
+  min_asset?: { native?: { denom?: string; amount?: string } };
+};
+
+/**
+ * Locate the `swap_and_action` carrying the floor, wherever Skip put it.
+ *
+ * A swap on the first chain comes back as a `MsgExecuteContract` holding it at
+ * `msg.swap_and_action`. A swap further along the route comes back as a
+ * `MsgTransfer` with it packed into the packet-forward memo, under any number
+ * of `forward.next` hops. Both shapes occur on live Osmosis withdrawals, so
+ * reading only the first left the second signing an unraised floor.
+ */
+function findSwapAndAction(node: unknown): SkipSwapAndAction | undefined {
+  if (!node || typeof node !== "object") return undefined;
+
+  const record = node as Record<string, unknown>;
+
+  if (record.swap_and_action)
+    return record.swap_and_action as SkipSwapAndAction;
+
+  return (
+    findSwapAndAction(record.wasm) ??
+    findSwapAndAction(record.msg) ??
+    findSwapAndAction(record.forward) ??
+    findSwapAndAction(record.next)
+  );
+}
+
+/** Memos are free-form strings; only a JSON one can carry a `swap_and_action`. */
+function parseMemo(memo: unknown): Record<string, unknown> | undefined {
+  if (typeof memo !== "string") return undefined;
+
+  try {
+    const parsed = JSON.parse(memo);
+    return typeof parsed === "object" && parsed !== null ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function raiseMinAssetToDestinationInput(
   msgs: SkipMsg[],
   operations: SkipOperation[]
@@ -80,20 +121,42 @@ export function raiseMinAssetToDestinationInput(
 
   if (!evmSwap || !axelarTransfer) return msgs;
 
+  // The two are summed, so they have to be denominated in the same asset.
+  if (evmSwap.denom_in !== axelarTransfer.fee_asset?.denom) {
+    console.warn(
+      "Skip: leaving min_asset alone, the destination swap input and the Axelar fee are different assets:",
+      evmSwap.denom_in,
+      axelarTransfer.fee_asset?.denom
+    );
+    return msgs;
+  }
+
   const required =
     BigInt(evmSwap.amount_in) + BigInt(axelarTransfer.fee_amount);
 
-  return msgs.map((message) => {
+  let foundFloor = false;
+  let raised = false;
+
+  const nextMsgs = msgs.map((message) => {
     if (!("multi_chain_msg" in message)) return message;
 
     const parsed = JSON.parse(message.multi_chain_msg.msg);
-    const minAsset = parsed?.msg?.swap_and_action?.min_asset?.native;
+    const memo = parseMemo(parsed?.memo);
+    const minAsset = (findSwapAndAction(parsed) ?? findSwapAndAction(memo))
+      ?.min_asset?.native;
 
-    if (!minAsset?.amount || BigInt(minAsset.amount) >= required) {
-      return message;
-    }
+    if (!minAsset?.amount) return message;
+
+    foundFloor = true;
+
+    if (BigInt(minAsset.amount) >= required) return message;
 
     minAsset.amount = required.toString();
+    raised = true;
+
+    // The memo travels as a string, so an edit inside it survives only if it
+    // is serialized back. Without this the raise is silently dropped.
+    if (memo) parsed.memo = JSON.stringify(memo);
 
     return {
       multi_chain_msg: {
@@ -102,6 +165,17 @@ export function raiseMinAssetToDestinationInput(
       },
     };
   });
+
+  // A route that swaps before bridging always carries a floor. Not finding one
+  // means the shape changed under us, which is how this gap went unnoticed the
+  // first time — so say so rather than returning a quiet no-op.
+  if (!foundFloor && operations.some((operation) => "swap" in operation)) {
+    console.warn(
+      "Skip: no min_asset found on a route that swaps before bridging; the signed floor carries no tolerance headroom."
+    );
+  }
+
+  return raised ? nextMsgs : msgs;
 }
 
 export class SkipBridgeProvider implements BridgeProvider {
@@ -129,8 +203,11 @@ export class SkipBridgeProvider implements BridgeProvider {
        * the default is what every real request uses. Skip splits the tolerance
        * across the route's swap legs rather than applying it to each, so
        * end-to-end exposure equals this number. 0.5% clears the 0.02%-0.14%
-       * quote-time margins measured on Osmosis to EVM stable routes and sits
-       * inside the app's own 2% and 6% gates. Deliberately tighter than Squid's
+       * quote-time margins measured on Osmosis to EVM stable routes. The app's
+       * loss gates do not bound this value: `HighSlippageGate` (6%) compares the
+       * quote's input-to-output fiat loss and `HighPriceImpactGate` (10%) the
+       * quote's price impact, neither of which is the tolerance we sign, so they
+       * catch a bad route rather than a generous tolerance. Tighter than Squid's
        * 1%: Skip has no recommended value to defer to, and its tolerance
        * reaches a swap on Osmosis rather than only the vendor's own route.
        */
