@@ -12,6 +12,7 @@ import { Readable } from "stream";
 import { finished } from "stream/promises";
 
 import {
+  IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
@@ -42,29 +43,52 @@ export const codegenDir = "config/generated";
 // Path to the lock file
 const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
 
-/**
- * Read the stored asset list hash from the lock file.
- * @returns The stored hash or null if the lock file doesn't exist.
- */
-function readStoredAssetListHash(): string | null {
+type AssetListLock = {
+  assetListHash?: string;
+  isTestnet?: boolean;
+};
+
+function readStoredAssetListLock(): AssetListLock | null {
   if (!fs.existsSync(lockFilePath)) {
     return null;
   }
-  const data = fs.readFileSync(lockFilePath, "utf-8");
   try {
-    const parsed = JSON.parse(data);
-    return parsed.assetListHash || null;
+    return JSON.parse(fs.readFileSync(lockFilePath, "utf-8")) as AssetListLock;
   } catch {
     return null;
   }
 }
 
 /**
- * Write the current asset list hash to the lock file.
+ * Read the stored asset list hash from the lock file.
+ * @returns The stored hash or null if the lock file doesn't exist.
+ */
+function readStoredAssetListHash(): string | null {
+  return readStoredAssetListLock()?.assetListHash || null;
+}
+
+const generatedListFiles = ["asset-lists.ts", "chain-list.ts"] as const;
+
+/** True when generate-lists has already written outputs for this asset-list commit and network. */
+export function isAssetListGenerateCached(commitHash: string): boolean {
+  const lock = readStoredAssetListLock();
+  if (lock?.assetListHash !== commitHash || lock?.isTestnet !== IS_TESTNET) {
+    return false;
+  }
+  return generatedListFiles.every((fileName) =>
+    fs.existsSync(path.join(codegenDir, fileName))
+  );
+}
+
+/**
+ * Write the current asset list hash and network to the lock file.
  * @param hash The hash to store.
  */
 export function writeCurrentAssetListHash(hash: string): void {
-  const data = { assetListHash: hash };
+  const data: AssetListLock = {
+    assetListHash: hash,
+    isTestnet: IS_TESTNET,
+  };
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
 }
 

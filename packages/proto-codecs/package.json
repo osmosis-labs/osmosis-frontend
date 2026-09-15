@@ -29,7 +29,7 @@
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "pre-commit": "lint-staged",
-    "prepare": "yarn build",
+    "prepublishOnly": "yarn build",
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
     "generate:packages": "tsx scripts/gen-package-types.ts",

@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["*"],
+      "@osmosis-labs/bridge": ["../bridge/src"],
+      "@osmosis-labs/bridge/build/*": ["../bridge/src/*"],
+      "@osmosis-labs/keplr-hooks": ["../keplr-hooks/src"],
+      "@osmosis-labs/keplr-stores": ["../keplr-stores/src"],
+      "@osmosis-labs/math": ["../math/src"],
+      "@osmosis-labs/proto-codecs": ["../proto-codecs/src"],
+      "@osmosis-labs/proto-codecs/build/*": ["../proto-codecs/src/*"],
+      "@osmosis-labs/server": ["../server/src"],
+      "@osmosis-labs/stores": ["../stores/src"],
+      "@osmosis-labs/stores/build/*": ["../stores/src/*"],
+      "@osmosis-labs/trpc": ["../trpc/src"],
+      "@osmosis-labs/tx": ["../tx/src"],
+      "@osmosis-labs/types": ["../types/src"],
+      "@osmosis-labs/unit": ["../unit/src"],
+      "@osmosis-labs/utils": ["../utils/src"]
+    }
+  }
+}
