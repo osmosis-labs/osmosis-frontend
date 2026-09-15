@@ -3,7 +3,7 @@ import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useUpdateEffect } from "react-use";
 import { Connector } from "wagmi";
 

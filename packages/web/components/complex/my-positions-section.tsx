@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { MyPositionCard } from "~/components/cards";
 import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";

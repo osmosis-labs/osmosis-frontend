@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { PropsWithChildren, ReactNode } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import { useUnmount } from "react-use";
 

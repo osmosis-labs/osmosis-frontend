@@ -29,7 +29,7 @@
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
-    "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e",
+    "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e -r unsync-similar-dependencies",
     "lint:workspace:fix": "yarn lint:workspace -f",
     "postinstall": "yarn lint:workspace"
   },
@@ -94,6 +94,10 @@
     "@keplr-wallet/types/axios": "^0.33.0",
     "@0xsquid/sdk/axios": "^0.33.0",
     "@terra-money/feather.js/axios": "^0.33.0",
-    "es5-ext": "npm:@unes/es5-ext@0.10.64-1"
+    "es5-ext": "npm:@unes/es5-ext@0.10.64-1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0"
   }
 }

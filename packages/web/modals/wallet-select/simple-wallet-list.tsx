@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { SearchBox } from "~/components/input";
 import { useTranslation, WalletSelectOption } from "~/hooks";

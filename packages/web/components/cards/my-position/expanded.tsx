@@ -10,7 +10,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, {
+import {
   ComponentProps,
   FunctionComponent,
   useCallback,

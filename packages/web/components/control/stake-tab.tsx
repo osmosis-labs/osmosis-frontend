@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 
 export const StakeTab = ({
   active,

@@ -3,12 +3,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/price-historical";

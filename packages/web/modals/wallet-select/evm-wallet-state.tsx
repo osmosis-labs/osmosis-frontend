@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
 import { ConnectingWalletState } from "~/components/wallet-states";

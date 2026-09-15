@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo } from "react";
+import { Fragment, memo, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import {

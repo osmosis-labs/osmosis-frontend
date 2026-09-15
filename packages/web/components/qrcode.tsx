@@ -1,6 +1,6 @@
 import Image from "next/image";
 import QRCodeUtil from "qrcode";
-import React, { FunctionComponent, ReactElement, useMemo } from "react";
+import { FunctionComponent, ReactElement, useMemo } from "react";
 
 const generateMatrix = (
   value: string,

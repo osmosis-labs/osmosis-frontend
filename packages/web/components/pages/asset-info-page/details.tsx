@@ -4,7 +4,7 @@ import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { FunctionComponent, ReactNode, useMemo, useState } from "react";
+import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";

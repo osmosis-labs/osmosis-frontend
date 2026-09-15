@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import {
   Id,
   toast,

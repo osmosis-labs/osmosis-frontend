@@ -2,7 +2,6 @@ import { TxSnapshot } from "@osmosis-labs/bridge";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import React from "react";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";

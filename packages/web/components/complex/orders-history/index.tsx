@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";

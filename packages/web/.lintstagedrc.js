@@ -12,7 +12,7 @@ module.exports = {
 
     return [
       `prettier --check ${filePaths.join(" ")}`,
-      `next lint --file ${filePaths.join(" --file ")}`,
+      `eslint ${filePaths.join(" ")}`,
     ];
   },
 };

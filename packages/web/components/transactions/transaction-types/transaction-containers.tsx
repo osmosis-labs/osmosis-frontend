@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import React from "react";
 
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";

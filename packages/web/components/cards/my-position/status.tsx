@@ -1,6 +1,6 @@
 import type { PositionStatus } from "@osmosis-labs/server";
 import classNames from "classnames";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";

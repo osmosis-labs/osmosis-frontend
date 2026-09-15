@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { AddInitialLiquidity } from "~/components/complex/pool/create/cl/add-initial-liquidity";
