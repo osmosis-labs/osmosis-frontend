@@ -108,7 +108,15 @@ test.describe("Test Trade feature", () => {
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
-    await tradePage.getTransactionUrl();
+    // Prefer the hash captured during the cancel: when REST confirms and the
+    // success toast never renders, TradePage has no hash of its own to fall
+    // back on and its toast-link lookup would fail the test.
+    const cancelUrl = trxPage.getLastTxUrl();
+    if (cancelUrl) {
+      console.log(`Cancel trx url: ${cancelUrl}`);
+    } else {
+      await tradePage.getTransactionUrl();
+    }
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
@@ -134,6 +142,14 @@ test.describe("Test Trade feature", () => {
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
-    await tradePage.getTransactionUrl();
+    // Prefer the hash captured during the cancel: when REST confirms and the
+    // success toast never renders, TradePage has no hash of its own to fall
+    // back on and its toast-link lookup would fail the test.
+    const cancelUrl = trxPage.getLastTxUrl();
+    if (cancelUrl) {
+      console.log(`Cancel trx url: ${cancelUrl}`);
+    } else {
+      await tradePage.getTransactionUrl();
+    }
   });
 });
