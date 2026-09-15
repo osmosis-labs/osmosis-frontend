@@ -14,7 +14,6 @@ jobs:
             "utils",
             "server",
             "stores",
-            "pools",
             "math",
             "bridge",
             "tx",

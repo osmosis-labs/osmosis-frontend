@@ -1,13 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  ObservableQueryBalances,
-  QueryResponse,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, QueryResponse } from "@osmosis-labs/keplr-stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryLiquiditiesNetInDirection } from "../../queries/concentrated-liquidity";
 import { ObservableQueryNumPools } from "../../queries/pools";
 import { ObservableQueryExternalBase } from "../base";
 import { isSupportedPool, ObservableQueryPool } from "./pool";
@@ -35,8 +30,6 @@ export class ObservableQueryPools
     readonly chainId: string,
     readonly baseUrl: string,
     readonly chainGetter: ChainGetter,
-    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
-    readonly queryBalances: ObservableQueryBalances,
     readonly queryNumPools: ObservableQueryNumPools,
     protected readonly poolIdBlacklist: string[] = [],
     protected readonly transmuterCodeIds: string[] = [],
@@ -89,8 +82,6 @@ export class ObservableQueryPools
             this.chainId,
             this.baseUrl,
             this.chainGetter,
-            this.queryLiquiditiesInNetDirection,
-            this.queryBalances,
             poolRaw,
             this.alloyedCodeIds
           )

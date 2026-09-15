@@ -220,8 +220,6 @@ export class OsmosisQueriesImpl {
       chainId,
       webApiBaseUrl,
       chainGetter,
-      this.queryLiquiditiesInNetDirection,
-      queries.queryBalances,
       this.queryGammNumPools,
       poolIdBlacklist,
       transmuterCodeIds,
