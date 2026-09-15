@@ -30,7 +30,7 @@ def pick_deployment(deployments, github_sha):
 
 def wait_for_deployment(timeout):
     branch_name = os.getenv("BRANCH_NAME")
-    github_sha = (os.getenv("GITHUB_SHA") or "")[:40]
+    github_sha = (os.getenv("COMMIT_SHA") or os.getenv("GITHUB_SHA") or "")[:40]
     print(
         f"Wait for a deployment for branch {branch_name} sha {github_sha or '(none)'}."
     )
