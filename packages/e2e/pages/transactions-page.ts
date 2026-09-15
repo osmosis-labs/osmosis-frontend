@@ -203,6 +203,18 @@ export class TransactionsPage extends BasePage {
           `message=${body?.message ?? body?.tx_response?.raw_log ?? "none"})`
       );
     }
+    // A non-zero code here is a CheckTx rejection (sequence mismatch, fee,
+    // signature, ...). The node returns a hash, but the tx never enters a
+    // block, so the LCD poll would spin until its budget expired and the test
+    // would die on Playwright's timeout with no reason attached. Fail now,
+    // carrying the ante-handler's own explanation.
+    const broadcastCode = body?.tx_response?.code ?? body?.code;
+    if (typeof broadcastCode === "number" && broadcastCode !== 0) {
+      throw new Error(
+        `tx ${hash} rejected at CheckTx (code ${broadcastCode}): ` +
+          `${body?.tx_response?.raw_log ?? body?.message ?? "no log"}`
+      );
+    }
     return String(hash).toLowerCase();
   }
 
@@ -217,8 +229,9 @@ export class TransactionsPage extends BasePage {
    *   2. Fallback (REST): capture the broadcast hash and poll the LCD from
    *      Node, which does not go through the browser proxy.
    *
-   * Whichever confirms first wins; the loser is aborted. Rejects only if BOTH
-   * fail, or if the REST poll sees the tx included with a non-zero code.
+   * Whichever confirms first wins; the loser is aborted. Rejects early on a
+   * deterministic failure (CheckTx rejection at broadcast, or the REST poll
+   * seeing the tx included with a non-zero code), otherwise only if BOTH fail.
    *
    * Arm this BEFORE the action click so the broadcast response isn't missed.
    */
@@ -261,7 +274,12 @@ export class TransactionsPage extends BasePage {
     const chainFailure = restPromise.then(
       () => new Promise<never>(() => {}),
       (err: Error) => {
-        if (err?.message?.includes("failed on-chain")) throw err;
+        if (
+          err?.message?.includes("failed on-chain") ||
+          err?.message?.includes("rejected at CheckTx")
+        ) {
+          throw err;
+        }
         return new Promise<never>(() => {});
       }
     );

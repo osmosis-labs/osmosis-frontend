@@ -742,7 +742,7 @@ export class TradePage extends BasePage {
     // hash but is never included → LCD "tx not found") is diagnosable from CI
     // logs. `code === 0` means accepted into the mempool; a non-zero `code` +
     // `raw_log`/`codespace` is the ante-handler rejection reason (sequence, fee,
-    // signature, etc.). Logged, not thrown, so the REST poll still runs.
+    // signature, etc.).
     console.log(
       `Broadcast response: httpStatus=${resp.status()} ` +
         `code=${txResponse?.code ?? body?.code ?? "?"} ` +
@@ -757,6 +757,18 @@ export class TradePage extends BasePage {
         `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
           `code=${txResponse?.code ?? body?.code ?? "?"}, ` +
           `message=${body?.message ?? txResponse?.raw_log ?? "none"})`
+      );
+    }
+    // A non-zero code here is a CheckTx rejection: a hash is returned but the
+    // tx never enters a block, so the LCD poll would spin until its budget
+    // expired and the test would die on Playwright's timeout with no reason
+    // attached. Fail now, carrying the ante-handler's own explanation.
+    const broadcastCode = txResponse?.code ?? body?.code;
+    if (typeof broadcastCode === "number" && broadcastCode !== 0) {
+      throw new Error(
+        `tx ${hash} rejected at CheckTx (code ${broadcastCode}, ` +
+          `codespace ${txResponse?.codespace ?? "-"}): ` +
+          `${txResponse?.raw_log ?? body?.message ?? "no log"}`
       );
     }
     return String(hash).toLowerCase();
@@ -839,7 +851,12 @@ export class TradePage extends BasePage {
     const chainFailure = restPromise.then(
       () => new Promise<never>(() => {}),
       (err: Error) => {
-        if (err?.message?.includes("failed on-chain")) throw err;
+        if (
+          err?.message?.includes("failed on-chain") ||
+          err?.message?.includes("rejected at CheckTx")
+        ) {
+          throw err;
+        }
         return new Promise<never>(() => {});
       }
     );
