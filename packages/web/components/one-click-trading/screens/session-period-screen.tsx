@@ -1,13 +1,13 @@
 import { OneClickTradingHumanizedSessionPeriod } from "@osmosis-labs/types";
 import classNames from "classnames";
 
-import { Button } from "~/components/buttons";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import {
   ScreenGoBackButton,
   useScreenManager,
 } from "~/components/screen-manager";
+import { Button } from "~/components/ui/button";
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
 
 export const oneClickTradingTimeMappings = {
