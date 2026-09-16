@@ -1,9 +1,5 @@
 name: Preview frontend E2E tests
 
-env:
-  YARN_IGNORE_PATH: "1"
-  COREPACK_ENABLE_PROJECT_SPEC: "0"
-
 # Run on non-draft PR pushes (and when a draft is marked ready for review),
 # plus direct pushes to stage for post-merge validation. Draft PRs skip the
 # suite entirely — the preview E2E tests spend real funds on every run.
@@ -55,6 +51,16 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -208,6 +214,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -259,6 +270,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -311,6 +327,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -364,6 +385,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -404,6 +430,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -455,6 +486,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:

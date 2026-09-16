@@ -1,9 +1,5 @@
 name: Synthetic Quote Geo Monitoring Frontend tests
 
-env:
-  YARN_IGNORE_PATH: "1"
-  COREPACK_ENABLE_PROJECT_SPEC: "0"
-
 on:
   workflow_dispatch:
   schedule:
@@ -35,6 +31,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:

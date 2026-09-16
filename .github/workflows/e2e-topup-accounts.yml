@@ -1,9 +1,5 @@
 name: "E2E: Topup Test Accounts"
 
-env:
-  YARN_IGNORE_PATH: "1"
-  COREPACK_ENABLE_PROJECT_SPEC: "0"
-
 # Tops up E2E test accounts from the topup holding account.
 #
 # Checks each account's current balance and sends only enough to reach
@@ -58,6 +54,11 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            package.json
+            yarn.lock
+            .yarnrc.yml
+            .yarn-4.12.0.cjs
+            packages/*/package.json
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
