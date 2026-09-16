@@ -16,9 +16,9 @@ import SuperJSON from "superjson";
 
 dayjs.extend(duration);
 
-// Own instance. Re-exporting superjson's default singleton lets Turbopack
-// rewrite `import { superjson } from "@osmosis-labs/server"` to the vanilla
-// package, skipping registerCustom.
+// One instance for tRPC + Redis. Re-exporting superjson's default singleton
+// lets Turbopack rewrite `import { superjson } from "@osmosis-labs/server"`
+// to the vanilla package, skipping registerCustom.
 const superjson = new SuperJSON();
 
 // tRPC SSG extracts `.serialize` (createServerSideHelpers.dehydrate),
@@ -29,6 +29,55 @@ superjson.deserialize = superjson.deserialize.bind(superjson);
 superjson.stringify = superjson.stringify.bind(superjson);
 superjson.parse = superjson.parse.bind(superjson);
 
+// Turbopack inlines @osmosis-labs/unit per chunk, so `instanceof` against
+// this file's Dec/PricePretty import fails for values constructed elsewhere
+// (e.g. getMakerFee). Match the unique fields + methods instead.
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null;
+}
+
+function hasFn(v: object, key: string): boolean {
+  return typeof (v as Record<string, unknown>)[key] === "function";
+}
+
+function isDecValue(v: unknown): v is Dec {
+  return (
+    v instanceof Dec || (isRecord(v) && "int" in v && hasFn(v, "truncate"))
+  );
+}
+
+function isIntValue(v: unknown): v is Int {
+  return (
+    v instanceof Int ||
+    (isRecord(v) && "int" in v && hasFn(v, "toDec") && !("intPretty" in v))
+  );
+}
+
+function isPricePrettyValue(v: unknown): v is PricePretty {
+  return (
+    v instanceof PricePretty ||
+    (isRecord(v) && "_fiatCurrency" in v && hasFn(v, "toDec"))
+  );
+}
+
+function isCoinPrettyValue(v: unknown): v is CoinPretty {
+  return (
+    v instanceof CoinPretty ||
+    (isRecord(v) && "_currency" in v && hasFn(v, "toDec"))
+  );
+}
+
+function isRatePrettyValue(v: unknown): v is RatePretty {
+  return (
+    v instanceof RatePretty ||
+    (isRecord(v) &&
+      "intPretty" in v &&
+      !("_fiatCurrency" in v) &&
+      !("_currency" in v) &&
+      hasFn(v, "toDec"))
+  );
+}
+
 // https://github.com/blitz-js/superjson
 
 // This file allows us to directly pass complex types to and from tRPC methods from client <> server
@@ -36,7 +85,7 @@ superjson.parse = superjson.parse.bind(superjson);
 
 superjson.registerCustom<Dec, string>(
   {
-    isApplicable: (v): v is Dec => v instanceof Dec,
+    isApplicable: isDecValue,
     serialize: (v) => v.toString(),
     deserialize: (v) => new Dec(v),
   },
@@ -45,7 +94,7 @@ superjson.registerCustom<Dec, string>(
 
 superjson.registerCustom<Int, string>(
   {
-    isApplicable: (v): v is Int => v instanceof Int,
+    isApplicable: isIntValue,
     serialize: (v) => v.toString(),
     deserialize: (v) => new Int(v),
   },
@@ -54,7 +103,7 @@ superjson.registerCustom<Int, string>(
 
 superjson.registerCustom<PricePretty, string>(
   {
-    isApplicable: (v): v is PricePretty => v instanceof PricePretty,
+    isApplicable: isPricePrettyValue,
     serialize: (v) =>
       JSON.stringify({
         fiat: v.fiatCurrency,
@@ -80,7 +129,7 @@ superjson.registerCustom<PricePretty, string>(
 
 superjson.registerCustom<CoinPretty, string>(
   {
-    isApplicable: (v): v is CoinPretty => v instanceof CoinPretty,
+    isApplicable: isCoinPrettyValue,
     serialize: (v) =>
       JSON.stringify({
         currency: v.currency,
@@ -106,7 +155,7 @@ superjson.registerCustom<CoinPretty, string>(
 
 superjson.registerCustom<RatePretty, string>(
   {
-    isApplicable: (v): v is RatePretty => v instanceof RatePretty,
+    isApplicable: isRatePrettyValue,
     serialize: (v) =>
       JSON.stringify({
         options: v.options,
