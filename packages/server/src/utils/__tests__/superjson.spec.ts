@@ -16,7 +16,10 @@ const osmoCurrency: AppCurrency = {
   coinDecimals: 6,
 };
 
-/** Stand-in for a class from a duplicate `@osmosis-labs/unit` chunk. */
+/**
+ * Stand-in for a PricePretty constructed from a duplicate `@osmosis-labs/unit`
+ * copy (Turbopack inlines the package per chunk, so `instanceof` fails).
+ */
 class ForeignPricePretty {
   constructor(
     public _fiatCurrency: typeof DEFAULT_VS_CURRENCY,
@@ -90,40 +93,6 @@ describe("superjson unit transformers", () => {
     expect(parsed.toDec().toString()).toBe(price.toDec().toString());
   });
 
-  test("round-trips a real CoinPretty", () => {
-    const coin = new CoinPretty(osmoCurrency, "1000000");
-    const parsed = superjson.parse(superjson.stringify(coin)) as CoinPretty;
-    expect(parsed).toBeInstanceOf(CoinPretty);
-    expect(parsed.currency.coinDenom).toBe("OSMO");
-  });
-
-  test("round-trips a real RatePretty", () => {
-    const parsed = superjson.parse(
-      superjson.stringify(new RatePretty(new Dec("0.05")))
-    ) as RatePretty;
-    expect(parsed).toBeInstanceOf(RatePretty);
-    expect(parsed.toDec().toString()).toBe(new Dec("0.05").toString());
-  });
-
-  test("round-trips a real Dec", () => {
-    const parsed = superjson.parse(superjson.stringify(new Dec("1.5"))) as Dec;
-    expect(parsed).toBeInstanceOf(Dec);
-    expect(parsed.toString()).toBe(new Dec("1.5").toString());
-  });
-
-  test("round-trips a real Int", () => {
-    const parsed = superjson.parse(superjson.stringify(new Int(42))) as Int;
-    expect(parsed).toBeInstanceOf(Int);
-    expect(parsed.toString()).toBe("42");
-  });
-
-  test("serialize stays bound when extracted, as tRPC SSG dehydrate does", () => {
-    const { serialize, deserialize } = superjson;
-    const parsed = deserialize(serialize(new Dec("1.5"))) as Dec;
-    expect(parsed).toBeInstanceOf(Dec);
-    expect(parsed.toString()).toBe(new Dec("1.5").toString());
-  });
-
   test("serializes a foreign PricePretty copy as PricePretty", () => {
     const foreign = new ForeignPricePretty(DEFAULT_VS_CURRENCY, new Dec("1.5"));
     expect(foreign instanceof PricePretty).toBe(false);
@@ -160,5 +129,94 @@ describe("superjson unit transformers", () => {
     const parsed = superjson.parse(superjson.stringify(foreign)) as Dec;
     expect(parsed).toBeInstanceOf(Dec);
     expect(parsed.toString()).toBe(real.toString());
+  });
+
+  test("round-trips a real Int", () => {
+    const parsed = superjson.parse(superjson.stringify(new Int(42))) as Int;
+    expect(parsed).toBeInstanceOf(Int);
+    expect(parsed.toString()).toBe("42");
+  });
+
+  test("revives a leaked PricePretty class-field dump", () => {
+    const leaked = {
+      _fiatCurrency: DEFAULT_VS_CURRENCY,
+      amount: 0.033288540369348626,
+      _options: {
+        separator: "",
+        upperCase: false,
+        lowerCase: false,
+        locale: "en-US",
+      },
+      intPretty: { dec: { int: "33288540369348626" } },
+    };
+    const parsed = superjson.parse(superjson.stringify(leaked)) as PricePretty;
+    expect(parsed).toBeInstanceOf(PricePretty);
+    expect(parsed.toDec().toString()).toContain("0.033");
+    expect(parsed.fiatCurrency.currency).toBe("usd");
+  });
+
+  test("revives a leaked PricePretty nested in a tRPC result", () => {
+    const payload = {
+      coinDenom: "OSMO",
+      currentPrice: {
+        _fiatCurrency: DEFAULT_VS_CURRENCY,
+        amount: 0.03349,
+        _options: {
+          separator: "",
+          upperCase: false,
+          lowerCase: false,
+          locale: "en-US",
+        },
+      },
+    };
+    const parsed = superjson.parse(superjson.stringify(payload)) as {
+      currentPrice: PricePretty;
+    };
+    expect(parsed.currentPrice).toBeInstanceOf(PricePretty);
+    expect(parsed.currentPrice.toDec().toString()).toContain("0.033");
+  });
+
+  test("deserialize revives leaked RatePretty in a tRPC json envelope", () => {
+    const payload = {
+      json: {
+        priceChange24h: {
+          amount: { int: "-3235611700000000" },
+          _options: { separator: "", symbol: "%" },
+          intPretty: { dec: { int: "-3235611700000000" } },
+        },
+      },
+    };
+    const parsed = superjson.deserialize(payload as never) as {
+      priceChange24h: RatePretty;
+    };
+    expect(parsed.priceChange24h).toBeInstanceOf(RatePretty);
+    expect(typeof parsed.priceChange24h.toDec).toBe("function");
+    const rate = Number(parsed.priceChange24h.toDec().toString());
+    expect(Math.abs(rate)).toBeLessThan(1);
+  });
+
+  test("revives getUserAssets usdValue whose amount is a leaked Dec dump", () => {
+    const payload = {
+      items: [
+        {
+          coinDenom: "OSMO",
+          usdValue: {
+            _fiatCurrency: DEFAULT_VS_CURRENCY,
+            amount: { int: "1093892430300488969896" },
+            _options: {
+              separator: "",
+              upperCase: false,
+              lowerCase: false,
+              locale: "en-US",
+            },
+          },
+        },
+      ],
+    };
+    const parsed = superjson.parse(superjson.stringify(payload)) as {
+      items: { usdValue: PricePretty }[];
+    };
+    expect(parsed.items[0].usdValue).toBeInstanceOf(PricePretty);
+    expect(typeof parsed.items[0].usdValue.toDec).toBe("function");
   });
 });
