@@ -37,18 +37,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
-            package.json
-            yarn.lock
-            .yarnrc.yml
-            .yarn-4.12.0.cjs
-            packages/*/package.json
-            package.json
-            yarn.lock
-            .yarnrc.yml
-            .yarn-4.12.0.cjs
-            packages/*/package.json
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
           ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -56,7 +52,7 @@ jobs:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --immutable
+        run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -192,8 +188,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
           ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -209,7 +211,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -271,13 +273,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
-            package.json
-            yarn.lock
-            .yarnrc.yml
-            .yarn-4.12.0.cjs
-            packages/*/package.json
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -292,7 +295,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://app.osmosis.zone"

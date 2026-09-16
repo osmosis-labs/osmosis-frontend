@@ -89,13 +89,14 @@ jobs:
         if: steps.plan.outputs.skip != 'true'
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
-            package.json
-            yarn.lock
-            .yarnrc.yml
-            .yarn-4.12.0.cjs
-            packages/*/package.json
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
 
       - name: Setup Node.js
         if: steps.plan.outputs.skip != 'true'
@@ -115,7 +116,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.plan.outputs.skip != 'true'
-        run: yarn --cwd packages/e2e install --immutable
+        run: yarn workspaces focus app-osmosis-e2e
 
       - name: Download baseline state (closest to target window)
         if: steps.plan.outputs.skip != 'true'
