@@ -69,6 +69,19 @@
     "noRewards": "एकत्र करने के लिए कुछ भी नहीं है, शीघ्र ही वापस जाँचें",
     "removeLiquidity": "तरलता दूर करें",
     "increaseLiquidity": "तरलता बढ़ाएँ",
+    "migrateLiquidity": "लिक्विडिटी माइग्रेट करें",
+    "migrateDescription": "अपनी {baseSymbol}/{fromUsdcSymbol} पोजीशन (पूल {fromPoolId}) को {baseSymbol}/{toUsdcSymbol} (पूल {toPoolId}) में ले जाएँ। समान मूल्य सीमा, समान शुल्क स्तर।",
+    "migrateDustNotice": "नई सीमा में न समाने वाली राशियाँ आपके वॉलेट में लौट आती हैं।",
+    "migrateIncentivesNotice": "न्यूनतम अवधि से कम के प्रोत्साहन निकासी पर जब्त हो जाते हैं।",
+    "migrateCurrentDifference": "वर्तमान मूल्य अंतर",
+    "migrateAllowedDifference": "अनुमत मूल्य अंतर",
+    "migrateRevalidationFailed": "यह खुला रहने के दौरान कीमतें बदल गईं और माइग्रेशन अब अपनी जाँचें पास नहीं करता। बंद करके फिर से प्रयास करें।",
+    "migrateReason": "स्थानांतरण के दौरान USDC.noble ट्रांसम्यूटर के माध्यम से 1:1 USDC में बदलता है।",
+    "migrateRiskNotice": "माइग्रेशन एक ही ट्रांज़ैक्शन में होता है। कीमतें बदलने पर कमी आपके वॉलेट बैलेंस से पूरी की जा सकती है, कभी भी उसमें मौजूद राशि से अधिक नहीं, जबकि दूसरे पक्ष का अधिशेष वॉलेट में लौट आता है।",
+    "migrateMaxWalletDraw": "बैलेंस से अधिकतम (रेंज किनारे पर मूल्य)",
+    "migrateMaxWalletDrawEstimate": "बैलेंस से अनुमानित उपयोग",
+    "migrateMaxWalletDrawValue": "{base} या {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} या {noble}",
     "yourPositions": "आपकी स्थिति",
     "yourPosition": "आपका मत",
     "yourPositionsDesc": "अपनी संपत्तियों को काम में लगाएं और प्रत्येक स्वैप पर स्प्रेड अर्जित करें।",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "संतुलन"
-      },
       "depositButton": "जमा",
       "search": "खोज",
       "withdrawButton": "निकालना",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "इस परिसंपत्ति को जमा नहीं किया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है",
     "strandedTokenWithdrawDisabled": "इस परिसंपत्ति को वापस नहीं लिया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है"
   },
-  "cypherCard": {
-    "cypherSpend": "ऑस्मोसिस पे",
-    "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
-    "cypherBeta": "बीटा",
-    "acceptedEverywhere": "आपका OSMO, अब हर जगह स्वीकार्य",
-    "newPill": "नया"
-  },
   "portfolio": {
     "buy": "खरीदना",
     "sell": "बेचना",
@@ -230,7 +233,6 @@
     "last1y": "पिछले 1 वर्ष",
     "allTime": "पूरे समय",
     "trade": "व्यापार",
-    "earn": "कमाना",
     "deposit": "जमा",
     "withdraw": "निकालना",
     "convert": "बदलना"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "खोज",
     "selectToken": {
-      "title": "एक टोकन चुनें",
       "unverifiedAsset": "यह संपत्ति सत्यापित नहीं है. सावधानी के साथ आगे बढ़ना।",
       "clickToActivate": "सक्रिय करने के लिए क्लिक करें"
     },
@@ -324,9 +325,6 @@
     "startAgain": "फिर से शुरू करें"
   },
   "estimated": "अनुमानित",
-  "frontierMigration": {
-    "proceed": "आगे बढ़ना"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "जमाव कार्य रोक दिया गया है। मूल निवासी पुल मार्ग बंद है।",
@@ -401,7 +399,6 @@
     "store": "ऐप्स",
     "vote": "वोट",
     "featureRequests": "सुविधा का अनुरोध",
-    "trade": "प्रो ट्रेडिंग",
     "more": "अधिक",
     "new": "नया",
     "settings": "समायोजन"
@@ -428,9 +425,6 @@
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
       "changeButton": "विन्यास बदलें"
-    },
-    "floatingBanner": {
-      "newPill": "नया"
     },
     "reviewOrder": {
       "recapRowTitle": "1-क्लिक ट्रेडिंग सीमा",
@@ -1221,82 +1215,6 @@
     "osmosisUpdates": "ऑस्मोसिस अपडेट!",
     "seeWhatsNew": "देखें, क्या नया है"
   },
-  "earnPage": {
-    "title": "कमाना",
-    "positions": "स्थितियां",
-    "strategiesCount": "{number} रणनीतियाँ",
-    "oneStrategy": "1 रणनीति",
-    "discoverStrategies": "रणनीतियों की खोज करें",
-    "myStrategies": "आपकी रणनीतियाँ",
-    "strategyPlatform": "रणनीति",
-    "apy": "अप्रैल",
-    "reward": "इनाम",
-    "lock": "बंधन मुक्त करना",
-    "days": "दिन",
-    "day": "दिन",
-    "risk": "जोखिम",
-    "strategyMethod": "प्रकार",
-    "allMethods": "सभी प्रकार के",
-    "platforms": "प्लेटफार्म",
-    "allPlatforms": "सभी प्लेटफार्म",
-    "allCategories": "सब वर्ग",
-    "filters": "फिल्टर",
-    "resetFilters": "फ़िल्टर रीसेट करें",
-    "saveFilters": "फ़िल्टर सहेजें",
-    "rewards": "पुरस्कार",
-    "availableToClaim": "दावा करने के लिए उपलब्ध",
-    "claimAllRewards": "सभी पुरस्कारों का दावा करें",
-    "join": "जोड़ना",
-    "tokenFilterOptions": {
-      "my": "आपकी संपत्ति",
-      "all": "सारी संपत्ति"
-    },
-    "rewardTypes": {
-      "all": "सभी",
-      "single": "अकेला",
-      "multi": "मल्टी"
-    },
-    "totalValueInvested": "कुल मूल्य",
-    "lookBelow": "नीचे देखें और अपने लिए सर्वोत्तम रणनीतियाँ खोजें",
-    "startEarningDescription": "अपनी पूरी कमाई क्षमता को अनलॉक करें। नीचे दी गई कई रणनीतियों के माध्यम से अपनी संपत्ति को काम में लगाएं।",
-    "loadingStrategies": "रणनीतियाँ लोड हो रही हैं...",
-    "sorryErrorOccurred": "क्षमा करें, एक त्रुटि उत्पन्न हुई.",
-    "sorryNoResultsWithAssets": "आपकी संपत्तियों से जुड़ी कोई रणनीति नहीं मिली।",
-    "sorryNoResults": "कोई रणनीति नहीं मिली.",
-    "tryChangingFilters": "फ़िल्टर बदलने का प्रयास करें",
-    "retry": "पुन: प्रयास करें",
-    "manage": "प्रबंधित करना",
-    "noLock": "ताला रहित",
-    "riskDisclaimer": "जोखिम की गणना किसी रणनीति और उसकी अंतर्निहित परिसंपत्तियों के बारे में मानदंडों के संयुक्त सेट के साथ की जाती है।",
-    "strategyGeoblocked": "क्षमा करें, यह रणनीति आपके देश में उपलब्ध नहीं है।",
-    "instantUnbondOnly": "केवल तत्काल बंधनमुक्त करें",
-    "tooltips": {
-      "apr": {
-        "description": "वार्षिक प्रतिशत दर (एपीआर) किसी रणनीति के वार्षिकीकृत प्रतिशत रिटर्न को संदर्भित करता है।\n\nनोट: किसी रणनीति का प्रतिफल भागीदारी और प्रदर्शन के आधार पर उतार-चढ़ाव कर सकता है।\n\nअस्वीकरण: ये APRs परियोजनाओं द्वारा स्वयं रिपोर्ट किए गए हैं और गलत हो सकते हैं।"
-      },
-      "tvl": {
-        "description": "टोटल वैल्यू लॉक्ड (टीवीएल) रणनीति में जमा की गई संपत्ति के कुल अमेरिकी डॉलर मूल्य को संदर्भित करता है।"
-      },
-      "reward": {
-        "description": "रणनीति के संचालन और/या प्रोत्साहन के माध्यम से अर्जित संपत्ति का प्रकार।"
-      },
-      "lock": {
-        "description": "वह समयावधि, जब कोई पोजीशन बाहर निकलने से पहले बंधी होती है। ध्यान दें: सभी रणनीति अनबॉन्डिंग* अवधियों में इनाम वितरण नहीं होता है।"
-      },
-      "strategy": {
-        "description": "ऑस्मोसिस पर विभिन्न प्लेटफार्मों द्वारा होस्ट किए गए विभिन्न प्रकार के कमाई के अवसर उपलब्ध हैं। किसी रणनीति तक पहुँचने के लिए विशिष्ट परिसंपत्तियों को जमा करना आवश्यक होता है।"
-      },
-      "risk": {
-        "description": "जोखिम मूल्यांकन में एक रणनीति और उसकी अंतर्निहित परिसंपत्तियों से संबंधित मानदंडों के संयोजन पर विचार करना शामिल है।"
-      }
-    },
-    "riskLabels": {
-      "low": "कम",
-      "medium": "मध्यम",
-      "high": "उच्च",
-      "veryHigh": "बहुत ऊँचा"
-    }
-  },
   "remaining": "शेष",
   "timeUnits": {
     "second": "दूसरा",
@@ -1367,10 +1285,6 @@
     "newer": "नई"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "अपना मूल्य चुनें",
-      "tryLimitOrders": "सीमा आदेश आज़माएँ"
-    },
     "historyTable": {
       "columns": {
         "order": "आदेश",

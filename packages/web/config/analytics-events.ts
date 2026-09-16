@@ -1,5 +1,5 @@
 /** # User Events Constants
- *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
+ *  Recorded in-process via useAmplitudeAnalytics (Amplitude SDK removed).
  */
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 

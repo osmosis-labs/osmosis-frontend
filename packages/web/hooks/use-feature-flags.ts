@@ -10,20 +10,16 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   tokenInfo: true,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
-  earnPage: false,
   transactionsPage: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
-  tfmProTradingNavbarButton: false,
   positionRoi: true,
   swapToolSimulateFee: true,
-  displayDailyEarn: false,
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,
   advancedChart: false,
-  cypherCard: false,
   inGivenOut: false,
   sqsActiveOrders: false,
   alloyedAssets: false,
@@ -39,6 +35,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   onrampmoney: true,
   polarisBanner: false,
   multiTxBridgeRoutes: true,
+  positionMigration: true,
 };
 
 export function useFeatureFlags() {

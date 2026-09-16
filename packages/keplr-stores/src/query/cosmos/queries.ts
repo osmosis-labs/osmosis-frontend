@@ -16,10 +16,6 @@ import {
   ObservableQueryValidators,
 } from "./staking";
 import {
-  ObservableQueryGovernance,
-  ObservableQueryProposalVote,
-} from "./governance";
-import {
   ObservableQueryDenomTrace,
   ObservableQueryIBCChannel,
   ObservableQueryIBCClientState,
@@ -81,9 +77,6 @@ export class CosmosQueriesImpl {
   public readonly queryDelegations: DeepReadonly<ObservableQueryDelegations>;
   public readonly queryUnbondingDelegations: DeepReadonly<ObservableQueryUnbondingDelegations>;
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
-  public readonly queryGovernance: DeepReadonly<ObservableQueryGovernance>;
-  public readonly queryProposalVote: DeepReadonly<ObservableQueryProposalVote>;
-
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
   public readonly queryIBCDenomTrace: DeepReadonly<ObservableQueryDenomTrace>;
@@ -183,18 +176,6 @@ export class CosmosQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryGovernance = new ObservableQueryGovernance(
-      kvStore,
-      chainId,
-      chainGetter,
-      this.queryPool
-    );
-    this.queryProposalVote = new ObservableQueryProposalVote(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-
     this.queryIBCClientState = new ObservableQueryIBCClientState(
       kvStore,
       chainId,

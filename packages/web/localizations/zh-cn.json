@@ -69,6 +69,19 @@
     "noRewards": "没有可收集的内容，请尽快回来查看",
     "removeLiquidity": "消除流动性",
     "increaseLiquidity": "增加流动性",
+    "migrateLiquidity": "迁移流动性",
+    "migrateDescription": "将您的 {baseSymbol}/{fromUsdcSymbol} 仓位（池 {fromPoolId}）迁移到 {baseSymbol}/{toUsdcSymbol}（池 {toPoolId}）。相同价格区间，相同费率等级。",
+    "migrateDustNotice": "无法放入新区间的金额将退回您的钱包。",
+    "migrateIncentivesNotice": "未达到最短持有时间的激励将在提取时被没收。",
+    "migrateCurrentDifference": "当前价格差",
+    "migrateAllowedDifference": "允许的价格差",
+    "migrateRevalidationFailed": "打开期间价格发生变动，迁移已无法通过检查。请关闭后重试。",
+    "migrateReason": "迁移过程中，USDC.noble 通过转换器按 1:1 兑换为 USDC。",
+    "migrateRiskNotice": "迁移在一笔交易中完成。若价格变动，缺口可能由您的钱包余额补足（绝不超过余额所持有的数额），另一侧的盈余将返回钱包。",
+    "migrateMaxWalletDraw": "余额中最多动用（价格到达区间边缘时）",
+    "migrateMaxWalletDrawEstimate": "预计动用余额",
+    "migrateMaxWalletDrawValue": "{base} 或 {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} 或 {noble}",
     "yourPositions": "您的职位",
     "yourPosition": "你的职位",
     "yourPositionsDesc": "让您的资产发挥作用，并在每次掉期中赚取点差。",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "余额"
-      },
       "depositButton": "存入",
       "search": "搜索",
       "withdrawButton": "提币",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "由于通往其原始链的路径已失效，因此无法存入该资产。",
     "strandedTokenWithdrawDisabled": "由于通往其源链的路径已失效，因此该资产无法提取。"
   },
-  "cypherCard": {
-    "cypherSpend": "渗透支付",
-    "cypherOrder": "立即订购您的卡",
-    "cypherBeta": "测试版",
-    "acceptedEverywhere": "您的 OSMO，现已随处可用",
-    "newPill": "新的"
-  },
   "portfolio": {
     "buy": "买",
     "sell": "卖",
@@ -230,7 +233,6 @@
     "last1y": "过去 1 年",
     "allTime": "所有时间",
     "trade": "贸易",
-    "earn": "赚",
     "deposit": "订金",
     "withdraw": "提取",
     "convert": "转变"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "搜索",
     "selectToken": {
-      "title": "选择一个代币",
       "unverifiedAsset": "此资产未经验证。请谨慎进行。",
       "clickToActivate": "点击以激活"
     },
@@ -324,9 +325,6 @@
     "startAgain": "重新开始"
   },
   "estimated": "估计的",
-  "frontierMigration": {
-    "proceed": "继续"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "存款已停止。原住民桥梁路线已中断。",
@@ -401,7 +399,6 @@
     "store": "应用",
     "vote": "投票",
     "featureRequests": "功能请求",
-    "trade": "专业交易",
     "more": "更多的",
     "new": "新的",
     "settings": "设置"
@@ -428,9 +425,6 @@
       "startTradingButton": "开始一键交易",
       "defaultParameters": "默认设置为 1 小时，损失保护限额为 5,000 美元。",
       "changeButton": "编辑设置"
-    },
-    "floatingBanner": {
-      "newPill": "新的"
     },
     "reviewOrder": {
       "recapRowTitle": "一键交易限制",
@@ -1221,82 +1215,6 @@
     "osmosisUpdates": "渗透更新！",
     "seeWhatsNew": "看看有什么新鲜事"
   },
-  "earnPage": {
-    "title": "赚",
-    "positions": "职位",
-    "strategiesCount": "{number}策略",
-    "oneStrategy": "1 个策略",
-    "discoverStrategies": "发现策略",
-    "myStrategies": "你的策略",
-    "strategyPlatform": "战略",
-    "apy": "年利率",
-    "reward": "报酬",
-    "lock": "解绑",
-    "days": "天",
-    "day": "天",
-    "risk": "风险",
-    "strategyMethod": "类型",
-    "allMethods": "所有类型",
-    "platforms": "平台",
-    "allPlatforms": "所有平台",
-    "allCategories": "所有类别",
-    "filters": "过滤器",
-    "resetFilters": "重置过滤器",
-    "saveFilters": "保存过滤器",
-    "rewards": "奖励",
-    "availableToClaim": "可索赔",
-    "claimAllRewards": "领取所有奖励",
-    "join": "加入",
-    "tokenFilterOptions": {
-      "my": "您的资产",
-      "all": "所有资产"
-    },
-    "rewardTypes": {
-      "all": "全部",
-      "single": "单身的",
-      "multi": "多"
-    },
-    "totalValueInvested": "总价值",
-    "lookBelow": "请参阅下文并找到最适合您的策略",
-    "startEarningDescription": "释放您的全部赚钱潜力。通过以下多种策略让您的资产发挥作用。",
-    "loadingStrategies": "加载策略...",
-    "sorryErrorOccurred": "抱歉，发生错误。",
-    "sorryNoResultsWithAssets": "未找到与您的资产相关的策略。",
-    "sorryNoResults": "未找到任何策略。",
-    "tryChangingFilters": "尝试更换过滤器",
-    "retry": "重试",
-    "manage": "管理",
-    "noLock": "无锁",
-    "riskDisclaimer": "风险是根据策略及其基础资产的一组组合标准来计算的。",
-    "strategyGeoblocked": "抱歉，此策略在您所在的国家/地区不可用。",
-    "instantUnbondOnly": "仅限即时解绑",
-    "tooltips": {
-      "apr": {
-        "description": "年利率（APR）是指某项策略的年化百分比回报率。<inlang-LineFeed><inlang-LineFeed>注意：策略的回报可能根据参与度和表现而波动。<inlang-LineFeed><inlang-LineFeed>免责声明：这些 APR 是由项目自己报告的，可能不准确。"
-      },
-      "tvl": {
-        "description": "锁定总价值 (TVL) 是指存入策略的资产的美元总价值。"
-      },
-      "reward": {
-        "description": "通过该策略的运营和/或激励措施获得的资产类型。"
-      },
-      "lock": {
-        "description": "头寸在可以退出之前被绑定的时间段。注意：并非所有策略解除绑定*期间都有奖励分配。"
-      },
-      "strategy": {
-        "description": "Osmosis 上提供由各种平台托管的各种类型的赚钱机会。访问策略需要存入特定资产。"
-      },
-      "risk": {
-        "description": "风险评估涉及考虑与策略及其基础资产相关的多种标准。"
-      }
-    },
-    "riskLabels": {
-      "low": "低的",
-      "medium": "中等的",
-      "high": "高的",
-      "veryHigh": "很高"
-    }
-  },
   "remaining": "其余的",
   "timeUnits": {
     "second": "第二",
@@ -1367,10 +1285,6 @@
     "newer": "较新"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "选择您的价格",
-      "tryLimitOrders": "尝试限价订单"
-    },
     "historyTable": {
       "columns": {
         "order": "命令",

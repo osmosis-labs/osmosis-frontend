@@ -69,6 +69,19 @@
     "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
+    "migrateLiquidity": "Migrate Liquidity",
+    "migrateDescription": "Move your {baseSymbol}/{fromUsdcSymbol} position (pool {fromPoolId}) to {baseSymbol}/{toUsdcSymbol} (pool {toPoolId}). Same price range, same fee tier.",
+    "migrateDustNotice": "Amounts that don't fit the new range return to your wallet.",
+    "migrateIncentivesNotice": "Incentives below their minimum uptime are forfeited on withdrawal.",
+    "migrateCurrentDifference": "Current price difference",
+    "migrateAllowedDifference": "Allowed price difference",
+    "migrateRevalidationFailed": "Prices moved while this was open and the migration no longer clears its checks. Close and try again.",
+    "migrateReason": "USDC.noble converts 1:1 to USDC through the transmuter as part of the move.",
+    "migrateRiskNotice": "Migration is performed in a single transaction. If prices move, a shortfall may be covered from your wallet balance, never more than it holds, while the other side's surplus is returned to it.",
+    "migrateMaxWalletDraw": "Max from balance (price at range edge)",
+    "migrateMaxWalletDrawEstimate": "Estimated draw from balance",
+    "migrateMaxWalletDrawValue": "{base} or {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} or {noble}",
     "yourPositions": "Your Positions",
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balance"
-      },
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "This asset cannot be deposited because the route to its origin chain is no longer active",
     "strandedTokenWithdrawDisabled": "This asset cannot be withdrawn because the route to its origin chain is no longer active"
   },
-  "cypherCard": {
-    "cypherSpend": "Osmosis Pay",
-    "cypherOrder": "Order your card now",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "Your OSMO, now accepted everywhere",
-    "newPill": "New"
-  },
   "portfolio": {
     "buy": "Buy",
     "sell": "Sell",
@@ -230,7 +233,6 @@
     "last1y": "Last 1y",
     "allTime": "All time",
     "trade": "Trade",
-    "earn": "Earn",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "convert": "Convert"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token",
       "unverifiedAsset": "This asset is not verified. Proceed with caution.",
       "clickToActivate": "Click to activate"
     },
@@ -324,9 +325,6 @@
     "startAgain": "Start again"
   },
   "estimated": "Estimated",
-  "frontierMigration": {
-    "proceed": "Proceed"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Deposits halted. Native bridge route is down.",
@@ -401,7 +399,6 @@
     "store": "Apps",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
-    "trade": "Pro Trading",
     "more": "More",
     "new": "NEW",
     "settings": "Settings"
@@ -428,9 +425,6 @@
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
       "changeButton": "Edit settings"
-    },
-    "floatingBanner": {
-      "newPill": "New"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Click Trading limit",
@@ -1221,82 +1215,6 @@
     "osmosisUpdates": "Osmosis updates!",
     "seeWhatsNew": "See what's new"
   },
-  "earnPage": {
-    "title": "Earn",
-    "positions": "Positions",
-    "strategiesCount": "{number} strategies",
-    "oneStrategy": "1 strategy",
-    "discoverStrategies": "Discover Strategies",
-    "myStrategies": "Your Strategies",
-    "strategyPlatform": "Strategy",
-    "apy": "APR",
-    "reward": "Reward",
-    "lock": "Unbond",
-    "days": "days",
-    "day": "day",
-    "risk": "Risk",
-    "strategyMethod": "Types",
-    "allMethods": "All types",
-    "platforms": "Platforms",
-    "allPlatforms": "All platforms",
-    "allCategories": "All categories",
-    "filters": "Filters",
-    "resetFilters": "Reset filters",
-    "saveFilters": "Save filters",
-    "rewards": "Rewards",
-    "availableToClaim": "available to claim",
-    "claimAllRewards": "Claim all rewards",
-    "join": "Join",
-    "tokenFilterOptions": {
-      "my": "Your assets",
-      "all": "All assets"
-    },
-    "rewardTypes": {
-      "all": "All",
-      "single": "Single",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Total value",
-    "lookBelow": "Look below and find best strategies for you",
-    "startEarningDescription": "Unlock your full earning potential. Put your assets to work through the many strategies below.",
-    "loadingStrategies": "Loading strategies...",
-    "sorryErrorOccurred": "Sorry, an error occured.",
-    "sorryNoResultsWithAssets": "No strategies found associated with your assets.",
-    "sorryNoResults": "No strategies found.",
-    "tryChangingFilters": "Try changing filters",
-    "retry": "Retry",
-    "manage": "Manage",
-    "noLock": "No Lock",
-    "riskDisclaimer": "Risk is calculated with a combined set of criteria about a strategy and its underlying assets.",
-    "strategyGeoblocked": "Sorry, this strategy is unavailable in your country.",
-    "instantUnbondOnly": "Instant unbond only",
-    "tooltips": {
-      "apr": {
-        "description": "Annual Percentage Rate (APR) refers to the annualized percentage return of a strategy.\n\nNote: A strategy's return may fluctuate based on participation and performance.\n\nDisclaimer: These APRs are self-reported by projects themselves and may be inaccurate."
-      },
-      "tvl": {
-        "description": "Total Value Locked (TVL) refers to the total US Dollar value of assets deposited into the strategy."
-      },
-      "reward": {
-        "description": "The type of assets earned through the strategy's operations and/or incentives."
-      },
-      "lock": {
-        "description": "The period of time a position is bonded before it can be exited. Note: Not all strategy unbonding* periods have reward distributions."
-      },
-      "strategy": {
-        "description": "Earning opportunities of various types, hosted by various platforms, are available on Osmosis. Accessing a strategy necessitates the deposit of specific assets."
-      },
-      "risk": {
-        "description": "Risk assessment involves considering a combination of criteria related to a strategy and its underlying assets."
-      }
-    },
-    "riskLabels": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
-      "veryHigh": "Very high"
-    }
-  },
   "remaining": "remaining",
   "timeUnits": {
     "second": "second",
@@ -1367,10 +1285,6 @@
     "newer": "Newer"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Pick your price",
-      "tryLimitOrders": "Try limit orders"
-    },
     "historyTable": {
       "columns": {
         "order": "Order",

@@ -69,6 +69,19 @@
     "noRewards": "چیزی برای جمع آوری نیست، به زودی دوباره بررسی کنید",
     "removeLiquidity": "حذف نقدینگی",
     "increaseLiquidity": "افزایش نقدینگی",
+    "migrateLiquidity": "انتقال نقدینگی",
+    "migrateDescription": "موقعیت {baseSymbol}/{fromUsdcSymbol} خود (استخر {fromPoolId}) را به {baseSymbol}/{toUsdcSymbol} (استخر {toPoolId}) منتقل کنید. همان محدوده قیمت، همان سطح کارمزد.",
+    "migrateDustNotice": "مقادیری که در محدوده جدید جا نشوند به کیف پول شما بازمی‌گردند.",
+    "migrateIncentivesNotice": "پاداش‌های زیر حداقل زمان لازم هنگام برداشت از بین می‌روند.",
+    "migrateCurrentDifference": "اختلاف قیمت فعلی",
+    "migrateAllowedDifference": "اختلاف قیمت مجاز",
+    "migrateRevalidationFailed": "قیمت‌ها در مدت باز بودن این پنجره تغییر کردند و انتقال دیگر بررسی‌ها را نمی‌گذراند. ببندید و دوباره تلاش کنید.",
+    "migrateReason": "USDC.noble در جریان انتقال به نسبت ۱:۱ از طریق ترنسمیوتر به USDC تبدیل می‌شود.",
+    "migrateRiskNotice": "انتقال در یک تراکنش واحد انجام می‌شود. اگر قیمت‌ها حرکت کنند، کسری ممکن است از موجودی کیف پول شما تأمین شود، هرگز بیش از موجودی آن، و مازاد طرف دیگر به آن بازگردانده می‌شود.",
+    "migrateMaxWalletDraw": "حداکثر از موجودی (قیمت در لبه بازه)",
+    "migrateMaxWalletDrawEstimate": "برداشت تخمینی از موجودی",
+    "migrateMaxWalletDrawValue": "{base} یا {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} یا {noble}",
     "yourPositions": "موقعیت های شما",
     "yourPosition": "جایگاه تو",
     "yourPositionsDesc": "دارایی‌های خود را به کار بیندازید و در هر مبادله، اسپرد کسب کنید.",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "موجودی"
-      },
       "depositButton": "واریز",
       "search": "جستجو",
       "withdrawButton": "برداشت",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "این دارایی قابل واریز نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست.",
     "strandedTokenWithdrawDisabled": "این دارایی قابل برداشت نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست."
   },
-  "cypherCard": {
-    "cypherSpend": "اسمز پرداخت",
-    "cypherOrder": "همین الان کارت خود را سفارش دهید",
-    "cypherBeta": "بتا",
-    "acceptedEverywhere": "OSMO شما، اکنون در همه جا پذیرفته شده است",
-    "newPill": "جدید"
-  },
   "portfolio": {
     "buy": "خرید کنید",
     "sell": "فروش",
@@ -230,7 +233,6 @@
     "last1y": "1 سال گذشته",
     "allTime": "تمام زمان",
     "trade": "تجارت",
-    "earn": "کسب درآمد",
     "deposit": "سپرده گذاری",
     "withdraw": "برداشت",
     "convert": "تبدیل کنید"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "جستجو",
     "selectToken": {
-      "title": "انتخاب توکن",
       "unverifiedAsset": "این دارایی تأیید نشده است. با احتیاط ادامه دهید.",
       "clickToActivate": "برای فعال کردن کلیک کنید"
     },
@@ -324,9 +325,6 @@
     "startAgain": "دوباره شروع کن"
   },
   "estimated": "تخمین زده",
-  "frontierMigration": {
-    "proceed": "ادامه دهید"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "واریزها متوقف شده است. مسیر پل بومی خراب است.",
@@ -401,7 +399,6 @@
     "store": "برنامه ها",
     "vote": "انتخابات",
     "featureRequests": "درخواست‌های ویژگی",
-    "trade": "تجارت حرفه ای",
     "more": "بیشتر",
     "new": "جدید",
     "settings": "تنظیمات"
@@ -428,9 +425,6 @@
       "startTradingButton": "شروع تجارت با 1 کلیک",
       "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
       "changeButton": "ویرایش تنظیمات"
-    },
-    "floatingBanner": {
-      "newPill": "جدید"
     },
     "reviewOrder": {
       "recapRowTitle": "1-روی محدودیت معاملاتی کلیک کنید",
@@ -1221,82 +1215,6 @@
     "osmosisUpdates": "به روز رسانی اسمز!",
     "seeWhatsNew": "ببینید چه چیز جدیدی است"
   },
-  "earnPage": {
-    "title": "بدست آوردن",
-    "positions": "موقعیت ها",
-    "strategiesCount": "استراتژی های {number}",
-    "oneStrategy": "1 استراتژی",
-    "discoverStrategies": "استراتژی ها را کشف کنید",
-    "myStrategies": "استراتژی های شما",
-    "strategyPlatform": "استراتژی",
-    "apy": "آوریل",
-    "reward": "جایزه",
-    "lock": "بی بند و باری",
-    "days": "روزها",
-    "day": "روز",
-    "risk": "خطر",
-    "strategyMethod": "انواع",
-    "allMethods": "همه انواع",
-    "platforms": "بستر، زمینه",
-    "allPlatforms": "همه پلتفرم ها",
-    "allCategories": "همه دسته بندی ها",
-    "filters": "فیلترها",
-    "resetFilters": "بازنشانی فیلترها",
-    "saveFilters": "ذخیره فیلترها",
-    "rewards": "پاداش",
-    "availableToClaim": "در دسترس برای ادعا",
-    "claimAllRewards": "تمام جوایز را مطالبه کنید",
-    "join": "پیوستن",
-    "tokenFilterOptions": {
-      "my": "دارایی های شما",
-      "all": "تمام دارایی ها"
-    },
-    "rewardTypes": {
-      "all": "همه",
-      "single": "تنها",
-      "multi": "چند"
-    },
-    "totalValueInvested": "ارزش کل",
-    "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید",
-    "startEarningDescription": "پتانسیل کسب درآمد کامل خود را باز کنید. دارایی های خود را از طریق بسیاری از استراتژی های زیر به کار بگیرید.",
-    "loadingStrategies": "بارگیری استراتژی‌ها...",
-    "sorryErrorOccurred": "با عرض پوزش، خطایی رخ داده است.",
-    "sorryNoResultsWithAssets": "هیچ استراتژی مرتبط با دارایی های شما یافت نشد.",
-    "sorryNoResults": "هیچ استراتژی یافت نشد",
-    "tryChangingFilters": "سعی کنید فیلترها را تغییر دهید",
-    "retry": "دوباره امتحان کنید",
-    "manage": "مدیریت کنید",
-    "noLock": "بدون قفل",
-    "riskDisclaimer": "ریسک با مجموعه‌ای از معیارهای ترکیبی در مورد یک استراتژی و دارایی‌های زیربنایی آن محاسبه می‌شود.",
-    "strategyGeoblocked": "متأسفیم، این استراتژی در کشور شما در دسترس نیست.",
-    "instantUnbondOnly": "فقط بی بند و باری فوری",
-    "tooltips": {
-      "apr": {
-        "description": "نرخ درصدی سالانه (APR) به درصد بازده سالانه یک استراتژی اشاره دارد.\n\nتوجه: بازده یک استراتژی ممکن است بر اساس مشارکت و عملکرد نوسان داشته باشد.\n\nسلب مسئولیت: این APR ها توسط خود پروژه ها گزارش می شوند و ممکن است نادرست باشند."
-      },
-      "tvl": {
-        "description": "ارزش کل قفل شده (TVL) به کل ارزش دلاری دارایی های سپرده شده در استراتژی اشاره دارد."
-      },
-      "reward": {
-        "description": "نوع دارایی هایی که از طریق عملیات و/یا مشوق های استراتژی به دست می آید."
-      },
-      "lock": {
-        "description": "دوره زمانی که یک موقعیت قبل از خروج از آن باند می شود. توجه: همه دوره‌های unbonding* استراتژی دارای توزیع پاداش نیستند."
-      },
-      "strategy": {
-        "description": "فرصت‌های کسب درآمد از انواع مختلفی که توسط پلتفرم‌های مختلف میزبانی می‌شوند، در Osmosis در دسترس هستند. دسترسی به یک استراتژی مستلزم سپرده گذاری دارایی های خاص است."
-      },
-      "risk": {
-        "description": "ارزیابی ریسک شامل در نظر گرفتن ترکیبی از معیارهای مرتبط با یک استراتژی و دارایی های زیربنایی آن است."
-      }
-    },
-    "riskLabels": {
-      "low": "کم",
-      "medium": "متوسط",
-      "high": "بالا",
-      "veryHigh": "خیلی بالا"
-    }
-  },
   "remaining": "باقی مانده است",
   "timeUnits": {
     "second": "دومین",
@@ -1367,10 +1285,6 @@
     "newer": "جدیدتر"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "قیمت خود را انتخاب کنید",
-      "tryLimitOrders": "سفارشات محدود را امتحان کنید"
-    },
     "historyTable": {
       "columns": {
         "order": "سفارش",

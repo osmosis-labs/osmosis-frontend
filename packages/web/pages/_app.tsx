@@ -25,7 +25,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
-import { CypherCardToast } from "~/components/alert/cypher-card-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
@@ -143,14 +142,6 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="assets" className="h-6 w-6" />,
         selectionTest: /\/assets/,
       },
-      flags.earnPage
-        ? {
-            label: t("earnPage.title"),
-            link: "/earn",
-            icon: <Icon id="earn" className="h-6 w-6" />,
-            selectionTest: /\/earn/,
-          }
-        : null,
       flags.staking
         ? {
             label: t("menu.stake"),
@@ -190,7 +181,6 @@ const MainLayoutWrapper: FunctionComponent<{
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [
-    flags.earnPage,
     flags.staking,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
@@ -231,7 +221,6 @@ const MainLayoutWrapper: FunctionComponent<{
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
-      {flags.cypherCard && !flags.alloyedAssets && <CypherCardToast />}
     </MainLayout>
   );
 });

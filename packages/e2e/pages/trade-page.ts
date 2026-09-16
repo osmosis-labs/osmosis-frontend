@@ -79,13 +79,12 @@ export class TradePage extends BasePage {
   }
 
   /**
-   * Navigate to the app home and wait for tokens to load.
+   * Navigate to the app home and wait for the trade widget to mount.
    *
    * Retries with backoff because the EU/SG monitoring suites load the app
-   * through an HTTP CONNECT proxy where the initial page load / `assets.json`
-   * fetch can intermittently stall — previously this surfaced as a hard
-   * `beforeAll` timeout (e.g. the 180s monitoring.limit hook on EU) instead of
-   * a recoverable retry.
+   * through an HTTP CONNECT proxy where the initial page load can stall —
+   * previously this surfaced as a hard `beforeAll` timeout instead of a
+   * recoverable retry.
    */
   async goto(retries = 2) {
     let lastError: unknown;
@@ -94,18 +93,8 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
-        // Wait for the assets.json *response* (not just the request being
-        // issued) and assert it loaded successfully, so a stalled/failed load
-        // surfaces as a retryable error rather than a false "ready". Using
-        // Promise.all ties both promises together, so if goto() throws the
-        // waitForResponse promise is still handled (no unhandled rejection).
-        const [assetResponse] = await Promise.all([
-          this.page.waitForResponse("**/assets.json", { timeout: 30_000 }),
-          this.page.goto("/"),
-        ]);
-        expect(assetResponse.ok()).toBeTruthy();
-        // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-        await this.page.waitForTimeout(2000);
+        await this.page.goto("/", { timeout: 30_000 });
+        await this.waitForTradeUi();
         const currentUrl = this.page.url();
         console.log(`FE opened at: ${currentUrl}`);
         await this.dismissVariantsPopupIfPresent();
@@ -753,7 +742,7 @@ export class TradePage extends BasePage {
     // hash but is never included → LCD "tx not found") is diagnosable from CI
     // logs. `code === 0` means accepted into the mempool; a non-zero `code` +
     // `raw_log`/`codespace` is the ante-handler rejection reason (sequence, fee,
-    // signature, etc.). Logged, not thrown, so the REST poll still runs.
+    // signature, etc.).
     console.log(
       `Broadcast response: httpStatus=${resp.status()} ` +
         `code=${txResponse?.code ?? body?.code ?? "?"} ` +
@@ -768,6 +757,18 @@ export class TradePage extends BasePage {
         `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
           `code=${txResponse?.code ?? body?.code ?? "?"}, ` +
           `message=${body?.message ?? txResponse?.raw_log ?? "none"})`
+      );
+    }
+    // A non-zero code here is a CheckTx rejection: a hash is returned but the
+    // tx never enters a block, so the LCD poll would spin until its budget
+    // expired and the test would die on Playwright's timeout with no reason
+    // attached. Fail now, carrying the ante-handler's own explanation.
+    const broadcastCode = txResponse?.code ?? body?.code;
+    if (typeof broadcastCode === "number" && broadcastCode !== 0) {
+      throw new Error(
+        `tx ${hash} rejected at CheckTx (code ${broadcastCode}, ` +
+          `codespace ${txResponse?.codespace ?? "-"}): ` +
+          `${txResponse?.raw_log ?? body?.message ?? "no log"}`
       );
     }
     return String(hash).toLowerCase();
@@ -842,14 +843,36 @@ export class TradePage extends BasePage {
       }).then(() => "REST LCD poll" as const);
     });
 
+    // A non-zero on-chain code is deterministic: the tx is included and failed,
+    // so the toast will never arrive. Racing that rejection against the pair
+    // below surfaces the chain error immediately instead of letting the toast
+    // branch run out its budget (which exceeds Playwright's test timeout and
+    // would report a generic timeout instead of the real reason).
+    const chainFailure = restPromise.then(
+      () => new Promise<never>(() => {}),
+      (err: Error) => {
+        if (
+          err?.message?.includes("failed on-chain") ||
+          err?.message?.includes("rejected at CheckTx")
+        ) {
+          throw err;
+        }
+        return new Promise<never>(() => {});
+      }
+    );
+
     // After Promise.any settles on the winner, the losing branch keeps running
     // and eventually rejects (the toast `waitFor` times out, or the REST poll
     // aborts). Attach no-op catches so that late rejection doesn't surface as
     // an unhandled promise rejection in Playwright/Node.
     toastPromise.catch(() => {});
     restPromise.catch(() => {});
+    chainFailure.catch(() => {});
 
-    return Promise.any([toastPromise, restPromise])
+    return Promise.race([
+      Promise.any([toastPromise, restPromise]),
+      chainFailure,
+    ])
       .then((winner) => {
         controller.abort();
         console.log(`Transaction confirmed via ${winner}.`);

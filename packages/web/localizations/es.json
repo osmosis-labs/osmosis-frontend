@@ -69,6 +69,19 @@
     "noRewards": "No hay nada que cobrar, vuelve pronto",
     "removeLiquidity": "Quitar Liquidez",
     "increaseLiquidity": "Aumentar la Liquidez",
+    "migrateLiquidity": "Migrar liquidez",
+    "migrateDescription": "Mueve tu posición {baseSymbol}/{fromUsdcSymbol} (pool {fromPoolId}) a {baseSymbol}/{toUsdcSymbol} (pool {toPoolId}). Mismo rango de precios, mismo nivel de comisión.",
+    "migrateDustNotice": "Las cantidades que no encajen en el nuevo rango vuelven a tu billetera.",
+    "migrateIncentivesNotice": "Los incentivos por debajo de su tiempo mínimo se pierden al retirar.",
+    "migrateCurrentDifference": "Diferencia de precio actual",
+    "migrateAllowedDifference": "Diferencia de precio permitida",
+    "migrateRevalidationFailed": "Los precios se movieron mientras esto estaba abierto y la migración ya no pasa sus comprobaciones. Cierra e inténtalo de nuevo.",
+    "migrateReason": "USDC.noble se convierte 1:1 a USDC a través del transmuter como parte del traslado.",
+    "migrateRiskNotice": "La migración se realiza en una sola transacción. Si los precios se mueven, un déficit puede cubrirse con el saldo de tu wallet, nunca más de lo que contiene, mientras el excedente del otro lado vuelve a ella.",
+    "migrateMaxWalletDraw": "Máx. del saldo (precio en el borde del rango)",
+    "migrateMaxWalletDrawEstimate": "Uso estimado del saldo",
+    "migrateMaxWalletDrawValue": "{base} o {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} o {noble}",
     "yourPositions": "Tus Posiciones",
     "yourPosition": "Tu posición",
     "yourPositionsDesc": "Ponga sus activos a trabajar y gane un margen en cada intercambio.",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balance"
-      },
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Retirar",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "Este activo no se puede depositar porque la ruta a su cadena de origen ya no está activa",
     "strandedTokenWithdrawDisabled": "Este activo no se puede retirar porque la ruta a su cadena de origen ya no está activa"
   },
-  "cypherCard": {
-    "cypherSpend": "Pago por ósmosis",
-    "cypherOrder": "Pide tu tarjeta ahora",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "Tu OSMO, ahora aceptado en todas partes",
-    "newPill": "Nuevo"
-  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
@@ -230,7 +233,6 @@
     "last1y": "Último 1 año",
     "allTime": "Todo el tiempo",
     "trade": "Comercio",
-    "earn": "Ganar",
     "deposit": "Depósito",
     "withdraw": "Retirar",
     "convert": "Convertir"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "Buscar",
     "selectToken": {
-      "title": "Seleccione un token",
       "unverifiedAsset": "Este activo no está verificado. Proceda con precaución.",
       "clickToActivate": "Haz clic para activar"
     },
@@ -324,9 +325,6 @@
     "startAgain": "Empezar de nuevo"
   },
   "estimated": "Estimado",
-  "frontierMigration": {
-    "proceed": "Proceder"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Se han suspendido los depósitos. La ruta del puente indígena está cortada.",
@@ -401,7 +399,6 @@
     "store": "Aplicaciones",
     "vote": "Votar",
     "featureRequests": "Solicitudes de Funciones",
-    "trade": "Comercio profesional",
     "more": "Más",
     "new": "NUEVO",
     "settings": "Ajustes"
@@ -428,9 +425,6 @@
       "startTradingButton": "Comience a operar con 1 clic",
       "defaultParameters": "La configuración predeterminada está establecida en 1 hora con un límite de protección contra pérdidas de $5,000 USD.",
       "changeButton": "Editar ajustes"
-    },
-    "floatingBanner": {
-      "newPill": "Nuevo"
     },
     "reviewOrder": {
       "recapRowTitle": "Límite de negociación con un solo clic",
@@ -1221,82 +1215,6 @@
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
     "seeWhatsNew": "Ver qué hay de nuevo"
   },
-  "earnPage": {
-    "title": "Ganar",
-    "positions": "Posiciones",
-    "strategiesCount": "{number} estrategias",
-    "oneStrategy": "1 estrategia",
-    "discoverStrategies": "Descubra estrategias",
-    "myStrategies": "Tus estrategias",
-    "strategyPlatform": "Estrategia",
-    "apy": "ABR",
-    "reward": "Premio",
-    "lock": "Desvinculado",
-    "days": "días",
-    "day": "día",
-    "risk": "Riesgo",
-    "strategyMethod": "Tipos",
-    "allMethods": "Todos los tipos",
-    "platforms": "Plataformas",
-    "allPlatforms": "Todas las plataformas",
-    "allCategories": "Todas las categorias",
-    "filters": "Filtros",
-    "resetFilters": "Restablecer filtros",
-    "saveFilters": "Guardar filtros",
-    "rewards": "Recompensas",
-    "availableToClaim": "disponible para reclamar",
-    "claimAllRewards": "Reclama todas las recompensas",
-    "join": "Unirse",
-    "tokenFilterOptions": {
-      "my": "Tus activos",
-      "all": "Todos los activos"
-    },
-    "rewardTypes": {
-      "all": "Todo",
-      "single": "Soltero",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Valor total",
-    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
-    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
-    "loadingStrategies": "Cargando estrategias...",
-    "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
-    "sorryNoResultsWithAssets": "No se encontraron estrategias asociadas con sus activos.",
-    "sorryNoResults": "No se encontraron estrategias.",
-    "tryChangingFilters": "Prueba a cambiar filtros",
-    "retry": "Rever",
-    "manage": "Administrar",
-    "noLock": "Sin bloqueo",
-    "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
-    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
-    "instantUnbondOnly": "Solo desvinculación instantánea",
-    "tooltips": {
-      "apr": {
-        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
-      },
-      "tvl": {
-        "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
-      },
-      "reward": {
-        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
-      },
-      "lock": {
-        "description": "El período de tiempo que una posición está vinculada antes de que se pueda salir de ella. Nota: No todos los períodos de desvinculación de estrategias* tienen distribuciones de recompensas."
-      },
-      "strategy": {
-        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
-      },
-      "risk": {
-        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
-      }
-    },
-    "riskLabels": {
-      "low": "Bajo",
-      "medium": "Medio",
-      "high": "Alto",
-      "veryHigh": "Muy alto"
-    }
-  },
   "remaining": "restantes",
   "timeUnits": {
     "second": "segundo",
@@ -1367,10 +1285,6 @@
     "newer": "Más nuevo"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Elige tu precio",
-      "tryLimitOrders": "Pruebe las órdenes limitadas"
-    },
     "historyTable": {
       "columns": {
         "order": "Orden",
