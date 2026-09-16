@@ -21,6 +21,14 @@ dayjs.extend(duration);
 // package, skipping registerCustom.
 const superjson = new SuperJSON();
 
+// tRPC SSG extracts `.serialize` (createServerSideHelpers.dehydrate),
+// which drops `this` and crashes in classRegistry.getIdentifier.
+// SuperJSON's static methods are already bound; instance methods are not.
+superjson.serialize = superjson.serialize.bind(superjson);
+superjson.deserialize = superjson.deserialize.bind(superjson);
+superjson.stringify = superjson.stringify.bind(superjson);
+superjson.parse = superjson.parse.bind(superjson);
+
 // https://github.com/blitz-js/superjson
 
 // This file allows us to directly pass complex types to and from tRPC methods from client <> server

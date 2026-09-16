@@ -50,4 +50,11 @@ describe("superjson unit transformers", () => {
     expect(parsed).toBeInstanceOf(Int);
     expect(parsed.toString()).toBe("42");
   });
+
+  test("serialize stays bound when extracted, as tRPC SSG dehydrate does", () => {
+    const { serialize, deserialize } = superjson;
+    const parsed = deserialize(serialize(new Dec("1.5"))) as Dec;
+    expect(parsed).toBeInstanceOf(Dec);
+    expect(parsed.toString()).toBe(new Dec("1.5").toString());
+  });
 });
