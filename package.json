@@ -26,7 +26,7 @@
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "pre-commit": "lerna run pre-commit --concurrency false",
+    "pre-commit": "lerna run pre-commit --concurrency 1",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
     "lint:workspace": "sherif --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e",
