@@ -110,7 +110,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.plan.outputs.skip != 'true'
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn --cwd packages/e2e install --immutable
 
       - name: Download baseline state (closest to target window)
         if: steps.plan.outputs.skip != 'true'

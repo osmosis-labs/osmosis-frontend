@@ -60,7 +60,7 @@ jobs:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn --cwd packages/e2e install --immutable
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -129,7 +129,7 @@ jobs:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn --cwd packages/e2e install --immutable
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -198,7 +198,7 @@ jobs:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn --cwd packages/e2e install --immutable
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -367,7 +367,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -413,7 +413,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Swap tests in EU
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -465,7 +465,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Swap tests in SG
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -521,7 +521,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Trade tests in US
         id: run-us
         env:
@@ -578,7 +578,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Cancel leftover open orders
         continue-on-error: true
         env:

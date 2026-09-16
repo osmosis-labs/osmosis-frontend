@@ -45,7 +45,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: "https://app.osmosis.zone"

@@ -34,7 +34,7 @@ jobs:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn --cwd packages/e2e install --immutable
       - name: Resolve private key
         env:
           KEY_ID: ${{ matrix.account.key_id }}

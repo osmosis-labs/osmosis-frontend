@@ -41,7 +41,7 @@ jobs:
             ${{ runner.OS }}-22.x-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Echo Current Server URL
         run: echo "SQS Server URL:${{ matrix.server-url }}"
@@ -112,7 +112,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --immutable && npx playwright install --with-deps chromium
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}
