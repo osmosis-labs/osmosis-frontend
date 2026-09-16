@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 /** Inspired by `usePrevious` from react-use, but includes a predicate for when to set the previous value. */
 export function usePreviousWhen<T>(value: T, condition: (prev: T) => boolean) {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
   useEffect(() => {
     if (condition(value)) ref.current = value;
   });
