@@ -12,9 +12,13 @@ import {
 } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import duration, { type Duration } from "dayjs/plugin/duration";
-import superjson from "superjson";
+import SuperJSON from "superjson";
 
 dayjs.extend(duration);
+
+// Named `const` so webpack compiling workspace `src` emits a real export.
+// `export { SuperJSON as superjson }` of a CJS default import is dropped.
+export const superjson = SuperJSON;
 
 // https://github.com/blitz-js/superjson
 
@@ -127,5 +131,3 @@ superjson.registerCustom<Buffer, string>(
   },
   "Buffer"
 );
-
-export { superjson };

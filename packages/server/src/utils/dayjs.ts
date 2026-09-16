@@ -1,8 +1,10 @@
 // create a module with dayjs and duration plugin extended
 
-import dayjs from "dayjs";
+import dayjsLib from "dayjs";
 import duration from "dayjs/plugin/duration";
 
-dayjs.extend(duration);
+dayjsLib.extend(duration);
 
-export { dayjs };
+// Named `const` so webpack compiling workspace `src` emits a real export.
+// `export { dayjs }` of a CJS default import is dropped.
+export const dayjs = dayjsLib;
