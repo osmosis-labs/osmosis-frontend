@@ -88,7 +88,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 apiKey={process.env.NEXT_PUBLIC_MOONPAY_PUBLIC_KEY ?? ""}
                 debug={process.env.NODE_ENV === "development"}
               >
-                <ErrorBoundary fallback={<ErrorFallback />}>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
                   <SEO />
                   <SpeedInsights />
                   <ToastContainer
