@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
+          package-manager-cache: false
           node-version: ${{ matrix.node-version }}
-          cache: yarn
 
       - name: Cache dependencies
         uses: actions/cache@v5

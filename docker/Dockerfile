@@ -5,8 +5,7 @@ WORKDIR /app
 COPY turbo.json lerna.json package.json tsconfig.json yarn.lock /app/
 COPY packages /app/packages/
 
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile
+RUN yarn
 RUN yarn build
 
 FROM node:20.11.1-alpine3.19

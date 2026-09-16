@@ -17,9 +17,7 @@
   "license": "Apache-2.0",
   "sideEffects": [
     "./build/utils/superjson.js",
-    "./build/utils/dayjs.js",
-    "./src/utils/superjson.ts",
-    "./src/utils/dayjs.ts"
+    "./build/utils/dayjs.js"
   ],
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",

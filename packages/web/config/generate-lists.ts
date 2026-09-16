@@ -36,13 +36,9 @@ import {
   getChainList,
   getImageRelativeFilePath,
   getOsmosisChainId,
-  isAssetListGenerateCached,
-  markAssetListsGenerated,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
 } from "./utils";
-
-const IMAGE_DOWNLOAD_CONCURRENCY = 10;
 
 interface ResponseAssetList {
   chainName: string;
@@ -377,28 +373,17 @@ async function generateAssetImages({
   commitHash: string;
 }) {
   console.time("Successfully downloaded images");
-  const assetsWithImages = assetList.assets.filter(
-    (asset) => asset?.logoURIs?.svg ?? asset?.logoURIs?.png
-  );
+  for await (const asset of assetList.assets) {
+    const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
-  let nextIndex = 0;
-  const workers = Array.from(
-    { length: Math.min(IMAGE_DOWNLOAD_CONCURRENCY, assetsWithImages.length) },
-    async () => {
-      while (nextIndex < assetsWithImages.length) {
-        const asset = assetsWithImages[nextIndex++];
-        if (!asset) continue;
-        const imageUrl = asset.logoURIs?.svg ?? asset.logoURIs?.png;
-        if (!imageUrl) continue;
-        await saveAssetImageToTokensDir({
-          imageUrl,
-          asset,
-          currentAssetListHash: commitHash,
-        });
-      }
-    }
-  );
-  await Promise.all(workers);
+    if (!imageUrl) continue;
+
+    await saveAssetImageToTokensDir({
+      imageUrl,
+      asset,
+      currentAssetListHash: commitHash,
+    });
+  }
   console.timeEnd("Successfully downloaded images");
 }
 
@@ -432,13 +417,6 @@ async function main() {
   }
 
   console.info(`Using hash '${mainLatestCommitHash}' to generate assets`);
-
-  if (isAssetListGenerateCached(mainLatestCommitHash)) {
-    console.info(
-      "Asset list hash, network, and generated files are current; skipping fetch"
-    );
-    return;
-  }
 
   const [
     mainnetChainList,
@@ -562,8 +540,6 @@ async function main() {
       overwriteFile: false,
     });
   }
-
-  markAssetListsGenerated();
 }
 
 main().catch((e) => {

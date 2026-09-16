@@ -12,7 +12,6 @@ import { Readable } from "stream";
 import { finished } from "stream/promises";
 
 import {
-  IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
@@ -43,86 +42,30 @@ export const codegenDir = "config/generated";
 // Path to the lock file
 const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
 
-export type AssetListLock = {
-  assetListHash?: string;
-  isTestnet?: boolean;
-  /** Set only after asset-lists.ts and chain-list.ts are fully written. */
-  listsGenerated?: boolean;
-};
-
-function readStoredAssetListLock(): AssetListLock | null {
+/**
+ * Read the stored asset list hash from the lock file.
+ * @returns The stored hash or null if the lock file doesn't exist.
+ */
+function readStoredAssetListHash(): string | null {
   if (!fs.existsSync(lockFilePath)) {
     return null;
   }
+  const data = fs.readFileSync(lockFilePath, "utf-8");
   try {
-    return JSON.parse(fs.readFileSync(lockFilePath, "utf-8")) as AssetListLock;
+    const parsed = JSON.parse(data);
+    return parsed.assetListHash || null;
   } catch {
     return null;
   }
 }
 
 /**
- * Read the stored asset list hash from the lock file.
- * @returns The stored hash or null if the lock file doesn't exist.
- */
-function readStoredAssetListHash(): string | null {
-  return readStoredAssetListLock()?.assetListHash || null;
-}
-
-const generatedListFiles = ["asset-lists.ts", "chain-list.ts"] as const;
-
-/** True when the lock records a finished generate-lists run for this commit and network. */
-export function isAssetListLockReady(
-  lock: AssetListLock | null,
-  commitHash: string,
-  isTestnet: boolean
-): boolean {
-  return (
-    lock?.assetListHash === commitHash &&
-    lock?.isTestnet === isTestnet &&
-    lock?.listsGenerated === true
-  );
-}
-
-/** True when generate-lists has already written outputs for this asset-list commit and network. */
-export function isAssetListGenerateCached(commitHash: string): boolean {
-  if (
-    !isAssetListLockReady(readStoredAssetListLock(), commitHash, IS_TESTNET)
-  ) {
-    return false;
-  }
-  return generatedListFiles.every((fileName) =>
-    fs.existsSync(path.join(codegenDir, fileName))
-  );
-}
-
-/**
- * Persist the asset-list hash and network. Clears `listsGenerated` so a crash
- * before the list files are written cannot satisfy the generate-lists skip.
- * Image downloads still use the hash for per-file resume.
+ * Write the current asset list hash to the lock file.
+ * @param hash The hash to store.
  */
 export function writeCurrentAssetListHash(hash: string): void {
-  const data: AssetListLock = {
-    assetListHash: hash,
-    isTestnet: IS_TESTNET,
-    listsGenerated: false,
-  };
+  const data = { assetListHash: hash };
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
-}
-
-/** Record that asset-lists.ts and chain-list.ts match the stored hash and network. */
-export function markAssetListsGenerated(): void {
-  const lock = readStoredAssetListLock();
-  if (!lock) {
-    throw new Error(
-      "Cannot mark asset lists generated because asset-lock.json is missing"
-    );
-  }
-  fs.writeFileSync(
-    lockFilePath,
-    JSON.stringify({ ...lock, listsGenerated: true }, null, 2),
-    "utf-8"
-  );
 }
 
 /**
