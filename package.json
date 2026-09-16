@@ -76,11 +76,6 @@
   "packageManager": "yarn@1.22.22",
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@babel/traverse": "^7.29.7",
     "elliptic": "^6.6.1",
     "pbkdf2": "^3.1.3",
