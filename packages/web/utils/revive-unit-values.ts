@@ -42,25 +42,49 @@ export function reviveLeakedUnitValues(value: unknown): unknown {
     return value;
   }
   if ("_fiatCurrency" in value && isRecord(value._fiatCurrency)) {
-    return new PricePretty(
-      value._fiatCurrency as unknown as FiatCurrency,
-      new Dec(String(value.amount))
-    );
+    const amount = leakedDecToString(value.amount);
+    if (amount != null) {
+      try {
+        return new PricePretty(
+          value._fiatCurrency as unknown as FiatCurrency,
+          new Dec(amount)
+        );
+      } catch {
+        // fall through and walk children
+      }
+    }
   }
   if (isRecord(value._currency) && "coinDenom" in value._currency) {
     const amount = leakedDecToString(value.amount);
-    if (amount == null) return value;
-    return new CoinPretty(value._currency as unknown as AppCurrency, amount);
+    if (amount != null) {
+      try {
+        return new CoinPretty(
+          value._currency as unknown as AppCurrency,
+          amount
+        );
+      } catch {
+        // fall through
+      }
+    }
   }
   if (isRecord(value._options) && "symbol" in value._options) {
     const amount = leakedDecToString(value.amount);
-    if (amount == null) return value;
-    return new RatePretty(amount);
+    if (amount != null) {
+      try {
+        return new RatePretty(amount);
+      } catch {
+        // fall through
+      }
+    }
   }
 
   const out: Record<string, unknown> = {};
   for (const [key, nested] of Object.entries(value)) {
-    out[key] = reviveLeakedUnitValues(nested);
+    try {
+      out[key] = reviveLeakedUnitValues(nested);
+    } catch {
+      out[key] = nested;
+    }
   }
   return out;
 }

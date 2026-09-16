@@ -194,4 +194,29 @@ describe("superjson unit transformers", () => {
     const rate = Number(parsed.priceChange24h.toDec().toString());
     expect(Math.abs(rate)).toBeLessThan(1);
   });
+
+  test("revives getUserAssets usdValue whose amount is a leaked Dec dump", () => {
+    const payload = {
+      items: [
+        {
+          coinDenom: "OSMO",
+          usdValue: {
+            _fiatCurrency: DEFAULT_VS_CURRENCY,
+            amount: { int: "1093892430300488969896" },
+            _options: {
+              separator: "",
+              upperCase: false,
+              lowerCase: false,
+              locale: "en-US",
+            },
+          },
+        },
+      ],
+    };
+    const parsed = superjson.parse(superjson.stringify(payload)) as {
+      items: { usdValue: PricePretty }[];
+    };
+    expect(parsed.items[0].usdValue).toBeInstanceOf(PricePretty);
+    expect(typeof parsed.items[0].usdValue.toDec).toBe("function");
+  });
 });

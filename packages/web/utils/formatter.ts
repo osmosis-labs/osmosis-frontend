@@ -466,6 +466,7 @@ export const compressZeros = (
  * Rounds to the provided `maxDecimals` parameter.
  */
 export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
+  if (!price || typeof price.toDec !== "function") return "$0";
   if (price.toDec().isZero()) return "$0";
 
   if (price.toDec().lt(new Dec(0.01))) {
