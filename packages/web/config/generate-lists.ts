@@ -37,6 +37,7 @@ import {
   getImageRelativeFilePath,
   getOsmosisChainId,
   isAssetListGenerateCached,
+  markAssetListsGenerated,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
 } from "./utils";
@@ -434,7 +435,7 @@ async function main() {
 
   if (isAssetListGenerateCached(mainLatestCommitHash)) {
     console.info(
-      "Asset list hash and network unchanged and generated files exist; skipping fetch"
+      "Asset list hash, network, and generated files are current; skipping fetch"
     );
     return;
   }
@@ -561,6 +562,8 @@ async function main() {
       overwriteFile: false,
     });
   }
+
+  markAssetListsGenerated();
 }
 
 main().catch((e) => {

@@ -43,9 +43,11 @@ export const codegenDir = "config/generated";
 // Path to the lock file
 const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
 
-type AssetListLock = {
+export type AssetListLock = {
   assetListHash?: string;
   isTestnet?: boolean;
+  /** Set only after asset-lists.ts and chain-list.ts are fully written. */
+  listsGenerated?: boolean;
 };
 
 function readStoredAssetListLock(): AssetListLock | null {
@@ -69,10 +71,24 @@ function readStoredAssetListHash(): string | null {
 
 const generatedListFiles = ["asset-lists.ts", "chain-list.ts"] as const;
 
+/** True when the lock records a finished generate-lists run for this commit and network. */
+export function isAssetListLockReady(
+  lock: AssetListLock | null,
+  commitHash: string,
+  isTestnet: boolean
+): boolean {
+  return (
+    lock?.assetListHash === commitHash &&
+    lock?.isTestnet === isTestnet &&
+    lock?.listsGenerated === true
+  );
+}
+
 /** True when generate-lists has already written outputs for this asset-list commit and network. */
 export function isAssetListGenerateCached(commitHash: string): boolean {
-  const lock = readStoredAssetListLock();
-  if (lock?.assetListHash !== commitHash || lock?.isTestnet !== IS_TESTNET) {
+  if (
+    !isAssetListLockReady(readStoredAssetListLock(), commitHash, IS_TESTNET)
+  ) {
     return false;
   }
   return generatedListFiles.every((fileName) =>
@@ -81,15 +97,32 @@ export function isAssetListGenerateCached(commitHash: string): boolean {
 }
 
 /**
- * Write the current asset list hash and network to the lock file.
- * @param hash The hash to store.
+ * Persist the asset-list hash and network. Clears `listsGenerated` so a crash
+ * before the list files are written cannot satisfy the generate-lists skip.
+ * Image downloads still use the hash for per-file resume.
  */
 export function writeCurrentAssetListHash(hash: string): void {
   const data: AssetListLock = {
     assetListHash: hash,
     isTestnet: IS_TESTNET,
+    listsGenerated: false,
   };
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+/** Record that asset-lists.ts and chain-list.ts match the stored hash and network. */
+export function markAssetListsGenerated(): void {
+  const lock = readStoredAssetListLock();
+  if (!lock) {
+    throw new Error(
+      "Cannot mark asset lists generated because asset-lock.json is missing"
+    );
+  }
+  fs.writeFileSync(
+    lockFilePath,
+    JSON.stringify({ ...lock, listsGenerated: true }, null, 2),
+    "utf-8"
+  );
 }
 
 /**
