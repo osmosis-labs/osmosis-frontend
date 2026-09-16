@@ -28,4 +28,5 @@ export type AvailableFlags =
   | "swapped"
   | "onrampmoney"
   | "polarisBanner"
+  | "multiTxBridgeRoutes"
   | "positionMigration";
