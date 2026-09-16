@@ -3,6 +3,7 @@ import {
   type Locator,
   type Page,
   expect,
+  test,
 } from "@playwright/test";
 
 import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
@@ -130,9 +131,22 @@ export class TransactionsPage extends BasePage {
     console.log(`Use locator for a cancel btn: ${cancelBtn}`);
 
     const cancelBtnLocator = this.page.locator(cancelBtn).first();
-    await expect(cancelBtnLocator, "Cancel button not found!").toBeVisible({
-      timeout: 30000,
-    });
+    try {
+      await expect(cancelBtnLocator, "Cancel button not found!").toBeVisible({
+        timeout: 30000,
+      });
+    } catch (error) {
+      // Capture the order list before afterEach logs out and hides the rows.
+      await test.info().attach("cancel-order-before-logout", {
+        body: await this.page.locator("body").innerText(),
+        contentType: "text/plain",
+      });
+      await test.info().attach("cancel-order-before-logout-screenshot", {
+        body: await this.page.screenshot(),
+        contentType: "image/png",
+      });
+      throw error;
+    }
 
     // Armed before the click so the broadcast response can't be missed; this
     // also absorbs the stale-toast guard (see startTxConfirmation).

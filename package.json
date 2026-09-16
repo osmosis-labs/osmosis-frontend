@@ -53,7 +53,7 @@
     "@typescript-eslint/parser": "^7.4.0",
     "babel-jest": "^29.7.0",
     "dotenv-cli": "^7.2.1",
-    "eslint": "^8.50.0",
+    "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unicorn": "^48.0.1",
@@ -95,9 +95,9 @@
     "@0xsquid/sdk/axios": "^0.33.0",
     "@terra-money/feather.js/axios": "^0.33.0",
     "es5-ext": "npm:@unes/es5-ext@0.10.64-1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
   }
 }
