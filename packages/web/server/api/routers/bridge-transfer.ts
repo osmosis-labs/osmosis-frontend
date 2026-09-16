@@ -828,7 +828,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             withdrawUrl = undefined;
           }
 
-          let urlToAdd: (typeof externalUrls)[number] | undefined =
+          const urlToAdd: (typeof externalUrls)[number] | undefined =
             input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,

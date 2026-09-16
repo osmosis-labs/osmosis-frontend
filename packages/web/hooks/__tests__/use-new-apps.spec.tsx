@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { AppStoreApp } from "@osmosis-labs/server";
 import { waitFor } from "@testing-library/react";
 import dayjs from "dayjs";

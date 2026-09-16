@@ -373,7 +373,7 @@ function ExpectedRate(
   // Used for Limit inputs to override the price display
   priceOverride?: PricePretty
 ) {
-  var inBaseOutQuoteSpotPrice =
+  const inBaseOutQuoteSpotPrice =
     swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
   if (inBaseOutQuoteSpotPrice.isZero()) {
     console.warn("ExpectedRate: inBaseOutQuoteSpotPrice is Zero");

@@ -1,5 +1,5 @@
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
+import "../styles/globals.css";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
@@ -126,7 +126,7 @@ const MainLayoutWrapper: FunctionComponent<{
       return [];
     }
 
-    let menuItems: (MainLayoutMenu | null)[] = [
+    const menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("limitOrders.trade"),
         link: "/",

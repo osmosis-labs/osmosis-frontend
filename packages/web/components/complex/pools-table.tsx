@@ -231,7 +231,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Pool>();
 
-    let allColumns = [
+    const allColumns = [
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
@@ -305,7 +305,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       );
     }
 
-    let remainingColumns = [
+    const remainingColumns = [
       columnHelper.accessor((row) => row, {
         id: "aprBreakdown.total",
         header: () => (

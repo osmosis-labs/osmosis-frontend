@@ -22,7 +22,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   );
   const [fuse, setFuse] = useState<Fuse<AppStoreApp> | null>(null);
 
-  const applications = apps.applications ?? [];
+  const applications = useMemo(
+    () => apps.applications ?? [],
+    [apps.applications]
+  );
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics({

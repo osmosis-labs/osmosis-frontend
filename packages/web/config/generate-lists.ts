@@ -9,7 +9,6 @@
  *  1. We need to determine all the available asset symbols for added type safety.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
 import type {
   Asset,
@@ -23,7 +22,6 @@ import * as fs from "fs";
 
 import { generateTsFile } from "~/utils/codegen";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
