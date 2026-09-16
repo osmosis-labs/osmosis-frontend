@@ -1,5 +1,9 @@
 name: Preview frontend E2E tests
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 # Run on non-draft PR pushes (and when a draft is marked ready for review),
 # plus direct pushes to stage for post-merge validation. Draft PRs skip the
 # suite entirely — the preview E2E tests spend real funds on every run.

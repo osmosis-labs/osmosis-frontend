@@ -1,5 +1,9 @@
 name: Cancel Open Limit Orders (E2E Test Accounts)
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 # Manually triggered workflow to cancel all open limit orders for every e2e test account.
 #
 # Use this when monitoring tests have accumulated uncancelled open orders.

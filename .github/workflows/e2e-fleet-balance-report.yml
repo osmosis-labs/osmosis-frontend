@@ -1,5 +1,9 @@
 name: "E2E: Fleet Balance Report"
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 # Posts a periodic Slack report of total assets across all five E2E accounts
 # (US/EU/SG monitoring, preview, topup/holding), valued in USD at SQS prices.
 # Read-only — no transactions.

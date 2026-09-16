@@ -1,5 +1,9 @@
 name: "E2E: Migrate Funds"
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 # One-time workflow for wallet rotation.
 #
 # Phase 1 (extract): Drains old accounts into the topup holding account, keeping

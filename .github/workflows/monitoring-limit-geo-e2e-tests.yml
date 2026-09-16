@@ -1,5 +1,9 @@
 name: Synthetic Geo Monitoring Frontend tests
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 # Two-tier cadence (cost control): the stablecoin swap suites are near-free
 # (round-trips net to ~0 USDC), so they run every hour in all regions. The US
 # market + limit suites cause almost all of the wallet drain (~25x the swap

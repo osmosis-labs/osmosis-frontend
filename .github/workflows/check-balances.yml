@@ -1,5 +1,9 @@
 name: Check E2E Account Balances
 
+env:
+  YARN_IGNORE_PATH: "1"
+  COREPACK_ENABLE_PROJECT_SPEC: "0"
+
 on:
   workflow_dispatch:
 
