@@ -6,10 +6,6 @@ prod
 build
 yarn-error.log
 .yarn
-!.yarn/
-/.yarn/*
-!.yarn/releases/
-!.yarn/releases/yarn-*.cjs
 
 src/styles/index.scss
 .vercel
