@@ -21,22 +21,11 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
-import { reviveLeakedUnitValues } from "~/utils/revive-unit-values";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
   EdgeRouterKey,
 } from "~/utils/trpc-edge";
-
-const originalDeserialize = superjson.deserialize.bind(superjson);
-superjson.deserialize = ((data: Parameters<typeof superjson.deserialize>[0]) =>
-  reviveLeakedUnitValues(
-    originalDeserialize(data)
-  )) as typeof superjson.deserialize;
-
-const originalParse = superjson.parse.bind(superjson);
-superjson.parse = ((str: string) =>
-  reviveLeakedUnitValues(originalParse(str))) as typeof superjson.parse;
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -111,10 +100,8 @@ export const api = createTRPCNext<AppRouter>({
       // and data respecting the new model is fetched from the server.
       // Otherwise, the old data will be served from cache
       // and unexpected data structures will be run through the app.
-      // v3: drop caches that may hold poisoned success-with-empty
-      // supported-assets results persisted before the Skip counterparty
-      // mutation fix.
-      buster: "v3",
+      // v4: drop caches persisted while tRPC leaked unit class dumps.
+      buster: "v4",
     });
 
     return {

@@ -78,15 +78,12 @@ export class BasePage {
   }
 
   async getWalletBalance() {
-    // OSMO navbar amount can be empty while the wallet is connected
-    // (empty span is not "visible" to Playwright). The profile button
-    // with the truncated address is the real connected signal.
-    await expect(
-      this.connectedWalletBtn,
-      "Wallet should be connected."
-    ).toBeVisible({ timeout: 9000 });
-    const balance = await this.walletBalance.textContent().catch(() => "");
-    console.log(`Wallet connected. Navbar OSMO amount: ${balance}`);
+    console.log("Wait for a wallet balance for 9s.");
+    await expect(this.walletBalance, "Wallet should be connected.").toBeVisible(
+      { timeout: 9000 }
+    );
+    const balance = await this.walletBalance.textContent({ timeout: 2000 });
+    console.log(`Wallet balance: ${balance}`);
     return balance;
   }
 

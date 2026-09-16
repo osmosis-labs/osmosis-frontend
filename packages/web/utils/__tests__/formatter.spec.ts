@@ -2,7 +2,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import cases from "jest-in-case";
 
-import { compressZeros, formatFiatPrice, formatPretty } from "../formatter";
+import { compressZeros, formatFiatPrice } from "../formatter";
 
 describe("compressZeros function", () => {
   it("should not compress zeros with and handle the absence of currency symbol", () => {
@@ -132,56 +132,3 @@ cases(
     },
   ]
 );
-
-describe("formatPretty", () => {
-  const opts = {
-    maxDecimals: 6,
-    maximumSignificantDigits: undefined,
-    maximumFractionDigits: 3,
-    notation: "standard" as const,
-  };
-
-  it("formats a PricePretty instance", () => {
-    const price = new PricePretty(DEFAULT_VS_CURRENCY, new Dec("0.03349"));
-    expect(formatPretty(price, opts)).toContain("0.033");
-  });
-
-  it("formats a foreign PricePretty copy without instanceof", () => {
-    const foreign = {
-      fiatCurrency: DEFAULT_VS_CURRENCY,
-      toDec: () => new Dec("0.03349"),
-      toString: () => "$0.03349",
-    };
-    expect(foreign instanceof PricePretty).toBe(false);
-    expect(formatPretty(foreign as unknown as PricePretty, opts)).toContain(
-      "0.033"
-    );
-  });
-
-  it("revives a superjson-leaked PricePretty plain object", () => {
-    const leaked = {
-      _fiatCurrency: DEFAULT_VS_CURRENCY,
-      amount: 0.03349002870085137,
-      _options: {
-        separator: "",
-        upperCase: false,
-        lowerCase: false,
-        locale: "en-US",
-      },
-    };
-    expect(formatPretty(leaked as unknown as PricePretty, opts)).toContain(
-      "0.033"
-    );
-  });
-
-  it("formats a foreign Dec copy without instanceof or toDec", () => {
-    const real = new Dec("1.25");
-    const foreign = {
-      int: "int-from-other-bundle",
-      truncate: () => ({ toString: () => "1" }),
-      toString: () => real.toString(),
-    };
-    expect(foreign instanceof Dec).toBe(false);
-    expect(formatPretty(foreign as unknown as Dec, opts)).toContain("1.25");
-  });
-});

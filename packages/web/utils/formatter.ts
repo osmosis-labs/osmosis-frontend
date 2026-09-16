@@ -33,76 +33,6 @@ const DEFAULT: CustomFormatOpts = {
   scientificMagnitudeThreshold: 14,
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function hasFn(value: object, key: string): boolean {
-  return typeof (value as Record<string, unknown>)[key] === "function";
-}
-
-/**
- * Turbopack can emit duplicate `@osmosis-labs/unit` class copies, so
- * `instanceof` is not enough. Duck-type unique fields/methods instead.
- */
-function asPricePretty(value: unknown): PricePretty | undefined {
-  if (value instanceof PricePretty) return value;
-  if (isRecord(value) && "fiatCurrency" in value && hasFn(value, "toDec")) {
-    return value as unknown as PricePretty;
-  }
-  // Superjson-without-custom-type: class fields leaked as a plain object.
-  if (
-    isRecord(value) &&
-    isRecord(value._fiatCurrency) &&
-    value.amount != null &&
-    !hasFn(value, "toDec")
-  ) {
-    return new PricePretty(
-      value._fiatCurrency as unknown as PricePretty["fiatCurrency"],
-      new Dec(String(value.amount))
-    );
-  }
-  return undefined;
-}
-
-function asCoinPretty(value: unknown): CoinPretty | undefined {
-  if (value instanceof CoinPretty) return value;
-  if (isRecord(value) && "currency" in value && hasFn(value, "toDec")) {
-    return value as unknown as CoinPretty;
-  }
-  return undefined;
-}
-
-function asRatePretty(value: unknown): RatePretty | undefined {
-  if (value instanceof RatePretty) return value;
-  if (
-    isRecord(value) &&
-    "intPretty" in value &&
-    !("fiatCurrency" in value) &&
-    !("currency" in value) &&
-    hasFn(value, "toDec")
-  ) {
-    return value as unknown as RatePretty;
-  }
-  return undefined;
-}
-
-function asDec(value: unknown): Dec | undefined {
-  if (value instanceof Dec) return value;
-  if (
-    isRecord(value) &&
-    "int" in value &&
-    hasFn(value, "truncate") &&
-    hasFn(value, "toString")
-  ) {
-    return new Dec((value as { toString(): string }).toString());
-  }
-  if (isRecord(value) && hasFn(value, "toDec")) {
-    return (value as { toDec(): Dec }).toDec();
-  }
-  return undefined;
-}
-
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty | Dec | { toDec(): Dec },
@@ -123,23 +53,20 @@ export function formatPretty(
     );
   }
 
-  const price = asPricePretty(prettyValue);
-  if (price) {
-    return priceFormatter(price, optsWithDefaults);
+  if (prettyValue instanceof PricePretty) {
+    return priceFormatter(prettyValue, optsWithDefaults);
+  } else if (prettyValue instanceof CoinPretty) {
+    return coinFormatter(prettyValue, optsWithDefaults);
+  } else if (prettyValue instanceof RatePretty) {
+    return rateFormatter(prettyValue, optsWithDefaults);
+  } else if (prettyValue instanceof Dec || "toDec" in prettyValue) {
+    return decFormatter(
+      prettyValue instanceof Dec ? prettyValue : prettyValue.toDec(),
+      optsWithDefaults
+    );
+  } else {
+    throw new Error("Unknown pretty value");
   }
-  const coin = asCoinPretty(prettyValue);
-  if (coin) {
-    return coinFormatter(coin, optsWithDefaults);
-  }
-  const rate = asRatePretty(prettyValue);
-  if (rate) {
-    return rateFormatter(rate, optsWithDefaults);
-  }
-  const dec = asDec(prettyValue);
-  if (dec) {
-    return decFormatter(dec, optsWithDefaults);
-  }
-  throw new Error("Unknown pretty value");
 }
 
 /** Formats a dec as compact by default. i.e. $7.53M or $265K. Validate handled by `Dec`. */
@@ -466,7 +393,6 @@ export const compressZeros = (
  * Rounds to the provided `maxDecimals` parameter.
  */
 export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
-  if (!price || typeof price.toDec !== "function") return "$0";
   if (price.toDec().isZero()) return "$0";
 
   if (price.toDec().lt(new Dec(0.01))) {
