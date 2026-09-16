@@ -15,8 +15,8 @@ export function useDeepMemo<T>(
   if (!Array.isArray(dependencies)) {
     throw new Error("useDeepMemo expects a dependency array");
   }
-  const dependenciesRef = useRef<DependencyList | undefined>(undefined);
-  const memoizedValueRef = useRef<T | undefined>(undefined);
+  const dependenciesRef = useRef<DependencyList>();
+  const memoizedValueRef = useRef<T>();
 
   if (!equal(dependenciesRef.current, dependencies)) {
     dependenciesRef.current = dependencies;

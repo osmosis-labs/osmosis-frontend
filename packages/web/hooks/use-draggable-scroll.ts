@@ -11,7 +11,7 @@ interface Options {
 }
 
 export function useDraggableScroll(
-  ref: RefObject<HTMLElement | null>,
+  ref: RefObject<HTMLElement>,
   options: Options = { direction: Direction.Horizontal }
 ) {
   const { direction } = options;

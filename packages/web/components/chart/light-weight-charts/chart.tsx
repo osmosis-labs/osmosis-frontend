@@ -213,9 +213,7 @@ export const Chart = memo(
       Controller,
     } = props;
     const [container, setContainer] = useState<HTMLDivElement | null>(null);
-    const chart = useRef<ChartController<TimeChartOptions, K> | undefined>(
-      undefined
-    );
+    const chart = useRef<ChartController<TimeChartOptions, K>>();
     const lastHoverDataPointLogicalIndex =
       useRef<MouseEventParams<K>["logical"]>(undefined);
 

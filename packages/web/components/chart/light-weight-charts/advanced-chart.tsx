@@ -17,7 +17,7 @@ type AdvancedChartProps = Omit<
 
 export const AdvancedChart = (props: AdvancedChartProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const chart = useRef<IChartingLibraryWidget | undefined>(undefined);
+  const chart = useRef<IChartingLibraryWidget>();
 
   const featureFlags = useFeatureFlags();
   const themeOptions: Partial<ChartingLibraryWidgetOptions> = {

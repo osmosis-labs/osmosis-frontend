@@ -32,7 +32,7 @@ export function useKeyboardNavigation<TItem>({
 }: {
   items: TItem[];
   onSelectItem: (item: TItem) => void;
-  searchBoxRef: RefObject<HTMLInputElement | null> | undefined;
+  searchBoxRef: RefObject<HTMLInputElement> | undefined;
   dataAttributeName?: string;
 }) {
   /** Prevent global collision */
