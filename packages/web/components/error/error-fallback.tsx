@@ -1,9 +1,8 @@
 import Image from "next/image";
-import { FallbackProps } from "react-error-boundary";
 
 import { useTranslation } from "~/hooks";
 
-export const ErrorFallback = ({ error }: Partial<FallbackProps> = {}) => {
+export const ErrorFallback = () => {
   const { t } = useTranslation();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-8 pt-4 text-center">
@@ -36,14 +35,6 @@ export const ErrorFallback = ({ error }: Partial<FallbackProps> = {}) => {
           {t("errors.fallbackSupport")}
         </a>
       </p>
-      {error?.message && (
-        <pre
-          data-testid="error-fallback-message"
-          className="max-w-xl overflow-auto whitespace-pre-wrap break-words text-left text-xs text-osmoverse-300"
-        >
-          {error.message}
-        </pre>
-      )}
     </div>
   );
 };

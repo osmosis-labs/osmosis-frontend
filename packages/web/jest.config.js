@@ -45,7 +45,6 @@ const esmModules = [
   "bitcoinjs-lib",
   "uint8array-tools",
   "varuint-bitcoin",
-  "nuqs",
 ];
 
 module.exports = async () => ({
