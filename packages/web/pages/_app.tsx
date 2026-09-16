@@ -14,6 +14,7 @@ import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import {
   ComponentType,
   FunctionComponent,
@@ -75,37 +76,39 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <MultiLanguageProvider
-        defaultLanguage={DEFAULT_LANGUAGE}
-        defaultTranslations={{ en }}
-      >
-        <StoreProvider>
-          <WalletSelectProvider>
-            <MoonPayProvider
-              apiKey={process.env.NEXT_PUBLIC_MOONPAY_PUBLIC_KEY ?? ""}
-              debug={process.env.NODE_ENV === "development"}
-            >
-              <ErrorBoundary fallback={<ErrorFallback />}>
-                <SEO />
-                <SpeedInsights />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-                <ImmersiveBridge />
-              </ErrorBoundary>
-            </MoonPayProvider>
-          </WalletSelectProvider>
-        </StoreProvider>
-      </MultiLanguageProvider>
-    </WagmiProvider>
+    <NuqsAdapter>
+      <WagmiProvider config={wagmiConfig}>
+        <MultiLanguageProvider
+          defaultLanguage={DEFAULT_LANGUAGE}
+          defaultTranslations={{ en }}
+        >
+          <StoreProvider>
+            <WalletSelectProvider>
+              <MoonPayProvider
+                apiKey={process.env.NEXT_PUBLIC_MOONPAY_PUBLIC_KEY ?? ""}
+                debug={process.env.NODE_ENV === "development"}
+              >
+                <ErrorBoundary fallback={<ErrorFallback />}>
+                  <SEO />
+                  <SpeedInsights />
+                  <ToastContainer
+                    toastStyle={{
+                      backgroundColor: "#2d2755",
+                    }}
+                    transition={Bounce}
+                    newestOnTop
+                  />
+                  <MainLayoutWrapper>
+                    {Component && <Component {...pageProps} />}
+                  </MainLayoutWrapper>
+                  <ImmersiveBridge />
+                </ErrorBoundary>
+              </MoonPayProvider>
+            </WalletSelectProvider>
+          </StoreProvider>
+        </MultiLanguageProvider>
+      </WagmiProvider>
+    </NuqsAdapter>
   );
 }
 
