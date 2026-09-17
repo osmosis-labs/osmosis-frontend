@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix",
-    "eslint": "^8.50.0",
+    "eslint": "^8.57.1",
     "jest": "^29.7.0",
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.2",
