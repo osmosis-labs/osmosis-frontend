@@ -64,7 +64,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Install dependencies
         run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
@@ -139,7 +139,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Install dependencies
         run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
@@ -214,7 +214,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Install dependencies
         run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
@@ -381,14 +381,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -433,14 +433,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -491,14 +491,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -553,14 +553,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -616,14 +616,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
