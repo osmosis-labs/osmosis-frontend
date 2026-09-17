@@ -24,10 +24,10 @@ jobs:
             ${{ runner.OS }}-22.x-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --immutable
 
       - name: Lint workspace
-        run: yarn lint:workspace
+        run: corepack yarn lint:workspace
 
   test:
     runs-on: ubuntu-latest
@@ -55,7 +55,7 @@ jobs:
             ${{ runner.OS }}-${{ matrix.node-version }}-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --immutable
 
       - name: Lint ${{ matrix.package }} package
-        run: yarn lint --filter=@osmosis-labs/${{ matrix.package }}
+        run: corepack yarn lint --filter=@osmosis-labs/${{ matrix.package }}

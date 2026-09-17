@@ -41,14 +41,14 @@ jobs:
             ${{ runner.OS }}-22.x-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --immutable
 
       - name: Echo Current Server URL
         run: echo "SQS Server URL:${{ matrix.server-url }}"
 
       - name: Run Tests
         id: tests
-        run: yarn test:e2e --filter=@osmosis-labs/server
+        run: corepack yarn test:e2e --filter=@osmosis-labs/server
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
@@ -96,8 +96,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -112,7 +118,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}

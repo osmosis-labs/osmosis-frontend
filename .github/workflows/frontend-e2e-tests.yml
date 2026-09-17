@@ -49,15 +49,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -202,8 +208,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -219,7 +231,7 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -253,8 +265,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -277,7 +295,7 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -305,8 +323,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -321,7 +345,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -358,8 +382,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -374,7 +404,7 @@ jobs:
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -398,8 +428,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -415,7 +451,7 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
@@ -449,8 +485,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -466,7 +508,7 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Claim tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
