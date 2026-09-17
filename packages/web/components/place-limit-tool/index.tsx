@@ -220,8 +220,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const defaultSlippage =
         quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+        slippageConfig.slippage
+          .toDec()
+          .equals(new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2)))
       ) {
         return;
       }
@@ -305,7 +306,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         maxDecimals: number = 2,
         rounding: boolean = false
       ) => {
-        resetSlippage();
+        const isFocused = focused === amountType;
+        // Derived-field synchronization must not reset the user's slippage or
+        // quote direction; only edits to the active field should do that.
+        if (isFocused) resetSlippage();
         const update =
           amountType === "fiat"
             ? setFiatAmount
@@ -320,11 +324,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ? swapState.marketState.inAmountInput.setAmount
           : swapState.marketState.outAmountInput.setAmount;
 
-        setQuoteType(
-          !isMarketOutAmount || !featureFlags.inGivenOut
-            ? "out-given-in"
-            : "in-given-out"
-        );
+        if (isFocused) {
+          setQuoteType(
+            !isMarketOutAmount || !featureFlags.inGivenOut
+              ? "out-given-in"
+              : "in-given-out"
+          );
+        }
 
         // If value is empty clear values
         if (!value?.trim()) {
@@ -354,8 +360,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         if (type === "market" || (amountType === "fiat" && tab === "buy")) {
           setMarketAmount(updatedValue);
         }
-        const isFocused = focused === amountType;
-
         const formattedValue = !isFocused
           ? trimPlaceholderZeros(updatedValue)
           : updatedValue;
@@ -364,7 +368,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [
         focused,
         swapState.baseAsset?.coinDecimals,
-        swapState.inAmountInput,
+        swapState.inAmountInput.setAmount,
         swapState.marketState.inAmountInput.setAmount,
         swapState.marketState.outAmountInput.setAmount,
         tab,
@@ -455,7 +459,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
-    // Adjusts the token value when the user updates the fiat value
+    // Adjusts the fiat value when the user updates the token value.
     useEffect(() => {
       if (
         focused !== "token" ||
@@ -473,15 +477,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         : undefined;
 
       setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined, 10);
-    }, [
-      focused,
-      setAmountSafe,
-      swapState.priceState.price,
-      tokenAmount,
-      swapState.marketState.inAmountInput,
-      tab,
-      type,
-    ]);
+    }, [focused, setAmountSafe, swapState.priceState.price, tokenAmount, type]);
 
     // Adjusts the token value when the user updates the fiat value
     useEffect(() => {
