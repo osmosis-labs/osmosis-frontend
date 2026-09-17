@@ -248,7 +248,9 @@ export const OrderHistory = observer(() => {
         >
           {isLoading ? (
             <tr className="flex items-center justify-center py-10">
-              <Spinner className="!h-10 !w-10" />
+              <td colSpan={headers.length + 1} className="!p-0">
+                <Spinner className="!h-10 !w-10" />
+              </td>
             </tr>
           ) : (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -295,14 +297,14 @@ export const OrderHistory = observer(() => {
             })
           )}
         </tbody>
-        <Intersection
-          onVisible={() => {
-            if (hasNextPage && !isFetchingNextPage && !isLoading) {
-              fetchNextPage();
-            }
-          }}
-        />
       </table>
+      <Intersection
+        onVisible={() => {
+          if (hasNextPage && !isFetchingNextPage && !isLoading) {
+            fetchNextPage();
+          }
+        }}
+      />
       {isLargeScreen && (
         <OrderModal
           order={selectedOrder}
@@ -388,11 +390,13 @@ const TableGroupHeader = ({
 
   return (
     <tr style={style} className="flex items-center">
-      <span className="sm:subtitle1 py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
-        {group === "pending"
-          ? t("limitOrders.orderHistoryHeaders.pending")
-          : t("limitOrders.orderHistoryHeaders.past")}
-      </span>
+      <td colSpan={headers.length + 1} className="!p-0">
+        <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
+          {group === "pending"
+            ? t("limitOrders.orderHistoryHeaders.pending")
+            : t("limitOrders.orderHistoryHeaders.past")}
+        </span>
+      </td>
     </tr>
   );
 };

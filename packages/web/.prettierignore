@@ -19,6 +19,7 @@ coverage
 yarn.lock
 .DS_Store
 
+.next
 .turbo
 *.log
 
@@ -31,3 +32,6 @@ public/datafeeds/**/*
 *.zip
 
 tsconfig.script.tsbuildinfo
+config/generated/asset-lock.json
+public
+tsconfig.tsbuildinfo
