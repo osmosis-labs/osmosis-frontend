@@ -202,13 +202,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -286,13 +279,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
