@@ -1,11 +1,10 @@
 import type { StdFee } from "@cosmjs/amino";
 import {
+  DEFAULT_VS_CURRENCY,
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-} from "@osmosis-labs/pools";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+} from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   getSwapMessages,

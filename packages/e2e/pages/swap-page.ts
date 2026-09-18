@@ -6,6 +6,7 @@ import {
   expect,
 } from '@playwright/test'
 
+import { unfoldWalletMsgYaml } from '../utils/wallet-msg'
 import { BasePage } from './base-page'
 import { getKeplrPopupPage } from './keplr-helper'
 
@@ -41,12 +42,8 @@ export class SwapPage extends BasePage {
   }
 
   async goto() {
-    const assetPromise = this.page.waitForRequest('**/assets.json')
-    await this.page.goto('/')
-    const request = await assetPromise
-    expect(request).toBeTruthy()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.goto('/', { timeout: 30_000 })
+    await this.waitForTradeUi()
     const currentUrl = this.page.url()
     console.log(`FE opened at: ${currentUrl}`)
     await this.dismissVariantsPopupIfPresent()
@@ -89,9 +86,11 @@ export class SwapPage extends BasePage {
       name: 'Approve',
     })
     await expect(approveBtn).toBeEnabled()
-    const msgContentAmount = await approvePage
-      .getByText('type: osmosis/poolmanager/')
-      .textContent()
+    const msgContentAmount = unfoldWalletMsgYaml(
+      (await approvePage
+        .getByText('type: osmosis/poolmanager/')
+        .textContent()) ?? undefined,
+    )
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`)
     await approveBtn.click()
     await this.page.waitForTimeout(4000)

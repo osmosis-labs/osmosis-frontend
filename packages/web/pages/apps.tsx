@@ -1,7 +1,7 @@
 import type { AppStoreApp, AppStoreResponse } from "@osmosis-labs/server";
 import Fuse from "fuse.js";
 import { NextSeo } from "next-seo";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useWindowSize } from "react-use";
 
 import { HeroCard } from "~/components/cards";
@@ -20,9 +20,11 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [fuzzySearchResults, setFuzzySearchResults] = useState<AppStoreApp[]>(
     []
   );
-  const [fuse, setFuse] = useState<Fuse<AppStoreApp> | null>(null);
 
-  const applications = apps.applications ?? [];
+  const applications = useMemo(
+    () => apps.applications ?? [],
+    [apps.applications]
+  );
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics({
@@ -30,13 +32,14 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   });
   const { width } = useWindowSize();
 
-  useEffect(() => {
-    const options = {
-      keys: ["title"],
-      threshold: 0.3,
-    };
-    setFuse(new Fuse(applications, options));
-  }, [applications]);
+  const fuse = useMemo(
+    () =>
+      new Fuse(applications, {
+        keys: ["title"],
+        threshold: 0.3,
+      }),
+    [applications]
+  );
 
   let featuredApp = applications?.find((app) => app.featured === true);
   const nonFeaturedApps = applications?.filter((app) => !app.featured);
@@ -48,13 +51,11 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   };
 
   const handleSearchInput = (value: string) => {
-    if (fuse) {
-      const searchResults = fuse.search(value);
-      const appDataResults = searchResults.map((result) => result.item);
+    const searchResults = fuse.search(value);
+    const appDataResults = searchResults.map((result) => result.item);
 
-      setSearchValue(value);
-      setFuzzySearchResults(appDataResults);
-    }
+    setSearchValue(value);
+    setFuzzySearchResults(appDataResults);
   };
 
   const appsToDisplay = searchValue ? fuzzySearchResults : nonFeaturedApps;

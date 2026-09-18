@@ -1,18 +1,18 @@
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
-  PoolRaw,
+  getPool,
+  PoolRawResponse,
   STABLE_POOL_TYPE,
   WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/pools/build/types";
-import { getPool } from "@osmosis-labs/server";
+} from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 
 type Response = {
-  pool: PoolRaw;
+  pool: PoolRawResponse;
 };
 
 export default async function pools(req: Request) {
@@ -45,7 +45,7 @@ export default async function pools(req: Request) {
     }
     return { ...pool.raw, ["@type"]: COSMWASM_POOL_TYPE };
   });
-  const response: Response = { pool: pool as PoolRaw };
+  const response: Response = { pool: pool as PoolRawResponse };
   return new Response(JSON.stringify(response), { status: 200 });
 }
 

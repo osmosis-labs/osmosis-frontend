@@ -105,9 +105,6 @@ const config = {
 
     return config;
   },
-  experimental: {
-    instrumentationHook: true,
-  },
 };
 
 module.exports = {

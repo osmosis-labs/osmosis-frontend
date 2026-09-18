@@ -1,0 +1,111 @@
+import { apiClient } from "@osmosis-labs/utils";
+
+import { IS_TESTNET } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
+
+/**
+ * Pure helpers for multi-transaction bridge routes. Kept free of store and
+ * hook imports so both the bridge components and the transfer-history store
+ * can use them without an import cycle.
+ */
+
+/**
+ * Named provider failures the client maps to specific recovery copy. These
+ * mirror the exported constants in `@osmosis-labs/bridge`'s errors module,
+ * which is the source of truth; they are duplicated here because the error
+ * crosses tRPC as a plain message string, and importing a VALUE from
+ * `@osmosis-labs/bridge` in client code pulls the whole package (and its
+ * Node-only LaunchDarkly dependency) into the browser bundle. Type-only
+ * imports from that package stay fine. `multi-tx.spec.ts` asserts these
+ * stay identical to the bridge constants.
+ */
+export const BRIDGE_ROUTE_EXPIRED_MESSAGE = "saved multi-tx route has expired";
+export const BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE =
+  "step fee exceeds the funds available to pay it";
+
+/**
+ * Polls Skip until the given tx's own route (the first leg of a multi-tx
+ * transfer) completes, i.e. the funds have reached the intermediate chain.
+ * `isActive` aborts the loop (e.g. on unmount); `maxAttempts` caps it for
+ * one-shot resume checks. `onWaiting` fires once, before the first wait
+ * between polls, so callers can surface that the funds haven't arrived yet
+ * without waiting for the whole polling budget to run out.
+ */
+export async function waitForSkipStepArrival({
+  chainId,
+  txHash,
+  isActive = () => true,
+  maxAttempts,
+  intervalMs = 10_000,
+  onWaiting,
+}: {
+  chainId: string;
+  txHash: string;
+  isActive?: () => boolean;
+  maxAttempts?: number;
+  intervalMs?: number;
+  onWaiting?: () => void;
+}): Promise<"success" | "failed" | "pending" | "aborted"> {
+  const env = IS_TESTNET ? "testnet" : "mainnet";
+  // prompt Skip to index the tx; the polling below tolerates failures
+  await fetch(
+    `/api/skip-track-tx?chainID=${chainId}&txHash=${txHash}&env=${env}`
+  ).catch(() => undefined);
+
+  for (let attempt = 0; !maxAttempts || attempt < maxAttempts; attempt++) {
+    if (!isActive()) return "aborted";
+    try {
+      const response = await fetch(
+        `/api/skip-tx-status?chainID=${chainId}&txHash=${txHash}&env=${env}`
+      );
+      if (response.ok) {
+        const { state } = (await response.json()) as { state?: string };
+        // Re-check liveness AFTER the await: the caller may have unmounted
+        // during the request, and returning a terminal state then would let
+        // the flow continue (e.g. prompt a wallet signature on a closed
+        // modal) instead of leaving the resumable history entry.
+        if (!isActive()) return "aborted";
+        if (state === "STATE_COMPLETED_SUCCESS") return "success";
+        if (state === "STATE_COMPLETED_ERROR" || state === "STATE_ABANDONED")
+          return "failed";
+      }
+    } catch {
+      // transient errors: keep polling
+    }
+    if (attempt === 0) onWaiting?.();
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return "pending";
+}
+
+/**
+ * Balance of `denom` held by `address` on a cosmos chain, queried via the
+ * chain's registry LCD. Returns undefined when it can't be determined, so
+ * callers can choose to fail open or closed.
+ */
+export async function getChainBalance({
+  chainId,
+  address,
+  denom,
+}: {
+  chainId: string;
+  address: string;
+  denom: string;
+}): Promise<bigint | undefined> {
+  const chain = ChainList.find((c) => c.chain_id === chainId);
+  const rest = chain?.apis?.rest?.[0]?.address;
+  if (!rest) return undefined;
+  try {
+    const { balance } = await apiClient<{ balance?: { amount?: string } }>(
+      `${rest.replace(
+        /\/$/,
+        ""
+      )}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${encodeURIComponent(
+        denom
+      )}`
+    );
+    return BigInt(balance?.amount ?? "0");
+  } catch {
+    return undefined;
+  }
+}

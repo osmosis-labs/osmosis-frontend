@@ -35,26 +35,24 @@ Components:
 If you need to mock a request on a non-e2e test, you can use msw. For example:
 
 ```ts
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { server } from "tests/msw-server";
 
 server.use(
-  rest.get(
+  http.get(
     "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
-    (_req, res, ctx) => {
-      return res(
-        ctx.json({
-          base_fee: baseFee.toString(),
-        } as {
-          base_fee: string;
-        })
-      );
+    () => {
+      return HttpResponse.json({
+        base_fee: baseFee.toString(),
+      } as {
+        base_fee: string;
+      });
     }
   )
 );
 ```
 
-If you'd like to learn more about msw, you can check out their [documentation](https://v1.mswjs.io/docs/).
+If you'd like to learn more about msw, you can check out their [documentation](https://mswjs.io/docs/).
 
 ### Troubleshooting
 

@@ -23,7 +23,7 @@ export type MainLayoutMenu = {
   icon: ReactNode;
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;
-  isNew?: Boolean;
+  isNew?: boolean;
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
   subtext?: string;

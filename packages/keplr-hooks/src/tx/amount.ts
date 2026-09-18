@@ -4,7 +4,6 @@ import {
   ChainGetter,
   CoinPrimitive,
   IQueriesStore,
-  CosmosQueries,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -16,7 +15,6 @@ import {
   ZeroAmountError,
 } from "./errors";
 import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
-import { useState } from "react";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @observable.ref
@@ -221,19 +219,3 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     return;
   }
 }
-
-export const useAmountConfig = (
-  chainGetter: ChainGetter,
-  queriesStore: IQueriesStore<CosmosQueries>,
-  chainId: string,
-  sender: string
-) => {
-  const [txConfig] = useState(
-    () =>
-      new AmountConfig(chainGetter, queriesStore, chainId, sender, undefined)
-  );
-  txConfig.setChain(chainId);
-  txConfig.setSender(sender);
-
-  return txConfig;
-};

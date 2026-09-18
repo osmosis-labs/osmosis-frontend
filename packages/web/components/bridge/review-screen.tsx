@@ -176,6 +176,43 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           {t("transfer.learnMore")}
         </Link>
       </div>
+      {/* Multi-transaction route: explain the extra signature up front, then
+          narrate the phase while the transfer is mid-flight. */}
+      {quote.multiTx && (
+        <div className="flex gap-3 rounded-[20px] border-2 border-osmoverse-700 p-5 py-3 mt-3">
+          <Icon id="info" className="h-6 w-6 shrink-0 text-wosmongton-300" />
+          <div className="flex flex-col">
+            <h1 className="body2">
+              {t("transfer.multiTxTitle", {
+                steps: String(quote.multiTx.totalSteps),
+              })}
+            </h1>
+            <p className="body2 text-osmoverse-300">
+              {quote.multiTxPhase === "waiting-arrival"
+                ? t("transfer.multiTxWaitingForFunds", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })
+                : quote.multiTxPhase === "step2-signing"
+                ? t("transfer.multiTxSignFinal", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })
+                : t("transfer.multiTxDescription", {
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })}
+            </p>
+            {quote.multiTx.finalStepGasWarning &&
+              quote.multiTx.finalStepGasFeeDenom &&
+              !quote.multiTxPhase && (
+                <p className="body2 text-rust-300">
+                  {t("transfer.multiTxGasWarning", {
+                    denom: quote.multiTx.finalStepGasFeeDenom,
+                    chain: quote.multiTx.intermediatePrettyName,
+                  })}
+                </p>
+              )}
+          </div>
+        </div>
+      )}
       {/* Renders for any active error, not just loss warnings — when the
           quote errors out (e.g. every provider fails a refetch), the details
           above unrender and this box is the only thing telling the user why
@@ -200,18 +237,26 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         </div>
       )}
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
-        {!quote.isTxPending && (
-          <Button
-            className="w-full md:h-12"
-            variant="secondary"
-            onClick={onCancel}
-            disabled={quote.isTxPending}
-          >
-            <div className="md:subtitle1 text-h6 font-h6">
-              {t("transfer.cancel")}
-            </div>
-          </Button>
-        )}
+        {/* A multi-tx flow must not offer an exit mid-flow: after the first
+            transaction broadcasts, leaving this screen only strands the user
+            between steps (the transfer itself continues). isTxPending covers
+            the wallet-prompt/broadcast window; multiTxPhase covers the
+            arrival wait and the second signature; approval is part of the
+            same commitment. */}
+        {!quote.isTxPending &&
+          !quote.isApprovingToken &&
+          !quote.multiTxPhase && (
+            <Button
+              className="w-full md:h-12"
+              variant="secondary"
+              onClick={onCancel}
+              disabled={quote.isTxPending}
+            >
+              <div className="md:subtitle1 text-h6 font-h6">
+                {t("transfer.cancel")}
+              </div>
+            </Button>
+          )}
         <Button
           className="w-full md:h-12"
           variant={hasLossWarning ? "destructive" : "default"}
@@ -220,7 +265,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
             (!quote.userCanAdvance && !hasLossWarning) ||
             (hasLossWarning && quote.warningNeedsAcknowledgement) ||
             quote.isTxPending ||
-            quote.isApprovingToken
+            quote.isApprovingToken ||
+            Boolean(quote.multiTxPhase)
           }
         >
           <div className="md:subtitle1 text-h6 font-h6">

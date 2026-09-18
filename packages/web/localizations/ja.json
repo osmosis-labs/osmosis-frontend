@@ -69,6 +69,19 @@
     "noRewards": "収集するものはありません。すぐにもう一度確認してください",
     "removeLiquidity": "流動性の除去",
     "increaseLiquidity": "流動性の向上",
+    "migrateLiquidity": "流動性を移行",
+    "migrateDescription": "{baseSymbol}/{fromUsdcSymbol}ポジション（プール{fromPoolId}）を{baseSymbol}/{toUsdcSymbol}（プール{toPoolId}）へ移動します。同じ価格帯、同じ手数料水準です。",
+    "migrateDustNotice": "新しい価格帯に収まらない金額はウォレットに戻ります。",
+    "migrateIncentivesNotice": "最低稼働時間に達していないインセンティブは引き出し時に失効します。",
+    "migrateCurrentDifference": "現在の価格差",
+    "migrateAllowedDifference": "許容される価格差",
+    "migrateRevalidationFailed": "開いている間に価格が変動し、移行がチェックを通過しなくなりました。閉じて再試行してください。",
+    "migrateReason": "移行の過程でUSDC.nobleはトランスミューターを通じて1:1でUSDCに変換されます。",
+    "migrateRiskNotice": "移行は1つのトランザクションで行われます。価格が動いた場合、不足分はウォレット残高から（保有額を超えることはありません）補われ、もう一方の余剰はウォレットに戻ります。",
+    "migrateMaxWalletDraw": "残高からの最大額（価格がレンジ端の場合）",
+    "migrateMaxWalletDrawEstimate": "残高からの推定利用額",
+    "migrateMaxWalletDrawValue": "{base} または {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} または {noble}",
     "yourPositions": "あなたのポジション",
     "yourPosition": "あなたの位置",
     "yourPositionsDesc": "資産を活用して、スワップごとにスプレッドを獲得しましょう。",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "バランス"
-      },
       "depositButton": "デポジット",
       "search": "検索",
       "withdrawButton": "撤回する",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "この資産は、元のチェーンへのルートがアクティブでなくなったため預けることができません",
     "strandedTokenWithdrawDisabled": "この資産は、その起源チェーンへのルートがアクティブではなくなったため、引き出すことができません。"
   },
-  "cypherCard": {
-    "cypherSpend": "オズモシスペイ",
-    "cypherOrder": "今すぐカードを注文する",
-    "cypherBeta": "ベータ",
-    "acceptedEverywhere": "あなたのOSMOは今やどこでも受け入れられます",
-    "newPill": "新しい"
-  },
   "portfolio": {
     "buy": "買う",
     "sell": "売る",
@@ -230,7 +233,6 @@
     "last1y": "過去1年間",
     "allTime": "これまで",
     "trade": "貿易",
-    "earn": "得る",
     "deposit": "デポジット",
     "withdraw": "撤回する",
     "convert": "変換する"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "検索",
     "selectToken": {
-      "title": "トークンを選択してください",
       "unverifiedAsset": "このアセットは検証されていません。慎重に作業を進めてください。",
       "clickToActivate": "クリックして有効化します"
     },
@@ -324,9 +325,6 @@
     "startAgain": "再開する"
   },
   "estimated": "推定",
-  "frontierMigration": {
-    "proceed": "進む"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "預金の受け入れは停止されました。ネイティブブリッジのルートは通行止めです。",
@@ -401,7 +399,6 @@
     "store": "アプリ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
-    "trade": "プロトレーディング",
     "more": "もっと",
     "new": "新しい",
     "settings": "設定"
@@ -428,9 +425,6 @@
       "startTradingButton": "1-Click取引を開始する",
       "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
       "changeButton": "編集の設定"
-    },
-    "floatingBanner": {
-      "newPill": "新しい"
     },
     "reviewOrder": {
       "recapRowTitle": "1クリック取引制限",
@@ -915,6 +909,26 @@
         "continueTo": "{provider}に進む"
       }
     },
+    "multiTxTitle": "この送金には{steps}件のトランザクションが必要です",
+    "multiTxBadge": "トランザクション{steps}件",
+    "multiTxDescription": "最初のトランザクションが確定すると、{chain}で最後の送金への署名を求められます。",
+    "multiTxWaitingForFunds": "{chain}への資金の到着を待っています…",
+    "multiTxSignFinal": "送金を完了するには、ウォレットで{chain}上の最後の送金に署名してください。",
+    "multiTxGasWarning": "最後のステップでは{chain}上のネットワーク手数料を{denom}で支払います。{chain}のアカウントに{denom}があることを確認してください。",
+    "multiTxContinue": "送金を続行",
+    "multiTxWrongAccountTitle": "ウォレットのアカウント不一致",
+    "multiTxWrongAccount": "ウォレットの{chain}アカウントがこのルートと一致しません。資金が移動する前に送金はキャンセルされました。",
+    "multiTxResumeWrongAccount": "ウォレットが、この送金の資金を保有している {chain} アカウントとは別のアカウントに接続されています。ウォレットで元のアカウントに切り替えてから、もう一度お試しください。",
+    "multiTxNeedsAttention": "要確認",
+    "multiTxFundsMissingTitle": "予定された資金が見つかりません",
+    "multiTxFundsMissing": "予定された資金は {chain} アカウントにありません。この送金は別のセッションで既に完了している可能性があります。",
+    "multiTxStillInTransit": "資金はまだ移動中です",
+    "multiTxRouteExpiredTitle": "送金ルートの有効期限切れ",
+    "multiTxRouteExpired": "この送金の保存されたルートは有効期限が切れ、署名できなくなりました。資金は{chain}アカウントに安全に保管されています。",
+    "multiTxFeeShortfall": "お客様の{chain}アカウントではこのステップのネットワーク手数料を支払えません。{chain}でガス用の資金を追加してから、もう一度続行を押してください。",
+    "multiTxStepFailedTitle": "最終送金が完了しませんでした",
+    "multiTxStepFailed": "{chain}での最終送金が完了しませんでした。資金は{chain}に安全に保管されています。取引履歴で続行を押して、もう一度お試しください。",
+    "multiTxRecordFailed": "この送金の進行状況を保存できなかったため、最終の{chain}ステップを提供できません。資金は{chain}に届きます。送金を完了するにはサポートにお問い合わせください。",
     "assetSelectScreen": {
       "titleDeposit": "預ける資産を選択してください",
       "titleWithdraw": "引き出す資産を選択してください",
@@ -939,6 +953,7 @@
     "estimatedTime": "予定時刻",
     "providerFees": "プロバイダー料金",
     "networkFee": "{networkName}ネットワーク料金",
+    "networkFees": "ネットワーク料金",
     "totalFees": "合計料金",
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
@@ -1200,82 +1215,6 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "earnPage": {
-    "title": "得る",
-    "positions": "ポジション",
-    "strategiesCount": "{number}戦略",
-    "oneStrategy": "1つの戦略",
-    "discoverStrategies": "戦略を発見する",
-    "myStrategies": "あなたの戦略",
-    "strategyPlatform": "戦略",
-    "apy": "4月",
-    "reward": "褒美",
-    "lock": "結合を解除する",
-    "days": "日々",
-    "day": "日",
-    "risk": "危険",
-    "strategyMethod": "種類",
-    "allMethods": "いろんなタイプ",
-    "platforms": "プラットフォーム",
-    "allPlatforms": "すべてのプラットフォーム",
-    "allCategories": "すべてのカテゴリ",
-    "filters": "フィルター",
-    "resetFilters": "フィルターをリセットする",
-    "saveFilters": "フィルターを保存する",
-    "rewards": "報酬",
-    "availableToClaim": "請求可能",
-    "claimAllRewards": "すべての報酬を受け取る",
-    "join": "参加する",
-    "tokenFilterOptions": {
-      "my": "あなたの資産",
-      "all": "すべての資産"
-    },
-    "rewardTypes": {
-      "all": "全て",
-      "single": "シングル",
-      "multi": "マルチ"
-    },
-    "totalValueInvested": "総価値",
-    "lookBelow": "以下を見て、あなたに最適な戦略を見つけてください",
-    "startEarningDescription": "収益の可能性を最大限に引き出します。以下の多くの戦略を通じて資産を活用してください。",
-    "loadingStrategies": "戦略を読み込んでいます...",
-    "sorryErrorOccurred": "申し訳ございません。エラーが発生しました。",
-    "sorryNoResultsWithAssets": "資産に関連付けられた戦略が見つかりません。",
-    "sorryNoResults": "戦略が見つかりませんでした。",
-    "tryChangingFilters": "フィルターを変更してみる",
-    "retry": "リトライ",
-    "manage": "管理",
-    "noLock": "ロックなし",
-    "riskDisclaimer": "リスクは、戦略とその基礎となる資産に関する一連の基準を組み合わせて計算されます。",
-    "strategyGeoblocked": "申し訳ございませんが、この戦略はお住まいの国ではご利用いただけません。",
-    "instantUnbondOnly": "即時結合解除のみ",
-    "tooltips": {
-      "apr": {
-        "description": "年率 (APR) は、戦略の年間パーセンテージ収益を指します。<inlang-LineFeed><inlang-LineFeed>注意: 戦略のリターンは、参加とパフォーマンスに基づいて変動する可能性があります。<inlang-LineFeed><inlang-LineFeed>免責事項: これらの APR はプロジェクト自体によって自己報告されたものであり、不正確な可能性があります。"
-      },
-      "tvl": {
-        "description": "Total Value Locked (TVL) は、ストラテジーに入金された資産の米ドル総額を指します。"
-      },
-      "reward": {
-        "description": "戦略の運用やインセンティブを通じて獲得した資産の種類。"
-      },
-      "lock": {
-        "description": "ポジションが決済されるまでの、ポジションが保証される期間。注: すべての戦略結合解除* 期間に報酬が分配されるわけではありません。"
-      },
-      "strategy": {
-        "description": "Osmosis では、さまざまなプラットフォームによってホストされているさまざまなタイプの収益機会が利用可能です。戦略にアクセスするには、特定の資産を入金する必要があります。"
-      },
-      "risk": {
-        "description": "リスク評価には、戦略とその基礎となる資産に関連する基準の組み合わせを考慮することが含まれます。"
-      }
-    },
-    "riskLabels": {
-      "low": "低い",
-      "medium": "中くらい",
-      "high": "高い",
-      "veryHigh": "すごく高い"
-    }
-  },
   "remaining": "残り",
   "timeUnits": {
     "second": "2番",
@@ -1346,10 +1285,6 @@
     "newer": "新しい"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "価格を選択してください",
-      "tryLimitOrders": "指値注文を試す"
-    },
     "historyTable": {
       "columns": {
         "order": "注文",

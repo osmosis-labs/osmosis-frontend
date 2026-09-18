@@ -1,12 +1,16 @@
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { createPublicClient } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
+import {
+  BridgeFeeExceedsBudgetMessage,
+  BridgeRouteExpiredMessage,
+} from "../../errors";
 import {
   BridgeChain,
   BridgeProviderContext,
@@ -23,6 +27,8 @@ import {
   ETH_OsmosisToEthereum_Route,
   SkipAssets,
   SkipChains,
+  USDC_EthereumToOsmosisAlloy_MultiTxMsgs,
+  USDC_EthereumToOsmosisAlloy_MultiTxRoute,
 } from "./mocks";
 
 jest.mock("viem", () => ({
@@ -45,6 +51,7 @@ jest.mock("viem", () => ({
 jest.mock("@osmosis-labs/tx", () => ({
   ...jest.requireActual("@osmosis-labs/tx"),
   estimateGasFee: jest.fn(),
+  simulateCosmosTxBody: jest.fn(),
 }));
 
 jest.mock("@cosmjs/proto-signing", () => ({
@@ -56,11 +63,11 @@ jest.mock("@cosmjs/proto-signing", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) => {
-      return res(ctx.json(SkipAssets));
+    http.get("https://api.skip.money/v2/fungible/assets", () => {
+      return HttpResponse.json(SkipAssets);
     }),
-    rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
-      return res(ctx.json(SkipChains));
+    http.get("https://api.skip.money/v2/info/chains", () => {
+      return HttpResponse.json(SkipChains);
     })
   );
   jest.clearAllMocks();
@@ -89,11 +96,11 @@ describe("SkipBridgeProvider", () => {
 
   it("should get a quote - ETH.axl from Osmosis to Ethereum", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Route))
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Route)
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
       )
     );
 
@@ -212,11 +219,11 @@ describe("SkipBridgeProvider", () => {
 
   it("should get a quote - ETH.axl from Ethereum to Osmosis", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Route))
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Route)
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
       )
     );
 
@@ -353,16 +360,14 @@ describe("SkipBridgeProvider", () => {
 
   const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...ETH_EthereumToOsmosis_Route,
-            estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
-          })
-        )
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_EthereumToOsmosis_Route,
+          estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
+        })
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
       )
     );
 
@@ -392,42 +397,40 @@ describe("SkipBridgeProvider", () => {
 
   it("ignores non-bridge fee_behavior entries when flagging the transfer fee", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...ETH_OsmosisToEthereum_Route,
-            estimated_fees: [
-              {
-                // an additive relay fee must not mark the (deducted)
-                // Cosmos-source bridge fee as additive
-                fee_type: "SMART_RELAY",
-                bridge_id: "IBC",
-                amount: "100",
-                usd_amount: "0.01",
-                origin_asset: {
-                  denom: "uosmo",
-                  chain_id: "osmosis-1",
-                  origin_denom: "uosmo",
-                  origin_chain_id: "osmosis-1",
-                  trace: "",
-                  is_cw20: false,
-                  is_evm: false,
-                  is_svm: false,
-                  symbol: "OSMO",
-                  name: "Osmosis",
-                  decimals: 6,
-                  coingecko_id: "osmosis",
-                },
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_OsmosisToEthereum_Route,
+          estimated_fees: [
+            {
+              // an additive relay fee must not mark the (deducted)
+              // Cosmos-source bridge fee as additive
+              fee_type: "SMART_RELAY",
+              bridge_id: "IBC",
+              amount: "100",
+              usd_amount: "0.01",
+              origin_asset: {
+                denom: "uosmo",
                 chain_id: "osmosis-1",
-                tx_index: 0,
-                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+                origin_denom: "uosmo",
+                origin_chain_id: "osmosis-1",
+                trace: "",
+                is_cw20: false,
+                is_evm: false,
+                is_svm: false,
+                symbol: "OSMO",
+                name: "Osmosis",
+                decimals: 6,
+                coingecko_id: "osmosis",
               },
-            ],
-          })
-        )
+              chain_id: "osmosis-1",
+              tx_index: 0,
+              fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+            },
+          ],
+        })
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
       )
     );
 
@@ -464,21 +467,10 @@ describe("SkipBridgeProvider", () => {
   });
 
   it("should handle unsupported asset error", async () => {
-    server.use(
-      rest.get(
-        "https://api.skip.money/v2/fungible/assets",
-        (_req, res, ctx) => {
-          return res(
-            ctx.json({
-              chain_to_assets_map: {
-                "1": { assets: [] },
-              },
-            })
-          );
-        }
-      )
-    );
-
+    // the global fixture serves a POPULATED chain-1 registry that simply
+    // lacks the requested asset: that is what "unsupported" means. (An
+    // empty chain asset list is the degraded-registry shape and is
+    // rejected by the cache guard instead.)
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -822,16 +814,52 @@ describe("SkipBridgeProvider", () => {
       ]);
     });
 
+    it("does not mutate the shared asset list when computing variants", async () => {
+      const request = {
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos" as const,
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit" as const,
+      };
+
+      const assetListAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((a) => a.coinMinimalDenom === request.asset.address)!;
+      const counterpartyCountBefore = assetListAsset.counterparty.length;
+
+      const first = await provider.getSupportedAssets(request);
+      // Aliasing the shared counterparty array previously doubled it on
+      // every call until the variant spread threw, permanently emptying
+      // results for the process.
+      for (let i = 0; i < 5; i++) {
+        await provider.getSupportedAssets(request);
+      }
+      const last = await provider.getSupportedAssets(request);
+
+      expect(assetListAsset.counterparty.length).toBe(counterpartyCountBefore);
+      expect(last).toEqual(first);
+    });
+
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
-        rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
+        http.get("https://api.skip.money/v2/info/chains", () => {
           const modifiedSkipChains = SkipChains.chains.map((chain) => {
             if (chain.chain_id === "noble-1") {
               return { ...chain, pfm_enabled: false };
             }
             return chain;
           });
-          return res(ctx.json({ ...SkipChains, chains: modifiedSkipChains }));
+          return HttpResponse.json({
+            ...SkipChains,
+            chains: modifiedSkipChains,
+          });
         })
       );
 
@@ -1018,5 +1046,754 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
 
     expect(result?.urlProviderName).toBe("Skip:Go");
     expect(result?.url.toString()).toBe(expectedUrl);
+  });
+});
+
+describe("SkipBridgeProvider multi-tx routes", () => {
+  let provider: SkipBridgeProvider;
+  let ctx: BridgeProviderContext;
+
+  const multiTxQuoteParams: GetBridgeQuoteParams = {
+    fromAmount: "1000000000",
+    fromAsset: {
+      denom: "USDC",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      decimals: 6,
+    },
+    fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+    toAsset: {
+      denom: "USDC",
+      address:
+        "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+      decimals: 6,
+    },
+    toChain: {
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      chainType: "cosmos",
+    },
+    fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    slippage: 0.01,
+  };
+  /** The fixture msgs' noble sender: bech32 conversion of `toAddress`. */
+  const nobleAddress = "noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96";
+  /** The quote's stored route data, replayed when rebuilding a step. */
+  const multiTxRouteData = {
+    source_asset_denom:
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.source_asset_denom,
+    source_asset_chain_id:
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.source_asset_chain_id,
+    dest_asset_denom: USDC_EthereumToOsmosisAlloy_MultiTxRoute.dest_asset_denom,
+    dest_asset_chain_id:
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.dest_asset_chain_id,
+    amount_in: USDC_EthereumToOsmosisAlloy_MultiTxRoute.amount_in,
+    amount_out: USDC_EthereumToOsmosisAlloy_MultiTxRoute.amount_out,
+    operations: USDC_EthereumToOsmosisAlloy_MultiTxRoute.operations,
+    required_chain_addresses:
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.required_chain_addresses,
+  };
+
+  /** Mirrors the live API: a single-tx-only request fails with the
+   *  "no single-tx routes" error; only allow_multi_tx returns the route. */
+  const useSingleTxRejectingRouteHandler = (
+    routeBodies?: Record<string, unknown>[]
+  ) => {
+    server.use(
+      http.post(
+        "https://api.skip.money/v2/fungible/route",
+        async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown> & {
+            allow_multi_tx?: boolean;
+          };
+          routeBodies?.push(body);
+          if (!body.allow_multi_tx) {
+            return HttpResponse.json(
+              {
+                code: 5,
+                message:
+                  "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true",
+              },
+              { status: 404 }
+            );
+          }
+          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxRoute);
+        }
+      )
+    );
+  };
+
+  beforeEach(() => {
+    ctx = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({
+        max: 500,
+      }),
+      assetLists: MockAssetLists,
+      // minimal chain registry data: the intermediate-chain key derivation
+      // gate (noble is standard coin type 118) plus the fee pricing the
+      // intermediate step's gas estimate reads (denom + price steps + LCD)
+      chainList: [
+        {
+          chain_id: "noble-1",
+          slip44: 118,
+          features: [],
+          feeCurrencies: [
+            {
+              coinDenom: "USDC.n",
+              coinMinimalDenom: "uusdc",
+              coinDecimals: 6,
+              gasPriceStep: { low: 0.1, average: 0.1, high: 0.2 },
+            },
+          ],
+          apis: { rpc: [], rest: [{ address: "https://noble-lcd.test" }] },
+        },
+        { chain_id: "osmosis-1", slip44: 118 },
+      ] as unknown as BridgeProviderContext["chainList"],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    provider = new SkipBridgeProvider(ctx);
+
+    useSingleTxRejectingRouteHandler();
+    server.use(
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs)
+      )
+    );
+
+    // Gas simulation for the intermediate (noble-1) cosmos step: 120000
+    // used -> 180000 limit (x1.5). The registry's high price (0.2) exceeds
+    // the fixture's 20000 fee reserve, so the estimate reprices at the low
+    // step (0.1) -> 18000, which fits.
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 120000,
+      coinsSpent: [],
+    });
+
+    // Live balance reads on the intermediate chain: default to an account
+    // holding nothing beyond the arriving funds, so the route's reserve
+    // stays the budget unless a test overrides this handler.
+    server.use(
+      http.get(
+        "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
+        () => HttpResponse.json({ balance: { amount: "0" } })
+      )
+    );
+  });
+
+  it("builds ordered transaction steps for a 2-tx route", async () => {
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transactionSteps).toHaveLength(2);
+    const [step1, step2] = quote.transactionSteps!;
+
+    expect(step1).toMatchObject({
+      type: "evm",
+      chainId: 1,
+      to: "0xBd3fa81B58Ba92a82136038B25aDec7066af3155",
+      // fixture allowance (100) < amount, so an approval is required
+      approvalTransactionRequest: {
+        to: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      },
+    });
+
+    expect(step2).toMatchObject({
+      type: "cosmos",
+      chainId: "noble-1",
+      // simulated 120000 x1.5 = 180000 gas; the safe-side high price (0.2)
+      // would cost 36000, over the route's 20000 fee reserve, so the fee is
+      // repriced at the chain's low step (0.1) to fit it
+      gasFee: { gas: "180000", denom: "uusdc", amount: "18000" },
+    });
+    if (step2.type !== "cosmos") throw new Error("expected cosmos step");
+    expect(step2.msgs).toHaveLength(1);
+    expect(step2.msgs[0].typeUrl).toBe(
+      "/ibc.applications.transfer.v1.MsgTransfer"
+    );
+    expect(step2.msgs[0].value.sender).toBe(nobleAddress);
+    expect(step2.msgs[0].value.token).toEqual({
+      denom: "uusdc",
+      amount: "999960000",
+    });
+
+    // the first step doubles as the plain transactionRequest so single-tx
+    // consumers (gas estimation, review screen) see step 1
+    expect(quote.transactionRequest?.type).toBe("evm");
+    expect(quote.expectedOutput.amount).toBe("999960000");
+
+    // the quoted route is snapshotted for later step rebuilds
+    expect(quote.multiTxRouteData).toEqual(multiTxRouteData);
+
+    // the noble step's fee is exposed for fee totals, with display metadata
+    // resolved from Skip's asset registry
+    expect(quote.intermediateGasFees).toEqual([
+      {
+        amount: "18000",
+        denom: "USDC",
+        address: "uusdc",
+        decimals: 6,
+        coinGeckoId: "usd-coin",
+      },
+    ]);
+  });
+
+  it("keeps a comparable single-tx route when multi-tx is allowed", async () => {
+    const routeBodies: Record<string, unknown>[] = [];
+    server.use(
+      http.post(
+        "https://api.skip.money/v2/fungible/route",
+        async ({ request }) => {
+          routeBodies.push((await request.json()) as Record<string, unknown>);
+          // the same single-tx route exists with and without multi-tx
+          // permission for this pair
+          return HttpResponse.json(ETH_EthereumToOsmosis_Route);
+        }
+      ),
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
+      )
+    );
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      fromAsset: {
+        denom: "WETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        decimals: 18,
+      },
+      toAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      allowMultiTx: true,
+    });
+
+    // both variants quoted in parallel, single-tx kept
+    expect(routeBodies).toHaveLength(2);
+    expect(routeBodies.filter((b) => b.allow_multi_tx === true)).toHaveLength(
+      1
+    );
+    expect(quote.transactionSteps).toBeUndefined();
+    expect(quote.multiTxRouteData).toBeUndefined();
+  });
+
+  it("prefers a meaningfully better multi-tx route over a lossy single-tx route", async () => {
+    // Mirrors the live Avalanche USDC case: a single-tx axelar+swap route
+    // exists but pays far less than the multi-tx CCTP route.
+    const lossySingleTxRoute = {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      txs_required: 1,
+      amount_out: "790000000", // 21% below the multi-tx route's 999960000
+    };
+    server.use(
+      http.post(
+        "https://api.skip.money/v2/fungible/route",
+        async ({ request }) => {
+          const body = (await request.json()) as { allow_multi_tx?: boolean };
+          return HttpResponse.json(
+            body.allow_multi_tx
+              ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+              : lossySingleTxRoute
+          );
+        }
+      ),
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs)
+      )
+    );
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transactionSteps).toHaveLength(2);
+    expect(quote.expectedOutput.amount).toBe(
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.amount_out
+    );
+  });
+
+  it("keeps the single-tx route when the multi-tx route is only marginally better", async () => {
+    const marginalSingleTxRoute = {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      txs_required: 1,
+      amount_out: "999000000", // ~0.1% below multi's 999960000: inside the 0.5% threshold
+    };
+    server.use(
+      http.post(
+        "https://api.skip.money/v2/fungible/route",
+        async ({ request }) => {
+          const body = (await request.json()) as { allow_multi_tx?: boolean };
+          return HttpResponse.json(
+            body.allow_multi_tx
+              ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+              : marginalSingleTxRoute
+          );
+        }
+      ),
+      // a real single-tx route returns a single message
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json({
+          msgs: USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs.slice(0, 1),
+        })
+      )
+    );
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transactionSteps).toBeUndefined();
+    expect(quote.expectedOutput.amount).toBe("999000000");
+  });
+
+  it("falls back to multi-tx only when no single-tx route exists (and only when enabled)", async () => {
+    const routeBodies: Record<string, unknown>[] = [];
+    useSingleTxRejectingRouteHandler(routeBodies);
+
+    // disabled: the no-single-tx error surfaces as NoQuotesError
+    await expect(provider.getQuote(multiTxQuoteParams)).rejects.toThrow(
+      "no single-tx routes found"
+    );
+    expect(routeBodies).toHaveLength(1);
+    expect(routeBodies[0]).not.toHaveProperty("allow_multi_tx");
+
+    // enabled: both variants quoted in parallel, only multi-tx succeeds
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+    expect(routeBodies).toHaveLength(3);
+    expect(
+      routeBodies.slice(1).filter((b) => b.allow_multi_tx === true)
+    ).toHaveLength(1);
+    expect(quote.transactionSteps).toHaveLength(2);
+  });
+
+  it("rejects the quote when an intermediate fee asset cannot be resolved", async () => {
+    // Financial precision must come from metadata: an unresolved fee asset
+    // must fail the quote rather than being valued with guessed decimals
+    // (20000 uusdc read with 0 decimals displays as 20,000 USDC).
+    const strippedAssets = {
+      ...SkipAssets,
+      chain_to_assets_map: {
+        ...SkipAssets.chain_to_assets_map,
+        "noble-1": {
+          assets: SkipAssets.chain_to_assets_map["noble-1"].assets.filter(
+            (a) => a.denom !== "uusdc"
+          ),
+        },
+      },
+    };
+    server.use(
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json(strippedAssets)
+      )
+    );
+
+    await expect(
+      provider.getQuote({ ...multiTxQuoteParams, allowMultiTx: true })
+    ).rejects.toThrow("Cannot resolve metadata for intermediate fee asset");
+  });
+
+  it("refuses a multi-tx route via an intermediate chain with non-118 key derivation", async () => {
+    // e.g. Injective: ethsecp256k1 / coin type 60 — a bech32-converted
+    // address there is NOT the user's account, and the first tx would
+    // route funds through it
+    ctx.chainList = [
+      { chain_id: "noble-1", slip44: 60 },
+      { chain_id: "osmosis-1", slip44: 118 },
+    ] as BridgeProviderContext["chainList"];
+    provider = new SkipBridgeProvider(ctx);
+
+    await expect(
+      provider.getQuote({ ...multiTxQuoteParams, allowMultiTx: true })
+    ).rejects.toThrow("key derivation differs");
+  });
+
+  it("rebuilds an intermediate step from the stored route with the wallet's address", async () => {
+    let msgsBody: { address_list: string[] } | undefined;
+    let rawMsgsBody: string | undefined;
+    let routeRequested = false;
+    server.use(
+      http.post("https://api.skip.money/v2/fungible/route", () => {
+        routeRequested = true;
+        return new HttpResponse(null, { status: 500 });
+      }),
+      http.post(
+        "https://api.skip.money/v2/fungible/msgs",
+        async ({ request }) => {
+          msgsBody = (await request.json()) as { address_list: string[] };
+          rawMsgsBody = JSON.stringify(msgsBody);
+          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
+        }
+      )
+    );
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    // the stored route is replayed — never re-routed after funds moved
+    expect(routeRequested).toBe(false);
+
+    // address list follows the stored required_chain_addresses (with the
+    // repeated osmosis-1 entry), and the wallet-provided address replaces
+    // the bech32-derived one on the step chain
+    expect(msgsBody?.address_list).toEqual([
+      "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      nobleAddress,
+      "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+    ]);
+
+    expect(step.type).toBe("cosmos");
+    expect(step.msgs[0].value.sender).toBe(nobleAddress);
+    // simulated 120000 x1.5 = 180000 gas, repriced at the low step (0.1) to
+    // fit the route's 20000 fee reserve
+    expect(step.gasFee).toEqual({
+      gas: "180000",
+      denom: "uusdc",
+      amount: "18000",
+    });
+
+    // the stored route's relay fee quote (expired long ago in the fixture)
+    // must not be replayed: Skip validates its expiration on submission
+    expect(rawMsgsBody).toBeDefined();
+    expect(rawMsgsBody).not.toContain("smart_relay_fee_quote");
+    // ...while everything else about the operations is preserved
+    expect(rawMsgsBody).toContain("cctp_transfer");
+  });
+
+  it("names an expired stored route so the UI can show recovery copy", async () => {
+    server.use(
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(
+          {
+            code: 9,
+            message: "relay fee quote has expired",
+          },
+          { status: 500 }
+        )
+      )
+    );
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeRouteExpiredMessage);
+  });
+
+  it("never caps a simulated gas limit below its full margin", async () => {
+    // 160000 used -> 240000 limit; even at the low price (0.1) the fee
+    // (24000) exceeds the 20000 reserve. The reserve would buy 200000 gas,
+    // which is above the simulated use but BELOW the multiplied limit, and
+    // simulation under-reports real execution (measured 27% low live), so
+    // accepting that cap risks an out-of-gas failure that spends the whole
+    // reserve and strands the funds. Refuse instead.
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 160000,
+      coinsSpent: [],
+    });
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeFeeExceedsBudgetMessage);
+  });
+
+  it("refuses even when the reserve covers the simulated gas itself", async () => {
+    // 190000 used: the reserve buys 200000 gas at the low price, which is
+    // MORE than the simulation measured and would have passed a thinner
+    // margin check. Real execution routinely exceeds simulation, so this is
+    // exactly the range that silently runs out of gas; the full multiplied
+    // limit (285000) is what the fee must cover.
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 190000,
+      coinsSpent: [],
+    });
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow(BridgeFeeExceedsBudgetMessage);
+  });
+
+  it("caps a fallback-derived gas limit instead of refusing", async () => {
+    // simulation unavailable (e.g. the account isn't funded yet): the
+    // conservative fallback limit (250000 x1.5 = 375000) is a deliberate
+    // overestimate, so capping it into the reserve is safe, not an error
+    (simulateCosmosTxBody as jest.Mock).mockRejectedValue(
+      new Error("account not found")
+    );
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    expect(step.gasFee).toEqual({
+      gas: "200000",
+      denom: "uusdc",
+      amount: "20000",
+    });
+  });
+
+  it("raises the fee budget from the account's live balance", async () => {
+    // the account holds 30000 beyond what the step moves (a top-up), so the
+    // low-priced fee (24000) fits without capping the gas limit
+    (simulateCosmosTxBody as jest.Mock).mockResolvedValue({
+      gasUsed: 160000,
+      coinsSpent: [],
+    });
+    server.use(
+      http.get(
+        "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
+        () => HttpResponse.json({ balance: { amount: "999990000" } })
+      )
+    );
+
+    const step = await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    expect(step.gasFee).toEqual({
+      gas: "240000",
+      denom: "uusdc",
+      amount: "24000",
+    });
+  });
+
+  it("rejects a step rebuild without stored route data", async () => {
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: undefined,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow("Missing or invalid multi-tx route data");
+  });
+
+  it("rejects a rebuilt step whose sender is not the wallet's address", async () => {
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: {
+          chainId: "noble-1",
+          senderAddress: "noble1someotheraccountaddressxxxxxxxxxxxxxxxx",
+        },
+      })
+    ).rejects.toThrow("does not match wallet address");
+  });
+
+  it("rejects when the route no longer includes a step on the chain", async () => {
+    server.use(
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json({
+          msgs: [USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs[0]],
+        })
+      )
+    );
+
+    await expect(
+      provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      })
+    ).rejects.toThrow("no longer includes a transaction on noble-1");
+  });
+});
+
+describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
+  it("rejects when the provider registry is unavailable", async () => {
+    server.use(
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json({ message: "registry unavailable" }, { status: 500 })
+      )
+    );
+
+    const failingCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const failingProvider = new SkipBridgeProvider(failingCtx);
+
+    // A registry failure must reject rather than resolve to an empty list:
+    // an empty list means "asset unsupported", which the client settles on
+    // without retrying, while a rejected query is retried and re-polled.
+    await expect(
+      failingProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
+  });
+
+  it("resolves empty when the asset is not in the (healthy) registry", async () => {
+    // registry responds fine (global fixture handlers); the asset is simply
+    // not listed — an ordinary unsupported asset, NOT an outage, so the
+    // result must resolve to [] rather than reject (a rejection would make
+    // the client retry forever and never render other transfer options)
+    const healthyCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const healthyProvider = new SkipBridgeProvider(healthyCtx);
+
+    await expect(
+      healthyProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "FAKE",
+          address: "ibc/NOTINREGISTRY",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).resolves.toEqual([]);
+  });
+
+  it("rejects a scoped empty-chain response and recovers on the next populated one via the same cache", async () => {
+    // the degraded shape observed in production: a scoped request answered
+    // with the chain present but zero assets — it must be rejected (NOT
+    // cached for 30 minutes), so a later healthy response recovers
+    let assetRequests = 0;
+    server.use(
+      http.get("https://api.skip.money/v2/fungible/assets", () => {
+        assetRequests++;
+        if (assetRequests === 1) {
+          return HttpResponse.json({
+            chain_to_assets_map: { "osmosis-1": { assets: [] } },
+          });
+        }
+        return HttpResponse.json(SkipAssets);
+      })
+    );
+
+    const sharedCacheCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const sharedCacheProvider = new SkipBridgeProvider(sharedCacheCtx);
+
+    const request = {
+      chain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      asset: {
+        denom: "USDC",
+        address:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        decimals: 6,
+      },
+      direction: "deposit",
+    } as const;
+
+    await expect(
+      sharedCacheProvider.getSupportedAssets(request)
+    ).rejects.toThrow();
+
+    const recovered = await sharedCacheProvider.getSupportedAssets(request);
+    expect(recovered.length).toBeGreaterThan(0);
+  });
+
+  it("rejects (and does not cache) a degraded 200 registry response with an empty body", async () => {
+    // a rate-limited or degraded upstream can answer 200 with an empty map;
+    // treating that as truth would read as "asset unsupported" for the
+    // 30-minute cache lifetime, silently bypassing the client's retry and
+    // re-poll machinery
+    server.use(
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json({ chain_to_assets_map: {} })
+      )
+    );
+
+    const degradedCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const degradedProvider = new SkipBridgeProvider(degradedCtx);
+
+    await expect(
+      degradedProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
   });
 });

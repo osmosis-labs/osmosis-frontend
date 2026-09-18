@@ -6,8 +6,8 @@ import { observer } from "mobx-react-lite";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { Button } from "~/components/ui/button";
 import { IconButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";

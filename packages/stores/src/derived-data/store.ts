@@ -7,7 +7,6 @@ import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 import {
   ObservableQueryActiveGauges,
-  ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolAprs,
   ObservableQueryPriceRangeAprs,
 } from "../queries-external";
@@ -33,7 +32,6 @@ export class DerivedDataStore {
     protected readonly externalQueries: {
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore<any>,

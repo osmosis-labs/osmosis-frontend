@@ -1,7 +1,7 @@
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http as httpMock, HttpResponse } from "msw";
 import { createPublicClient, http } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
@@ -32,52 +32,46 @@ jest.mock("viem", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
-      return res(
-        ctx.json({
-          route: {
-            estimate: {
-              fromAmount: "1",
-              toAmount: "0.99",
-              feeCosts: [
-                { token: { symbol: "ETH", decimals: 18 }, amount: "0.01" },
-              ],
-              gasCosts: [
-                { token: { symbol: "ETH", decimals: 18 }, amount: "0.00042" },
-              ],
-              estimatedRouteDuration: 900,
-              aggregatePriceImpact: "0",
-              fromAmountUSD: "1000",
-              toAmountUSD: "990",
-            },
-            transactionRequest: {
-              target: "0x0000000000000000000000000000000000000000",
-              data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
-              gasLimit: "21000",
-              gasPrice: "1000000000",
-              value: "0",
-              type: "SEND",
-            },
-            params: {
-              toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-            },
+    httpMock.post("https://v2.api.squidrouter.com/v2/route", () => {
+      return HttpResponse.json({
+        route: {
+          estimate: {
+            fromAmount: "1",
+            toAmount: "0.99",
+            feeCosts: [
+              { token: { symbol: "ETH", decimals: 18 }, amount: "0.01" },
+            ],
+            gasCosts: [
+              { token: { symbol: "ETH", decimals: 18 }, amount: "0.00042" },
+            ],
+            estimatedRouteDuration: 900,
+            aggregatePriceImpact: "0",
+            fromAmountUSD: "1000",
+            toAmountUSD: "990",
           },
-        })
-      );
+          transactionRequest: {
+            target: "0x0000000000000000000000000000000000000000",
+            data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
+            gasLimit: "21000",
+            gasPrice: "1000000000",
+            value: "0",
+            type: "SEND",
+          },
+          params: {
+            toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+          },
+        },
+      });
     }),
-    rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
-      res(
-        ctx.json({
-          tokens: MockTokens,
-        })
-      )
+    httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+      HttpResponse.json({
+        tokens: MockTokens,
+      })
     ),
-    rest.get("https://v2.api.squidrouter.com/v2/chains", (_req, res, ctx) =>
-      res(
-        ctx.json({
-          chains: MockChains,
-        })
-      )
+    httpMock.get("https://v2.api.squidrouter.com/v2/chains", () =>
+      HttpResponse.json({
+        chains: MockChains,
+      })
     )
   );
 });
@@ -112,8 +106,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
-      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
+      httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
+        HttpResponse.json(ETHtoAVAX_EthereumToAvalanche_Route)
       )
     );
     const quoteRequest = {
@@ -210,8 +204,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
-      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Route))
+      httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Route)
       )
     );
     console.log(
@@ -3835,5 +3829,131 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
 
     expect(result?.urlProviderName).toBe("Squid");
     expect(result?.url.toString()).toBe(expectedUrl);
+  });
+});
+
+describe("SquidBridgeProvider getSupportedAssets failure propagation", () => {
+  it("rejects when the provider registry is unavailable", async () => {
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+        HttpResponse.json({ message: "registry unavailable" }, { status: 500 })
+      )
+    );
+
+    const failingCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const failingProvider = new SquidBridgeProvider("integratorId", failingCtx);
+
+    // A registry failure must reject rather than resolve to an empty list:
+    // an empty list means "asset unsupported", which the client settles on
+    // without retrying, while a rejected query is retried and re-polled.
+    // (getTokens rethrows the API error body, a plain object rather than an
+    // Error, so assert the rejection outcome directly instead of toThrow.)
+    const outcome = await failingProvider
+      .getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+      .then(
+        () => "resolved",
+        () => "rejected"
+      );
+    expect(outcome).toBe("rejected");
+  });
+
+  it("resolves empty when the token is not in the (healthy) registry", async () => {
+    // registry responds fine (global fixture handlers); the token is simply
+    // not listed — an ordinary unsupported asset, NOT an outage, so the
+    // result must resolve to [] rather than reject (a rejection would make
+    // the client retry forever and never render other transfer options)
+    const healthyCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const healthyProvider = new SquidBridgeProvider("integratorId", healthyCtx);
+
+    await expect(
+      healthyProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "FAKE",
+          address: "ibc/NOTINREGISTRY",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).resolves.toEqual([]);
+  });
+
+  it("rejects (and does not cache) a degraded 200 registry response with an empty body", async () => {
+    // a rate-limited or degraded upstream can answer 200 with an empty
+    // token list; treating that as truth would read as "asset unsupported"
+    // for the 30-minute cache lifetime, silently bypassing the client's
+    // retry and re-poll machinery
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+        HttpResponse.json({ tokens: [] })
+      )
+    );
+
+    const degradedCtx: BridgeProviderContext = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    const degradedProvider = new SquidBridgeProvider(
+      "integratorId",
+      degradedCtx
+    );
+
+    await expect(
+      degradedProvider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainName: "osmosis",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      })
+    ).rejects.toThrow();
   });
 });

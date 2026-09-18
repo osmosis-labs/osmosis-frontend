@@ -13,7 +13,7 @@ export function get(obj: any, path: any) {
       // If there's no path left, we've arrived at the object we care about.
       list.push(obj);
     } else {
-      let key = path[index];
+      const key = path[index];
 
       const value = obj[key];
 
