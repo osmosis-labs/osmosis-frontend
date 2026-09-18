@@ -4,6 +4,8 @@ const esmModules = [
   "varuint-bitcoin",
   "@osmosis-labs/tx",
   "superjson",
+  "@cosmos-kit/core",
+  "uuid",
   "rettime",
   "until-async",
   "msw",
