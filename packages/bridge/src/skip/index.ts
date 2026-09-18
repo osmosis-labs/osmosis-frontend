@@ -61,6 +61,21 @@ import {
 } from "./types";
 
 /**
+ * Percent, per `getBridgeQuoteSchema`. No caller supplies `slippage` today, so
+ * this is what every real request uses. Skip splits the tolerance across the
+ * route's swap legs rather than applying it to each, so end-to-end exposure
+ * equals this number. 0.5% clears the 0.02%-0.14% quote-time margins measured
+ * on Osmosis to EVM stable routes. The app's loss gates do not bound it:
+ * `HighSlippageGate` (6%) compares the quote's input-to-output fiat loss and
+ * `HighPriceImpactGate` (10%) the quote's price impact, neither of which is the
+ * tolerance we sign, so they catch a bad route rather than a generous
+ * tolerance. Tighter than Squid's 1%: Skip has no recommended value to defer
+ * to, and its tolerance reaches a swap on Osmosis rather than only the vendor's
+ * own route.
+ */
+const DEFAULT_SLIPPAGE_PERCENT = 0.5;
+
+/**
  * Restore the invariant that the Osmosis leg must produce at least what the
  * destination swap is going to spend.
  *
@@ -218,20 +233,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       fromAddress,
       toAddress,
       allowMultiTx,
-      /**
-       * Percent, per `getBridgeQuoteSchema`. No caller supplies this today, so
-       * the default is what every real request uses. Skip splits the tolerance
-       * across the route's swap legs rather than applying it to each, so
-       * end-to-end exposure equals this number. 0.5% clears the 0.02%-0.14%
-       * quote-time margins measured on Osmosis to EVM stable routes. The app's
-       * loss gates do not bound this value: `HighSlippageGate` (6%) compares the
-       * quote's input-to-output fiat loss and `HighPriceImpactGate` (10%) the
-       * quote's price impact, neither of which is the tolerance we sign, so they
-       * catch a bad route rather than a generous tolerance. Tighter than Squid's
-       * 1%: Skip has no recommended value to defer to, and its tolerance
-       * reaches a swap on Osmosis rather than only the vendor's own route.
-       */
-      slippage = 0.5,
+      slippage = DEFAULT_SLIPPAGE_PERCENT,
     } = params;
 
     return cachified({
@@ -1192,6 +1194,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         dest_asset_chain_id: routeData.dest_asset_chain_id,
         amount_in: routeData.amount_in,
         amount_out: routeData.amount_out,
+        // The step is rebuilt from the quoted route, so it signs the same
+        // tolerance the quote was built with.
+        slippage_tolerance_percent: DEFAULT_SLIPPAGE_PERCENT.toString(),
         // Stored routes embed relay fee quotes that expire ~30 minutes
         // after quoting, and Skip rejects a msgs build whose submitted
         // operations carry an expired one. Strip them so the rebuild works

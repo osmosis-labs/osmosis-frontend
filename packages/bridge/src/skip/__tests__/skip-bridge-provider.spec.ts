@@ -1757,6 +1757,34 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(rawMsgsBody).toContain("cctp_transfer");
   });
 
+  /**
+   * Skip rejects a `/msgs` build that omits the tolerance — or sends it empty
+   * — with `invalid slippage_tolerance_percent`, so a step rebuilt without one
+   * cannot be signed at all and the funds stay on the intermediate chain. The
+   * request type keeps the field required to stop that reaching runtime; this
+   * pins the value actually sent, which no type can check.
+   */
+  it("sends a real tolerance when rebuilding an intermediate step", async () => {
+    let msgsBody: { slippage_tolerance_percent?: string } | undefined;
+    server.use(
+      rest.post(
+        "https://api.skip.money/v2/fungible/msgs",
+        async (req, res, ctx) => {
+          msgsBody = await req.json();
+          return res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs));
+        }
+      )
+    );
+
+    await provider.getTransactionStep({
+      ...multiTxQuoteParams,
+      route: multiTxRouteData,
+      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    });
+
+    expect(msgsBody?.slippage_tolerance_percent).toBe("0.5");
+  });
+
   it("names an expired stored route so the UI can show recovery copy", async () => {
     server.use(
       http.post("https://api.skip.money/v2/fungible/msgs", () =>

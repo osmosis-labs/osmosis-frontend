@@ -226,8 +226,15 @@ export type SkipMsgsRequest = {
   address_list: string[];
   operations: SkipOperation[];
 
+  /**
+   * Required, despite reading as a tuning knob: Skip rejects a `/msgs` build
+   * that omits it — or sends it empty — with `invalid
+   * slippage_tolerance_percent`. Kept non-optional so a new call site cannot
+   * forget it and fail only at runtime.
+   */
+  slippage_tolerance_percent: string;
+
   estimated_amount_out?: string;
-  slippage_tolerance_percent?: string;
   affiliates?: SkipAffiliate[];
 
   client_id?: string;
