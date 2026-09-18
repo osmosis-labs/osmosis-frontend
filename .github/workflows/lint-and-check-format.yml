@@ -13,15 +13,15 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 24.x
+          node-version: 22.x
 
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-24.x-
+            ${{ runner.OS }}-22.x-
 
       - name: Install Dependencies
         run: corepack yarn install --immutable
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [22.x]
         package: ["web", "utils", "server", "stores", "math", "bridge"]
 
     steps:
