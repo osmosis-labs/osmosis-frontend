@@ -666,9 +666,7 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(1);
 
-      expect(() =>
-        solveCfmm(xReserve, yReserve, remReserves, yIn)
-      ).toThrowError();
+      expect(() => solveCfmm(xReserve, yReserve, remReserves, yIn)).toThrow();
     });
     test("negative yReserve", () => {
       const xReserve = new BigDec(100);
@@ -676,9 +674,7 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(1);
 
-      expect(() =>
-        solveCfmm(xReserve, yReserve, remReserves, yIn)
-      ).toThrowError();
+      expect(() => solveCfmm(xReserve, yReserve, remReserves, yIn)).toThrow();
     });
     test("input greater than pool reserves (even 4-asset pool)", () => {
       const xReserve = new BigDec(100);
@@ -686,9 +682,7 @@ describe("Test stableswap math", () => {
       const remReserves = [new BigDec(100), new BigDec(100)];
       const yIn = new BigDec(1000);
 
-      expect(() =>
-        solveCfmm(xReserve, yReserve, remReserves, yIn)
-      ).toThrowError();
+      expect(() => solveCfmm(xReserve, yReserve, remReserves, yIn)).toThrow();
     });
   });
 });
