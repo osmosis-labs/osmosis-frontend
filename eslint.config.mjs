@@ -11,13 +11,38 @@ const baseConfig = require("./.eslintrc.base.js");
 const sourceFiles = ["**/*.{js,cjs,mjs,jsx,ts,tsx}"];
 
 const webNextConfig = {
-  extends: ["next/core-web-vitals", "prettier"],
+  extends: [
+    "next/core-web-vitals",
+    "plugin:react-hooks/recommended-latest",
+    "prettier",
+  ],
   settings: { next: { rootDir: webRoot } },
 };
+
+const reactCompilerRules = [
+  "config",
+  "error-boundaries",
+  "gating",
+  "globals",
+  "immutability",
+  "incompatible-library",
+  "preserve-manual-memoization",
+  "purity",
+  "refs",
+  "set-state-in-effect",
+  "set-state-in-render",
+  "static-components",
+  "unsupported-syntax",
+  "use-memo",
+  "void-use-memo",
+];
 
 const webRules = {
   plugins: ["unicorn", "simple-import-sort", "unused-imports"],
   rules: {
+    ...Object.fromEntries(
+      reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "warn"])
+    ),
     "unicorn/filename-case": ["error", { case: "kebabCase" }],
     "import/no-extraneous-dependencies": [
       "error",
