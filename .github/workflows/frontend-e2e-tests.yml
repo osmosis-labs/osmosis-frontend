@@ -285,13 +285,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -336,13 +329,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -395,13 +381,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
@@ -423,12 +402,7 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [
-        wait-for-deployment,
-        preview-swap-osmo-tests,
-        preview-swap-usdc-tests,
-        check-balances,
-      ]
+      [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -446,13 +420,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -503,13 +470,6 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-24.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
