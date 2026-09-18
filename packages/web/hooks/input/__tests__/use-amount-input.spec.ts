@@ -4,7 +4,7 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { act, waitFor } from "@testing-library/react";
 
-import { server, trpcMsw } from "~/__tests__/msw";
+import { server, trpcQuery } from "~/__tests__/msw";
 import {
   cleanupTestWallets,
   connectTestWallet,
@@ -24,24 +24,17 @@ describe("useAmountInput", () => {
   beforeEach(() => {
     cleanupTestWallets();
     server.use(
-      trpcMsw.edge.assets.getAssetPrice.query((_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)))
-        );
-      }),
-      trpcMsw.local.balances.getUserBalances.query((_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data([
-            {
-              denom: osmoMockCurrency.coinMinimalDenom,
-              amount: "1000000000",
-              coin: undefined,
-            },
-          ])
-        );
-      })
+      trpcQuery(
+        "edge.assets.getAssetPrice",
+        () => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1))
+      ),
+      trpcQuery("local.balances.getUserBalances", () => [
+        {
+          denom: osmoMockCurrency.coinMinimalDenom,
+          amount: "1000000000",
+          coin: undefined,
+        },
+      ])
     );
   });
 

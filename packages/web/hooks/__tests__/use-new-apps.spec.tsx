@@ -2,7 +2,7 @@ import { AppStoreApp } from "@osmosis-labs/server";
 import { waitFor } from "@testing-library/react";
 import dayjs from "dayjs";
 
-import { server, trpcMsw } from "~/__tests__/msw";
+import { server, trpcQuery } from "~/__tests__/msw";
 import {
   renderHookWithProviders,
   resetQueryClient,
@@ -31,21 +31,13 @@ describe("useNewApps", () => {
 
   it("returns all apps and filters apps listed within the last 31 days", async () => {
     server.use(
-      trpcMsw.local.cms.getAppStore.query((_req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            applications: [
-              makeApp("Fresh App", dayjs().subtract(1, "day").toISOString()),
-              makeApp(
-                "Boundary App",
-                dayjs().subtract(31, "day").toISOString()
-              ),
-              makeApp("Old App", dayjs().subtract(32, "day").toISOString()),
-            ],
-          })
-        )
-      )
+      trpcQuery("local.cms.getAppStore", () => ({
+        applications: [
+          makeApp("Fresh App", dayjs().subtract(1, "day").toISOString()),
+          makeApp("Boundary App", dayjs().subtract(31, "day").toISOString()),
+          makeApp("Old App", dayjs().subtract(32, "day").toISOString()),
+        ],
+      }))
     );
 
     const { result } = renderHookWithProviders(() => useNewApps());
@@ -60,14 +52,9 @@ describe("useNewApps", () => {
   it("reuses cached app data across remounts", async () => {
     const requestSpy = jest.fn();
     server.use(
-      trpcMsw.local.cms.getAppStore.query((_req, res, ctx) => {
+      trpcQuery("local.cms.getAppStore", () => {
         requestSpy();
-        return res(
-          ctx.status(200),
-          ctx.data({
-            applications: [makeApp("Cached App", dayjs().toISOString())],
-          })
-        );
+        return { applications: [makeApp("Cached App", dayjs().toISOString())] };
       })
     );
 
