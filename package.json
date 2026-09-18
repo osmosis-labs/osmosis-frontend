@@ -85,6 +85,7 @@
     "cipher-base": "^1.0.5",
     "handlebars": "^4.7.9",
     "joi": "^17.13.4",
+    "caniuse-lite": "^1.0.30001810",
     "@keplr-wallet/background/axios": "^0.33.0",
     "@keplr-wallet/cosmos/axios": "^0.33.0",
     "@keplr-wallet/ens/axios": "^0.33.0",
