@@ -2,7 +2,7 @@ import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { createPublicClient } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
@@ -63,11 +63,11 @@ jest.mock("@cosmjs/proto-signing", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) => {
-      return res(ctx.json(SkipAssets));
+    http.get("https://api.skip.money/v2/fungible/assets", () => {
+      return HttpResponse.json(SkipAssets);
     }),
-    rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
-      return res(ctx.json(SkipChains));
+    http.get("https://api.skip.money/v2/info/chains", () => {
+      return HttpResponse.json(SkipChains);
     })
   );
   jest.clearAllMocks();
@@ -96,11 +96,11 @@ describe("SkipBridgeProvider", () => {
 
   it("should get a quote - ETH.axl from Osmosis to Ethereum", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Route))
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Route)
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
       )
     );
 
@@ -219,11 +219,11 @@ describe("SkipBridgeProvider", () => {
 
   it("should get a quote - ETH.axl from Ethereum to Osmosis", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Route))
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Route)
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
       )
     );
 
@@ -360,16 +360,14 @@ describe("SkipBridgeProvider", () => {
 
   const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...ETH_EthereumToOsmosis_Route,
-            estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
-          })
-        )
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_EthereumToOsmosis_Route,
+          estimated_fees: [{ ...axelarBridgeFee, fee_behavior }],
+        })
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
       )
     );
 
@@ -399,42 +397,40 @@ describe("SkipBridgeProvider", () => {
 
   it("ignores non-bridge fee_behavior entries when flagging the transfer fee", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/route", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...ETH_OsmosisToEthereum_Route,
-            estimated_fees: [
-              {
-                // an additive relay fee must not mark the (deducted)
-                // Cosmos-source bridge fee as additive
-                fee_type: "SMART_RELAY",
-                bridge_id: "IBC",
-                amount: "100",
-                usd_amount: "0.01",
-                origin_asset: {
-                  denom: "uosmo",
-                  chain_id: "osmosis-1",
-                  origin_denom: "uosmo",
-                  origin_chain_id: "osmosis-1",
-                  trace: "",
-                  is_cw20: false,
-                  is_evm: false,
-                  is_svm: false,
-                  symbol: "OSMO",
-                  name: "Osmosis",
-                  decimals: 6,
-                  coingecko_id: "osmosis",
-                },
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_OsmosisToEthereum_Route,
+          estimated_fees: [
+            {
+              // an additive relay fee must not mark the (deducted)
+              // Cosmos-source bridge fee as additive
+              fee_type: "SMART_RELAY",
+              bridge_id: "IBC",
+              amount: "100",
+              usd_amount: "0.01",
+              origin_asset: {
+                denom: "uosmo",
                 chain_id: "osmosis-1",
-                tx_index: 0,
-                fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+                origin_denom: "uosmo",
+                origin_chain_id: "osmosis-1",
+                trace: "",
+                is_cw20: false,
+                is_evm: false,
+                is_svm: false,
+                symbol: "OSMO",
+                name: "Osmosis",
+                decimals: 6,
+                coingecko_id: "osmosis",
               },
-            ],
-          })
-        )
+              chain_id: "osmosis-1",
+              tx_index: 0,
+              fee_behavior: "FEE_BEHAVIOR_ADDITIONAL",
+            },
+          ],
+        })
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
       )
     );
 
@@ -853,14 +849,17 @@ describe("SkipBridgeProvider", () => {
 
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
-        rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
+        http.get("https://api.skip.money/v2/info/chains", () => {
           const modifiedSkipChains = SkipChains.chains.map((chain) => {
             if (chain.chain_id === "noble-1") {
               return { ...chain, pfm_enabled: false };
             }
             return chain;
           });
-          return res(ctx.json({ ...SkipChains, chains: modifiedSkipChains }));
+          return HttpResponse.json({
+            ...SkipChains,
+            chains: modifiedSkipChains,
+          });
         })
       );
 
@@ -1101,22 +1100,24 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     routeBodies?: Record<string, unknown>[]
   ) => {
     server.use(
-      rest.post(
+      http.post(
         "https://api.skip.money/v2/fungible/route",
-        async (req, res, ctx) => {
-          const body = await req.json();
+        async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown> & {
+            allow_multi_tx?: boolean;
+          };
           routeBodies?.push(body);
           if (!body.allow_multi_tx) {
-            return res(
-              ctx.status(404),
-              ctx.json({
+            return HttpResponse.json(
+              {
                 code: 5,
                 message:
                   "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true",
-              })
+              },
+              { status: 404 }
             );
           }
-          return res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxRoute));
+          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxRoute);
         }
       )
     );
@@ -1158,8 +1159,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 
     useSingleTxRejectingRouteHandler();
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs)
       )
     );
 
@@ -1176,9 +1177,9 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     // holding nothing beyond the arriving funds, so the route's reserve
     // stays the budget unless a test overrides this handler.
     server.use(
-      rest.get(
+      http.get(
         "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
-        (_req, res, ctx) => res(ctx.json({ balance: { amount: "0" } }))
+        () => HttpResponse.json({ balance: { amount: "0" } })
       )
     );
   });
@@ -1245,17 +1246,17 @@ describe("SkipBridgeProvider multi-tx routes", () => {
   it("keeps a comparable single-tx route when multi-tx is allowed", async () => {
     const routeBodies: Record<string, unknown>[] = [];
     server.use(
-      rest.post(
+      http.post(
         "https://api.skip.money/v2/fungible/route",
-        async (req, res, ctx) => {
-          routeBodies.push(await req.json());
+        async ({ request }) => {
+          routeBodies.push((await request.json()) as Record<string, unknown>);
           // the same single-tx route exists with and without multi-tx
           // permission for this pair
-          return res(ctx.json(ETH_EthereumToOsmosis_Route));
+          return HttpResponse.json(ETH_EthereumToOsmosis_Route);
         }
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(ETH_EthereumToOsmosis_Msgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Msgs)
       )
     );
 
@@ -1293,21 +1294,19 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       amount_out: "790000000", // 21% below the multi-tx route's 999960000
     };
     server.use(
-      rest.post(
+      http.post(
         "https://api.skip.money/v2/fungible/route",
-        async (req, res, ctx) => {
-          const body = await req.json();
-          return res(
-            ctx.json(
-              body.allow_multi_tx
-                ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
-                : lossySingleTxRoute
-            )
+        async ({ request }) => {
+          const body = (await request.json()) as { allow_multi_tx?: boolean };
+          return HttpResponse.json(
+            body.allow_multi_tx
+              ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+              : lossySingleTxRoute
           );
         }
       ),
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs))
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs)
       )
     );
 
@@ -1329,26 +1328,22 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       amount_out: "999000000", // ~0.1% below multi's 999960000: inside the 0.5% threshold
     };
     server.use(
-      rest.post(
+      http.post(
         "https://api.skip.money/v2/fungible/route",
-        async (req, res, ctx) => {
-          const body = await req.json();
-          return res(
-            ctx.json(
-              body.allow_multi_tx
-                ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
-                : marginalSingleTxRoute
-            )
+        async ({ request }) => {
+          const body = (await request.json()) as { allow_multi_tx?: boolean };
+          return HttpResponse.json(
+            body.allow_multi_tx
+              ? USDC_EthereumToOsmosisAlloy_MultiTxRoute
+              : marginalSingleTxRoute
           );
         }
       ),
       // a real single-tx route returns a single message
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            msgs: USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs.slice(0, 1),
-          })
-        )
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json({
+          msgs: USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs.slice(0, 1),
+        })
       )
     );
 
@@ -1400,8 +1395,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       },
     };
     server.use(
-      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
-        res(ctx.json(strippedAssets))
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json(strippedAssets)
       )
     );
 
@@ -1430,19 +1425,16 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     let rawMsgsBody: string | undefined;
     let routeRequested = false;
     server.use(
-      rest.post(
-        "https://api.skip.money/v2/fungible/route",
-        (_req, res, ctx) => {
-          routeRequested = true;
-          return res(ctx.status(500));
-        }
-      ),
-      rest.post(
+      http.post("https://api.skip.money/v2/fungible/route", () => {
+        routeRequested = true;
+        return new HttpResponse(null, { status: 500 });
+      }),
+      http.post(
         "https://api.skip.money/v2/fungible/msgs",
-        async (req, res, ctx) => {
-          msgsBody = await req.json();
+        async ({ request }) => {
+          msgsBody = (await request.json()) as { address_list: string[] };
           rawMsgsBody = JSON.stringify(msgsBody);
-          return res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs));
+          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
         }
       )
     );
@@ -1486,13 +1478,13 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 
   it("names an expired stored route so the UI can show recovery copy", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(
-          ctx.status(500),
-          ctx.json({
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(
+          {
             code: 9,
             message: "relay fee quote has expired",
-          })
+          },
+          { status: 500 }
         )
       )
     );
@@ -1576,9 +1568,9 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       coinsSpent: [],
     });
     server.use(
-      rest.get(
+      http.get(
         "https://noble-lcd.test/cosmos/bank/v1beta1/balances/:address/by_denom",
-        (_req, res, ctx) => res(ctx.json({ balance: { amount: "999990000" } }))
+        () => HttpResponse.json({ balance: { amount: "999990000" } })
       )
     );
 
@@ -1620,12 +1612,10 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 
   it("rejects when the route no longer includes a step on the chain", async () => {
     server.use(
-      rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-        res(
-          ctx.json({
-            msgs: [USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs[0]],
-          })
-        )
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json({
+          msgs: [USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs[0]],
+        })
       )
     );
 
@@ -1642,8 +1632,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
 describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
   it("rejects when the provider registry is unavailable", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
-        res(ctx.status(500), ctx.json({ message: "registry unavailable" }))
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json({ message: "registry unavailable" }, { status: 500 })
       )
     );
 
@@ -1720,20 +1710,15 @@ describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
     // cached for 30 minutes), so a later healthy response recovers
     let assetRequests = 0;
     server.use(
-      rest.get(
-        "https://api.skip.money/v2/fungible/assets",
-        (_req, res, ctx) => {
-          assetRequests++;
-          if (assetRequests === 1) {
-            return res(
-              ctx.json({
-                chain_to_assets_map: { "osmosis-1": { assets: [] } },
-              })
-            );
-          }
-          return res(ctx.json(SkipAssets));
+      http.get("https://api.skip.money/v2/fungible/assets", () => {
+        assetRequests++;
+        if (assetRequests === 1) {
+          return HttpResponse.json({
+            chain_to_assets_map: { "osmosis-1": { assets: [] } },
+          });
         }
-      )
+        return HttpResponse.json(SkipAssets);
+      })
     );
 
     const sharedCacheCtx: BridgeProviderContext = {
@@ -1777,8 +1762,8 @@ describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
     // 30-minute cache lifetime, silently bypassing the client's retry and
     // re-poll machinery
     server.use(
-      rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) =>
-        res(ctx.json({ chain_to_assets_map: {} }))
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json({ chain_to_assets_map: {} })
       )
     );
 

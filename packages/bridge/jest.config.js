@@ -8,7 +8,7 @@ module.exports = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   transform: {
-    "^.+\\.(js|jsx)?$": [
+    "^.+\\.(js|jsx|mjs)?$": [
       "babel-jest",
       { configFile: "../../babel.config.json" },
     ],
@@ -19,7 +19,9 @@ module.exports = {
       },
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(superjson|msw|@mswjs|@open-draft|rettime|until-async)/)",
+  ],
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
