@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "workspaces": {
     "packages": [
