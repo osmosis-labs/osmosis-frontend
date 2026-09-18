@@ -221,7 +221,7 @@ export const NavBar: FunctionComponent<
               {({ close: closeMobileMainMenu }) => {
                 closeMobileMenuRef.current = closeMobileMainMenu;
 
-                let mobileMenus = menus.concat({
+                const mobileMenus = menus.concat({
                   label: t("menu.settings"),
                   link: (e) => {
                     e.preventDefault();

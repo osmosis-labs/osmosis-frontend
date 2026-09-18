@@ -1,5 +1,4 @@
 import type { StdFee } from "@cosmjs/amino";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   DEFAULT_VS_CURRENCY,
   NoRouteError,

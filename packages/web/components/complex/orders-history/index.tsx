@@ -322,7 +322,7 @@ const TableGroupHeader = ({
   claimOrders,
 }: {
   group: string;
-  style: Object;
+  style: object;
   filledOrdersCount: number;
   claimOrders: () => Promise<void>;
 }) => {
@@ -409,7 +409,7 @@ const TableOrderRow = memo(
     onOrderSelect,
   }: {
     order: MappedLimitOrder;
-    style: Object;
+    style: object;
     refetch: () => Promise<any>;
     onOrderSelect: (order: MappedLimitOrder) => void;
   }) => {

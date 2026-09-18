@@ -92,8 +92,12 @@ export class RootStore {
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
+      // These are Keplr store factories, not React Hooks.
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmosQueries.use(),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmQueries.use(),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       OsmosisQueries.use(
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
@@ -178,13 +182,17 @@ export class RootStore {
           },
         },
       },
+      // These are Keplr store factories, not React Hooks.
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       OsmosisAccount.use({
         queriesStore: this.queriesStore,
         queriesExternalStore: this.queriesExternalStore,
       }),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmosAccount.use({
         queriesStore: this.queriesStore,
       }),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 

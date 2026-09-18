@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { act, renderHook } from "@testing-library/react";
 
 import { useUserSettingsStore } from "../user-settings-store";

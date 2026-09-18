@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";

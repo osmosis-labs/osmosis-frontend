@@ -1,6 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { resetLDMocks } from "jest-launchdarkly-mock";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";

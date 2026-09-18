@@ -38,19 +38,22 @@ export function normalizeEventKey(
 export const useKeyActions = (
   actions: Partial<Record<EventKeys, (event: KeyboardEvent) => void>>
 ) => {
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    const eventKey = normalizeEventKey(event);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const eventKey = normalizeEventKey(event);
 
-    if (eventKey === "Enter" && event.shiftKey) {
-      return;
-    }
+      if (eventKey === "Enter" && event.shiftKey) {
+        return;
+      }
 
-    const action = actions[eventKey];
+      const action = actions[eventKey];
 
-    if (action) {
-      return action(event);
-    }
-  }, []);
+      if (action) {
+        return action(event);
+      }
+    },
+    [actions]
+  );
 
   return { handleKeyDown };
 };

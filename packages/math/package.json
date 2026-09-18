@@ -41,7 +41,7 @@
     "big-integer": "^1.6.48"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.5",
     "jest": "^29.7.0",
     "jest-in-case": "^1.0.2",
     "lint-staged": "^12.1.3",

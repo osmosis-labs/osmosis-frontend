@@ -104,7 +104,7 @@ export function compare1CTTransactionParams({
   prevParams?: OneClickTradingTransactionParams;
   nextParams?: OneClickTradingTransactionParams;
 }): OneClickTradingParamsChanges {
-  let changes: OneClickTradingParamsChanges = [];
+  const changes: OneClickTradingParamsChanges = [];
 
   if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
     changes.push("spendLimit");
