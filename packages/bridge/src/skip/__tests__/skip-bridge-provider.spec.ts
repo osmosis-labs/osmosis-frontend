@@ -990,15 +990,14 @@ describe("SkipBridgeProvider", () => {
       const captured: { body?: SkipMsgsRequest } = {};
 
       server.use(
-        rest.post(
-          "https://api.skip.money/v2/fungible/route",
-          (_req, res, ctx) => res(ctx.json(ETH_OsmosisToEthereum_Route))
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_Route)
         ),
-        rest.post(
+        http.post(
           "https://api.skip.money/v2/fungible/msgs",
-          async (req, res, ctx) => {
-            captured.body = await req.json();
-            return res(ctx.json(ETH_OsmosisToEthereum_Msgs));
+          async ({ request }) => {
+            captured.body = (await request.json()) as SkipMsgsRequest;
+            return HttpResponse.json(ETH_OsmosisToEthereum_Msgs);
           }
         )
       );
@@ -1037,13 +1036,11 @@ describe("SkipBridgeProvider", () => {
      */
     it("raises the signed floor to cover a destination swap", async () => {
       server.use(
-        rest.post(
-          "https://api.skip.money/v2/fungible/route",
-          (_req, res, ctx) =>
-            res(ctx.json(ETH_OsmosisToEthereum_DestinationSwap_Route))
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_DestinationSwap_Route)
         ),
-        rest.post("https://api.skip.money/v2/fungible/msgs", (_req, res, ctx) =>
-          res(ctx.json(ETH_OsmosisToEthereum_DestinationSwap_Msgs))
+        http.post("https://api.skip.money/v2/fungible/msgs", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_DestinationSwap_Msgs)
         )
       );
 
@@ -1767,11 +1764,13 @@ describe("SkipBridgeProvider multi-tx routes", () => {
   it("sends a real tolerance when rebuilding an intermediate step", async () => {
     let msgsBody: { slippage_tolerance_percent?: string } | undefined;
     server.use(
-      rest.post(
+      http.post(
         "https://api.skip.money/v2/fungible/msgs",
-        async (req, res, ctx) => {
-          msgsBody = await req.json();
-          return res(ctx.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs));
+        async ({ request }) => {
+          msgsBody = (await request.json()) as {
+            slippage_tolerance_percent?: string;
+          };
+          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
         }
       )
     );
