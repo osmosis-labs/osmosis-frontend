@@ -6,6 +6,14 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  experimental: {
+    /**
+     * A handful of `/assets/[...denom]` pages embed a lot of token metadata and
+     * exceed Next's default 128 kB page-data warning threshold. Those payloads
+     * are intentional, so raise the threshold to keep the build output clean.
+     */
+    largePageDataBytes: 512 * 1024,
+  },
   images: {
     remotePatterns: [
       {
@@ -35,7 +43,23 @@ const config = {
       },
     ];
   },
-  webpack(config) {
+  webpack(config, { nextRuntime }) {
+    /**
+     * The Edge Runtime does not support Node.js APIs such as `process.nextTick`
+     * and `setImmediate`. `dataloader` references both at module scope, but our
+     * `EdgeDataLoader` wrapper always overrides `batchScheduleFn`, so those
+     * branches never run. Next's edge-runtime static analysis still flags the
+     * module, so ignore that specific false positive in edge bundles.
+     */
+    if (nextRuntime === "edge") {
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings ?? []),
+        (warning) =>
+          warning.message?.includes("A Node.js API is used") &&
+          warning.module?.resource?.includes("dataloader"),
+      ];
+    }
+
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
