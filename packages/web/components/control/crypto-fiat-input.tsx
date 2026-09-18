@@ -143,7 +143,7 @@ export const CryptoFiatInput: FunctionComponent<{
       assetPrice.fiatCurrency,
       new Dec(safeInputToDec(fiatInputRaw))
     );
-  }, [assetPrice?.fiatCurrency, fiatInputRaw]);
+  }, [assetPrice, fiatInputRaw]);
 
   const inputCoin = useMemo(() => {
     if (!assetWithBalance) return;

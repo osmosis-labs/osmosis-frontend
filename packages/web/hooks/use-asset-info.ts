@@ -69,7 +69,7 @@ export const useAssetInfo = () => {
     ) {
       return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
     }
-  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
+  }, [coingeckoCoin, details]);
 
   const coingeckoURL = useMemo(() => {
     if (coinGeckoId) {
