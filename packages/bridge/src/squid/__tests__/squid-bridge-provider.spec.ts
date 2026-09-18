@@ -1,7 +1,7 @@
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http as httpMock, HttpResponse } from "msw";
 import { createPublicClient, http } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
@@ -32,52 +32,46 @@ jest.mock("viem", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
-      return res(
-        ctx.json({
-          route: {
-            estimate: {
-              fromAmount: "1",
-              toAmount: "0.99",
-              feeCosts: [
-                { token: { symbol: "ETH", decimals: 18 }, amount: "0.01" },
-              ],
-              gasCosts: [
-                { token: { symbol: "ETH", decimals: 18 }, amount: "0.00042" },
-              ],
-              estimatedRouteDuration: 900,
-              aggregatePriceImpact: "0",
-              fromAmountUSD: "1000",
-              toAmountUSD: "990",
-            },
-            transactionRequest: {
-              target: "0x0000000000000000000000000000000000000000",
-              data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
-              gasLimit: "21000",
-              gasPrice: "1000000000",
-              value: "0",
-              type: "SEND",
-            },
-            params: {
-              toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-            },
+    httpMock.post("https://v2.api.squidrouter.com/v2/route", () => {
+      return HttpResponse.json({
+        route: {
+          estimate: {
+            fromAmount: "1",
+            toAmount: "0.99",
+            feeCosts: [
+              { token: { symbol: "ETH", decimals: 18 }, amount: "0.01" },
+            ],
+            gasCosts: [
+              { token: { symbol: "ETH", decimals: 18 }, amount: "0.00042" },
+            ],
+            estimatedRouteDuration: 900,
+            aggregatePriceImpact: "0",
+            fromAmountUSD: "1000",
+            toAmountUSD: "990",
           },
-        })
-      );
+          transactionRequest: {
+            target: "0x0000000000000000000000000000000000000000",
+            data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
+            gasLimit: "21000",
+            gasPrice: "1000000000",
+            value: "0",
+            type: "SEND",
+          },
+          params: {
+            toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+          },
+        },
+      });
     }),
-    rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
-      res(
-        ctx.json({
-          tokens: MockTokens,
-        })
-      )
+    httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+      HttpResponse.json({
+        tokens: MockTokens,
+      })
     ),
-    rest.get("https://v2.api.squidrouter.com/v2/chains", (_req, res, ctx) =>
-      res(
-        ctx.json({
-          chains: MockChains,
-        })
-      )
+    httpMock.get("https://v2.api.squidrouter.com/v2/chains", () =>
+      HttpResponse.json({
+        chains: MockChains,
+      })
     )
   );
 });
@@ -112,8 +106,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
-      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
+      httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
+        HttpResponse.json(ETHtoAVAX_EthereumToAvalanche_Route)
       )
     );
     const quoteRequest = {
@@ -210,8 +204,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
-      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Route))
+      httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Route)
       )
     );
     console.log(
@@ -3841,8 +3835,8 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
 describe("SquidBridgeProvider getSupportedAssets failure propagation", () => {
   it("rejects when the provider registry is unavailable", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
-        res(ctx.status(500), ctx.json({ message: "registry unavailable" }))
+      httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+        HttpResponse.json({ message: "registry unavailable" }, { status: 500 })
       )
     );
 
@@ -3925,8 +3919,8 @@ describe("SquidBridgeProvider getSupportedAssets failure propagation", () => {
     // for the 30-minute cache lifetime, silently bypassing the client's
     // retry and re-poll machinery
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
-        res(ctx.json({ tokens: [] }))
+      httpMock.get("https://v2.api.squidrouter.com/v2/tokens", () =>
+        HttpResponse.json({ tokens: [] })
       )
     );
 

@@ -13,6 +13,8 @@ class JSDOMEnvironmentExtended extends JSDOMEnvironment {
     super(...args);
 
     this.global.ReadableStream = ReadableStream;
+    this.global.WritableStream = WritableStream;
+    this.global.TransformStream = TransformStream;
     this.global.TextDecoder = TextDecoder;
     this.global.TextEncoder = TextEncoder;
 
@@ -22,11 +24,15 @@ class JSDOMEnvironmentExtended extends JSDOMEnvironment {
     this.global.FormData = FormData;
     this.global.Request = Request;
     this.global.Response = Response;
+    this.global.AbortController = AbortController;
+    this.global.AbortSignal = AbortSignal;
+    this.global.BroadcastChannel = BroadcastChannel;
     this.global.Request = Request;
     this.global.Response = Response;
     Object.defineProperty(this.global, "fetch", {
       value: fetch,
       writable: true,
+      configurable: true,
     });
     this.global.structuredClone = structuredClone;
   }

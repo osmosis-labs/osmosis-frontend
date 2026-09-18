@@ -19,12 +19,16 @@ const config = {
   moduleNameMapper: {
     // Resolve absolute imports
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+    "^msw/node$": require.resolve("msw/node"),
   },
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "../../jsdom-extended.js",
+  testEnvironmentOptions: {
+    customExportConditions: [""],
+  },
   testPathIgnorePatterns: ["e2e"],
 };
 
@@ -46,6 +50,11 @@ const esmModules = [
   "uint8array-tools",
   "varuint-bitcoin",
   "nuqs",
+  "rettime",
+  "until-async",
+  "msw",
+  "@mswjs",
+  "@open-draft",
 ];
 
 module.exports = async () => ({
