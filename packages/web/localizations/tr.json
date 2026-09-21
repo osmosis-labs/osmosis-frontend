@@ -69,6 +69,19 @@
     "noRewards": "Toplanacak bir şey yok, kısa süre sonra tekrar kontrol edin",
     "removeLiquidity": "Likiditeyi Kaldır",
     "increaseLiquidity": "Likiditeyi Artırın",
+    "migrateLiquidity": "Likiditeyi Taşı",
+    "migrateDescription": "{baseSymbol}/{fromUsdcSymbol} pozisyonunuzu (havuz {fromPoolId}) {baseSymbol}/{toUsdcSymbol} çiftine (havuz {toPoolId}) taşıyın. Aynı fiyat aralığı, aynı ücret seviyesi.",
+    "migrateDustNotice": "Yeni aralığa sığmayan tutarlar cüzdanınıza döner.",
+    "migrateIncentivesNotice": "Minimum süresini doldurmayan teşvikler çekimde kaybedilir.",
+    "migrateCurrentDifference": "Mevcut fiyat farkı",
+    "migrateAllowedDifference": "İzin verilen fiyat farkı",
+    "migrateRevalidationFailed": "Bu açıkken fiyatlar değişti ve taşıma artık kontrollerini geçemiyor. Kapatıp yeniden deneyin.",
+    "migrateReason": "Taşıma sırasında USDC.noble, transmuter üzerinden 1:1 USDC'ye dönüştürülür.",
+    "migrateRiskNotice": "Taşıma tek bir işlemle gerçekleştirilir. Fiyatlar hareket ederse, eksik cüzdan bakiyenizden karşılanabilir, hiçbir zaman içindekinden fazla olmadan; diğer tarafın fazlası ise cüzdana geri döner.",
+    "migrateMaxWalletDraw": "Bakiyeden en fazla (fiyat aralık kenarında)",
+    "migrateMaxWalletDrawEstimate": "Bakiyeden tahmini kullanım",
+    "migrateMaxWalletDrawValue": "{base} veya {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} veya {noble}",
     "yourPositions": "Pozisyonlarınız",
     "yourPosition": "Senin pozisyonun",
     "yourPositionsDesc": "Varlıklarınızı çalıştırın ve her takasta spread kazanın.",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Bakiye"
-      },
       "depositButton": "Yatır",
       "search": "Arama",
       "withdrawButton": "Çek",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "Bu varlık, kaynak zincirine giden yol artık etkin olmadığından yatırılamaz",
     "strandedTokenWithdrawDisabled": "Bu varlık geri çekilemez çünkü kaynak zincirine giden yol artık etkin değil"
   },
-  "cypherCard": {
-    "cypherSpend": "Osmoz Ödeme",
-    "cypherOrder": "Kartınızı şimdi sipariş edin",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "OSMO'nuz artık her yerde kabul görüyor",
-    "newPill": "Yeni"
-  },
   "portfolio": {
     "buy": "Satın almak",
     "sell": "Satmak",
@@ -230,7 +233,6 @@
     "last1y": "Son 1y",
     "allTime": "Tüm zamanlar",
     "trade": "Ticaret",
-    "earn": "Para kazanmak",
     "deposit": "Depozito",
     "withdraw": "Geri çekilmek",
     "convert": "Dönüştürmek"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin",
       "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin.",
       "clickToActivate": "Etkinleştirmek için tıklayın"
     },
@@ -324,9 +325,6 @@
     "startAgain": "Tekrar başla"
   },
   "estimated": "Tahmini",
-  "frontierMigration": {
-    "proceed": "Devam et"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Para yatırma işlemleri durduruldu. Yerli köprü güzergahı kapalı.",
@@ -401,7 +399,6 @@
     "store": "Uygulamalar",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
-    "trade": "Profesyonel Ticaret",
     "more": "Daha",
     "new": "YENİ",
     "settings": "Ayarlar"
@@ -428,9 +425,6 @@
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
       "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
       "changeButton": "Ayarları düzenle"
-    },
-    "floatingBanner": {
-      "newPill": "Yeni"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Tıkla İşlem limiti",
@@ -915,6 +909,26 @@
         "continueTo": "{provider} ile devam et"
       }
     },
+    "multiTxTitle": "Bu transfer {steps} işlem gerektirir",
+    "multiTxBadge": "{steps} işlem",
+    "multiTxDescription": "İlk işlem onaylandıktan sonra {chain} üzerinde son bir transferi imzalamanız istenecektir.",
+    "multiTxWaitingForFunds": "Fonların {chain} ağına ulaşması bekleniyor…",
+    "multiTxSignFinal": "Transferi tamamlamak için cüzdanınızda {chain} üzerindeki son transferi imzalayın.",
+    "multiTxGasWarning": "Son adım, ağ ücretini {chain} üzerinde {denom} olarak öder. {chain} hesabınızda {denom} bulunduğundan emin olun.",
+    "multiTxContinue": "Transfere devam et",
+    "multiTxWrongAccountTitle": "Cüzdan hesabı eşleşmiyor",
+    "multiTxWrongAccount": "Cüzdanınızın {chain} hesabı bu rotayla eşleşmiyor. Fonlar taşınmadan önce transfer iptal edildi.",
+    "multiTxResumeWrongAccount": "Cüzdanınız, bu transferin fonlarını tutan hesaptan farklı bir {chain} hesabına bağlı. Cüzdanınızda özgün hesaba geri dönün ve tekrar deneyin.",
+    "multiTxNeedsAttention": "Dikkat gerekli",
+    "multiTxFundsMissingTitle": "Beklenen fonlar bulunamadı",
+    "multiTxFundsMissing": "Beklenen fonlar artık {chain} hesabınızda değil. Bu transfer başka bir oturumda zaten tamamlanmış olabilir.",
+    "multiTxStillInTransit": "Fonlar hâlâ yolda",
+    "multiTxRouteExpiredTitle": "Transfer rotasının süresi doldu",
+    "multiTxRouteExpired": "Bu transferin kayıtlı rotasının süresi doldu ve artık imzalanamaz. Fonlarınız {chain} hesabınızda güvende.",
+    "multiTxFeeShortfall": "{chain} hesabınız bu adımın ağ ücretini karşılayamıyor. {chain} üzerinde gas için fon ekleyin, ardından tekrar Devam'a basın.",
+    "multiTxStepFailedTitle": "Son transfer tamamlanmadı",
+    "multiTxStepFailed": "{chain} üzerindeki son transfer tamamlanmadı. Fonlarınız {chain} üzerinde güvende; tekrar denemek için işlem geçmişinizde Devam'a basın.",
+    "multiTxRecordFailed": "Bu transferin ilerlemesi kaydedilemedi, bu nedenle son {chain} adımı sunulamıyor. Fonlarınız yine de {chain} üzerine ulaşacak; transferi tamamlamak için lütfen destekle iletişime geçin.",
     "assetSelectScreen": {
       "titleDeposit": "Yatırılacak bir varlık seçin",
       "titleWithdraw": "Çekilecek bir varlık seçin",
@@ -939,6 +953,7 @@
     "estimatedTime": "Tahmini süresi",
     "providerFees": "Sağlayıcı ücretleri",
     "networkFee": "{networkName} ağ ücreti",
+    "networkFees": "Ağ ücretleri",
     "totalFees": "Toplam ücretler",
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
@@ -1200,82 +1215,6 @@
     "osmosisUpdates": "Osmoz güncellemeleri!",
     "seeWhatsNew": "Yenilikleri görün"
   },
-  "earnPage": {
-    "title": "Para kazanmak",
-    "positions": "Pozisyonlar",
-    "strategiesCount": "{number} stratejiler",
-    "oneStrategy": "1 strateji",
-    "discoverStrategies": "Stratejileri Keşfedin",
-    "myStrategies": "Stratejileriniz",
-    "strategyPlatform": "Strateji",
-    "apy": "Nisan",
-    "reward": "Ödül",
-    "lock": "Bağlantıyı kaldır",
-    "days": "günler",
-    "day": "gün",
-    "risk": "Risk",
-    "strategyMethod": "Türler",
-    "allMethods": "Her türlü",
-    "platforms": "Platformlar",
-    "allPlatforms": "Tüm platformlar",
-    "allCategories": "Tüm Kategoriler",
-    "filters": "Filtreler",
-    "resetFilters": "Filtreleri sıfırla",
-    "saveFilters": "Filtreleri kaydet",
-    "rewards": "Ödüller",
-    "availableToClaim": "talep edilebilir",
-    "claimAllRewards": "Tüm ödülleri talep edin",
-    "join": "Katılmak",
-    "tokenFilterOptions": {
-      "my": "Varlıklarınız",
-      "all": "Tüm varlıklar"
-    },
-    "rewardTypes": {
-      "all": "Tüm",
-      "single": "Bekar",
-      "multi": "Çok"
-    },
-    "totalValueInvested": "Toplam değer",
-    "lookBelow": "Aşağıya bakın ve sizin için en iyi stratejileri bulun",
-    "startEarningDescription": "Tam kazanç potansiyelinizin kilidini açın. Varlıklarınızı aşağıdaki birçok stratejiyle uygulamaya koyun.",
-    "loadingStrategies": "Stratejiler yükleniyor...",
-    "sorryErrorOccurred": "Üzgünüz, bir hata oluştu.",
-    "sorryNoResultsWithAssets": "Öğelerinizle ilişkili strateji bulunamadı.",
-    "sorryNoResults": "Hiçbir strateji bulunamadı.",
-    "tryChangingFilters": "Filtreleri değiştirmeyi deneyin",
-    "retry": "Yeniden dene",
-    "manage": "Üstesinden gelmek",
-    "noLock": "Kilit yok",
-    "riskDisclaimer": "Risk, bir strateji ve onun temel varlıklarına ilişkin bir dizi kriterin birleşimiyle hesaplanır.",
-    "strategyGeoblocked": "Üzgünüz, bu strateji ülkenizde kullanılamıyor.",
-    "instantUnbondOnly": "Yalnızca anında ayrılma",
-    "tooltips": {
-      "apr": {
-        "description": "Yıllık Yüzde Oranı (APR), bir stratejinin yıllık yüzde getirisini ifade eder.\n\nNot: Bir stratejinin getirisi katılım ve performansa bağlı olarak dalgalanabilir.\n\nSorumluluk reddi beyanı: Bu APR'ler projelerin kendisi tarafından raporlanmaktadır ve hatalı olabilir."
-      },
-      "tvl": {
-        "description": "Kilitli Toplam Değer (TVL), stratejiye yatırılan varlıkların ABD Doları cinsinden toplam değerini ifade eder."
-      },
-      "reward": {
-        "description": "Stratejinin operasyonları ve/veya teşvikleri aracılığıyla kazanılan varlıkların türü."
-      },
-      "lock": {
-        "description": "Bir pozisyondan çıkılmadan önce bağlı kalınan süre. Not: Tüm strateji çözülme* dönemlerinde ödül dağılımları yoktur."
-      },
-      "strategy": {
-        "description": "Osmosis'te çeşitli platformların barındırdığı çeşitli türlerde kazanç fırsatları mevcuttur. Bir stratejiye erişim belirli varlıkların yatırılmasını gerektirir."
-      },
-      "risk": {
-        "description": "Risk değerlendirmesi, bir strateji ve onun temel varlıklarına ilişkin kriterlerin bir kombinasyonunun dikkate alınmasını içerir."
-      }
-    },
-    "riskLabels": {
-      "low": "Düşük",
-      "medium": "Orta",
-      "high": "Yüksek",
-      "veryHigh": "Çok yüksek"
-    }
-  },
   "remaining": "geriye kalan",
   "timeUnits": {
     "second": "ikinci",
@@ -1346,10 +1285,6 @@
     "newer": "Daha yeni"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Fiyatınızı seçin",
-      "tryLimitOrders": "Limit emirlerini deneyin"
-    },
     "historyTable": {
       "columns": {
         "order": "Emir",

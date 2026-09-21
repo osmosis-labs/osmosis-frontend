@@ -3,7 +3,6 @@
  */
 
 import * as fs from "fs";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { glob } from "glob";
 
 import { omittedKeyPaths } from "../scripts/omitted-keys.mjs";
@@ -86,7 +85,7 @@ function getJSONsAsObjs(
   const contents: [string, object][] = [];
 
   fileNames.forEach((fileName: string) => {
-    let typeName = fileName.match(/(^.*?)\.json/);
+    const typeName = fileName.match(/(^.*?)\.json/);
     if (typeName) {
       const obj = JSON.parse(
         fs.readFileSync(readPath + fileName, "utf8").toString()
@@ -137,7 +136,7 @@ function deepEqual_onlyObjects(
   }
 
   // Iterate through the keys of the first object
-  for (let key of obj1Keys) {
+  for (const key of obj1Keys) {
     // Check if the key exists in the second object
     if (!obj2Keys.includes(key)) {
       console.error("not included in obj2:", curKeyPath.concat(key).join("."));
@@ -171,7 +170,7 @@ function objectKeys(obj1: any, keys: string[] = [], curKeyPath: string[] = []) {
   const obj1Keys = Object.keys(obj1);
 
   // Iterate through the keys of the first object
-  for (let key of obj1Keys) {
+  for (const key of obj1Keys) {
     // Recursively compare the values of the key in both objects
     curKeyPath.push(key);
     objectKeys(obj1[key], keys, curKeyPath);

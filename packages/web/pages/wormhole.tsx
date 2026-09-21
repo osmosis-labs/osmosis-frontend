@@ -276,7 +276,7 @@ const Wormhole: FunctionComponent = () => {
   const toNetwork = router.query.to as string;
   const token = router.query.token as string;
 
-  let config: WormholeConnectConfig = {
+  const config: WormholeConnectConfig = {
     networks: ["solana", "osmosis", "sui", "aptos", "ethereum"],
     rpcs: {
       // Was a hardcoded Helius URL with a shared public API key that
@@ -385,7 +385,7 @@ const Wormhole: FunctionComponent = () => {
     tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT", "WSOL", "USDT"],
   };
 
-  let bridgeDefaults = {
+  const bridgeDefaults = {
     fromNetwork: "solana" as ChainName,
     toNetwork: "osmosis" as ChainName,
     token: "W",

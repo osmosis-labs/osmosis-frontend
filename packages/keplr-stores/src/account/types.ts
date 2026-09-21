@@ -1,10 +1,10 @@
-import type { Msg, StdFee } from "@cosmjs/launchpad";
+import type { AminoMsg, StdFee } from "@cosmjs/amino";
 import type { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
 import { Dec } from "@osmosis-labs/unit";
 import type { KeplrSignOptions } from "@keplr-wallet/types";
 
 export type ProtoMsgsOrWithAminoMsgs = {
-  aminoMsgs?: Msg[];
+  aminoMsgs?: AminoMsg[];
   protoMsgs: Any[];
 };
 

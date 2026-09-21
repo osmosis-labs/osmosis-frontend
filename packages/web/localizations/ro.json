@@ -69,6 +69,19 @@
     "noRewards": "Nimic de colectat, verificați din nou în curând",
     "removeLiquidity": "Eliminați lichiditatea",
     "increaseLiquidity": "Creșteți lichiditatea",
+    "migrateLiquidity": "Migrează lichiditatea",
+    "migrateDescription": "Mută poziția ta {baseSymbol}/{fromUsdcSymbol} (pool {fromPoolId}) în {baseSymbol}/{toUsdcSymbol} (pool {toPoolId}). Același interval de preț, același nivel de comision.",
+    "migrateDustNotice": "Sumele care nu încap în noul interval revin în portofel.",
+    "migrateIncentivesNotice": "Stimulentele sub durata minimă se pierd la retragere.",
+    "migrateCurrentDifference": "Diferența de preț actuală",
+    "migrateAllowedDifference": "Diferența de preț permisă",
+    "migrateRevalidationFailed": "Prețurile s-au mișcat cât timp aceasta era deschisă și migrarea nu își mai trece verificările. Închide și încearcă din nou.",
+    "migrateReason": "USDC.noble este convertit 1:1 în USDC prin transmuter în cadrul mutării.",
+    "migrateRiskNotice": "Migrarea se realizează într-o singură tranzacție. Dacă prețurile se mișcă, un deficit poate fi acoperit din soldul portofelului, niciodată mai mult decât conține, iar surplusul celeilalte părți revine în portofel.",
+    "migrateMaxWalletDraw": "Max din sold (preț la marginea intervalului)",
+    "migrateMaxWalletDrawEstimate": "Utilizare estimată din sold",
+    "migrateMaxWalletDrawValue": "{base} sau {noble}",
+    "migrateMaxWalletDrawWideRange": "≈ {base} sau {noble}",
     "yourPositions": "Pozițiile voastre",
     "yourPosition": "Pozitia ta",
     "yourPositionsDesc": "Pune-ți activele la treabă și câștigă spread la fiecare swap.",
@@ -129,9 +142,6 @@
       }
     },
     "table": {
-      "columns": {
-        "balance": "Balanta"
-      },
       "depositButton": "Depoziteaza",
       "search": "Filtreaza dupa simbol",
       "withdrawButton": "Retrage",
@@ -190,13 +200,6 @@
     "strandedTokenDepositDisabled": "Acest activ nu poate fi depus deoarece ruta către lanțul său de origine nu mai este activă.",
     "strandedTokenWithdrawDisabled": "Acest activ nu poate fi retras deoarece ruta către lanțul său de origine nu mai este activă."
   },
-  "cypherCard": {
-    "cypherSpend": "Plată osmoză",
-    "cypherOrder": "Comanda cardul tau acum",
-    "cypherBeta": "Beta",
-    "acceptedEverywhere": "OSMO dvs., acum acceptat peste tot",
-    "newPill": "Nou"
-  },
   "portfolio": {
     "buy": "Cumpără",
     "sell": "Vinde",
@@ -230,7 +233,6 @@
     "last1y": "Ultimul 1 an",
     "allTime": "Tot timpul",
     "trade": "Comerț",
-    "earn": "Câştiga",
     "deposit": "Depozit",
     "withdraw": "Retrage",
     "convert": "Convertit"
@@ -254,7 +256,6 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol",
       "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție.",
       "clickToActivate": "Faceți clic pentru a activa"
     },
@@ -324,9 +325,6 @@
     "startAgain": "Incepe din nou"
   },
   "estimated": "Estimată",
-  "frontierMigration": {
-    "proceed": "Continuați"
-  },
   "halt": {
     "deposit": {
       "bridge_down": "Depozitele au fost oprite. Traseul podului nativ este oprit.",
@@ -401,7 +399,6 @@
     "store": "Aplicații",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
-    "trade": "Pro Trading",
     "more": "Mai mult",
     "new": "NOU",
     "settings": "Setări"
@@ -428,9 +425,6 @@
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
       "changeButton": "Editeaza setarile"
-    },
-    "floatingBanner": {
-      "newPill": "Nou"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
@@ -915,6 +909,26 @@
         "continueTo": "Continuați la {provider}"
       }
     },
+    "multiTxTitle": "Acest transfer necesită {steps} tranzacții",
+    "multiTxBadge": "{steps} tranzacții",
+    "multiTxDescription": "După confirmarea primei tranzacții, vi se va cere să semnați un transfer final pe {chain}.",
+    "multiTxWaitingForFunds": "Se așteaptă sosirea fondurilor pe {chain}…",
+    "multiTxSignFinal": "Semnați transferul final pe {chain} în portofelul dvs. pentru a finaliza transferul.",
+    "multiTxGasWarning": "Ultimul pas plătește taxa de rețea în {denom} pe {chain}. Asigurați-vă că contul dvs. de pe {chain} deține {denom}.",
+    "multiTxContinue": "Continuați transferul",
+    "multiTxWrongAccountTitle": "Contul portofelului nu corespunde",
+    "multiTxWrongAccount": "Contul {chain} din portofelul dvs. nu corespunde acestei rute. Transferul a fost anulat înainte de mutarea fondurilor.",
+    "multiTxResumeWrongAccount": "Portofelul dvs. este conectat la un alt cont {chain} decât cel care deține fondurile acestui transfer. Reveniți la contul original în portofel, apoi încercați din nou.",
+    "multiTxNeedsAttention": "Necesită atenție",
+    "multiTxFundsMissingTitle": "Fondurile așteptate nu au fost găsite",
+    "multiTxFundsMissing": "Fondurile așteptate nu se mai află în contul dvs. {chain}. Este posibil ca acest transfer să fi fost deja finalizat dintr-o altă sesiune.",
+    "multiTxStillInTransit": "Fondurile sunt încă în tranzit",
+    "multiTxRouteExpiredTitle": "Ruta de transfer a expirat",
+    "multiTxRouteExpired": "Ruta salvată a acestui transfer a expirat și nu mai poate fi semnată. Fondurile dvs. sunt în siguranță în contul dvs. {chain}.",
+    "multiTxFeeShortfall": "Contul dvs. {chain} nu poate acoperi taxa de rețea a acestui pas. Adăugați fonduri pentru gaz pe {chain}, apoi apăsați din nou Continuați.",
+    "multiTxStepFailedTitle": "Transferul final nu s-a finalizat",
+    "multiTxStepFailed": "Transferul final pe {chain} nu s-a finalizat. Fondurile dvs. sunt în siguranță pe {chain}; apăsați Continuați în istoricul tranzacțiilor pentru a încerca din nou.",
+    "multiTxRecordFailed": "Progresul acestui transfer nu a putut fi salvat, deci pasul final pe {chain} nu poate fi oferit. Fondurile dvs. vor ajunge totuși pe {chain}; vă rugăm să contactați asistența pentru a finaliza transferul.",
     "assetSelectScreen": {
       "titleDeposit": "Selectați un activ de depus",
       "titleWithdraw": "Selectați un activ de retras",
@@ -939,6 +953,7 @@
     "estimatedTime": "Timpul estimat",
     "providerFees": "Taxe de furnizor",
     "networkFee": "Taxa de rețea {networkName}",
+    "networkFees": "Taxe de rețea",
     "totalFees": "Taxele totale",
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
@@ -1200,82 +1215,6 @@
     "osmosisUpdates": "Actualizări pentru osmoză!",
     "seeWhatsNew": "Vezi ce este nou"
   },
-  "earnPage": {
-    "title": "Câştiga",
-    "positions": "Poziții",
-    "strategiesCount": "{number} strategii",
-    "oneStrategy": "1 strategie",
-    "discoverStrategies": "Descoperiți strategii",
-    "myStrategies": "Strategiile tale",
-    "strategyPlatform": "Strategie",
-    "apy": "APRILIE",
-    "reward": "Răsplată",
-    "lock": "Dezlegați",
-    "days": "zile",
-    "day": "zi",
-    "risk": "Risc",
-    "strategyMethod": "Tipuri",
-    "allMethods": "Toate tipurile",
-    "platforms": "Platforme",
-    "allPlatforms": "Toate platformele",
-    "allCategories": "Toate categoriile",
-    "filters": "Filtre",
-    "resetFilters": "Resetați filtrele",
-    "saveFilters": "Salvați filtrele",
-    "rewards": "Recompense",
-    "availableToClaim": "disponibil pentru revendicare",
-    "claimAllRewards": "Revendicați toate recompensele",
-    "join": "A te alatura",
-    "tokenFilterOptions": {
-      "my": "Activele tale",
-      "all": "Toate activele"
-    },
-    "rewardTypes": {
-      "all": "Toate",
-      "single": "Singur",
-      "multi": "Multi"
-    },
-    "totalValueInvested": "Valoarea totală",
-    "lookBelow": "Privește mai jos și găsește cele mai bune strategii pentru tine",
-    "startEarningDescription": "Deblocați-vă întregul potențial de câștig. Pune-ți bunurile la lucru prin numeroasele strategii de mai jos.",
-    "loadingStrategies": "Se încarcă strategiile...",
-    "sorryErrorOccurred": "Ne pare rău, a apărut o eroare.",
-    "sorryNoResultsWithAssets": "Nu s-au găsit strategii asociate cu activele dvs.",
-    "sorryNoResults": "Nu s-au găsit strategii.",
-    "tryChangingFilters": "Încercați să schimbați filtrele",
-    "retry": "Reîncercați",
-    "manage": "Administra",
-    "noLock": "Fără blocare",
-    "riskDisclaimer": "Riscul este calculat cu un set combinat de criterii despre o strategie și activele sale subiacente.",
-    "strategyGeoblocked": "Ne pare rău, această strategie nu este disponibilă în țara dvs.",
-    "instantUnbondOnly": "Dezlegarea instantanee numai",
-    "tooltips": {
-      "apr": {
-        "description": "Rata anuală procentuală (APR) se referă la randamentul procentual anual al unei strategii.\n\nNotă: rentabilitatea unei strategii poate varia în funcție de participare și performanță.\n\nExonerare de răspundere: aceste date anuale anuale sunt auto-raportate de proiecte în sine și pot fi inexacte."
-      },
-      "tvl": {
-        "description": "Valoarea totală blocată (TVL) se referă la valoarea totală în dolari SUA a activelor depuse în strategie."
-      },
-      "reward": {
-        "description": "Tipul de active câștigate prin operațiunile și/sau stimulentele strategiei."
-      },
-      "lock": {
-        "description": "Perioada de timp în care o poziție este legată înainte de a putea fi părăsită. Notă: nu toate perioadele de dezlegare a strategiilor* au distribuții de recompense."
-      },
-      "strategy": {
-        "description": "Oportunități de câștig de diferite tipuri, găzduite de diverse platforme, sunt disponibile pe Osmosis. Accesarea unei strategii necesită depunerea unor active specifice."
-      },
-      "risk": {
-        "description": "Evaluarea riscului implică luarea în considerare a unei combinații de criterii legate de o strategie și activele de bază ale acesteia."
-      }
-    },
-    "riskLabels": {
-      "low": "Scăzut",
-      "medium": "Mediu",
-      "high": "Înalt",
-      "veryHigh": "Foarte inalt"
-    }
-  },
   "remaining": "rămas",
   "timeUnits": {
     "second": "al doilea",
@@ -1346,10 +1285,6 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
-    "floatingBanner": {
-      "title": "Alege-ți prețul",
-      "tryLimitOrders": "Încercați comenzi limită"
-    },
     "historyTable": {
       "columns": {
         "order": "Ordin",

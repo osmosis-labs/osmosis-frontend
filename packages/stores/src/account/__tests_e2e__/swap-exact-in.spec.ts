@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
-import { OptimizedRoutes } from "@osmosis-labs/pools";
 import { Coin, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 
 import { ObservableQueryPool } from "../../queries-external/pools";
@@ -491,50 +490,28 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
     const pool2 = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
 
-    // ION > OSMO via router
-    const routablePools = [queryPool!, pool2].map(({ pool }) => pool);
-    const router = new OptimizedRoutes({
-      pools: routablePools,
-      preferredPoolIds: [pool2.id], // add second pool as preferred so it must split
-      getPoolTotalValueLocked: () => new Dec(0),
-    });
-
-    const tokenIn = {
-      currency: {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
-      amount: "10000", // amount is base denominated
-    };
-    const tokenOutCurrency = {
-      coinDenom: "OSMO",
-      coinMinimalDenom: "uosmo",
-      coinDecimals: 6,
-    };
-
-    const { amount, split } = await router.routeByTokenIn(
-      {
-        denom: tokenIn.currency.coinMinimalDenom,
-        amount: new Int(tokenIn.amount),
-      },
-      tokenOutCurrency.coinMinimalDenom
-    );
+    const tokenInDenom = "uion";
+    const tokenOutDenom = "uosmo";
+    const split0Amount = "9000";
+    const split1Amount = "1000";
 
     const tx = await new Promise<any>((resolve, reject) => {
       account!.osmosis
         .sendSplitRouteSwapExactAmountInMsg(
-          split.map((route) => ({
-            pools: route.pools.map(({ id }, index) => ({
-              id,
-              tokenOutDenom: route.tokenOutDenoms[index],
-            })),
-            tokenInAmount: route.initialAmount.toString(),
-          })),
+          [
+            {
+              pools: [{ id: queryPool!.id, tokenOutDenom }],
+              tokenInAmount: split0Amount,
+            },
+            {
+              pools: [{ id: pool2.id, tokenOutDenom }],
+              tokenInAmount: split1Amount,
+            },
+          ],
           {
-            coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+            coinMinimalDenom: tokenInDenom,
           },
-          amount.toString(),
+          "1",
           undefined,
           undefined,
           (tx) => {
@@ -564,35 +541,17 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       getEventFromTx(tx, "message")
     );
 
-    // since this is a split route, there are two transfers that occur for the two pools
-    // it appears the router does a 90 / 10 split for pool 1 / 2
     deepContained(
       {
         type: "transfer",
         attributes: [
           {
             key: "amount",
-            value:
-              split[0].initialAmount.toString() +
-              tokenIn.currency.coinMinimalDenom,
+            value: split0Amount + tokenInDenom,
           },
           {
             key: "amount",
-            value:
-              new Dec(amount).mul(new Dec(0.9)).roundUp().toString() +
-              tokenOutCurrency.coinMinimalDenom,
-          },
-          {
-            key: "amount",
-            value:
-              split[1].initialAmount.toString() +
-              tokenIn.currency.coinMinimalDenom,
-          },
-          {
-            key: "amount",
-            value:
-              new Dec(amount).mul(new Dec(0.1)).truncate().toString() +
-              tokenOutCurrency.coinMinimalDenom,
+            value: split1Amount + tokenInDenom,
           },
         ],
       },

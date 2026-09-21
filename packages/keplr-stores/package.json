@@ -13,7 +13,6 @@
   "keywords": [
     "osmosis"
   ],
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -26,12 +25,16 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "devDependencies": {
-    "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix",
+    "eslint": "^9.39.5",
+    "jest": "^29.7.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.2",
+    "typescript": "5.4.5"
   },
   "dependencies": {
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "^0.24.0-alpha.25",
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/tendermint-rpc": "^0.24.1",
     "@ethersproject/address": "^5.6.0",
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
@@ -40,8 +43,8 @@
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "axios": "^0.33.0",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",

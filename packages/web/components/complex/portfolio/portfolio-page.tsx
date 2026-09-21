@@ -16,7 +16,6 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDimension,
-  useFeatureFlags,
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
@@ -24,7 +23,6 @@ import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { api } from "~/utils/trpc";
 
-import { CypherCard } from "./cypher-card";
 import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
 export const PortfolioPage: FunctionComponent = observer(() => {
@@ -34,7 +32,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
   const setHideDust = useUserSettingsStore((state) => state.setHideDust);
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const featureFlags = useFeatureFlags();
 
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
@@ -161,7 +158,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 "md:w-full md:max-w-full"
               )}
             >
-              {featureFlags.cypherCard && <CypherCard />}
               {!isLoadingAllocation && !userHasNoAssets && (
                 <Allocation assets={allocation} />
               )}

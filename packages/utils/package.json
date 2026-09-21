@@ -11,7 +11,7 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "yarn build"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@cosmjs/encoding": "0.32.3",
@@ -30,8 +30,12 @@
   "devDependencies": {
     "@types/bs58check": "^2.1.2",
     "@types/jest-in-case": "^1.0.6",
+    "eslint": "^9.39.5",
+    "jest": "^29.7.0",
     "jest-in-case": "^1.0.2",
+    "prettier": "^2.8.8",
     "ts-jest": "^29.1.2",
+    "typescript": "5.4.5",
     "whatwg-fetch": "^3.6.2"
   },
   "lint-staged": {

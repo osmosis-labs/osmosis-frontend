@@ -1,4 +1,4 @@
-import type { BroadcastMode, Msg, StdFee, StdSignDoc } from "@cosmjs/launchpad";
+import type { AminoMsg, StdFee, StdSignDoc } from "@cosmjs/amino";
 import { isAddress } from "@ethersproject/address";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
 import {
@@ -10,8 +10,6 @@ import {
 import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
 import { PubKey } from "@keplr-wallet/proto-types/cosmos/crypto/secp256k1/keys";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
-import { VoteOption } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/gov";
-import { MsgVote } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/tx";
 import {
   MsgBeginRedelegate,
   MsgDelegate,
@@ -98,7 +96,6 @@ export interface CosmosMsgOpts {
   readonly redelegate: MsgOpt;
   // The gas multiplication per rewards.
   readonly withdrawRewards: MsgOpt;
-  readonly govVote: MsgOpt;
 }
 
 /**
@@ -131,10 +128,6 @@ export const defaultCosmosMsgOpts: CosmosMsgOpts = {
   withdrawRewards: {
     type: "cosmos-sdk/MsgWithdrawDelegationReward",
     gas: 140000,
-  },
-  govVote: {
-    type: "cosmos-sdk/MsgVote",
-    gas: 250000,
   },
 };
 
@@ -491,7 +484,7 @@ export class CosmosAccountImpl {
 
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
 
-    const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+    const aminoMsgs: AminoMsg[] = msgs.aminoMsgs || [];
     const protoMsgs: Any[] = msgs.protoMsgs;
 
     if (protoMsgs.length === 0) {
@@ -607,7 +600,7 @@ export class CosmosAccountImpl {
       txHash: await keplr.sendTx(
         this.chainId,
         signedTx.tx,
-        mode as BroadcastMode
+        mode as Parameters<Keplr["sendTx"]>[2]
       ),
       signDoc: signedTx.signDoc,
     };
@@ -1730,172 +1723,6 @@ export class CosmosAccountImpl {
           this.queries.cosmos.queryRewards
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
-        }
-      })
-    );
-  }
-
-  makeGovVoteTx(
-    proposalId: string,
-    option: "Yes" | "No" | "Abstain" | "NoWithVeto"
-  ) {
-    const voteOption = (() => {
-      switch (option) {
-        case "Yes":
-          return 1;
-        case "Abstain":
-          return 2;
-        case "No":
-          return 3;
-        case "NoWithVeto":
-          return 4;
-      }
-    })();
-
-    const msg = {
-      type: this.msgOpts.govVote.type,
-      value: {
-        option: voteOption,
-        proposal_id: proposalId,
-        voter: this.base.bech32Address,
-      },
-    };
-
-    return this.makeTx(
-      "govVote",
-      {
-        aminoMsgs: [msg],
-        protoMsgs: [
-          {
-            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
-            value: MsgVote.encode({
-              proposalId: msg.value.proposal_id,
-              voter: msg.value.voter,
-              option: (() => {
-                switch (msg.value.option) {
-                  case 1:
-                    return VoteOption.VOTE_OPTION_YES;
-                  case 2:
-                    return VoteOption.VOTE_OPTION_ABSTAIN;
-                  case 3:
-                    return VoteOption.VOTE_OPTION_NO;
-                  case 4:
-                    return VoteOption.VOTE_OPTION_NO_WITH_VETO;
-                  default:
-                    return VoteOption.VOTE_OPTION_UNSPECIFIED;
-                }
-              })(),
-            }).finish(),
-          },
-        ],
-      },
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          // After succeeding to vote, refresh the proposal.
-          const proposal = this.queries.cosmos.queryGovernance.proposals.find(
-            (proposal) => proposal.id === proposalId
-          );
-          if (proposal) {
-            proposal.fetch();
-          }
-
-          const vote = this.queries.cosmos.queryProposalVote.getVote(
-            proposalId,
-            this.base.bech32Address
-          );
-          vote.fetch();
-        }
-      }
-    );
-  }
-
-  /**
-   * @deprecated
-   */
-  async sendGovVoteMsg(
-    proposalId: string,
-    option: "Yes" | "No" | "Abstain" | "NoWithVeto",
-    memo: string = "",
-    stdFee: Partial<StdFee> = {},
-    signOptions?: KeplrSignOptions,
-    onTxEvents?:
-      | ((tx: any) => void)
-      | {
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
-  ) {
-    const voteOption = (() => {
-      switch (option) {
-        case "Yes":
-          return 1;
-        case "Abstain":
-          return 2;
-        case "No":
-          return 3;
-        case "NoWithVeto":
-          return 4;
-      }
-    })();
-
-    const msg = {
-      type: this.msgOpts.govVote.type,
-      value: {
-        option: voteOption,
-        proposal_id: proposalId,
-        voter: this.base.bech32Address,
-      },
-    };
-
-    await this.sendMsgs(
-      "govVote",
-      {
-        aminoMsgs: [msg],
-        protoMsgs: [
-          {
-            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
-            value: MsgVote.encode({
-              proposalId: msg.value.proposal_id,
-              voter: msg.value.voter,
-              option: (() => {
-                switch (msg.value.option) {
-                  case 1:
-                    return VoteOption.VOTE_OPTION_YES;
-                  case 2:
-                    return VoteOption.VOTE_OPTION_ABSTAIN;
-                  case 3:
-                    return VoteOption.VOTE_OPTION_NO;
-                  case 4:
-                    return VoteOption.VOTE_OPTION_NO_WITH_VETO;
-                  default:
-                    return VoteOption.VOTE_OPTION_UNSPECIFIED;
-                }
-              })(),
-            }).finish(),
-          },
-        ],
-      },
-      memo,
-      {
-        amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.msgOpts.govVote.gas.toString(),
-      },
-      signOptions,
-      txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          // After succeeding to vote, refresh the proposal.
-          const proposal = this.queries.cosmos.queryGovernance.proposals.find(
-            (proposal) => proposal.id === proposalId
-          );
-          if (proposal) {
-            proposal.fetch();
-          }
-
-          const vote = this.queries.cosmos.queryProposalVote.getVote(
-            proposalId,
-            this.base.bech32Address
-          );
-          vote.fetch();
         }
       })
     );

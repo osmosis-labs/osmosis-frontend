@@ -1,7 +1,15 @@
 import { createNodeQuery } from "../../create-node-query";
 
+export const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool" as const;
+export const STABLE_POOL_TYPE =
+  "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" as const;
+export const CONCENTRATED_LIQ_POOL_TYPE =
+  "/osmosis.concentratedliquidity.v1beta1.Pool" as const;
+export const COSMWASM_POOL_TYPE =
+  "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool" as const;
+
 export type WeightedPoolRawResponse = {
-  "@type": "/osmosis.gamm.v1beta1.Pool";
+  "@type": typeof WEIGHTED_POOL_TYPE;
   id: string;
   pool_params: {
     // Dec
@@ -52,7 +60,7 @@ export type WeightedPoolRawResponse = {
 };
 
 export type StablePoolRawResponse = {
-  "@type": "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
+  "@type": typeof STABLE_POOL_TYPE;
   address: string;
   id: string;
   pool_params: {
@@ -73,7 +81,7 @@ export type StablePoolRawResponse = {
 };
 
 export type ConcentratedPoolRawResponse = {
-  "@type": "/osmosis.concentratedliquidity.v1beta1.Pool";
+  "@type": typeof CONCENTRATED_LIQ_POOL_TYPE;
   address: string;
   incentives_address: string;
   spread_rewards_address: string;
@@ -90,7 +98,7 @@ export type ConcentratedPoolRawResponse = {
 };
 
 export type CosmwasmPoolRawResponse = {
-  "@type": "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
+  "@type": typeof COSMWASM_POOL_TYPE;
   contract_address: string;
   pool_id: string;
   code_id: string;

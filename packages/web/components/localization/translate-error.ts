@@ -9,7 +9,7 @@ import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-} from "@osmosis-labs/pools";
+} from "@osmosis-labs/server";
 import {
   CalculatingShareOutAmountError,
   DepositNoBalanceError,

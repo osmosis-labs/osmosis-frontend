@@ -49,15 +49,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
       - name: Install dependencies
-        run: yarn --cwd packages/e2e install --frozen-lockfile
+        run: yarn workspaces focus app-osmosis-e2e
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -202,8 +208,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -219,7 +231,7 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -253,8 +265,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -267,17 +285,10 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -305,23 +316,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -342,30 +352,38 @@ jobs:
           path: packages/e2e/playwright-report
 
   preview-pools-and-select-pair-tests:
-    timeout-minutes: 10
+    # 15, matching the other long suites. What pushed this job past 10 was the
+    # two pool tests that hung once the Noble pools were renamed (fixed in this
+    # PR): two tests times two attempts times a 90s timeout is six minutes of
+    # dead time, which is almost exactly the gap between the 11m09s failing run
+    # and the 5m42s it takes with them passing.
+    #
+    # Kept at 15 rather than restored to 10, because the margin was already too
+    # thin before any of that: the last consistently passing runs, on 26 August,
+    # ranged from 5m31s to 9m17s, leaving 43 seconds under a 10 minute cap.
+    timeout-minutes: 15
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -389,24 +407,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
@@ -440,24 +457,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            packages/e2e
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
       - name: Run Claim tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
