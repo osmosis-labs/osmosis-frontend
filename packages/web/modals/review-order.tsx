@@ -79,6 +79,8 @@ interface ReviewOrderProps {
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
+  /** Effective order type; overrides the `type` URL param when provided. */
+  orderType?: "market" | "limit";
 }
 
 export function ReviewOrder({
@@ -109,6 +111,7 @@ export function ReviewOrder({
   isBeyondOppositePrice = false,
   quoteType,
   overspendErrorParams,
+  orderType: orderTypeProp,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -151,10 +154,11 @@ export function ReviewOrder({
     overspendErrorParams?.wouldSpendTotal,
   ]);
 
-  const [orderType] = useQueryState(
+  const [queryOrderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
   );
+  const orderType = orderTypeProp ?? queryOrderType;
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const isManualSlippageTooHigh =
