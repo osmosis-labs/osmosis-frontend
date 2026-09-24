@@ -12,6 +12,8 @@ export enum SwapToolTab {
 interface SwapToolTabsProps {
   setTab: (tab: SwapToolTab) => void;
   activeTab: SwapToolTab;
+  /** When false, only the Swap tab is shown (limit orders kill switch). */
+  showLimitOrderTabs?: boolean;
 }
 
 /**
@@ -24,25 +26,27 @@ interface SwapToolTabsProps {
 export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
+  showLimitOrderTabs = true,
 }) => {
   const { t } = useTranslation();
 
   const tabs = useMemo(
-    () => [
-      {
-        label: t("portfolio.buy"),
-        value: SwapToolTab.BUY,
-      },
-      {
-        label: t("limitOrders.sell"),
-        value: SwapToolTab.SELL,
-      },
-      {
-        label: t("swap.title"),
-        value: SwapToolTab.SWAP,
-      },
-    ],
-    [t]
+    () =>
+      [
+        {
+          label: t("portfolio.buy"),
+          value: SwapToolTab.BUY,
+        },
+        {
+          label: t("limitOrders.sell"),
+          value: SwapToolTab.SELL,
+        },
+        {
+          label: t("swap.title"),
+          value: SwapToolTab.SWAP,
+        },
+      ].filter((tab) => showLimitOrderTabs || tab.value === SwapToolTab.SWAP),
+    [t, showLimitOrderTabs]
   );
 
   return (
