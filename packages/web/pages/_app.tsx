@@ -65,13 +65,6 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-import dynamic from "next/dynamic";
-
-const MoonPayProvider = dynamic(
-  () => import("@moonpay/moonpay-react").then((mod) => mod.MoonPayProvider),
-  { ssr: false }
-);
-
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
@@ -84,26 +77,21 @@ function MyApp({ Component, pageProps }: AppProps) {
         >
           <StoreProvider>
             <WalletSelectProvider>
-              <MoonPayProvider
-                apiKey={process.env.NEXT_PUBLIC_MOONPAY_PUBLIC_KEY ?? ""}
-                debug={process.env.NODE_ENV === "development"}
-              >
-                <ErrorBoundary fallback={<ErrorFallback />}>
-                  <SEO />
-                  <SpeedInsights />
-                  <ToastContainer
-                    toastStyle={{
-                      backgroundColor: "#2d2755",
-                    }}
-                    transition={Bounce}
-                    newestOnTop
-                  />
-                  <MainLayoutWrapper>
-                    {Component && <Component {...pageProps} />}
-                  </MainLayoutWrapper>
-                  <ImmersiveBridge />
-                </ErrorBoundary>
-              </MoonPayProvider>
+              <ErrorBoundary fallback={<ErrorFallback />}>
+                <SEO />
+                <SpeedInsights />
+                <ToastContainer
+                  toastStyle={{
+                    backgroundColor: "#2d2755",
+                  }}
+                  transition={Bounce}
+                  newestOnTop
+                />
+                <MainLayoutWrapper>
+                  {Component && <Component {...pageProps} />}
+                </MainLayoutWrapper>
+                <ImmersiveBridge />
+              </ErrorBoundary>
             </WalletSelectProvider>
           </StoreProvider>
         </MultiLanguageProvider>
