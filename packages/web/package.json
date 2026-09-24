@@ -39,8 +39,6 @@
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/crypto": "0.12.48",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@moonpay/moonpay-node": "^0.2.7",
-    "@moonpay/moonpay-react": "^1.8.2",
     "@mysten/sui": "^1",
     "@mysten/wallet-standard": "^0",
     "@next/bundle-analyzer": "15.5.25",

@@ -58,7 +58,6 @@
     "principalAssets": "دارایی های اصلی",
     "totalRewardsEarned": "مجموع جوایز کسب شده",
     "unclaimedRewards": "جوایز بی ادعا",
-    "roi": "بازگشت سرمایه",
     "selectedRange": "محدوده انتخاب شده",
     "myLiquidity": "نقدینگی من",
     "spreadFactor": "فاکتور گسترش",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "کریپتو بخر",
       "swappedSubtitle": "پشتیبانی از OSMO و USDC",
-      "moonpaySubtitle": "پشتیبانی از OSMO، USDC",
-      "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC",
-      "moonpayCountrySupport": "165+ کشور"
+      "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "MAX": "حداکثر",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "هزینه های تبدیل",
     "free": "رایگان",
     "unavailable": "در حال حاضر در دسترس نیست. بعداً دوباره امتحان کنید."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "فقط زمان محدود",
-    "skipWaitlist": "از لیست انتظار رد شوید",
-    "anyTokenOnAnyNetworkOn": "هر توکنی در هر شبکه ای در",
-    "trade": "تجارت",
-    "with": "با"
-  },
-  "polarisBanner": {
-    "tradeYour": "تجارت خود را",
-    "andSoMuchMore": "و خیلی چیزهای دیگر.",
-    "tradeAnythingOnPolaris": "هر چیزی را در پولاریس معامله کنید"
   },
   "lowLiquidityAlert": {
     "title": "ممکن است معامله شما شکست بخورد",

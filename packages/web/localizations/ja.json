@@ -58,7 +58,6 @@
     "principalAssets": "主要な資産",
     "totalRewardsEarned": "獲得した報酬の合計",
     "unclaimedRewards": "未請求の報酬",
-    "roi": "ROI",
     "selectedRange": "選択範囲",
     "myLiquidity": "私の流動性",
     "spreadFactor": "スプレッドファクター",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "暗号通貨を購入する",
       "swappedSubtitle": "OSMO、USDCをサポート",
-      "moonpaySubtitle": "OSMO、USDCをサポート",
-      "onrampMoneySubtitle": "OSMO、USDCをサポート",
-      "moonpayCountrySupport": "165か国以上"
+      "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
     "MAX": "マックス",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "変換手数料",
     "free": "無料",
     "unavailable": "現在ご利用いただけません。しばらくしてからもう一度お試しください。"
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "期間限定",
-    "skipWaitlist": "順番待ちリストをスキップ",
-    "anyTokenOnAnyNetworkOn": "あらゆるネットワーク上のあらゆるトークン",
-    "trade": "貿易",
-    "with": "と"
-  },
-  "polarisBanner": {
-    "tradeYour": "あなたの",
-    "andSoMuchMore": "その他にもたくさんあります。",
-    "tradeAnythingOnPolaris": "Polarisで何でも取引"
   },
   "lowLiquidityAlert": {
     "title": "取引が失敗する可能性がある",

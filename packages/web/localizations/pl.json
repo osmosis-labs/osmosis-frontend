@@ -58,7 +58,6 @@
     "principalAssets": "Aktywa główne",
     "totalRewardsEarned": "Łączna liczba zdobytych nagród",
     "unclaimedRewards": "Nieodebrane nagrody",
-    "roi": "ROI",
     "selectedRange": "Wybrany zakres",
     "myLiquidity": "Moja płynność",
     "spreadFactor": "Współczynnik rozrzutu",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Kup kryptowalutę",
       "swappedSubtitle": "Obsługuje OSMO, USDC",
-      "moonpaySubtitle": "Obsługuje OSMO, USDC",
-      "onrampMoneySubtitle": "Obsługuje OSMO, USDC",
-      "moonpayCountrySupport": "165+ krajów"
+      "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
     "MAX": "MAKSIMUM",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "Opłaty za konwersję",
     "free": "Bezpłatny",
     "unavailable": "Obecnie niedostępne. Spróbuj ponownie później."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "Tylko przez ograniczony czas",
-    "skipWaitlist": "Omiń listę oczekujących",
-    "anyTokenOnAnyNetworkOn": "dowolny token w dowolnej sieci",
-    "trade": "Handel",
-    "with": "z"
-  },
-  "polarisBanner": {
-    "tradeYour": "Handluj swoim",
-    "andSoMuchMore": "i wiele więcej.",
-    "tradeAnythingOnPolaris": "Handluj czymkolwiek na Polaris"
   },
   "lowLiquidityAlert": {
     "title": "Twój handel może się nie powieść",
