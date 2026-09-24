@@ -4,16 +4,12 @@ import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
 import { useFeatureFlags } from "~/hooks";
 import { FiatRampKey } from "~/integrations";
-import { Layerswap } from "~/integrations/layerswap";
-import { Moonpay } from "~/integrations/moonpay";
 import { OnrampMoney } from "~/integrations/onrampmoney";
 import { Swapped } from "~/integrations/swapped";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
   swapped: "Swapped",
-  layerswapcoinbase: "Coinbase Layer Swap",
-  moonpay: "MoonPay",
   onrampmoney: "Onramp.money",
 };
 
@@ -53,12 +49,8 @@ export const FiatRampsModal: FunctionComponent<
         switch (fiatRampKey) {
           case "swapped":
             if (flags.swapped) return <Swapped {...props} />;
-          case "moonpay":
-            if (flags.moonpay) return <Moonpay {...props} />;
           case "onrampmoney":
             if (flags.onrampmoney) return <OnrampMoney {...props} />;
-          case "layerswapcoinbase":
-            if (flags.layerswapcoinbase) return <Layerswap {...props} />;
           default:
             return null;
         }

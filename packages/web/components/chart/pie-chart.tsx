@@ -1,6 +1,6 @@
 import type { Options } from "highcharts";
 import dynamic from "next/dynamic";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
   ssr: false,
@@ -63,16 +63,19 @@ export const PieChart: FunctionComponent<{
   width?: number;
   options: Options;
 }> = (props) => {
-  const [options, setOptions] = useState<Partial<Options>>(defaultOptions);
-  useEffect(() => {
-    if (!props.options) return;
-    setOptions((v) => {
-      if (props.height && props.width) {
-        v.chart = { ...v.chart, height: props.height, width: props.width };
-      }
-      return { ...v, ...props.options };
-    });
-  }, [props.options, props.height, props.width]);
+  const options = useMemo<Partial<Options>>(() => {
+    const chart = {
+      ...defaultOptions.chart,
+      ...props.options.chart,
+    };
+
+    if (props.height && props.width) {
+      chart.height = props.height;
+      chart.width = props.width;
+    }
+
+    return { ...defaultOptions, ...props.options, chart };
+  }, [props.height, props.options, props.width]);
 
   const [hc, setHc] = useState<any | null>(null);
   useEffect(() => {

@@ -86,7 +86,7 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
         }
       );
     },
-    [account?.osmosis, account?.address, bondDurations, apiUtils]
+    [account, bondDurations, apiUtils]
   );
 
   return { delegateSharesToValidator };
