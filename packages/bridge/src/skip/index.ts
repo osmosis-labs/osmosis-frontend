@@ -1194,8 +1194,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         dest_asset_chain_id: routeData.dest_asset_chain_id,
         amount_in: routeData.amount_in,
         amount_out: routeData.amount_out,
-        // The step is rebuilt from the quoted route, so it signs the same
-        // tolerance the quote was built with.
+        // Always the default, not the tolerance the quote was built with, which
+        // routeData does not carry. The two differ only if a caller quotes
+        // with a custom slippage; no caller does today.
         slippage_tolerance_percent: DEFAULT_SLIPPAGE_PERCENT.toString(),
         // Stored routes embed relay fee quotes that expire ~30 minutes
         // after quoting, and Skip rejects a msgs build whose submitted
