@@ -37,21 +37,20 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
     ({ page, swapToolProps, previousTrade, setPreviousTrade, children }) => {
       const { logEvent } = useAmplitudeAnalytics();
       const { t } = useTranslation();
-      const [queryTab, setTab] = useQueryState(
+      const [tab, setTab] = useQueryState(
         "tab",
         parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
           SwapToolTab.SWAP
         )
       );
 
-      // Kill switch for placing limit orders. Waits for LaunchDarkly to
-      // initialise so the tabs don't flicker away (and a LaunchDarkly outage
-      // leaves limit orders available). Order history stays reachable so
-      // existing orders can still be claimed or cancelled.
+      // Kill switch for limit orders: hides the Market/Limit toggle so Buy and
+      // Sell only place market orders (PlaceLimitTool forces the type too).
+      // Waits for LaunchDarkly to initialise so the toggle doesn't flicker and
+      // an outage leaves limit orders available.
       const featureFlags = useFeatureFlags();
       const limitOrdersDisabled =
         featureFlags._isInitialized && !featureFlags.limitOrders;
-      const tab = limitOrdersDisabled ? SwapToolTab.SWAP : queryTab;
 
       const { accountStore } = useStore();
       const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -80,13 +79,9 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
         <div className="flex flex-col gap-3">
           <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
             <div className="flex w-full items-center justify-between md:gap-2">
-              <SwapToolTabs
-                activeTab={tab}
-                setTab={setTab}
-                showLimitOrderTabs={!limitOrdersDisabled}
-              />
+              <SwapToolTabs activeTab={tab} setTab={setTab} />
               <div className="flex items-center gap-2">
-                {tab !== SwapToolTab.SWAP && (
+                {tab !== SwapToolTab.SWAP && !limitOrdersDisabled && (
                   <OrderTypeSelector
                     initialBaseDenom={previousTrade?.baseDenom}
                     initialQuoteDenom={previousTrade?.quoteDenom}
