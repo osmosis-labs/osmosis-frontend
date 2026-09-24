@@ -169,6 +169,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const limitOrdersDisabled =
       featureFlags._isInitialized && !featureFlags.limitOrders;
     const type = limitOrdersDisabled ? "market" : queryType;
+
+    // The flag can flip while a review is open (LaunchDarkly streams updates),
+    // which would turn a reviewed limit order into an unreviewed market order.
+    // Close the review so the user must review the new order type.
+    useEffect(() => {
+      setReviewOpen(false);
+    }, [type]);
+
     const [isSendingTx, setIsSendingTx] = useState(false);
 
     const [focused, setFocused] = useState<"fiat" | "token">(
