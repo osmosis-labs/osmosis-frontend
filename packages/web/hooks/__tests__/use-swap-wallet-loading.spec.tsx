@@ -159,14 +159,22 @@ jest.mock("~/hooks/input/use-amount-input", () => {
   };
 });
 
-jest.mock("nuqs", () => ({
-  parseAsString: { withDefault: (value: string) => value },
-  parseAsBoolean: { withDefault: (value: boolean) => value },
-  useQueryState: (key: string, defaultValue: unknown) => [
+jest.mock("nuqs", () => {
+  const parser = (defaultValue: unknown) => ({
     defaultValue,
-    jest.fn(),
-  ],
-}));
+    withOptions() {
+      return this;
+    },
+  });
+  return {
+    parseAsString: { withDefault: parser },
+    parseAsBoolean: { withDefault: parser },
+    useQueryState: (
+      key: string,
+      { defaultValue }: { defaultValue: unknown }
+    ) => [defaultValue, jest.fn()],
+  };
+});
 
 const trpcReactMock = jest.requireMock("@trpc/react-query") as {
   __mock: {
