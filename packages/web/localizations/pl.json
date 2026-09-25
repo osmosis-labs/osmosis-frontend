@@ -923,6 +923,7 @@
     "multiTxRouteExpiredTitle": "Trasa transferu wygasła",
     "multiTxRouteExpired": "Zapisana trasa tego transferu wygasła i nie można jej już podpisać. Twoje środki są bezpieczne na Twoim koncie {chain}.",
     "multiTxFeeShortfall": "Twoje konto {chain} nie może pokryć opłaty sieciowej tego kroku. Dodaj środki na gaz na {chain}, a następnie ponownie naciśnij Kontynuuj.",
+    "solanaNeedsSol": "Potrzebujesz SOL w portfelu Solana, aby opłacić opłatę sieciową i czynsz za konto tej transakcji. Dodaj SOL i spróbuj ponownie.",
     "multiTxStepFailedTitle": "Końcowy transfer nie został ukończony",
     "multiTxStepFailed": "Końcowy transfer na {chain} nie został ukończony. Twoje środki są bezpieczne na {chain}; naciśnij Kontynuuj w historii transakcji, aby spróbować ponownie.",
     "multiTxRecordFailed": "Nie udało się zapisać postępu tego transferu, więc końcowy krok na {chain} nie może zostać zaoferowany. Twoje środki i tak dotrą na {chain}; skontaktuj się z pomocą techniczną, aby dokończyć transfer.",

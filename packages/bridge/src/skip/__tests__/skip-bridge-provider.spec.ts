@@ -1766,6 +1766,58 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(steps[1]).toMatchObject({ type: "cosmos", chainId: "noble-1" });
   });
 
+  it("prices a Solana first step's network fee in SOL", async () => {
+    server.use(
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({ result: { value: 14030 } })
+      )
+    );
+    // two signatures (user + Skip's pre-signed message account), then a
+    // message; only its presence matters to the fee lookup
+    const txBase64 = Buffer.concat([
+      Buffer.from([2]),
+      Buffer.alloc(128),
+      Buffer.from([1, 2, 3]),
+    ]).toString("base64");
+
+    const fee = await provider.estimateGasFee(multiTxQuoteParams, {
+      type: "solana",
+      chainId: "solana",
+      txBase64,
+      signerAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    });
+
+    expect(fee).toEqual({
+      amount: "14030",
+      denom: "SOL",
+      decimals: 9,
+      address: "So11111111111111111111111111111111111111112",
+      coinGeckoId: "solana",
+    });
+  });
+
+  it("leaves a Solana fee unknown, never zero, when it cannot be priced", async () => {
+    server.use(
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({ result: { value: null } })
+      )
+    );
+    const txBase64 = Buffer.concat([
+      Buffer.from([1]),
+      Buffer.alloc(64),
+      Buffer.from([1, 2, 3]),
+    ]).toString("base64");
+
+    await expect(
+      provider.estimateGasFee(multiTxQuoteParams, {
+        type: "solana",
+        chainId: "solana",
+        txBase64,
+        signerAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+      })
+    ).resolves.toBeUndefined();
+  });
+
   it("refuses a multi-tx route with a message type it cannot build", async () => {
     // Dropping a step would present the rest as the whole route (a missing
     // first-leg burn would leave the later step signing against funds that

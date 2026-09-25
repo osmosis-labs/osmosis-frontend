@@ -51,6 +51,7 @@ import {
   SolanaBridgeTransactionRequest,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
+import { getSolanaTxFeeLamports } from "../utils/solana";
 import { SkipApiClient } from "./client";
 import {
   SkipEvmTx,
@@ -60,6 +61,11 @@ import {
   SkipRouteResponse,
   SkipSvmTx,
 } from "./types";
+
+/** Native SOL, as the fee asset of Solana-signed steps. Solana has no
+ *  native-mint address in the SPL sense; this is the conventional
+ *  wrapped-SOL mint, used only as a stable identifier for pricing. */
+const SOLANA_NATIVE_DENOM = "So11111111111111111111111111111111111111112";
 
 export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";
@@ -1625,10 +1631,25 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
-    // Solana fees are set inside the Skip-built transaction itself and are
-    // a fraction of a cent; there is no estimation path here, so the quote
-    // simply shows no source-side gas figure.
-    if (txData.type === "solana") return undefined;
+    if (txData.type === "solana") {
+      // The cluster prices the exact Skip-built transaction (signature fees
+      // plus its compute-budget priority fee). This excludes the rent
+      // deposit for accounts the burn creates, so signing still preflights
+      // the SOL balance by simulating the transaction. An unpriceable
+      // message (e.g. an expired blockhash) or an unreachable RPC leaves the
+      // fee unknown, which the quote renders as such, never as zero.
+      const lamports = await getSolanaTxFeeLamports(txData.txBase64).catch(
+        () => undefined
+      );
+      if (lamports === undefined) return undefined;
+      return {
+        amount: lamports.toString(),
+        denom: "SOL",
+        decimals: 9,
+        address: SOLANA_NATIVE_DENOM,
+        coinGeckoId: "solana",
+      };
+    }
 
     if (txData.type === "evm") {
       const evmChain = EthereumChainInfo.find(

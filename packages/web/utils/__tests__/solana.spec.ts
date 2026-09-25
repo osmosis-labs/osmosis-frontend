@@ -1,4 +1,8 @@
-import { SolanaSignatureStatus, waitForSolanaSignature } from "../solana";
+import {
+  classifySolanaSimulation,
+  SolanaSignatureStatus,
+  waitForSolanaSignature,
+} from "../solana";
 
 /** Feeds a fixed sequence of statuses (last one repeats). */
 const statuses = (...sequence: SolanaSignatureStatus[]) => {
@@ -109,5 +113,49 @@ describe("waitForSolanaSignature", () => {
       ...fast,
     });
     expect(outcome).toBe("confirmed");
+  });
+});
+
+describe("classifySolanaSimulation", () => {
+  it("passes a clean simulation", () => {
+    expect(classifySolanaSimulation(null, [])).toBe("ok");
+  });
+
+  it("reports an expired blockhash (observed live for a stale route)", () => {
+    expect(classifySolanaSimulation("BlockhashNotFound", null)).toBe("expired");
+  });
+
+  it("reports a payer that has never held SOL", () => {
+    expect(classifySolanaSimulation("AccountNotFound", null)).toBe("needs-sol");
+  });
+
+  it("reports a payer that cannot cover the fee", () => {
+    expect(classifySolanaSimulation("InsufficientFundsForFee", null)).toBe(
+      "needs-sol"
+    );
+  });
+
+  it("reports a payer that cannot cover rent for a created account", () => {
+    expect(
+      classifySolanaSimulation(
+        { InsufficientFundsForRent: { account_index: 1 } },
+        []
+      )
+    ).toBe("needs-sol");
+    expect(
+      classifySolanaSimulation({ InstructionError: [0, { Custom: 1 }] }, [
+        "Transfer: insufficient lamports 890880, need 2039280",
+      ])
+    ).toBe("needs-sol");
+  });
+
+  it("does not block on other failures (observed live: no USDC to burn)", () => {
+    // Only the two actionable cases block before the wallet; anything else
+    // goes to Phantom, which simulates again and explains it.
+    expect(
+      classifySolanaSimulation({ InstructionError: [0, { Custom: 3012 }] }, [
+        "Program log: AnchorError caused by account: burn_token_account. Error Code: AccountNotInitialized.",
+      ])
+    ).toBe("ok");
   });
 });

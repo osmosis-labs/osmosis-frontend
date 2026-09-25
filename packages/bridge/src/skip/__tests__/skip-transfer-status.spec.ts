@@ -144,6 +144,27 @@ describe("SkipTransferStatusProvider", () => {
     );
   });
 
+  it("resolves an abandoned transfer as failed rather than polling forever", async () => {
+    // e.g. a restored Solana entry whose source tx expired before landing
+    // while the tab was closed: Skip abandons tracking, and nothing else
+    // would ever resolve the entry.
+    server.use(
+      http.get("https://api.skip.money/v2/tx/status", () => {
+        return HttpResponse.json({ state: "STATE_ABANDONED" });
+      })
+    );
+
+    const snapshot = { ...baseTxSnapshot };
+
+    await provider.trackTxStatus(snapshot);
+
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      snapshot.sendTxHash,
+      "failed",
+      undefined
+    );
+  });
+
   it("should handle undefined transfer status", async () => {
     server.use(
       http.get("https://api.skip.money/v2/tx/status", () => {

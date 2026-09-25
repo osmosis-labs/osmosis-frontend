@@ -1,3 +1,91 @@
+import { apiClient } from "@osmosis-labs/utils";
+
+import { SOLANA_RPC_OVERWRITE } from "~/config/env";
+
+/**
+ * Solana RPC endpoints for reads the browser makes, in preference order: the
+ * configured (domain-restricted) production RPC, then the public endpoint.
+ * publicnode is deliberately not listed: it rejects the indexed
+ * token-account queries that balances depend on.
+ */
+export function getClientSolanaRpcUrls(): string[] {
+  const configured = SOLANA_RPC_OVERWRITE?.trim();
+  return [
+    ...(configured ? [configured] : []),
+    "https://api.mainnet-beta.solana.com",
+  ];
+}
+
+/** Calls a Solana JSON-RPC method, trying each endpoint in order. Throws the
+ *  last error when none answers, so callers never read a failure as an
+ *  empty result. */
+export async function clientSolanaRpc<T>(
+  method: string,
+  params: unknown[],
+  rpcUrls: string[] = getClientSolanaRpcUrls()
+): Promise<T> {
+  let lastError: unknown = new Error("No Solana RPC configured");
+  for (const rpc of rpcUrls) {
+    try {
+      // JSON-RPC reports method errors inside a 200 response, so apiClient
+      // (which throws on non-2xx) is checked for `error` as well.
+      const json = await apiClient<{
+        error?: { message?: string };
+        result?: T;
+      }>(rpc, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      });
+      if (json.error) {
+        throw new Error(`Solana RPC ${method} failed: ${json.error.message}`);
+      }
+      return json.result as T;
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * What a pre-signing simulation of a Solana transaction says about whether
+ * it is worth opening the wallet.
+ *
+ * - `needs-sol`: the fee payer cannot cover the network fee or the rent for
+ *   an account the transaction creates. The wallet would only fail.
+ * - `expired`: the transaction's blockhash is no longer valid, so it can
+ *   never land; the quote must be rebuilt.
+ * - `ok`: nothing actionable found. Any OTHER simulation failure is also
+ *   reported as `ok`: only the two cases above are definite and actionable,
+ *   and blocking on anything else would risk refusing a transaction the
+ *   cluster would accept (the wallet runs its own simulation regardless).
+ */
+export type SolanaPreflightResult = "ok" | "needs-sol" | "expired";
+
+/** Classifies a `simulateTransaction` result. `err` is the RPC's
+ *  TransactionError value; `logs` its program logs. */
+export function classifySolanaSimulation(
+  err: unknown,
+  logs: string[] | null | undefined
+): SolanaPreflightResult {
+  if (err == null) return "ok";
+  if (err === "BlockhashNotFound") return "expired";
+  // The fee payer has never been funded (no SOL at all), or cannot pay.
+  if (err === "AccountNotFound" || err === "InsufficientFundsForFee") {
+    return "needs-sol";
+  }
+  if (typeof err === "object" && "InsufficientFundsForRent" in err) {
+    return "needs-sol";
+  }
+  // A system-program transfer (e.g. funding a new account's rent) that the
+  // payer cannot afford fails with this log line.
+  if ((logs ?? []).some((line) => /insufficient lamports/i.test(line))) {
+    return "needs-sol";
+  }
+  return "ok";
+}
+
 /**
  * Outcome of watching a submitted Solana transaction.
  *
