@@ -48,6 +48,7 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
   GetBridgeTransactionStepParams,
+  SolanaBridgeTransactionRequest,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
 import { SkipApiClient } from "./client";
@@ -57,6 +58,7 @@ import {
   SkipMultiChainMsg,
   SkipMultiTxRouteData,
   SkipRouteResponse,
+  SkipSvmTx,
 } from "./types";
 
 export class SkipBridgeProvider implements BridgeProvider {
@@ -476,6 +478,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     chain,
     asset,
     direction,
+    allowMultiTx,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -538,18 +541,22 @@ export class SkipBridgeProvider implements BridgeProvider {
         // single-tx CCTP route through Noble).
         // - Withdrawals: always in-app (one Osmosis signature; destination
         //   is a Solana address).
-        // - Deposits: only when the receiving variant is Noble-native USDC,
-        //   which CCTP auto-forwards to Osmosis in a single Solana
-        //   transaction (signed by the user's SVM wallet). Other variants
-        //   (e.g. an alloy, which needs an Osmosis swap Noble forwarding
-        //   cannot carry) would require a second user-signed step and stay
-        //   off until the multi-tx flow supports an SVM first step.
+        // - Deposits into Noble-native USDC: single-tx, since CCTP
+        //   auto-forwards to Osmosis from one Solana transaction (signed by
+        //   the user's SVM wallet).
+        // - Deposits into any other variant (e.g. an alloy, which needs an
+        //   Osmosis swap Noble forwarding cannot carry): the only route is
+        //   multi-tx (a Solana burn, then a user-signed Noble step), so
+        //   offer them only when the caller can execute multi-tx routes.
+        //   Offering them otherwise would present a source that can never
+        //   quote.
         if (!("chainId" in counterparty)) {
           if (
             counterparty.chainName === "solana" &&
             "sourceDenom" in counterparty &&
             (direction === "withdraw" ||
-              chainAsset.origin_chain_id === "noble-1")
+              chainAsset.origin_chain_id === "noble-1" ||
+              allowMultiTx === true)
           ) {
             const skipSplAsset = assets["solana"]?.assets.find(
               (a) => a.denom === counterparty.sourceDenom
@@ -738,14 +745,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
 
       if ("svm_tx" in message) {
-        // Skip builds the complete Solana transaction; the user's SVM
-        // wallet (e.g. Phantom) signs and sends it as-is.
-        return {
-          type: "solana" as const,
-          chainId: message.svm_tx.chain_id,
-          txBase64: message.svm_tx.tx,
-          signerAddress: message.svm_tx.signer_address,
-        };
+        return this.createSolanaTransaction(message.svm_tx);
       }
     }
   }
@@ -773,6 +773,8 @@ export class SkipBridgeProvider implements BridgeProvider {
           )),
           chainId: Number(message.evm_tx.chain_id),
         });
+      } else if ("svm_tx" in message) {
+        steps.push(this.createSolanaTransaction(message.svm_tx));
       } else if ("multi_chain_msg" in message) {
         const chainId = message.multi_chain_msg.chain_id;
         const cosmosTx = await this.createCosmosTransaction(
@@ -809,6 +811,19 @@ export class SkipBridgeProvider implements BridgeProvider {
           msgs: cosmosTx.msgs,
           gasFee,
           chainId,
+        });
+      } else {
+        // Every msg is a transaction the user must sign, in order. Skipping
+        // one would present the remaining steps as the whole route (a
+        // dropped first-leg burn would leave the later step to sign against
+        // funds that never moved), so refuse rather than build a partial
+        // route.
+        throw new BridgeQuoteError({
+          bridgeId: SkipBridgeProvider.ID,
+          errorType: "UnsupportedQuoteError",
+          message: `Unsupported message type in multi-tx route: ${Object.keys(
+            message
+          ).join(", ")}`,
         });
       }
     }
@@ -1245,6 +1260,19 @@ export class SkipBridgeProvider implements BridgeProvider {
         fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
+  }
+
+  /** Skip builds the complete Solana transaction; the user's SVM wallet
+   *  (e.g. Phantom) signs and sends it as-is. */
+  createSolanaTransaction(
+    svmTx: SkipSvmTx
+  ): SolanaBridgeTransactionRequest & { chainId: string } {
+    return {
+      type: "solana",
+      chainId: svmTx.chain_id,
+      txBase64: svmTx.tx,
+      signerAddress: svmTx.signer_address,
+    };
   }
 
   async createEvmTransaction(

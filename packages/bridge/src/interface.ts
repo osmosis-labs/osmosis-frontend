@@ -346,6 +346,14 @@ export const getBridgeSupportedAssetsParams = z.object({
    * The direction of the transfer.
    */
   direction: z.enum(["deposit", "withdraw"]),
+  /**
+   * Optional: Whether the caller can execute routes that need more than one
+   * user-signed transaction. Providers only advertise a source whose sole
+   * route is multi-tx when this is set; otherwise such a source would be
+   * offered and then fail to quote every time. Matches `allowMultiTx` on
+   * quote requests.
+   */
+  allowMultiTx: z.boolean().optional(),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
