@@ -82,6 +82,23 @@ export const OrderTypeSelector = ({
     isLoading,
   ]);
 
+  /**
+   * Switch to a quote the base's orderbooks support in the same update as
+   * the order type. Leaving it to the effect above means the quote changes
+   * right after the click, and the trade tool's `quote` hooks then flip
+   * between the old and new value on every render, freezing the page.
+   */
+  const selectType = (id: UITradeType["id"]) => {
+    if (
+      id === "limit" &&
+      selectableQuotes.length > 0 &&
+      !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote)
+    ) {
+      setQuote(selectableQuotes[0].coinMinimalDenom);
+    }
+    setType(id);
+  };
+
   const { data: baseAsset } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: base,
   });
@@ -137,7 +154,7 @@ export const OrderTypeSelector = ({
           >
             <button
               type="button"
-              onClick={() => setType(id)}
+              onClick={() => selectType(id)}
               className={classNames(
                 "sm:body2 -m-px rounded-[22px] px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50 sm:px-3 sm:py-1.5",
                 {
