@@ -497,6 +497,7 @@ export class SkipBridgeProvider implements BridgeProvider {
             operations: route.operations,
             required_chain_addresses:
               route.required_chain_addresses ?? route.chain_ids,
+            slippage_tolerance_percent: slippage.toString(),
           };
           intermediateGasFees = await this.getIntermediateGasFees(
             transactionSteps.slice(1)
@@ -1194,10 +1195,12 @@ export class SkipBridgeProvider implements BridgeProvider {
         dest_asset_chain_id: routeData.dest_asset_chain_id,
         amount_in: routeData.amount_in,
         amount_out: routeData.amount_out,
-        // Always the default, not the tolerance the quote was built with, which
-        // routeData does not carry. The two differ only if a caller quotes
-        // with a custom slippage; no caller does today.
-        slippage_tolerance_percent: DEFAULT_SLIPPAGE_PERCENT.toString(),
+        // The quote's own tolerance, so every step signs the same one. Routes
+        // persisted before it was stored fall back to the default.
+        slippage_tolerance_percent:
+          typeof routeData.slippage_tolerance_percent === "string"
+            ? routeData.slippage_tolerance_percent
+            : DEFAULT_SLIPPAGE_PERCENT.toString(),
         // Stored routes embed relay fee quotes that expire ~30 minutes
         // after quoting, and Skip rejects a msgs build whose submitted
         // operations carry an expired one. Strip them so the rebuild works

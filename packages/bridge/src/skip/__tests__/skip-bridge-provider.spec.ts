@@ -1370,6 +1370,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     operations: USDC_EthereumToOsmosisAlloy_MultiTxRoute.operations,
     required_chain_addresses:
       USDC_EthereumToOsmosisAlloy_MultiTxRoute.required_chain_addresses,
+    // multiTxQuoteParams.slippage
+    slippage_tolerance_percent: "0.01",
   };
 
   /** Mirrors the live API: a single-tx-only request fails with the
@@ -1761,27 +1763,48 @@ describe("SkipBridgeProvider multi-tx routes", () => {
    * request type keeps the field required to stop that reaching runtime; this
    * pins the value actually sent, which no type can check.
    */
-  it("sends a real tolerance when rebuilding an intermediate step", async () => {
-    let msgsBody: { slippage_tolerance_percent?: string } | undefined;
-    server.use(
-      http.post(
-        "https://api.skip.money/v2/fungible/msgs",
-        async ({ request }) => {
-          msgsBody = (await request.json()) as {
-            slippage_tolerance_percent?: string;
-          };
-          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
-        }
-      )
-    );
+  describe("tolerance sent when rebuilding an intermediate step", () => {
+    const captureMsgsTolerance = () => {
+      const captured: { tolerance?: string } = {};
+      server.use(
+        http.post(
+          "https://api.skip.money/v2/fungible/msgs",
+          async ({ request }) => {
+            captured.tolerance = (
+              (await request.json()) as { slippage_tolerance_percent?: string }
+            ).slippage_tolerance_percent;
+            return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
+          }
+        )
+      );
+      return captured;
+    };
 
-    await provider.getTransactionStep({
-      ...multiTxQuoteParams,
-      route: multiTxRouteData,
-      step: { chainId: "noble-1", senderAddress: nobleAddress },
+    it("reuses the tolerance the quote was built with", async () => {
+      const captured = captureMsgsTolerance();
+
+      await provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      });
+
+      expect(captured.tolerance).toBe("0.01");
     });
 
-    expect(msgsBody?.slippage_tolerance_percent).toBe("0.5");
+    it("falls back to the default for a route persisted without one", async () => {
+      const captured = captureMsgsTolerance();
+      const { slippage_tolerance_percent: _, ...legacyRouteData } =
+        multiTxRouteData;
+
+      await provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: legacyRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      });
+
+      expect(captured.tolerance).toBe("0.5");
+    });
   });
 
   it("names an expired stored route so the UI can show recovery copy", async () => {

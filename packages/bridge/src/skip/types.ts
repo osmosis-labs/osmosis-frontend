@@ -263,6 +263,11 @@ export type SkipMultiTxRouteData = {
   amount_out: string;
   operations: SkipOperation[];
   required_chain_addresses: string[];
+  /**
+   * The tolerance the quote was built with, so later steps sign the same one.
+   * Absent on routes persisted before it was stored.
+   */
+  slippage_tolerance_percent?: string;
 };
 
 export type SkipMsg =
