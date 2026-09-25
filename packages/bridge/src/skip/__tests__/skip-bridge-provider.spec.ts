@@ -774,6 +774,15 @@ describe("SkipBridgeProvider", () => {
 
       expect(sourceVariants).toEqual([
         {
+          transferTypes: ["quote"],
+          chainId: "solana",
+          chainType: "solana",
+          address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          denom: "USDC",
+          decimals: 6,
+          coinGeckoId: "usd-coin",
+        },
+        {
           address: "uusdc",
           chainId: "noble-1",
           chainType: "cosmos",
@@ -847,6 +856,99 @@ describe("SkipBridgeProvider", () => {
       expect(last).toEqual(first);
     });
 
+    it("returns Solana as an in-app quote chain for withdrawals of SPL-counterparty assets", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "withdraw",
+      });
+
+      expect(sourceVariants).toContainEqual({
+        transferTypes: ["quote"],
+        chainId: "solana",
+        chainType: "solana",
+        address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        denom: "USDT",
+        decimals: 6,
+        coinGeckoId: "tether",
+      });
+    });
+
+    it("does not offer Solana deposits into a non-Noble variant without multi-tx", async () => {
+      // A variant CCTP cannot auto-forward to (anything but Noble-native
+      // USDC) is reachable from Solana only by a multi-tx route. With
+      // multi-tx off, offering it would present a source that never quotes.
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "deposit",
+      });
+
+      expect(
+        sourceVariants.some((variant) => variant.chainId === "solana")
+      ).toBe(false);
+    });
+
+    it("offers Solana deposits into a non-Noble variant when multi-tx is allowed", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "deposit",
+        allowMultiTx: true,
+      });
+
+      expect(sourceVariants).toContainEqual(
+        expect.objectContaining({
+          transferTypes: ["quote"],
+          chainId: "solana",
+          chainType: "solana",
+          address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        })
+      );
+    });
+
+    it("uses the destination address verbatim for a Solana endpoint", async () => {
+      const addressList = await provider.getAddressList(
+        ["osmosis-1", "noble-1", "solana"],
+        "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        { chainId: "osmosis-1", chainName: "osmosis", chainType: "cosmos" },
+        { chainId: "solana", chainName: "Solana", chainType: "solana" }
+      );
+
+      expect(addressList).toEqual([
+        "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        // derived for the intermediate hop from the cosmos-side address
+        "noble107vyuer6wzfe7nrrsujppa0pvx35fvplpddx96",
+        // the pasted Solana destination, used verbatim
+        "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+      ]);
+    });
+
     it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
       server.use(
         http.get("https://api.skip.money/v2/info/chains", () => {
@@ -878,6 +980,15 @@ describe("SkipBridgeProvider", () => {
       });
 
       expect(sourceVariants).toEqual([
+        {
+          transferTypes: ["quote"],
+          chainId: "solana",
+          chainType: "solana",
+          address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          denom: "USDC",
+          decimals: 6,
+          coinGeckoId: "usd-coin",
+        },
         {
           address: "uusdc",
           chainId: "noble-1",
@@ -915,7 +1026,7 @@ describe("SkipBridgeProvider", () => {
       });
 
       // makes sure that the first variants are sourced from counterparty array
-      expect(sourceVariants[0]).toEqual({
+      expect(sourceVariants[1]).toEqual({
         address: "uusdc",
         chainId: "noble-1",
         chainType: "cosmos",
@@ -942,7 +1053,7 @@ describe("SkipBridgeProvider", () => {
       });
 
       // makes sure that the first variants are sourced from counterparty array
-      expect(sourceVariants[1]).toEqual({
+      expect(sourceVariants[2]).toEqual({
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         chainId: 1,
         chainType: "evm",
@@ -1626,6 +1737,101 @@ describe("SkipBridgeProvider multi-tx routes", () => {
         step: { chainId: "noble-1", senderAddress: nobleAddress },
       })
     ).rejects.toThrow("no longer includes a transaction on noble-1");
+  });
+
+  it("builds a Solana first step ahead of the intermediate cosmos step", async () => {
+    // Solana USDC into an alloy: a Phantom-signed CCTP burn on Solana, then
+    // the user-signed Noble step. Mirrors the live /msgs shape.
+    const svmTx = {
+      chain_id: "solana",
+      tx: "AQID",
+      signer_address: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    };
+    const steps = await provider.createTransactionSteps(
+      "0x0000000000000000000000000000000000000000",
+      [
+        { svm_tx: svmTx },
+        USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs[1] as SkipMsg,
+      ],
+      USDC_EthereumToOsmosisAlloy_MultiTxRoute.operations
+    );
+
+    expect(steps).toHaveLength(2);
+    expect(steps[0]).toEqual({
+      type: "solana",
+      chainId: "solana",
+      txBase64: "AQID",
+      signerAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    });
+    expect(steps[1]).toMatchObject({ type: "cosmos", chainId: "noble-1" });
+  });
+
+  it("prices a Solana first step's network fee in SOL", async () => {
+    server.use(
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({ result: { value: 14030 } })
+      )
+    );
+    // two signatures (user + Skip's pre-signed message account), then a
+    // message; only its presence matters to the fee lookup
+    const txBase64 = Buffer.concat([
+      Buffer.from([2]),
+      Buffer.alloc(128),
+      Buffer.from([1, 2, 3]),
+    ]).toString("base64");
+
+    const fee = await provider.estimateGasFee(multiTxQuoteParams, {
+      type: "solana",
+      chainId: "solana",
+      txBase64,
+      signerAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    });
+
+    expect(fee).toEqual({
+      amount: "14030",
+      denom: "SOL",
+      decimals: 9,
+      address: "So11111111111111111111111111111111111111112",
+      coinGeckoId: "solana",
+    });
+  });
+
+  it("leaves a Solana fee unknown, never zero, when it cannot be priced", async () => {
+    server.use(
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({ result: { value: null } })
+      )
+    );
+    const txBase64 = Buffer.concat([
+      Buffer.from([1]),
+      Buffer.alloc(64),
+      Buffer.from([1, 2, 3]),
+    ]).toString("base64");
+
+    await expect(
+      provider.estimateGasFee(multiTxQuoteParams, {
+        type: "solana",
+        chainId: "solana",
+        txBase64,
+        signerAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+      })
+    ).resolves.toBeUndefined();
+  });
+
+  it("refuses a multi-tx route with a message type it cannot build", async () => {
+    // Dropping a step would present the rest as the whole route (a missing
+    // first-leg burn would leave the later step signing against funds that
+    // never moved), so an unknown message type must fail the quote.
+    await expect(
+      provider.createTransactionSteps(
+        "0x0000000000000000000000000000000000000000",
+        [
+          { some_future_tx: {} } as unknown as SkipMsg,
+          USDC_EthereumToOsmosisAlloy_MultiTxMsgs.msgs[1] as SkipMsg,
+        ],
+        USDC_EthereumToOsmosisAlloy_MultiTxRoute.operations
+      )
+    ).rejects.toThrow("Unsupported message type in multi-tx route");
   });
 });
 

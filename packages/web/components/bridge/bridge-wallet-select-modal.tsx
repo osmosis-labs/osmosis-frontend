@@ -9,6 +9,7 @@ import {
   isSolanaAddressValid,
   isTonAddressValid,
   isXrplAddressValid,
+  shorten,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -40,6 +41,10 @@ import {
   useEvmWalletAccount,
   useSwitchEvmChain,
 } from "~/hooks/evm-wallet";
+import {
+  getPhantomProvider,
+  usePhantomWallet,
+} from "~/hooks/use-phantom-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
@@ -241,6 +246,12 @@ const BridgeWalletSelectScreens: FunctionComponent<
           />
         </div>
       );
+    }
+
+    // Solana deposits connect Phantom directly: an SVM source chain has no
+    // cosmos/EVM wallet list to offer.
+    if (direction === "deposit" && fromChain.chainType === "solana") {
+      return <PhantomConnectSection onDone={onClose} />;
     }
 
     const showEvmWallets = !isNil(evmChain) && !isNil(evmWallets);
@@ -506,6 +517,76 @@ interface SendToAnotherAddressFormProps {
   toChain: BridgeChainWithDisplayInfo;
 }
 
+/** Phantom connect/connected state for Solana-source deposits. */
+const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
+  onDone,
+}) => {
+  const { t } = useTranslation();
+  const { address, connect, disconnect } = usePhantomWallet();
+  const [phantomDetected, setPhantomDetected] = useState(false);
+  useEffect(() => {
+    setPhantomDetected(Boolean(getPhantomProvider()));
+  }, []);
+
+  return (
+    <section className="flex flex-col gap-4 py-8">
+      {address ? (
+        <>
+          <div className="flex items-center justify-between rounded-2xl bg-osmoverse-900 p-4">
+            <div className="flex items-center gap-2">
+              <img
+                src="/wallets/phantom.svg"
+                width={24}
+                height={24}
+                className="rounded-md"
+                alt="Phantom logo"
+              />
+              <p className="body2 text-osmoverse-300">
+                {shorten(address, { prefixLength: 8, suffixLength: 6 })}
+              </p>
+            </div>
+            <Button
+              variant="link"
+              className="!h-fit !px-0 !py-0 text-wosmongton-200"
+              onClick={() => disconnect().catch(() => undefined)}
+            >
+              {t("walletSelect.disconnect")}
+            </Button>
+          </div>
+          <Button className="w-full md:h-12" onClick={onDone}>
+            {t("walletSelect.done")}
+          </Button>
+        </>
+      ) : (
+        <Button
+          variant="secondary"
+          className="flex w-full items-center gap-2 md:h-12"
+          onClick={async () => {
+            try {
+              // opens the install page itself when the extension is absent
+              const connected = await connect();
+              if (connected) onDone();
+            } catch {
+              // user rejected the connect prompt
+            }
+          }}
+        >
+          <img
+            src="/wallets/phantom.svg"
+            width={24}
+            height={24}
+            className="rounded-md"
+            alt="Phantom logo"
+          />
+          {phantomDetected
+            ? t("transfer.wormholeRedeem.connectPhantom")
+            : t("transfer.wormholeRedeem.installPhantomWallet")}
+        </Button>
+      )}
+    </section>
+  );
+};
+
 const SendToAnotherAddressForm: FunctionComponent<
   SendToAnotherAddressFormProps
 > = ({ initialManualAddress, onConfirm, toChain }) => {
@@ -513,6 +594,29 @@ const SendToAnotherAddressForm: FunctionComponent<
   const [isInvalidAddress, setIsInvalidAddress] = useState(false);
   const [address, setAddress] = useState(initialManualAddress ?? "");
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+
+  // Solana destinations offer a wallet-connect autofill: Phantom provides
+  // the address, the user still reviews and confirms it through the same
+  // acknowledged-address flow as a pasted one.
+  const { connect: connectPhantomWallet } = usePhantomWallet();
+  const [phantomDetected, setPhantomDetected] = useState(false);
+  useEffect(() => {
+    if (toChain.chainType !== "solana") return;
+    setPhantomDetected(Boolean(getPhantomProvider()));
+  }, [toChain.chainType]);
+
+  const connectPhantom = async () => {
+    try {
+      // opens the install page itself when the extension is absent
+      const phantomAddress = await connectPhantomWallet();
+      if (phantomAddress) {
+        setAddress(phantomAddress);
+        setIsInvalidAddress(!isSolanaAddressValid({ address: phantomAddress }));
+      }
+    } catch {
+      // user rejected the connect prompt: leave the form as-is
+    }
+  };
 
   const handleConfirm = () => {
     if (isAcknowledged) {
@@ -533,6 +637,24 @@ const SendToAnotherAddressForm: FunctionComponent<
           {t("transfer.verifyAddressWarning")}
         </p>
       </div>
+      {toChain.chainType === "solana" && (
+        <Button
+          variant="secondary"
+          className="flex w-full items-center gap-2 md:h-12"
+          onClick={connectPhantom}
+        >
+          <img
+            src="/wallets/phantom.svg"
+            width={24}
+            height={24}
+            className="rounded-md"
+            alt="Phantom logo"
+          />
+          {phantomDetected
+            ? t("transfer.fillFromPhantom")
+            : t("transfer.wormholeRedeem.installPhantomWallet")}
+        </Button>
+      )}
       <div className="flex flex-col gap-1">
         <label
           className="body2 text-osmoverse-300"
@@ -592,7 +714,11 @@ const SendToAnotherAddressForm: FunctionComponent<
           placeholder={t("transfer.enterAddress")}
           className="w-full"
           classes={{
-            textarea: isInvalidAddress ? "text-rust-200" : undefined,
+            // text-sm so typical addresses (Solana base58, bech32, EVM hex)
+            // fit on a single line at this modal width
+            textarea: classNames("text-sm", {
+              "text-rust-200": isInvalidAddress,
+            }),
           }}
           trailingSymbol={
             <ChainLogo
@@ -601,7 +727,9 @@ const SendToAnotherAddressForm: FunctionComponent<
               prettyName={toChain.prettyName}
             />
           }
-          rows={2}
+          // single line normally; grow for the few chains whose addresses
+          // are long enough to wrap, so the user can verify all of it
+          rows={address.length > 50 ? 2 : 1}
         />
         {isInvalidAddress && (
           <p className="body2 text-rust-400">

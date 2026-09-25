@@ -23,6 +23,8 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { clientSolanaRpc } from "~/utils/solana";
+
 /**
  * Normalizes an amount between different decimal precisions
  * Used primarily for cross-chain asset normalization when comparing or displaying values
@@ -118,7 +120,10 @@ export const localBridgeTransferRouter = createTRPCRouter({
           createAssetObject("evm", UserEvmAddressSchema),
           createAssetObject("cosmos", UserCosmosAddressSchema),
           createAssetObject("bitcoin", z.object({})),
-          createAssetObject("solana", z.object({})),
+          createAssetObject(
+            "solana",
+            z.object({ userSolanaAddress: z.string().optional() })
+          ),
           createAssetObject("tron", z.object({})),
           createAssetObject("penumbra", z.object({})),
           createAssetObject("doge", z.object({})),
@@ -170,6 +175,66 @@ export const localBridgeTransferRouter = createTRPCRouter({
                *
                * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
                */
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: Object.keys(asset.supportedVariants)[0],
+                amount: decAmount,
+              }).catch((e) => captureErrorAndReturn(e, undefined));
+
+              return {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  decAmount
+                ),
+                usdValue: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  usdValue ?? new Dec(0)
+                ),
+              };
+            })
+        );
+      } else if (input.source.type === "solana") {
+        const solanaAddress = input.source.userSolanaAddress;
+        return Promise.all(
+          input.source.assets
+            .filter(
+              (
+                asset
+              ): asset is Extract<typeof asset, { chainType: "solana" }> =>
+                asset.chainType === "solana"
+            )
+            .map(async (asset) => {
+              const emptyBalance = {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  0
+                ),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+              };
+
+              if (!solanaAddress) return emptyBalance;
+
+              // No catch: an RPC failure must fail the query, so React Query
+              // retries and the UI shows a balance error. Swallowing it into
+              // an empty balance would be a successful false zero that hides
+              // funded USDC and is never retried.
+              const balance = await getSolanaTokenBalance({
+                owner: solanaAddress,
+                mint: asset.address,
+              });
+
+              const decAmount = new Dec(balance.toString());
+              // Price via the Osmosis-side variant, mirroring the EVM branch
               const usdValue = await calcAssetValue({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
@@ -327,3 +392,36 @@ export const localBridgeTransferRouter = createTRPCRouter({
       }
     }),
 });
+
+/**
+ * Total SPL token balance (minimal units) of `mint` held by `owner`, summed
+ * across the owner's token accounts. This router runs in the browser, so it
+ * reads through the configured domain-restricted production Solana RPC (see
+ * `getClientSolanaRpcUrls`), and throws when no endpoint answers: an
+ * unanswered read is not a zero balance.
+ */
+async function getSolanaTokenBalance({
+  owner,
+  mint,
+}: {
+  owner: string;
+  mint: string;
+}): Promise<bigint> {
+  const result = await clientSolanaRpc<{
+    value?: {
+      account?: {
+        data?: {
+          parsed?: { info?: { tokenAmount?: { amount?: string } } };
+        };
+      };
+    }[];
+  }>("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed" }]);
+  return (result?.value ?? []).reduce(
+    (sum, tokenAccount) =>
+      sum +
+      BigInt(
+        tokenAccount?.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0"
+      ),
+    BigInt(0)
+  );
+}

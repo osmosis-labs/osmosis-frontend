@@ -81,7 +81,14 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           status = "success";
         }
 
-        if (txStatus.state === "STATE_COMPLETED_ERROR") {
+        // Abandoned is terminal too: Skip has stopped tracking the transfer
+        // (e.g. a source tx it never saw land), so polling on would report
+        // "pending" forever. Matches the multi-tx arrival poller, which
+        // already treats it as a failure.
+        if (
+          txStatus.state === "STATE_COMPLETED_ERROR" ||
+          txStatus.state === "STATE_ABANDONED"
+        ) {
           status = "failed";
         }
 
@@ -118,6 +125,13 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     // chain: the explorer must be the tracking chain's, or the link would
     // be an AxelarScan GMP URL wrapping a cosmos hash.
     const explorerChainId = snapshot.trackingChainId ?? fromChainId;
+
+    // A Solana-origin transfer's hash is a Solana signature until (for a
+    // multi-tx route) it advances onto the intermediate chain. Solana isn't
+    // in the cosmos chain list, so it needs its own explorer.
+    if (explorerChainId === "solana") {
+      return `https://solscan.io/tx/${sendTxHash}`;
+    }
 
     if (
       snapshot.trackingChainId === undefined &&

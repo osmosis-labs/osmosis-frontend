@@ -46,6 +46,7 @@ import {
 import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
+import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import {
@@ -210,6 +211,7 @@ export const AmountScreen = observer(
       isConnecting,
     } = useEvmWalletAccount();
     const { switchChain: switchEvmChain } = useSwitchEvmChain();
+    const { address: phantomAddress } = usePhantomWallet();
 
     const fromCosmosCounterpartyAccount =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
@@ -240,6 +242,16 @@ export const AmountScreen = observer(
         return isEvmWalletConnected;
       }
 
+      // Solana deposits sign with Phantom; withdrawals to Solana still go
+      // through the manual-address flow below (the address can be
+      // autofilled from Phantom there, but must be confirmed).
+      if (
+        direction === "deposit" &&
+        chainThatNeedsWalletConnection.chainType === "solana"
+      ) {
+        return !isNil(phantomAddress);
+      }
+
       if (chainThatNeedsConnectionIsManual) {
         return !isNil(manualToAddress);
       }
@@ -248,8 +260,10 @@ export const AmountScreen = observer(
     }, [
       cosmosAccountRequiringConnection?.address,
       chainThatNeedsWalletConnection,
+      direction,
       isEvmWalletConnected,
       manualToAddress,
+      phantomAddress,
       chainThatNeedsConnectionIsManual,
     ]);
 
@@ -513,6 +527,7 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "solana" }
             >[],
+            userSolanaAddress: phantomAddress,
           };
         default:
           return {
@@ -566,6 +581,25 @@ export const AmountScreen = observer(
               );
 
               setFromAsset(highestBalance);
+            } else {
+              // Keep the selected asset's balance in sync with the refetch in
+              // BOTH directions. The branch above only upgrades to a larger
+              // balance, so switching to a poorer account (e.g. another
+              // Phantom account, which re-keys this query) would otherwise
+              // keep showing the previous account's spendable amount. Look
+              // up the unfiltered data: a now-empty balance is filtered out
+              // of `nextData` but must still replace the stale one.
+              const refreshed = data?.find(
+                (asset) =>
+                  asset.address === fromAsset.address &&
+                  asset.denom === fromAsset.denom
+              );
+              if (
+                refreshed &&
+                !refreshed.amount.toDec().equals(fromAsset.amount.toDec())
+              ) {
+                setFromAsset(refreshed);
+              }
             }
           }
 

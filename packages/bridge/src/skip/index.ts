@@ -48,8 +48,10 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
   GetBridgeTransactionStepParams,
+  SolanaBridgeTransactionRequest,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
+import { getSolanaTxFeeLamports } from "../utils/solana";
 import { SkipApiClient } from "./client";
 import {
   SkipEvmTx,
@@ -57,7 +59,13 @@ import {
   SkipMultiChainMsg,
   SkipMultiTxRouteData,
   SkipRouteResponse,
+  SkipSvmTx,
 } from "./types";
+
+/** Native SOL, as the fee asset of Solana-signed steps. Solana has no
+ *  native-mint address in the SPL sense; this is the conventional
+ *  wrapped-SOL mint, used only as a stable identifier for pricing. */
+const SOLANA_NATIVE_DENOM = "So11111111111111111111111111111111111111112";
 
 export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";
@@ -475,6 +483,8 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
+    direction,
+    allowMultiTx,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -532,7 +542,45 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       for (const counterparty of counterparties) {
         // check if supported by skip
-        if (!("chainId" in counterparty)) continue;
+        // Solana counterparties carry no chainId (NonCosmosCounterparty).
+        // Skip routes SPL assets natively (e.g. allUSDC -> Solana USDC as a
+        // single-tx CCTP route through Noble).
+        // - Withdrawals: always in-app (one Osmosis signature; destination
+        //   is a Solana address).
+        // - Deposits into Noble-native USDC: single-tx, since CCTP
+        //   auto-forwards to Osmosis from one Solana transaction (signed by
+        //   the user's SVM wallet).
+        // - Deposits into any other variant (e.g. an alloy, which needs an
+        //   Osmosis swap Noble forwarding cannot carry): the only route is
+        //   multi-tx (a Solana burn, then a user-signed Noble step), so
+        //   offer them only when the caller can execute multi-tx routes.
+        //   Offering them otherwise would present a source that can never
+        //   quote.
+        if (!("chainId" in counterparty)) {
+          if (
+            counterparty.chainName === "solana" &&
+            "sourceDenom" in counterparty &&
+            (direction === "withdraw" ||
+              chainAsset.origin_chain_id === "noble-1" ||
+              allowMultiTx === true)
+          ) {
+            const skipSplAsset = assets["solana"]?.assets.find(
+              (a) => a.denom === counterparty.sourceDenom
+            );
+            if (skipSplAsset) {
+              foundVariants.setAsset("solana", counterparty.sourceDenom, {
+                transferTypes: ["quote"],
+                chainId: "solana",
+                chainType: "solana",
+                address: counterparty.sourceDenom,
+                denom: counterparty.symbol,
+                decimals: counterparty.decimals,
+                coinGeckoId: skipSplAsset.coingecko_id,
+              });
+            }
+          }
+          continue;
+        }
         const address =
           "address" in counterparty
             ? counterparty.address
@@ -701,6 +749,10 @@ export class SkipBridgeProvider implements BridgeProvider {
       if ("multi_chain_msg" in message) {
         return await this.createCosmosTransaction(message.multi_chain_msg);
       }
+
+      if ("svm_tx" in message) {
+        return this.createSolanaTransaction(message.svm_tx);
+      }
     }
   }
 
@@ -727,6 +779,8 @@ export class SkipBridgeProvider implements BridgeProvider {
           )),
           chainId: Number(message.evm_tx.chain_id),
         });
+      } else if ("svm_tx" in message) {
+        steps.push(this.createSolanaTransaction(message.svm_tx));
       } else if ("multi_chain_msg" in message) {
         const chainId = message.multi_chain_msg.chain_id;
         const cosmosTx = await this.createCosmosTransaction(
@@ -763,6 +817,19 @@ export class SkipBridgeProvider implements BridgeProvider {
           msgs: cosmosTx.msgs,
           gasFee,
           chainId,
+        });
+      } else {
+        // Every msg is a transaction the user must sign, in order. Skipping
+        // one would present the remaining steps as the whole route (a
+        // dropped first-leg burn would leave the later step to sign against
+        // funds that never moved), so refuse rather than build a partial
+        // route.
+        throw new BridgeQuoteError({
+          bridgeId: SkipBridgeProvider.ID,
+          errorType: "UnsupportedQuoteError",
+          message: `Unsupported message type in multi-tx route: ${Object.keys(
+            message
+          ).join(", ")}`,
         });
       }
     }
@@ -1201,6 +1268,19 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
+  /** Skip builds the complete Solana transaction; the user's SVM wallet
+   *  (e.g. Phantom) signs and sends it as-is. */
+  createSolanaTransaction(
+    svmTx: SkipSvmTx
+  ): SolanaBridgeTransactionRequest & { chainId: string } {
+    return {
+      type: "solana",
+      chainId: svmTx.chain_id,
+      txBase64: svmTx.tx,
+      signerAddress: svmTx.signer_address,
+    };
+  }
+
   async createEvmTransaction(
     chainID: string,
     sender: Address,
@@ -1320,6 +1400,14 @@ export class SkipBridgeProvider implements BridgeProvider {
           return skipAsset;
         }
       }
+
+      // Other chain types (e.g. Solana): match by denom exactly. Base58
+      // addresses are case-sensitive, so no case folding here.
+      if (chain.chainType !== "cosmos" && chain.chainType !== "evm") {
+        if (asset.address === skipAsset.denom) {
+          return skipAsset;
+        }
+      }
     }
   }
 
@@ -1432,6 +1520,30 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(toAddress);
       }
 
+      // Endpoint chains that are neither cosmos nor EVM (e.g. Solana,
+      // chain_type "svm"): their addresses cannot be derived from anything,
+      // so the given endpoint address is used verbatim.
+      if (
+        chain.chain_type !== "cosmos" &&
+        chain.chain_type !== "evm" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType !== "cosmos" &&
+        fromChain.chainType !== "evm"
+      ) {
+        addressList.push(fromAddress);
+        continue;
+      }
+      if (
+        chain.chain_type !== "cosmos" &&
+        chain.chain_type !== "evm" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType !== "cosmos" &&
+        toChain.chainType !== "evm"
+      ) {
+        addressList.push(toAddress);
+        continue;
+      }
+
       if (
         chain.chain_type === "cosmos" &&
         chain.chain_id === String(fromChain.chainId) &&
@@ -1519,6 +1631,26 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
+    if (txData.type === "solana") {
+      // The cluster prices the exact Skip-built transaction (signature fees
+      // plus its compute-budget priority fee). This excludes the rent
+      // deposit for accounts the burn creates, so signing still preflights
+      // the SOL balance by simulating the transaction. An unpriceable
+      // message (e.g. an expired blockhash) or an unreachable RPC leaves the
+      // fee unknown, which the quote renders as such, never as zero.
+      const lamports = await getSolanaTxFeeLamports(txData.txBase64).catch(
+        () => undefined
+      );
+      if (lamports === undefined) return undefined;
+      return {
+        amount: lamports.toString(),
+        denom: "SOL",
+        decimals: 9,
+        address: SOLANA_NATIVE_DENOM,
+        coinGeckoId: "solana",
+      };
+    }
+
     if (txData.type === "evm") {
       const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId
