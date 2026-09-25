@@ -156,13 +156,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const inputRef = useRef<HTMLInputElement>(null);
     const featureFlags = useFeatureFlags();
 
-    const [{ from, quote, tab, type }, set] = useQueryStates({
+    const [{ from, quote, tab, type: queryType }, set] = useQueryStates({
       from: parseAsString.withDefault(initialBaseDenom),
       quote: parseAsString.withDefault(initialQuoteDenom),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,
     });
+    // Limit orders kill switch: with the flag off, only market orders can be
+    // placed, even if the URL asks for a limit order. Existing orders stay
+    // claimable and cancellable from order history.
+    const limitOrdersDisabled =
+      featureFlags._isInitialized && !featureFlags.limitOrders;
+    const type = limitOrdersDisabled ? "market" : queryType;
+
+    // The flag can flip while a review is open (LaunchDarkly streams updates),
+    // which would turn a reviewed limit order into an unreviewed market order.
+    // Close the review so the user must review the new order type.
+    useEffect(() => {
+      setReviewOpen(false);
+    }, [type]);
+
     const [isSendingTx, setIsSendingTx] = useState(false);
 
     const [focused, setFocused] = useState<"fiat" | "token">(
@@ -1030,6 +1044,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           page={page}
+          orderType={type}
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();

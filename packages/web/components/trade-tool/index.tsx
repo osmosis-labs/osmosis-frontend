@@ -17,7 +17,11 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -39,6 +43,14 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
           SwapToolTab.SWAP
         )
       );
+
+      // Kill switch for limit orders: hides the Market/Limit toggle so Buy and
+      // Sell only place market orders (PlaceLimitTool forces the type too).
+      // Waits for LaunchDarkly to initialise so the toggle doesn't flicker and
+      // an outage leaves limit orders available.
+      const featureFlags = useFeatureFlags();
+      const limitOrdersDisabled =
+        featureFlags._isInitialized && !featureFlags.limitOrders;
 
       const { accountStore } = useStore();
       const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -69,7 +81,7 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
             <div className="flex w-full items-center justify-between md:gap-2">
               <SwapToolTabs activeTab={tab} setTab={setTab} />
               <div className="flex items-center gap-2">
-                {tab !== SwapToolTab.SWAP && (
+                {tab !== SwapToolTab.SWAP && !limitOrdersDisabled && (
                   <OrderTypeSelector
                     initialBaseDenom={previousTrade?.baseDenom}
                     initialQuoteDenom={previousTrade?.quoteDenom}
