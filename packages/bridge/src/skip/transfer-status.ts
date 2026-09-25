@@ -119,6 +119,13 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     // be an AxelarScan GMP URL wrapping a cosmos hash.
     const explorerChainId = snapshot.trackingChainId ?? fromChainId;
 
+    // A Solana-origin transfer's hash is a Solana signature until (for a
+    // multi-tx route) it advances onto the intermediate chain. Solana isn't
+    // in the cosmos chain list, so it needs its own explorer.
+    if (explorerChainId === "solana") {
+      return `https://solscan.io/tx/${sendTxHash}`;
+    }
+
     if (
       snapshot.trackingChainId === undefined &&
       (typeof fromChainId === "number" || typeof toChainId === "number")

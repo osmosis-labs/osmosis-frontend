@@ -212,4 +212,34 @@ describe("SkipTransferStatusProvider", () => {
     const url = cosmosProvider.makeExplorerUrl(snapshot);
     expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
   });
+
+  it("links a Solana-origin transfer to Solscan, then to the intermediate chain once advanced", () => {
+    // Solana isn't in the cosmos chain list, so without its own explorer the
+    // row would render no link (and warn on every render).
+    const solanaSnapshot: TxSnapshot = {
+      ...baseTxSnapshot,
+      sendTxHash: "5SolanaSig",
+      fromChain: {
+        chainId: "solana",
+        prettyName: "Solana",
+        chainType: "solana",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+    };
+    expect(provider.makeExplorerUrl(solanaSnapshot)).toBe(
+      "https://solscan.io/tx/5SolanaSig"
+    );
+
+    // a multi-tx transfer that advanced onto Noble links the Noble tx
+    const advanced: TxSnapshot = {
+      ...solanaSnapshot,
+      sendTxHash: "NOBLETX",
+      trackingChainId: "cosmoshub-4",
+    };
+    expect(provider.makeExplorerUrl(advanced)).not.toContain("solscan");
+  });
 });

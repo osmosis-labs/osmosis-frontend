@@ -52,6 +52,7 @@ import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
+import { waitForSolanaSignature } from "~/utils/solana";
 import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
@@ -63,6 +64,25 @@ class EvmTxRevertedError extends Error {
     super(`Transaction ${txHash} reverted on-chain`);
   }
 }
+
+/** A Solana transaction that definitively moved nothing: it executed with
+ *  an error, or its blockhash expired before it landed. */
+class SolanaTxFailedError extends Error {
+  constructor(readonly txHash: string, readonly outcome: "failed" | "dropped") {
+    super(
+      outcome === "failed"
+        ? `Solana transaction ${txHash} failed on-chain`
+        : `Solana transaction ${txHash} expired before landing`
+    );
+  }
+}
+
+/** Phantom (like EIP-1193 wallets) rejects a declined signature with 4001. */
+const isWalletRejection = (e: unknown) =>
+  typeof e === "object" &&
+  e !== null &&
+  "code" in e &&
+  (e as { code: unknown }).code === 4001;
 
 /** Display denom of a chain's fee token (e.g. USDC.n for uusdc on noble-1),
  *  for user-facing copy; falls back to the minimal denom when unknown. */
@@ -928,7 +948,8 @@ export const useBridgeQuotes = ({
    * connect on the intermediate chain, its account there must match the
    * address the quote's transactions were built against, and the final
    * step's fee token must be funded when it isn't paid from the arriving
-   * funds. Then: sign the first (EVM) tx, wait for the funds to reach the
+   * funds. Then: sign the first tx (EVM, or Solana via Phantom), wait for
+   * the funds to reach the
    * intermediate chain, and rebuild + sign the final step there. Closing
    * the modal mid-flow is safe: the transfer persists with its pending step
    * and can be resumed from history.
@@ -941,10 +962,12 @@ export const useBridgeQuotes = ({
   ) => {
     const [firstStep, ...laterSteps] = transactionSteps;
     const finalStep = laterSteps[0];
-    // Multi-tx routes Skip returns today are EVM-first with one final cosmos
-    // step; refuse anything else rather than executing a partial route.
+    // Multi-tx routes Skip returns today have one first step signed on the
+    // source chain (an EVM burn, or a Solana burn signed with Phantom) and
+    // one final cosmos step; refuse anything else rather than executing a
+    // partial route.
     if (
-      firstStep.type !== "evm" ||
+      (firstStep.type !== "evm" && firstStep.type !== "solana") ||
       laterSteps.length !== 1 ||
       finalStep.type !== "cosmos" ||
       typeof finalStep.chainId !== "string"
@@ -964,7 +987,7 @@ export const useBridgeQuotes = ({
       finalStepChainId;
     // set the moment the first tx leaves the wallet: the error handling
     // below must know whether an entry keyed on it was already persisted
-    let firstStepBroadcastHash: Address | undefined;
+    let firstStepBroadcastHash: string | undefined;
 
     try {
       // ---- Preflight the intermediate signer; nothing irreversible yet ----
@@ -1050,14 +1073,14 @@ export const useBridgeQuotes = ({
       // which the signing session updates at final-step broadcast and any
       // stale session re-reads before signing (syncPendingStepFromStorage).
 
-      // ---- Step 1: the EVM transaction ----
+      // ---- Step 1: the source-chain transaction (EVM or Solana) ----
       // Persist the resumable entry (with the quoted route, so the final
       // step can be rebuilt after a reload) the moment the wallet returns a
       // hash: the funds are en route from broadcast, so waiting for the
       // receipt to record it would lose the resume record if the app
       // closes during confirmation.
       let entryRecorded = false;
-      const sendTxHash = await sendEvmBridgeTx(firstStep, (broadcastHash) => {
+      const onFirstStepBroadcast = (broadcastHash: string) => {
         firstStepBroadcastHash = broadcastHash;
         entryRecorded = trackTransferStatus({
           quote,
@@ -1076,7 +1099,11 @@ export const useBridgeQuotes = ({
                 : undefined,
           },
         });
-      });
+      };
+      const sendTxHash =
+        firstStep.type === "evm"
+          ? await sendEvmBridgeTx(firstStep, onFirstStepBroadcast)
+          : await sendSolanaBridgeTx(firstStep, onFirstStepBroadcast);
       setIsBroadcastingTx(false);
 
       // The persisted entry is the replay guard the final step refuses to
@@ -1154,11 +1181,12 @@ export const useBridgeQuotes = ({
         },
       });
     } catch (e) {
-      // A first tx that reverted on-chain definitively failed: the entry
-      // persisted at broadcast must not stay "pending" with a Continue
-      // that can never work.
+      // A first tx that definitively failed (an EVM revert, or a Solana tx
+      // that errored or expired before landing) moved nothing: the entry
+      // persisted at broadcast must not stay "pending" with a Continue that
+      // can never work.
       if (
-        e instanceof EvmTxRevertedError &&
+        (e instanceof EvmTxRevertedError || e instanceof SolanaTxFailedError) &&
         e.txHash === firstStepBroadcastHash
       ) {
         transferHistoryStore.receiveNewTxStatus(e.txHash, "failed", undefined);
@@ -1166,15 +1194,26 @@ export const useBridgeQuotes = ({
       // Named multi-tx failures (route expired, fee shortfall) carry
       // specific recovery copy shared with the resume flow; the funds are
       // on the intermediate chain and the entry stays resumable from
-      // history. Everything else gets the wallet-error mapping.
+      // history. Everything else gets the wallet-error mapping for the wallet
+      // that was signing (Phantom errors are not wagmi errors).
       const multiTxToast = getMultiTxErrorToastContent(e, finalStepPrettyName);
       displayToast(
         multiTxToast ??
-          getWagmiToastErrorMessage({
-            error: e as BaseError,
-            t,
-            walletName: evmConnector?.name ?? "",
-          }),
+          (firstStep.type === "solana"
+            ? isWalletRejection(e)
+              ? {
+                  titleTranslationKey: "transactionFailed",
+                  captionTranslationKey: "requestRejected",
+                }
+              : {
+                  titleTranslationKey: "transfer.somethingIsntWorking",
+                  captionTranslationKey: "transfer.sorryForTheInconvenience",
+                }
+            : getWagmiToastErrorMessage({
+                error: e as BaseError,
+                t,
+                walletName: evmConnector?.name ?? "",
+              })),
         ToastType.ERROR
       );
     } finally {
@@ -1184,65 +1223,128 @@ export const useBridgeQuotes = ({
     }
   };
 
+  /**
+   * Signs and sends a Skip-built Solana transaction with Phantom, resolving
+   * with its signature once it has landed. The Solana counterpart of
+   * `sendEvmBridgeTx`: `onBroadcast` fires the moment the wallet submits it,
+   * before confirmation, so callers can persist it.
+   *
+   * Throws `SolanaTxFailedError` only when the outcome is definite (failed
+   * on-chain, or dropped with an expired blockhash). An outcome it cannot
+   * prove within the watch resolves normally, and the caller's own status
+   * tracking takes over: treating "can't tell yet" as a failure would mark
+   * a transfer failed that may still land.
+   */
+  const sendSolanaBridgeTx = async (
+    transactionRequest: SolanaBridgeTransactionRequest,
+    onBroadcast?: (signature: string) => void
+  ): Promise<string> => {
+    const phantom = getPhantomProvider();
+    if (!phantom || !phantomAddress) {
+      throw new Error("No Phantom wallet connected");
+    }
+    // The Skip-built transaction is bound to a specific signer. If the user
+    // switched Phantom accounts after this quote was built, the refreshed
+    // quote (keyed on fromAddress) replaces it momentarily; never ask the
+    // wrong account to sign.
+    if (transactionRequest.signerAddress !== phantomAddress) {
+      throw new Error(
+        "Connected Phantom account does not match the quoted signer"
+      );
+    }
+
+    const { Connection, Transaction, VersionedTransaction } = await import(
+      "@solana/web3.js"
+    );
+    const txBytes = Buffer.from(transactionRequest.txBase64, "base64");
+    let solanaTx: unknown;
+    let recentBlockhash: string | undefined;
+    try {
+      const versioned = VersionedTransaction.deserialize(txBytes);
+      solanaTx = versioned;
+      recentBlockhash = versioned.message.recentBlockhash;
+    } catch {
+      const legacy = Transaction.from(txBytes);
+      solanaTx = legacy;
+      recentBlockhash = legacy.recentBlockhash ?? undefined;
+    }
+
+    const connection = new Connection(SOLANA_RPC, "confirmed");
+    let signature: string;
+    if (phantom.signAndSendTransaction) {
+      ({ signature } = await phantom.signAndSendTransaction(solanaTx));
+    } else if (phantom.signTransaction) {
+      const signed = (await phantom.signTransaction(solanaTx)) as {
+        serialize: () => Uint8Array;
+      };
+      signature = await connection.sendRawTransaction(signed.serialize());
+    } else {
+      throw new Error("Phantom provider cannot sign transactions");
+    }
+
+    onBroadcast?.(signature);
+    setIsBroadcastingTx(true);
+
+    const outcome = await waitForSolanaSignature({
+      getStatus: async (searchHistory) =>
+        (
+          await connection.getSignatureStatuses([signature], {
+            searchTransactionHistory: searchHistory,
+          })
+        ).value[0],
+      isBlockhashValid: recentBlockhash
+        ? async () =>
+            (
+              await connection.isBlockhashValid(recentBlockhash!, {
+                commitment: "confirmed",
+              })
+            ).value
+        : undefined,
+    });
+    if (outcome === "failed" || outcome === "dropped") {
+      throw new SolanaTxFailedError(signature, outcome);
+    }
+    return signature;
+  };
+
   const signAndBroadcastSolanaTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as SolanaBridgeTransactionRequest;
+    let broadcastSignature: string | undefined;
     try {
-      const phantom = getPhantomProvider();
-      if (!phantom || !phantomAddress) {
-        throw new Error("No Phantom wallet connected");
-      }
-      // The Skip-built transaction is bound to a specific signer. If the
-      // user switched Phantom accounts after this quote was built, the
-      // refreshed quote (keyed on fromAddress) replaces it momentarily;
-      // never ask the wrong account to sign.
-      if (transactionRequest.signerAddress !== phantomAddress) {
-        throw new Error(
-          "Connected Phantom account does not match the quoted signer"
-        );
-      }
-
-      setIsBroadcastingTx(true);
-      const { Connection, Transaction, VersionedTransaction } = await import(
-        "@solana/web3.js"
-      );
-      const txBytes = Buffer.from(transactionRequest.txBase64, "base64");
-      let solanaTx: unknown;
-      try {
-        solanaTx = VersionedTransaction.deserialize(txBytes);
-      } catch {
-        solanaTx = Transaction.from(txBytes);
-      }
-
-      let signature: string;
-      if (phantom.signAndSendTransaction) {
-        ({ signature } = await phantom.signAndSendTransaction(solanaTx));
-      } else if (phantom.signTransaction) {
-        const signed = (await phantom.signTransaction(solanaTx)) as {
-          serialize: () => Uint8Array;
-        };
-        const connection = new Connection(SOLANA_RPC, "confirmed");
-        signature = await connection.sendRawTransaction(signed.serialize());
-      } else {
-        throw new Error("Phantom provider cannot sign transactions");
-      }
-
-      trackTransferStatus({
-        quote,
-        sendTxHash: signature,
+      // Record the transfer the moment it is submitted, as the EVM and
+      // multi-tx paths do: the funds are en route from broadcast, and
+      // waiting for confirmation to record it would lose the history entry
+      // if the app closes meanwhile.
+      await sendSolanaBridgeTx(transactionRequest, (signature) => {
+        broadcastSignature = signature;
+        trackTransferStatus({
+          quote,
+          sendTxHash: signature,
+        });
       });
 
       onTransferProp?.();
       setTransferInitiated(true);
     } catch (e) {
       console.error("Solana transaction failed", e);
+      // Definitely failed after being recorded: resolve the entry instead
+      // of leaving it pending on a transaction that can no longer land.
+      if (e instanceof SolanaTxFailedError && e.txHash === broadcastSignature) {
+        transferHistoryStore.receiveNewTxStatus(e.txHash, "failed", undefined);
+      }
       displayToast(
-        {
-          titleTranslationKey: "transfer.somethingIsntWorking",
-          captionTranslationKey: "transfer.sorryForTheInconvenience",
-        },
+        isWalletRejection(e)
+          ? {
+              titleTranslationKey: "transactionFailed",
+              captionTranslationKey: "requestRejected",
+            }
+          : {
+              titleTranslationKey: "transfer.somethingIsntWorking",
+              captionTranslationKey: "transfer.sorryForTheInconvenience",
+            },
         ToastType.ERROR
       );
     } finally {
