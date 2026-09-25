@@ -81,7 +81,14 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           status = "success";
         }
 
-        if (txStatus.state === "STATE_COMPLETED_ERROR") {
+        // Abandoned is terminal too: Skip has stopped tracking the transfer
+        // (e.g. a source tx it never saw land), so polling on would report
+        // "pending" forever. Matches the multi-tx arrival poller, which
+        // already treats it as a failure.
+        if (
+          txStatus.state === "STATE_COMPLETED_ERROR" ||
+          txStatus.state === "STATE_ABANDONED"
+        ) {
           status = "failed";
         }
 

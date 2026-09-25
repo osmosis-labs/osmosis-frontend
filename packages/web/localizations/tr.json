@@ -923,6 +923,7 @@
     "multiTxRouteExpiredTitle": "Transfer rotasının süresi doldu",
     "multiTxRouteExpired": "Bu transferin kayıtlı rotasının süresi doldu ve artık imzalanamaz. Fonlarınız {chain} hesabınızda güvende.",
     "multiTxFeeShortfall": "{chain} hesabınız bu adımın ağ ücretini karşılayamıyor. {chain} üzerinde gas için fon ekleyin, ardından tekrar Devam'a basın.",
+    "solanaNeedsSol": "Bu işlemin ağ ücretini ve hesap kirasını ödemek için Solana cüzdanınızda SOL gerekir. SOL ekleyin, ardından tekrar deneyin.",
     "multiTxStepFailedTitle": "Son transfer tamamlanmadı",
     "multiTxStepFailed": "{chain} üzerindeki son transfer tamamlanmadı. Fonlarınız {chain} üzerinde güvende; tekrar denemek için işlem geçmişinizde Devam'a basın.",
     "multiTxRecordFailed": "Bu transferin ilerlemesi kaydedilemedi, bu nedenle son {chain} adımı sunulamıyor. Fonlarınız yine de {chain} üzerine ulaşacak; transferi tamamlamak için lütfen destekle iletişime geçin.",

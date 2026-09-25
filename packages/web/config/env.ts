@@ -16,6 +16,15 @@ export const WALLETCONNECT_RELAY_URL =
 
 export const HISTORICAL_DATA_URL = process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL;
 
+/**
+ * Solana RPC for reads the browser makes (SPL balances, and watching a
+ * submitted transaction). Browser-visible by nature, so it must be a key
+ * the provider restricts to this app's domain, never an unrestricted or
+ * server-side key. Without it, reads fall back to public endpoints, which
+ * Solana documents as rate-limited and unsuitable for production.
+ */
+export const SOLANA_RPC_OVERWRITE = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
+
 export const TWITTER_PUBLIC_URL = "https://x.com";
 export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";
 

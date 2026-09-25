@@ -581,6 +581,25 @@ export const AmountScreen = observer(
               );
 
               setFromAsset(highestBalance);
+            } else {
+              // Keep the selected asset's balance in sync with the refetch in
+              // BOTH directions. The branch above only upgrades to a larger
+              // balance, so switching to a poorer account (e.g. another
+              // Phantom account, which re-keys this query) would otherwise
+              // keep showing the previous account's spendable amount. Look
+              // up the unfiltered data: a now-empty balance is filtered out
+              // of `nextData` but must still replace the stale one.
+              const refreshed = data?.find(
+                (asset) =>
+                  asset.address === fromAsset.address &&
+                  asset.denom === fromAsset.denom
+              );
+              if (
+                refreshed &&
+                !refreshed.amount.toDec().equals(fromAsset.amount.toDec())
+              ) {
+                setFromAsset(refreshed);
+              }
             }
           }
 

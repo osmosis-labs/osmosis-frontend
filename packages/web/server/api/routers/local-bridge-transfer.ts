@@ -23,6 +23,8 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { clientSolanaRpc } from "~/utils/solana";
+
 /**
  * Normalizes an amount between different decimal precisions
  * Used primarily for cross-chain asset normalization when comparing or displaying values
@@ -222,12 +224,14 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               if (!solanaAddress) return emptyBalance;
 
+              // No catch: an RPC failure must fail the query, so React Query
+              // retries and the UI shows a balance error. Swallowing it into
+              // an empty balance would be a successful false zero that hides
+              // funded USDC and is never retried.
               const balance = await getSolanaTokenBalance({
                 owner: solanaAddress,
                 mint: asset.address,
-              }).catch(() => undefined);
-
-              if (balance === undefined) return emptyBalance;
+              });
 
               const decAmount = new Dec(balance.toString());
               // Price via the Osmosis-side variant, mirroring the EVM branch
@@ -389,18 +393,12 @@ export const localBridgeTransferRouter = createTRPCRouter({
     }),
 });
 
-// The official endpoint first: publicnode rejects indexed queries like
-// getTokenAccountsOwner-by-mint for well-populated owners ("Indexed
-// requests require a personal token"), verified 2026-09-04.
-const SOLANA_RPCS = [
-  "https://api.mainnet-beta.solana.com",
-  "https://solana-rpc.publicnode.com",
-];
-
 /**
  * Total SPL token balance (minimal units) of `mint` held by `owner`, summed
- * across the owner's token accounts. Throws when no RPC gives an answer, so
- * the caller degrades to an empty balance rather than caching a false zero.
+ * across the owner's token accounts. This router runs in the browser, so it
+ * reads through the configured domain-restricted production Solana RPC (see
+ * `getClientSolanaRpcUrls`), and throws when no endpoint answers: an
+ * unanswered read is not a zero balance.
  */
 async function getSolanaTokenBalance({
   owner,
@@ -409,49 +407,21 @@ async function getSolanaTokenBalance({
   owner: string;
   mint: string;
 }): Promise<bigint> {
-  let lastError: unknown;
-  for (const rpc of SOLANA_RPCS) {
-    try {
-      const response = await fetch(rpc, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "getTokenAccountsByOwner",
-          params: [owner, { mint }, { encoding: "jsonParsed" }],
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`Solana RPC error: ${response.status}`);
-      }
-      const json = (await response.json()) as {
-        error?: { message?: string };
-        result?: {
-          value?: {
-            account?: {
-              data?: {
-                parsed?: { info?: { tokenAmount?: { amount?: string } } };
-              };
-            };
-          }[];
+  const result = await clientSolanaRpc<{
+    value?: {
+      account?: {
+        data?: {
+          parsed?: { info?: { tokenAmount?: { amount?: string } } };
         };
       };
-      if (json.error) {
-        throw new Error(`Solana RPC error: ${json.error.message}`);
-      }
-      return (json.result?.value ?? []).reduce(
-        (sum, tokenAccount) =>
-          sum +
-          BigInt(
-            tokenAccount?.account?.data?.parsed?.info?.tokenAmount?.amount ??
-              "0"
-          ),
-        BigInt(0)
-      );
-    } catch (e) {
-      lastError = e;
-    }
-  }
-  throw lastError;
+    }[];
+  }>("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed" }]);
+  return (result?.value ?? []).reduce(
+    (sum, tokenAccount) =>
+      sum +
+      BigInt(
+        tokenAccount?.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0"
+      ),
+    BigInt(0)
+  );
 }
