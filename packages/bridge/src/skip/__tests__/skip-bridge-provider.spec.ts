@@ -1097,7 +1097,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
   /** Mirrors the live API: a single-tx-only request fails with the
    *  "no single-tx routes" error; only allow_multi_tx returns the route. */
   const useSingleTxRejectingRouteHandler = (
-    routeBodies?: Record<string, unknown>[]
+    routeBodies?: Record<string, unknown>[],
+    route: object = USDC_EthereumToOsmosisAlloy_MultiTxRoute
   ) => {
     server.use(
       http.post(
@@ -1117,10 +1118,34 @@ describe("SkipBridgeProvider multi-tx routes", () => {
               { status: 404 }
             );
           }
-          return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxRoute);
+          return HttpResponse.json(route);
         }
       )
     );
+  };
+
+  /** Skip's CCTP relayer fee as the live API reports it on this route. */
+  const cctpRelayFee = {
+    fee_type: "SMART_RELAY",
+    bridge_id: "CCTP",
+    amount: "20000",
+    usd_amount: "0.02",
+    origin_asset: {
+      denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      chain_id: "1",
+      origin_denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      origin_chain_id: "1",
+      trace: "",
+      is_cw20: false,
+      is_evm: true,
+      is_svm: false,
+      symbol: "USDC",
+      decimals: 6,
+      coingecko_id: "usd-coin",
+    },
+    chain_id: "1",
+    tx_index: 0,
+    fee_behavior: "FEE_BEHAVIOR_DEDUCTED",
   };
 
   beforeEach(() => {
@@ -1241,6 +1266,48 @@ describe("SkipBridgeProvider multi-tx routes", () => {
         coinGeckoId: "usd-coin",
       },
     ]);
+  });
+
+  it("quotes a CCTP route's relayer fee instead of showing it as free", async () => {
+    useSingleTxRejectingRouteHandler(undefined, {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      estimated_fees: [cctpRelayFee],
+    });
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transferFee).toMatchObject({
+      amount: "20000",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      decimals: 6,
+      // taken out of the transferred amount, so max inputs reserve nothing
+      isAdditive: false,
+    });
+  });
+
+  it("leaves out a relayer fee paid in an asset other than the source", async () => {
+    useSingleTxRejectingRouteHandler(undefined, {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      estimated_fees: [
+        {
+          ...cctpRelayFee,
+          origin_asset: {
+            ...cctpRelayFee.origin_asset,
+            denom: "ethereum-native",
+          },
+        },
+      ],
+    });
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transferFee.amount).toBe("0");
   });
 
   it("keeps a comparable single-tx route when multi-tx is allowed", async () => {

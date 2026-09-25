@@ -52,6 +52,7 @@ import {
 import { BridgeAssetMap } from "../utils/asset";
 import { SkipApiClient } from "./client";
 import {
+  SkipEstimatedFee,
   SkipEvmTx,
   SkipMsg,
   SkipMultiChainMsg,
@@ -254,17 +255,19 @@ export class SkipBridgeProvider implements BridgeProvider {
         // otherwise assume additive for EVM sources so max-amount inputs
         // reserve the fee (over-reserving strands fee-sized dust,
         // under-reserving fails the wallet signature).
-        const bridgeFeeBehaviors =
-          route.estimated_fees
-            ?.filter((fee) => fee.fee_type === "BRIDGE")
-            .map((fee) => fee.fee_behavior)
-            .filter(Boolean) ?? [];
         // Unknown/unspecified behaviors fall through to the EVM default so
         // they fail toward over-reserving; only an explicit DEDUCTED opts out.
-        const isAdditiveFee =
-          bridgeFeeBehaviors.includes("FEE_BEHAVIOR_ADDITIONAL") ||
-          (!bridgeFeeBehaviors.includes("FEE_BEHAVIOR_DEDUCTED") &&
-            fromChain.chainType === "evm");
+        const isAdditive = (fees: SkipEstimatedFee[]) => {
+          const behaviors = fees.map((fee) => fee.fee_behavior);
+          return (
+            behaviors.includes("FEE_BEHAVIOR_ADDITIONAL") ||
+            (!behaviors.includes("FEE_BEHAVIOR_DEDUCTED") &&
+              fromChain.chainType === "evm")
+          );
+        };
+        const isAdditiveFee = isAdditive(
+          route.estimated_fees?.filter((fee) => fee.fee_type === "BRIDGE") ?? []
+        );
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
@@ -283,6 +286,31 @@ export class SkipBridgeProvider implements BridgeProvider {
               decimals: feeAsset.decimals ?? 6,
               coinGeckoId: feeAsset.coingecko_id,
               isAdditive: isAdditiveFee,
+            };
+          }
+        }
+
+        // Routes without an Axelar leg (e.g. CCTP) pay Skip's relayer
+        // instead, and that fee only appears as a SMART_RELAY estimate.
+        // Only fees in the source asset fit the single-coin transferFee.
+        if (!route.operations.some((op) => "axelar_transfer" in op)) {
+          const relayFees =
+            route.estimated_fees?.filter(
+              (fee) =>
+                fee.fee_type === "SMART_RELAY" &&
+                fee.amount &&
+                fee.chain_id === route.source_asset_chain_id &&
+                fee.origin_asset?.denom.toLowerCase() ===
+                  route.source_asset_denom.toLowerCase()
+            ) ?? [];
+
+          if (relayFees.length > 0) {
+            transferFee = {
+              ...transferFee,
+              amount: relayFees
+                .reduce((sum, fee) => sum + BigInt(fee.amount), BigInt(0))
+                .toString(),
+              isAdditive: isAdditive(relayFees),
             };
           }
         }
