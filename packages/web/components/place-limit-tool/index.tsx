@@ -27,6 +27,7 @@ import {
 } from "~/components/complex/asset-fieldset";
 import {
   ATOM_BASE_DENOM,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
@@ -157,8 +158,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const featureFlags = useFeatureFlags();
 
     const [{ from, quote, tab, type: queryType }, set] = useQueryStates({
-      from: parseAsString.withDefault(initialBaseDenom),
-      quote: parseAsString.withDefault(initialQuoteDenom),
+      from: parseAsString
+        .withDefault(initialBaseDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS),
+      quote: parseAsString
+        .withDefault(initialQuoteDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,

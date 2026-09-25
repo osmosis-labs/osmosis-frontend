@@ -12,6 +12,7 @@ import React, { Fragment, memo, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import {
   ATOM_BASE_DENOM,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDC_NOBLE_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -101,11 +102,15 @@ export const PriceSelector = memo(
     const [tab, setTab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
       "quote",
-      parseAsString.withDefault(initialQuoteDenom)
+      parseAsString
+        .withDefault(initialQuoteDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [base, setBase] = useQueryState(
       "from",
-      parseAsString.withDefault(initialBaseDenom)
+      parseAsString
+        .withDefault(initialBaseDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
@@ -454,11 +459,15 @@ const SelectableQuotes = observer(
 
     const [base] = useQueryState(
       "from",
-      parseAsString.withDefault(ATOM_BASE_DENOM)
+      parseAsString
+        .withDefault(ATOM_BASE_DENOM)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [quote, setQuote] = useQueryState(
       "quote",
-      parseAsString.withDefault(USDC_BASE_DENOM)
+      parseAsString
+        .withDefault(USDC_BASE_DENOM)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [type] = useQueryState("type", parseAsString.withDefault("market"));
 

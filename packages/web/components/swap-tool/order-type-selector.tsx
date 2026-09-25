@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from "react";
 
 import {
   ATOM_BASE_DENOM,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -38,11 +39,15 @@ export const OrderTypeSelector = ({
   );
   const [base] = useQueryState(
     "from",
-    parseAsString.withDefault(initialBaseDenom)
+    parseAsString
+      .withDefault(initialBaseDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault(initialQuoteDenom)
+    parseAsString
+      .withDefault(initialQuoteDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
 
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
