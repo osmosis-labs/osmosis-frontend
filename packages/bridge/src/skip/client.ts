@@ -78,10 +78,7 @@ export class SkipApiClient {
       `${this.baseUrl}/v2/fungible/msgs`,
       {
         method: "POST",
-        body: JSON.stringify({
-          ...options,
-          slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
-        }),
+        body: JSON.stringify(options),
       }
     );
   }
