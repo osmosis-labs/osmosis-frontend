@@ -4,6 +4,7 @@ import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
 
 import { captureIfError } from "../../../utils";
+import { queryPortfolioCurrent } from "../../data-services/portfolio-current";
 import { Categories, queryPortfolioAssets } from "../../sidecar";
 import { getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
@@ -154,7 +155,6 @@ export type PortfolioAssets = {
   all: Allocation[];
   assets: Allocation[];
   available: Allocation[];
-  totalCap: PricePretty;
   assetVariants: AssetVariant[];
   /**
    * Assets the user holds across all categories (bank balances, staked,
@@ -198,11 +198,6 @@ export async function getPortfolioAssets({
     allocationLimit
   );
 
-  const totalCap = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(categories["total-assets"].capitalization)
-  );
-
   // Update userBalanceDenoms to be a list of objects with denom and amount
   const userBalanceDenoms =
     categories["user-balances"]?.account_coins_result?.map((result) => ({
@@ -220,7 +215,6 @@ export async function getPortfolioAssets({
     all: allocations,
     assets,
     available,
-    totalCap,
     assetVariants,
     heldAssets,
   };
@@ -287,4 +281,23 @@ export function checkAssetVariants(
       return null;
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item));
+}
+
+/**
+ * Gets the user's portfolio total value directly from Numia API.
+ * This is an alternative to using the totalCap calculated from portfolio assets.
+ */
+export async function getPortfolioCurrentValue({
+  address,
+}: {
+  address: string;
+}): Promise<PricePretty> {
+  try {
+    const { usd } = await queryPortfolioCurrent({ address });
+    return new PricePretty(DEFAULT_VS_CURRENCY, new Dec(usd.toString()));
+  } catch (error) {
+    console.error("Error fetching portfolio current value from Numia:", error);
+    // Return a zero value on error
+    return new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+  }
 }
