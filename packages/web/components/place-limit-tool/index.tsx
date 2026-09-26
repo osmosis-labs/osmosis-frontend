@@ -27,6 +27,7 @@ import {
 } from "~/components/complex/asset-fieldset";
 import {
   ATOM_BASE_DENOM,
+  deferQueryCorrection,
   TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -203,11 +204,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     useEffect(() => {
       if (from === quote) {
-        if (quote === USDC_BASE_DENOM) {
-          set({ quote: USDT_BASE_DENOM });
-        } else {
-          set({ quote: USDC_BASE_DENOM });
-        }
+        return deferQueryCorrection(() =>
+          set({
+            quote:
+              quote === USDC_BASE_DENOM ? USDT_BASE_DENOM : USDC_BASE_DENOM,
+          })
+        );
       }
     }, [from, quote, set]);
 

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from "react";
 
 import {
   ATOM_BASE_DENOM,
+  deferQueryCorrection,
   TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
@@ -64,13 +65,15 @@ export const OrderTypeSelector = ({
 
   useEffect(() => {
     if (type === "limit" && !hasOrderbook && !isLoading) {
-      setType("market");
+      return deferQueryCorrection(() => setType("market"));
     } else if (
       type === "limit" &&
       !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote) &&
       selectableQuotes.length > 0
     ) {
-      setQuote(selectableQuotes[0].coinMinimalDenom);
+      return deferQueryCorrection(() =>
+        setQuote(selectableQuotes[0].coinMinimalDenom)
+      );
     }
   }, [
     hasOrderbook,
@@ -84,9 +87,8 @@ export const OrderTypeSelector = ({
 
   /**
    * Switch to a quote the base's orderbooks support in the same update as
-   * the order type. Leaving it to the effect above means the quote changes
-   * right after the click, and the trade tool's `quote` hooks then flip
-   * between the old and new value on every render, freezing the page.
+   * the order type, so the limit tool never renders with an unsupported
+   * quote. The effect above only catches cases this click doesn't cover.
    */
   const selectType = (id: UITradeType["id"]) => {
     if (

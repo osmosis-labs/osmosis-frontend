@@ -170,10 +170,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
     }
 
     /**
-     * The Buy/Sell tools need a valid quote from the first render. An empty
-     * or same-as-asset quote gets corrected by an effect right after the
-     * Buy/Sell click, and the trade tool's `quote` hooks then flip between
-     * the two values on every render, freezing the page.
+     * Give the Buy/Sell tools a valid quote from the first render. An empty
+     * or same-as-asset quote would only be fixed by an effect after the
+     * Buy/Sell click, which is the pattern that froze this page.
      */
     const quoteDenom =
       previousTrade?.quoteDenom &&

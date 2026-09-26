@@ -16,3 +16,19 @@ export const USDT_BASE_DENOM =
  * their own default, which silently swaps the selected asset.
  */
 export const TRADE_PAIR_QUERY_OPTIONS = { clearOnDefault: false } as const;
+
+/**
+ * Runs an effect's correction to the trade tool's query params (e.g. swapping
+ * a quote the pair has no orderbook for) on the next task, and returns the
+ * effect cleanup.
+ *
+ * Several mounted tools read these params through separate nuqs hooks. When a
+ * click updates a param and an effect corrects it in the same React batch,
+ * nuqs' cross-hook sync keeps replaying the clicked value, the hooks flip
+ * between the two values on every render and the page freezes. Deferring the
+ * correction lets the click's update commit first, so the hooks converge.
+ */
+export function deferQueryCorrection(correct: () => void) {
+  const timeout = setTimeout(correct);
+  return () => clearTimeout(timeout);
+}
