@@ -4,6 +4,8 @@ import React, { useEffect, useMemo } from "react";
 
 import {
   ATOM_BASE_DENOM,
+  deferQueryCorrection,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -38,11 +40,15 @@ export const OrderTypeSelector = ({
   );
   const [base] = useQueryState(
     "from",
-    parseAsString.withDefault(initialBaseDenom)
+    parseAsString
+      .withDefault(initialBaseDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault(initialQuoteDenom)
+    parseAsString
+      .withDefault(initialQuoteDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
 
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
@@ -59,13 +65,15 @@ export const OrderTypeSelector = ({
 
   useEffect(() => {
     if (type === "limit" && !hasOrderbook && !isLoading) {
-      setType("market");
+      return deferQueryCorrection(() => setType("market"));
     } else if (
       type === "limit" &&
       !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote) &&
       selectableQuotes.length > 0
     ) {
-      setQuote(selectableQuotes[0].coinMinimalDenom);
+      return deferQueryCorrection(() =>
+        setQuote(selectableQuotes[0].coinMinimalDenom)
+      );
     }
   }, [
     hasOrderbook,
@@ -76,6 +84,22 @@ export const OrderTypeSelector = ({
     quote,
     isLoading,
   ]);
+
+  /**
+   * Switch to a quote the base's orderbooks support in the same update as
+   * the order type, so the limit tool never renders with an unsupported
+   * quote. The effect above only catches cases this click doesn't cover.
+   */
+  const selectType = (id: UITradeType["id"]) => {
+    if (
+      id === "limit" &&
+      selectableQuotes.length > 0 &&
+      !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote)
+    ) {
+      setQuote(selectableQuotes[0].coinMinimalDenom);
+    }
+    setType(id);
+  };
 
   const { data: baseAsset } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: base,
@@ -132,7 +156,7 @@ export const OrderTypeSelector = ({
           >
             <button
               type="button"
-              onClick={() => setType(id)}
+              onClick={() => selectType(id)}
               className={classNames(
                 "sm:body2 -m-px rounded-[22px] px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50 sm:px-3 sm:py-1.5",
                 {
