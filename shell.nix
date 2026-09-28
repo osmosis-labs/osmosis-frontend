@@ -2,7 +2,7 @@ with import <nixpkgs> {};
 mkShell {
   packages = [
     yarn
-    nodejs
+    nodejs_24
   ];
 
   # Enable nix-ld, read here more:

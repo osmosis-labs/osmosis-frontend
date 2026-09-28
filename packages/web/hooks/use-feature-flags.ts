@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
+// Mirrors the values production serves. Only used in local dev without a
+// LaunchDarkly client ID; deployed builds take every value from LaunchDarkly.
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
@@ -18,15 +20,15 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,
-  advancedChart: false,
-  inGivenOut: false,
-  sqsActiveOrders: false,
-  alloyedAssets: false,
-  assetAlerts: false,
-  incentivizePool: false,
-  bridgeDepositAddress: false,
-  nomicWithdrawAmount: false,
-  swapToolTopGainers: false,
+  advancedChart: true,
+  inGivenOut: true,
+  sqsActiveOrders: true,
+  alloyedAssets: true,
+  assetAlerts: true,
+  incentivizePool: true,
+  bridgeDepositAddress: true,
+  nomicWithdrawAmount: true,
+  swapToolTopGainers: true,
   swapped: true,
   onrampmoney: true,
   multiTxBridgeRoutes: true,
