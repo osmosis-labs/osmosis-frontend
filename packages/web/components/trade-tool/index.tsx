@@ -7,6 +7,7 @@ import {
   PropsWithChildren,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -38,13 +39,23 @@ interface TradeToolProps {
  * statically optimised page `router.query` is empty until the router is
  * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
  * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
+ *
+ * Readiness goes through state set in an effect rather than `isReady`
+ * directly: a page without query params can be ready on the first browser
+ * render but never during static rendering, and rendering the tool on that
+ * first render would not match the server markup.
  */
 export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   props
 ) => {
   const { isReady } = useRouter();
+  const [canRender, setCanRender] = useState(false);
 
-  if (!isReady) return null;
+  useEffect(() => {
+    if (isReady) setCanRender(true);
+  }, [isReady]);
+
+  if (!canRender) return null;
 
   return <TradeToolContent {...props} />;
 };
