@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -7,6 +8,16 @@ import { ALLOYED_ASSETS_DASHBOARD_URL } from "~/config/env";
 import { useTranslation } from "~/hooks";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
+
+/**
+ * Backing history page for an alloyed asset on the alloy dashboard. The
+ * dashboard redirects an alloyed denom to the pool that currently issues it,
+ * so the link survives a pool redeploy.
+ */
+export const getAlloyBackingHistoryUrl = (coinMinimalDenom: string) =>
+  `${ALLOYED_ASSETS_DASHBOARD_URL}/alloys/${encodeURIComponent(
+    coinMinimalDenom
+  )}`;
 
 interface AlloyedAssetsSectionProps {
   className?: string;
@@ -30,6 +41,24 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
         enabled: Boolean(contractAddress),
       }
     );
+
+  // Largest share of the alloy first; assets without a percentage go last.
+  const sortedAlloyedAssets = useMemo(
+    () =>
+      alloyedAssets
+        ? [...alloyedAssets].sort((a, b) => {
+            if (!a.percentage || !b.percentage) {
+              return a.percentage ? -1 : b.percentage ? 1 : 0;
+            }
+            const aShare = a.percentage.toDec();
+            const bShare = b.percentage.toDec();
+            if (aShare.gt(bShare)) return -1;
+            if (aShare.lt(bShare)) return 1;
+            return 0;
+          })
+        : undefined,
+    [alloyedAssets]
+  );
 
   if (isLoading) {
     return (
@@ -67,7 +96,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
     );
   }
 
-  if (!alloyedAssets) {
+  if (!sortedAlloyedAssets) {
     return null;
   }
 
@@ -92,22 +121,8 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
         </Link>
       </p>
 
-      <Link
-        // The dashboard redirects an alloyed denom to the pool that currently
-        // issues it, so the link survives a pool redeploy.
-        href={`${ALLOYED_ASSETS_DASHBOARD_URL}/alloys/${encodeURIComponent(
-          coinMinimalDenom
-        )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mb-6 inline-flex items-center gap-1 text-body2 font-medium text-wosmongton-300"
-      >
-        {t("tokenInfos.underlyingAssets.viewBackingHistory")}
-        <Icon id="external-link" className="h-4 w-4" aria-hidden />
-      </Link>
-
       <div className="flex flex-col gap-8">
-        {alloyedAssets.map((alloyedAsset) => (
+        {sortedAlloyedAssets.map((alloyedAsset) => (
           <Link
             href={`/assets/${alloyedAsset.asset.coinMinimalDenom}`}
             key={alloyedAsset.asset.coinMinimalDenom}
@@ -139,7 +154,8 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
 
             <div className="ml-auto">
               <p className="mb-1 text-subtitle1 font-semibold">
-                {alloyedAsset.percentage?.toString()}
+                {/* Two decimals keep tiny shares to "< 0.01%" so they fit */}
+                {alloyedAsset.percentage?.maxDecimals(2).toString()}
               </p>
 
               <p className="text-right text-body2 font-medium text-osmoverse-300">
@@ -154,6 +170,16 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
           </Link>
         ))}
       </div>
+
+      <Link
+        href={getAlloyBackingHistoryUrl(coinMinimalDenom)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-6 inline-flex items-center gap-1 text-body2 font-medium text-wosmongton-300"
+      >
+        {t("tokenInfos.underlyingAssets.viewBackingHistory")}
+        <Icon id="external-link" className="h-3.5 w-3.5" aria-hidden />
+      </Link>
     </section>
   );
 };
