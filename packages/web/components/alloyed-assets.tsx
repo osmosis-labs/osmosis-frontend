@@ -153,8 +153,9 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
             </div>
 
             <div className="ml-auto">
-              <p className="mb-1 text-subtitle1 font-semibold">
-                {/* Two decimals keep tiny shares to "< 0.01%" so they fit */}
+              <p className="mb-1 whitespace-nowrap text-subtitle1 font-semibold">
+                {/* Two decimals keep tiny shares to "< 0.01%"; nowrap stops it
+                    splitting at the formatter's space */}
                 {alloyedAsset.percentage?.maxDecimals(2).toString()}
               </p>
 
