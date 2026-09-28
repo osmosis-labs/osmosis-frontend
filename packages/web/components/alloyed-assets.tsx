@@ -110,7 +110,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
         {t("tokenInfos.underlyingAssets.description", {
           name: title ?? denom,
           denom,
-          count: alloyedAssets.length.toString(),
+          count: sortedAlloyedAssets.length.toString(),
         })}{" "}
         <Link
           href="https://forum.osmosis.zone/t/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation/2624"
