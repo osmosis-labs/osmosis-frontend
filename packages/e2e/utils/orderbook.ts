@@ -8,7 +8,10 @@
  * that need an order to stay open read the book's best bid from here.
  */
 
-import { REST_ENDPOINT, SQS_BASE_URL } from "./config";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+
+import { SQS_BASE_URL } from "./config";
+import { OSMOSIS_RPC } from "./order-utils";
 
 interface CanonicalOrderbook {
   base: string;
@@ -52,28 +55,21 @@ export async function getOrderbookBestBid({
     }
 
     // With the quote as `quote_asset_denom`, the contract's spot price is the
-    // price a seller of the base gets now, i.e. the best bid.
-    const query = Buffer.from(
-      JSON.stringify({
+    // price a seller of the base gets now, i.e. the best bid. Queried over RPC
+    // because lcd.osmosis.zone rejects CosmWasm smart queries with a 403.
+    const client = await CosmWasmClient.connect(OSMOSIS_RPC);
+    const { spot_price } = (await client.queryContractSmart(
+      orderbook.contract_address,
+      {
         spot_price: {
           quote_asset_denom: quoteDenom,
           base_asset_denom: baseDenom,
         },
-      })
-    ).toString("base64");
-    const spotResponse = await fetch(
-      `${REST_ENDPOINT}/cosmwasm/wasm/v1/contract/${orderbook.contract_address}/smart/${query}`,
-      { signal: AbortSignal.timeout(15_000) }
-    );
-    if (!spotResponse.ok) {
-      throw new Error(`spot_price: ${spotResponse.status}`);
-    }
-    const { data } = (await spotResponse.json()) as {
-      data?: { spot_price?: string };
-    };
-    const rawPrice = Number(data?.spot_price);
+      }
+    )) as { spot_price?: string };
+    const rawPrice = Number(spot_price);
     if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
-      throw new Error(`unexpected spot_price: ${data?.spot_price}`);
+      throw new Error(`unexpected spot_price: ${spot_price}`);
     }
 
     const bestBid = rawPrice * 10 ** (baseExponent - quoteExponent);
