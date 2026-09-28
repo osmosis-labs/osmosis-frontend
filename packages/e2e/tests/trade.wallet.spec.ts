@@ -3,6 +3,7 @@ import { TradePage } from "../pages/trade-page";
 import { TransactionsPage } from "../pages/transactions-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { getOrderbookBestBid } from "../utils/orderbook";
 import { resolveAppUsdcDenom } from "../utils/usdc-identity";
 import { deriveAddress } from "../utils/wallet-utils";
 
@@ -127,6 +128,24 @@ test.describe("Test Trade feature", () => {
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount(amount);
     await tradePage.setLimitPriceChange("10%");
+    // The preset is 10% above the market price, but the thin OSMO orderbook
+    // can hold bids above that. An ask at or below the best bid fills at
+    // placement and leaves nothing to cancel, so price it above the book.
+    const bestBid = await getOrderbookBestBid({
+      baseDenom: "uosmo",
+      quoteDenom: USDC,
+      baseExponent: 6,
+      quoteExponent: 6,
+    });
+    if (
+      bestBid !== undefined &&
+      Number(await tradePage.getLimitPrice()) <= bestBid * 1.02
+    ) {
+      // 4 significant digits, matching how the app formats prices below 100.
+      await tradePage.setLimitPrice(
+        String(Number((bestBid * 1.1).toPrecision(4)))
+      );
+    }
     const limitPrice = await tradePage.getLimitPrice();
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context, {
       maxRetries: 2,
