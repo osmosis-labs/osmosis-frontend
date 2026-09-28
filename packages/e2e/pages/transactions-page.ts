@@ -171,10 +171,18 @@ export class TransactionsPage extends BasePage {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
-      const msgContentAmount = await result.page
-        .getByText("Execute contract")
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      // A partially filled order is cancelled with a claim_limit and a
+      // cancel_limit in the same tx, so the popup can hold two messages.
+      const executeMsgs = result.page.getByText("Execute contract");
+      await expect(executeMsgs.first()).toBeVisible();
+      const msgContents = await executeMsgs.allTextContents();
+      console.log(
+        `Wallet is approving ${msgContents.length} msg(s): \n${msgContents.join(
+          "\n"
+        )}`
+      );
+      const msgContentAmount =
+        msgContents.find((msg) => msg.includes("cancel_limit")) ?? "";
       await approveBtn.click();
       expect(msgContentAmount).toContain("cancel_limit");
       await successPromise;
