@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Icon } from "~/components/assets";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
+import { ALLOYED_ASSETS_DASHBOARD_URL } from "~/config/env";
 import { useTranslation } from "~/hooks";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
@@ -12,10 +13,12 @@ interface AlloyedAssetsSectionProps {
   contractAddress: string;
   title: string;
   denom: string;
+  /** Minimal denom of the alloyed asset, for its page on the alloy dashboard. */
+  coinMinimalDenom: string;
 }
 
 export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
-  const { contractAddress, title, denom, className } = props;
+  const { contractAddress, title, denom, coinMinimalDenom, className } = props;
   const { t } = useTranslation();
 
   const { data: alloyedAssets, isLoading } =
@@ -88,6 +91,20 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
           {t("pool.learnMore")}
         </Link>
       </p>
+
+      <Link
+        // The dashboard redirects an alloyed denom to the pool that currently
+        // issues it, so the link survives a pool redeploy.
+        href={`${ALLOYED_ASSETS_DASHBOARD_URL}/alloys/${encodeURIComponent(
+          coinMinimalDenom
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mb-6 inline-flex items-center gap-1 text-body2 font-medium text-wosmongton-300"
+      >
+        {t("tokenInfos.underlyingAssets.viewBackingHistory")}
+        <Icon id="external-link" className="h-4 w-4" aria-hidden />
+      </Link>
 
       <div className="flex flex-col gap-8">
         {alloyedAssets.map((alloyedAsset) => (

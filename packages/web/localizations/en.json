@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",
-      "of": "of {denom}"
+      "of": "of {denom}",
+      "viewBackingHistory": "View backing history"
     }
   },
   "osmosisUpdates": {

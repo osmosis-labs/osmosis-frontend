@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
-      "of": "{denom}"
+      "of": "{denom}",
+      "viewBackingHistory": "裏付け資産の履歴を見る"
     }
   },
   "osmosisUpdates": {

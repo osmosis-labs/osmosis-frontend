@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",
-      "of": "of {denom}"
+      "of": "of {denom}",
+      "viewBackingHistory": "مشاهده تاریخچه پشتوانه"
     }
   },
   "osmosisUpdates": {
