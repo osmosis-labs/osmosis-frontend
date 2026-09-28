@@ -57,16 +57,24 @@ export async function getOrderbookBestBid({
     // With the quote as `quote_asset_denom`, the contract's spot price is the
     // price a seller of the base gets now, i.e. the best bid. Queried over RPC
     // because lcd.osmosis.zone rejects CosmWasm smart queries with a 403.
-    const client = await CosmWasmClient.connect(OSMOSIS_RPC);
-    const { spot_price } = (await client.queryContractSmart(
-      orderbook.contract_address,
-      {
-        spot_price: {
-          quote_asset_denom: quoteDenom,
-          base_asset_denom: baseDenom,
-        },
-      }
-    )) as { spot_price?: string };
+    // CosmJS 0.32 has no request timeout, so race it to keep a stalled RPC
+    // from blocking the test past the fallback.
+    const rpcTimeout = AbortSignal.timeout(15_000);
+    const { spot_price } = (await Promise.race([
+      CosmWasmClient.connect(OSMOSIS_RPC).then((client) =>
+        client.queryContractSmart(orderbook.contract_address, {
+          spot_price: {
+            quote_asset_denom: quoteDenom,
+            base_asset_denom: baseDenom,
+          },
+        })
+      ),
+      new Promise<never>((_, reject) =>
+        rpcTimeout.addEventListener("abort", () =>
+          reject(new Error("spot_price: RPC timed out after 15s"))
+        )
+      ),
+    ])) as { spot_price?: string };
     const rawPrice = Number(spot_price);
     if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
       throw new Error(`unexpected spot_price: ${spot_price}`);
