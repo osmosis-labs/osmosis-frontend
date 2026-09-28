@@ -6,9 +6,22 @@ import {
   test,
 } from "@playwright/test";
 
-import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
+import {
+  SEQUENCE_RETRY_DELAY_MS,
+  buildExplorerTxUrl,
+  isSequenceMismatch,
+  pollTxOnChain,
+} from "../utils/tx-confirm";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage } from "./keplr-helper";
+
+/**
+ * XPath predicate matching a displayed price such as "$1.80" to a limit price
+ * such as "1.8". The orders table pads trailing zeros that the price input
+ * trims, so an exact text match misses those orders.
+ */
+const priceEquals = (price: string | number) =>
+  `number(translate(normalize-space(.), '$,', ''))=${Number(price)}`;
 
 /**
  * Page object for the /transactions view and limit-order actions (cancel, claim).
@@ -127,7 +140,9 @@ export class TransactionsPage extends BasePage {
     price: string,
     context: BrowserContext
   ) {
-    const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[.='$${price}']/../../..//button`;
+    const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[${priceEquals(
+      price
+    )}]/../../..//button`;
     console.log(`Use locator for a cancel btn: ${cancelBtn}`);
 
     const cancelBtnLocator = this.page.locator(cancelBtn).first();
@@ -148,6 +163,24 @@ export class TransactionsPage extends BasePage {
       throw error;
     }
 
+    // Another run on the shared wallet can use up the account sequence between
+    // signing and broadcast. The order is still open then, so sign it again
+    // once the next block has updated the sequence.
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await this.submitCancel(cancelBtnLocator, context);
+      } catch (error) {
+        if (attempt >= 2 || !isSequenceMismatch(error)) throw error;
+        console.warn("Cancel hit an account sequence mismatch; retrying.");
+        await this.page.waitForTimeout(SEQUENCE_RETRY_DELAY_MS);
+      }
+    }
+  }
+
+  private async submitCancel(
+    cancelBtnLocator: Locator,
+    context: BrowserContext
+  ) {
     // Armed before the click so the broadcast response can't be missed; this
     // also absorbs the stale-toast guard (see startTxConfirmation).
     const successPromise = this.startTxConfirmation();
@@ -346,7 +379,7 @@ export class TransactionsPage extends BasePage {
   }
 
   async isFilledByLimitPrice(price: string | number) {
-    const loc = `//td//span[.='Filled']/../../..//td//p[.='$${price}']`;
+    const loc = `//td//span[.='Filled']/../../..//td//p[${priceEquals(price)}]`;
     console.log(`Use Limit Order locator: ${loc}`);
     await expect(this.page.locator(loc).first()).toBeVisible({
       timeout: 120_000,
