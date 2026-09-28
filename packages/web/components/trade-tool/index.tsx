@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import {
   FunctionComponent,
@@ -32,7 +33,23 @@ interface TradeToolProps {
   setPreviousTrade: (trade: PreviousTrade) => void;
 }
 
-export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
+/**
+ * The trade tool's tab, order type and denoms all live in the URL. On a
+ * statically optimised page `router.query` is empty until the router is
+ * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
+ * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
+ */
+export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
+  props
+) => {
+  const { isReady } = useRouter();
+
+  if (!isReady) return null;
+
+  return <TradeToolContent {...props} />;
+};
+
+const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> =
   observer(
     ({ page, swapToolProps, previousTrade, setPreviousTrade, children }) => {
       const { logEvent } = useAmplitudeAnalytics();
