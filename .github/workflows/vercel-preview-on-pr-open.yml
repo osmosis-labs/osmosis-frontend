@@ -1,0 +1,94 @@
+name: Vercel preview on PR open
+
+# Vercel only builds a preview for a branch with an open PR
+# (.github/scripts/vercel-ignore-build.sh). A branch pushed before its PR
+# exists has its preview skipped, and opening the PR doesn't trigger a build,
+# so this deploys the PR's head commit when the PR opens. Without a preview,
+# the preview E2E suite (started by Vercel's deployment_status) never runs and
+# the PR's required checks never report.
+on:
+  pull_request:
+    types: [opened, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-if-skipped:
+    # Fork PRs have no access to the Vercel token.
+    if: github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      checks: read
+      statuses: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+          REPO: ${{ github.repository }}
+          REPO_ID: ${{ github.event.repository.id }}
+          REF: ${{ github.event.pull_request.head.ref }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          DRAFT: ${{ github.event.pull_request.draft }}
+          VERCEL_STATUS_CONTEXT: "Vercel – osmosis-frontend"
+        run: |
+          set -euo pipefail
+
+          # Let Vercel settle the push-triggered deployment for this commit
+          # first: it is either building (nothing to do) or was skipped by the
+          # ignore step because the PR didn't exist yet (deploy it now).
+          STATE=""
+          for _ in $(seq 1 30); do
+            STATUS=$(gh api "repos/$REPO/commits/$SHA/statuses?per_page=100" \
+              --jq "[.[] | select(.context == \"$VERCEL_STATUS_CONTEXT\")][0] // empty | \"\(.state)|\(.description)\"")
+            STATE="${STATUS%%|*}"
+            DESCRIPTION="${STATUS#*|}"
+            [ -n "$STATE" ] && [ "$STATE" != "pending" ] && break
+            sleep 20
+          done
+
+          if [ "$STATE" = "success" ] && [[ "$DESCRIPTION" != *"Ignored Build Step"* ]]; then
+            # The preview exists. E2E starts from its deployment_status, but
+            # if that fired while this PR didn't exist (or was closed), the
+            # run skipped, and skipped required checks count as passing: the
+            # PR would look green with no E2E. Drafts don't run E2E; marking
+            # one ready starts it from the existing preview.
+            if [ "$DRAFT" = "true" ]; then
+              echo "Vercel already built $SHA and the PR is a draft; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            # Give a deployment_status run that is resolving right now (the
+            # PR may have opened moments after the build finished) time to
+            # create its checks.
+            sleep 60
+            E2E=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=preview-trade-tests&per_page=100" \
+              --jq '[.check_runs[] | select(.status != "completed" or .conclusion != "skipped")] | length')
+            if [ "$E2E" != "0" ]; then
+              echo "Vercel already built $SHA and E2E ran or is running; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Vercel built $SHA but E2E never ran for it; redeploying so it does." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "$STATE" = "pending" ]; then
+            echo "Vercel is still building $SHA; its own deployment will start E2E." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # Skipped, never tested, or no status at all: deploy the head commit.
+          # forceNew, because Vercel otherwise returns the existing deployment
+          # for a commit it has already seen.
+          echo "Deploying $SHA ($REF): Vercel status was '${STATE:-none}' ${DESCRIPTION:+($DESCRIPTION)}" | tee -a "$GITHUB_STEP_SUMMARY"
+          RESPONSE=$(jq -n \
+            --arg project "$VERCEL_PROJECT" \
+            --arg ref "$REF" \
+            --arg sha "$SHA" \
+            --argjson repoId "$REPO_ID" \
+            '{name: "osmosis-frontend", project: $project, gitSource: {type: "github", repoId: $repoId, ref: $ref, sha: $sha}}' |
+            curl -fsS -X POST "https://api.vercel.com/v13/deployments?forceNew=1" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data @-)
+          echo "Created Vercel deployment $(jq -r '.id' <<< "$RESPONSE") ($(jq -r '.url' <<< "$RESPONSE"))." | tee -a "$GITHUB_STEP_SUMMARY"
