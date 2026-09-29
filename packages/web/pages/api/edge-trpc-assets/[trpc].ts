@@ -22,12 +22,14 @@ export default async function handler(req: NextRequest) {
     router: edgeRouter,
     req,
     createContext: createEdgeTrpcContext,
-    responseMeta: ({ paths, type, errors }) => {
+    responseMeta: ({ paths, type, errors, data, eagerGeneration }) => {
       const cacheControl = getAssetsCdnCacheControl({
         url: req.url,
         paths,
         type,
         errorCount: errors.length,
+        results: data,
+        eagerGeneration,
       });
       return cacheControl ? { headers: { "Cache-Control": cacheControl } } : {};
     },

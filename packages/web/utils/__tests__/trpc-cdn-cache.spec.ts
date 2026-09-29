@@ -31,7 +31,7 @@ describe("getAssetsCdnCacheControl", () => {
         ["assets.getMarketAsset"],
         [{ findMinDenomOrSymbol: "OSMO" }]
       )
-    ).toBe("public, s-maxage=30");
+    ).toBe("public, s-maxage=10");
   });
 
   it("uses the shortest max age in a batch", () => {
@@ -41,7 +41,7 @@ describe("getAssetsCdnCacheControl", () => {
         [{ coinGeckoId: "osmosis" }, { findMinDenomOrSymbol: "OSMO" }],
         true
       )
-    ).toBe("public, s-maxage=30");
+    ).toBe("public, s-maxage=10");
   });
 
   it("does not cache a batch containing a procedure off the allowlist", () => {
@@ -101,6 +101,78 @@ describe("getAssetsCdnCacheControl", () => {
         errorCount: 0,
       })
     ).toBeUndefined();
+  });
+});
+
+describe("getAssetsCdnCacheControl guards", () => {
+  const paths = ["assets.getAssetHistoricalPrice"];
+  const url = queryUrl(paths, [{ coinMinimalDenom: "uosmo", timeFrame: "1D" }]);
+  const ok = (data: unknown) => ({ result: { data } });
+
+  it("does not cache streamed batches, whose headers precede the results", () => {
+    expect(
+      getAssetsCdnCacheControl({
+        url,
+        paths,
+        type: "query",
+        errorCount: 0,
+        eagerGeneration: true,
+      })
+    ).toBeUndefined();
+  });
+
+  it("does not cache empty results, which may be upstream-failure fallbacks", () => {
+    expect(
+      getAssetsCdnCacheControl({
+        url,
+        paths,
+        type: "query",
+        errorCount: 0,
+        results: [ok([])],
+      })
+    ).toBeUndefined();
+    expect(
+      getAssetsCdnCacheControl({
+        url: queryUrl(
+          ["assets.getAssetPairHistoricalPrice"],
+          [
+            {
+              poolId: "1",
+              baseCoinMinimalDenom: "a",
+              quoteCoinMinimalDenom: "b",
+              timeDuration: "7d",
+            },
+          ]
+        ),
+        paths: ["assets.getAssetPairHistoricalPrice"],
+        type: "query",
+        errorCount: 0,
+        results: [ok({ prices: [], min: 0, max: 0 })],
+      })
+    ).toBeUndefined();
+  });
+
+  it("caches non-empty results", () => {
+    expect(
+      getAssetsCdnCacheControl({
+        url,
+        paths,
+        type: "query",
+        errorCount: 0,
+        results: [ok([{ time: 1, close: 1 }])],
+      })
+    ).toBe("public, s-maxage=60");
+  });
+
+  it("does not cache inputs with any user address key", () => {
+    for (const key of ["osmoAddress", "userCosmosAddress", "userEvmAddress"]) {
+      expect(
+        cacheControl(
+          ["assets.getMarketAsset"],
+          [{ findMinDenomOrSymbol: "OSMO", [key]: "someaddress" }]
+        )
+      ).toBeUndefined();
+    }
   });
 });
 
