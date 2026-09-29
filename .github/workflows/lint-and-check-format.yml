@@ -63,7 +63,7 @@ jobs:
       - name: Type check web
         run: corepack yarn workspace @osmosis-labs/web typecheck
 
-  test:
+  lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
