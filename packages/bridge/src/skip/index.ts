@@ -447,23 +447,61 @@ export class SkipBridgeProvider implements BridgeProvider {
         // instead, and that fee only appears as a SMART_RELAY estimate.
         // Only fees in the source asset fit the single-coin transferFee.
         if (!route.operations.some((op) => "axelar_transfer" in op)) {
-          const relayFees =
+          const isSameAsset = (
+            fee: SkipEstimatedFee,
+            chainId: string,
+            denom: string
+          ) =>
+            fee.chain_id === chainId &&
+            fee.origin_asset?.denom.toLowerCase() === denom.toLowerCase();
+          const sumAmounts = (fees: SkipEstimatedFee[]) =>
+            fees
+              .reduce((sum, fee) => sum + BigInt(fee.amount), BigInt(0))
+              .toString();
+
+          const allRelayFees =
             route.estimated_fees?.filter(
-              (fee) =>
-                fee.fee_type === "SMART_RELAY" &&
-                fee.amount &&
-                fee.chain_id === route.source_asset_chain_id &&
-                fee.origin_asset?.denom.toLowerCase() ===
-                  route.source_asset_denom.toLowerCase()
+              (fee) => fee.fee_type === "SMART_RELAY" && fee.amount
             ) ?? [];
+          const relayFees = allRelayFees.filter((fee) =>
+            isSameAsset(
+              fee,
+              route.source_asset_chain_id,
+              route.source_asset_denom
+            )
+          );
+          const otherAsset = allRelayFees[0]?.origin_asset;
 
           if (relayFees.length > 0) {
             transferFee = {
               ...transferFee,
-              amount: relayFees
-                .reduce((sum, fee) => sum + BigInt(fee.amount), BigInt(0))
-                .toString(),
+              amount: sumAmounts(relayFees),
               isAdditive: isAdditive(relayFees),
+            };
+          } else if (
+            // Withdrawals through Noble CCTP pay the relayer on noble-1 in
+            // uusdc, so report the fee in that asset when it is the only one.
+            otherAsset &&
+            allRelayFees.every((fee) =>
+              isSameAsset(fee, allRelayFees[0].chain_id, otherAsset.denom)
+            )
+          ) {
+            transferFee = {
+              amount: sumAmounts(allRelayFees),
+              denom: otherAsset.symbol ?? otherAsset.denom,
+              chainId: otherAsset.is_evm
+                ? Number(otherAsset.chain_id)
+                : otherAsset.chain_id,
+              address: otherAsset.is_evm
+                ? otherAsset.token_contract ?? NativeEVMTokenConstantAddress
+                : otherAsset.denom,
+              decimals: otherAsset.decimals ?? 6,
+              coinGeckoId: otherAsset.coingecko_id,
+              // A fee paid off the source chain can't be reserved from the
+              // source balance, so only an explicit ADDITIONAL counts.
+              isAdditive: allRelayFees.some(
+                (fee) => fee.fee_behavior === "FEE_BEHAVIOR_ADDITIONAL"
+              ),
             };
           }
         }

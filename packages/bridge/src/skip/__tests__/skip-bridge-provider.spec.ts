@@ -1568,18 +1568,26 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     });
   });
 
-  it("leaves out a relayer fee paid in an asset other than the source", async () => {
+  /** Withdrawals through Noble CCTP pay the relayer on noble-1 in uusdc. */
+  const nobleRelayFee = {
+    ...cctpRelayFee,
+    amount: "8178",
+    origin_asset: {
+      ...cctpRelayFee.origin_asset,
+      denom: "uusdc",
+      chain_id: "noble-1",
+      origin_denom: "uusdc",
+      origin_chain_id: "noble-1",
+      is_evm: false,
+      symbol: "USDC.n",
+    },
+    chain_id: "noble-1",
+  };
+
+  it("quotes a relayer fee paid off the source chain in its own asset", async () => {
     useSingleTxRejectingRouteHandler(undefined, {
       ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
-      estimated_fees: [
-        {
-          ...cctpRelayFee,
-          origin_asset: {
-            ...cctpRelayFee.origin_asset,
-            denom: "ethereum-native",
-          },
-        },
-      ],
+      estimated_fees: [nobleRelayFee],
     });
 
     const quote = await provider.getQuote({
@@ -1587,7 +1595,32 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       allowMultiTx: true,
     });
 
-    expect(quote.transferFee.amount).toBe("0");
+    expect(quote.transferFee).toEqual({
+      amount: "8178",
+      denom: "USDC.n",
+      chainId: "noble-1",
+      address: "uusdc",
+      decimals: 6,
+      coinGeckoId: "usd-coin",
+      isAdditive: false,
+    });
+  });
+
+  it("quotes only the source-asset part of relayer fees split across assets", async () => {
+    useSingleTxRejectingRouteHandler(undefined, {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      estimated_fees: [cctpRelayFee, nobleRelayFee],
+    });
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transferFee).toMatchObject({
+      amount: "20000",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    });
   });
 
   it("keeps a comparable single-tx route when multi-tx is allowed", async () => {
