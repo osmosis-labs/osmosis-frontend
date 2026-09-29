@@ -52,20 +52,53 @@ export class TradePage extends BasePage {
   private lastTxHash?: string;
   /** Request and response of the most recent failed router quote, logged when the swap button shows "Error". */
   private lastQuoteError?: string;
+  private quoteRequestCount = 0;
+  private lastQuoteErrorSeq = 0;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
     // The swap button only ever reads "Error" when a quote fails, so keep the
-    // router's actual response to explain the failure in CI logs.
+    // router's actual response to explain the failure in CI logs. Quotes come
+    // from the `local.quoteRouter` tRPC procedure, which runs in the browser
+    // and fetches the sidecar (SQS) directly, so watch the sidecar requests.
+    const isQuoteUrl = (url: string) =>
+      /\/router\/(quote|custom-direct-quote)$/.test(new URL(url).pathname);
+    const recordQuoteError = (seq: number, url: string, detail: string) => {
+      // Body reads can finish out of order; keep the latest-arriving failure.
+      if (seq < this.lastQuoteErrorSeq) return;
+      this.lastQuoteErrorSeq = seq;
+      // Quotes are GETs, so the request payload is the URL's query string.
+      const { pathname, search } = new URL(url);
+      this.lastQuoteError = `${new Date().toISOString()} ${pathname} request=${search} ${detail}`;
+    };
     page.on("response", async (response) => {
-      if (!response.url().includes("quoteRouter") || response.ok()) return;
+      if (!isQuoteUrl(response.url())) return;
+      const seq = ++this.quoteRequestCount;
       const body = await response.text().catch(() => "");
-      // tRPC queries are GETs, so the request payload is the `input` search param.
-      const url = new URL(response.url());
-      this.lastQuoteError = `${new Date().toISOString()} HTTP ${response.status()} ${
-        url.pathname
-      } request=${url.searchParams.get("input")} response=${body}`;
+      // Like the app's apiClient, treat an error payload in a 200 as a failure.
+      let payloadError = false;
+      try {
+        const data = JSON.parse(body);
+        payloadError = Boolean(data?.code) || data?.status_code >= 400;
+      } catch {
+        payloadError = true;
+      }
+      if (response.ok() && !payloadError) return;
+      recordQuoteError(
+        seq,
+        response.url(),
+        `HTTP ${response.status()} response=${body}`
+      );
+    });
+    // Timeouts and connection failures never produce a response.
+    page.on("requestfailed", (request) => {
+      if (!isQuoteUrl(request.url())) return;
+      recordQuoteError(
+        ++this.quoteRequestCount,
+        request.url(),
+        `request failed: ${request.failure()?.errorText}`
+      );
     });
     this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
