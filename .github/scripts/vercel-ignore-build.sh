@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# Vercel "Ignored Build Step" (wired up via `ignoreCommand` in vercel.json).
+# Vercel "Ignored Build Step" for the osmosis-frontend project. Set it in that
+# project's settings (Git > Ignored Build Step > Custom:
+# `bash .github/scripts/vercel-ignore-build.sh`), not as `ignoreCommand` in
+# vercel.json: the other Vercel projects built from this repo (-dev, -edgenet,
+# -datadog, osmosis-testnet) read the same vercel.json, and an ignoreCommand
+# there replaces their own ignore rules, which skip PR branches entirely.
 # Exit 0 skips the build, exit 1 lets it proceed.
 #
 # Preview builds take ~6 min each and used to run on every push to every
