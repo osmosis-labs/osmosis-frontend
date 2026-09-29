@@ -112,3 +112,19 @@ export async function pollTxOnChain(
 
   throw new Error(`tx ${hash} not confirmed on-chain within ${timeout}ms`);
 }
+
+/**
+ * How long to wait before re-signing after a sequence mismatch: a few blocks,
+ * so the node reports the sequence the other signer's tx moved it to.
+ */
+export const SEQUENCE_RETRY_DELAY_MS = 6_000;
+
+/**
+ * True for a CheckTx rejection caused by another tx from the same account
+ * landing between signing and broadcast. The shared CI wallet makes this
+ * likely whenever runs on different branches overlap.
+ */
+export function isSequenceMismatch(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("account sequence mismatch");
+}
