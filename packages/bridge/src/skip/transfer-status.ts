@@ -27,6 +27,29 @@ export interface SkipStatusProvider {
   trackTransaction: ({ chainID, txHash, env }: Transaction) => Promise<void>;
 }
 
+/**
+ * Maps a Skip status to a transfer status. `trackingChainId` is the chain the
+ * tracked tx was signed on (the from chain, or an intermediate chain for a
+ * later step of a multi-tx route).
+ *
+ * `STATE_ABANDONED` means Skip stopped tracking. For a tx signed on Solana
+ * that is final: Skip never saw it land, and Solana drops a tx whose
+ * blockhash expires, so polling on would report "pending" forever. Skip
+ * also abandons slow transfers elsewhere whose funds can still arrive or be
+ * refunded, so there it stays pending rather than being reported as failed.
+ */
+export function toTransferStatus(
+  state: SkipTxStatusResponse["state"],
+  trackingChainId: string
+): TransferStatus {
+  if (state === "STATE_COMPLETED_SUCCESS") return "success";
+  if (state === "STATE_COMPLETED_ERROR") return "failed";
+  if (state === "STATE_ABANDONED" && trackingChainId === "solana") {
+    return "failed";
+  }
+  return "pending";
+}
+
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly providerId = SkipBridgeProvider.ID;
@@ -76,25 +99,9 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
             throw error;
           });
 
-        let status: TransferStatus = "pending";
-        if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
-          status = "success";
-        }
-
-        // Abandoned is terminal too: Skip has stopped tracking the transfer
-        // (e.g. a source tx it never saw land), so polling on would report
-        // "pending" forever. Matches the multi-tx arrival poller, which
-        // already treats it as a failure.
-        if (
-          txStatus.state === "STATE_COMPLETED_ERROR" ||
-          txStatus.state === "STATE_ABANDONED"
-        ) {
-          status = "failed";
-        }
-
         return {
           id: sendTxHash,
-          status,
+          status: toTransferStatus(txStatus.state, tx.chainID),
         };
       },
       validate: (incomingStatus) => {

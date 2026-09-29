@@ -12,6 +12,7 @@ import { SkipApiClient } from "../client";
 import {
   SkipStatusProvider,
   SkipTransferStatusProvider,
+  toTransferStatus,
 } from "../transfer-status";
 
 jest.mock("@osmosis-labs/utils", () => ({
@@ -144,7 +145,7 @@ describe("SkipTransferStatusProvider", () => {
     );
   });
 
-  it("resolves an abandoned transfer as failed rather than polling forever", async () => {
+  it("resolves an abandoned Solana-signed transfer as failed rather than polling forever", async () => {
     // e.g. a restored Solana entry whose source tx expired before landing
     // while the tab was closed: Skip abandons tracking, and nothing else
     // would ever resolve the entry.
@@ -154,7 +155,14 @@ describe("SkipTransferStatusProvider", () => {
       })
     );
 
-    const snapshot = { ...baseTxSnapshot };
+    const snapshot: TxSnapshot = {
+      ...baseTxSnapshot,
+      fromChain: {
+        chainId: "solana",
+        prettyName: "Solana",
+        chainType: "solana",
+      },
+    };
 
     await provider.trackTxStatus(snapshot);
 
@@ -163,6 +171,29 @@ describe("SkipTransferStatusProvider", () => {
       "failed",
       undefined
     );
+  });
+
+  describe("toTransferStatus", () => {
+    it("maps completed states on any chain", () => {
+      expect(toTransferStatus("STATE_COMPLETED_SUCCESS", "osmosis-1")).toBe(
+        "success"
+      );
+      expect(toTransferStatus("STATE_COMPLETED_ERROR", "1")).toBe("failed");
+    });
+
+    it("treats abandoned as failed only for a tx signed on Solana", () => {
+      expect(toTransferStatus("STATE_ABANDONED", "solana")).toBe("failed");
+      // Skip also abandons slow transfers whose funds can still arrive, so a
+      // cosmos, EVM or intermediate-step tx keeps polling.
+      expect(toTransferStatus("STATE_ABANDONED", "osmosis-1")).toBe("pending");
+      expect(toTransferStatus("STATE_ABANDONED", "1")).toBe("pending");
+      expect(toTransferStatus("STATE_ABANDONED", "noble-1")).toBe("pending");
+    });
+
+    it("keeps in-flight states pending", () => {
+      expect(toTransferStatus("STATE_PENDING", "solana")).toBe("pending");
+      expect(toTransferStatus("STATE_SUBMITTED", "osmosis-1")).toBe("pending");
+    });
   });
 
   it("should handle undefined transfer status", async () => {
