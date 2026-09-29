@@ -29,6 +29,40 @@ jobs:
       - name: Lint workspace
         run: corepack yarn lint:workspace
 
+  typecheck-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-24.x-
+
+      - name: Install Dependencies
+        run: corepack yarn install --immutable
+
+      # Web resolves workspace packages through their build/ output and imports generated config.
+      - name: Build workspace packages
+        run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
+
+      - name: Generate web config
+        run: corepack yarn workspace @osmosis-labs/web generate
+
+      # Replaces the type check `next build` used to run on Vercel (see next.config.js).
+      - name: Type check web
+        run: corepack yarn workspace @osmosis-labs/web typecheck
+
   test:
     runs-on: ubuntu-latest
     strategy:
