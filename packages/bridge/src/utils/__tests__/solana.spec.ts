@@ -11,7 +11,10 @@ import {
 const RPC = "https://solana-rpc.test";
 
 /** A serialized transaction: signature count, signatures, then message. */
-const serializedTx = (signatureCountPrefix: number[], signatureCount: number) => {
+const serializedTx = (
+  signatureCountPrefix: number[],
+  signatureCount: number
+) => {
   const message = Buffer.from([0x01, 0x02, 0x03, 0x04]);
   return Buffer.concat([
     Buffer.from(signatureCountPrefix),
@@ -100,9 +103,7 @@ describe("getSolanaTxFeeLamports", () => {
   });
 
   it("throws when no RPC answers, rather than reporting a zero fee", async () => {
-    server.use(
-      http.post(RPC, () => new HttpResponse(null, { status: 503 }))
-    );
+    server.use(http.post(RPC, () => new HttpResponse(null, { status: 503 })));
     await expect(
       getSolanaTxFeeLamports(serializedTx([2], 2), [RPC])
     ).rejects.toThrow();
