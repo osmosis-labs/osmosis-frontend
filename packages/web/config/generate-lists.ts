@@ -45,6 +45,8 @@ interface ResponseAssetList {
 
 const repo = "osmosis-labs/assetlists";
 
+const IMAGE_DOWNLOAD_CONCURRENCY = 16;
+
 function getFilePath({
   chainId,
   fileType,
@@ -371,17 +373,32 @@ async function generateAssetImages({
   commitHash: string;
 }) {
   console.time("Successfully downloaded images");
-  for await (const asset of assetList.assets) {
+  // ~1300 images: downloading them one at a time dominated build time on
+  // fresh clones (~3 min), so fetch with a small pool of workers instead.
+  // Assets sharing a symbol write to the same file, so keep only the last one
+  // (matching the previous sequential last-write-wins behavior) to avoid
+  // concurrent writes to one path.
+  const downloads = new Map<
+    string,
+    { imageUrl: string; asset: Pick<Asset, "symbol"> }
+  >();
+  for (const asset of assetList.assets) {
     const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
-
     if (!imageUrl) continue;
-
-    await saveAssetImageToTokensDir({
-      imageUrl,
-      asset,
-      currentAssetListHash: commitHash,
-    });
+    const filePath = getImageRelativeFilePath(imageUrl, asset.symbol);
+    downloads.set(filePath, { imageUrl, asset });
   }
+
+  const queue = Array.from(downloads.values());
+  const worker = async () => {
+    for (let next = queue.shift(); next; next = queue.shift()) {
+      await saveAssetImageToTokensDir({
+        ...next,
+        currentAssetListHash: commitHash,
+      });
+    }
+  };
+  await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
   console.timeEnd("Successfully downloaded images");
 }
 
