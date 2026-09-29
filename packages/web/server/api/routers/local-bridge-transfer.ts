@@ -396,9 +396,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
 /**
  * Total SPL token balance (minimal units) of `mint` held by `owner`, summed
  * across the owner's token accounts. This router runs in the browser, so it
- * reads through the configured domain-restricted production Solana RPC (see
- * `getClientSolanaRpcUrls`), and throws when no endpoint answers: an
- * unanswered read is not a zero balance.
+ * reads through the app's Solana RPC route, which holds the provider key
+ * server-side (see `getClientSolanaRpcUrls`), and throws when no endpoint
+ * answers: an unanswered read is not a zero balance.
  */
 async function getSolanaTokenBalance({
   owner,

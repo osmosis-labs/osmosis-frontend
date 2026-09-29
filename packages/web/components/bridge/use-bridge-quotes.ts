@@ -39,7 +39,6 @@ import {
   waitForSkipStepArrival,
 } from "~/components/bridge/use-multi-tx-step";
 import { IS_TESTNET } from "~/config";
-import { SOLANA_RPC_OVERWRITE } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
@@ -57,6 +56,7 @@ import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import {
   classifySolanaSimulation,
   clientSolanaRpc,
+  getSolanaRpcProxyUrl,
   waitForSolanaSignature,
 } from "~/utils/solana";
 import { api, RouterInputs } from "~/utils/trpc";
@@ -135,13 +135,6 @@ const displayFeeDenom = (chainId: string, minimalDenom: string) =>
   ChainList.find((c) => c.chain_id === chainId)?.feeCurrencies.find(
     (fc) => fc.coinMinimalDenom === minimalDenom
   )?.coinDenom ?? minimalDenom;
-
-// For simulating, sending (when Phantom lacks signAndSendTransaction) and
-// watching Solana transactions: the configured domain-restricted production
-// RPC, else the public node the Wormhole redeem flow uses. None of these
-// calls are indexed queries, which publicnode would reject.
-const SOLANA_RPC =
-  SOLANA_RPC_OVERWRITE?.trim() || "https://solana-rpc.publicnode.com";
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
@@ -1335,19 +1328,15 @@ export const useBridgeQuotes = ({
     // reason to block: Phantom simulates again before signing.
     const simulation = await clientSolanaRpc<{
       value?: { err?: unknown; logs?: string[] | null };
-    }>(
-      "simulateTransaction",
-      [
-        transactionRequest.txBase64,
-        {
-          encoding: "base64",
-          sigVerify: false,
-          replaceRecentBlockhash: false,
-          commitment: "processed",
-        },
-      ],
-      [SOLANA_RPC]
-    ).catch(() => undefined);
+    }>("simulateTransaction", [
+      transactionRequest.txBase64,
+      {
+        encoding: "base64",
+        sigVerify: false,
+        replaceRecentBlockhash: false,
+        commitment: "processed",
+      },
+    ]).catch(() => undefined);
     if (simulation?.value) {
       const preflight = classifySolanaSimulation(
         simulation.value.err,
@@ -1356,7 +1345,9 @@ export const useBridgeQuotes = ({
       if (preflight !== "ok") throw new SolanaPreflightError(preflight);
     }
 
-    const connection = new Connection(SOLANA_RPC, "confirmed");
+    // Sending (when Phantom lacks signAndSendTransaction) and watching go
+    // through the app's RPC route, which holds the provider key.
+    const connection = new Connection(getSolanaRpcProxyUrl(), "confirmed");
     let signature: string;
     if (phantom.signAndSendTransaction) {
       ({ signature } = await phantom.signAndSendTransaction(solanaTx));

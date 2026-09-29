@@ -1,19 +1,28 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { SOLANA_RPC_OVERWRITE } from "~/config/env";
+/** This app's Solana RPC route (pages/api/solana-rpc), which forwards to the
+ *  keyed provider server-side. */
+const SOLANA_RPC_PROXY_PATH = "/api/solana-rpc";
+
+/**
+ * Absolute URL of the Solana RPC route. `@solana/web3.js` `Connection`
+ * requires an absolute URL; outside the browser the path is returned as-is.
+ */
+export function getSolanaRpcProxyUrl(): string {
+  return typeof window === "undefined"
+    ? SOLANA_RPC_PROXY_PATH
+    : new URL(SOLANA_RPC_PROXY_PATH, window.location.origin).toString();
+}
 
 /**
  * Solana RPC endpoints for reads the browser makes, in preference order: the
- * configured (domain-restricted) production RPC, then the public endpoint.
- * publicnode is deliberately not listed: it rejects the indexed
- * token-account queries that balances depend on.
+ * app's RPC route (which holds the provider key server-side), then the
+ * public endpoint in case the route itself fails. publicnode is deliberately
+ * not listed: it rejects the indexed token-account queries that balances
+ * depend on.
  */
 export function getClientSolanaRpcUrls(): string[] {
-  const configured = SOLANA_RPC_OVERWRITE?.trim();
-  return [
-    ...(configured ? [configured] : []),
-    "https://api.mainnet-beta.solana.com",
-  ];
+  return [getSolanaRpcProxyUrl(), "https://api.mainnet-beta.solana.com"];
 }
 
 /** Calls a Solana JSON-RPC method, trying each endpoint in order. Throws the
