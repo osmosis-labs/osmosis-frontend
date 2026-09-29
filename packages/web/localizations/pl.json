@@ -971,6 +971,8 @@
     "enterAddress": "Podaj adres",
     "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",
+    "solanaTokenAccountAddress": "To jest adres konta tokena. Wpisz adres portfela Solana, do którego należy.",
+    "solanaAddressUnverified": "Nie udało się zweryfikować tego adresu Solana. Spróbuj ponownie.",
     "acknowledgement": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy lub próby wypłaty na giełdę.",
     "acknowledgementWithoutExchange": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy.",
     "done": "Zrobione",

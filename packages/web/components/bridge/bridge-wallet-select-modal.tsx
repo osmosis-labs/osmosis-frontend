@@ -51,6 +51,7 @@ import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
+import { checkSolanaRecipient } from "~/utils/solana";
 
 interface BridgeWalletSelectProps {
   direction: "deposit" | "withdraw";
@@ -594,6 +595,12 @@ const SendToAnotherAddressForm: FunctionComponent<
   const [isInvalidAddress, setIsInvalidAddress] = useState(false);
   const [address, setAddress] = useState(initialManualAddress ?? "");
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+  // Solana destinations are checked onchain at confirm: a token account
+  // address is well formed but can't receive a withdrawal.
+  const [solanaAddressError, setSolanaAddressError] = useState<
+    "token-account" | "unverified" | undefined
+  >();
+  const [isCheckingAddress, setIsCheckingAddress] = useState(false);
 
   // Solana destinations offer a wallet-connect autofill: Phantom provides
   // the address, the user still reviews and confirms it through the same
@@ -611,6 +618,7 @@ const SendToAnotherAddressForm: FunctionComponent<
       const phantomAddress = await connectPhantomWallet();
       if (phantomAddress) {
         setAddress(phantomAddress);
+        setSolanaAddressError(undefined);
         setIsInvalidAddress(!isSolanaAddressValid({ address: phantomAddress }));
       }
     } catch {
@@ -618,10 +626,27 @@ const SendToAnotherAddressForm: FunctionComponent<
     }
   };
 
-  const handleConfirm = () => {
-    if (isAcknowledged) {
-      onConfirm?.(address);
+  const handleConfirm = async () => {
+    if (!isAcknowledged) return;
+
+    if (toChain.chainType === "solana") {
+      setIsCheckingAddress(true);
+      try {
+        const recipient = await checkSolanaRecipient(address);
+        if (recipient === "token-account") {
+          setSolanaAddressError("token-account");
+          return;
+        }
+      } catch {
+        // Fail closed: an address that can't be checked isn't accepted.
+        setSolanaAddressError("unverified");
+        return;
+      } finally {
+        setIsCheckingAddress(false);
+      }
     }
+
+    onConfirm?.(address);
   };
 
   return (
@@ -709,6 +734,7 @@ const SendToAnotherAddressForm: FunctionComponent<
             if (!nextValue) setIsInvalidAddress(false);
             else setIsInvalidAddress(!isValid);
 
+            setSolanaAddressError(undefined);
             setAddress(nextValue);
           }}
           placeholder={t("transfer.enterAddress")}
@@ -736,6 +762,13 @@ const SendToAnotherAddressForm: FunctionComponent<
             {t("transfer.invalidAddress", { chain: toChain.prettyName })}
           </p>
         )}
+        {!isInvalidAddress && solanaAddressError && (
+          <p className="body2 text-rust-400">
+            {solanaAddressError === "token-account"
+              ? t("transfer.solanaTokenAccountAddress")
+              : t("transfer.solanaAddressUnverified")}
+          </p>
+        )}
       </div>
       <div className="flex gap-2">
         <Checkbox
@@ -755,7 +788,14 @@ const SendToAnotherAddressForm: FunctionComponent<
       </div>
       <Button
         onClick={handleConfirm}
-        disabled={!isAcknowledged || isInvalidAddress || !address}
+        disabled={
+          !isAcknowledged ||
+          isInvalidAddress ||
+          !address ||
+          isCheckingAddress ||
+          solanaAddressError === "token-account"
+        }
+        isLoading={isCheckingAddress}
         className="w-full !text-subtitle1"
       >
         {t("transfer.done")}

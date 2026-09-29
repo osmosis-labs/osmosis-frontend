@@ -393,12 +393,17 @@ export const localBridgeTransferRouter = createTRPCRouter({
     }),
 });
 
+/** The associated token account program. */
+const SOLANA_ATA_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+
 /**
- * Total SPL token balance (minimal units) of `mint` held by `owner`, summed
- * across the owner's token accounts. This router runs in the browser, so it
- * reads through the app's Solana RPC route, which holds the provider key
- * server-side (see `getClientSolanaRpcUrls`), and throws when no endpoint
- * answers: an unanswered read is not a zero balance.
+ * SPL token balance (minimal units) of `mint` in `owner`'s associated token
+ * account. Only that account counts: Skip's burn spends from it, so a Max
+ * that also counted other token accounts of the same mint would fail at
+ * signing. This router runs in the browser, so it reads through the app's
+ * Solana RPC route, which holds the provider key server-side (see
+ * `getClientSolanaRpcUrls`), and throws when no endpoint answers: an
+ * unanswered read is not a zero balance.
  */
 async function getSolanaTokenBalance({
   owner,
@@ -409,19 +414,39 @@ async function getSolanaTokenBalance({
 }): Promise<bigint> {
   const result = await clientSolanaRpc<{
     value?: {
+      pubkey?: string;
       account?: {
+        // the token program that owns this token account
+        owner?: string;
         data?: {
           parsed?: { info?: { tokenAmount?: { amount?: string } } };
         };
       };
     }[];
   }>("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed" }]);
-  return (result?.value ?? []).reduce(
-    (sum, tokenAccount) =>
-      sum +
-      BigInt(
-        tokenAccount?.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0"
-      ),
-    BigInt(0)
+
+  // Loaded on demand: this router ships to the browser.
+  const { PublicKey } = await import("@solana/web3.js");
+  const ownerKey = new PublicKey(owner);
+  const mintKey = new PublicKey(mint);
+  const ataProgram = new PublicKey(SOLANA_ATA_PROGRAM_ID);
+  const associatedAddress = (tokenProgram: string) =>
+    PublicKey.findProgramAddressSync(
+      [
+        ownerKey.toBuffer(),
+        new PublicKey(tokenProgram).toBuffer(),
+        mintKey.toBuffer(),
+      ],
+      ataProgram
+    )[0].toBase58();
+
+  const associated = (result?.value ?? []).find(
+    (tokenAccount) =>
+      tokenAccount?.pubkey &&
+      tokenAccount.account?.owner &&
+      tokenAccount.pubkey === associatedAddress(tokenAccount.account.owner)
+  );
+  return BigInt(
+    associated?.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0"
   );
 }

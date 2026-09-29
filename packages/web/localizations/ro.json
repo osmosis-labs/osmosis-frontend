@@ -971,6 +971,8 @@
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
+    "solanaTokenAccountAddress": "Aceasta este adresa unui cont de token. Introdu adresa portofelului Solana care îl deține.",
+    "solanaAddressUnverified": "Această adresă Solana nu a putut fi verificată. Te rugăm să încerci din nou.",
     "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "acknowledgementWithoutExchange": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului.",
     "done": "Terminat",

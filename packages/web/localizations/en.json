@@ -971,6 +971,8 @@
     "enterAddress": "Enter an address",
     "sendToAnotherAddress": "Send to another address",
     "invalidAddress": "Invalid {chain} address",
+    "solanaTokenAccountAddress": "This is a token account address. Enter the Solana wallet address that owns it.",
+    "solanaAddressUnverified": "Couldn't verify this Solana address. Please try again.",
     "acknowledgement": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address or try to withdraw to an exchange.",
     "acknowledgementWithoutExchange": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address.",
     "done": "Done",

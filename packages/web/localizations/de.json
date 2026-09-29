@@ -971,6 +971,8 @@
     "enterAddress": "Gib eine Adresse ein",
     "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",
+    "solanaTokenAccountAddress": "Dies ist eine Token-Konto-Adresse. Gib die Solana-Wallet-Adresse ein, der sie gehört.",
+    "solanaAddressUnverified": "Diese Solana-Adresse konnte nicht überprüft werden. Bitte versuche es erneut.",
     "acknowledgement": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere dieses, wenn ich eine falsche Empfängeradresse angebe oder versuche, das Geld über eine Börse abzuheben.",
     "acknowledgementWithoutExchange": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere es, wenn ich eine falsche Empfängeradresse angebe.",
     "done": "Erledigt",

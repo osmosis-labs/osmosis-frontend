@@ -1,4 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { http, HttpResponse } from "msw";
+
+import { server } from "~/__tests__/msw";
+
 import {
+  checkSolanaRecipient,
   classifySolanaSimulation,
   SolanaSignatureStatus,
   waitForSolanaSignature,
@@ -36,6 +42,23 @@ describe("waitForSolanaSignature", () => {
       ...fast,
     });
     expect(outcome).toBe("failed");
+  });
+
+  it("does not treat an error seen only at processed as final", async () => {
+    // A processed status can belong to a fork that is later skipped; the
+    // signature can then land cleanly on the canonical chain.
+    const outcome = await waitForSolanaSignature({
+      getStatus: statuses(
+        {
+          err: { InstructionError: [0, "Custom"] },
+          confirmationStatus: "processed",
+        },
+        { err: null, confirmationStatus: "confirmed" }
+      ),
+      isBlockhashValid: async () => true,
+      ...fast,
+    });
+    expect(outcome).toBe("confirmed");
   });
 
   it("resolves dropped when the blockhash expires with no status anywhere", async () => {
@@ -157,5 +180,49 @@ describe("classifySolanaSimulation", () => {
         "Program log: AnchorError caused by account: burn_token_account. Error Code: AccountNotInitialized.",
       ])
     ).toBe("ok");
+  });
+});
+
+describe("checkSolanaRecipient", () => {
+  const WALLET = "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM";
+
+  /** Answers getAccountInfo on the app's RPC route with `value`. */
+  const accountInfo = (value: unknown) =>
+    server.use(
+      http.post("*/api/solana-rpc", () =>
+        HttpResponse.json({ jsonrpc: "2.0", id: 1, result: { value } })
+      )
+    );
+
+  it("rejects an account owned by the SPL Token program", async () => {
+    accountInfo({ owner: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" });
+    await expect(checkSolanaRecipient(WALLET)).resolves.toBe("token-account");
+  });
+
+  it("rejects an account owned by the Token-2022 program", async () => {
+    accountInfo({ owner: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb" });
+    await expect(checkSolanaRecipient(WALLET)).resolves.toBe("token-account");
+  });
+
+  it("accepts a system-owned wallet", async () => {
+    accountInfo({ owner: "11111111111111111111111111111111" });
+    await expect(checkSolanaRecipient(WALLET)).resolves.toBe("ok");
+  });
+
+  it("accepts an address with no account yet (a fresh wallet)", async () => {
+    accountInfo(null);
+    await expect(checkSolanaRecipient(WALLET)).resolves.toBe("ok");
+  });
+
+  it("throws when no endpoint answers, rather than passing the address", async () => {
+    server.use(
+      http.post("*/api/solana-rpc", () =>
+        HttpResponse.json({}, { status: 502 })
+      ),
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({}, { status: 503 })
+      )
+    );
+    await expect(checkSolanaRecipient(WALLET)).rejects.toBeDefined();
   });
 });

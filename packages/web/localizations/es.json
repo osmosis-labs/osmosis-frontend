@@ -971,6 +971,8 @@
     "enterAddress": "Introduce una direccion",
     "sendToAnotherAddress": "Enviar a otra dirección",
     "invalidAddress": "Dirección {chain} no válida",
+    "solanaTokenAccountAddress": "Esta es la dirección de una cuenta de token. Introduce la dirección de la billetera de Solana a la que pertenece.",
+    "solanaAddressUnverified": "No se pudo verificar esta dirección de Solana. Inténtalo de nuevo.",
     "acknowledgement": "Reconozco y acepto los riesgos de pérdida de fondos si proporciono una dirección de destinatario incorrecta o intento retirar dinero a un intercambio.",
     "acknowledgementWithoutExchange": "Reconozco y acepto los riesgos de pérdida de fondos si proporciono una dirección de destinatario incorrecta.",
     "done": "Hecho",

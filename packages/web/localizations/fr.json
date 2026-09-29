@@ -971,6 +971,8 @@
     "enterAddress": "Entrer une adresse",
     "sendToAnotherAddress": "Envoyer à une autre adresse",
     "invalidAddress": "Adresse {chain} non valide",
+    "solanaTokenAccountAddress": "Ceci est l'adresse d'un compte de jeton. Saisissez l'adresse du portefeuille Solana qui le possède.",
+    "solanaAddressUnverified": "Impossible de vérifier cette adresse Solana. Veuillez réessayer.",
     "acknowledgement": "Je reconnais et accepte les risques de perte de fonds si je fournis une adresse de destinataire incorrecte ou si je tente de me retirer vers un échange.",
     "acknowledgementWithoutExchange": "Je reconnais et accepte les risques de perte de fonds si je fournis une adresse de destinataire incorrecte.",
     "done": "Fait",

@@ -971,6 +971,8 @@
     "enterAddress": "输入地址",
     "sendToAnotherAddress": "发送到另一个地址",
     "invalidAddress": "无效的{chain}地址",
+    "solanaTokenAccountAddress": "这是代币账户地址。请输入拥有该账户的 Solana 钱包地址。",
+    "solanaAddressUnverified": "无法验证此 Solana 地址，请重试。",
     "acknowledgement": "如果我提供了错误的收款地址或尝试提取到交易所，我承认并接受资金损失的风险。",
     "acknowledgementWithoutExchange": "如果我提供了错误的收件人地址，我承认并接受资金损失的风险。",
     "done": "完毕",

@@ -57,6 +57,42 @@ export async function clientSolanaRpc<T>(
   throw lastError;
 }
 
+/** The SPL Token and Token-2022 programs, which own every token account
+ *  and mint. */
+const SPL_TOKEN_PROGRAM_IDS = new Set([
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+]);
+
+/**
+ * Whether a Solana address can receive a bridge withdrawal.
+ *
+ * A token account (or mint) address passes format validation but is not a
+ * wallet: CCTP mints to the token account derived from the address it is
+ * given, and one derived from a token account belongs to nobody, so funds
+ * sent there are lost. Such addresses are easy to copy from an explorer.
+ *
+ * - `ok`: the account doesn't exist yet (a fresh wallet) or isn't owned by
+ *   a token program.
+ * - `token-account`: owned by the SPL Token or Token-2022 program.
+ *
+ * Throws when the account can't be read, so an unanswered lookup is never
+ * taken as a pass.
+ */
+export async function checkSolanaRecipient(
+  address: string
+): Promise<"ok" | "token-account"> {
+  const result = await clientSolanaRpc<{
+    value?: { owner?: string } | null;
+  }>("getAccountInfo", [
+    address,
+    // Only the owner is needed, so skip the account data.
+    { encoding: "base64", dataSlice: { offset: 0, length: 0 } },
+  ]);
+  const owner = result?.value?.owner;
+  return owner && SPL_TOKEN_PROGRAM_IDS.has(owner) ? "token-account" : "ok";
+}
+
 /**
  * What a pre-signing simulation of a Solana transaction says about whether
  * it is worth opening the wallet.
@@ -155,16 +191,22 @@ export async function waitForSolanaSignature({
     }
   };
 
+  // An outcome, success or error, is final only once the slot is confirmed:
+  // a status seen at `processed` can belong to a fork that is later skipped,
+  // and the same signature can then still land on the canonical chain.
+  const settled = (status: SolanaSignatureStatus | undefined) =>
+    status?.confirmationStatus === "confirmed" ||
+    status?.confirmationStatus === "finalized"
+      ? status.err
+        ? "failed"
+        : "confirmed"
+      : undefined;
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const result = await read(false);
     const status = result?.status;
-    if (status?.err) return "failed";
-    if (
-      status?.confirmationStatus === "confirmed" ||
-      status?.confirmationStatus === "finalized"
-    ) {
-      return "confirmed";
-    }
+    const outcome = settled(status);
+    if (outcome) return outcome;
 
     // Seen but not yet confirmed (processed): keep waiting. Only a
     // transaction that has NOT been seen can be dropped.
@@ -182,14 +224,9 @@ export async function waitForSolanaSignature({
         // proof it was dropped.
         const final = await read(true);
         if (!final) return "unknown";
-        if (final.status?.err) return "failed";
         if (final.status === null) return "dropped";
-        if (
-          final.status.confirmationStatus === "confirmed" ||
-          final.status.confirmationStatus === "finalized"
-        ) {
-          return "confirmed";
-        }
+        const finalOutcome = settled(final.status);
+        if (finalOutcome) return finalOutcome;
         // landed but not yet confirmed: keep watching
       }
     }

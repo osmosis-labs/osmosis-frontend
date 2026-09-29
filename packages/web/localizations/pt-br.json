@@ -971,6 +971,8 @@
     "enterAddress": "Insira um endereço",
     "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
+    "solanaTokenAccountAddress": "Este é o endereço de uma conta de token. Insira o endereço da carteira Solana à qual ela pertence.",
+    "solanaAddressUnverified": "Não foi possível verificar este endereço Solana. Tente novamente.",
     "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
     "acknowledgementWithoutExchange": "Reconheço e aceito os riscos de perda de fundos se eu fornecer um endereço de destinatário incorreto.",
     "done": "Feito",
