@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 
 import { edgeRouter } from "~/server/api/edge-router";
 import { createEdgeTrpcContext } from "~/server/api/trpc";
+import { getAssetsCdnCacheControl } from "~/utils/trpc-cdn-cache";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
 // We're using the edge-runtime
@@ -21,6 +22,15 @@ export default async function handler(req: NextRequest) {
     router: edgeRouter,
     req,
     createContext: createEdgeTrpcContext,
+    responseMeta: ({ paths, type, errors }) => {
+      const cacheControl = getAssetsCdnCacheControl({
+        url: req.url,
+        paths,
+        type,
+        errorCount: errors.length,
+      });
+      return cacheControl ? { headers: { "Cache-Control": cacheControl } } : {};
+    },
     onError:
       process.env.NODE_ENV === "development"
         ? ({ path, error }) => {

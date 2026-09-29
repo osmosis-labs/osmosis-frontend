@@ -4,6 +4,7 @@ import { timeout } from "@osmosis-labs/utils";
 import {
   httpBatchLink,
   httpLink,
+  Operation,
   OperationResultEnvelope,
   splitLink,
   TRPCClientError,
@@ -139,12 +140,17 @@ export function localLink<TRouter extends AnyRouter>({
 /**
  * Provides ability to skip batching for a specific query.
  * This is useful for preventing expensive queries from blocking less expensive queries.
+ * `shouldSkipBatch` also sends matching operations unbatched, e.g. so each
+ * CDN-cacheable query gets its own stable URL.
  */
-export const makeSkipBatchLink = (url: string) =>
+export const makeSkipBatchLink = (
+  url: string,
+  shouldSkipBatch?: (op: Operation) => boolean
+) =>
   splitLink({
     condition(op) {
       // check for context property `skipBatch`
-      return op.context.skipBatch === true;
+      return op.context.skipBatch === true || Boolean(shouldSkipBatch?.(op));
     },
     // when condition is true, use normal request
     true: httpLink({
