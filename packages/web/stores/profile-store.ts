@@ -1,42 +1,14 @@
 import { create } from "zustand";
 import { combine, persist } from "zustand/middleware";
 
-/**
- * Avatar type - matches the original MobX ProfileStore
- */
 export type Avatar = "wosmongton" | "ammelia";
 
-/**
- * Once legacy MobX keys have been checked/migrated, we can skip future checks.
- * This avoids repeated localStorage reads on subsequent visits.
- */
 const PROFILE_STORE_KEY = "profile-store";
+/** Set once legacy MobX keys have been migrated, so later visits skip the
+ *  localStorage reads. */
 const LEGACY_MIGRATION_COMPLETE_KEY = "profile-store/legacy-migration-complete";
 
-/**
- * Zustand store for user profile settings
- *
- * Migrated from MobX ProfileStore (packages/web/stores/profile.ts)
- *
- * Features:
- * - Persists avatar selection to localStorage
- * - Compatible with the same storage key as the original MobX version
- *
- * @example
- * ```tsx
- * import { useProfileStore } from "~/stores/profile-store";
- *
- * function MyComponent() {
- *   const { currentAvatar, setCurrentAvatar } = useProfileStore();
- *
- *   return (
- *     <button onClick={() => setCurrentAvatar("ammelia")}>
- *       Current: {currentAvatar}
- *     </button>
- *   );
- * }
- * ```
- */
+/** Avatar selection, persisted to localStorage. */
 export const useProfileStore = create(
   persist(
     combine(

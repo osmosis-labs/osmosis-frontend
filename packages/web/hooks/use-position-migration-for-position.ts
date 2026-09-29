@@ -1,9 +1,6 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
-import {
-  createMultiEndpointClient,
-  MultiEndpointClient,
-} from "@osmosis-labs/utils";
+import { MultiEndpointClient } from "@osmosis-labs/utils";
 import { useCallback } from "react";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -45,7 +42,7 @@ const getLcdClient = () => {
     address: address.replace(/\/+$/, ""),
   }));
   if (endpoints.length === 0) return undefined;
-  lcdClient = createMultiEndpointClient(endpoints);
+  lcdClient = new MultiEndpointClient(endpoints);
   return lcdClient;
 };
 

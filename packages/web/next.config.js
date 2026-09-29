@@ -66,9 +66,9 @@ const config = {
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
     config.resolve = {
-      ...config.resolve, // This spreads existing resolve configuration (if any)
+      ...config.resolve,
       alias: {
-        ...config.resolve.alias, // This spreads any existing alias configurations
+        ...config.resolve.alias,
         libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
         "libsodium-wrappers": path.resolve(
           __dirname,
@@ -104,14 +104,6 @@ const config = {
     };
 
     return config;
-  },
-};
-
-module.exports = {
-  ...module.exports,
-  mode: "production", // Ensure the mode is 'production' for tree shaking to work
-  optimization: {
-    usedExports: true, // This setting enables tree shaking
   },
 };
 

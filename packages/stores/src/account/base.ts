@@ -40,9 +40,9 @@ import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,
-  createMultiEndpointClient,
   getChain,
   isNil,
+  MultiEndpointClient,
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
@@ -644,7 +644,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         const restUrls = this.getChainRestUrls(wallet);
         if (restUrls.length > 1) {
           try {
-            const client = createMultiEndpointClient(
+            const client = new MultiEndpointClient(
               restUrls.map((url) => ({ address: url }))
             );
             const { endpointAddress } = await client.fetchWithEndpoint(
@@ -715,7 +715,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           : [getEndpointString(await wallet.getRpcEndpoint(true))];
       if (rpcUrls.length > 1) {
         try {
-          const client = createMultiEndpointClient(
+          const client = new MultiEndpointClient(
             rpcUrls.map((url) => ({ address: url }))
           );
           const { endpointAddress } = await client.fetchWithEndpoint("/status");
@@ -1452,7 +1452,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     let endpoint: string;
     if (restUrls.length > 1) {
       try {
-        const client = createMultiEndpointClient(
+        const client = new MultiEndpointClient(
           restUrls.map((url) => ({ address: url }))
         );
         const { endpointAddress } = await client.fetchWithEndpoint(
