@@ -1606,6 +1606,21 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     });
   });
 
+  it("leaves out a relayer fee in another asset with unknown decimals", async () => {
+    const { decimals: _, ...originAsset } = nobleRelayFee.origin_asset;
+    useSingleTxRejectingRouteHandler(undefined, {
+      ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
+      estimated_fees: [{ ...nobleRelayFee, origin_asset: originAsset }],
+    });
+
+    const quote = await provider.getQuote({
+      ...multiTxQuoteParams,
+      allowMultiTx: true,
+    });
+
+    expect(quote.transferFee.amount).toBe("0");
+  });
+
   it("quotes only the source-asset part of relayer fees split across assets", async () => {
     useSingleTxRejectingRouteHandler(undefined, {
       ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,

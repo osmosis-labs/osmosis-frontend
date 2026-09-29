@@ -481,7 +481,8 @@ export class SkipBridgeProvider implements BridgeProvider {
           } else if (
             // Withdrawals through Noble CCTP pay the relayer on noble-1 in
             // uusdc, so report the fee in that asset when it is the only one.
-            otherAsset &&
+            // Without its decimals the amount can't be scaled, so stay "Free".
+            otherAsset?.decimals !== undefined &&
             allRelayFees.every((fee) =>
               isSameAsset(fee, allRelayFees[0].chain_id, otherAsset.denom)
             )
@@ -495,7 +496,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: otherAsset.is_evm
                 ? otherAsset.token_contract ?? NativeEVMTokenConstantAddress
                 : otherAsset.denom,
-              decimals: otherAsset.decimals ?? 6,
+              decimals: otherAsset.decimals,
               coinGeckoId: otherAsset.coingecko_id,
               // A fee paid off the source chain can't be reserved from the
               // source balance, so only an explicit ADDITIONAL counts.
