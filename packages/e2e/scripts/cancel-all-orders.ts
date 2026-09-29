@@ -20,6 +20,9 @@
  * @requires PRIVATE_KEY   - Hex-encoded secp256k1 private key (with or without 0x prefix).
  * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "Monitoring EU").
  * @requires DRY_RUN       - (optional) Set to "true" to skip sending transactions.
+ * @requires MIN_ORDER_AGE_MINUTES - (optional) Leave orders younger than this alone. CI sets it
+ *           for the pre-test cleanup so one run can't cancel another run's in-flight test orders
+ *           on the shared wallet. Defaults to 0 (cancel everything).
  *
  * Usage (from packages/e2e/):
  *   npx tsx scripts/cancel-all-orders.ts
@@ -95,6 +98,7 @@ async function main(): Promise<void> {
   const privateKey = process.env.PRIVATE_KEY;
   const label = process.env.ACCOUNT_LABEL;
   const isDryRun = process.env.DRY_RUN === "true";
+  const minAgeMs = Number(process.env.MIN_ORDER_AGE_MINUTES ?? 0) * 60_000;
 
   if (!privateKey || privateKey === "private_key") {
     console.error("❌ PRIVATE_KEY environment variable is not set.");
@@ -115,13 +119,24 @@ async function main(): Promise<void> {
 
   const client = isDryRun ? null : await createSigningClient(wallet);
 
+  // The SQS passthrough reports placed_at in unix seconds.
+  const fetchOrders = async () =>
+    (await fetchActiveOrders(address)).filter(
+      (o) => Date.now() - o.placed_at * 1000 >= minAgeMs
+    );
+  if (minAgeMs > 0) {
+    console.log(
+      `Skipping orders placed in the last ${minAgeMs / 60_000} minutes.\n`
+    );
+  }
+
   let totalFoundOnFirstRound = 0;
 
   for (let round = 1; round <= MAX_ROUNDS; round++) {
     console.log(`Round ${round}/${MAX_ROUNDS}:`);
     console.log(`  Finding open orders for account ${address}...`);
 
-    let orders = await fetchActiveOrders(address);
+    let orders = await fetchOrders();
 
     if (orders.length === 0) {
       console.log(
@@ -162,7 +177,7 @@ async function main(): Promise<void> {
       await executeBatches(client!, address, claimBatches, "Claim");
 
       // Re-fetch: fully-filled orders are gone after claiming, rest are now open
-      orders = await fetchActiveOrders(address);
+      orders = await fetchOrders();
       if (orders.length === 0) {
         console.log("  All orders were fully filled and claimed. Done.");
         return;
@@ -181,7 +196,7 @@ async function main(): Promise<void> {
     await executeBatches(client!, address, cancelBatches, "Cancel");
 
     // Check what's left
-    const remaining = await fetchActiveOrders(address);
+    const remaining = await fetchOrders();
 
     if (remaining.length === 0) {
       console.log("  All orders successfully closed.");
