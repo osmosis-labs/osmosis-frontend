@@ -50,10 +50,23 @@ export class TradePage extends BasePage {
   readonly buySellTimeout = 30_000;
   /** Hash of the most recently broadcast tx, captured for the REST fallback. */
   private lastTxHash?: string;
+  /** Request and response of the most recent failed router quote, logged when the swap button shows "Error". */
+  private lastQuoteError?: string;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
+    // The swap button only ever reads "Error" when a quote fails, so keep the
+    // router's actual response to explain the failure in CI logs.
+    page.on("response", async (response) => {
+      if (!response.url().includes("quoteRouter") || response.ok()) return;
+      const body = await response.text().catch(() => "");
+      // tRPC queries are GETs, so the request payload is the `input` search param.
+      const url = new URL(response.url());
+      this.lastQuoteError = `${new Date().toISOString()} HTTP ${response.status()} ${
+        url.pathname
+      } request=${url.searchParams.get("input")} response=${body}`;
+    });
     this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
     this.buyBtn = page.locator('//div[@class]/button[@class]/h6[.="Buy"]/..');
@@ -383,11 +396,24 @@ export class TradePage extends BasePage {
       await expect(errorBtn).not.toBeVisible({ timeout: settleTimeout });
       return false;
     } catch {
+      console.log(
+        `Swap button shows "Error". Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
       return true;
     }
   }
 
   async showSwapInfo() {
+    // A failed router quote turns the swap button into a disabled "Error",
+    // which also keeps "Show details" disabled. The swap tool refetches the
+    // quote every 5s even after a failure, so a transient router error clears
+    // by itself; give it time to recover before failing the test.
+    expect(
+      await this.isError(30_000),
+      "Swap quote stayed in an error state!"
+    ).toBeFalsy();
     const swapInfo = this.page.locator("//button//span[.='Show details']");
     await expect(swapInfo, "Show Swap Info button not visible!").toBeVisible({
       timeout: 10000,
