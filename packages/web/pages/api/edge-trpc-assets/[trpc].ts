@@ -31,7 +31,17 @@ export default async function handler(req: NextRequest) {
         results: data,
         eagerGeneration,
       });
-      return cacheControl ? { headers: { "Cache-Control": cacheControl } } : {};
+      // tRPC only sends `Vary: trpc-batch-mode` on streamed responses, so add
+      // it here to keep a cached JSON batch from being served to a stream
+      // request for the same URL.
+      return cacheControl
+        ? {
+            headers: {
+              "Cache-Control": cacheControl,
+              Vary: "trpc-batch-mode",
+            },
+          }
+        : {};
     },
     onError:
       process.env.NODE_ENV === "development"
