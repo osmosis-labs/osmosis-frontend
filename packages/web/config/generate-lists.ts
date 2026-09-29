@@ -375,27 +375,32 @@ async function generateAssetImages({
   console.time("Successfully downloaded images");
   // ~1300 images: downloading them one at a time dominated build time on
   // fresh clones (~3 min), so fetch with a small pool of workers instead.
-  // Assets sharing a symbol write to the same file, so keep only the last one
-  // (matching the previous sequential last-write-wins behavior) to avoid
-  // concurrent writes to one path.
+  // Assets sharing a symbol write to the same file, so group them by path and
+  // download each group in order on one worker. That avoids concurrent writes
+  // to one path and keeps the previous sequential behavior: the last
+  // successful download wins, and a failed one leaves an earlier image.
   const downloads = new Map<
     string,
-    { imageUrl: string; asset: Pick<Asset, "symbol"> }
+    { imageUrl: string; asset: Pick<Asset, "symbol"> }[]
   >();
   for (const asset of assetList.assets) {
     const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
     if (!imageUrl) continue;
     const filePath = getImageRelativeFilePath(imageUrl, asset.symbol);
-    downloads.set(filePath, { imageUrl, asset });
+    const candidates = downloads.get(filePath) ?? [];
+    candidates.push({ imageUrl, asset });
+    downloads.set(filePath, candidates);
   }
 
   const queue = Array.from(downloads.values());
   const worker = async () => {
-    for (let next = queue.shift(); next; next = queue.shift()) {
-      await saveAssetImageToTokensDir({
-        ...next,
-        currentAssetListHash: commitHash,
-      });
+    for (let group = queue.shift(); group; group = queue.shift()) {
+      for (const download of group) {
+        await saveAssetImageToTokensDir({
+          ...download,
+          currentAssetListHash: commitHash,
+        });
+      }
     }
   };
   await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
