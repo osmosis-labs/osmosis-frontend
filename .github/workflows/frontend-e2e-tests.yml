@@ -3,8 +3,7 @@ name: Preview frontend E2E tests
 # Runs against the Vercel preview built from the commit under test: for the
 # head commit of a non-draft PR (and when a draft is marked ready for review),
 # plus pushes to stage for post-merge validation. Draft PRs skip the suite
-# entirely — the preview E2E tests spend real funds on every run. Commits whose
-# build Vercel skips (.github/scripts/vercel-ignore-build.sh) never run here.
+# entirely — the preview E2E tests spend real funds on every run.
 #
 # PRs start from Vercel's deployment_status event rather than polling the
 # Vercel API. Stage can't: the monitoring workflows delete every GitHub
@@ -38,6 +37,8 @@ jobs:
       || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
     runs-on: ubuntu-latest
     permissions:
+      # To cancel runs for superseded commits of the same PR.
+      actions: write
       contents: read
       deployments: read
       pull-requests: read
@@ -87,16 +88,25 @@ jobs:
             DEPLOYMENT_URL=$(jq -r '.url' <<< "$DEPLOYMENT")
             BRANCH=stage
           else
-            # Marked ready for review: reuse the preview Vercel already built
-            # for the head commit. If it is still building, its
-            # deployment_status event starts the run instead once it succeeds.
+            # Marked ready for review: wait up to 20 min for the head commit's
+            # preview instead of skipping. Skipped jobs count as passing
+            # required checks, so a skip would leave the PR mergeable untested
+            # until the preview finished building.
             if [ "$EVENT" = "pull_request" ]; then
-              DEPLOYMENT_ID=$(gh api "repos/$REPO/deployments?sha=$SHA" \
-                --jq "[.[] | select(.environment == \"$PREVIEW_ENV\")][0].id // empty")
-              [ -n "$DEPLOYMENT_ID" ] || skip "no preview deployment for $SHA (build skipped or not started)."
-              DEPLOYMENT_URL=$(gh api "repos/$REPO/deployments/$DEPLOYMENT_ID/statuses" \
-                --jq '[.[] | select(.state == "success")][0].environment_url // empty')
-              [ -n "$DEPLOYMENT_URL" ] || skip "preview for $SHA is not ready yet; its deployment_status event will start the run."
+              for _ in $(seq 1 60); do
+                DEPLOYMENT_ID=$(gh api "repos/$REPO/deployments?sha=$SHA" \
+                  --jq "[.[] | select(.environment == \"$PREVIEW_ENV\")][0].id // empty")
+                if [ -n "$DEPLOYMENT_ID" ]; then
+                  STATUS=$(gh api "repos/$REPO/deployments/$DEPLOYMENT_ID/statuses" \
+                    --jq '[.[] | select(.state == "success" or .state == "failure" or .state == "error")][0] // empty | "\(.state) \(.environment_url)"')
+                  case "${STATUS%% *}" in
+                    success) DEPLOYMENT_URL="${STATUS#* }"; break ;;
+                    failure | error) echo "Vercel preview for $SHA failed."; exit 1 ;;
+                  esac
+                fi
+                sleep 20
+              done
+              [ -n "$DEPLOYMENT_URL" ] || { echo "Timed out waiting for the Vercel preview of $SHA."; exit 1; }
             fi
 
             # Only test the latest commit of an open PR. Deployments of
@@ -109,6 +119,21 @@ jobs:
             # Fork PRs have no access to the E2E secrets.
             [ "$(jq -r '.head.repo.fork' <<< "$PR")" = "false" ] || skip "PR is from a fork."
             BRANCH=$(jq -r '.head.ref' <<< "$PR")
+
+            # Cancel in-progress runs for earlier commits of this PR. The
+            # job-level groups only cancel the same job in an older run, so an
+            # older run's later jobs could still share the E2E wallet with
+            # this one.
+            PR_SHAS=$(gh api --paginate "repos/$REPO/pulls/$(jq -r '.number' <<< "$PR")/commits?per_page=100" --jq '.[].sha')
+            gh run list -R "$REPO" --workflow frontend-e2e-tests.yml --limit 100 \
+              --json databaseId,headSha,status \
+              --jq '.[] | select(.status != "completed") | "\(.databaseId) \(.headSha)"' |
+              while read -r RUN_ID RUN_SHA; do
+                if [ "$RUN_SHA" != "$SHA" ] && grep -qx "$RUN_SHA" <<< "$PR_SHAS"; then
+                  echo "Cancelling run $RUN_ID for superseded commit $RUN_SHA."
+                  gh run cancel -R "$REPO" "$RUN_ID" || true
+                fi
+              done
           fi
 
           echo "Vercel deployment: $DEPLOYMENT_URL ($BRANCH)" | tee -a "$GITHUB_STEP_SUMMARY"
