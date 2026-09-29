@@ -24,11 +24,17 @@ fi
 # the PR later doesn't trigger a build, so vercel-preview-on-pr-open.yml
 # deploys the head commit then.
 #
+# stage and master are exempt: they have an open PR only during a release,
+# and stage's preview must build on every merge (it is stage.osmosis.zone and
+# what the post-merge E2E run tests).
+#
 # VERCEL_GIT_PULL_REQUEST_ID is empty when the branch was pushed before its
 # PR existed, and may be for deployments made through the API, so an empty
 # value is checked against GitHub. Anything unanswered builds: a missing
 # preview blocks the PR's required E2E checks, a spare one only costs a build.
-if [ -z "$VERCEL_GIT_PULL_REQUEST_ID" ]; then
+if [ -z "$VERCEL_GIT_PULL_REQUEST_ID" ] &&
+  [ "$VERCEL_GIT_COMMIT_REF" != "stage" ] &&
+  [ "$VERCEL_GIT_COMMIT_REF" != "master" ]; then
   OPEN_PRS=$(
     curl -fsS --max-time 10 \
       ${GITHUB_PR_READ_TOKEN:+-H "Authorization: Bearer $GITHUB_PR_READ_TOKEN"} \

@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      checks: read
       statuses: read
     steps:
       - env:
@@ -31,6 +32,7 @@ jobs:
           REPO_ID: ${{ github.event.repository.id }}
           REF: ${{ github.event.pull_request.head.ref }}
           SHA: ${{ github.event.pull_request.head.sha }}
+          DRAFT: ${{ github.event.pull_request.draft }}
           VERCEL_STATUS_CONTEXT: "Vercel – osmosis-frontend"
         run: |
           set -euo pipefail
@@ -49,17 +51,35 @@ jobs:
           done
 
           if [ "$STATE" = "success" ] && [[ "$DESCRIPTION" != *"Ignored Build Step"* ]]; then
-            echo "Vercel already built $SHA; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
-            exit 0
+            # The preview exists. E2E starts from its deployment_status, but
+            # if that fired while this PR didn't exist (or was closed), the
+            # run skipped, and skipped required checks count as passing: the
+            # PR would look green with no E2E. Drafts don't run E2E; marking
+            # one ready starts it from the existing preview.
+            if [ "$DRAFT" = "true" ]; then
+              echo "Vercel already built $SHA and the PR is a draft; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            # Give a deployment_status run that is resolving right now (the
+            # PR may have opened moments after the build finished) time to
+            # create its checks.
+            sleep 60
+            E2E=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=preview-trade-tests&per_page=100" \
+              --jq '[.check_runs[] | select(.status != "completed" or .conclusion != "skipped")] | length')
+            if [ "$E2E" != "0" ]; then
+              echo "Vercel already built $SHA and E2E ran or is running; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Vercel built $SHA but E2E never ran for it; redeploying so it does." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           if [ "$STATE" = "pending" ]; then
             echo "Vercel is still building $SHA; its own deployment will start E2E." | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          # Skipped (or no status at all): deploy the head commit. forceNew,
-          # because Vercel otherwise returns the existing (canceled)
-          # deployment for a commit it has already seen.
+          # Skipped, never tested, or no status at all: deploy the head commit.
+          # forceNew, because Vercel otherwise returns the existing deployment
+          # for a commit it has already seen.
           echo "Deploying $SHA ($REF): Vercel status was '${STATE:-none}' ${DESCRIPTION:+($DESCRIPTION)}" | tee -a "$GITHUB_STEP_SUMMARY"
           RESPONSE=$(jq -n \
             --arg project "$VERCEL_PROJECT" \
