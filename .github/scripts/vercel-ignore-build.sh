@@ -19,6 +19,34 @@ if [ "$VERCEL_ENV" = "production" ]; then
   exit 1
 fi
 
+# Previews only for branches with an open PR, draft or ready. A branch with
+# no PR never runs E2E, and was about a third of all preview builds. Opening
+# the PR later doesn't trigger a build, so vercel-preview-on-pr-open.yml
+# deploys the head commit then.
+#
+# VERCEL_GIT_PULL_REQUEST_ID is empty when the branch was pushed before its
+# PR existed, and may be for deployments made through the API, so an empty
+# value is checked against GitHub. Anything unanswered builds: a missing
+# preview blocks the PR's required E2E checks, a spare one only costs a build.
+if [ -z "$VERCEL_GIT_PULL_REQUEST_ID" ]; then
+  OPEN_PRS=$(
+    curl -fsS --max-time 10 \
+      ${GITHUB_PR_READ_TOKEN:+-H "Authorization: Bearer $GITHUB_PR_READ_TOKEN"} \
+      -H "Accept: application/vnd.github+json" \
+      "https://api.github.com/repos/$VERCEL_GIT_REPO_OWNER/$VERCEL_GIT_REPO_SLUG/pulls?state=open&per_page=1&head=$VERCEL_GIT_REPO_OWNER:$VERCEL_GIT_COMMIT_REF" |
+      node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const a=JSON.parse(s);console.log(Array.isArray(a)?a.length:"")}catch{console.log("")}})'
+  ) || OPEN_PRS=""
+
+  if [ "$OPEN_PRS" = "0" ]; then
+    echo "No open PR for $VERCEL_GIT_COMMIT_REF — skipping the preview."
+    exit 0
+  fi
+  if [ -z "$OPEN_PRS" ]; then
+    echo "Couldn't check GitHub for an open PR on $VERCEL_GIT_COMMIT_REF — building."
+    exit 1
+  fi
+fi
+
 # The preview E2E suite runs against this deployment, so changes to the tests
 # or their workflow still need one even though web does not depend on them.
 if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ] &&
