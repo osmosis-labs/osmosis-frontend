@@ -33,7 +33,10 @@ import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetOrderHistory } from "~/components/pages/asset-info-page/orders";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
-import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
+import {
+  USDC_BASE_DENOM,
+  USDT_BASE_DENOM,
+} from "~/components/place-limit-tool/defaults";
 import { SwapToolProps } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
@@ -166,6 +169,19 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       return null;
     }
 
+    /**
+     * Give the Buy/Sell tools a valid quote from the first render. An empty
+     * or same-as-asset quote would only be fixed by an effect after the
+     * Buy/Sell click, which is the pattern that froze this page.
+     */
+    const quoteDenom =
+      previousTrade?.quoteDenom &&
+      previousTrade.quoteDenom !== asset.coinMinimalDenom
+        ? previousTrade.quoteDenom
+        : asset.coinMinimalDenom === USDC_BASE_DENOM
+        ? USDT_BASE_DENOM
+        : USDC_BASE_DENOM;
+
     const tradeToolProps = {
       page: "Token Info Page" as const,
       swapToolProps,
@@ -174,7 +190,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
         baseDenom: asset.coinMinimalDenom,
         sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
         outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
-        quoteDenom: previousTrade?.quoteDenom ?? "",
+        quoteDenom,
       },
     };
 

@@ -429,6 +429,10 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
           ACCOUNT_LABEL: "E2E Test Account (pre-test cleanup)"
+          # The wallet is shared by runs on other branches. Only clear orders
+          # older than this job's 15 min timeout, so another run's in-flight
+          # test orders are left alone.
+          MIN_ORDER_AGE_MINUTES: "20"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Swap Pair tests
         env:
