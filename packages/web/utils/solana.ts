@@ -57,6 +57,56 @@ export async function clientSolanaRpc<T>(
   throw lastError;
 }
 
+/**
+ * One-shot, provable outcome of a submitted Solana transaction, for status
+ * tracking that outlives the signing flow (e.g. a transfer restored after a
+ * reload).
+ *
+ * - `confirmed` / `failed`: the tx is in history at `confirmed` or later,
+ *   without or with an error.
+ * - `dropped`: no record in full history and its blockhash has expired, so
+ *   it can never land.
+ * - `undefined`: nothing provable yet (not seen but the blockhash is still
+ *   valid or unknown, seen only at `processed`, or the RPC didn't answer).
+ *   Callers must keep waiting, never treat it as a failure.
+ */
+export async function checkSolanaSignatureOutcome({
+  signature,
+  recentBlockhash,
+}: {
+  signature: string;
+  recentBlockhash?: string;
+}): Promise<"confirmed" | "failed" | "dropped" | undefined> {
+  try {
+    const statuses = await clientSolanaRpc<{
+      value?: (SolanaSignatureStatus | undefined)[];
+    }>("getSignatureStatuses", [
+      [signature],
+      { searchTransactionHistory: true },
+    ]);
+    const status = statuses?.value?.[0];
+
+    if (status) {
+      if (
+        status.confirmationStatus === "confirmed" ||
+        status.confirmationStatus === "finalized"
+      ) {
+        return status.err ? "failed" : "confirmed";
+      }
+      return undefined; // processed only: may still be on a skipped fork
+    }
+
+    if (!recentBlockhash) return undefined;
+    const validity = await clientSolanaRpc<{ value?: boolean }>(
+      "isBlockhashValid",
+      [recentBlockhash, { commitment: "confirmed" }]
+    );
+    return validity?.value === false ? "dropped" : undefined;
+  } catch {
+    return undefined; // unanswered: undecided, not negative
+  }
+}
+
 /** The SPL Token and Token-2022 programs, which own every token account
  *  and mint. */
 const SPL_TOKEN_PROGRAM_IDS = new Set([

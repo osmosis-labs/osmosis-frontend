@@ -43,6 +43,7 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { checkSolanaSignatureOutcome } from "~/utils/solana";
 
 import {
   TRANSFER_HISTORY_STORE_KEY,
@@ -238,7 +239,10 @@ export class RootStore {
             }
             return responseJson;
           },
-        }
+        },
+        // Resolves Solana-signed transfers from the chain: a tx that never
+        // landed is invisible to Skip, including after a reload.
+        checkSolanaSignatureOutcome
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
       new NomicTransferStatusProvider(

@@ -778,6 +778,13 @@ const txSnapshotSchema = z.object({
    */
   trackingChainId: z.string().optional(),
   /**
+   * For a transfer whose tracked tx was signed on Solana: the tx's recent
+   * blockhash. A Solana tx that has not landed by the time its blockhash
+   * expires never will, so persisting this lets a restored entry prove a
+   * dropped tx instead of waiting on a status provider that never sees it.
+   */
+  solanaRecentBlockhash: z.string().optional(),
+  /**
    * Present while a multi-transaction route is mid-flow: the next
    * user-signed step, so an interrupted transfer can be resumed from
    * history. Cleared (set to undefined) when the final step is signed.

@@ -5,6 +5,7 @@ import { server } from "~/__tests__/msw";
 
 import {
   checkSolanaRecipient,
+  checkSolanaSignatureOutcome,
   classifySolanaSimulation,
   SolanaSignatureStatus,
   waitForSolanaSignature,
@@ -224,5 +225,94 @@ describe("checkSolanaRecipient", () => {
       )
     );
     await expect(checkSolanaRecipient(WALLET)).rejects.toBeDefined();
+  });
+});
+
+describe("checkSolanaSignatureOutcome", () => {
+  /** Answers the app's RPC route per method. */
+  const rpc = (answers: Record<string, unknown>) =>
+    server.use(
+      http.post("*/api/solana-rpc", async ({ request }) => {
+        const { method } = (await request.json()) as { method: string };
+        return HttpResponse.json({
+          jsonrpc: "2.0",
+          id: 1,
+          result: answers[method],
+        });
+      })
+    );
+
+  const check = () =>
+    checkSolanaSignatureOutcome({
+      signature: "signature",
+      recentBlockhash: "blockhash",
+    });
+
+  it("reports confirmed and failed only at confirmed commitment or later", async () => {
+    rpc({
+      getSignatureStatuses: {
+        value: [{ err: null, confirmationStatus: "finalized" }],
+      },
+    });
+    await expect(check()).resolves.toBe("confirmed");
+
+    rpc({
+      getSignatureStatuses: {
+        value: [
+          {
+            err: { InstructionError: [0, "Custom"] },
+            confirmationStatus: "confirmed",
+          },
+        ],
+      },
+    });
+    await expect(check()).resolves.toBe("failed");
+  });
+
+  it("proves nothing from a status seen only at processed", async () => {
+    rpc({
+      getSignatureStatuses: {
+        value: [
+          {
+            err: { InstructionError: [0, "Custom"] },
+            confirmationStatus: "processed",
+          },
+        ],
+      },
+    });
+    await expect(check()).resolves.toBeUndefined();
+  });
+
+  it("reports dropped once the blockhash has expired with no record in history", async () => {
+    rpc({
+      getSignatureStatuses: { value: [null] },
+      isBlockhashValid: { value: false },
+    });
+    await expect(check()).resolves.toBe("dropped");
+  });
+
+  it("proves nothing while the blockhash is still valid, or without one", async () => {
+    rpc({
+      getSignatureStatuses: { value: [null] },
+      isBlockhashValid: { value: true },
+    });
+    await expect(check()).resolves.toBeUndefined();
+
+    // entries recorded before the blockhash was persisted
+    await expect(
+      checkSolanaSignatureOutcome({ signature: "signature" })
+    ).resolves.toBeUndefined();
+  });
+
+  it("proves nothing when no endpoint answers", async () => {
+    server.use(
+      http.post("*/api/solana-rpc", () =>
+        HttpResponse.json({}, { status: 502 })
+      ),
+      http.post("https://api.mainnet-beta.solana.com", () =>
+        HttpResponse.json({}, { status: 503 })
+      )
+    );
+    await expect(check()).resolves.toBeUndefined();
   });
 });

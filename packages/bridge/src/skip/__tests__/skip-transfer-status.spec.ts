@@ -145,54 +145,123 @@ describe("SkipTransferStatusProvider", () => {
     );
   });
 
-  it("resolves an abandoned Solana-signed transfer as failed rather than polling forever", async () => {
-    // e.g. a restored Solana entry whose source tx expired before landing
-    // while the tab was closed: Skip abandons tracking, and nothing else
-    // would ever resolve the entry.
-    server.use(
-      http.get("https://api.skip.money/v2/tx/status", () => {
-        return HttpResponse.json({ state: "STATE_ABANDONED" });
-      })
-    );
-
-    const snapshot: TxSnapshot = {
+  describe("Solana-signed transfers", () => {
+    const solanaSnapshot: TxSnapshot = {
       ...baseTxSnapshot,
+      sendTxHash: "solanaSignature",
       fromChain: {
         chainId: "solana",
         prettyName: "Solana",
         chainType: "solana",
       },
+      solanaRecentBlockhash: "recentBlockhash",
     };
 
-    await provider.trackTxStatus(snapshot);
+    const withCheck = (
+      outcome: "confirmed" | "failed" | "dropped" | undefined
+    ) => {
+      const check = jest.fn(async () => outcome);
+      const solanaProvider = new SkipTransferStatusProvider(
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        SkipStatusProvider,
+        check
+      );
+      solanaProvider.statusReceiverDelegate = mockReceiver;
+      return { check, solanaProvider };
+    };
 
-    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      snapshot.sendTxHash,
-      "failed",
-      undefined
-    );
+    const skipState = (state: string) =>
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ state })
+        )
+      );
+
+    it("does not resolve an abandoned transfer as failed on Skip's word alone", async () => {
+      // Skip abandons tracking on a timeout; the source tx may have landed
+      // and the funds may still arrive.
+      skipState("STATE_ABANDONED");
+      const { solanaProvider } = withCheck("confirmed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+
+    it("resolves a restored transfer as failed once the chain proves it was dropped", async () => {
+      // Reload-before-confirmation regression: a fresh provider has only the
+      // persisted snapshot, including the blockhash recorded at broadcast.
+      skipState("STATE_PENDING");
+      const { check, solanaProvider } = withCheck("dropped");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(check).toHaveBeenCalledWith({
+        signature: "solanaSignature",
+        recentBlockhash: "recentBlockhash",
+      });
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "failed",
+        undefined
+      );
+    });
+
+    it("resolves as failed when the tx failed onchain", async () => {
+      skipState("STATE_ABANDONED");
+      const { solanaProvider } = withCheck("failed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "failed",
+        undefined
+      );
+    });
+
+    it("keeps polling when Skip errors and the chain proves nothing yet", async () => {
+      // Skip can't see a Solana tx that hasn't landed; its error must not
+      // end tracking, or a later dropped proof could never resolve it.
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ message: "tx not found" }, { status: 404 })
+        )
+      );
+      const { solanaProvider } = withCheck(undefined);
+
+      await expect(
+        solanaProvider.trackTxStatus(solanaSnapshot)
+      ).resolves.toBeUndefined();
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+
+    it("still reports Skip's own terminal success", async () => {
+      skipState("STATE_COMPLETED_SUCCESS");
+      const { solanaProvider } = withCheck("confirmed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "success",
+        undefined
+      );
+    });
   });
 
   describe("toTransferStatus", () => {
-    it("maps completed states on any chain", () => {
-      expect(toTransferStatus("STATE_COMPLETED_SUCCESS", "osmosis-1")).toBe(
-        "success"
-      );
-      expect(toTransferStatus("STATE_COMPLETED_ERROR", "1")).toBe("failed");
+    it("maps completed states", () => {
+      expect(toTransferStatus("STATE_COMPLETED_SUCCESS")).toBe("success");
+      expect(toTransferStatus("STATE_COMPLETED_ERROR")).toBe("failed");
     });
 
-    it("treats abandoned as failed only for a tx signed on Solana", () => {
-      expect(toTransferStatus("STATE_ABANDONED", "solana")).toBe("failed");
-      // Skip also abandons slow transfers whose funds can still arrive, so a
-      // cosmos, EVM or intermediate-step tx keeps polling.
-      expect(toTransferStatus("STATE_ABANDONED", "osmosis-1")).toBe("pending");
-      expect(toTransferStatus("STATE_ABANDONED", "1")).toBe("pending");
-      expect(toTransferStatus("STATE_ABANDONED", "noble-1")).toBe("pending");
-    });
-
-    it("keeps in-flight states pending", () => {
-      expect(toTransferStatus("STATE_PENDING", "solana")).toBe("pending");
-      expect(toTransferStatus("STATE_SUBMITTED", "osmosis-1")).toBe("pending");
+    it("keeps abandoned and in-flight states pending", () => {
+      // Skip also abandons slow transfers whose funds can still arrive.
+      expect(toTransferStatus("STATE_ABANDONED")).toBe("pending");
+      expect(toTransferStatus("STATE_PENDING")).toBe("pending");
+      expect(toTransferStatus("STATE_SUBMITTED")).toBe("pending");
     });
   });
 

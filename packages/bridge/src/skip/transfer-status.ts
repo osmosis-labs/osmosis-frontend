@@ -28,27 +28,31 @@ export interface SkipStatusProvider {
 }
 
 /**
- * Maps a Skip status to a transfer status. `trackingChainId` is the chain the
- * tracked tx was signed on (the from chain, or an intermediate chain for a
- * later step of a multi-tx route).
+ * Maps a Skip status to a transfer status.
  *
- * `STATE_ABANDONED` means Skip stopped tracking. For a tx signed on Solana
- * that is final: Skip never saw it land, and Solana drops a tx whose
- * blockhash expires, so polling on would report "pending" forever. Skip
- * also abandons slow transfers elsewhere whose funds can still arrive or be
- * refunded, so there it stays pending rather than being reported as failed.
+ * `STATE_ABANDONED` is not a failure: it means Skip stopped tracking, which
+ * it also does when a slow transfer times out while its funds can still
+ * arrive or be refunded. It stays pending; only proof of failure resolves
+ * it (see `SolanaSignatureCheck` for Solana-signed transfers).
  */
 export function toTransferStatus(
-  state: SkipTxStatusResponse["state"],
-  trackingChainId: string
+  state: SkipTxStatusResponse["state"]
 ): TransferStatus {
   if (state === "STATE_COMPLETED_SUCCESS") return "success";
   if (state === "STATE_COMPLETED_ERROR") return "failed";
-  if (state === "STATE_ABANDONED" && trackingChainId === "solana") {
-    return "failed";
-  }
   return "pending";
 }
+
+/**
+ * Proves the outcome of a Solana signature from the chain, independent of
+ * Skip: "failed" (error at confirmed or later) or "dropped" (no record in
+ * full history and the blockhash has expired). Anything unproven must come
+ * back undefined.
+ */
+export type SolanaSignatureCheck = (params: {
+  signature: string;
+  recentBlockhash?: string;
+}) => Promise<"confirmed" | "failed" | "dropped" | undefined>;
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
@@ -62,7 +66,12 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   constructor(
     protected readonly env: BridgeEnvironment,
     protected readonly chainList: Chain[],
-    protected readonly skipStatusProvider: SkipStatusProvider
+    protected readonly skipStatusProvider: SkipStatusProvider,
+    /**
+     * Optional. Resolves Solana-signed transfers Skip can't: a tx that never
+     * landed is invisible to Skip, so without this it stays pending.
+     */
+    protected readonly checkSolanaSignature?: SolanaSignatureCheck
   ) {
     this.axelarScanBaseUrl =
       env === "mainnet"
@@ -86,6 +95,20 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           env: this.env,
         };
 
+        const isSolanaSigned = tx.chainID === "solana";
+
+        // A Solana tx that never landed is invisible to Skip, so check the
+        // chain first: it is the only proof of a dropped or failed tx.
+        if (isSolanaSigned && this.checkSolanaSignature) {
+          const outcome = await this.checkSolanaSignature({
+            signature: sendTxHash,
+            recentBlockhash: snapshot.solanaRecentBlockhash,
+          });
+          if (outcome === "failed" || outcome === "dropped") {
+            return { id: sendTxHash, status: "failed" as const };
+          }
+        }
+
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
@@ -97,11 +120,18 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
             }
 
             throw error;
+          })
+          // For a Solana-signed tx, Skip not knowing it yet (or erroring)
+          // is not an outcome: keep polling so the chain check above can
+          // still resolve it, rather than stopping on the error.
+          .catch((error) => {
+            if (isSolanaSigned) return undefined;
+            throw error;
           });
 
         return {
           id: sendTxHash,
-          status: toTransferStatus(txStatus.state, tx.chainID),
+          status: txStatus ? toTransferStatus(txStatus.state) : "pending",
         };
       },
       validate: (incomingStatus) => {

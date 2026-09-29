@@ -776,12 +776,15 @@ export const useBridgeQuotes = ({
       quote,
       nomicCheckpointIndex,
       pendingStep,
+      solanaRecentBlockhash,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
       nomicCheckpointIndex?: number;
       /** Set for multi-tx transfers still awaiting a later user-signed step. */
       pendingStep?: TxSnapshot["pendingStep"];
+      /** Set when `sendTxHash` is a Solana signature. */
+      solanaRecentBlockhash?: string;
     }): boolean => {
       if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
         throw new Error(
@@ -836,6 +839,7 @@ export const useBridgeQuotes = ({
             : undefined,
           nomicCheckpointIndex,
           pendingStep,
+          solanaRecentBlockhash,
         });
         return true;
       }
@@ -1136,11 +1140,15 @@ export const useBridgeQuotes = ({
       // receipt to record it would lose the resume record if the app
       // closes during confirmation.
       let entryRecorded = false;
-      const onFirstStepBroadcast = (broadcastHash: string) => {
+      const onFirstStepBroadcast = (
+        broadcastHash: string,
+        solanaRecentBlockhash?: string
+      ) => {
         firstStepBroadcastHash = broadcastHash;
         entryRecorded = trackTransferStatus({
           quote,
           sendTxHash: broadcastHash,
+          solanaRecentBlockhash,
           pendingStep: {
             chainId: finalStepChainId,
             prettyName: finalStepPrettyName,
@@ -1288,7 +1296,7 @@ export const useBridgeQuotes = ({
    */
   const sendSolanaBridgeTx = async (
     transactionRequest: SolanaBridgeTransactionRequest,
-    onBroadcast?: (signature: string) => void
+    onBroadcast?: (signature: string, recentBlockhash?: string) => void
   ): Promise<string> => {
     const phantom = getPhantomProvider();
     if (!phantom || !phantomAddress) {
@@ -1360,7 +1368,7 @@ export const useBridgeQuotes = ({
       throw new Error("Phantom provider cannot sign transactions");
     }
 
-    onBroadcast?.(signature);
+    onBroadcast?.(signature, recentBlockhash);
     setIsBroadcastingTx(true);
 
     const outcome = await waitForSolanaSignature({
@@ -1399,13 +1407,17 @@ export const useBridgeQuotes = ({
       // multi-tx paths do: the funds are en route from broadcast, and
       // waiting for confirmation to record it would lose the history entry
       // if the app closes meanwhile.
-      await sendSolanaBridgeTx(transactionRequest, (signature) => {
-        broadcastSignature = signature;
-        trackTransferStatus({
-          quote,
-          sendTxHash: signature,
-        });
-      });
+      await sendSolanaBridgeTx(
+        transactionRequest,
+        (signature, solanaRecentBlockhash) => {
+          broadcastSignature = signature;
+          trackTransferStatus({
+            quote,
+            sendTxHash: signature,
+            solanaRecentBlockhash,
+          });
+        }
+      );
 
       onTransferProp?.();
       setTransferInitiated(true);

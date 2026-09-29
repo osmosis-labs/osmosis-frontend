@@ -30,6 +30,10 @@ export const BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE =
  * one-shot resume checks. `onWaiting` fires once, before the first wait
  * between polls, so callers can surface that the funds haven't arrived yet
  * without waiting for the whole polling budget to run out.
+ * `abandonedIsFailed` (default true) sets whether Skip abandoning the
+ * route counts as failed. Pass false when the first leg can't be proven
+ * failed by Skip alone (a Solana tx: abandonment is a tracking timeout,
+ * and the funds may still arrive).
  */
 export async function waitForSkipStepArrival({
   chainId,
@@ -38,6 +42,7 @@ export async function waitForSkipStepArrival({
   maxAttempts,
   intervalMs = 10_000,
   onWaiting,
+  abandonedIsFailed = true,
 }: {
   chainId: string;
   txHash: string;
@@ -45,6 +50,7 @@ export async function waitForSkipStepArrival({
   maxAttempts?: number;
   intervalMs?: number;
   onWaiting?: () => void;
+  abandonedIsFailed?: boolean;
 }): Promise<"success" | "failed" | "pending" | "aborted"> {
   const env = IS_TESTNET ? "testnet" : "mainnet";
   // prompt Skip to index the tx; the polling below tolerates failures
@@ -66,7 +72,10 @@ export async function waitForSkipStepArrival({
         // modal) instead of leaving the resumable history entry.
         if (!isActive()) return "aborted";
         if (state === "STATE_COMPLETED_SUCCESS") return "success";
-        if (state === "STATE_COMPLETED_ERROR" || state === "STATE_ABANDONED")
+        if (
+          state === "STATE_COMPLETED_ERROR" ||
+          (abandonedIsFailed && state === "STATE_ABANDONED")
+        )
           return "failed";
       }
     } catch {
