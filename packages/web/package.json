@@ -13,6 +13,7 @@
     "test": "yarn generate && dotenv -c -- jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "prettier --check \"**/*\" && eslint .",
     "lint:fix": "prettier --write \"**/*\" && eslint . --fix",
     "pre-commit": "lint-staged",

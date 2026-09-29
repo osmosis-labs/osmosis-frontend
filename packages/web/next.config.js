@@ -6,6 +6,14 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
+  // so skip both here to save ~40s on each Vercel build.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
