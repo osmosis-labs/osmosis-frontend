@@ -15,14 +15,17 @@ import {
   BridgeChain,
   BridgeProviderContext,
   BridgeTransactionRequest,
+  CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "../../interface";
-import { SkipBridgeProvider } from "..";
-import { SkipMsg } from "../types";
+import { raiseMinAssetToDestinationInput, SkipBridgeProvider } from "..";
+import { SkipMsg, SkipMsgsRequest } from "../types";
 import {
   ETH_EthereumToOsmosis_Msgs,
   ETH_EthereumToOsmosis_Route,
+  ETH_OsmosisToEthereum_DestinationSwap_Msgs,
+  ETH_OsmosisToEthereum_DestinationSwap_Route,
   ETH_OsmosisToEthereum_Msgs,
   ETH_OsmosisToEthereum_Route,
   SkipAssets,
@@ -136,7 +139,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote).toBeDefined();
@@ -248,7 +251,7 @@ describe("SkipBridgeProvider", () => {
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote).toBeDefined();
@@ -355,7 +358,7 @@ describe("SkipBridgeProvider", () => {
     fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
     toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
     fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-    slippage: 0.01,
+    slippage: 1,
   };
 
   const useEthereumToOsmosisRouteWithFeeBehavior = (fee_behavior: string) =>
@@ -460,7 +463,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
-      slippage: 0.01,
+      slippage: 1,
     });
 
     expect(quote.transferFee.isAdditive).toBe(false);
@@ -487,7 +490,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0xabc",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     await expect(provider.getQuote(params)).rejects.toThrow(
@@ -538,7 +541,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0xabc",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     const txData: BridgeTransactionRequest = {
@@ -590,7 +593,7 @@ describe("SkipBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "osmo1ABC123",
       toAddress: "0xdef",
-      slippage: 0.01,
+      slippage: 1,
     };
 
     const txData: BridgeTransactionRequest = {
@@ -953,6 +956,281 @@ describe("SkipBridgeProvider", () => {
       });
     });
   });
+
+  describe("slippage tolerance", () => {
+    const osmosisToEthereumQuoteParams: GetBridgeQuoteParams = {
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    };
+
+    /**
+     * The tolerance only exists in the outgoing request — Skip echoes none of
+     * it back, and the returned quote reports `route.amount_out` either way, so
+     * a test that inspects the quote cannot see this bug at all.
+     */
+    const captureMsgsRequest = () => {
+      const captured: { body?: SkipMsgsRequest } = {};
+
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_Route)
+        ),
+        http.post(
+          "https://api.skip.money/v2/fungible/msgs",
+          async ({ request }) => {
+            captured.body = (await request.json()) as SkipMsgsRequest;
+            return HttpResponse.json(ETH_OsmosisToEthereum_Msgs);
+          }
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
+
+      return captured;
+    };
+
+    it("sends the default tolerance when no caller supplies one", async () => {
+      const captured = captureMsgsRequest();
+
+      await provider.getQuote(osmosisToEthereumQuoteParams);
+
+      expect(captured.body?.slippage_tolerance_percent).toBe("0.5");
+    });
+
+    it("prefers an explicit caller tolerance over the default", async () => {
+      const captured = captureMsgsRequest();
+
+      await provider.getQuote({
+        ...osmosisToEthereumQuoteParams,
+        slippage: 1.5,
+      });
+
+      expect(captured.body?.slippage_tolerance_percent).toBe("1.5");
+    });
+
+    /**
+     * The raise has its own unit tests, but nothing asserted it was still
+     * wired into `getQuote`: every other fixture routes without a destination
+     * swap, so the call could be deleted and leave the suite green.
+     */
+    it("raises the signed floor to cover a destination swap", async () => {
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_DestinationSwap_Route)
+        ),
+        http.post("https://api.skip.money/v2/fungible/msgs", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_DestinationSwap_Msgs)
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
+
+      const quote = await provider.getQuote(osmosisToEthereumQuoteParams);
+
+      const { msgs } =
+        quote.transactionRequest as CosmosBridgeTransactionRequest;
+      const executed = JSON.parse(Buffer.from(msgs[0].value.msg).toString());
+
+      // evm_swap.amount_in + axelar_transfer.fee_amount, up from the 0.5%
+      // floor Skip signed at 9942313206615014490.
+      expect(executed.swap_and_action.min_asset.native.amount).toBe(
+        "9992274579512577377"
+      );
+    });
+  });
+});
+
+/**
+ * Figures are the live Osmosis allUSDT -> Optimism USDT route measured on
+ * 2026-09-14 at a 0.5% tolerance. Skip's own zero-tolerance response for the
+ * same route returns a `min_asset` of exactly 59982717, which is what these
+ * assertions restore.
+ */
+describe("raiseMinAssetToDestinationInput", () => {
+  const DESTINATION_INPUT = "58897323";
+  const AXELAR_FEE = "1085394";
+  const REQUIRED = "59982717";
+
+  const BRIDGED_ASSET = "0xaxlUSDC";
+
+  const operations = [
+    { swap: { swap_in: { swap_venue: {}, swap_operations: [] } } },
+    {
+      axelar_transfer: {
+        fee_amount: AXELAR_FEE,
+        fee_asset: { denom: BRIDGED_ASSET },
+      },
+    },
+    { evm_swap: { amount_in: DESTINATION_INPUT, denom_in: BRIDGED_ASSET } },
+  ] as unknown as Parameters<typeof raiseMinAssetToDestinationInput>[1];
+
+  /**
+   * The packet-forward shape: Skip returns a `MsgTransfer` and the floor rides
+   * in the memo, which is carried as a string.
+   */
+  const makeForwardedMsgs = (minAssetAmount: string): SkipMsg[] => [
+    {
+      multi_chain_msg: {
+        chain_id: "osmosis-1",
+        path: ["osmosis-1", "42161"],
+        msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+        msg: JSON.stringify({
+          source_port: "transfer",
+          source_channel: "channel-0",
+          token: { denom: "ibc/ATOM", amount: "5000000" },
+          sender: "osmo1sender",
+          receiver: "cosmos1receiver",
+          memo: JSON.stringify({
+            forward: {
+              channel: "channel-569",
+              next: {
+                wasm: {
+                  contract: "neutron1entrypoint",
+                  msg: {
+                    swap_and_action: {
+                      min_asset: {
+                        native: { denom: "ibc/USDC", amount: minAssetAmount },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        }),
+      },
+    },
+  ];
+
+  const makeMsgs = (minAssetAmount: string): SkipMsg[] => [
+    {
+      multi_chain_msg: {
+        chain_id: "osmosis-1",
+        path: ["osmosis-1", "10"],
+        msg_type_url: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        msg: JSON.stringify({
+          sender: "osmo1sender",
+          contract: "osmo1entrypoint",
+          msg: {
+            swap_and_action: {
+              min_asset: {
+                native: { denom: "ibc/USDC", amount: minAssetAmount },
+              },
+            },
+          },
+          funds: [],
+        }),
+      },
+    },
+  ];
+
+  const readMinAsset = (msgs: SkipMsg[]) =>
+    JSON.parse(
+      (msgs[0] as { multi_chain_msg: { msg: string } }).multi_chain_msg.msg
+    ).msg.swap_and_action.min_asset.native.amount;
+
+  it("raises a tolerance-reduced min_asset to what the destination swap spends", () => {
+    const raised = raiseMinAssetToDestinationInput(
+      makeMsgs("59892649"),
+      operations
+    );
+
+    expect(readMinAsset(raised)).toBe(REQUIRED);
+  });
+
+  it("leaves a min_asset that already covers the destination untouched", () => {
+    const msgs = makeMsgs(REQUIRED);
+
+    expect(raiseMinAssetToDestinationInput(msgs, operations)[0]).toBe(msgs[0]);
+  });
+
+  it("does not touch routes without a destination EVM swap", () => {
+    const msgs = makeMsgs("59892649");
+    const cosmosOnly = [
+      { axelar_transfer: { fee_amount: AXELAR_FEE } },
+    ] as unknown as typeof operations;
+
+    expect(raiseMinAssetToDestinationInput(msgs, cosmosOnly)).toBe(msgs);
+  });
+
+  it("raises a floor carried inside a packet-forward memo", () => {
+    const raised = raiseMinAssetToDestinationInput(
+      makeForwardedMsgs("59892649"),
+      operations
+    );
+
+    const parsed = JSON.parse(
+      (raised[0] as { multi_chain_msg: { msg: string } }).multi_chain_msg.msg
+    );
+
+    // The memo has to go back as a string, or the edit is dropped on the wire.
+    expect(typeof parsed.memo).toBe("string");
+    expect(
+      JSON.parse(parsed.memo).forward.next.wasm.msg.swap_and_action.min_asset
+        .native.amount
+    ).toBe(REQUIRED);
+  });
+
+  it("leaves the floor alone when the fee is a different asset to the swap input", () => {
+    const msgs = makeMsgs("59892649");
+    const mismatched = [
+      {
+        axelar_transfer: {
+          fee_amount: AXELAR_FEE,
+          fee_asset: { denom: "ethereum-native" },
+        },
+      },
+      { evm_swap: { amount_in: DESTINATION_INPUT, denom_in: "0xWETH" } },
+    ] as unknown as typeof operations;
+
+    expect(raiseMinAssetToDestinationInput(msgs, mismatched)).toBe(msgs);
+  });
+
+  it("warns when a swapping route carries no floor to raise", () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    const floorless = [
+      {
+        multi_chain_msg: {
+          chain_id: "osmosis-1",
+          path: ["osmosis-1", "10"],
+          msg_type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+          msg: JSON.stringify({ token: {}, memo: "not json" }),
+        },
+      },
+    ] as SkipMsg[];
+
+    raiseMinAssetToDestinationInput(floorless, operations);
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("no min_asset found")
+    );
+
+    warn.mockRestore();
+  });
 });
 
 describe("SkipBridgeProvider.getExternalUrl", () => {
@@ -1092,6 +1370,8 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     operations: USDC_EthereumToOsmosisAlloy_MultiTxRoute.operations,
     required_chain_addresses:
       USDC_EthereumToOsmosisAlloy_MultiTxRoute.required_chain_addresses,
+    // multiTxQuoteParams.slippage
+    slippage_tolerance_percent: "0.01",
   };
 
   /** Mirrors the live API: a single-tx-only request fails with the
@@ -1474,6 +1754,57 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(rawMsgsBody).not.toContain("smart_relay_fee_quote");
     // ...while everything else about the operations is preserved
     expect(rawMsgsBody).toContain("cctp_transfer");
+  });
+
+  /**
+   * Skip rejects a `/msgs` build that omits the tolerance — or sends it empty
+   * — with `invalid slippage_tolerance_percent`, so a step rebuilt without one
+   * cannot be signed at all and the funds stay on the intermediate chain. The
+   * request type keeps the field required to stop that reaching runtime; this
+   * pins the value actually sent, which no type can check.
+   */
+  describe("tolerance sent when rebuilding an intermediate step", () => {
+    const captureMsgsTolerance = () => {
+      const captured: { tolerance?: string } = {};
+      server.use(
+        http.post(
+          "https://api.skip.money/v2/fungible/msgs",
+          async ({ request }) => {
+            captured.tolerance = (
+              (await request.json()) as { slippage_tolerance_percent?: string }
+            ).slippage_tolerance_percent;
+            return HttpResponse.json(USDC_EthereumToOsmosisAlloy_MultiTxMsgs);
+          }
+        )
+      );
+      return captured;
+    };
+
+    it("reuses the tolerance the quote was built with", async () => {
+      const captured = captureMsgsTolerance();
+
+      await provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: multiTxRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      });
+
+      expect(captured.tolerance).toBe("0.01");
+    });
+
+    it("falls back to the default for a route persisted without one", async () => {
+      const captured = captureMsgsTolerance();
+      const { slippage_tolerance_percent: _, ...legacyRouteData } =
+        multiTxRouteData;
+
+      await provider.getTransactionStep({
+        ...multiTxQuoteParams,
+        route: legacyRouteData,
+        step: { chainId: "noble-1", senderAddress: nobleAddress },
+      });
+
+      expect(captured.tolerance).toBe("0.5");
+    });
   });
 
   it("names an expired stored route so the UI can show recovery copy", async () => {
