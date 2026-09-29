@@ -218,7 +218,7 @@ describe("setAssetsQueryDefaults", () => {
 
   it("keeps CDN-cacheable queries fresh for their CDN max age", () => {
     expect(optionsFor("edge.assets.getMarketAsset")).toMatchObject({
-      staleTime: 30_000,
+      staleTime: 10_000,
       refetchOnWindowFocus: false,
     });
     expect(optionsFor("edge.assets.getCoingeckoCoin").staleTime).toBe(300_000);
