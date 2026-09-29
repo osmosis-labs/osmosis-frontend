@@ -354,6 +354,13 @@ export const getBridgeSupportedAssetsParams = z.object({
    * quote requests.
    */
   allowMultiTx: z.boolean().optional(),
+  /**
+   * Optional: Whether in-app Solana routes may be offered (Phantom-signed
+   * deposits and withdrawals to Solana addresses). A kill switch: without
+   * it, providers advertise no Solana counterparty. Matches `allowSolana`
+   * on quote requests.
+   */
+  allowSolana: z.boolean().optional(),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
@@ -463,6 +470,12 @@ export const getBridgeQuoteSchema = z.object({
    * providers return `transactionSteps` on the quote when the route needs it.
    */
   allowMultiTx: z.boolean().optional(),
+  /**
+   * Optional: Whether a route to or from Solana may be quoted. A kill switch
+   * matching `allowSolana` on supported-assets requests; providers refuse a
+   * Solana quote without it.
+   */
+  allowSolana: z.boolean().optional(),
 });
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;

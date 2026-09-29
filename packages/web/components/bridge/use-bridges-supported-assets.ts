@@ -56,8 +56,10 @@ export const useBridgesSupportedAssets = ({
   // Sources whose only route is multi-tx (e.g. Solana USDC into an alloy)
   // are advertised only where the flow can execute them: deposits, with the
   // flag on. Mirrors the quote-side `allowMultiTx` gating in useBridgeQuotes.
-  const { multiTxBridgeRoutes } = useFeatureFlags();
+  const { multiTxBridgeRoutes, solanaSkipRoutes } = useFeatureFlags();
   const allowMultiTx = multiTxBridgeRoutes === true && direction === "deposit";
+  // Kill switch for the Phantom-signed Solana routes, in both directions.
+  const allowSolana = solanaSkipRoutes === true;
 
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
@@ -73,6 +75,7 @@ export const useBridgesSupportedAssets = ({
             direction,
             chain,
             allowMultiTx,
+            allowSolana,
           },
           {
             enabled: !isNil(assets),

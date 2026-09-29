@@ -252,12 +252,15 @@ export const useBridgeQuotes = ({
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
   const allowMultiTx =
     featureFlags.multiTxBridgeRoutes === true &&
-    // deposits only: the executor supports exactly an EVM first tx followed
-    // by one cosmos step, so a multi-tx withdraw route would quote (and
+    // deposits only: the executor supports exactly an EVM or Solana first tx
+    // followed by one cosmos step, so a multi-tx withdraw route would quote (and
     // render its steps badge) only to be refused at Confirm
     !isWithdraw &&
     cosmosSideChain?.chainType === "cosmos" &&
     Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
+  // Kill switch for the Phantom-signed Solana routes; the provider refuses a
+  // Solana quote without it.
+  const allowSolana = featureFlags.solanaSkipRoutes === true;
 
   const quoteParams: Partial<
     Omit<
@@ -273,6 +276,7 @@ export const useBridgeQuotes = ({
       toAsset,
       toChain,
       allowMultiTx,
+      allowSolana,
     }),
     [
       fromAddress,
@@ -282,6 +286,7 @@ export const useBridgeQuotes = ({
       toAsset,
       toChain,
       allowMultiTx,
+      allowSolana,
     ]
   );
 

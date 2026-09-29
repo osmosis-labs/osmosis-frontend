@@ -242,8 +242,22 @@ export class SkipBridgeProvider implements BridgeProvider {
       fromAddress,
       toAddress,
       allowMultiTx,
+      allowSolana,
       slippage = DEFAULT_SLIPPAGE_PERCENT,
     } = params;
+
+    // Kill switch: supported assets hide Solana without `allowSolana`, and a
+    // quote requested directly must not bypass that.
+    if (
+      !allowSolana &&
+      (fromChain.chainType === "solana" || toChain.chainType === "solana")
+    ) {
+      throw new BridgeQuoteError({
+        bridgeId: SkipBridgeProvider.ID,
+        errorType: "UnsupportedQuoteError",
+        message: "Solana routes are disabled",
+      });
+    }
 
     return cachified({
       cache: this.ctx.cache,
@@ -673,6 +687,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     asset,
     direction,
     allowMultiTx,
+    allowSolana,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -744,8 +759,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         //   offer them only when the caller can execute multi-tx routes.
         //   Offering them otherwise would present a source that can never
         //   quote.
+        // All of it sits behind `allowSolana`, the kill switch for the
+        // Phantom-signed Solana flow.
         if (!("chainId" in counterparty)) {
           if (
+            allowSolana === true &&
             counterparty.chainName === "solana" &&
             "sourceDenom" in counterparty &&
             (direction === "withdraw" ||

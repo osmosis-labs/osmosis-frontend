@@ -762,6 +762,7 @@ describe("SkipBridgeProvider", () => {
   describe("getSupportedAssets", () => {
     it("gets shared origin assets", async () => {
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -861,6 +862,7 @@ describe("SkipBridgeProvider", () => {
 
     it("returns Solana as an in-app quote chain for withdrawals of SPL-counterparty assets", async () => {
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -885,11 +887,64 @@ describe("SkipBridgeProvider", () => {
       });
     });
 
+    it("offers no Solana counterparty when Solana routes are disabled", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "solana.USDT.pica",
+          address:
+            "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+          decimals: 6,
+        },
+        direction: "withdraw",
+        allowMultiTx: true,
+      });
+
+      expect(
+        sourceVariants.some((variant) => variant.chainType === "solana")
+      ).toBe(false);
+    });
+
+    it("refuses a Solana quote when Solana routes are disabled", async () => {
+      await expect(
+        provider.getQuote({
+          fromAmount: "1000000",
+          fromAsset: {
+            denom: "USDC",
+            address:
+              "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+            decimals: 6,
+          },
+          fromChain: {
+            chainId: "osmosis-1",
+            chainName: "osmosis",
+            chainType: "cosmos",
+          },
+          toAsset: {
+            denom: "USDC",
+            address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            decimals: 6,
+          },
+          toChain: {
+            chainId: "solana",
+            chainName: "Solana",
+            chainType: "solana",
+          },
+          fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+          toAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        })
+      ).rejects.toThrow("Solana routes are disabled");
+    });
+
     it("does not offer Solana deposits into a non-Noble variant without multi-tx", async () => {
       // A variant CCTP cannot auto-forward to (anything but Noble-native
       // USDC) is reachable from Solana only by a multi-tx route. With
       // multi-tx off, offering it would present a source that never quotes.
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -910,6 +965,7 @@ describe("SkipBridgeProvider", () => {
 
     it("offers Solana deposits into a non-Noble variant when multi-tx is allowed", async () => {
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -969,6 +1025,7 @@ describe("SkipBridgeProvider", () => {
       );
 
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -1015,6 +1072,7 @@ describe("SkipBridgeProvider", () => {
 
     it("includes skip supported cosmos counterparty assets from asset list", async () => {
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -1042,6 +1100,7 @@ describe("SkipBridgeProvider", () => {
 
     it("includes skip supported evm counterparty assets from asset list", async () => {
       const sourceVariants = await provider.getSupportedAssets({
+        allowSolana: true,
         chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
