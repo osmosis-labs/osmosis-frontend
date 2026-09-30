@@ -140,15 +140,20 @@ export const historicalDatafeed: ({
 
       let bars: TokenHistoricalPrice[] = [];
 
-      bars = await apiUtils.edge.assets.getAssetHistoricalPrice.fetch({
-        coinMinimalDenom: symbolInfo.base_name
-          ? symbolInfo.base_name[0]
-          : symbolInfo.name,
-        timeFrame: {
-          custom: customTimeFrame,
+      bars = await apiUtils.edge.assets.getAssetHistoricalPrice.fetch(
+        {
+          coinMinimalDenom: symbolInfo.base_name
+            ? symbolInfo.base_name[0]
+            : symbolInfo.name,
+          timeFrame: {
+            custom: customTimeFrame,
+          },
+          realtime: true,
         },
-        realtime: true,
-      });
+        // The procedure's defaults keep non-realtime history fresh for 60s;
+        // realtime bars must always be fetched.
+        { staleTime: 0 }
+      );
 
       if (bars.length === 0 || bars.length < countBack) {
         onResult([], {
