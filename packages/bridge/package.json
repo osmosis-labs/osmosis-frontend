@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/bridge",
   "version": "1.0.0",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "osmosis-labs",
   "repository": {
     "type": "git",

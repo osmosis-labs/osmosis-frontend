@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/keplr-hooks",
   "version": "0.10.24-ibc.go.v7.hot.fix",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "chainapsis",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/math#readme",
   "repository": {

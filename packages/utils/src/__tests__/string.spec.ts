@@ -5,12 +5,10 @@ import { TextDecoder, TextEncoder } from "util";
 (global as any).TextDecoder = TextDecoder;
 
 import {
-  camelToKebabCase,
-  deriveCosmosAddress,
   isBitcoinAddressValid,
   isDogecoinAddressValid,
-  shorten,
-} from "../string";
+} from "../address-validation";
+import { camelToKebabCase, deriveCosmosAddress, shorten } from "../string";
 
 describe("shorten", () => {
   it("should return an empty string if input is empty", () => {
