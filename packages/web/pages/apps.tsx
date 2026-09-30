@@ -8,8 +8,7 @@ import { HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
-import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation } from "~/hooks";
 
 type AppStoreProps = {
   apps: AppStoreResponse;
@@ -27,9 +26,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   );
 
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.AppStore.pageViewed],
-  });
   const { width } = useWindowSize();
 
   const fuse = useMemo(
@@ -45,10 +41,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const nonFeaturedApps = applications?.filter((app) => !app.featured);
 
   featuredApp = featuredApp ? featuredApp : nonFeaturedApps[0];
-
-  const handleApplyClick = () => {
-    logEvent([EventName.AppStore.applyClicked]);
-  };
 
   const handleSearchInput = (value: string) => {
     const searchResults = fuse.search(value);
@@ -114,7 +106,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
       <div className="container mx-auto py-3">
         <div className="1.5md:grid-cols-1; grid grid-cols-3 gap-4 1.5xl:grid-cols-2">
-          {appsToDisplay?.map((app, index) => {
+          {appsToDisplay?.map((app) => {
             return (
               <AppCard
                 key={app.title}
@@ -124,7 +116,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
                 twitterUrl={app?.twitter_URL}
                 githubUrl={app?.github_URL}
                 externalUrl={app?.external_URL}
-                index={index}
               />
             );
           })}
@@ -144,7 +135,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
               href="https://github.com/osmosis-labs/fe-content/tree/main/cms/apps"
               target="_blank"
               rel="noreferrer noopener"
-              onClick={handleApplyClick}
             >
               {t("store.applyButton")} &rarr;
             </a>

@@ -13,12 +13,11 @@ import { Markdown } from "~/components/markdown";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import {
   GOVERNANCE_MODULE_ADDRESS,
   TOKENFACTORY_BURN_ADDRESS,
 } from "~/config/tokenfactory";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -54,7 +53,6 @@ const TEXT_CHAR_LIMIT = 450;
 export const AssetDetails = observer(({ className }: CustomClasses) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const {
     title,
@@ -104,10 +102,6 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
   }, [isExpandable, isExpanded, description]);
 
   const toggleExpand = () => {
-    logEvent([
-      EventName.TokenInfo.viewMoreClicked,
-      { tokenName: asset.coinDenom },
-    ]);
     setIsExpanded(!isExpanded);
   };
 

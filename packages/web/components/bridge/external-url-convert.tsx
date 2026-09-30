@@ -204,7 +204,6 @@ export const ExternalUrlConvertOption: FunctionComponent<{
                 <SwapTool
                   useQueryParams={false}
                   useOtherCurrencies={false}
-                  page="Bridge Page"
                   initialSendTokenDenom={alloyMinimalDenom}
                   initialOutTokenDenom={convertToVariant.coinMinimalDenom}
                   onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {

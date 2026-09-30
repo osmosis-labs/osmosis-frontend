@@ -98,7 +98,6 @@ const Pool: FunctionComponent = () => {
           outTokenDenom={pool.reserveCoins[1].denom}
           useOtherCurrencies={pool.reserveCoins.length > 2}
           forceSwapInPoolId={poolId}
-          page="Pool Details Page"
         />
       )}
       {!pool ? (

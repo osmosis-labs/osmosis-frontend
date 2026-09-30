@@ -8,8 +8,7 @@ import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { HistorySwapTransaction } from "~/hooks/use-transaction-history";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -67,8 +66,6 @@ export const TransactionSwapDetails = ({
       { maxDecimals: 2 }
     );
   }, [conversion.numerator, conversion.denominator]);
-
-  const { logEvent } = useAmplitudeAnalytics();
 
   const status = transaction.code === 0 ? "success" : "failed";
 
@@ -207,19 +204,7 @@ export const TransactionSwapDetails = ({
             />
           </div>
         </div>
-        <Button
-          size="default"
-          variant="secondary"
-          asChild
-          onClick={() =>
-            logEvent([
-              EventName.TransactionsPage.explorerClicked,
-              {
-                source: "modal",
-              },
-            ])
-          }
-        >
+        <Button size="default" variant="secondary" asChild>
           <a
             rel="noopener noreferrer"
             target="_blank"

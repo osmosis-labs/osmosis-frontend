@@ -22,7 +22,7 @@ import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button, IconButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
 import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time";
@@ -32,8 +32,6 @@ import { displayHumanizedTime } from "~/utils/date";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
-
-import { EventName } from "../../config/analytics-events";
 
 const QRCode = dynamic(
   () => import("~/components/qrcode").then((module) => module.QRCode),
@@ -67,7 +65,6 @@ export const DepositAddressScreen = observer(
     toAsset,
   }: DepositAddressScreenProps) => {
     const { accountStore } = useStore();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const osmosisAddress = accountStore.getWallet(
       accountStore.osmosisChainId
@@ -245,7 +242,6 @@ export const DepositAddressScreen = observer(
                     className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
                     aria-label={t("transfer.showQrCode")}
                     onClick={() => {
-                      logEvent([EventName.DepositWithdraw.qrOpened]);
                       setShowQrCode(true);
                     }}
                     disabled={isLoading || isExpired}
@@ -272,7 +268,6 @@ export const DepositAddressScreen = observer(
                     className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
                     aria-label={t("transfer.copyAddress")}
                     onClick={() => {
-                      logEvent([EventName.DepositWithdraw.addressCopied]);
                       onCopy();
                     }}
                     disabled={isLoading || isExpired}

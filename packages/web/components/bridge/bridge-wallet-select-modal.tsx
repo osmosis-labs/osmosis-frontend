@@ -32,9 +32,9 @@ import {
 import { Button, GoBackButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
-import { EventName, IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
-import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import {
   useDisconnectEvmWallet,
   useEvmWalletAccount,
@@ -138,7 +138,6 @@ const BridgeWalletSelectScreens: FunctionComponent<
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const cosmosAccount = cosmosChain
       ? accountStore.getWallet(accountStore.osmosisChainId)
@@ -451,10 +450,6 @@ const BridgeWalletSelectScreens: FunctionComponent<
                                   wallet,
                                   chainId: evmChain.chainId as EthereumChainIds,
                                 });
-                                logEvent([
-                                  EventName.DepositWithdraw.walletSelected,
-                                  { walletName: wallet.name },
-                                ]);
                               }}
                               name={wallet.name}
                               icon={wallet.icon}

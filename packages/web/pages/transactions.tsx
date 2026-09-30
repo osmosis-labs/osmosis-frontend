@@ -9,9 +9,7 @@ import { TransactionContent } from "~/components/transactions/transaction-conten
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
-import { EventName } from "~/config";
 import {
-  useAmplitudeAnalytics,
   useFeatureFlags,
   useNavBar,
   useTranslation,
@@ -63,10 +61,6 @@ const Transactions: React.FC = observer(() => {
       router.push("/");
     }
   }, [transactionsPage, router, _isInitialized]);
-
-  useAmplitudeAnalytics({
-    onLoadEvent: [EventName.TransactionsPage.pageViewed],
-  });
 
   const [fromPage] = useQueryState("fromPage");
 

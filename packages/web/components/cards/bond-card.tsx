@@ -10,9 +10,7 @@ import { useMeasure } from "react-use";
 import { FallbackImg, Icon } from "~/components/assets";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import { EventName } from "~/config";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
 
 export const BondCard: FunctionComponent<
@@ -381,7 +379,6 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
 }> = ({ swapFeeApr }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   return (
     <div className="flex place-content-between items-start">
       <div className="flex items-center gap-2">
@@ -398,11 +395,6 @@ const SwapFeeBreakdownRow: FunctionComponent<{
           <a
             rel="noreferrer"
             target="_blank"
-            onClick={() => {
-              logEvent([
-                EventName.PoolDetail.CardDetail.swapFeesLinkOutClicked,
-              ]);
-            }}
             href="https://docs.osmosis.zone/overview/educate/getting-started/#adding-liquidity-to-a-pool"
           >
             <u>{t("pool.swapFees")}</u>

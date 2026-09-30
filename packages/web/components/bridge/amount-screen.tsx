@@ -34,10 +34,8 @@ import {
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
-  useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useDisclosure,
   useFeatureFlags,
@@ -165,7 +163,6 @@ export const AmountScreen = observer(
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
     const featureFlags = useFeatureFlags();
 
     const {
@@ -903,10 +900,6 @@ export const AmountScreen = observer(
               if (osmosisWalletConnected) {
                 checkChainAndConnectWallet(nextChain);
               }
-              logEvent([
-                EventName.DepositWithdraw.networkSelected,
-                { network: nextChain.prettyName },
-              ]);
             }}
             readonly={direction === "withdraw" || supportedChains.length === 1}
             isNetworkSelectVisible={
@@ -942,10 +935,6 @@ export const AmountScreen = observer(
               if (osmosisWalletConnected) {
                 checkChainAndConnectWallet(nextChain);
               }
-              logEvent([
-                EventName.DepositWithdraw.networkSelected,
-                { network: nextChain.prettyName },
-              ]);
             }}
             readonly={direction === "deposit" || supportedChains.length === 1}
             isNetworkSelectVisible={

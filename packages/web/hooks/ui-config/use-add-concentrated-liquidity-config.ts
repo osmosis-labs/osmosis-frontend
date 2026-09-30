@@ -34,8 +34,6 @@ import {
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -54,7 +52,6 @@ export function useAddConcentratedLiquidityConfig(
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -146,19 +143,6 @@ export function useAddConcentratedLiquidityConfig(
             baseDepositValue = baseCoin;
           }
 
-          const baseEvent = {
-            isSingleAsset:
-              !Boolean(baseDepositValue) || !Boolean(quoteDepositValue),
-            volatilityType: config.currentStrategy ?? "",
-            poolId,
-            rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
-            rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
-          };
-          logEvent([
-            EventName.ConcentratedLiquidity.addLiquidityStarted,
-            baseEvent,
-          ]);
-
           await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
             config.poolId,
             config.tickRange[0],
@@ -180,11 +164,6 @@ export function useAddConcentratedLiquidityConfig(
                 ])
                   .then(() => resolve())
                   .catch(reject);
-
-                logEvent([
-                  EventName.ConcentratedLiquidity.addLiquidityCompleted,
-                  baseEvent,
-                ]);
               }
             }
           );
@@ -206,10 +185,7 @@ export function useAddConcentratedLiquidityConfig(
       config.baseDepositOnly,
       config.quoteDepositOnly,
       config.tickRange,
-      config.currentStrategy,
-      config.rangeWithCurrencyDecimals,
       config.poolId,
-      logEvent,
     ]
   );
 
@@ -228,8 +204,6 @@ export function useAddConcentratedLiquidityConfig(
               amount: "0",
             }
           : config.quoteDepositAmountIn.getAmountPrimitive();
-
-        logEvent([EventName.ConcentratedLiquidity.addMoreLiquidityStarted]);
 
         try {
           await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
@@ -250,10 +224,6 @@ export function useAddConcentratedLiquidityConfig(
                 ])
                   .then(() => resolve())
                   .catch(reject);
-
-                logEvent([
-                  EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
-                ]);
               }
             }
           );
@@ -271,7 +241,6 @@ export function useAddConcentratedLiquidityConfig(
       config.baseDepositOnly,
       config.quoteDepositOnly,
       account,
-      logEvent,
     ]
   );
 

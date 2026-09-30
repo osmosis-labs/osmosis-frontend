@@ -4,8 +4,7 @@ import isYesterday from "dayjs/plugin/isYesterday";
 
 import { TransactionSwapRow } from "~/components/transactions/transaction-types/transaction-swap-row";
 import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 dayjs.extend(isToday);
@@ -60,7 +59,6 @@ export const TransactionRows = ({
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
-  const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
 
   return (
@@ -104,19 +102,6 @@ export const TransactionRows = ({
                         },
                       }}
                       onClick={() => {
-                        // TODO - once there are more transaction types, we can add more event names
-                        logEvent([
-                          EventName.TransactionsPage.swapClicked,
-                          {
-                            tokenIn:
-                              transaction.metadata[0].value[0].txInfo.tokenIn
-                                .token.denom,
-                            tokenOut:
-                              transaction.metadata[0].value[0].txInfo.tokenOut
-                                .token.denom,
-                          },
-                        ]);
-
                         setSelectedTransactionHash(transaction.hash);
 
                         // delay to ensure the slide over transitions smoothly
@@ -137,17 +122,6 @@ export const TransactionRows = ({
                       size="lg"
                       transaction={transaction}
                       onClick={() => {
-                        logEvent([
-                          EventName.TransactionsPage.transferClicked,
-                          {
-                            transferDirection: transaction.direction,
-                            fromToken: transaction.fromAsset.denom,
-                            toToken: transaction.toAsset.denom,
-                            fromChainId: transaction.fromChain.chainId,
-                            toChainId: transaction.toChain.chainId,
-                          },
-                        ]);
-
                         setSelectedTransactionHash(transaction.sendTxHash);
 
                         // delay to ensure the slide over transitions smoothly

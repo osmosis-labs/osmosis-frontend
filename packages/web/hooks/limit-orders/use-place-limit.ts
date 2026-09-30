@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
-import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
@@ -19,7 +18,6 @@ import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
@@ -47,7 +45,6 @@ interface UsePlaceLimitParams {
   baseDenom: string;
   quoteDenom: string;
   type: "limit" | "market";
-  page: EventPage;
   maxSlippage?: Dec;
   quoteType?: QuoteDirection;
 }
@@ -65,13 +62,11 @@ export const usePlaceLimit = ({
   useQueryParams = false,
   useOtherCurrencies = true,
   type,
-  page,
   maxSlippage,
   quoteType = "out-given-in",
 }: UsePlaceLimitParams) => {
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const {
     makerFee,
@@ -316,50 +311,10 @@ export const usePlaceLimit = ({
     }
 
     if (isMarket) {
-      let valueUsd = Number(
-        marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-      );
-
-      // Protect our data from outliers
-      // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
-        valueUsd = 0;
-      }
-
-      const baseEvent = {
-        fromToken: marketState.fromAsset?.coinDenom,
-        tokenAmount: Number(
-          marketState.inAmountInput.amount?.toDec().toString() ?? "0"
-        ),
-        toToken: marketState.toAsset?.coinDenom,
-        isOnHome: page === "Swap Page",
-        isMultiHop: marketState.quote?.split.some(
-          ({ pools }) => pools.length !== 1
-        ),
-        isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
-        valueUsd,
-        feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
-        page,
-        quoteTimeMilliseconds: marketState.quote?.timeMs,
-        swapSource: "market" as "swap" | "market",
-      };
       try {
-        logEvent([EventName.Swap.swapStarted, baseEvent]);
-        const result = await marketState.sendTradeTokenInTx();
-        logEvent([
-          EventName.Swap.swapCompleted,
-          {
-            ...baseEvent,
-            isMultiHop: result === "multihop",
-          },
-        ]);
+        await marketState.sendTradeTokenInTx();
       } catch (error) {
         console.error("swap failed", error);
-        if (error instanceof Error && error.message === "Request rejected") {
-          // don't log when the user rejects in wallet
-          return;
-        }
-        logEvent([EventName.Swap.swapFailed, baseEvent]);
       } finally {
         return;
       }
@@ -367,29 +322,7 @@ export const usePlaceLimit = ({
 
     if (!limitMessages || limitMessages.length === 0) return;
 
-    const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
-
-    let valueUsd = Number(paymentFiatValue?.toDec().toString() ?? "0");
-    // Protect our data from outliers
-    // Perhaps from upstream issues with price data providers
-    if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
-      valueUsd = 0;
-    }
-
-    const baseEvent = {
-      type: orderDirection === "bid" ? "buy" : "sell",
-      fromToken: paymentDenom,
-      toToken:
-        orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
-      valueUsd,
-      tokenAmount: Number(quantity),
-      page,
-      isOnHomePage: page === "Swap Page",
-      feeUsdValue,
-    };
-
     try {
-      logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
       /**
        * If it's ledger and we have one-click messages, we need to add a 1CT session
        * before broadcasting the transaction as there is a payload limit on ledger
@@ -431,7 +364,6 @@ export const usePlaceLimit = ({
                   transaction1CTParams: oneClickMessages.transaction1CTParams,
                   allowedAmount: oneClickMessages.allowedAmount,
                   t,
-                  logEvent,
                 });
               } else if (
                 shouldSend1CTTx &&
@@ -441,7 +373,6 @@ export const usePlaceLimit = ({
                 await onEnd1CTSession({
                   accountStore,
                   authenticatorId: oneClickMessages.authenticatorId,
-                  logEvent,
                 });
               }
             }
@@ -483,7 +414,6 @@ export const usePlaceLimit = ({
                   transaction1CTParams: oneClickMessages.transaction1CTParams,
                   allowedAmount: oneClickMessages.allowedAmount,
                   t,
-                  logEvent,
                 });
               } else if (
                 shouldSend1CTTx &&
@@ -493,38 +423,20 @@ export const usePlaceLimit = ({
                 onEnd1CTSession({
                   accountStore,
                   authenticatorId: oneClickMessages.authenticatorId,
-                  logEvent,
                 });
               }
             }
           }
         );
       }
-      logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
     } catch (error) {
       console.error("Error attempting to broadcast place limit tx", error);
-      if (error instanceof Error && error.message === "Request rejected") {
-        // don't log when the user rejects in wallet
-        return;
-      }
-      const { message } = error as Error;
-      logEvent([
-        EventName.LimitOrder.placeOrderFailed,
-        { ...baseEvent, errorMessage: message },
-      ]);
     }
   }, [
     paymentTokenValue,
     isMarket,
     limitMessages,
-    paymentFiatValue,
-    orderDirection,
-    baseAsset?.coinDenom,
-    quoteAsset?.coinDenom,
-    page,
-    feeUsdValue,
     marketState,
-    logEvent,
     isLedger,
     oneClickMessages,
     shouldSend1CTTx,

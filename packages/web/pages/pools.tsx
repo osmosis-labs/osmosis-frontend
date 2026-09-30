@@ -8,9 +8,7 @@ import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolType } from "~/components/complex/pools-table";
-import { EventName } from "~/config";
 import {
-  useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
   useTranslation,
@@ -22,9 +20,6 @@ import { useStore } from "~/stores";
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
-  useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Pools.pageViewed],
-  });
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(accountStore.osmosisChainId);

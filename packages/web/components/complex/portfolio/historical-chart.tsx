@@ -9,8 +9,6 @@ import {
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { IconButton } from "~/components/ui/button";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { useTranslation } from "~/hooks";
 
 interface PortfolioHistoricalChartProps {
@@ -37,7 +35,6 @@ export const PortfolioHistoricalChart = ({
   setIsChartMinimized,
 }: PortfolioHistoricalChartProps) => {
   const { t } = useTranslation();
-  const { logEvent, getLastEvent } = useAmplitudeAnalytics();
 
   return (
     <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
@@ -54,14 +51,6 @@ export const PortfolioHistoricalChart = ({
             onPointerHover={(value, time) => {
               setShowDate(true);
               setDataPoint({ value, time });
-
-              const lastEvent = getLastEvent();
-              // Avoid logging subsequent chartInteraction events to prevent Amplitude overload
-              if (
-                lastEvent?.eventName !== EventName.Portfolio.chartInteraction
-              ) {
-                logEvent([EventName.Portfolio.chartInteraction]);
-              }
             }}
             onPointerOut={resetDataPoint}
           />

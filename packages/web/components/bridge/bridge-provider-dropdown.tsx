@@ -7,8 +7,7 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 
 import { BridgeQuote } from "./use-bridge-quotes";
 
@@ -29,7 +28,6 @@ export const BridgeProviderDropdown = ({
 }: Props) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const quotes = useMemo(
     () =>
@@ -137,10 +135,6 @@ export const BridgeProviderDropdown = ({
                     )}
                     onClick={() => {
                       onSelect(provider.id);
-                      logEvent([
-                        EventName.DepositWithdraw.providerSelected,
-                        { bridgeProviderName: provider.id },
-                      ]);
                     }}
                   >
                     <div className="flex items-center gap-3">
