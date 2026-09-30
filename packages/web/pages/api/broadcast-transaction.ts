@@ -1,4 +1,5 @@
 import { ChainList } from "~/config/generated/chain-list";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 import { findAllowedRestEndpoint } from "~/utils/url";
 
 /**
@@ -9,7 +10,7 @@ import { findAllowedRestEndpoint } from "~/utils/url";
  * the CORS headers. Therefore, by having this endpoint, we can ensure that
  * users can still broadcast their transactions to the network.
  */
-export default async function broadcastTransactionHandler(req: Request) {
+async function broadcastTransactionHandler(req: Request) {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
@@ -95,7 +96,8 @@ export default async function broadcastTransactionHandler(req: Request) {
   }
 }
 
+export default toNodeApiHandler(broadcastTransactionHandler);
+
 export const config = {
-  runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
+  api: { bodyParser: false },
 };
