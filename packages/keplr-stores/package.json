@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/keplr-stores",
   "version": "0.10.24-ibc.go.v7.hot.fix",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "chainapsis",
   "repository": {
     "type": "git",
