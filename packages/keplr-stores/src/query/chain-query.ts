@@ -1,5 +1,5 @@
 import { ObservableQuery } from "../common";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../common/kv-store";
 import Axios, { AxiosInstance } from "axios";
 import { override } from "mobx";
 import { ChainGetter } from "../common";
@@ -21,12 +21,7 @@ export class ObservableChainQuery<
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
-    const instance = Axios.create({
-      ...{
-        baseURL: chainInfo.rest,
-      },
-      ...chainInfo.restConfig,
-    });
+    const instance = Axios.create({ baseURL: chainInfo.rest });
 
     super(kvStore, instance, url);
 
@@ -38,12 +33,7 @@ export class ObservableChainQuery<
   protected get instance(): AxiosInstance {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    return Axios.create({
-      ...{
-        baseURL: chainInfo.rest,
-      },
-      ...chainInfo.restConfig,
-    });
+    return Axios.create({ baseURL: chainInfo.rest });
   }
 
   get chainId(): string {

@@ -1,10 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { WalletStatus } from "@cosmos-kit/core";
-import { MemoryKVStore } from "@keplr-wallet/common";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
+  MemoryKVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { Coin, Int } from "@osmosis-labs/unit";

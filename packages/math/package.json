@@ -36,7 +36,6 @@
     ]
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "big-integer": "^1.6.48"
   },

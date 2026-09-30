@@ -4,7 +4,7 @@ import {
   ObservableQueryBase,
   QueryOptions,
 } from "./query";
-import { KVStore, MemoryKVStore } from "@keplr-wallet/common";
+import { KVStore, MemoryKVStore } from "../kv-store";
 import Axios from "axios";
 import Http from "http";
 import { autorun } from "mobx";

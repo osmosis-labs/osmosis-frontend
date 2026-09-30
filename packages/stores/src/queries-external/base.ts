@@ -1,5 +1,4 @@
-import { KVStore } from "@keplr-wallet/common";
-import { ObservableQuery } from "@osmosis-labs/keplr-stores";
+import { KVStore, ObservableQuery } from "@osmosis-labs/keplr-stores";
 import Axios from "axios";
 export class ObservableQueryExternalBase<
   T = unknown,

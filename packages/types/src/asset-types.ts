@@ -1,7 +1,7 @@
 import type {
   AppCurrency as KeplrAppCurrency,
   Currency as KeplrBaseCurrency,
-} from "@keplr-wallet/types";
+} from "@osmosis-labs/unit";
 
 export interface AssetList {
   chain_name: string;

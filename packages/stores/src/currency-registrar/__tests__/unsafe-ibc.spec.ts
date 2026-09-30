@@ -1,6 +1,6 @@
-import { IBCCurrency } from "@keplr-wallet/types";
 import { ChainInfoInner, ChainStore } from "@osmosis-labs/keplr-stores";
 import type { ChainInfo } from "@osmosis-labs/types";
+import { IBCCurrency } from "@osmosis-labs/unit";
 import { makeIBCMinimalDenom } from "@osmosis-labs/utils";
 
 import { mockChainInfos, mockIbcAssets } from "../../tests/mock-data";

@@ -7,8 +7,14 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../tests/test-env";
-import { Dec, Int, Coin, DecUtils, IntPretty } from "@osmosis-labs/unit";
-import { Currency } from "@keplr-wallet/types";
+import {
+  Dec,
+  Int,
+  Coin,
+  DecUtils,
+  IntPretty,
+  Currency,
+} from "@osmosis-labs/unit";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
 import { TestOsmosisChainId } from "../../tests/mock-data";

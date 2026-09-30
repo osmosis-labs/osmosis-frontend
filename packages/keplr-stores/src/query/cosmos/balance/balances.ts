@@ -1,4 +1,5 @@
-import { DenomHelper, KVStore } from "@keplr-wallet/common";
+import { DenomHelper } from "../../../common/denom";
+import { KVStore } from "../../../common/kv-store";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@osmosis-labs/unit";

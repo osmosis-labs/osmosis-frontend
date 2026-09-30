@@ -1,17 +1,10 @@
-import {
-  CONCENTRATED_LIQ_POOL_TYPE,
-  COSMWASM_POOL_TYPE,
-  getPools,
-  PoolRawResponse,
-  queryNumPools,
-  STABLE_POOL_TYPE,
-  WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/server";
+import { getPools, PoolRawResponse, queryNumPools } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { toLegacyPoolResponse } from "~/server/api/legacy-pool-response";
 import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
 /** @deprecated */
@@ -26,14 +19,7 @@ type Response = {
 /** @deprecated prefer tRPC pools procedures */
 async function pools(req: Request) {
   const url = new URL(req.url);
-  // This was legacy behavior
-  // Ignore pagination and return all pools in a single array
-  // const page = url.searchParams.has("page")
-  //   ? Number(url.searchParams.get("page") as string)
-  //   : 1;
-  // const limit = url.searchParams.has("limit")
-  //   ? Number(url.searchParams.get("limit") as string)
-  //   : 100;
+  // Legacy behavior: pagination params are ignored and all pools returned.
   const minimumLiquidity = isNumeric(url.searchParams.get("min_liquidity"))
     ? Number(url.searchParams.get("min_liquidity") as string)
     : undefined;
@@ -45,33 +31,12 @@ async function pools(req: Request) {
       minLiquidityUsd: minimumLiquidity,
     }).then((r) =>
       r?.items
-        .map((pool) => {
-          if (
-            minimumLiquidity &&
-            pool.totalFiatValueLocked.toDec().lt(new Dec(minimumLiquidity))
-          ) {
-            return;
-          }
-
-          if (pool.type === "weighted") {
-            return {
-              ...pool.raw,
-              ["@type"]: WEIGHTED_POOL_TYPE,
-            };
-          } else if (pool.type === "stable") {
-            return {
-              ...pool.raw,
-              ["@type"]: STABLE_POOL_TYPE,
-            };
-          } else if (pool.type === "concentrated") {
-            return {
-              ...pool.raw,
-              ["@type"]: CONCENTRATED_LIQ_POOL_TYPE,
-            };
-          }
-          return { ...pool.raw, ["@type"]: COSMWASM_POOL_TYPE };
-        })
-        .filter((pool): pool is PoolRawResponse => Boolean(pool))
+        .filter(
+          (pool) =>
+            !minimumLiquidity ||
+            !pool.totalFiatValueLocked.toDec().lt(new Dec(minimumLiquidity))
+        )
+        .map(toLegacyPoolResponse)
     ),
     queryNumPools({ chainList: ChainList }).then((r) => r.num_pools),
   ]);

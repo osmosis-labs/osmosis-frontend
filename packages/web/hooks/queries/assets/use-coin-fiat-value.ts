@@ -1,6 +1,5 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, FiatCurrency, PricePretty } from "@osmosis-labs/unit";
 import { useMemo } from "react";
 
 import { usePrice } from "~/hooks/queries/assets/use-price";

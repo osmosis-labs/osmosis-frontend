@@ -1,9 +1,9 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import { Currency } from "@osmosis-labs/types";
 import {
   CoinPretty,
   CoinPrettyOptions,
   Dec,
+  FiatCurrency,
   Int,
   PricePretty,
   PricePrettyOptions,

@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
-import { Coin, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
+import {
+  Coin,
+  Currency,
+  Dec,
+  DecUtils,
+  Int,
+  IntPretty,
+} from "@osmosis-labs/unit";
 
 import { ObservableQueryPool } from "../../queries-external/pools";
 import { TestOsmosisChainId } from "../../tests/mock-data";

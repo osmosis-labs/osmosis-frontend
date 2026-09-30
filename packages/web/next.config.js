@@ -46,7 +46,7 @@ const config = {
       },
     ];
   },
-  webpack(config, { isServer }) {
+  webpack(config, { isServer, webpack }) {
     /**
      * Split the generated asset and chain lists (~3MB raw) out of the _app chunk into their own
      * chunks. Their content hash then only changes when the lists are regenerated with new data,
@@ -97,14 +97,15 @@ const config = {
     // Replace libsodium with a no-op API. It is only imported from within cosmJS to support
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
-    // (And it gets bundled twice)
+    // Our CosmJS (>=0.36) no longer uses libsodium, but the CosmJS 0.31 copies pulled in by
+    // @0xsquid/sdk and nomic-bitcoin still do.
     //
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
     config.resolve = {
-      ...config.resolve, // This spreads existing resolve configuration (if any)
+      ...config.resolve,
       alias: {
-        ...config.resolve.alias, // This spreads any existing alias configurations
+        ...config.resolve.alias,
         libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
         "libsodium-wrappers": path.resolve(
           __dirname,
@@ -123,31 +124,23 @@ const config = {
         // replacing it with a no-op breaks build, so we can at least replace it with a lighter weight version for now.
         // ideally this becomes replaced with an API-compatible no-op.
         bip39: path.resolve(__dirname, "../../node_modules/bip39-light"),
-        // @cosmjs/launchpad is deprecated and pins axios 0.21.4, which any scanner reports
-        // against the client bundle. We never import it at runtime, but @keplr-wallet/cosmos'
-        // barrel unconditionally re-exports its adr-36 module, which requires launchpad, so it
-        // ships anyway along with launchpad's axios-based LcdClient.
-        //
-        // @cosmjs/amino is the maintained successor and is already eagerly bundled. It exports
-        // every symbol the real call sites use (serializeSignDoc, encodeSecp256k1Pubkey,
-        // encodeSecp256k1Signature), so aliasing keeps ADR-36 working rather than stubbing it.
-        // yarn resolutions cannot fix this — they do not reach launchpad's nested axios.
-        "@cosmjs/launchpad": path.resolve(
-          __dirname,
-          "../../node_modules/@cosmjs/amino"
-        ),
       },
     };
 
-    return config;
-  },
-};
+    // CosmJS >=0.36 replaced libsodium with @noble/curves (ed25519), @noble/ciphers
+    // (xchacha20poly1305) and hash-wasm (argon2id), all loaded from this one module. Stub it
+    // like the libsodium aliases above so they stay out of the client bundle (~90kb gzipped,
+    // mostly hash-wasm's inlined WASM). Only this file is replaced: other packages need the
+    // real @noble/curves. Ed25519, Argon2id and Xchacha20poly1305Ietf from @cosmjs/crypto are
+    // therefore unavailable client-side, exactly as they were with libsodium stubbed.
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /@cosmjs[\\/]crypto[\\/]build[\\/]libsodium\.js$/,
+        path.resolve(__dirname, "etc", "noop", "index.js")
+      )
+    );
 
-module.exports = {
-  ...module.exports,
-  mode: "production", // Ensure the mode is 'production' for tree shaking to work
-  optimization: {
-    usedExports: true, // This setting enables tree shaking
+    return config;
   },
 };
 

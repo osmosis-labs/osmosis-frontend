@@ -1,7 +1,7 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import bigInteger from "big-integer";
 import { DeepReadonly } from "utility-types";
 
+import { FiatCurrency } from "./currency-types";
 import { DecUtils } from "./dec-utils";
 import { Dec } from "./decimal";
 import { IntPretty, IntPrettyOptions } from "./int-pretty";

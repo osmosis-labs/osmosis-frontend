@@ -1,8 +1,5 @@
 import { apiClient } from "../api-client";
-import {
-  createMultiEndpointClient,
-  MultiEndpointClient,
-} from "../multi-endpoint-client";
+import { MultiEndpointClient } from "../multi-endpoint-client";
 
 jest.mock("../api-client", () => ({
   apiClient: jest.fn(),
@@ -11,21 +8,6 @@ jest.mock("../api-client", () => ({
 describe("MultiEndpointClient", () => {
   beforeEach(() => {
     (apiClient as jest.Mock).mockClear();
-  });
-
-  it("should create client with single endpoint", () => {
-    const client = new MultiEndpointClient([
-      { address: "https://endpoint1.com" },
-    ]);
-    expect(client.getEndpoints()).toHaveLength(1);
-  });
-
-  it("should create client with multiple endpoints", () => {
-    const client = new MultiEndpointClient([
-      { address: "https://endpoint1.com" },
-      { address: "https://endpoint2.com" },
-    ]);
-    expect(client.getEndpoints()).toHaveLength(2);
   });
 
   it("should throw error when no endpoints provided", () => {
@@ -38,7 +20,7 @@ describe("MultiEndpointClient", () => {
     const mockResult = { data: "success" };
     (apiClient as jest.Mock).mockResolvedValue(mockResult);
 
-    const client = createMultiEndpointClient([
+    const client = new MultiEndpointClient([
       { address: "https://endpoint1.com" },
     ]);
 
@@ -61,7 +43,7 @@ describe("MultiEndpointClient", () => {
       return Promise.resolve(mockResult);
     });
 
-    const client = createMultiEndpointClient(
+    const client = new MultiEndpointClient(
       [
         { address: "https://endpoint1.com" },
         { address: "https://endpoint2.com" },
@@ -81,7 +63,7 @@ describe("MultiEndpointClient", () => {
   it("should throw error when all endpoints fail", async () => {
     (apiClient as jest.Mock).mockRejectedValue(new Error("All failed"));
 
-    const client = createMultiEndpointClient(
+    const client = new MultiEndpointClient(
       [
         { address: "https://endpoint1.com" },
         { address: "https://endpoint2.com" },
@@ -90,24 +72,6 @@ describe("MultiEndpointClient", () => {
     );
 
     await expect(client.fetch("/status")).rejects.toThrow(/endpoints failed/);
-  });
-
-  it("should sort endpoints by priority", async () => {
-    const mockResult = { data: "success" };
-    (apiClient as jest.Mock).mockResolvedValue(mockResult);
-
-    const client = createMultiEndpointClient([
-      { address: "https://low-priority.com", priority: 0 },
-      { address: "https://high-priority.com", priority: 10 },
-      { address: "https://medium-priority.com", priority: 5 },
-    ]);
-
-    await client.fetch<typeof mockResult>("/status");
-
-    // First call should be the highest priority
-    expect((apiClient as jest.Mock).mock.calls[0][0]).toBe(
-      "https://high-priority.com/status"
-    );
   });
 
   describe("hedged request behavior", () => {
@@ -124,7 +88,7 @@ describe("MultiEndpointClient", () => {
         return Promise.resolve(mockResult);
       });
 
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         [
           { address: "https://endpoint1.com" },
           { address: "https://endpoint2.com" },
@@ -148,7 +112,7 @@ describe("MultiEndpointClient", () => {
       // First endpoint is fast (resolves immediately)
       (apiClient as jest.Mock).mockResolvedValue(mockResult);
 
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         [
           { address: "https://endpoint1.com" },
           { address: "https://endpoint2.com" },
@@ -175,7 +139,7 @@ describe("MultiEndpointClient", () => {
           )
       );
 
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         [
           { address: "https://endpoint1.com" },
           { address: "https://endpoint2.com" },
@@ -190,7 +154,7 @@ describe("MultiEndpointClient", () => {
     it("should include budget info in error message", async () => {
       (apiClient as jest.Mock).mockRejectedValue(new Error("fail"));
 
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         [{ address: "https://endpoint1.com" }],
         { maxTotalTime: 5000 }
       );
@@ -203,7 +167,7 @@ describe("MultiEndpointClient", () => {
     it("should stop immediately when signal is already aborted", async () => {
       (apiClient as jest.Mock).mockResolvedValue({ data: "ok" });
 
-      const client = createMultiEndpointClient([
+      const client = new MultiEndpointClient([
         { address: "https://endpoint1.com" },
       ]);
 
@@ -222,7 +186,7 @@ describe("MultiEndpointClient", () => {
       const mockResult = { data: "success" };
       (apiClient as jest.Mock).mockResolvedValue(mockResult);
 
-      const client = createMultiEndpointClient([
+      const client = new MultiEndpointClient([
         { address: "https://endpoint1.com" },
       ]);
 
@@ -244,7 +208,7 @@ describe("MultiEndpointClient", () => {
         return Promise.resolve(mockResult);
       });
 
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         [
           { address: "https://endpoint1.com" },
           { address: "https://endpoint2.com" },

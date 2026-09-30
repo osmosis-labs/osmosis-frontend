@@ -1,4 +1,4 @@
-import { apiClient, createMultiEndpointClient } from "@osmosis-labs/utils";
+import { apiClient, MultiEndpointClient } from "@osmosis-labs/utils";
 
 export type Status = {
   node_info: {
@@ -95,7 +95,7 @@ export async function queryRPCStatus(
       throw new Error("At least one RPC URL must be provided");
     }
 
-    const client = createMultiEndpointClient(
+    const client = new MultiEndpointClient(
       rpcUrls.map((url) => ({ address: url })),
       { timeout, hedgeDelay, maxTotalTime }
     );
