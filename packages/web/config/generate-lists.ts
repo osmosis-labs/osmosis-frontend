@@ -2,8 +2,10 @@
  * This file is used to generate the asset-list.ts and chain-list.ts files.
  *
  * Reasons we need to generate chain-list.ts:
- *  1. We need to add the `keplrChain` object to the chain list. This is used to keep compatibility with the Keplr stores.
+ *  1. We need to apply the Osmosis chain overwrites and drop chains without an asset list.
  *  2. We need to determine all the available chain ids for added type safety.
+ *
+ * The Keplr `ChainInfo` and CosmosKit fields are derived at runtime (see `keplr-chain.ts`), not stored.
  *
  * Reasons we need to generate asset-list.ts:
  *  1. We need to determine all the available asset symbols for added type safety.
@@ -29,10 +31,10 @@ import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "./env";
+import { getImageRelativeFilePath } from "./keplr-chain";
 import {
   codegenDir,
   getChainList,
-  getImageRelativeFilePath,
   getOsmosisChainId,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
@@ -101,8 +103,8 @@ async function generateChainListFile({
 
   if (!onlyTypes) {
     content += `
-      import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
-      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
+      import type { Chain } from "@osmosis-labs/types";
+      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
       getChainList({ assetLists, environment, chains: chainList.chains }),
       null,
       2
