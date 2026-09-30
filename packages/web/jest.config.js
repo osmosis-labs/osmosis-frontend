@@ -35,6 +35,7 @@ const config = {
 const esmModules = [
   "superjson",
   "@cosmos-kit/core",
+  "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
   "uuid",
   "@keplr-wallet/unit",
   "@osmosis-labs/stores",
