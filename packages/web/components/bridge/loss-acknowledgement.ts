@@ -42,23 +42,6 @@ export interface LossFigures {
   swapImpactUnknown: boolean;
 }
 
-/**
- * Normalize a provider-reported price impact to a positive magnitude.
- *
- * Nomic, whose quotes bundle an Osmosis swap, reports impact as a negative
- * fraction; Squid reports it positive. Both the `HighPriceImpactGate`
- * comparison and the worsening check in `shouldResetAcknowledgement` assume
- * larger = worse, so a negative figure silently fails every gate — which is why
- * the ≥10% gate had never fired for any bundled-swap provider before MTN-199.
- *
- * Exported (rather than inlined at the call site) so this sign contract is
- * test-enforced: a regression here does not throw or misrender, it just stops
- * the gate firing for bundled-swap providers.
- */
-export function normalizePriceImpact(priceImpact: Dec): Dec {
-  return priceImpact.abs();
-}
-
 /** Whether any warning requiring acknowledgement is active. */
 export function hasActiveWarning(figures: LossFigures): boolean {
   return (
@@ -83,7 +66,7 @@ export function needsAcknowledgement(
 
 /**
  * Whether a previously acknowledged basis is stale for the current figures
- * and the acknowledgement must be reset. Pure; exhaustively unit-tested.
+ * and the acknowledgement must be reset.
  *
  * Resets when:
  * 1. The transfer identity changed (provider, chains, assets, input amount).

@@ -1,6 +1,9 @@
+import { QueryClient } from "@tanstack/react-query";
+
 import {
   getAssetsCdnCacheControl,
   isCdnCacheableAssetsQuery,
+  setAssetsQueryDefaults,
 } from "~/utils/trpc-cdn-cache";
 
 const base = "https://app.osmosis.zone/api/edge-trpc-assets";
@@ -199,5 +202,42 @@ describe("isCdnCacheableAssetsQuery", () => {
         input: { coinMinimalDenom: "uosmo", timeFrame: "1H", realtime: true },
       })
     ).toBe(false);
+  });
+});
+
+describe("setAssetsQueryDefaults", () => {
+  const queryClient = new QueryClient();
+  setAssetsQueryDefaults(queryClient);
+
+  /** Resolves options for a query key shaped the way tRPC builds it. */
+  const optionsFor = (path: string, callSite: object = {}) =>
+    queryClient.defaultQueryOptions({
+      queryKey: [path.split("."), { input: {}, type: "query" }],
+      ...callSite,
+    });
+
+  it("keeps CDN-cacheable queries fresh for their CDN max age", () => {
+    expect(optionsFor("edge.assets.getMarketAsset")).toMatchObject({
+      staleTime: 10_000,
+      refetchOnWindowFocus: false,
+    });
+    expect(optionsFor("edge.assets.getCoingeckoCoin").staleTime).toBe(300_000);
+  });
+
+  it("keeps balances fresh briefly and still refetches them on focus", () => {
+    const options = optionsFor("edge.assets.getUserAssets");
+    expect(options.staleTime).toBe(10_000);
+    expect(options.refetchOnWindowFocus).toBeUndefined();
+  });
+
+  it("leaves asset prices and other routers untouched", () => {
+    expect(optionsFor("edge.assets.getAssetPrice").staleTime).toBeUndefined();
+    expect(optionsFor("edge.pools.getPool").staleTime).toBeUndefined();
+  });
+
+  it("lets call-site options win", () => {
+    expect(
+      optionsFor("edge.assets.getMarketAsset", { staleTime: 0 }).staleTime
+    ).toBe(0);
   });
 });
