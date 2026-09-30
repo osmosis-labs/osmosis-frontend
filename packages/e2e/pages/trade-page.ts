@@ -439,29 +439,35 @@ export class TradePage extends BasePage {
   }
 
   async showSwapInfo() {
-    // A failed router quote turns the swap button into a disabled "Error",
-    // which also keeps "Show details" disabled. The swap tool refetches the
-    // quote every 5s even after a failure, so a transient router error clears
-    // by itself; give it time to recover before failing the test.
-    expect(
-      await this.isError(30_000),
-      "Swap quote stayed in an error state!"
-    ).toBeFalsy();
     const swapInfo = this.page.locator("//button//span[.='Show details']");
     await expect(swapInfo, "Show Swap Info button not visible!").toBeVisible({
       timeout: 10000,
     });
     // The disclosure renders as soon as there is an input amount but stays
     // disabled until the quote fills the out amount, so wait for it to be
-    // enabled rather than racing the quote with the click timeout.
+    // enabled rather than racing the quote with the click timeout. A failed
+    // router quote shows "Error" and keeps it disabled, but the swap tool
+    // refetches the quote every 5s, so a transient router error clears by
+    // itself; the wait covers that too, whether the error is already showing
+    // or arrives while the quote is still loading.
     const swapInfoBtn = this.page.locator(
       "//button[.//span[.='Show details']]"
     );
-    await expect(swapInfoBtn, "Show Swap Info button is disabled!").toBeEnabled(
-      {
-        timeout: 15000,
-      }
-    );
+    try {
+      await expect(
+        swapInfoBtn,
+        "Show Swap Info button is disabled!"
+      ).toBeEnabled({
+        timeout: 30_000,
+      });
+    } catch (e) {
+      console.log(
+        `Show details stayed disabled. Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
+      throw e;
+    }
     await swapInfo.click({ timeout: 5000 });
   }
 
