@@ -22,7 +22,7 @@ import type {
 import { isNil } from "@osmosis-labs/utils";
 import * as fs from "fs";
 
-import { generateTsFile } from "~/utils/codegen";
+import { generateJsonFile, generateTsFile } from "~/utils/codegen";
 
 import {
   ASSET_LIST_COMMIT_HASH,
@@ -102,13 +102,20 @@ async function generateChainListFile({
     environment === "mainnet" ? "MainnetChainIds" : "TestnetChainIds";
 
   if (!onlyTypes) {
+    if (
+      !generateJsonFile(
+        getChainList({ assetLists, environment, chains: chainList.chains }),
+        codegenDir,
+        "chain-list.data.json"
+      )
+    )
+      throw new Error("Failed to generate chain list data file");
+
+    // Cast through unknown so TypeScript doesn't check the JSON's inferred type against Chain.
     content += `
       import type { Chain } from "@osmosis-labs/types";
-      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
-      getChainList({ assetLists, environment, chains: chainList.chains }),
-      null,
-      2
-    )};
+      import chainListData from "./chain-list.data.json";
+      export const ChainList = chainListData as unknown as ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[];
     `;
   }
 
@@ -294,13 +301,13 @@ async function generateAssetListFile({
   let content: string = "";
 
   if (!onlyTypes) {
+    if (!generateJsonFile(assetLists, codegenDir, "asset-lists.data.json"))
+      throw new Error("Failed to generate asset list data file");
+
     content += `
       import type { AssetList } from "@osmosis-labs/types";
-      export const AssetLists: AssetList[] = ${JSON.stringify(
-        assetLists,
-        null,
-        2
-      )};    
+      import assetListsData from "./asset-lists.data.json";
+      export const AssetLists = assetListsData as unknown as AssetList[];
     `;
   }
 

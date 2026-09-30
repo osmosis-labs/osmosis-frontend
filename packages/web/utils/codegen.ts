@@ -47,3 +47,27 @@ export async function generateTsFile(
     return false;
   }
 }
+
+/** Writes `data` as minified JSON. Large data ships as JSON because JS engines parse a
+ *  `JSON.parse` string much faster than an equivalent object literal. */
+export function generateJsonFile(
+  data: unknown,
+  dirPath: string,
+  fileName: string
+): boolean {
+  if (!fileName.endsWith(".json")) {
+    throw new Error("JSON file name must end with '.json'.");
+  }
+
+  try {
+    fs.writeFileSync(path.join(dirPath, fileName), JSON.stringify(data), {
+      encoding: "utf8",
+      flag: "w",
+    });
+    console.info(`Successfully wrote ${dirPath}/${fileName}.`);
+    return true;
+  } catch (e) {
+    console.error(`Error writing ${fileName}: ${e}`);
+    return false;
+  }
+}

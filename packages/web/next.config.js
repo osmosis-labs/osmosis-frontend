@@ -43,7 +43,33 @@ const config = {
       },
     ];
   },
-  webpack(config, { webpack }) {
+  webpack(config, { isServer, webpack }) {
+    /**
+     * Put the generated asset and chain list data (~2.7MB raw) in their own client chunks
+     * instead of the _app chunk. Their content hash then only changes when the lists are
+     * regenerated with new data, so returning visitors keep them cached across deploys that
+     * only touch app code.
+     */
+    if (!isServer && config.optimization.splitChunks) {
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        assetLists: {
+          test: /[\\/]config[\\/]generated[\\/]asset-lists\.data\.json$/,
+          name: "asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        chainList: {
+          test: /[\\/]config[\\/]generated[\\/]chain-list\.data\.json$/,
+          name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+      };
+    }
+
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
