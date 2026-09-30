@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
+import dynamic, { DynamicOptionsLoadingProps } from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useMount, useSearchParam } from "react-use";
@@ -15,7 +15,7 @@ import { GeneralErrorScreen } from "~/components/error/general-error-screen";
 import { Spinner } from "~/components/loaders";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
-import { IconButton } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation, useWindowKeyActions } from "~/hooks";
 import {
@@ -28,10 +28,41 @@ import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 // The bridge screens pull in every bridge provider's client code (Nomic, TON,
 // Bitcoin, Solana wallets, ...). They only render while the bridge is open, so
 // load them on first open instead of shipping them in the shared _app chunk.
-const ScreenLoader = () => (
-  <div className="flex justify-center py-20">
-    <Spinner />
-  </div>
+//
+// `next/dynamic` hands a failed chunk download (typically a stale hash after a
+// deploy) to the loading component rather than the nearest error boundary, and
+// keeps that failure until `retry` is called. Without a retry the bridge would
+// spin forever, even after closing and reopening it.
+const ChunkLoadFallback = ({
+  error,
+  retry,
+  showSpinner,
+}: DynamicOptionsLoadingProps & { showSpinner: boolean }) => {
+  const { t } = useTranslation();
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center gap-6 py-20">
+        <p>{t("errors.uhOhSomethingWentWrong")}</p>
+        <Button variant="secondary" onClick={retry}>
+          {t("walletSelect.retry")}
+        </Button>
+      </div>
+    );
+  }
+
+  return showSpinner ? (
+    <div className="flex justify-center py-20">
+      <Spinner />
+    </div>
+  ) : null;
+};
+const ScreenLoader = (props: DynamicOptionsLoadingProps) => (
+  <ChunkLoadFallback {...props} showSpinner />
+);
+/** The modal is an overlay, so render nothing while it loads and only surface a failure. */
+const ModalLoader = (props: DynamicOptionsLoadingProps) => (
+  <ChunkLoadFallback {...props} showSpinner={false} />
 );
 const AssetSelectScreen = dynamic(
   () =>
@@ -49,7 +80,7 @@ const AmountAndReviewScreen = dynamic(
 );
 const FiatRampsModal = dynamic(
   () => import("~/modals/fiat-ramps").then((module) => module.FiatRampsModal),
-  { ssr: false }
+  { ssr: false, loading: ModalLoader }
 );
 
 export const enum BridgeScreen {

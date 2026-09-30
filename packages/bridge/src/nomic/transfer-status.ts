@@ -10,6 +10,8 @@ import type {
 } from "../interface";
 import { NomicProviderId } from "./utils";
 
+const POLL_INTERVAL_MS = 30_000;
+
 export class NomicTransferStatusProvider implements TransferStatusProvider {
   readonly providerId = NomicProviderId;
   readonly sourceDisplayName = "Nomic Bridge";
@@ -30,11 +32,21 @@ export class NomicTransferStatusProvider implements TransferStatusProvider {
 
     // This provider is constructed at app start to resume pending transfers;
     // load nomic-bitcoin (and its bitcoinjs-lib copy) only once one needs tracking.
-    const { getCheckpoint } = await import("nomic-bitcoin");
+    // Callers don't await this method, so a rejected import would surface as an
+    // unhandled rejection and leave the transfer pending for the session. Retry
+    // the load on the polling interval instead.
+    let nomic: typeof import("nomic-bitcoin");
+    try {
+      nomic = await import("nomic-bitcoin");
+    } catch (e) {
+      console.error("Failed to load nomic-bitcoin, retrying", e);
+      setTimeout(() => this.trackTxStatus(snapshot), POLL_INTERVAL_MS);
+      return;
+    }
 
     await poll({
       fn: async () => {
-        const checkpoint = await getCheckpoint(
+        const checkpoint = await nomic.getCheckpoint(
           {
             relayers: getNomicRelayerUrl({ env: this.env }),
             bitcoinNetwork: this.env === "mainnet" ? "bitcoin" : "testnet",
@@ -52,7 +64,7 @@ export class NomicTransferStatusProvider implements TransferStatusProvider {
         } as BridgeTransferStatus;
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
-      interval: 30_000,
+      interval: POLL_INTERVAL_MS,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
       .then((s) => {
