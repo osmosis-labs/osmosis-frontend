@@ -53,12 +53,12 @@
     "ws": "^7.4.5"
   },
   "dependencies": {
-    "@cosmjs/amino": "0.32.3",
-    "@cosmjs/cosmwasm-stargate": "0.32.3",
-    "@cosmjs/encoding": "0.32.3",
-    "@cosmjs/math": "0.32.3",
-    "@cosmjs/proto-signing": "0.32.3",
-    "@cosmjs/stargate": "0.32.3",
+    "@cosmjs/amino": "0.36.2",
+    "@cosmjs/cosmwasm-stargate": "0.36.2",
+    "@cosmjs/encoding": "0.36.2",
+    "@cosmjs/math": "0.36.2",
+    "@cosmjs/proto-signing": "0.36.2",
+    "@cosmjs/stargate": "0.36.2",
     "@cosmos-kit/core": "^2.18.1",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",

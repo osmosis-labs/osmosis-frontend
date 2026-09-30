@@ -5,6 +5,7 @@ const esmModules = [
   "@osmosis-labs/tx",
   "superjson",
   "@cosmos-kit/core",
+  "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
   "uuid",
   "rettime",
   "until-async",

@@ -43,7 +43,7 @@ const config = {
       },
     ];
   },
-  webpack(config) {
+  webpack(config, { webpack }) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
@@ -69,7 +69,8 @@ const config = {
     // Replace libsodium with a no-op API. It is only imported from within cosmJS to support
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
-    // (And it gets bundled twice)
+    // Our CosmJS (>=0.36) no longer uses libsodium, but the older CosmJS copies pulled in by
+    // @keplr-wallet (0.24), @0xsquid/sdk and nomic-bitcoin (0.31) still do.
     //
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
@@ -110,6 +111,19 @@ const config = {
         ),
       },
     };
+
+    // CosmJS >=0.36 replaced libsodium with @noble/curves (ed25519), @noble/ciphers
+    // (xchacha20poly1305) and hash-wasm (argon2id), all loaded from this one module. Stub it
+    // like the libsodium aliases above so they stay out of the shared _app chunk (~107kb gzipped,
+    // mostly hash-wasm's inlined WASM). Only this file is replaced: other packages need the
+    // real @noble/curves. Ed25519, Argon2id and Xchacha20poly1305Ietf from @cosmjs/crypto are
+    // therefore unavailable client-side, exactly as they were with libsodium stubbed.
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /@cosmjs[\\/]crypto[\\/]build[\\/]libsodium\.js$/,
+        path.resolve(__dirname, "etc", "noop", "index.js")
+      )
+    );
 
     return config;
   },
