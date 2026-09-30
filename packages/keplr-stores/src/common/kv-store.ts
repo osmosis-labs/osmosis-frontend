@@ -6,27 +6,50 @@ export interface KVStore {
   prefix(): string;
 }
 
-/** In-memory store; used in tests and on the server where there is no browser storage. */
-export class MemoryKVStore implements KVStore {
-  protected store: Record<string, unknown> = {};
+interface KVStoreProvider {
+  get(): Promise<Record<string, unknown>>;
+  set(items: Record<string, unknown>): Promise<void>;
+}
 
-  constructor(protected readonly _prefix: string) {}
+// Keeps Keplr's provider indirection (and its extra await on reads) so query
+// stores see the same promise ordering they were written against.
+class BaseKVStore implements KVStore {
+  constructor(
+    protected readonly provider: KVStoreProvider,
+    protected readonly _prefix: string
+  ) {}
 
-  get<T = unknown>(key: string): Promise<T | undefined> {
-    return Promise.resolve(this.store[this.key(key)] as T | undefined);
+  async get<T = unknown>(key: string): Promise<T | undefined> {
+    const data = await this.provider.get();
+    return data[this.prefix() + "/" + key] as T | undefined;
   }
 
   set<T = unknown>(key: string, data: T | null): Promise<void> {
-    this.store = { ...this.store, [this.key(key)]: data };
-    return Promise.resolve();
+    return this.provider.set({ [this.prefix() + "/" + key]: data });
   }
 
   prefix(): string {
     return this._prefix;
   }
+}
 
-  private key(key: string): string {
-    return this.prefix() + "/" + key;
+class MemoryKVStoreProvider implements KVStoreProvider {
+  protected store: Record<string, unknown> = {};
+
+  get(): Promise<Record<string, unknown>> {
+    return Promise.resolve(this.store);
+  }
+
+  set(items: Record<string, unknown>): Promise<void> {
+    this.store = { ...this.store, ...items };
+    return Promise.resolve();
+  }
+}
+
+/** In-memory store; used in tests and on the server where there is no browser storage. */
+export class MemoryKVStore extends BaseKVStore {
+  constructor(prefix: string) {
+    super(new MemoryKVStoreProvider(), prefix);
   }
 }
 
