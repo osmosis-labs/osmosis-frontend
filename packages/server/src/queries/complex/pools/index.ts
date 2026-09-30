@@ -116,37 +116,25 @@ export async function getPool({
     return pool;
   }
 
-  // If not found in Sidecar (likely due to unlisted assets), fallback to direct chain query
-  try {
-    console.log(
-      `Pool ${poolId} not found in Sidecar, attempting direct chain query...`
-    );
-    const chainResponse = await queryPoolChain({ poolId, chainList });
+  // Sidecar omits pools with unlisted assets, so fall back to the chain.
+  const chainResponse = await queryPoolChain({ poolId, chainList });
 
-    if (!chainResponse.pool) {
-      throw new Error(poolId + " not found on chain");
-    }
-
-    // Convert chain pool to our Pool type, handling unlisted assets
-    const chainPool = makePoolFromChainPool({
-      chainPool: chainResponse.pool,
-      assetLists,
-    });
-
-    if (!chainPool) {
-      throw new Error(
-        `Pool ${poolId} found on chain but cannot be constructed (likely CL or CosmWasm pool without balance data)`
-      );
-    }
-
-    console.log(
-      `Successfully retrieved pool ${poolId} from chain with unlisted assets`
-    );
-    return chainPool;
-  } catch (error) {
-    console.error(`Failed to query pool ${poolId} from chain:`, error);
-    throw error;
+  if (!chainResponse.pool) {
+    throw new Error(poolId + " not found on chain");
   }
+
+  const chainPool = makePoolFromChainPool({
+    chainPool: chainResponse.pool,
+    assetLists,
+  });
+
+  if (!chainPool) {
+    throw new Error(
+      `Pool ${poolId} found on chain but cannot be constructed (likely CL or CosmWasm pool without balance data)`
+    );
+  }
+
+  return chainPool;
 }
 
 /** Fetches pools and returns them as a more useful and simplified TS type.

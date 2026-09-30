@@ -208,34 +208,8 @@ function migrateFromOldStorage(state: UserSettingsData): UserSettingsData {
   return newState;
 }
 
-/**
- * Zustand store for user settings
- *
- * Migrated from MobX UserSettings (packages/web/stores/user-settings/)
- *
- * Features:
- * - Persists all settings to localStorage
- * - Migrates from old MobX storage format
- * - Individual setters for each setting
- *
- * @example
- * ```tsx
- * import { useUserSettingsStore } from "~/stores/user-settings-store";
- *
- * function MyComponent() {
- *   const { hideDust, setHideDust, language } = useUserSettingsStore();
- *
- *   return (
- *     <div>
- *       <p>Language: {language}</p>
- *       <button onClick={() => setHideDust(!hideDust)}>
- *         {hideDust ? "Show Dust" : "Hide Dust"}
- *       </button>
- *     </div>
- *   );
- * }
- * ```
- */
+/** User settings, persisted to localStorage and migrated from the old MobX
+ *  storage format on first load. */
 export const useUserSettingsStore = create(
   persist(
     combine(initialState, (set) => ({

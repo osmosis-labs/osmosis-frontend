@@ -287,8 +287,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           : Promise.resolve(undefined),
       ]);
 
-      console.log(assetPrice, feeAssetPrice, gasFeeAssetPrice);
-
       const transferFee = {
         amount: new CoinPretty(
           {
