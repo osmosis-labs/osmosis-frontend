@@ -14,6 +14,9 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // isows resolves to a different entry under the Cloudflare `workerd` export condition than under
+  // Node, so Next's file tracing misses it. Keeping it external lets OpenNext copy the whole package.
+  serverExternalPackages: ["isows"],
   images: {
     remotePatterns: [
       {
@@ -43,7 +46,32 @@ const config = {
       },
     ];
   },
-  webpack(config) {
+  webpack(config, { isServer }) {
+    /**
+     * Split the generated asset and chain lists (~3MB raw) out of the _app chunk into their own
+     * chunks. Their content hash then only changes when the lists are regenerated with new data,
+     * so returning visitors keep them cached across deploys that only touch app code.
+     */
+    if (!isServer && config.optimization.splitChunks) {
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        assetLists: {
+          test: /[\\/]config[\\/]generated[\\/]asset-lists\.ts$/,
+          name: "asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        chainList: {
+          test: /[\\/]config[\\/]generated[\\/]chain-list\.ts$/,
+          name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+      };
+    }
+
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */

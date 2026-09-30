@@ -12,6 +12,7 @@ import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
 /** @deprecated */
 type Response = {
@@ -23,7 +24,7 @@ type Response = {
 };
 
 /** @deprecated prefer tRPC pools procedures */
-export default async function pools(req: Request) {
+async function pools(req: Request) {
   const url = new URL(req.url);
   // This was legacy behavior
   // Ignore pagination and return all pools in a single array
@@ -88,6 +89,8 @@ export default async function pools(req: Request) {
   return new Response("", { status: 500 });
 }
 
+export default toNodeApiHandler(pools);
+
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };

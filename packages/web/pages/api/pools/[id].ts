@@ -10,12 +10,13 @@ import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
 type Response = {
   pool: PoolRawResponse;
 };
 
-export default async function pools(req: Request) {
+async function pools(req: Request) {
   const url = new URL(req.url);
   const poolId = url.pathname.split("/").slice(-1)[0];
 
@@ -49,6 +50,8 @@ export default async function pools(req: Request) {
   return new Response(JSON.stringify(response), { status: 200 });
 }
 
+export default toNodeApiHandler(pools);
+
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };
