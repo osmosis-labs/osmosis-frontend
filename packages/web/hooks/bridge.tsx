@@ -24,6 +24,7 @@ import {
   useAmplitudeAnalytics,
 } from "~/hooks/use-amplitude-analytics";
 import { FiatRampKey } from "~/integrations";
+import { ModalBase } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 
 // The bridge screens pull in every bridge provider's client code (Nomic, TON,
@@ -72,10 +73,20 @@ const ChunkLoadFallback = ({
 const ScreenLoader = (props: DynamicOptionsLoadingProps) => (
   <ChunkLoadFallback {...props} showSpinner />
 );
-/** The modal is an overlay, so render nothing while it loads and only surface a failure. */
-const ModalLoader = (props: DynamicOptionsLoadingProps) => (
-  <ChunkLoadFallback {...props} showSpinner={false} />
-);
+/** The modal is an overlay, so render nothing while it loads. A failed load is
+ *  shown inside a modal shell of its own: the selection modal has already
+ *  closed, and the bridge frame this renders in may sit offscreen. */
+const ModalLoader = ({ error, retry }: DynamicOptionsLoadingProps) => {
+  if (!error) return null;
+  return (
+    <ModalBase
+      isOpen
+      onRequestClose={() => useBridgeStore.getState().setFiatRampParams(null)}
+    >
+      <ChunkLoadFallback error={error} retry={retry} showSpinner={false} />
+    </ModalBase>
+  );
+};
 const AssetSelectScreen = dynamic(
   () =>
     import("~/components/bridge/asset-select-screen").then(
