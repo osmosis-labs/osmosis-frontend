@@ -1,5 +1,4 @@
 import { fromBech32 } from "@cosmjs/encoding";
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   IFeeConfig,
   InvalidNumberAmountError,
@@ -11,7 +10,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@osmosis-labs/keplr-stores";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { AppCurrency, Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   action,
   computed,

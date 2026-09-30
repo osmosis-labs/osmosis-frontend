@@ -1,6 +1,5 @@
-import { Currency } from "@keplr-wallet/types";
-
 import { Coin } from "./coin";
+import { Currency } from "./currency-types";
 import { DecUtils } from "./dec-utils";
 import { Dec } from "./decimal";
 import { Int } from "./int";

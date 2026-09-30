@@ -1,11 +1,10 @@
-import { Currency } from "@keplr-wallet/types";
 import {
   DefaultGasPriceStep,
   FeeType,
   IFeeConfig,
 } from "@osmosis-labs/keplr-hooks";
 import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Currency, Dec, Int } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 

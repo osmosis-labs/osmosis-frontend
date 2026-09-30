@@ -1,4 +1,3 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
   KVStore,
@@ -6,7 +5,7 @@ import {
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";

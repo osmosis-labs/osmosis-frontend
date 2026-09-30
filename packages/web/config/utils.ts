@@ -1,4 +1,3 @@
-import { CW20Currency, Secret20Currency } from "@keplr-wallet/types";
 import type {
   Asset,
   AssetList,
@@ -6,6 +5,7 @@ import type {
   ChainInfo,
   ChainInfoWithExplorer,
 } from "@osmosis-labs/types";
+import { CW20Currency, Secret20Currency } from "@osmosis-labs/unit";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";

@@ -1,4 +1,3 @@
-import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   ChainGetter,
   KVStore,
@@ -12,7 +11,9 @@ import {
   WEIGHTED_POOL_TYPE,
 } from "@osmosis-labs/server";
 import {
+  AppCurrency,
   CoinPretty,
+  Currency,
   Dec,
   DecUtils,
   Int,

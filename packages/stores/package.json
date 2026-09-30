@@ -61,7 +61,6 @@
     "@cosmjs/stargate": "0.32.3",
     "@cosmos-kit/core": "^2.18.1",
     "@keplr-wallet/crypto": "0.12.48",
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",

@@ -38,7 +38,6 @@
     "@cosmos-kit/xdefi": "^2.12.0",
     "@headlessui/react": "^2.1.1",
     "@keplr-wallet/crypto": "0.12.48",
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@mysten/sui": "^1",
     "@mysten/wallet-standard": "^0",
     "@next/bundle-analyzer": "15.5.25",

@@ -1,5 +1,5 @@
 import { flow, makeObservable, observable, runInAction } from "mobx";
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 import { ChainInfoInner, ChainStore } from "../chain";
 import {
   CosmosQueries,

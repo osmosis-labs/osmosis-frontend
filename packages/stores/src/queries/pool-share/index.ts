@@ -1,8 +1,10 @@
-import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import { ObservableQueryBalances } from "@osmosis-labs/keplr-stores";
 import {
+  AppCurrency,
   CoinPretty,
+  Currency,
   Dec,
+  FiatCurrency,
   Int,
   IntPretty,
   PricePretty,

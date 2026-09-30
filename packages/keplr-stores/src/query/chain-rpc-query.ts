@@ -21,12 +21,7 @@ export class ObservableChainQueryRPC<
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
-    const instance = Axios.create({
-      ...{
-        baseURL: chainInfo.rpc,
-      },
-      ...chainInfo.rpcConfig,
-    });
+    const instance = Axios.create({ baseURL: chainInfo.rpc });
 
     super(kvStore, instance, url);
 
@@ -38,12 +33,7 @@ export class ObservableChainQueryRPC<
   protected get instance(): AxiosInstance {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    return Axios.create({
-      ...{
-        baseURL: chainInfo.rpc,
-      },
-      ...chainInfo.rpcConfig,
-    });
+    return Axios.create({ baseURL: chainInfo.rpc });
   }
 
   get chainId(): string {

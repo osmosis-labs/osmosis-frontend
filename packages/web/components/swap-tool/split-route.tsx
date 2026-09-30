@@ -1,5 +1,4 @@
-import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { RatePretty } from "@osmosis-labs/unit";
+import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

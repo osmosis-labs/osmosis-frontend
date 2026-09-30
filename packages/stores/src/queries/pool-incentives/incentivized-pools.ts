@@ -1,10 +1,15 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
   KVStore,
   ObservableChainQuery,
 } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, Int, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  FiatCurrency,
+  Int,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";

@@ -3,8 +3,7 @@ import { DenomHelper } from "../common/denom";
 import { KVStore } from "../common/kv-store";
 import { ChainGetter } from "../common";
 import { computed, makeObservable, observable, runInAction } from "mobx";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, Int, AppCurrency } from "@osmosis-labs/unit";
 import { HasMapStore } from "../common";
 import { computedFn } from "mobx-utils";
 

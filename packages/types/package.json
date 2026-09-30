@@ -24,7 +24,6 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "dayjs": "^1.10.7"
   },

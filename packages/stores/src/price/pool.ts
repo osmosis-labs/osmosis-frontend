@@ -1,11 +1,10 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
   CoinGeckoPriceStore,
   KVStore,
 } from "@osmosis-labs/keplr-stores";
 import { Asset } from "@osmosis-labs/types";
-import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, FiatCurrency, PricePretty } from "@osmosis-labs/unit";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries-external/pools";
