@@ -1,3 +1,4 @@
+export * from "./address-validation";
 export * from "./api-client";
 export * from "./assertion";
 export * from "./asset-utils";

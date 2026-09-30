@@ -1,6 +1,7 @@
 import { Transition } from "@headlessui/react";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useMount, useSearchParam } from "react-use";
@@ -9,10 +10,9 @@ import { combine } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
-import { AmountAndReviewScreen } from "~/components/bridge/amount-and-review-screen";
-import { AssetSelectScreen } from "~/components/bridge/asset-select-screen";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { GeneralErrorScreen } from "~/components/error/general-error-screen";
+import { Spinner } from "~/components/loaders";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
@@ -24,7 +24,33 @@ import {
 } from "~/hooks/use-amplitude-analytics";
 import { FiatRampKey } from "~/integrations";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
-import { FiatRampsModal } from "~/modals/fiat-ramps";
+
+// The bridge screens pull in every bridge provider's client code (Nomic, TON,
+// Bitcoin, Solana wallets, ...). They only render while the bridge is open, so
+// load them on first open instead of shipping them in the shared _app chunk.
+const ScreenLoader = () => (
+  <div className="flex justify-center py-20">
+    <Spinner />
+  </div>
+);
+const AssetSelectScreen = dynamic(
+  () =>
+    import("~/components/bridge/asset-select-screen").then(
+      (module) => module.AssetSelectScreen
+    ),
+  { ssr: false, loading: ScreenLoader }
+);
+const AmountAndReviewScreen = dynamic(
+  () =>
+    import("~/components/bridge/amount-and-review-screen").then(
+      (module) => module.AmountAndReviewScreen
+    ),
+  { ssr: false, loading: ScreenLoader }
+);
+const FiatRampsModal = dynamic(
+  () => import("~/modals/fiat-ramps").then((module) => module.FiatRampsModal),
+  { ssr: false }
+);
 
 export const enum BridgeScreen {
   Asset = "0",

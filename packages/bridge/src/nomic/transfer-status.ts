@@ -1,6 +1,5 @@
 import { Chain } from "@osmosis-labs/types";
 import { getNomicRelayerUrl, isNil, poll } from "@osmosis-labs/utils";
-import { getCheckpoint } from "nomic-bitcoin";
 
 import type {
   BridgeEnvironment,
@@ -28,6 +27,10 @@ export class NomicTransferStatusProvider implements TransferStatusProvider {
     if (!snapshot.nomicCheckpointIndex) {
       throw new Error("Nomic checkpoint index is required. Skipping tracking.");
     }
+
+    // This provider is constructed at app start to resume pending transfers;
+    // load nomic-bitcoin (and its bitcoinjs-lib copy) only once one needs tracking.
+    const { getCheckpoint } = await import("nomic-bitcoin");
 
     await poll({
       fn: async () => {
