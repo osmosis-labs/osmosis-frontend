@@ -1,5 +1,5 @@
 import { CoinGeckoPriceStore } from "./index";
-import { MemoryKVStore } from "@keplr-wallet/common";
+import { MemoryKVStore } from "../common/kv-store";
 import { autorun } from "mobx";
 import Http from "http";
 
@@ -167,12 +167,8 @@ describe("Test coin gecko price store", () => {
 
     // Query cosmos,osmosis,regen price
     await (async () => {
-      const {
-        port,
-        closeServer,
-        getTestPrice,
-        getServerRespCount,
-      } = createMockCoingeckoServer();
+      const { port, closeServer, getTestPrice, getServerRespCount } =
+        createMockCoingeckoServer();
 
       const priceStore = new CoinGeckoPriceStore(
         store,
@@ -228,12 +224,8 @@ describe("Test coin gecko price store", () => {
     })();
 
     await (async () => {
-      const {
-        port,
-        closeServer,
-        getTestPrice,
-        getServerRespCount,
-      } = createMockCoingeckoServer();
+      const { port, closeServer, getTestPrice, getServerRespCount } =
+        createMockCoingeckoServer();
 
       const priceStore = new CoinGeckoPriceStore(
         store,
@@ -289,12 +281,8 @@ describe("Test coin gecko price store", () => {
     })();
 
     await (async () => {
-      const {
-        port,
-        closeServer,
-        getTestPrice,
-        getServerRespCount,
-      } = createMockCoingeckoServer();
+      const { port, closeServer, getTestPrice, getServerRespCount } =
+        createMockCoingeckoServer();
 
       const priceStore = new CoinGeckoPriceStore(
         store,

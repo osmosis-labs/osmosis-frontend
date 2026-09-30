@@ -1,6 +1,6 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { ChainInfo } from "@osmosis-labs/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 
 /** Adds Osmosis LP share currencies to the Osmosis chain in the chain store as they are encountered in query responses. */
 export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {

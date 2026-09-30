@@ -1,5 +1,4 @@
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { ChainGetter, KVStore } from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import { IPriceStore } from "../price";

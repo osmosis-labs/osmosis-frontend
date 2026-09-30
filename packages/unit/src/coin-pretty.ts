@@ -1,7 +1,7 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import bigInteger from "big-integer";
 import { DeepReadonly } from "utility-types";
 
+import { AppCurrency } from "./currency-types";
 import { DecUtils } from "./dec-utils";
 import { Dec } from "./decimal";
 import { IntPretty, IntPrettyOptions } from "./int-pretty";

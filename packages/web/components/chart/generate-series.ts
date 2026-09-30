@@ -1,4 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 import type { PointOptionsObject, SeriesPieOptions } from "highcharts";
 
 import { HIGHCHART_GRADIENTS } from "~/components/chart/gradients";

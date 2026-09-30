@@ -1,4 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 import { useCallback, useState } from "react";
 
 import { useStore } from "~/stores";

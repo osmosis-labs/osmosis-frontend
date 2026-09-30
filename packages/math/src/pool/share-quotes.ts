@@ -1,7 +1,7 @@
-import { Currency } from "@keplr-wallet/types";
 import {
   Coin,
   CoinPretty,
+  Currency,
   Dec,
   DecUtils,
   Int,

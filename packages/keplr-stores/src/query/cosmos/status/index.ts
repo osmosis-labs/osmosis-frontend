@@ -1,4 +1,4 @@
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../common/kv-store";
 import { ChainGetter } from "../../../common";
 import { ObservableChainQueryRPC } from "../../chain-rpc-query";
 import { Int } from "@osmosis-labs/unit";

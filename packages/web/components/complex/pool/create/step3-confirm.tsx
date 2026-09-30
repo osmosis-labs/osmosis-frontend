@@ -1,5 +1,4 @@
-import { IBCCurrency } from "@keplr-wallet/types";
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, IBCCurrency } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 

@@ -1,13 +1,12 @@
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
+  ChainIdHelper,
   CosmosQueries,
   IQueriesStore,
   txEventsWithPreOnFulfill,
 } from "@osmosis-labs/keplr-stores";
 import { makeIBCTransferMsg } from "@osmosis-labs/tx";
-import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
+import { AppCurrency, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
 import {
   AccountStore,

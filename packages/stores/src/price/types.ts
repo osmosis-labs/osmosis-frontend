@@ -1,5 +1,4 @@
-import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, FiatCurrency, PricePretty } from "@osmosis-labs/unit";
 
 // TODO: Move to @keplr-wallet
 export interface IPriceStore {

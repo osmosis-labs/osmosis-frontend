@@ -1,5 +1,5 @@
 import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../kv-store";
 import { AxiosInstance } from "axios";
 import { action, makeObservable, observable } from "mobx";
 import { sha256 } from "sha.js";

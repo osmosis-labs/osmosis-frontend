@@ -1,5 +1,8 @@
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
+import {
+  ChainGetter,
+  KVStore,
+  ObservableChainQuery,
+} from "@osmosis-labs/keplr-stores";
 import { Dec } from "@osmosis-labs/unit";
 import { computed } from "mobx";
 

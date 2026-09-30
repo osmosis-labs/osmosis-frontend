@@ -1,4 +1,5 @@
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
+import { KeplrChainInfo as ChainInfo } from "@osmosis-labs/types";
 
 export interface ChainGetter {
   // Return the chain info matched with chain id.
