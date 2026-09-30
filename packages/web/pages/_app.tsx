@@ -1,7 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "../styles/globals.css";
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
@@ -75,7 +74,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             <WalletSelectProvider>
               <ErrorBoundary fallback={<ErrorFallback />}>
                 <SEO />
-                <SpeedInsights />
                 <ToastContainer
                   toastStyle={{
                     backgroundColor: "#2d2755",

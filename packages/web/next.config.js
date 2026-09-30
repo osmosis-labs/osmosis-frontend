@@ -14,6 +14,9 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // isows resolves to a different entry under the Cloudflare `workerd` export condition than under
+  // Node, so Next's file tracing misses it. Keeping it external lets OpenNext copy the whole package.
+  serverExternalPackages: ["isows"],
   images: {
     remotePatterns: [
       {

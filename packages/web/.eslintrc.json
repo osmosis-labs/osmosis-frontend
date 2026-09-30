@@ -38,7 +38,7 @@
   "overrides": [
     // Pages router, config files
     {
-      "files": ["pages/**/*", "playwright.config.ts"],
+      "files": ["pages/**/*", "playwright.config.ts", "open-next.config.ts"],
       "rules": {
         "import/no-default-export": "off"
       }
