@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 
-import { AmplitudeEvent, EventProperties, UserProperties } from "~/config";
+import { AmplitudeEvent, EventProperties } from "~/config";
 
 /** set to true to see events and properties in console. DON'T COMMIT. */
 const DEBUG = false;
@@ -54,12 +54,6 @@ export function useAmplitudeAnalytics({
 
   return {
     logEvent,
-    setUserProperty: (
-      _: keyof UserProperties,
-      __: UserProperties[keyof UserProperties]
-    ) => {
-      // no-op: Amplitude identify was never wired back in
-    },
     getLastEvent,
   };
 }
