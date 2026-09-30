@@ -7287,22 +7287,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@moonpay/moonpay-node@npm:^0.2.7":
-  version: 0.2.7
-  resolution: "@moonpay/moonpay-node@npm:0.2.7"
-  checksum: 10c0/8a58bd07aaf17c7941c2dc87b1f02072670ef69e2ca2feb39993a0d1dce38062819b6c9249adbe43b698f944bc41b249d4015132a92c74522932dabe4b1d86af
-  languageName: node
-  linkType: hard
-
-"@moonpay/moonpay-react@npm:^1.8.2":
-  version: 1.8.2
-  resolution: "@moonpay/moonpay-react@npm:1.8.2"
-  peerDependencies:
-    react: ">=16"
-  checksum: 10c0/8a394eb6147ee596974a3b43103811638c552fc6b419284cbc650f55227b578150ec7098b1bd480d7b5a8311d9941ec865d69fd5fb24968f3e5590e2f7fc234e
-  languageName: node
-  linkType: hard
-
 "@motionone/animation@npm:^10.15.1, @motionone/animation@npm:^10.17.0":
   version: 10.17.0
   resolution: "@motionone/animation@npm:10.17.0"
@@ -9270,8 +9254,6 @@ __metadata:
     "@keplr-wallet/crypto": "npm:0.12.48"
     "@keplr-wallet/provider-mock": "npm:0.12.12"
     "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@moonpay/moonpay-node": "npm:^0.2.7"
-    "@moonpay/moonpay-react": "npm:^1.8.2"
     "@mysten/sui": "npm:^1"
     "@mysten/wallet-standard": "npm:^0"
     "@next/bundle-analyzer": "npm:15.5.25"

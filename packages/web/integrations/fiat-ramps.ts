@@ -1,11 +1,7 @@
 import { SpriteIconId } from "~/config";
 
 // Fiat on/off ramps
-export type FiatRampKey =
-  | "moonpay"
-  | "swapped"
-  | "layerswapcoinbase"
-  | "onrampmoney";
+export type FiatRampKey = "swapped" | "onrampmoney";
 export const FiatRampDisplayInfos: Record<
   FiatRampKey,
   {
@@ -15,21 +11,10 @@ export const FiatRampDisplayInfos: Record<
     logoId?: SpriteIconId;
   }
 > = {
-  moonpay: {
-    rampKey: "moonpay",
-    iconUrl: "/logos/moonpay.svg",
-    displayName: "MoonPay",
-    logoId: "moonpay-logo",
-  },
   swapped: {
     rampKey: "swapped",
     iconUrl: "/logos/swapped.svg",
     displayName: "Swapped",
-  },
-  layerswapcoinbase: {
-    rampKey: "layerswapcoinbase",
-    iconUrl: "/logos/coinbase.svg",
-    displayName: "Coinbase",
   },
   onrampmoney: {
     rampKey: "onrampmoney",

@@ -58,7 +58,6 @@
     "principalAssets": "મુખ્ય સંપત્તિ",
     "totalRewardsEarned": "કુલ પુરસ્કારો કમાયા",
     "unclaimedRewards": "દાવો ન કરેલા પુરસ્કારો",
-    "roi": "ROI",
     "selectedRange": "પસંદ કરેલ શ્રેણી",
     "myLiquidity": "મારી લિક્વિડિટી",
     "spreadFactor": "સ્પ્રેડ ફેક્ટર",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "ક્રિપ્ટો ખરીદો",
       "swappedSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
-      "moonpaySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
-      "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
-      "moonpayCountrySupport": "165+ દેશો"
+      "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે"
     },
     "MAX": "MAX",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "રૂપાંતર ફી",
     "free": "મફત",
     "unavailable": "હાલમાં અનુપલબ્ધ. પછીથી ફરી પ્રયાસ કરો."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "મર્યાદિત સમય માટે જ",
-    "skipWaitlist": "રાહ જોવાની સૂચિ છોડી દો",
-    "anyTokenOnAnyNetworkOn": "કોઈપણ નેટવર્ક પર કોઈપણ ટોકન",
-    "trade": "વેપાર",
-    "with": "સાથે"
-  },
-  "polarisBanner": {
-    "tradeYour": "તમારા વેપાર કરો",
-    "andSoMuchMore": "અને ઘણું બધું.",
-    "tradeAnythingOnPolaris": "પોલારિસ પર કંઈપણ વેપાર કરો"
   },
   "lowLiquidityAlert": {
     "title": "તમારો વેપાર નિષ્ફળ થઈ શકે છે",

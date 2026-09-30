@@ -58,7 +58,6 @@
     "principalAssets": "主要資產",
     "totalRewardsEarned": "獲得的總獎勵",
     "unclaimedRewards": "無人認領的獎勵",
-    "roi": "投資回報率",
     "selectedRange": "選定範圍",
     "myLiquidity": "我的流動性",
     "spreadFactor": "擴頻因子",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "購買加密貨幣",
       "swappedSubtitle": "支援OSMO、USDC",
-      "moonpaySubtitle": "支援OSMO、USDC",
-      "onrampMoneySubtitle": "支援OSMO、USDC",
-      "moonpayCountrySupport": "超過 165 個國家"
+      "onrampMoneySubtitle": "支援OSMO、USDC"
     },
     "MAX": "全部",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "轉換費",
     "free": "自由的",
     "unavailable": "目前不可用。稍後再試。"
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "僅限時",
-    "skipWaitlist": "跳過候補名單",
-    "anyTokenOnAnyNetworkOn": "任何網路上的任何令牌",
-    "trade": "貿易",
-    "with": "和"
-  },
-  "polarisBanner": {
-    "tradeYour": "交易你的",
-    "andSoMuchMore": "等等。",
-    "tradeAnythingOnPolaris": "在 Polaris 上交易任何商品"
   },
   "lowLiquidityAlert": {
     "title": "你的交易可能會失敗",

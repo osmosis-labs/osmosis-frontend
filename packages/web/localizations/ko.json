@@ -58,7 +58,6 @@
     "principalAssets": "주요 자산",
     "totalRewardsEarned": "총 획득 보상",
     "unclaimedRewards": "청구되지 않은 보상",
-    "roi": "ROI",
     "selectedRange": "선택한 범위",
     "myLiquidity": "내 유동성",
     "spreadFactor": "스프레드 팩터",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "암호화폐를 구매하세요",
       "swappedSubtitle": "OSMO, USDC 지원",
-      "moonpaySubtitle": "OSMO, USDC 지원",
-      "onrampMoneySubtitle": "OSMO, USDC 지원",
-      "moonpayCountrySupport": "165+ 국가"
+      "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
     "MAX": "MAX",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "환전 수수료",
     "free": "무료",
     "unavailable": "현재 사용할 수 없습니다. 나중에 다시 시도하세요."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "기간 한정",
-    "skipWaitlist": "대기자 명단 건너뛰기",
-    "anyTokenOnAnyNetworkOn": "모든 네트워크의 모든 토큰",
-    "trade": "거래",
-    "with": "~와 함께"
-  },
-  "polarisBanner": {
-    "tradeYour": "거래하세요",
-    "andSoMuchMore": "그리고 훨씬 더 많은 것들이 있습니다.",
-    "tradeAnythingOnPolaris": "Polaris에서 무엇이든 거래하세요"
   },
   "lowLiquidityAlert": {
     "title": "당신의 거래는 실패할 수 있습니다",

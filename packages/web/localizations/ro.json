@@ -58,7 +58,6 @@
     "principalAssets": "Active principale",
     "totalRewardsEarned": "Total recompense câștigate",
     "unclaimedRewards": "Recompense nerevendicate",
-    "roi": "ROI",
     "selectedRange": "Interval selectat",
     "myLiquidity": "Lichiditatea mea",
     "spreadFactor": "Factorul de răspândire",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Cumpărați cripto",
       "swappedSubtitle": "Suportă OSMO, USDC",
-      "moonpaySubtitle": "Suporta OSMO, USDC",
-      "onrampMoneySubtitle": "Suporta OSMO, USDC",
-      "moonpayCountrySupport": "Peste 165 de țări"
+      "onrampMoneySubtitle": "Suporta OSMO, USDC"
     },
     "MAX": "MAX",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "Taxe de conversie",
     "free": "Gratuit",
     "unavailable": "Momentan indisponibil. Încercați din nou mai târziu."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "Doar timp limitat",
-    "skipWaitlist": "Sari peste lista de asteptare",
-    "anyTokenOnAnyNetworkOn": "orice simbol din orice rețea activată",
-    "trade": "Comerț",
-    "with": "cu"
-  },
-  "polarisBanner": {
-    "tradeYour": "Tranzacționează-ți",
-    "andSoMuchMore": "și mult mai multe.",
-    "tradeAnythingOnPolaris": "Tranzacționează orice pe Polaris"
   },
   "lowLiquidityAlert": {
     "title": "Tranzacția ta ar putea eșua",

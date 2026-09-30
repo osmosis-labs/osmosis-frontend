@@ -58,7 +58,6 @@
     "principalAssets": "Основные активы",
     "totalRewardsEarned": "Всего заработано вознаграждений",
     "unclaimedRewards": "Невостребованные награды",
-    "roi": "рентабельность инвестиций",
     "selectedRange": "Выбранный диапазон",
     "myLiquidity": "Моя ликвидность",
     "spreadFactor": "Фактор распространения",
@@ -246,9 +245,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Купить криптовалюту",
       "swappedSubtitle": "Поддерживает OSMO, USDC",
-      "moonpaySubtitle": "Поддерживает OSMO, USDC",
-      "onrampMoneySubtitle": "Поддерживает OSMO, USDC",
-      "moonpayCountrySupport": "165+ стран"
+      "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
     },
     "MAX": "МАКС",
     "pool": {
@@ -1442,18 +1439,6 @@
     "conversionFees": "Комиссия за конвертацию",
     "free": "Бесплатно",
     "unavailable": "В настоящее время недоступно. Попробуйте еще раз позже."
-  },
-  "babyBanner": {
-    "limitedTimeOnly": "Только ограниченное время",
-    "skipWaitlist": "Пропустить лист ожидания",
-    "anyTokenOnAnyNetworkOn": "любой токен в любой сети на",
-    "trade": "Торговля",
-    "with": "с"
-  },
-  "polarisBanner": {
-    "tradeYour": "Торгуйте своим",
-    "andSoMuchMore": "и многое другое.",
-    "tradeAnythingOnPolaris": "Торгуйте чем угодно на Polaris"
   },
   "lowLiquidityAlert": {
     "title": "Ваша сделка может потерпеть неудачу",

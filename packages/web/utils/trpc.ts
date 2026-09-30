@@ -22,6 +22,10 @@ import { ChainList } from "~/config/generated/chain-list";
 import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
 import {
+  isCdnCacheableAssetsQuery,
+  setAssetsQueryDefaults,
+} from "~/utils/trpc-cdn-cache";
+import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
   EdgeRouterKey,
@@ -69,6 +73,7 @@ export const api = createTRPCNext<AppRouter>({
         },
       },
     });
+    setAssetsQueryDefaults(queryClient);
 
     persistQueryClient({
       queryClient,
@@ -161,7 +166,8 @@ export const api = createTRPCNext<AppRouter>({
               `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`
             )(runtime),
             [constructEdgeRouterKey("assets")]: makeSkipBatchLink(
-              `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`
+              `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`,
+              isCdnCacheableAssetsQuery
             )(runtime),
           };
 

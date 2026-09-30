@@ -1,11 +1,13 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import {
   FunctionComponent,
   PropsWithChildren,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -17,7 +19,11 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -28,7 +34,33 @@ interface TradeToolProps {
   setPreviousTrade: (trade: PreviousTrade) => void;
 }
 
-export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
+/**
+ * The trade tool's tab, order type and denoms all live in the URL. On a
+ * statically optimised page `router.query` is empty until the router is
+ * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
+ * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
+ *
+ * Readiness goes through state set in an effect rather than `isReady`
+ * directly: a page without query params can be ready on the first browser
+ * render but never during static rendering, and rendering the tool on that
+ * first render would not match the server markup.
+ */
+export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
+  props
+) => {
+  const { isReady } = useRouter();
+  const [canRender, setCanRender] = useState(false);
+
+  useEffect(() => {
+    if (isReady) setCanRender(true);
+  }, [isReady]);
+
+  if (!canRender) return null;
+
+  return <TradeToolContent {...props} />;
+};
+
+const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> =
   observer(
     ({ page, swapToolProps, previousTrade, setPreviousTrade, children }) => {
       const { logEvent } = useAmplitudeAnalytics();
@@ -39,6 +71,14 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
           SwapToolTab.SWAP
         )
       );
+
+      // Kill switch for limit orders: hides the Market/Limit toggle so Buy and
+      // Sell only place market orders (PlaceLimitTool forces the type too).
+      // Waits for LaunchDarkly to initialise so the toggle doesn't flicker and
+      // an outage leaves limit orders available.
+      const featureFlags = useFeatureFlags();
+      const limitOrdersDisabled =
+        featureFlags._isInitialized && !featureFlags.limitOrders;
 
       const { accountStore } = useStore();
       const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -69,7 +109,7 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> =
             <div className="flex w-full items-center justify-between md:gap-2">
               <SwapToolTabs activeTab={tab} setTab={setTab} />
               <div className="flex items-center gap-2">
-                {tab !== SwapToolTab.SWAP && (
+                {tab !== SwapToolTab.SWAP && !limitOrdersDisabled && (
                   <OrderTypeSelector
                     initialBaseDenom={previousTrade?.baseDenom}
                     initialQuoteDenom={previousTrade?.quoteDenom}
