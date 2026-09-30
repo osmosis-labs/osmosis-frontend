@@ -32,6 +32,8 @@ jest.mock("~/utils/formatter", () => ({
 
 jest.mock("@osmosis-labs/utils", () => ({
   apiClient: jest.fn(),
+  EthereumChainInfo: [{ id: 1, rpcUrls: { default: { http: [] } } }],
+  getEvmRpcTransport: jest.fn(),
   shorten: jest.fn((s: string) =>
     s.length > 13 ? `${s.slice(0, 6)}...${s.slice(-5)}` : s
   ),
@@ -47,9 +49,17 @@ jest.mock("@mysten/wallet-standard", () => ({
   signAndExecuteTransaction: jest.fn(),
 }));
 
+const mockReadContract = jest.fn();
+jest.mock("viem", () => ({
+  createPublicClient: jest.fn(() => ({ readContract: mockReadContract })),
+  parseAbi: jest.fn(() => []),
+}));
+jest.mock("viem/chains", () => ({ mainnet: { id: 1 } }));
+
 import { MultiLanguageProvider, t } from "~/hooks/language";
 
 import {
+  checkGuardianSet,
   checkIfRedeemed,
   checkOsmosisPacketFate,
   fetchGovernorDelay,
@@ -1030,6 +1040,101 @@ describe("WormholeRedeem governor_delayed render guard", () => {
       screen.queryByText(/VAA is signed and ready/i)
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Redeem on Sui")).not.toBeInTheDocument();
+  });
+});
+
+describe("WormholeRedeem guardian_set_expired render guard", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it("explains the expiry and withholds the Sui redeem button", async () => {
+    mockedApiClient.mockResolvedValueOnce({
+      operations: [
+        {
+          ...OPERATION_SUI_COMPLETED,
+          vaa: { raw: btoa("set-4-vaa"), guardianSetIndex: 4 },
+          targetChain: undefined,
+        },
+      ],
+    });
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ guardianSet: { index: 7 } }),
+    })) as unknown as typeof fetch;
+    mockReadContract.mockResolvedValue({ expirationTime: 1_772_728_559 });
+
+    renderWithI18n(<WormholeRedeem />);
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Osmosis transaction hash..."),
+      { target: { value: WORMCHAIN_HASH } }
+    );
+    fireEvent.click(screen.getByText("Lookup"));
+
+    expect(
+      await screen.findByText(/signed by Wormhole guardian set 4/)
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Redeem on Sui")).not.toBeInTheDocument();
+  });
+});
+
+describe("checkGuardianSet", () => {
+  const originalFetch = global.fetch;
+  const now = Math.floor(Date.now() / 1000);
+  const currentSet = (index: number) =>
+    jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ guardianSet: { index } }),
+    })) as unknown as typeof fetch;
+  const signedBy = (guardianSetIndex: number) =>
+    makeOperation({ vaa: { raw: "vaa", guardianSetIndex } }) as any;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it("is valid without an Ethereum read when the VAA uses the current set", async () => {
+    global.fetch = currentSet(7);
+
+    expect(await checkGuardianSet(signedBy(7))).toBe("valid");
+    expect(mockReadContract).not.toHaveBeenCalled();
+  });
+
+  it("is expired when an older set expired well past the margin", async () => {
+    global.fetch = currentSet(7);
+    mockReadContract.mockResolvedValue({ expirationTime: now - 30 * 86400 });
+
+    expect(await checkGuardianSet(signedBy(4))).toBe("expired");
+    expect(mockReadContract).toHaveBeenCalledWith(
+      expect.objectContaining({ functionName: "getGuardianSet", args: [4] })
+    );
+  });
+
+  it("is still valid while an older set is inside its grace period", async () => {
+    global.fetch = currentSet(7);
+    mockReadContract.mockResolvedValue({ expirationTime: now + 3600 });
+
+    expect(await checkGuardianSet(signedBy(6))).toBe("valid");
+  });
+
+  it("fails open as unknown when the set expired only just now", async () => {
+    global.fetch = currentSet(7);
+    mockReadContract.mockResolvedValue({ expirationTime: now - 3600 });
+
+    expect(await checkGuardianSet(signedBy(6))).toBe("unknown");
+  });
+
+  it("fails open as unknown when Wormholescan is unreachable", async () => {
+    global.fetch = jest.fn(async () => {
+      throw new Error("network down");
+    }) as unknown as typeof fetch;
+
+    expect(await checkGuardianSet(signedBy(4))).toBe("unknown");
   });
 });
 
