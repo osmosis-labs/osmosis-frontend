@@ -65,6 +65,24 @@ function getFilePath({
   return `${chainId}/generated/frontend/${fileType}.json`;
 }
 
+/**
+ * Declares the type of a generated JSON data file (`<name>.d.json.ts`, see tsconfig's
+ * `allowArbitraryExtensions`), so TypeScript reads the declaration instead of inferring
+ * a type from megabytes of JSON.
+ */
+async function generateJsonDeclarationFile(
+  typeName: "AssetList" | "Chain",
+  baseName: string
+) {
+  const content = `
+    import type { ${typeName} } from "@osmosis-labs/types";
+    declare const data: ${typeName}[];
+    export default data;
+  `;
+  if (!(await generateTsFile(content, codegenDir, `${baseName}.d.json.ts`)))
+    throw new Error(`Failed to generate ${baseName}.d.json.ts`);
+}
+
 async function generateChainListFile({
   assetLists,
   chainList,
@@ -110,12 +128,12 @@ async function generateChainListFile({
       )
     )
       throw new Error("Failed to generate chain list data file");
+    await generateJsonDeclarationFile("Chain", "chain-list.data");
 
-    // Cast through unknown so TypeScript doesn't check the JSON's inferred type against Chain.
     content += `
       import type { Chain } from "@osmosis-labs/types";
       import chainListData from "./chain-list.data.json";
-      export const ChainList = chainListData as unknown as ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[];
+      export const ChainList = chainListData as ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[];
     `;
   }
 
@@ -303,11 +321,12 @@ async function generateAssetListFile({
   if (!onlyTypes) {
     if (!generateJsonFile(assetLists, codegenDir, "asset-lists.data.json"))
       throw new Error("Failed to generate asset list data file");
+    await generateJsonDeclarationFile("AssetList", "asset-lists.data");
 
     content += `
       import type { AssetList } from "@osmosis-labs/types";
       import assetListsData from "./asset-lists.data.json";
-      export const AssetLists = assetListsData as unknown as AssetList[];
+      export const AssetLists: AssetList[] = assetListsData;
     `;
   }
 
