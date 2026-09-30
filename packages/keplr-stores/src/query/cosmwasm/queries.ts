@@ -1,6 +1,6 @@
 import { QueriesSetBase } from "../queries";
 import { ChainGetter } from "../../common";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../common/kv-store";
 import { ObservableQueryCw20ContractInfo } from "./cw20-contract-info";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryCw20BalanceRegistry } from "./cw20-balance";

@@ -1,7 +1,7 @@
-import { KVStore } from "@keplr-wallet/common";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
+  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,

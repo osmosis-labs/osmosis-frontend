@@ -1,4 +1,4 @@
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../common/kv-store";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,

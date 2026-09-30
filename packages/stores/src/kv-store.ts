@@ -3,7 +3,7 @@ import {
   KVStore,
   LocalKVStore,
   MemoryKVStore,
-} from "@keplr-wallet/common";
+} from "@osmosis-labs/keplr-stores";
 
 const USER_CLEARED_CACHE_MESSAGE =
   "Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing.";

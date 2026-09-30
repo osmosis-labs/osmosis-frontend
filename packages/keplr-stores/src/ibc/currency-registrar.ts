@@ -7,7 +7,9 @@ import {
   IQueriesStore,
   QueriesSetBase,
 } from "../query";
-import { DenomHelper, KVStore, toGenerator } from "@keplr-wallet/common";
+import { DenomHelper } from "../common/denom";
+import { KVStore } from "../common/kv-store";
+import { toGenerator } from "../common/mobx";
 import type { ChainInfo } from "@osmosis-labs/types";
 
 type CacheIBCDenomData = {

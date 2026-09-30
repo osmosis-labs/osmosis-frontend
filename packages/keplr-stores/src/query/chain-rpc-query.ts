@@ -1,5 +1,5 @@
 import { ObservableQuery } from "../common";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../common/kv-store";
 import Axios, { AxiosInstance } from "axios";
 import { override } from "mobx";
 import { ChainGetter } from "../common";

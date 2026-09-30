@@ -32,8 +32,6 @@
     "typescript": "5.4.5"
   },
   "dependencies": {
-    "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
@@ -49,8 +47,6 @@
   },
   "gitHead": "53108b832ecce14a9aeb48a46c565724e5904361",
   "resolutions": {
-    "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix"
   }

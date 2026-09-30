@@ -1,4 +1,3 @@
-import { KVStore } from "@keplr-wallet/common";
 import {
   TransferFailureReason,
   TransferStatus,
@@ -6,6 +5,7 @@ import {
   TransferStatusReceiver,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
+import { KVStore } from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import {

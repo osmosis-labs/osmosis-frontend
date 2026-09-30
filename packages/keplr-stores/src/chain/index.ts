@@ -8,7 +8,7 @@ import {
 } from "mobx";
 import { Bech32Config, BIP44, Currency } from "@keplr-wallet/types";
 import { ChainGetter } from "../common";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainIdHelper } from "../common/cosmos";
 import { DeepReadonly } from "utility-types";
 import { AxiosRequestConfig } from "axios";
 import { keepAlive } from "mobx-utils";

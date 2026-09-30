@@ -1,5 +1,4 @@
-import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@osmosis-labs/keplr-stores";
+import { HasMapStore, KVStore } from "@osmosis-labs/keplr-stores";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { Int, RatePretty } from "@osmosis-labs/unit";
 import { computed, makeObservable } from "mobx";

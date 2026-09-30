@@ -1,5 +1,8 @@
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, QueryResponse } from "@osmosis-labs/keplr-stores";
+import {
+  ChainGetter,
+  KVStore,
+  QueryResponse,
+} from "@osmosis-labs/keplr-stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

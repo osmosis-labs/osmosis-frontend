@@ -6396,17 +6396,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keplr-wallet/common@npm:0.10.24-ibc.go.v7.hot.fix":
-  version: 0.10.24-ibc.go.v7.hot.fix
-  resolution: "@keplr-wallet/common@npm:0.10.24-ibc.go.v7.hot.fix"
-  dependencies:
-    "@keplr-wallet/crypto": "npm:0.10.24-ibc.go.v7.hot.fix"
-    buffer: "npm:^6.0.3"
-    delay: "npm:^4.4.0"
-  checksum: 10c0/a11a0869b9738f6ccef94f3f81ba10b2c09649300c0b1b2ea2f23d9dc96c9ce13ca9b72f0d0d15de39527bd482ab957b0f2b372970a72997ad7f4d9de1a878d4
-  languageName: node
-  linkType: hard
-
 "@keplr-wallet/common@npm:0.12.12":
   version: 0.12.12
   resolution: "@keplr-wallet/common@npm:0.12.12"
@@ -6430,25 +6419,6 @@ __metadata:
     delay: "npm:^4.4.0"
     mobx: "npm:^6.1.7"
   checksum: 10c0/6207dac075aad13af4cd78efe5f79b3abfc445cb42cef6c6bf0c06b32c6e570dd1f4f93a4c64214bd03b77a669b308c30c09d041f51e25f14544305bc7f7f6a2
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/cosmos@npm:0.10.24-ibc.go.v7.hot.fix":
-  version: 0.10.24-ibc.go.v7.hot.fix
-  resolution: "@keplr-wallet/cosmos@npm:0.10.24-ibc.go.v7.hot.fix"
-  dependencies:
-    "@cosmjs/launchpad": "npm:^0.24.0-alpha.25"
-    "@ethersproject/address": "npm:^5.6.0"
-    "@keplr-wallet/crypto": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@keplr-wallet/proto-types": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@keplr-wallet/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    axios: "npm:^0.27.2"
-    bech32: "npm:^1.1.4"
-    buffer: "npm:^6.0.3"
-    long: "npm:^4.0.0"
-    protobufjs: "npm:^6.11.2"
-  checksum: 10c0/1b15097663b930c780696e60f34d6a9fa48b2b742fc3a891177482e3138952613f17b034fcf30175a6f32a2a99bd74dc7e593ee82b2049314299029cff2c2870
   languageName: node
   linkType: hard
 
@@ -6487,21 +6457,6 @@ __metadata:
     long: "npm:^4.0.0"
     protobufjs: "npm:^6.11.2"
   checksum: 10c0/b062eb75c03a1285aba7e5398191961e7e9d01ec53e1094a6c3858817e4e41d9c571f09961289b07fb3175d9648eeb3587744efb563be9c379b79e2ed0fc207c
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/crypto@npm:0.10.24-ibc.go.v7.hot.fix":
-  version: 0.10.24-ibc.go.v7.hot.fix
-  resolution: "@keplr-wallet/crypto@npm:0.10.24-ibc.go.v7.hot.fix"
-  dependencies:
-    bip32: "npm:^2.0.6"
-    bip39: "npm:^3.0.3"
-    bs58check: "npm:^2.1.2"
-    buffer: "npm:^6.0.3"
-    crypto-js: "npm:^4.0.0"
-    elliptic: "npm:^6.5.3"
-    sha.js: "npm:^2.4.11"
-  checksum: 10c0/7acdd81aff4b9875251e02d86d42facb497eba41881f2be2f5287448a72ad257b054308bb8cb4af98f4d8babf4479625ce9dd88bf87b05db7a402b88a40bd885
   languageName: node
   linkType: hard
 
@@ -6550,16 +6505,6 @@ __metadata:
     elliptic: "npm:^6.5.3"
     sha.js: "npm:^2.4.11"
   checksum: 10c0/7f2f0141960c5004564b1422f59bf7eeb95259ebccf6f3fbbe5f9897aaaed822a0b088f1cab8299b9bcb8a12248076e82f590b0555bda347d426979b79cbe208
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/proto-types@npm:0.10.24-ibc.go.v7.hot.fix":
-  version: 0.10.24-ibc.go.v7.hot.fix
-  resolution: "@keplr-wallet/proto-types@npm:0.10.24-ibc.go.v7.hot.fix"
-  dependencies:
-    long: "npm:^4.0.0"
-    protobufjs: "npm:^6.11.2"
-  checksum: 10c0/bde07057c1b6ceeef67f8a339b682d3988ed5c736ffffd6f707067cd8cb2d75a6bed15f3bfb0aac8dbe17bd5e23bda9681f67253443070070edaa657f3019f56
   languageName: node
   linkType: hard
 
@@ -6722,17 +6667,6 @@ __metadata:
   peerDependencies:
     starknet: ^8
   checksum: 10c0/a54793c349edcb55906adf723ad779a8c165227306088b4d03da0ca3096f1ce574d186b4213302aa640384a14b793b7353bd70dded0d84221293b57dffca6f86
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/unit@npm:0.10.24-ibc.go.v7.hot.fix":
-  version: 0.10.24-ibc.go.v7.hot.fix
-  resolution: "@keplr-wallet/unit@npm:0.10.24-ibc.go.v7.hot.fix"
-  dependencies:
-    "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"
-    big-integer: "npm:^1.6.48"
-    utility-types: "npm:^3.10.0"
-  checksum: 10c0/7b69f261853d48ea8689143f7b90d9bf269a4a1c5e73bf50451bc8f7e3bff04440b1677db541c66f866636a2d0421e81b2341149aee8d349204508d8a4c61b39
   languageName: node
   linkType: hard
 
@@ -8715,8 +8649,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@osmosis-labs/keplr-stores@workspace:packages/keplr-stores"
   dependencies:
-    "@keplr-wallet/common": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@keplr-wallet/cosmos": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
@@ -8824,10 +8756,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:0.32.3"
     "@cosmjs/stargate": "npm:0.32.3"
     "@cosmos-kit/core": "npm:^2.18.1"
-    "@keplr-wallet/common": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@keplr-wallet/cosmos": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/crypto": "npm:0.12.48"
-    "@keplr-wallet/proto-types": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/provider-mock": "npm:0.12.12"
     "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/bridge": "npm:^1.0.0"
@@ -8988,7 +8917,6 @@ __metadata:
     "@cosmos-kit/trust": "npm:^2.16.1"
     "@cosmos-kit/xdefi": "npm:^2.12.0"
     "@headlessui/react": "npm:^2.1.1"
-    "@keplr-wallet/common": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/crypto": "npm:0.12.48"
     "@keplr-wallet/provider-mock": "npm:0.12.12"
     "@keplr-wallet/types": "npm:0.10.24-ibc.go.v7.hot.fix"

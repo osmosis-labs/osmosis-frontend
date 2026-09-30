@@ -1,7 +1,7 @@
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   ChainGetter,
+  ChainIdHelper,
   CosmosQueries,
   IQueriesStore,
   txEventsWithPreOnFulfill,

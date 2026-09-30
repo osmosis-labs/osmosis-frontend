@@ -15,16 +15,15 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { KVStore } from "@keplr-wallet/common";
-import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import {
+  BaseAccount,
   ChainedFunctionifyTuple,
   ChainGetter,
   CosmosQueries,
   CosmwasmQueries,
   Functionify,
+  KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
@@ -1030,7 +1029,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { TxExtension },
       { fromBase64 },
       { Int53 },
-      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
+      { makeAuthInfoBytes, makeSignBytes, makeSignDoc, encodePubkey },
       { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
@@ -1093,18 +1092,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber as unknown as number
     );
 
-    const sig = privateKey.signDigest32(
-      Hash.sha256(
-        SignDoc.encode(
-          SignDoc.fromPartial({
-            bodyBytes: signDoc.bodyBytes,
-            authInfoBytes: signDoc.authInfoBytes,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber.toString(),
-          })
-        ).finish()
-      )
-    );
+    const sig = privateKey.signDigest32(Hash.sha256(makeSignBytes(signDoc)));
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
