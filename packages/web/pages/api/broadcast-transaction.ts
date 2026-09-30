@@ -10,7 +10,7 @@ import { findAllowedRestEndpoint } from "~/utils/url";
  * the CORS headers. Therefore, by having this endpoint, we can ensure that
  * users can still broadcast their transactions to the network.
  */
-async function broadcastTransactionHandler(req: Request) {
+export async function broadcastTransactionHandler(req: Request) {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
