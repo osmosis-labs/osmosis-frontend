@@ -46,6 +46,33 @@ jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
 jest.mock("~/hooks", () => ({
   useAmplitudeAnalytics: () => ({ logEvent: jest.fn() }),
   useTranslation: () => ({ t: (key: string) => key }),
+  useWalletSelect: () => ({ onOpenWalletSelect: jest.fn() }),
+}));
+
+jest.mock("~/stores", () => ({
+  useStore: () => ({
+    accountStore: { osmosisChainId: "osmosis-1", getWallet: () => undefined },
+  }),
+}));
+
+// HASH already has an orderbook, so the creation flow never engages here.
+jest.mock("~/hooks/limit-orders/use-create-orderbook", () => ({
+  useCreateOrderbook: () => ({
+    createOrderbook: jest.fn(),
+    isCreating: false,
+    error: undefined,
+    resetError: jest.fn(),
+  }),
+  wasOrderbookJustCreated: () => false,
+  clearJustCreatedOrderbook: jest.fn(),
+}));
+
+jest.mock("~/hooks/limit-orders/use-orderbook-ratio-guard", () => ({
+  useOrderbookRatioGuard: () => ({ isBlocked: false }),
+}));
+
+jest.mock("~/modals/create-orderbook", () => ({
+  CreateOrderbookModal: () => null,
 }));
 
 jest.mock("~/utils/trpc", () => ({
@@ -53,6 +80,15 @@ jest.mock("~/utils/trpc", () => ({
     edge: {
       assets: {
         getUserAsset: { useQuery: () => ({ data: { coinDenom: "HASH" } }) },
+      },
+      orderbooks: {
+        verifyOrderbookCreation: {
+          useQuery: () => ({
+            data: undefined,
+            isLoading: false,
+            fetchStatus: "idle",
+          }),
+        },
       },
     },
   },
