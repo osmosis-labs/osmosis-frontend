@@ -137,7 +137,6 @@ export const WormholeAlloyConvert: FunctionComponent<{
       <SwapTool
         useQueryParams={false}
         useOtherCurrencies={false}
-        page="Wormhole Page"
         initialSendTokenDenom={convertAsset.alloyMinimalDenom}
         initialOutTokenDenom={convertAsset.variantMinimalDenom}
       />

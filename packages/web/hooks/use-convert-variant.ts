@@ -3,12 +3,10 @@ import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
-import { EventName } from "~/config";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
-import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
 
 /** Slippage tolerance for a conversion through a single fixed-ratio pool
  *  (transmuter / alloyed), as a decimal fraction: 0.01%.
@@ -38,7 +36,6 @@ export function useConvertVariant(
   enabled = true
 ) {
   const { accountStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const transactionIdentifier = "convertVariant";
 
@@ -136,14 +133,6 @@ export function useConvertVariant(
             {
               onFulfill: (tx) => {
                 if (tx.code) return reject(tx.code);
-                logEvent([
-                  EventName.ConvertVariants.completeFlow,
-                  {
-                    fromToken: variant.amount.currency.coinDenom,
-                    toToken: variant.canonicalAsset.coinDenom,
-                    valueUsd: Number(variant.fiatValue.toDec().toString()),
-                  },
-                ]);
                 resolve();
               },
               onBroadcastFailed: reject,
@@ -154,14 +143,7 @@ export function useConvertVariant(
             reject(e);
           });
       }),
-    [
-      variant,
-      account,
-      quote,
-      accountStore,
-      variantTransactionIdentifier,
-      logEvent,
-    ]
+    [variant, account, quote, accountStore, variantTransactionIdentifier]
   );
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);

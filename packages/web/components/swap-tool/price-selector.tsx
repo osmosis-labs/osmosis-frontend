@@ -19,11 +19,9 @@ import {
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   Breakpoint,
-  useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
   useWindowSize,
@@ -98,7 +96,6 @@ export const PriceSelector = memo(
     initialQuoteDenom = USDC_BASE_DENOM,
   }: PriceSelectorProps) => {
     const { t } = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const [tab, setTab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
@@ -318,7 +315,6 @@ export const PriceSelector = memo(
                       <button
                         type="button"
                         onClick={() => {
-                          logEvent([EventName.LimitOrder.addFunds]);
                           openAddFundsModal?.();
                         }}
                         className="flex w-full items-center justify-between py-3"
@@ -359,7 +355,6 @@ export const PriceSelector = memo(
                     <button
                       type="button"
                       onClick={() => {
-                        logEvent([EventName.LimitOrder.swapFromAnotherAsset]);
                         if (tab === "buy") {
                           setSellOpen(true);
                         } else {

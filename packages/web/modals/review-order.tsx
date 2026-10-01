@@ -30,12 +30,10 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
-import { EventName, EventPage } from "~/config/analytics-events";
 import {
   Breakpoint,
   MultiLanguageT,
   OneClickTradingParamsChanges,
-  useAmplitudeAnalytics,
   useFeatureFlags,
   useOneClickTradingSwapReview,
   useTranslation,
@@ -75,7 +73,6 @@ interface ReviewOrderProps {
   inAmountFiat?: PricePretty;
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
-  page?: EventPage;
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
@@ -107,14 +104,12 @@ export function ReviewOrder({
   inAmountFiat,
   toAsset,
   fromAsset,
-  page,
   isBeyondOppositePrice = false,
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
@@ -635,18 +630,6 @@ export function ReviewOrder({
                               }}
                               onChange={(e) => {
                                 handleManualSlippageChange(e.target.value);
-
-                                logEvent([
-                                  EventName.Swap.slippageToleranceSet,
-                                  {
-                                    fromToken: fromAsset?.coinDenom,
-                                    toToken: toAsset?.coinDenom,
-                                    isOnHome: true,
-                                    percentage:
-                                      slippageConfig?.slippage.toString(),
-                                    page,
-                                  },
-                                ]);
                               }}
                             />
                             {manualSlippage !== "" && (

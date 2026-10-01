@@ -13,16 +13,13 @@ import {
 } from "react";
 
 import { Pill } from "~/components/indicators/pill";
-import { AmplitudeEvent } from "~/config";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
 
 export type MainLayoutMenu = {
   label: string;
   link: string | MouseEventHandler;
   icon: ReactNode;
   selectionTest?: RegExp;
-  amplitudeEvent?: AmplitudeEvent;
   isNew?: boolean;
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
@@ -182,10 +179,8 @@ const MenuItemContent: React.FC<{
   menu: MainLayoutMenu;
 }> = ({ selected, showSubTitle, menu }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
-  const { label, icon, amplitudeEvent, isNew, badge, secondaryLogo, subtext } =
-    menu;
+  const { label, icon, isNew, badge, secondaryLogo, subtext } = menu;
 
   return (
     <div
@@ -195,11 +190,6 @@ const MenuItemContent: React.FC<{
           ? "text-white-high"
           : "text-osmoverse-300 hover:text-white-high"
       )}
-      onClick={() => {
-        if (amplitudeEvent) {
-          logEvent(amplitudeEvent);
-        }
-      }}
     >
       <div className="relative h-6 w-6">
         {/* Main Icon */}

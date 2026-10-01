@@ -104,12 +104,6 @@ jest.mock("~/hooks/one-click-trading", () => ({
   }),
 }));
 
-jest.mock("~/hooks/use-amplitude-analytics", () => ({
-  useAmplitudeAnalytics: () => ({
-    logEvent: jest.fn(),
-  }),
-}));
-
 jest.mock("~/hooks/language", () => ({
   useTranslation: () => ({
     t: (key: string) => key,

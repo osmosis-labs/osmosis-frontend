@@ -43,7 +43,6 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
-import { EventPage } from "~/config";
 import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
@@ -65,7 +64,6 @@ import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 interface PlaceLimitToolProps {
-  page: EventPage;
   initialBaseDenom?: string;
   initialQuoteDenom?: string;
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
@@ -141,7 +139,6 @@ const NON_DISPLAY_ERRORS = [
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({
-    page,
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
@@ -232,7 +229,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom: from,
       quoteDenom: quote,
       type,
-      page,
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
     });
@@ -876,7 +872,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             )}
             <div className="flex items-center justify-between py-3 ">
               <AssetFieldsetInput
-                page={page}
                 inputPrefix={
                   focused === "fiat" && (
                     <span
@@ -901,7 +896,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 data-testid={`trade-input-${type}`}
               />
               <AssetFieldsetTokenSelector
-                page={page}
                 onSelect={setBase}
                 selectableAssets={selectableBaseAssets}
                 orderDirection={orderDirection}
@@ -1050,7 +1044,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         </div>
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
-          page={page}
           orderType={type}
           confirmAction={async () => {
             setIsSendingTx(true);

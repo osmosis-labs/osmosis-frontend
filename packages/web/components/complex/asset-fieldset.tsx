@@ -1,7 +1,6 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
   forwardRef,
@@ -13,10 +12,8 @@ import {
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName, EventPage } from "~/config";
 import {
   Breakpoint,
-  useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
   useWindowSize,
@@ -58,13 +55,11 @@ const AssetFieldsetHeaderBalance = observer(
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
-    const { logEvent } = useAmplitudeAnalytics();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
     const onClickAddFunds = useCallback(() => {
-      logEvent([EventName.LimitOrder.addFunds]);
       openAddFundsModal?.();
-    }, [openAddFundsModal, logEvent]);
+    }, [openAddFundsModal]);
 
     return (
       <div
@@ -115,7 +110,6 @@ interface AssetFieldsetInputProps {
   onInputChange?: ChangeEventHandler<HTMLInputElement>;
   inputValue?: string;
   outputValue?: ReactNode;
-  page?: EventPage;
   wrapperClassNames?: string;
   placeholder?: string;
   disabled?: boolean;
@@ -189,7 +183,6 @@ interface TokenSelectProps {
   hasNextPageAssets?: boolean;
   isFetchingNextPageAssets?: boolean;
   isLoadingSelectAssets?: boolean;
-  page?: EventPage;
   assetQueryInput?: string;
   setAssetQueryInput?: (input: string) => void;
 }
@@ -205,14 +198,12 @@ const AssetFieldsetTokenSelector = ({
   fetchNextPageAssets,
   hasNextPageAssets,
   isFetchingNextPageAssets,
-  page = "Swap Page",
   isLoadingSelectAssets,
   assetQueryInput,
   setAssetQueryInput,
   ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const { isMobile } = useWindowSize(Breakpoint.sm);
   const {
     isOpen: isSelectOpen,
@@ -220,17 +211,7 @@ const AssetFieldsetTokenSelector = ({
     onClose: closeSelect,
   } = useDisclosure();
 
-  const router = useRouter();
-
   const onSelect = (tokenDenom: string) => {
-    logEvent([
-      EventName.Swap.dropdownAssetSelected,
-      {
-        tokenName: tokenDenom,
-        isOnHome: router.pathname === "/",
-        page,
-      },
-    ]);
     onOriginalSelect?.(tokenDenom);
   };
 

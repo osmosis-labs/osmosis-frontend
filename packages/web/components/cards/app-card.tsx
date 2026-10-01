@@ -3,8 +3,6 @@ import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { IconLink } from "~/components/cards/icon-link";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
 
 export const AppCard: FunctionComponent<{
   title?: string;
@@ -14,7 +12,6 @@ export const AppCard: FunctionComponent<{
   githubUrl?: string;
   externalUrl?: string;
   mediumUrl?: string;
-  index: number;
 }> = ({
   title = "",
   subtitle,
@@ -23,10 +20,7 @@ export const AppCard: FunctionComponent<{
   githubUrl,
   externalUrl,
   mediumUrl,
-  index,
 }) => {
-  const { logEvent } = useAmplitudeAnalytics();
-
   const utmParams = new URLSearchParams({
     utm_source: "OsmosisAppStore",
     utm_medium: "AppCard",
@@ -36,10 +30,6 @@ export const AppCard: FunctionComponent<{
   const externalUrlWithUTM = externalUrl + `?${utmParams}`;
 
   const handleAppClicked = () => {
-    logEvent([
-      EventName.AppStore.appClicked,
-      { appName: title, isFeatured: false, isBanner: false, position: index },
-    ]);
     window.open(externalUrlWithUTM, "_blank", "noopener noreferrer");
   };
 

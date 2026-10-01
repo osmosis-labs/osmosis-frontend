@@ -5,13 +5,7 @@ import { FunctionComponent, ReactNode, useMemo } from "react";
 import { PriceChange } from "~/components/assets/price";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
-import {
-  Breakpoint,
-  useAmplitudeAnalytics,
-  useTranslation,
-  useWindowSize,
-} from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -23,8 +17,6 @@ type PriceChange24hAsset =
 
 type UpcomingReleaseAsset =
   RouterOutputs["edge"]["assets"]["getTopUpcomingAssets"][number];
-
-type Highlight = "new" | "topGainers" | "upcoming";
 
 type HighlightsProps = {
   isCategorySelected: boolean;
@@ -154,7 +146,6 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
           title={t("assets.highlights.new")}
           isLoading={isTopNewAssetsLoading}
           assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-          highlight="new"
         />
       )}
       <AssetHighlights
@@ -171,7 +162,6 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
-        highlight="topGainers"
         columns={isGainersOnly ? 2 : 1}
       />
       {hasQualifyingUpcomingAssets && (
@@ -180,7 +170,6 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
           title={t("assets.highlights.upcoming")}
           isLoading={isTopUpcomingAssetsLoading}
           assets={qualifyingUpcomingAssets.map(highlightUpcomingReleaseAsset)}
-          highlight="upcoming"
         />
       )}
     </div>
@@ -271,7 +260,6 @@ export const AssetHighlights: FunctionComponent<
     }[];
     isLoading?: boolean;
     disableLinking?: boolean;
-    highlight: Highlight;
     onClickAsset?: (asset: HighlightAsset) => void;
     /**
      * Number of columns to flow the asset rows into. Defaults to 1. Use 2 when
@@ -287,7 +275,6 @@ export const AssetHighlights: FunctionComponent<
   assets,
   isLoading = false,
   className,
-  highlight,
   onClickAsset,
   columns = 1,
 }) => {
@@ -341,7 +328,6 @@ export const AssetHighlights: FunctionComponent<
                 key={asset.coinDenom}
                 asset={asset}
                 extraInfo={extraInfo}
-                highlight={highlight}
                 onClick={onClickAsset}
               />
             ))}
@@ -363,12 +349,9 @@ type HighlightAsset = {
 const AssetHighlightRow: FunctionComponent<{
   asset: HighlightAsset;
   extraInfo: ReactNode;
-  highlight: Highlight;
   onClick?: (asset: HighlightAsset) => void;
-}> = ({ asset, extraInfo, highlight, onClick }) => {
+}> = ({ asset, extraInfo, onClick }) => {
   const { coinDenom, coinName, coinImageUrl, href, externalLink } = asset;
-  const { logEvent } = useAmplitudeAnalytics();
-
   const logoURIs = useMemo(() => getLogoURIs(coinImageUrl), [coinImageUrl]);
 
   const AssetContent = (
@@ -406,7 +389,6 @@ const AssetHighlightRow: FunctionComponent<{
       target={externalLink ? "_blank" : "_self"}
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
       onClick={() => {
-        logEvent([EventName.Assets.assetClicked, { coinDenom, highlight }]);
         onClick?.(asset);
       }}
     >

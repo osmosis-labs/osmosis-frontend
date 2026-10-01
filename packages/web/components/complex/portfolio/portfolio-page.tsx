@@ -12,13 +12,7 @@ import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { PortfolioAssetBalancesTable } from "~/components/table/portfolio-asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
-import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useDimension,
-  useTranslation,
-  useWalletSelect,
-} from "~/hooks";
+import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { api } from "~/utils/trpc";
@@ -32,10 +26,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
   const setHideDust = useUserSettingsStore((state) => state.setHideDust);
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Portfolio.pageViewed],
-  });
 
   const {
     data: allocation,
@@ -80,12 +70,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                   <Tab
                     disabled={userHasNoAssets}
                     className="py-3 px-4 disabled:opacity-80"
-                    onClick={() => {
-                      logEvent([
-                        EventName.Portfolio.tabClicked,
-                        { section: "Your balances" },
-                      ]);
-                    }}
                   >
                     {({ selected }) => (
                       <div
@@ -101,12 +85,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                   <Tab
                     disabled={userHasNoAssets}
                     className="py-3 px-4 disabled:opacity-80 "
-                    onClick={() => {
-                      logEvent([
-                        EventName.Portfolio.tabClicked,
-                        { section: "Your positions" },
-                      ]);
-                    }}
                   >
                     {({ selected }) => (
                       <div

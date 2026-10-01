@@ -6,13 +6,7 @@ import { PoolCard } from "~/components/cards";
 import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
-import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useHideDustUserSetting,
-  useTranslation,
-  useWindowSize,
-} from "~/hooks";
+import { useHideDustUserSetting, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -21,7 +15,6 @@ export const MyPoolsCardsGrid = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
-  const { logEvent } = useAmplitudeAnalytics();
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
@@ -162,18 +155,6 @@ export const MyPoolsCardsGrid = observer(() => {
                     isSuperfluid={isSuperfluid}
                     isSupercharged={type === "concentrated"}
                     mobileShowFirstLabel
-                    onClick={() =>
-                      logEvent([
-                        EventName.Pools.myPoolsCardClicked,
-                        {
-                          poolId: id,
-                          poolName: reserveCoins
-                            .map((coin) => coin.currency.coinDenom)
-                            .join(" / "),
-                          isSuperfluidPool: isSuperfluid,
-                        },
-                      ])
-                    }
                   />
                 );
               }
