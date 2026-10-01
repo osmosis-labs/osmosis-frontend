@@ -44,7 +44,6 @@ jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
 }));
 
 jest.mock("~/hooks", () => ({
-  useAmplitudeAnalytics: () => ({ logEvent: jest.fn() }),
   useTranslation: () => ({ t: (key: string) => key }),
   useWalletSelect: () => ({ onOpenWalletSelect: jest.fn() }),
 }));

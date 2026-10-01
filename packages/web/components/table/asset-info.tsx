@@ -23,10 +23,8 @@ import { useMount } from "react-use";
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
-import { EventName } from "~/config";
 import {
   Breakpoint,
-  useAmplitudeAnalytics,
   useDimension,
   useTranslation,
   useUserWatchlist,
@@ -94,12 +92,11 @@ export const AssetsInfoTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
   const selectCategory = useCallback(
-    (category: string, highlight?: string) => {
+    (category: string) => {
       setCategory(category);
       router.push(
         {
@@ -109,15 +106,8 @@ export const AssetsInfoTable: FunctionComponent<{
         undefined,
         { shallow: true }
       );
-      logEvent([
-        EventName.Assets.categorySelected,
-        {
-          assetCategory: category,
-          highlight,
-        },
-      ]);
     },
-    [logEvent, router]
+    [router]
   );
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
@@ -132,7 +122,7 @@ export const AssetsInfoTable: FunctionComponent<{
     );
   }, [router]);
   const onSelectTopGainers = useCallback(() => {
-    selectCategory("topGainers", "topGainers");
+    selectCategory("topGainers");
   }, [selectCategory]);
   const categories = useMemo(
     () =>
@@ -173,21 +163,9 @@ export const AssetsInfoTable: FunctionComponent<{
     if (selectedCategory === "topGainers") return "desc";
     else return sortDirection_;
   }, [selectedCategory, sortDirection_]);
-  const setSortKey = useCallback(
-    (key: SortKey | undefined) => {
-      setSortKey_(key);
-      if (key !== undefined) {
-        logEvent([
-          EventName.Assets.assetsListSorted,
-          {
-            sortedBy: key,
-            sortDirection,
-          },
-        ]);
-      }
-    },
-    [logEvent, sortDirection]
-  );
+  const setSortKey = useCallback((key: SortKey | undefined) => {
+    setSortKey_(key);
+  }, []);
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
@@ -596,7 +574,7 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {virtualRows.map((virtualRow) => {
             const row = rows[virtualRow.index];
-            const { coinDenom, coinMinimalDenom, isVerified } = row.original;
+            const { coinMinimalDenom, isVerified } = row.original;
             const unverified = !isVerified && !showUnverifiedAssets;
 
             return (
@@ -605,10 +583,6 @@ export const AssetsInfoTable: FunctionComponent<{
                 key={row.id}
                 onClick={() => {
                   router.push(`/assets/${coinMinimalDenom}`);
-                  logEvent([
-                    EventName.Assets.assetClicked,
-                    { tokenName: coinDenom },
-                  ]);
                 }}
               >
                 {row.getVisibleCells().map((cell, index, cells) => (
@@ -626,10 +600,6 @@ export const AssetsInfoTable: FunctionComponent<{
                       href={`/assets/${coinMinimalDenom}`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        logEvent([
-                          EventName.Assets.assetClicked,
-                          { tokenName: coinDenom },
-                        ]);
                       }}
                       passHref
                     >

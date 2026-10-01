@@ -1,5 +1,4 @@
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
 import { BondStatus } from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
@@ -14,10 +13,8 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
-import { AmountDefault, EventName } from "~/config";
 import {
   useAmountConfig,
-  useAmplitudeAnalytics,
   useFakeFeeConfig,
   useGetApr,
   useTranslation,
@@ -29,12 +26,6 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 
-const getAmountDefault = (fraction: number | undefined): AmountDefault => {
-  if (fraction === 0.5) return "half";
-  if (fraction === 1) return "max";
-  return "input";
-};
-
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
@@ -44,11 +35,7 @@ export const Staking: React.FC = observer(() => {
 
   const { t } = useTranslation();
 
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Stake.pageViewed],
-  });
-
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
@@ -170,89 +157,25 @@ export const Staking: React.FC = observer(() => {
     ? "stake"
     : "edit";
 
-  const amountDefault = getAmountDefault(stakeTabAmountConfig.fraction);
-  const amount = Number(stakeTabAmountConfig.amount || "0");
-  const amountUSD = priceStore
-    .calculatePrice(
-      new CoinPretty(osmo, stakeTabAmountConfig.getAmountPrimitive().amount)
-    )
-    ?.toString();
-
-  const squadSize = usersValidatorsMap.size;
-
   const stakeCall = useCallback(() => {
-    logEvent([
-      EventName.Stake.stakingStarted,
-      {
-        amountDefault,
-        amount,
-        amountUSD,
-      },
-    ]);
-
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
-        .sendDelegateToValidatorSetMsg(coin, "", (tx: DeliverTxResponse) => {
-          if (tx.code === 0) {
-            logEvent([
-              EventName.Stake.stakingCompleted,
-              { amountDefault, amount, amountUSD, squadSize },
-            ]);
-          }
-        })
+        .sendDelegateToValidatorSetMsg(coin, "")
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [
-    account?.address,
-    account?.osmosis,
-    amount,
-    amountDefault,
-    amountUSD,
-    coin,
-    logEvent,
-    squadSize,
-  ]);
+  }, [account?.address, account?.osmosis, coin]);
 
   const unstakeCall = useCallback(() => {
-    logEvent([
-      EventName.Stake.unstakingStarted,
-      {
-        amountDefault,
-        amount,
-        amountUSD,
-      },
-    ]);
-
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
-        .sendUndelegateFromRebalancedValidatorSet(
-          coin,
-          "",
-          (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([
-                EventName.Stake.unstakingCompleted,
-                { amountDefault, amount, amountUSD, squadSize },
-              ]);
-            }
-          }
-        )
+        .sendUndelegateFromRebalancedValidatorSet(coin, "")
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [
-    account?.address,
-    account?.osmosis,
-    amount,
-    amountDefault,
-    amountUSD,
-    coin,
-    logEvent,
-    squadSize,
-  ]);
+  }, [account?.address, account?.osmosis, coin]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 

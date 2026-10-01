@@ -1,11 +1,10 @@
 import { RichTweet } from "@osmosis-labs/server";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 
-import { EventName, TWITTER_PUBLIC_URL } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { TWITTER_PUBLIC_URL } from "~/config";
+import { useTranslation } from "~/hooks";
 
 interface TwitterSectionProps {
   tweets: RichTweet[];
@@ -48,16 +47,6 @@ const Tweet: FunctionComponent<RichTweet> = ({
   user,
   previewImage,
 }) => {
-  const router = useRouter();
-  const { logEvent } = useAmplitudeAnalytics();
-
-  const onTweetLinkClick = () => {
-    logEvent([
-      EventName.TokenInfo.socialPostClicked,
-      { tokenName: router.query.denom as string },
-    ]);
-  };
-
   return (
     <li className="flex flex-col items-start gap-4 self-stretch py-3">
       <div className="flex-start flex gap-3 self-stretch 1.5xs:flex-col">
@@ -88,7 +77,6 @@ const Tweet: FunctionComponent<RichTweet> = ({
                 passHref
                 target="_blank"
                 className="text-body2 font-body2 leading-5 text-osmoverse-500 hover:underline"
-                onClick={onTweetLinkClick}
               >
                 @{user.username}
               </Link>
@@ -108,7 +96,6 @@ const Tweet: FunctionComponent<RichTweet> = ({
             target="_blank"
             className="breakspaces self-stretch text-body1 font-body1 text-osmoverse-200"
             passHref
-            onClick={onTweetLinkClick}
           >
             {text}
             {previewImage && (

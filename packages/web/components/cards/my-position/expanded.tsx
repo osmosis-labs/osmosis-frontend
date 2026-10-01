@@ -26,8 +26,7 @@ import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -87,8 +86,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       },
       accountStore,
     } = useStore();
-
-    const { logEvent } = useAmplitudeAnalytics();
 
     const account = accountStore.getWallet(chainId);
 
@@ -188,24 +185,16 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     }, [lowerPrice, upperPrice, setPriceRange]);
 
     const sendCollectAllRewardsMsg = useCallback(() => {
-      logEvent([EventName.ConcentratedLiquidity.collectRewardsClicked]);
       const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
       const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
       account!.osmosis
         .sendCollectAllPositionsRewardsMsgs(
           hasSpreadRewards ? [rawPosition.position.position_id] : [],
           hasIncentiveRewards ? [rawPosition.position.position_id] : [],
-          undefined,
-          (tx) => {
-            if (!tx.code) {
-              logEvent([
-                EventName.ConcentratedLiquidity.collectRewardsCompleted,
-              ]);
-            }
-          }
+          undefined
         )
         .catch(console.error);
-    }, [account, logEvent, rawPosition]);
+    }, [account, rawPosition]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>

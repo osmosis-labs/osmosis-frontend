@@ -6,8 +6,6 @@ import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
-import { EventName, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -44,7 +42,6 @@ export const AmountAndReviewScreen = observer(
   }: AmountAndConfirmationScreenProps) => {
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
-    const { logEvent } = useAmplitudeAnalytics();
     const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
@@ -91,15 +88,6 @@ export const AmountAndReviewScreen = observer(
       toChain?.chainType === "evm"
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
-
-    const fromWalletName =
-      fromChain?.chainType === "evm"
-        ? evmConnector?.name
-        : fromChainCosmosAccount?.walletInfo.name;
-    const toWalletName =
-      toChain?.chainType === "evm"
-        ? evmConnector?.name
-        : toChainCosmosAccount?.walletInfo.name;
 
     const { data: assetsInOsmosis, isLoading: isLoadingAssetsInOsmosis } =
       api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -334,66 +322,6 @@ export const AmountAndReviewScreen = observer(
                     quote={quote}
                     onCancel={goBack}
                     onConfirm={() => {
-                      const q = quote.selectedQuote?.quote;
-
-                      if (q) {
-                        const variants =
-                          direction === "deposit"
-                            ? Object.keys(fromAsset.supportedVariants)
-                            : counterpartySupportedAssetsByChainId[
-                                toAsset.chainId
-                              ].map(({ address }) => address);
-
-                        /** If there's multiple variants, it's only recommended if
-                         * the selected variant is the first one in the sorted list.
-                         * If there's not multiple variants, it automatically is recommended.
-                         * This allows us to more easily isolate transfers where
-                         * the user optend out of the default flow by selecting
-                         * an unconventional/alt variant.
-                         */
-                        const isRecommendedVariant =
-                          variants.length > 1
-                            ? toAsset.address === variants[0]
-                            : true;
-
-                        const walletName =
-                          direction === "deposit"
-                            ? fromWalletName
-                            : toWalletName;
-
-                        const networkName =
-                          direction === "deposit"
-                            ? fromChain.chainName
-                            : toChain.chainName;
-
-                        let valueUsd = q.input.fiatValue
-                          ? Number(q.input.fiatValue.toDec().toString())
-                          : 0;
-                        // Protect our data from outliers
-                        // Perhaps from upstream issues with price data providers
-                        if (
-                          isNaN(valueUsd) ||
-                          valueUsd > OUTLIER_USD_VALUE_THRESHOLD
-                        ) {
-                          valueUsd = 0;
-                        }
-
-                        logEvent([
-                          EventName.DepositWithdraw.started,
-                          {
-                            amount: Number(q.input.amount.toDec().toString()),
-                            tokenName: q.input.amount.denom,
-                            bridgeProviderName: q.provider.id,
-                            hasMultipleVariants: variants.length > 1,
-                            isRecommendedVariant,
-                            network: networkName,
-                            transferDirection: direction,
-                            valueUsd,
-                            walletName,
-                          },
-                        ]);
-                      }
-
                       quote.onTransfer().catch(noop);
                     }}
                     isManualAddress={!isNil(manualToAddress)}

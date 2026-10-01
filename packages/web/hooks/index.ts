@@ -3,7 +3,6 @@ export * from "./language";
 export * from "./one-click-trading";
 export * from "./staking/use-get-apr";
 export * from "./ui-config";
-export * from "./use-amplitude-analytics";
 export * from "./use-asset-variants-toast";
 export * from "./use-boolean-with-window-event";
 export * from "./use-connect-wallet-modal-redirect";

@@ -38,11 +38,9 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import {
-  useAmplitudeAnalytics,
   useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
@@ -71,7 +69,6 @@ export interface SwapToolProps {
   swapButton?: React.ReactElement;
   initialSendTokenDenom?: string;
   initialOutTokenDenom?: string;
-  page: EventPage;
   forceSwapInPoolId?: string;
   onSwapSuccess?: (params: {
     sendTokenDenom: string;
@@ -89,7 +86,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     swapButton,
     initialSendTokenDenom,
     initialOutTokenDenom,
-    page,
     forceSwapInPoolId,
     onSwapSuccess,
   }) => {
@@ -97,7 +93,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
-    const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
@@ -232,45 +227,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const sendSwapTx = useCallback(() => {
       if (!swapState.inAmountInput.amount) return;
 
-      let valueUsd = Number(
-        swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-      );
-
-      // Protect our data from outliers
-      // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
-        valueUsd = 0;
-      }
-
-      const baseEvent = {
-        fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
-        toToken: swapState.toAsset?.coinDenom,
-        isOnHome: page === "Swap Page",
-        isMultiHop: swapState.quote?.split.some(
-          ({ pools }) => pools.length !== 1
-        ),
-        isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-        valueUsd,
-        feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
-        page,
-        quoteTimeMilliseconds: swapState.quote?.timeMs,
-        swapSource: "swap" as "swap" | "market",
-      };
-      logEvent([EventName.Swap.swapStarted, baseEvent]);
       setIsSendingTx(true);
       swapState
         .sendTradeTokenInTx()
-        .then((result) => {
-          // onFullfill
-          logEvent([
-            EventName.Swap.swapCompleted,
-            {
-              ...baseEvent,
-              isMultiHop: result === "multihop",
-            },
-          ]);
-
+        .then(() => {
           if (swapState.toAsset && swapState.fromAsset) {
             onSwapSuccess?.({
               outTokenDenom: swapState.toAsset.coinMinimalDenom,
@@ -282,25 +242,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         })
         .catch((error) => {
           console.error("swap failed", error);
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
-          }
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
           setIsSendingTx(false);
           onRequestModalClose?.();
           setShowSwapReviewModal(false);
         });
-    }, [
-      swapState,
-      page,
-      logEvent,
-      resetSlippage,
-      onSwapSuccess,
-      onRequestModalClose,
-    ]);
+    }, [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]);
 
     const isSwapToolLoading =
       isWalletLoading ||

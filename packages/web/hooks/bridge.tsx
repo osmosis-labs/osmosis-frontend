@@ -17,12 +17,7 @@ import { Spinner } from "~/components/loaders";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button, IconButton } from "~/components/ui/button";
-import { EventName } from "~/config";
 import { useTranslation, useWindowKeyActions } from "~/hooks";
-import {
-  logAmplitudeEvent,
-  useAmplitudeAnalytics,
-} from "~/hooks/use-amplitude-analytics";
 import { FiatRampKey } from "~/integrations";
 import { ModalBase } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
@@ -133,14 +128,6 @@ export const useBridgeStore = create(
         set({ direction });
       },
       setSelectedAssetDenom: (denom: string | undefined) => {
-        if (!isNil(denom)) {
-          logAmplitudeEvent([
-            EventName.DepositWithdraw.assetSelected,
-            {
-              tokenName: denom,
-            },
-          ]);
-        }
         set({ selectedAssetDenom: denom });
       },
       startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
@@ -153,14 +140,6 @@ export const useBridgeStore = create(
         anyDenom: string | undefined;
         direction: "deposit" | "withdraw" | undefined;
       }) => {
-        if (anyDenom) {
-          logAmplitudeEvent([
-            EventName.DepositWithdraw.assetSelected,
-            {
-              tokenName: anyDenom,
-            },
-          ]);
-        }
         set({
           isVisible: true,
           direction,
@@ -203,7 +182,6 @@ export const useBridgeStore = create(
 /** Provides a globally accessible bridge UX that is initiated via the `useBridge` hook. */
 export const ImmersiveBridge = () => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const transferDirectionSearchParam = useSearchParam("transferDirection");
   const transferAssetSearchParam = useSearchParam("transferAsset");
   const { isReady: isRouterReady } = useRouter();
@@ -495,9 +473,6 @@ export const ImmersiveBridge = () => {
       <FiatOnrampSelectionModal
         isOpen={isFiatOnRampSelectionOpen}
         onRequestClose={() => toggleFiatOnRampSelection(false)}
-        onSelectRamp={() => {
-          logEvent([EventName.ProfileModal.buyTokensClicked]);
-        }}
       />
     </>
   );

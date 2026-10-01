@@ -9,8 +9,7 @@ import { Icon } from "~/components/assets";
 import { SupportedAsset } from "~/components/bridge/use-bridges-supported-assets";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 
@@ -73,7 +72,6 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
       assetsInOsmosis,
       counterpartySupportedAssetsByChainId,
     }) => {
-      const { logEvent } = useAmplitudeAnalytics();
       const { accountStore } = useStore();
       const { t } = useTranslation();
 
@@ -149,7 +147,6 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                         )!;
 
                         const onClick = () => {
-                          logEvent([EventName.DepositWithdraw.variantSelected]);
                           setToAsset({
                             chainType: "cosmos",
                             address: asset.coinMinimalDenom,

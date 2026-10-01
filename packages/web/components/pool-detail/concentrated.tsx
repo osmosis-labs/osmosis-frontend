@@ -17,13 +17,7 @@ import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
 import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useFeatureFlags,
-  useTranslation,
-  useWalletSelect,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -59,7 +53,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -120,19 +113,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const onClickCollectAllRewards = () => {
-      logEvent([EventName.ConcentratedLiquidity.claimAllRewardsClicked]);
       account!.osmosis
         .sendCollectAllPositionsRewardsMsgs(
           claimableSpreadRewardPositions.map(({ id }) => id),
           claimableIncentivePositions.map(({ id }) => id),
-          undefined,
-          (tx) => {
-            if (!tx.code) {
-              logEvent([
-                EventName.ConcentratedLiquidity.claimAllRewardsCompleted,
-              ]);
-            }
-          }
+          undefined
         )
         .catch(console.error);
     };

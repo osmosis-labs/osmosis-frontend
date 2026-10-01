@@ -10,13 +10,8 @@ import {
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import {
-  useAmplitudeAnalytics,
-  useTranslation,
-  useWalletSelect,
-} from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   clearJustCreatedOrderbook,
   useCreateOrderbook,
@@ -46,7 +41,6 @@ export const OrderTypeSelector = ({
   initialBaseDenom = ATOM_BASE_DENOM,
 }: OrderTypeSelectorProps) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { onOpenWalletSelect } = useWalletSelect();
@@ -189,18 +183,6 @@ export const OrderTypeSelector = ({
   const { data: quoteAsset } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: quote,
   });
-
-  useEffect(() => {
-    switch (type) {
-      case "market":
-        logEvent([EventName.LimitOrder.marketOrderSelected]);
-        break;
-      case "limit":
-        logEvent([EventName.LimitOrder.limitOrderSelected]);
-        break;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
 
   // Shared with the quote dropdown's creatable rows so both entry points apply
   // the same fail-closed verdict (loading, refetching, errored or missing
