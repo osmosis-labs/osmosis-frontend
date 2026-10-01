@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "અંતર્ગત અસ્કયામતો",
       "description": "ઓસ્મોસિસ પર {name} ( {denom} ) એ {count} વિવિધ પ્રકારના {name} .",
-      "of": "{denom} માંથી"
+      "of": "{denom} માંથી",
+      "viewBackingHistory": "બેકિંગ ઇતિહાસ જુઓ"
     }
   },
   "osmosisUpdates": {

@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",
-      "of": "из {denom}"
+      "of": "из {denom}",
+      "viewBackingHistory": "Посмотреть историю обеспечения"
     }
   },
   "osmosisUpdates": {

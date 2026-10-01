@@ -1,5 +1,5 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
+import { AppCurrency } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 

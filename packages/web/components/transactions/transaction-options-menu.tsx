@@ -7,8 +7,7 @@ import {
 import classNames from "classnames";
 import Link from "next/link";
 
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 export const TransactionOptionsMenu = ({
   address,
@@ -17,7 +16,6 @@ export const TransactionOptionsMenu = ({
   address: string;
 }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const options = [
     {
@@ -51,16 +49,6 @@ export const TransactionOptionsMenu = ({
               key={id}
               href={href}
               target="_blank"
-              onClick={() => {
-                if (id === "explorer") {
-                  logEvent([
-                    EventName.TransactionsPage.explorerClicked,
-                    {
-                      source: "top",
-                    },
-                  ]);
-                }
-              }}
               className={classNames(
                 "px-4 py-1.5 transition-colors hover:bg-osmoverse-700",
                 {

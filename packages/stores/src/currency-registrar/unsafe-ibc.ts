@@ -1,4 +1,3 @@
-import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type {
   AppCurrency,
@@ -7,6 +6,7 @@ import type {
   CosmosCounterparty,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
+import { Currency, IBCCurrency } from "@osmosis-labs/unit";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID

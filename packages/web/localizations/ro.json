@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",
-      "of": "din {denom}"
+      "of": "din {denom}",
+      "viewBackingHistory": "Vezi istoricul acoperirii"
     }
   },
   "osmosisUpdates": {

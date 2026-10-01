@@ -39,10 +39,8 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { SwapToolProps } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
-import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
-  useAmplitudeAnalytics,
   useAssetInfoConfig,
   useFeatureFlags,
   useNavBar,
@@ -116,17 +114,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
             ? "uosmo"
             : USDC_BASE_DENOM,
         initialOutTokenDenom: asset.coinMinimalDenom,
-        page: "Token Info Page",
       }),
       [asset.coinMinimalDenom]
     );
-    useAmplitudeAnalytics({
-      onLoadEvent: [
-        EventName.TokenInfo.pageViewed,
-        { tokenName: router.query.denom as string },
-      ],
-    });
-
     const [ref] = useQueryState("ref");
 
     useNavBar({
@@ -183,7 +173,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
         : USDC_BASE_DENOM;
 
     const tradeToolProps = {
-      page: "Token Info Page" as const,
       swapToolProps,
       setPreviousTrade,
       previousTrade: {
@@ -259,6 +248,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   className="hidden xl:block"
                   title={title ?? asset.coinDenom}
                   denom={asset.coinDenom}
+                  coinMinimalDenom={asset.coinMinimalDenom}
                   contractAddress={asset.contract}
                 />
               ) : null}
@@ -278,6 +268,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   className="xl:hidden"
                   title={title ?? asset.coinDenom}
                   denom={asset.coinDenom}
+                  coinMinimalDenom={asset.coinMinimalDenom}
                   contractAddress={asset.contract}
                 />
               ) : null}

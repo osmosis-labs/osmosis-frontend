@@ -1,6 +1,6 @@
 import { ObservableChainQuery } from "../../chain-query";
 import { StakingPool } from "./types";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../common/kv-store";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { CoinPretty } from "@osmosis-labs/unit";

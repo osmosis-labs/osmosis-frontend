@@ -11,8 +11,7 @@ import { Alert, AlloyedAssetsAlert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
 import { shouldPersistDismissalOnClose } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
@@ -264,7 +263,6 @@ const AlloyedAssetsToast: FunctionComponent<
   closeToast,
 }) => {
   const { isMobile } = useWindowSize();
-  const { logEvent } = useAmplitudeAnalytics();
   // should close toast if screen size changes to mobile while shown
   useEffect(() => {
     if (isMobile) {
@@ -286,8 +284,6 @@ const AlloyedAssetsToast: FunctionComponent<
     if (shouldPersistDismissalOnClose(isDontShowAgainChecked)) {
       dismissGroups(variantGroupKeys);
     }
-
-    logEvent([EventName.ConvertVariants.declineFlow]);
 
     closeToast();
   };

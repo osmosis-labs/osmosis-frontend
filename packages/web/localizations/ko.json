@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",
-      "of": "{denom} 의"
+      "of": "{denom} 의",
+      "viewBackingHistory": "담보 자산 내역 보기"
     }
   },
   "osmosisUpdates": {

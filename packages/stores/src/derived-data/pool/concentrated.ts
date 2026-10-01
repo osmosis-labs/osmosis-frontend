@@ -1,9 +1,9 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   CoinPretty,
   Dec,
   DecUtils,
+  FiatCurrency,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";

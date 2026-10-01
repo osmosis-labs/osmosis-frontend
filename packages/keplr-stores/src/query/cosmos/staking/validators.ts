@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { Validators, Validator } from "./types";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../common/kv-store";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 import { ObservableQuery, QueryResponse } from "../../../common";

@@ -1,4 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback } from "react";
 

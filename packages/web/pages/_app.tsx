@@ -31,7 +31,6 @@ import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
@@ -39,7 +38,6 @@ import {
   useTranslation,
 } from "~/hooks";
 import { ImmersiveBridge } from "~/hooks/bridge";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
@@ -66,8 +64,6 @@ enableStaticRendering(typeof window === "undefined");
 const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  useAmplitudeAnalytics({ init: true });
-
   return (
     <NuqsAdapter>
       <WagmiProvider config={wagmiConfig}>
@@ -139,7 +135,6 @@ const MainLayoutWrapper: FunctionComponent<{
             link: "/stake",
             icon: <Icon id="ticket" className="h-6 w-6" />,
             selectionTest: /\/stake/,
-            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : {
             label: t("menu.stake"),
@@ -147,7 +142,6 @@ const MainLayoutWrapper: FunctionComponent<{
               osmosisWallet?.walletInfo?.stakeUrl ??
               "https://wallet.keplr.app/chains/osmosis",
             icon: <Icon id="ticket" className="h-6 w-6" />,
-            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           },
       {
         label: t("menu.pools"),
@@ -184,7 +178,6 @@ const MainLayoutWrapper: FunctionComponent<{
         label: t("menu.help"),
         link: "https://support.osmosis.zone/",
         icon: <Icon id="help-circle" className="h-6 w-6" />,
-        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
       },
       {
         label: t("menu.vote"),
@@ -192,13 +185,11 @@ const MainLayoutWrapper: FunctionComponent<{
           osmosisWallet?.walletInfo?.governanceUrl ??
           "https://wallet.keplr.app/chains/osmosis?tab=governance",
         icon: <Icon id="vote" className="h-6 w-6" />,
-        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
       },
       {
         label: t("menu.info"),
         link: "https://www.datalenses.zone/chain/osmosis/overview",
         icon: <Icon id="chart" className="h-6 w-6" />,
-        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
       },
       {
         label: t("menu.featureRequests"),

@@ -1,5 +1,4 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { AppCurrency } from "@keplr-wallet/types";
+import { fromBech32 } from "@cosmjs/encoding";
 import {
   IFeeConfig,
   InvalidNumberAmountError,
@@ -11,7 +10,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@osmosis-labs/keplr-stores";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { AppCurrency, Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   action,
   computed,
@@ -310,10 +309,10 @@ export class ObservableCreatePoolConfig {
       .bech32PrefixAccAddr;
 
     try {
-      Bech32Address.validate(
-        this._scalingFactorControllerAddress,
-        bech32Prefix
-      );
+      const { prefix } = fromBech32(this._scalingFactorControllerAddress);
+      if (bech32Prefix && prefix !== bech32Prefix) {
+        throw new Error(`Unexpected bech32 prefix: ${prefix}`);
+      }
     } catch {
       return new InvalidScalingFactorControllerAddress(
         "Invalid scaling factor controller address"

@@ -28,9 +28,7 @@ import { Spinner } from "~/components/loaders";
 import { PrivateText } from "~/components/privacy";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import {
-  useAmplitudeAnalytics,
   useDailyEpochCountdown,
   useFeatureFlags,
   useLockTokenConfig,
@@ -49,8 +47,6 @@ import {
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
-
-const E = EventName.PoolDetail;
 
 export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
   ({ pool }) => {
@@ -126,26 +122,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
 
     const { delegateSharesToValidator } = useSuperfluidPool(bondDurations_);
 
-    // user analytics
-    const { poolName } = useMemo(
-      () => ({
-        poolName: pool.reserveCoins
-          .map((poolAsset) => poolAsset.denom)
-          .join(" / "),
-      }),
-      [pool]
-    );
-    const { logEvent } = useAmplitudeAnalytics({
-      onLoadEvent: [
-        E.pageViewed,
-        {
-          poolId: pool.id,
-          poolName,
-          isSuperfluidPool: isSuperfluid,
-        },
-      ],
-    });
-
     // Manage liquidity + bond LP tokens (modals) state
     const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
     const [showRemoveLiquidityModal, setShowRemoveLiquidityModal] =
@@ -167,73 +143,29 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const superfluidBondDuration = bondDurations.find((duration) =>
       Boolean(duration?.superfluid)
     );
-    const isSuperfluidEnabled =
-      superfluidBondDuration?.superfluid?.delegated?.toDec().isPositive() ||
-      superfluidBondDuration?.superfluid?.undelegating?.toDec().isPositive();
 
     // handle user actions
-    const baseEventInfo = useMemo(
-      () => ({
-        poolId: pool.id,
-        poolName,
-        isSuperfluidPool: isSuperfluid,
-        isStableswapPool: pool.type === "stable",
-      }),
-      [pool, poolName, isSuperfluid]
-    );
-    const onAddLiquidity = useCallback(
-      (result: Promise<void>) => {
-        const poolInfo = {
-          ...baseEventInfo,
-          isSuperfluidEnabled,
-        };
-
-        logEvent([E.addLiquidityStarted, poolInfo]);
-
-        result
-          .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
-          .catch(console.error)
-          .finally(() => setShowAddLiquidityModal(false));
-      },
-      [baseEventInfo, isSuperfluidEnabled, logEvent]
-    );
-    const onRemoveLiquidity = useCallback(
-      (result: Promise<void>) => {
-        const removeLiqInfo = {
-          ...baseEventInfo,
-          isSuperfluidEnabled,
-        };
-
-        logEvent([E.removeLiquidityStarted, removeLiqInfo]);
-
-        result
-          .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
-          .catch(console.error)
-          .finally(() => setShowRemoveLiquidityModal(false));
-      },
-      [baseEventInfo, isSuperfluidEnabled, logEvent]
-    );
+    const onAddLiquidity = useCallback((result: Promise<void>) => {
+      result
+        .catch(console.error)
+        .finally(() => setShowAddLiquidityModal(false));
+    }, []);
+    const onRemoveLiquidity = useCallback((result: Promise<void>) => {
+      result
+        .catch(console.error)
+        .finally(() => setShowRemoveLiquidityModal(false));
+    }, []);
     const onLockToken = useCallback(
       (duration: Duration, electSuperfluid?: boolean) => {
-        const lockInfo = {
-          ...baseEventInfo,
-          isSuperfluidEnabled: Boolean(electSuperfluid),
-          unbondingPeriod: duration.asDays(),
-        };
-
-        logEvent([E.bondingStarted, lockInfo]);
-
         if (electSuperfluid) {
           setShowSuperfluidValidatorsModal(true);
           setShowLockLPTokenModal(false);
           // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
         } else {
-          lockToken(duration)
-            .then(() => logEvent([E.bondingCompleted, lockInfo]))
-            .finally(() => setShowLockLPTokenModal(false));
+          lockToken(duration).finally(() => setShowLockLPTokenModal(false));
         }
       },
-      [baseEventInfo, logEvent, lockToken]
+      [lockToken]
     );
     const onUnlockTokens = useCallback(
       (duration: Duration) => {
@@ -247,43 +179,21 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           return;
         }
 
-        const unlockEvent = {
-          ...baseEventInfo,
-          unbondingPeriod: duration?.asDays(),
-        };
-        logEvent([E.unbondAllStarted, unlockEvent]);
-
-        unlockTokens(locks).then(() => {
-          logEvent([E.unbondAllCompleted, unlockEvent]);
-        });
+        unlockTokens(locks);
       },
-      [bondDurations, baseEventInfo, logEvent, unlockTokens]
+      [bondDurations, unlockTokens]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress: string) => {
         if (!isSuperfluid || !pool.id) return;
 
-        const poolInfo = {
-          ...baseEventInfo,
-          unbondingPeriod: 14,
-          isSuperfluidEnabled,
-        };
-
-        logEvent([E.superfluidStakeStarted, poolInfo]);
-
-        delegateSharesToValidator(pool.id, validatorAddress, lockLPTokensConfig)
-          .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
-          .finally(() => setShowSuperfluidValidatorsModal(false));
+        delegateSharesToValidator(
+          pool.id,
+          validatorAddress,
+          lockLPTokensConfig
+        ).finally(() => setShowSuperfluidValidatorsModal(false));
       },
-      [
-        pool,
-        isSuperfluid,
-        baseEventInfo,
-        isSuperfluidEnabled,
-        logEvent,
-        delegateSharesToValidator,
-        lockLPTokensConfig,
-      ]
+      [pool, isSuperfluid, delegateSharesToValidator, lockLPTokensConfig]
     );
 
     const levelCta = useMemo(() => {
@@ -506,7 +416,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
               variant="ghost"
               className="subtitle2 mx-auto gap-1"
               onClick={() => {
-                logEvent([E.showHidePoolDetails]);
                 setShowPoolDetails(!showPoolDetails);
               }}
             >
@@ -585,9 +494,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 rel="noreferrer"
                 className="text-wosmongton-300 underline"
                 target="_blank"
-                onClick={() => {
-                  logEvent([E.PutYourAssetsToWork.learnMoreClicked]);
-                }}
                 href="https://docs.osmosis.zone/overview/educate/getting-started#bonding-lp-tokens"
               >
                 {t("pool.learnMore")}
@@ -647,10 +553,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                           !userSharePool?.availableShares?.toDec().isPositive()
                         }
                         onClick={() => {
-                          logEvent([
-                            E.removeLiquidityClicked,
-                            { ...baseEventInfo, isSuperfluidEnabled },
-                          ]);
                           setShowRemoveLiquidityModal(true);
                         }}
                       >
@@ -663,10 +565,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                             "bg-gradient-positive text-osmoverse-1000"
                         )}
                         onClick={() => {
-                          logEvent([
-                            E.addLiquidityClicked,
-                            { ...baseEventInfo, isSuperfluidEnabled },
-                          ]);
                           setShowAddLiquidityModal(true);
                         }}
                       >
@@ -766,7 +664,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         }
                         loadingText={t("pool.bondShares")}
                         onClick={() => {
-                          logEvent([E.bondSharesClicked, baseEventInfo]);
                           setShowLockLPTokenModal(true);
                         }}
                       >
@@ -791,34 +688,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       key={bondDuration.duration.asMilliseconds()}
                       {...bondDuration}
                       onUnbond={() => {
-                        logEvent([
-                          E.unbondClicked,
-                          {
-                            ...baseEventInfo,
-                            unbondingPeriod: bondDuration.duration.asDays(),
-                          },
-                        ]);
                         onUnlockTokens(bondDuration.duration);
                       }}
-                      onToggleDetails={(nextValue) => {
-                        if (nextValue)
-                          logEvent([
-                            E.cardDetailsExpanded,
-                            {
-                              ...baseEventInfo,
-                              unbondingPeriod: bondDuration.duration.asDays(),
-                            },
-                          ]);
-                      }}
                       onGoSuperfluid={() => {
-                        logEvent([
-                          E.goSuperfluidClicked,
-                          {
-                            ...baseEventInfo,
-                            unbondingPeriod: bondDuration.duration.asDays(),
-                            isSuperfluidEnabled,
-                          },
-                        ]);
                         setShowSuperfluidValidatorsModal(true);
                       }}
                       splashImageSrc={

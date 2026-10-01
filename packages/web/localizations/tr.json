@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",
-      "of": "{denom}"
+      "of": "{denom}",
+      "viewBackingHistory": "Teminat geçmişini görüntüle"
     }
   },
   "osmosisUpdates": {

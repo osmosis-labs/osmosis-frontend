@@ -8,8 +8,7 @@ import { TransactionSwapRow } from "~/components/transactions/transaction-types/
 import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
 import { Skeleton } from "~/components/ui/skeleton";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 const ACTIVITY_LIMIT = 5;
@@ -30,7 +29,6 @@ const RecentActivitySkeleton = () => {
 // v1 includes top 5 transactions from transaction history
 export const RecentActivity: FunctionComponent = observer(() => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const { transactions, isLoading } = useTransactionHistory();
 
@@ -94,19 +92,6 @@ export const RecentActivity: FunctionComponent = observer(() => {
                   hash={transaction.hash}
                   isSelected={isSelected}
                   onClick={() => {
-                    // TODO - once there are more transaction types, we can add more event names
-                    logEvent([
-                      EventName.TransactionsPage.swapClicked,
-                      {
-                        tokenIn:
-                          transaction.metadata[0].value[0].txInfo.tokenIn.token
-                            .denom,
-                        tokenOut:
-                          transaction.metadata[0].value[0].txInfo.tokenOut.token
-                            .denom,
-                      },
-                    ]);
-
                     setSelectedTransactionHash(transaction.hash);
 
                     // delay to ensure the slide over transitions smoothly
@@ -127,17 +112,6 @@ export const RecentActivity: FunctionComponent = observer(() => {
                   size="sm"
                   transaction={transaction}
                   onClick={() => {
-                    logEvent([
-                      EventName.TransactionsPage.transferClicked,
-                      {
-                        transferDirection: transaction.direction,
-                        fromToken: transaction.fromAsset.denom,
-                        toToken: transaction.toAsset.denom,
-                        fromChainId: transaction.fromChain.chainId,
-                        toChainId: transaction.toChain.chainId,
-                      },
-                    ]);
-
                     setSelectedTransactionHash(transaction.sendTxHash);
 
                     // delay to ensure the slide over transitions smoothly

@@ -1,5 +1,4 @@
-import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
-import { CoinPretty } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, IBCCurrency } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";

@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/keplr-hooks",
   "version": "0.10.24-ibc.go.v7.hot.fix",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "chainapsis",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/math#readme",
   "repository": {
@@ -26,8 +27,8 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "mobx": "^6.1.7"
   },

@@ -4,8 +4,6 @@ import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/store
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -19,7 +17,6 @@ export function useRemoveConcentratedLiquidityConfig(
   removeLiquidity: () => Promise<void>;
 } {
   const { accountStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -58,15 +55,6 @@ export function useRemoveConcentratedLiquidityConfig(
             return Promise.reject("No account");
           }
 
-          logEvent([
-            EventName.ConcentratedLiquidity.removeLiquidityClicked,
-            {
-              liquidityUSD: Number(liquidity.toString()),
-              poolId,
-              positionId: position.id,
-            },
-          ]);
-
           account.osmosis
             .sendWithdrawConcentratedLiquidityPositionMsg(
               position.id,
@@ -76,16 +64,6 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.rawLog);
                 } else {
-                  logEvent([
-                    EventName.ConcentratedLiquidity.removeLiquidityCompleted,
-                    {
-                      liquidityUSD: Number(liquidity.toString()),
-                      poolId,
-                      positionId: position.id,
-                      percentage: config.percentage.toString(),
-                    },
-                  ]);
-
                   // refresh tick data
                   apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
                     .invalidate({ poolId })
@@ -98,15 +76,7 @@ export function useRemoveConcentratedLiquidityConfig(
           reject(e);
         }
       }),
-    [
-      config.effectiveLiquidity,
-      config.percentage,
-      account,
-      logEvent,
-      poolId,
-      position.id,
-      apiUtils,
-    ]
+    [config.effectiveLiquidity, account, poolId, position.id, apiUtils]
   );
 
   return { config, removeLiquidity };

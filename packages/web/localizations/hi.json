@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",
-      "of": "{denom} का"
+      "of": "{denom} का",
+      "viewBackingHistory": "बैकिंग इतिहास देखें"
     }
   },
   "osmosisUpdates": {

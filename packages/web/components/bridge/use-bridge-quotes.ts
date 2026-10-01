@@ -28,7 +28,6 @@ import {
   deriveMemoFlags,
   LossFigures,
   needsAcknowledgement,
-  normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
@@ -405,12 +404,12 @@ export const useBridgeQuotes = ({
               (fee) => fee.amount.maxDecimals(8)
             );
 
-            // Nomic, whose quotes bundle an Osmosis swap, reports price impact
-            // as a negative fraction, Squid as positive.
-            // Normalize to magnitude so the gate comparison and the re-arm
-            // math work regardless of the provider's sign convention.
+            // Nomic reports price impact as a negative fraction, Squid as
+            // positive. The high-impact gate and the acknowledgement re-arm
+            // check assume larger = worse, so compare magnitudes; a negative
+            // figure would silently never trip the gate.
             const priceImpact = new RatePretty(
-              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
+              new Dec(expectedOutput.priceImpact).abs()
             );
 
             // Handle cases where fiat values might be undefined

@@ -1,11 +1,10 @@
-import type { ChainInfo as BaseChainInfo } from "@keplr-wallet/types";
-
 import type {
   AppCurrency,
   FeeCurrency,
   MinimalAsset,
   StakeCurrency,
 } from "./asset-types";
+import type { KeplrChainInfo as BaseChainInfo } from "./keplr-chain-info";
 
 export interface ChainList {
   zone: string;
@@ -46,7 +45,6 @@ export interface Chain {
   staking?: {
     staking_tokens: StakeCurrency[];
   };
-  keplrChain?: ChainInfoWithExplorer;
 }
 
 interface Bech32Config {

@@ -1,7 +1,7 @@
-import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   HasMapStore,
+  KVStore,
   ObservableChainQuery,
 } from "@osmosis-labs/keplr-stores";
 import { Dec } from "@osmosis-labs/unit";

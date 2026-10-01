@@ -1,10 +1,9 @@
-import { Currency } from "@keplr-wallet/types";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Currency, Dec, RatePretty } from "@osmosis-labs/unit";
 import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
@@ -37,8 +36,7 @@ import { Tooltip } from "~/components/tooltip";
 import { StakeOrEdit } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
@@ -116,8 +114,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       // i18n
       const { t } = useTranslation();
-
-      const { logEvent } = useAmplitudeAnalytics();
 
       const [globalFilter, setGlobalFilter] = useState("");
 
@@ -476,20 +472,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const handleSetSquadClick = useCallback(async () => {
         // TODO disable cases for button, disable if none selected, if weights and list is same
 
-        const validatorNames = Object.keys(rowSelection).map((rowId) =>
-          table.getRow(rowId).getValue("validatorName")
-        );
-
         const operatorAddresses = Object.keys(rowSelection).map(
           (rowId) => table.getRow(rowId).original.operatorAddress
         );
-
-        const numberOfValidators = Object.keys(rowSelection).length;
-
-        logEvent([
-          EventName.Stake.selectSquadAndStakeClicked,
-          { numberOfValidators, validatorNames },
-        ]);
 
         // throw or return
         if (!account) return;
@@ -510,15 +495,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             onRequestClose
           );
         }
-      }, [
-        logEvent,
-        rowSelection,
-        table,
-        account,
-        onRequestClose,
-        coin,
-        action,
-      ]);
+      }, [rowSelection, table, account, onRequestClose, coin, action]);
 
       const { rows } = table.getRowModel();
 

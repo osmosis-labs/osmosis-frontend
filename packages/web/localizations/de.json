@@ -1209,7 +1209,8 @@
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",
-      "of": "von {denom}"
+      "of": "von {denom}",
+      "viewBackingHistory": "Verlauf der Deckung ansehen"
     }
   },
   "osmosisUpdates": {
