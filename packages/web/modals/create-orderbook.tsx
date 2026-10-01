@@ -22,6 +22,13 @@ interface CreateOrderbookModalProps extends ModalBaseProps {
   acknowledgeFee: boolean;
   onAcknowledgeFee: (value: boolean) => void;
   onConfirm: () => void;
+  /** The chain's creation fee, formatted; the generic pool-creation amount is
+   *  shown until it loads (confirm stays disabled meanwhile). */
+  feeLabel?: string;
+  /** Data the confirm depends on (prices, fee, balance) is still loading. */
+  isConfirmPending?: boolean;
+  /** Why creation is blocked for this pair, shown instead of confirming. */
+  blockedReason?: string;
 }
 
 export const CreateOrderbookModal: FunctionComponent<
@@ -38,6 +45,9 @@ export const CreateOrderbookModal: FunctionComponent<
   acknowledgeFee,
   onAcknowledgeFee,
   onConfirm,
+  feeLabel,
+  isConfirmPending = false,
+  blockedReason,
   ...modalProps
 }) => {
   const { t } = useTranslation();
@@ -94,18 +104,22 @@ export const CreateOrderbookModal: FunctionComponent<
               htmlFor="acknowledge-orderbook-fee"
               className="body2 cursor-pointer text-osmoverse-200"
             >
-              {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
+              {t("pools.createPool.undersandCost", {
+                POOL_CREATION_FEE: feeLabel ?? POOL_CREATION_FEE,
+              })}
             </label>
           </div>
         </div>
-        {error && (
-          <p className="body2 break-words text-center text-rust-400">{error}</p>
+        {(error ?? blockedReason) && (
+          <p className="body2 break-words text-center text-rust-400">
+            {error ?? blockedReason}
+          </p>
         )}
         <div className="flex flex-col gap-3">
           <Button
             isLoading={isCreating}
             loadingText={<h6>{t("assets.transfer.loading")}</h6>}
-            disabled={!acknowledgeFee}
+            disabled={!acknowledgeFee || isConfirmPending || !!blockedReason}
             onClick={onConfirm}
           >
             <h6>{t("limitOrders.createOrderbook")}</h6>

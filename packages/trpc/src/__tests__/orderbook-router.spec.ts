@@ -7,19 +7,27 @@ import {
 } from "..";
 import { orderbookRouter } from "../orderbook-router";
 
+let mockIsTestnet = false;
+
 jest.mock("@osmosis-labs/server", () => {
   const actual = jest.requireActual("@osmosis-labs/server");
-  return {
+  const mocked = {
     ...actual,
     getOrderbookPools: jest.fn(),
     queryTx: jest.fn(),
   };
+  // Defined separately: a getter inside the spread literal compiles to
+  // Object.assign, which reads it once instead of on every access.
+  Object.defineProperty(mocked, "IS_TESTNET", { get: () => mockIsTestnet });
+  return mocked;
 });
 
 const mockedGetOrderbookPools = jest.mocked(getOrderbookPools);
 const mockedQueryTx = jest.mocked(queryTx);
 
-const BASE_DENOM = "uatom";
+// ATOM
+const BASE_DENOM =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 const QUOTE_DENOM =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 const OTHER_DENOM = "uosmo";
@@ -97,7 +105,9 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
     expect(result).toEqual({ orderbookExists: true, endpointFunctional: true });
   });
 
-  it("returns orderbookExists: false and endpointFunctional: true when pools list is empty", async () => {
+  it("treats an empty pools list as non-functional on mainnet", async () => {
+    // SQS serves [] before ingest completes; reading that as "no orderbook
+    // for any pair" would offer a paid duplicate creation everywhere.
     mockedGetOrderbookPools.mockResolvedValue([]);
 
     const caller = makeCaller();
@@ -108,8 +118,28 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
 
     expect(result).toEqual({
       orderbookExists: false,
-      endpointFunctional: true,
+      endpointFunctional: false,
     });
+  });
+
+  it("treats an empty pools list as functional on testnet", async () => {
+    mockIsTestnet = true;
+    try {
+      mockedGetOrderbookPools.mockResolvedValue([]);
+
+      const caller = makeCaller();
+      const result = await caller.orderbooks.verifyOrderbookCreation({
+        baseDenom: BASE_DENOM,
+        quoteDenom: QUOTE_DENOM,
+      });
+
+      expect(result).toEqual({
+        orderbookExists: false,
+        endpointFunctional: true,
+      });
+    } finally {
+      mockIsTestnet = false;
+    }
   });
 });
 

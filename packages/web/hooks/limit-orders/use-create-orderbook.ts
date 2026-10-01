@@ -253,6 +253,23 @@ async function withPairCreationLock<T>(
 }
 
 /**
+ * Whether a broadcast POST failure leaves it unknown if the node accepted the
+ * tx: no response at all (network error, timeout) or a 5xx from the broadcast
+ * proxy, which can come after the node already accepted it. A 4xx is the proxy
+ * or node refusing the request, and a CheckTx rejection is thrown as a
+ * BroadcastTxError, both of which prove nothing entered the mempool.
+ */
+function isAmbiguousBroadcastFailure(e: unknown): boolean {
+  const err = e as {
+    isAxiosError?: boolean;
+    response?: { status?: number };
+  } | null;
+  if (!err?.isAxiosError) return false;
+  const status = err.response?.status;
+  return status === undefined || status >= 500;
+}
+
+/**
  * Hook to create a new orderbook pool for a given base/quote denom pair.
  * Sends a MsgCreateCosmWasmPool with the canonical orderbook code ID.
  * After success, invalidates the canonical orderbook pools cache so the
@@ -397,6 +414,9 @@ export function useCreateOrderbook({
 
       let broadcastAccepted = false;
       let broadcastedTxHash: string | undefined;
+      // Hash of the signed tx, known once onSign's checks pass and before the
+      // POST; the handle for reconciling an ambiguous broadcast failure.
+      let signedTxHash: string | undefined;
       let existsDiscoveredPreBroadcast = false;
       let deliveredCode: number | undefined;
       let deliveredLog: string | undefined;
@@ -413,7 +433,12 @@ export function useCreateOrderbook({
             fresh: true,
           });
         if (!verification.endpointFunctional) {
-          throw new Error(t("errors.uhOhSomethingWentWrong"));
+          // Nothing was broadcast, so skip the account store's global
+          // onBroadcastFailed handlers (a "transaction failed" toast here
+          // would describe a tx that never existed).
+          throw new AccountStoreNoBroadcastErrorEvent(
+            t("errors.uhOhSomethingWentWrong")
+          );
         }
         if (verification.orderbookExists) {
           // Someone else already created this pair: the goal state is
@@ -461,13 +486,14 @@ export function useCreateOrderbook({
           undefined,
           undefined,
           {
-            onSign: async () => {
+            onSign: async (txHash) => {
               // The wallet approval window is unbounded and the endpoint
               // probe adds seconds more, so the early check can be
               // arbitrarily stale. This callback runs immediately before the
               // broadcast POST (nothing else awaits between them); a throw
               // here discards the signed tx without broadcasting it.
               await assertPairStillAbsent();
+              signedTxHash = Buffer.from(txHash).toString("hex");
             },
             onBroadcasted: (txHash) => {
               // CheckTx accepted: the tx is in the mempool and may land even
@@ -515,6 +541,23 @@ export function useCreateOrderbook({
           throw new Error(deliveredLog || t("errors.uhOhSomethingWentWrong"));
         }
       } catch (e) {
+        if (
+          !broadcastAccepted &&
+          signedTxHash &&
+          isAmbiguousBroadcastFailure(e)
+        ) {
+          // The POST failed in a way that does not prove the node rejected
+          // the tx (timeout, 5xx after acceptance). Treat it as accepted:
+          // releasing the pair here would let a retry sign a second paid
+          // creation with a fresh sequence. The signed hash goes through the
+          // same reconcile-by-hash path as a traced broadcast.
+          broadcastAccepted = true;
+          broadcastedTxHash = signedTxHash;
+          markOrderbookJustCreated(baseDenom, quoteDenom, "broadcasted", {
+            owner: attemptOwner,
+            txHash: signedTxHash,
+          });
+        }
         if (existsDiscoveredPreBroadcast) {
           // The pair exists onchain (created by someone else while this
           // attempt was underway): the goal state is reached without
@@ -566,10 +609,15 @@ export function useCreateOrderbook({
               // Keep the "broadcasted" mark: delivery is unproven, and later
               // confirms reconcile the persisted hash before releasing it.
             }
+            // Still unproven either way: say so rather than surfacing the raw
+            // transport/tracing error, which reads as a failure that is safe
+            // to retry.
+            console.error("Error creating orderbook pool", e);
+            throw new Error(t("limitOrders.creationAwaitingConfirmation"));
           }
         } else {
           // Nothing was accepted by the chain (verification fail-closed,
-          // sign rejection, or CheckTx failure): roll back this attempt's
+          // sign rejection, a refused POST, or CheckTx failure): roll back this attempt's
           // in-flight mark so the pair can be retried. Owner-scoped, so a
           // concurrent attempt's protection is never stripped.
           clearJustCreatedOrderbookIfOwned(baseDenom, quoteDenom, attemptOwner);
@@ -627,7 +675,11 @@ export function useCreateOrderbook({
           // Reject instead; those marks self-expire, after which a re-confirm
           // broadcasts.
           if (entry.s !== "created" && !exists) {
-            throw new Error(t("errors.uhOhSomethingWentWrong"));
+            throw new Error(
+              entry.s === "broadcasted"
+                ? t("limitOrders.creationAwaitingConfirmation")
+                : t("errors.uhOhSomethingWentWrong")
+            );
           }
           return;
         }

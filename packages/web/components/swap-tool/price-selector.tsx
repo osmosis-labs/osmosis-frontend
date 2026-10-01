@@ -24,14 +24,11 @@ import {
   Breakpoint,
   useDisclosure,
   useTranslation,
-  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import {
-  useCreateOrderbook,
-  wasOrderbookJustCreated,
-} from "~/hooks/limit-orders/use-create-orderbook";
+import { wasOrderbookJustCreated } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookCreationFlow } from "~/hooks/limit-orders/use-orderbook-creation-flow";
 import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
 import { AddFundsModal } from "~/modals/add-funds";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
@@ -177,7 +174,6 @@ export const PriceSelector = memo(
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-    const { onOpenWalletSelect } = useWalletSelect();
 
     const defaultQuotes = useMemo(
       () =>
@@ -305,74 +301,21 @@ export const PriceSelector = memo(
     const [pendingCreateQuote, setPendingCreateQuote] = useState<
       AssetWithBalance | undefined
     >();
-    const [isOrderbookModalOpen, setIsOrderbookModalOpen] = useState(false);
-    const [acknowledgeOrderbookFee, setAcknowledgeOrderbookFee] =
-      useState(false);
 
-    const {
-      createOrderbook,
-      isCreating: isCreatingOrderbook,
-      error: createOrderbookError,
-      resetError: resetCreateOrderbookError,
-    } = useCreateOrderbook({
+    const creationFlow = useOrderbookCreationFlow({
       // Resolved minimal denom, never the raw "from" param: a symbol here
       // would end up inside the instantiate message.
       baseDenom: baseMinimalDenom ?? "",
       quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
-    });
-
-    // Same guard the creatable row used to enable itself, re-evaluated here
-    // for the pair the modal is open for: the row unmounts when the menu
-    // closes, so its verdict must not be the last word before a paid tx.
-    const { isBlocked: isPendingPairRatioBlocked } = useOrderbookRatioGuard({
-      baseDenom: baseMinimalDenom ?? "",
-      quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
-      baseDecimals: baseRawAsset?.decimals,
-      quoteDecimals: pendingCreateQuote?.decimals,
+      onCreated: () => {
+        if (pendingCreateQuote) setQuote(pendingCreateQuote.coinMinimalDenom);
+        setPendingCreateQuote(undefined);
+      },
     });
 
     const handleOpenOrderbookModal = (asset: AssetWithBalance) => {
       setPendingCreateQuote(asset);
-      setIsOrderbookModalOpen(true);
-    };
-
-    const handleCloseOrderbookModal = () => {
-      setIsOrderbookModalOpen(false);
-      setAcknowledgeOrderbookFee(false);
-      // The hook outlives the modal; drop this attempt's failure so the next
-      // open does not show it.
-      resetCreateOrderbookError();
-    };
-
-    const handleOrderbookConfirm = async () => {
-      if (!wallet?.isWalletConnected) {
-        // Mirror the Limit-tab entry point: hand the user to the wallet
-        // selector rather than silently closing the modal.
-        handleCloseOrderbookModal();
-        onOpenWalletSelect({
-          walletOptions: [
-            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
-          ],
-        });
-        return;
-      }
-      // Re-check the ratio guard at confirm time, as the Limit-tab entry
-      // point does: the modal can sit open while prices move or finish
-      // loading, and a blocked verdict must still stop the broadcast. The
-      // row the user reopens then shows the guard's explanation.
-      if (isPendingPairRatioBlocked) {
-        handleCloseOrderbookModal();
-        setPendingCreateQuote(undefined);
-        return;
-      }
-      try {
-        await createOrderbook();
-        if (pendingCreateQuote) setQuote(pendingCreateQuote.coinMinimalDenom);
-        handleCloseOrderbookModal();
-        setPendingCreateQuote(undefined);
-      } catch {
-        // keep modal open on error
-      }
+      creationFlow.open();
     };
 
     return (
@@ -534,8 +477,7 @@ export const PriceSelector = memo(
           from="buy"
         />
         <CreateOrderbookModal
-          isOpen={isOrderbookModalOpen}
-          onRequestClose={handleCloseOrderbookModal}
+          {...creationFlow.modalProps}
           baseDenom={base}
           baseSymbol={baseRawAsset?.symbol ?? base}
           quoteDenom={pendingCreateQuote?.coinMinimalDenom ?? ""}
@@ -547,11 +489,6 @@ export const PriceSelector = memo(
             pendingCreateQuote?.logoURIs?.png ??
             pendingCreateQuote?.logoURIs?.svg
           }
-          isCreating={isCreatingOrderbook}
-          error={createOrderbookError}
-          acknowledgeFee={acknowledgeOrderbookFee}
-          onAcknowledgeFee={setAcknowledgeOrderbookFee}
-          onConfirm={handleOrderbookConfirm}
         />
       </>
     );

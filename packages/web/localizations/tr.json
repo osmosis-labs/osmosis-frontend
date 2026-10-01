@@ -1397,6 +1397,7 @@
     "noOrderbookExists": "{denom} için orderbook yok",
     "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
     "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
+    "creationAwaitingConfirmation": "Bu parite için önceki emir defteri oluşturma işlemi hâlâ zincir üstü onay bekliyor. Birkaç dakika sonra tekrar deneyin.",
     "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
   },
   "tradeDetails": {

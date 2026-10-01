@@ -1397,6 +1397,7 @@
     "noOrderbookExists": "بدون orderbook برای {denom}",
     "clickToCreateOrderbook": "برای ایجاد یک orderbook برای این جفت کلیک کنید.",
     "creationInProgress": "ایجاد دفتر سفارش برای این جفت در برگه دیگری در حال انجام است",
+    "creationAwaitingConfirmation": "ایجاد قبلی دفتر سفارش برای این جفت هنوز در انتظار تأیید روی زنجیره است. چند دقیقه دیگر دوباره تلاش کنید.",
     "createOrderbookDescription": "ایجاد یک orderbook pool امکان ثبت limit orders برای این جفت معاملاتی در Osmosis را فراهم می‌کند."
   },
   "tradeDetails": {

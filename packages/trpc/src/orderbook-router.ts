@@ -8,9 +8,11 @@ import {
   getOrderbookPools,
   getOrderbookPoolsFresh,
   getOrderbookState,
+  IS_TESTNET,
   MappedLimitOrder,
   maybeCachePaginatedItems,
   OrderStatus,
+  queryPoolmanagerParams,
   queryTx,
 } from "@osmosis-labs/server";
 import { Dec, Int } from "@osmosis-labs/unit";
@@ -239,7 +241,11 @@ export const orderbookRouter = createTRPCRouter({
    * Verifies whether an orderbook can be created for a given base/quote pair.
    * Returns:
    *  - `orderbookExists`: true if the canonical list already has this pair.
-   *  - `endpointFunctional`: true if the sidecar endpoint responded without throwing.
+   *  - `endpointFunctional`: true if the sidecar endpoint responded with a
+   *    usable list. On mainnet an empty list counts as non-functional: SQS
+   *    serves `[]` before ingest completes, and treating that as "no orderbook
+   *    for any pair" would offer a paid duplicate creation for every pair.
+   *    Testnet can legitimately have no canonical orderbooks.
    */
   verifyOrderbookCreation: publicProcedure
     .input(
@@ -254,16 +260,15 @@ export const orderbookRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { baseDenom, quoteDenom, fresh } = input;
 
-      let pools: Awaited<ReturnType<typeof getOrderbookPools>> = [];
-      let endpointFunctional = false;
+      let pools: Awaited<ReturnType<typeof getOrderbookPools>>;
       try {
         pools = fresh
           ? await getOrderbookPoolsFresh()
           : await getOrderbookPools();
-        endpointFunctional = true;
       } catch {
         return { orderbookExists: false, endpointFunctional: false };
       }
+      const endpointFunctional = IS_TESTNET || pools.length > 0;
 
       const orderbookExists = pools.some(
         (pool) =>
@@ -273,6 +278,17 @@ export const orderbookRouter = createTRPCRouter({
 
       return { orderbookExists, endpointFunctional };
     }),
+  /**
+   * The chain's pool creation fee (charged by MsgCreateCosmWasmPool), as
+   * minimal-denom coins. Read live so the confirm modal shows and prechecks
+   * what the chain will actually charge rather than a hardcoded amount.
+   */
+  getPoolCreationFee: publicProcedure.query(async ({ ctx }) => {
+    const { params } = await queryPoolmanagerParams({
+      chainList: ctx.chainList,
+    });
+    return params.pool_creation_fee;
+  }),
   /**
    * Delivery status of a broadcast-accepted orderbook-creation tx, straight
    * from the node (`/cosmos/tx/v1beta1/txs/{hash}`) rather than the

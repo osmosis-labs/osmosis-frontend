@@ -1,7 +1,7 @@
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 
 import {
   ATOM_BASE_DENOM,
@@ -11,16 +11,15 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useTranslation, useWalletSelect } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   clearJustCreatedOrderbook,
-  useCreateOrderbook,
   wasOrderbookJustCreated,
 } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookCreationFlow } from "~/hooks/limit-orders/use-orderbook-creation-flow";
 import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 interface UITradeType {
@@ -41,9 +40,6 @@ export const OrderTypeSelector = ({
   initialBaseDenom = ATOM_BASE_DENOM,
 }: OrderTypeSelectorProps) => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const { onOpenWalletSelect } = useWalletSelect();
 
   const [type, setType] = useQueryState(
     "type",
@@ -69,24 +65,26 @@ export const OrderTypeSelector = ({
   // already have one) and would have put the literal symbol into the
   // instantiate message. Unresolvable params stay undefined and creation is
   // not offered (fail closed).
-  const baseMinimalDenom = useMemo(
+  const baseListAsset = useMemo(
     () =>
       getAssetFromAssetList({
         assetLists: AssetLists,
         coinMinimalDenom: base,
         symbol: base,
-      })?.coinMinimalDenom,
+      }),
     [base]
   );
-  const quoteMinimalDenom = useMemo(
+  const quoteListAsset = useMemo(
     () =>
       getAssetFromAssetList({
         assetLists: AssetLists,
         coinMinimalDenom: quote,
         symbol: quote,
-      })?.coinMinimalDenom,
+      }),
     [quote]
   );
+  const baseMinimalDenom = baseListAsset?.coinMinimalDenom;
+  const quoteMinimalDenom = quoteListAsset?.coinMinimalDenom;
 
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
     useOrderbookSelectableDenoms();
@@ -190,8 +188,8 @@ export const OrderTypeSelector = ({
   const { isBlocked: is18DecimalMismatch } = useOrderbookRatioGuard({
     baseDenom: resolvedBase,
     quoteDenom: resolvedQuote,
-    baseDecimals: baseAsset?.coinDecimals,
-    quoteDecimals: quoteAsset?.coinDecimals,
+    baseDecimals: baseListAsset?.decimals,
+    quoteDecimals: quoteListAsset?.decimals,
   });
 
   // Verify whether this is a real missing orderbook vs. an endpoint failure.
@@ -257,62 +255,23 @@ export const OrderTypeSelector = ({
     // duplicate pool-creation tx.
     !wasOrderbookJustCreated(resolvedBase, resolvedQuote);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [acknowledgeFee, setAcknowledgeFee] = useState(false);
   // Prevents the !hasOrderbook reset effect from firing immediately after
   // creation while the getPools cache is still catching up. Holds the pair
   // it was created for — a plain boolean would leak the suppression onto
   // other bases if the user switches tokens before the cache refreshes.
   const justCreatedPairRef = useRef<string | null>(null);
 
-  const {
-    createOrderbook,
-    isCreating,
-    error: createError,
-    resetError: resetCreateError,
-  } = useCreateOrderbook({
+  const creationFlow = useOrderbookCreationFlow({
     baseDenom: resolvedBase,
     quoteDenom: resolvedQuote,
-  });
-
-  // Every way the modal closes (dismiss, wallet handoff, guard block, success)
-  // goes through here so the acknowledgement and any previous attempt's error
-  // never carry over to the next open.
-  const closeCreateModal = () => {
-    setIsModalOpen(false);
-    setAcknowledgeFee(false);
-    resetCreateError();
-  };
-
-  const handleConfirmCreate = async () => {
-    if (!account?.isWalletConnected) {
-      closeCreateModal();
-      onOpenWalletSelect({
-        walletOptions: [
-          { walletType: "cosmos", chainId: accountStore.osmosisChainId },
-        ],
-      });
-      return;
-    }
-    // Re-check the ratio guard at confirm time: the modal can sit open while
-    // asset/price data finishes loading, and a guard verdict that arrives
-    // after the click must still block the broadcast.
-    if (isPairMetadataLoading || is18DecimalMismatch) {
-      closeCreateModal();
-      return;
-    }
-    try {
-      await createOrderbook();
-      closeCreateModal();
+    onCreated: () => {
       // Optimistically activate limit tab — orderbook exists on-chain even if
       // SQS / server cache hasn't caught up yet. The ref suppresses the
       // !hasOrderbook reset effect until the cache refreshes.
       justCreatedPairRef.current = `${resolvedBase}:${resolvedQuote}`;
       setType("limit");
-    } catch {
-      // createOrderbook sets error state internally; keep modal open so user sees it
-    }
-  };
+    },
+  });
 
   return (
     <>
@@ -326,7 +285,7 @@ export const OrderTypeSelector = ({
               type="button"
               onClick={() => {
                 if (isLimitWithCreate) {
-                  setIsModalOpen(true);
+                  creationFlow.open();
                 } else {
                   selectType(id);
                 }
@@ -389,19 +348,13 @@ export const OrderTypeSelector = ({
       </div>
 
       <CreateOrderbookModal
-        isOpen={isModalOpen}
-        onRequestClose={closeCreateModal}
+        {...creationFlow.modalProps}
         baseDenom={base}
         baseSymbol={baseAsset?.coinDenom ?? base}
         quoteDenom={quote}
         quoteSymbol={quoteAsset?.coinDenom ?? quote}
         baseCoinImageUrl={baseAsset?.coinImageUrl}
         quoteCoinImageUrl={quoteAsset?.coinImageUrl}
-        isCreating={isCreating}
-        error={createError}
-        acknowledgeFee={acknowledgeFee}
-        onAcknowledgeFee={setAcknowledgeFee}
-        onConfirm={handleConfirmCreate}
       />
     </>
   );

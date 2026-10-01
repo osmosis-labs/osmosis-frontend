@@ -1397,6 +1397,7 @@
     "noOrderbookExists": "Kein Orderbuch für {denom}",
     "clickToCreateOrderbook": "Klicken, um ein Orderbuch für dieses Paar zu erstellen.",
     "creationInProgress": "Für dieses Paar läuft bereits eine Orderbuch-Erstellung in einem anderen Tab",
+    "creationAwaitingConfirmation": "Eine frühere Orderbuch-Erstellung für dieses Paar wartet noch auf die Bestätigung onchain. Versuche es in ein paar Minuten erneut.",
     "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren."
   },
   "tradeDetails": {

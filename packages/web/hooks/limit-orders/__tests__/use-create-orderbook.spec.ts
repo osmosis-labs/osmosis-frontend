@@ -75,12 +75,17 @@ jest.mock("@osmosis-labs/tx", () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
-const BASE_DENOM = "uatom";
+// ATOM
+const BASE_DENOM =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+/** A real-shaped (32-byte) tx hash: the hook persists and reconciles it. */
+const SIGNED_TX_HASH = new Uint8Array(32).fill(0xcd);
+const SIGNED_TX_HASH_HEX = "cd".repeat(32);
 const QUOTE_DENOM =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 
 type OnTxEvents = {
-  onSign?: () => Promise<void> | void;
+  onSign?: (txHash: Uint8Array) => Promise<void> | void;
   onBroadcasted?: (txHash: Uint8Array) => void;
   onFulfill?: (tx: { code: number; rawLog?: string }) => Promise<void> | void;
 };
@@ -99,8 +104,8 @@ function mockBroadcastSuccess() {
     ) => {
       // Mirrors the real pipeline: onSign after wallet approval (a throw here
       // aborts the broadcast), then acceptance, then delivery.
-      await onTxEvents.onSign?.();
-      onTxEvents.onBroadcasted?.(new Uint8Array());
+      await onTxEvents.onSign?.(SIGNED_TX_HASH);
+      onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
       await onTxEvents.onFulfill?.({ code: 0 });
     }
   );
@@ -324,6 +329,9 @@ describe("useCreateOrderbook", () => {
       });
 
       expect(thrown).toBeInstanceOf(Error);
+      // Nothing was broadcast, so the store's global broadcast-failed
+      // handlers (a "transaction failed" toast) must be skipped.
+      expect((thrown as Error).name).toBe("AccountStoreNoBroadcastErrorEvent");
       expect(mockSignAndBroadcast).not.toHaveBeenCalled();
     });
   });
@@ -448,8 +456,8 @@ describe("useCreateOrderbook", () => {
           _signOpts: unknown,
           onTxEvents: OnTxEvents
         ) => {
-          await onTxEvents.onSign?.();
-          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
           await deliveryGate;
           await onTxEvents.onFulfill?.({ code: 5, rawLog: "out of gas" });
         }
@@ -722,8 +730,8 @@ describe("useCreateOrderbook", () => {
           _signOpts: unknown,
           onTxEvents: OnTxEvents
         ) => {
-          await onTxEvents.onSign?.();
-          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
           await onTxEvents.onFulfill?.({ code: 5, rawLog: "out of gas" });
         }
       );
@@ -767,8 +775,8 @@ describe("useCreateOrderbook", () => {
           _signOpts: unknown,
           onTxEvents: OnTxEvents
         ) => {
-          await onTxEvents.onSign?.();
-          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
           throw new Error("tx tracing failed");
         }
       );
@@ -805,8 +813,8 @@ describe("useCreateOrderbook", () => {
           _signOpts: unknown,
           onTxEvents: OnTxEvents
         ) => {
-          await onTxEvents.onSign?.();
-          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
           throw new Error("tx tracing failed");
         }
       );
@@ -832,8 +840,70 @@ describe("useCreateOrderbook", () => {
         });
       });
       expect(rethrown).toBeInstanceOf(Error);
+      expect((rethrown as Error).message).toBe(
+        "limitOrders.creationAwaitingConfirmation"
+      );
       expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
     }, 30_000); // both the reconcile and the refresh-only retry loops sleep between attempts
+
+    /** CheckTx accepted, then the tracer fails before delivery is observed. */
+    const mockTraceFailureAfterAcceptance = () =>
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
+          throw new Error("tx tracing failed");
+        }
+      );
+
+    it("reconciles the in-flight attempt by tx hash: delivered settles as success", async () => {
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      mockFetchTxStatus.mockReset().mockResolvedValue({ status: "delivered" });
+      mockTraceFailureAfterAcceptance();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+
+      expect(mockFetchTxStatus).toHaveBeenCalledWith({
+        txHash: SIGNED_TX_HASH_HEX,
+      });
+      expect(result.current.error).toBeUndefined();
+      expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(true);
+    }, 15_000);
+
+    it("reconciles the in-flight attempt by tx hash: failed releases the pair", async () => {
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      mockFetchTxStatus
+        .mockReset()
+        .mockResolvedValue({ status: "failed", code: 5, rawLog: "out of gas" });
+      mockTraceFailureAfterAcceptance();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => {});
+      });
+      expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(false);
+
+      // Provably no pool: a retry broadcasts again.
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => {});
+      });
+      expect(mockSignAndBroadcast).toHaveBeenCalledTimes(2);
+    }, 15_000);
 
     it("still invalidates caches via the reconcile after a trace failure", async () => {
       mockSignAndBroadcast.mockImplementation(
@@ -846,8 +916,8 @@ describe("useCreateOrderbook", () => {
           _signOpts: unknown,
           onTxEvents: OnTxEvents
         ) => {
-          await onTxEvents.onSign?.();
-          onTxEvents.onBroadcasted?.(new Uint8Array());
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
           throw new Error("tx tracing failed");
         }
       );
@@ -860,6 +930,96 @@ describe("useCreateOrderbook", () => {
         await result.current.createOrderbook();
       });
       expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("createOrderbook — ambiguous broadcast failure", () => {
+    /** The POST fails after onSign passed: the node may or may not have the tx. */
+    const mockPostFailure = (error: unknown) =>
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          throw error;
+        }
+      );
+    const axiosError = (status?: number) =>
+      Object.assign(new Error("Request failed"), {
+        isAxiosError: true,
+        response: status === undefined ? undefined : { status },
+      });
+
+    it.each([
+      ["a timeout (no response)", undefined],
+      ["a 5xx from the broadcast proxy", 502],
+    ])(
+      "keeps the pair protected under the signed hash after %s",
+      async (_label, status) => {
+        mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+        mockPostFailure(axiosError(status));
+
+        const { result } = renderHook(() =>
+          useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+        );
+        let thrown: unknown;
+        await act(async () => {
+          await result.current.createOrderbook().catch((e) => {
+            thrown = e;
+          });
+        });
+
+        // Reconciled against the node using the hash known before the POST.
+        expect(mockFetchTxStatus).toHaveBeenCalledWith({
+          txHash: SIGNED_TX_HASH_HEX,
+        });
+        expect((thrown as Error).message).toBe(
+          "limitOrders.creationAwaitingConfirmation"
+        );
+        expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(true);
+
+        // A re-confirm must not sign a second paid creation.
+        await act(async () => {
+          await result.current.createOrderbook().catch(() => {});
+        });
+        expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+      },
+      30_000
+    );
+
+    it("settles as success when the ambiguously failed tx turns out delivered", async () => {
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      mockFetchTxStatus.mockReset().mockResolvedValue({ status: "delivered" });
+      mockPostFailure(axiosError());
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+      expect(result.current.error).toBeUndefined();
+    }, 15_000);
+
+    it("releases the pair when the proxy refuses the request (4xx)", async () => {
+      // A 4xx is the proxy or node refusing the tx: nothing entered the
+      // mempool, so the pair is released and a retry may broadcast.
+      mockPostFailure(axiosError(400));
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => {});
+      });
+      expect(mockFetchTxStatus).not.toHaveBeenCalled();
+      expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(false);
     });
   });
 

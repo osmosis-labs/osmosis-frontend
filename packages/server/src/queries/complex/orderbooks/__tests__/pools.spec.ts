@@ -104,4 +104,25 @@ describe("fetchOrderbookPools cache behavior", () => {
     expect(contractAddresses(cached)).toContain("osmo1justmade");
     expect(sidecarModule.queryCanonicalOrderbooks).not.toHaveBeenCalled();
   });
+
+  it("throttles forced-fresh reads so a public caller cannot hammer the sidecar", async () => {
+    // Concurrent fresh reads share one sidecar request.
+    await Promise.all([
+      poolsModule.getOrderbookPoolsFresh(),
+      poolsModule.getOrderbookPoolsFresh(),
+    ]);
+    expect(sidecarModule.queryCanonicalOrderbooks).toHaveBeenCalledTimes(1);
+
+    // A fresh read right after another is served from the entry it wrote.
+    sidecarModule.queryCanonicalOrderbooks.mockResolvedValue(caughtUpList);
+    const throttled = await poolsModule.getOrderbookPoolsFresh();
+    expect(sidecarModule.queryCanonicalOrderbooks).toHaveBeenCalledTimes(1);
+    expect(contractAddresses(throttled)).not.toContain("osmo1justmade");
+
+    // Spaced like the client's post-creation retries, it reads fresh again.
+    jest.advanceTimersByTime(2000);
+    const spaced = await poolsModule.getOrderbookPoolsFresh();
+    expect(sidecarModule.queryCanonicalOrderbooks).toHaveBeenCalledTimes(2);
+    expect(contractAddresses(spaced)).toContain("osmo1justmade");
+  });
 });

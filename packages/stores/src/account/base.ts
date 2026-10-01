@@ -557,7 +557,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
-          onSign?: () => Promise<void> | void;
+          /** Runs immediately before the broadcast POST with the hash of the
+           *  signed tx, which is known before broadcast (sha256 of the tx
+           *  bytes). A throw aborts the broadcast and discards the signed tx. */
+          onSign?: (txHash: Uint8Array) => Promise<void> | void;
         },
     memoFlags?: TxFeMemoFlags,
     /** Expiry-bind a direct-signed transaction; see {@link sign}. */
@@ -588,7 +591,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
-      let onSign: (() => Promise<void> | void) | undefined;
+      let onSign: ((txHash: Uint8Array) => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -680,7 +683,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onSign) {
-        await onSign();
+        // Callers persisting in-flight state (duplicate-creation guards) need
+        // the hash before the POST: if the POST fails ambiguously (timeout,
+        // 5xx after the node accepted), it is the only handle to reconcile.
+        await onSign(Hash.sha256(encodedTx));
       }
 
       const res = await axios.post<{

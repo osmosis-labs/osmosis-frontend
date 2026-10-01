@@ -1,11 +1,21 @@
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { api } from "~/utils/trpc";
 
 /**
- * Price-ratio guard for orderbook creation with an 18-decimal base against a
- * 6-decimal quote: the orderbook contract's tick math needs the base to be
- * worth at least 100 quote units, or orders on the book cannot be priced.
+ * Lowest price per minimal unit (quote minimal units per base minimal unit) a
+ * creatable orderbook may have: 100x headroom over the contract's MIN_TICK
+ * price floor of 1e-12, below which orders on the book cannot be priced.
+ */
+const MIN_PRICE_PER_MINIMAL_UNIT = new Dec("0.0000000001");
+
+/**
+ * Price-ratio guard for orderbook creation when the base has more decimals
+ * than the quote. The book prices in minimal units, so a display price P
+ * becomes P × 10^(quoteDecimals − baseDecimals); with a large decimals gap
+ * (e.g. an 18-decimal base against a 6- or 8-decimal quote) a modestly priced
+ * base falls under the tick floor and the book cannot price orders. For 18/6
+ * this is the base being worth at least 100 quote units.
  *
  * Fails closed: `isBlocked` is true while either price is loading, being
  * refetched in the background, or in an error state, and when a price is
@@ -27,7 +37,12 @@ export function useOrderbookRatioGuard({
   baseDecimals?: number;
   quoteDecimals?: number;
 }) {
-  const is18DecimalBase = baseDecimals === 18 && quoteDecimals === 6;
+  // With equal or fewer base decimals the minimal-unit price is at least the
+  // display price, so only a base with more decimals can fall under the floor.
+  const needsRatioCheck =
+    baseDecimals !== undefined &&
+    quoteDecimals !== undefined &&
+    baseDecimals > quoteDecimals;
 
   const {
     data: basePrice,
@@ -36,7 +51,7 @@ export function useOrderbookRatioGuard({
     isError: isBasePriceError,
   } = api.edge.assets.getAssetPrice.useQuery(
     { coinMinimalDenom: baseDenom },
-    { enabled: is18DecimalBase && !!baseDenom }
+    { enabled: needsRatioCheck && !!baseDenom }
   );
   const {
     data: quotePrice,
@@ -45,21 +60,31 @@ export function useOrderbookRatioGuard({
     isError: isQuotePriceError,
   } = api.edge.assets.getAssetPrice.useQuery(
     { coinMinimalDenom: quoteDenom },
-    { enabled: is18DecimalBase && !!quoteDenom }
+    { enabled: needsRatioCheck && !!quoteDenom }
   );
 
-  const isBlocked =
-    is18DecimalBase &&
-    (isBasePriceLoading ||
-      isQuotePriceLoading ||
-      isBasePriceFetching ||
-      isQuotePriceFetching ||
-      isBasePriceError ||
-      isQuotePriceError ||
-      basePrice === undefined ||
-      quotePrice === undefined ||
-      quotePrice.toDec().isZero() ||
-      basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+  const isSettled =
+    !isBasePriceLoading &&
+    !isQuotePriceLoading &&
+    !isBasePriceFetching &&
+    !isQuotePriceFetching &&
+    !isBasePriceError &&
+    !isQuotePriceError &&
+    basePrice !== undefined &&
+    quotePrice !== undefined;
 
-  return { is18DecimalBase, isBlocked };
+  /** Settled prices put the book under the tick floor (or quote price is 0). */
+  const isRatioTooLow =
+    needsRatioCheck &&
+    isSettled &&
+    (quotePrice.toDec().isZero() ||
+      basePrice
+        .toDec()
+        .quo(quotePrice.toDec())
+        .mul(new Dec(10).pow(new Int(quoteDecimals - baseDecimals)))
+        .lt(MIN_PRICE_PER_MINIMAL_UNIT));
+
+  const isBlocked = needsRatioCheck && (!isSettled || isRatioTooLow);
+
+  return { needsRatioCheck, isBlocked, isRatioTooLow };
 }

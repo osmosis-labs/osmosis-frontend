@@ -68,16 +68,31 @@ describe("useOrderbookRatioGuard", () => {
     mockUseQuery.mockReset();
   });
 
-  it("does not apply to non-18-decimal bases and leaves the price queries disabled", () => {
+  it("does not apply when the base has no more decimals than the quote and leaves the price queries disabled", () => {
     mockPrices({ [BASE]: settled("1"), [QUOTE]: settled("1") });
 
-    const { is18DecimalBase, isBlocked } = render({ baseDecimals: 6 });
+    const { needsRatioCheck, isBlocked } = render({ baseDecimals: 6 });
 
-    expect(is18DecimalBase).toBe(false);
+    expect(needsRatioCheck).toBe(false);
     expect(isBlocked).toBe(false);
     for (const [, options] of mockUseQuery.mock.calls) {
       expect(options.enabled).toBe(false);
     }
+  });
+
+  it("does not apply until both decimals are known", () => {
+    mockPrices({ [BASE]: settled("1"), [QUOTE]: settled("1") });
+    expect(render({ quoteDecimals: undefined }).needsRatioCheck).toBe(false);
+  });
+
+  it("applies to any base with more decimals than the quote, not only 18/6", () => {
+    // 18-decimal base against an 8-decimal quote: the minimal-unit price is
+    // P x 1e-10, so the base must be worth at least 1 quote unit.
+    mockPrices({ [BASE]: settled("0.5"), [QUOTE]: settled("1") });
+    expect(render({ quoteDecimals: 8 }).isBlocked).toBe(true);
+
+    mockPrices({ [BASE]: settled("1"), [QUOTE]: settled("1") });
+    expect(render({ quoteDecimals: 8 }).isBlocked).toBe(false);
   });
 
   it("allows a settled ratio of at least 100 quote units per base", () => {

@@ -6,6 +6,8 @@ import { OrderTypeSelector } from "~/components/swap-tool/order-type-selector";
 
 const HASH =
   "ibc/CE5BFF1D9BADA03BB5CCA5F56939392A761B53A10FBD03B37506669C3218D3B2";
+const ATOM =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 const USDC_NOBLE =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 const ALL_USDC =
@@ -13,6 +15,10 @@ const ALL_USDC =
 
 const mockQueryState: Record<string, string> = {};
 const mockSetters: Record<string, jest.Mock> = {};
+const mockOpenCreation = jest.fn();
+let mockVerification:
+  | { orderbookExists: boolean; endpointFunctional: boolean }
+  | undefined;
 
 jest.mock("nuqs", () => {
   const parser = (defaultValue: unknown) => ({
@@ -36,8 +42,8 @@ jest.mock("nuqs", () => {
 
 jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
   useOrderbookSelectableDenoms: () => ({
+    // Only HASH has an orderbook, and only against USDC.noble; ATOM has none.
     selectableBaseAssets: [{ coinMinimalDenom: HASH }],
-    // HASH only has a USDC.noble-quoted orderbook
     selectableQuoteDenoms: { [HASH]: [{ coinMinimalDenom: USDC_NOBLE }] },
     isLoading: false,
   }),
@@ -45,25 +51,20 @@ jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
 
 jest.mock("~/hooks", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
-  useWalletSelect: () => ({ onOpenWalletSelect: jest.fn() }),
 }));
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: { osmosisChainId: "osmosis-1", getWallet: () => undefined },
-  }),
-}));
-
-// HASH already has an orderbook, so the creation flow never engages here.
 jest.mock("~/hooks/limit-orders/use-create-orderbook", () => ({
-  useCreateOrderbook: () => ({
-    createOrderbook: jest.fn(),
-    isCreating: false,
-    error: undefined,
-    resetError: jest.fn(),
-  }),
   wasOrderbookJustCreated: () => false,
   clearJustCreatedOrderbook: jest.fn(),
+}));
+
+jest.mock("~/hooks/limit-orders/use-orderbook-creation-flow", () => ({
+  useOrderbookCreationFlow: () => ({
+    isOpen: false,
+    open: mockOpenCreation,
+    close: jest.fn(),
+    modalProps: {},
+  }),
 }));
 
 jest.mock("~/hooks/limit-orders/use-orderbook-ratio-guard", () => ({
@@ -78,12 +79,14 @@ jest.mock("~/utils/trpc", () => ({
   api: {
     edge: {
       assets: {
-        getUserAsset: { useQuery: () => ({ data: { coinDenom: "HASH" } }) },
+        getUserAsset: {
+          useQuery: () => ({ data: { coinDenom: "HASH", coinDecimals: 9 } }),
+        },
       },
       orderbooks: {
         verifyOrderbookCreation: {
           useQuery: () => ({
-            data: undefined,
+            data: mockVerification,
             isLoading: false,
             fetchStatus: "idle",
           }),
@@ -103,6 +106,8 @@ describe("OrderTypeSelector", () => {
   beforeEach(() => {
     for (const key of Object.keys(mockQueryState)) delete mockQueryState[key];
     for (const key of Object.keys(mockSetters)) delete mockSetters[key];
+    mockOpenCreation.mockReset();
+    mockVerification = undefined;
     mockQueryState.type = "market";
     mockQueryState.from = HASH;
   });
@@ -132,6 +137,18 @@ describe("OrderTypeSelector", () => {
     expect(mockSetters.type).toHaveBeenCalledWith("limit");
   });
 
+  it("keeps a supported quote given in symbol form (?quote=USDC.noble)", () => {
+    // The URL may carry a symbol: it must resolve to the supported minimal
+    // denom rather than look unsupported and be replaced.
+    mockQueryState.quote = "USDC.noble";
+    render(<OrderTypeSelector initialBaseDenom={HASH} />);
+
+    fireEvent.click(screen.getByText("limitOrders.limit"));
+
+    expect(mockSetters.quote).not.toHaveBeenCalled();
+    expect(mockSetters.type).toHaveBeenCalledWith("limit");
+  });
+
   it("leaves the quote alone when selecting Market", () => {
     mockQueryState.type = "limit";
     mockQueryState.quote = USDC_NOBLE;
@@ -141,5 +158,28 @@ describe("OrderTypeSelector", () => {
 
     expect(mockSetters.quote).not.toHaveBeenCalled();
     expect(mockSetters.type).toHaveBeenCalledWith("market");
+  });
+
+  it("opens the creation modal instead of selecting Limit for a pair without an orderbook", () => {
+    mockQueryState.from = ATOM;
+    mockQueryState.quote = USDC_NOBLE;
+    mockVerification = { orderbookExists: false, endpointFunctional: true };
+    render(<OrderTypeSelector initialBaseDenom={ATOM} />);
+
+    fireEvent.click(screen.getByText("limitOrders.limit"));
+
+    expect(mockOpenCreation).toHaveBeenCalledTimes(1);
+    expect(mockSetters.type).not.toHaveBeenCalled();
+  });
+
+  it("does not offer creation when the verification endpoint is not functional", () => {
+    mockQueryState.from = ATOM;
+    mockQueryState.quote = USDC_NOBLE;
+    mockVerification = { orderbookExists: false, endpointFunctional: false };
+    render(<OrderTypeSelector initialBaseDenom={ATOM} />);
+
+    fireEvent.click(screen.getByText("limitOrders.limit"));
+
+    expect(mockOpenCreation).not.toHaveBeenCalled();
   });
 });

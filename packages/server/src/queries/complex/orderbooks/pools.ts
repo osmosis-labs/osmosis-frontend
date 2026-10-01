@@ -46,6 +46,27 @@ export function getOrderbookPools() {
   return fetchOrderbookPools(false);
 }
 
-export function getOrderbookPoolsFresh() {
-  return fetchOrderbookPools(true);
+/**
+ * Minimum spacing between forced-fresh sidecar reads on this instance. The
+ * fresh path is reachable from a public procedure, so without a floor any
+ * client could bypass the cache and hammer SQS. Shorter than the client's
+ * 2s post-creation retry spacing, so one user's refresh loop still gets a
+ * real fresh read per attempt.
+ */
+const FRESH_MIN_INTERVAL_MS = 1500;
+let lastFreshReadAt = 0;
+let inFlightFreshRead: Promise<Orderbook[]> | undefined;
+
+export function getOrderbookPoolsFresh(): Promise<Orderbook[]> {
+  // Concurrent fresh reads share one sidecar request.
+  if (inFlightFreshRead) return inFlightFreshRead;
+  // A fresh read just completed and wrote its result back: serve that.
+  if (Date.now() - lastFreshReadAt < FRESH_MIN_INTERVAL_MS) {
+    return fetchOrderbookPools(false);
+  }
+  inFlightFreshRead = fetchOrderbookPools(true).finally(() => {
+    lastFreshReadAt = Date.now();
+    inFlightFreshRead = undefined;
+  });
+  return inFlightFreshRead;
 }
