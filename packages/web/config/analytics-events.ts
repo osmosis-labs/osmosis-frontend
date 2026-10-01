@@ -96,12 +96,6 @@ export type EventProperties = {
   toChainId: string;
 };
 
-export type UserProperties = {
-  isWalletConnected: boolean;
-  connectedWallet: string;
-  myPoolsCount: number;
-};
-
 export type AmplitudeEvent =
   | [
       eventName: string,

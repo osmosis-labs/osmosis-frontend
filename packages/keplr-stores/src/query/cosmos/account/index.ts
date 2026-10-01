@@ -2,11 +2,11 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../common/kv-store";
 import { ChainGetter } from "../../../common";
 import { AuthAccount } from "./types";
 import { computed, makeObservable } from "mobx";
-import { BaseAccount } from "@keplr-wallet/cosmos";
+import { BaseAccount } from "../../../common/cosmos";
 
 export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccount> {
   constructor(

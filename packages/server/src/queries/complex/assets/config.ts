@@ -1,4 +1,4 @@
-import { FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@osmosis-labs/unit";
 
 /** Use to specify the display properties for `PricePretty`. */
 export const DEFAULT_VS_CURRENCY: FiatCurrency = {

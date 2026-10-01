@@ -1,3 +1,5 @@
+import type { QueryClient } from "@tanstack/react-query";
+
 /**
  * Public, display-only assets procedures that Vercel's CDN may cache, with
  * the max age in seconds. The server also keeps these in memory (market data
@@ -129,4 +131,45 @@ export function getAssetsCdnCacheControl({
   }
 
   return `public, s-maxage=${Math.min(...maxAges)}`;
+}
+
+/** Assets procedures that return the user's wallet balances. */
+const USER_BALANCE_ASSETS_PROCEDURES = [
+  "getUserAsset",
+  "getUserAssets",
+  "getUserMarketAsset",
+  "getUserBridgeAsset",
+  "getUserBridgeAssets",
+  "getUserAssetsTotal",
+];
+
+/** How long the browser treats wallet balances as fresh. */
+const USER_BALANCE_STALE_TIME_MS = 10_000;
+
+/**
+ * Browser side: React Query's default staleTime of 0 refetches every assets
+ * query whenever a component using it mounts (the navbar does on every page)
+ * or the tab regains focus. Call-site options still override these defaults.
+ *
+ * - CDN-cacheable procedures stay fresh as long as the CDN may cache them,
+ *   and don't refetch on focus.
+ * - Balances stay fresh briefly, only to skip remount refetches.
+ *   refetchUserQueries (stores/index.tsx) still refreshes them after every tx.
+ *
+ * getAssetPrice is untouched: it sets the default limit order price.
+ */
+export function setAssetsQueryDefaults(queryClient: QueryClient) {
+  for (const [path, maxAgeSeconds] of Object.entries(
+    ASSETS_CDN_MAX_AGE_SECONDS
+  )) {
+    queryClient.setQueryDefaults([["edge", ...path.split(".")]], {
+      staleTime: maxAgeSeconds * 1000,
+      refetchOnWindowFocus: false,
+    });
+  }
+  for (const procedure of USER_BALANCE_ASSETS_PROCEDURES) {
+    queryClient.setQueryDefaults([["edge", "assets", procedure]], {
+      staleTime: USER_BALANCE_STALE_TIME_MS,
+    });
+  }
 }

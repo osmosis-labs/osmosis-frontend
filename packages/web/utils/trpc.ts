@@ -21,7 +21,10 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
-import { isCdnCacheableAssetsQuery } from "~/utils/trpc-cdn-cache";
+import {
+  isCdnCacheableAssetsQuery,
+  setAssetsQueryDefaults,
+} from "~/utils/trpc-cdn-cache";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
@@ -70,6 +73,7 @@ export const api = createTRPCNext<AppRouter>({
         },
       },
     });
+    setAssetsQueryDefaults(queryClient);
 
     persistQueryClient({
       queryClient,

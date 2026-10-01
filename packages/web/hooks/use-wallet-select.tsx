@@ -17,7 +17,6 @@ import {
 
 import { EthereumChainIds } from "~/config/wagmi";
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
@@ -101,19 +100,6 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const { setUserProperty } = useAmplitudeAnalytics();
-
-    const setUserAmplitudeProperties = useCallback(() => {
-      const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-      if (wallet) {
-        setUserProperty("isWalletConnected", true);
-        setUserProperty(
-          "connectedWallet",
-          wallet?.walletInfo?.name ?? "unknown"
-        );
-      }
-    }, [accountStore, setUserProperty]);
-
     useEffect(() => {
       const init = async () => {
         try {
@@ -124,7 +110,6 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
           });
           // On mounted handles wallet connection if a session exists
           await accountStore.walletManager.onMounted();
-          setUserAmplitudeProperties();
         } finally {
           setIsLoading(false);
         }
@@ -135,7 +120,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
       return () => {
         accountStore.walletManager.onUnmounted();
       };
-    }, [accountStore, setUserAmplitudeProperties]);
+    }, [accountStore]);
 
     const onOpenWalletSelect = useCallback((params: WalletSelectParams) => {
       setIsWalletSelectOpen(true);
@@ -153,10 +138,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
           walletSelectParams.walletOptions.length > 0 && (
             <WalletSelectModal
               walletOptions={walletSelectParams.walletOptions}
-              onConnect={() => {
-                setUserAmplitudeProperties();
-                walletSelectParams.onConnect?.();
-              }}
+              onConnect={() => walletSelectParams.onConnect?.()}
               isOpen={isWalletSelectOpen}
               onRequestClose={() => {
                 setIsWalletSelectOpen(false);

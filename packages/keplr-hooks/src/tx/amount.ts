@@ -6,7 +6,6 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   EmptyAmountError,
   InsufficientAmountError,
@@ -14,7 +13,7 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "./errors";
-import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, AppCurrency } from "@osmosis-labs/unit";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @observable.ref

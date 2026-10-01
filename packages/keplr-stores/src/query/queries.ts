@@ -1,5 +1,5 @@
 import { makeObservable, observable, runInAction } from "mobx";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../common/kv-store";
 import { DeepReadonly, UnionToIntersection } from "utility-types";
 import { ObservableQueryBalances } from "./balances";
 import {

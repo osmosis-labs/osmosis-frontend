@@ -1,5 +1,5 @@
 import { ObservableChainQuery } from "../chain-query";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../common/kv-store";
 import { ChainGetter } from "../../common";
 import { QueryResponse } from "../../common";
 
@@ -73,7 +73,7 @@ export class ObservableCosmwasmContractChainQuery<
   ): Promise<{ response: QueryResponse<T>; headers: any }> {
     const { response, headers } = await super.fetchResponse(abortController);
 
-    const wasmResult = (response.data as unknown) as
+    const wasmResult = response.data as unknown as
       | {
           data: any;
         }

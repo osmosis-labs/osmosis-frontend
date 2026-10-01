@@ -1,6 +1,8 @@
-import { KVStore } from "@keplr-wallet/common";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { ChainGetter, QueryResponse } from "@osmosis-labs/keplr-stores";
+import {
+  ChainGetter,
+  KVStore,
+  QueryResponse,
+} from "@osmosis-labs/keplr-stores";
 import { BigDec, StableSwapMath, WeightedPoolMath } from "@osmosis-labs/math";
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
@@ -9,7 +11,9 @@ import {
   WEIGHTED_POOL_TYPE,
 } from "@osmosis-labs/server";
 import {
+  AppCurrency,
   CoinPretty,
+  Currency,
   Dec,
   DecUtils,
   Int,

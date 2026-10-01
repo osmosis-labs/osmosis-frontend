@@ -50,10 +50,56 @@ export class TradePage extends BasePage {
   readonly buySellTimeout = 30_000;
   /** Hash of the most recently broadcast tx, captured for the REST fallback. */
   private lastTxHash?: string;
+  /** Request and response of the most recent failed router quote, logged when the swap button shows "Error". */
+  private lastQuoteError?: string;
+  private quoteRequestCount = 0;
+  private lastQuoteErrorSeq = 0;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
+    // The swap button only ever reads "Error" when a quote fails, so keep the
+    // router's actual response to explain the failure in CI logs. Quotes come
+    // from the `local.quoteRouter` tRPC procedure, which runs in the browser
+    // and fetches the sidecar (SQS) directly, so watch the sidecar requests.
+    const isQuoteUrl = (url: string) =>
+      /\/router\/(quote|custom-direct-quote)$/.test(new URL(url).pathname);
+    const recordQuoteError = (seq: number, url: string, detail: string) => {
+      // Body reads can finish out of order; keep the latest-arriving failure.
+      if (seq < this.lastQuoteErrorSeq) return;
+      this.lastQuoteErrorSeq = seq;
+      // Quotes are GETs, so the request payload is the URL's query string.
+      const { pathname, search } = new URL(url);
+      this.lastQuoteError = `${new Date().toISOString()} ${pathname} request=${search} ${detail}`;
+    };
+    page.on("response", async (response) => {
+      if (!isQuoteUrl(response.url())) return;
+      const seq = ++this.quoteRequestCount;
+      const body = await response.text().catch(() => "");
+      // Like the app's apiClient, treat an error payload in a 200 as a failure.
+      let payloadError = false;
+      try {
+        const data = JSON.parse(body);
+        payloadError = Boolean(data?.code) || data?.status_code >= 400;
+      } catch {
+        payloadError = true;
+      }
+      if (response.ok() && !payloadError) return;
+      recordQuoteError(
+        seq,
+        response.url(),
+        `HTTP ${response.status()} response=${body}`
+      );
+    });
+    // Timeouts and connection failures never produce a response.
+    page.on("requestfailed", (request) => {
+      if (!isQuoteUrl(request.url())) return;
+      recordQuoteError(
+        ++this.quoteRequestCount,
+        request.url(),
+        `request failed: ${request.failure()?.errorText}`
+      );
+    });
     this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
     this.buyBtn = page.locator('//div[@class]/button[@class]/h6[.="Buy"]/..');
@@ -383,6 +429,11 @@ export class TradePage extends BasePage {
       await expect(errorBtn).not.toBeVisible({ timeout: settleTimeout });
       return false;
     } catch {
+      console.log(
+        `Swap button shows "Error". Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
       return true;
     }
   }
@@ -394,15 +445,29 @@ export class TradePage extends BasePage {
     });
     // The disclosure renders as soon as there is an input amount but stays
     // disabled until the quote fills the out amount, so wait for it to be
-    // enabled rather than racing the quote with the click timeout.
+    // enabled rather than racing the quote with the click timeout. A failed
+    // router quote shows "Error" and keeps it disabled, but the swap tool
+    // refetches the quote every 5s, so a transient router error clears by
+    // itself; the wait covers that too, whether the error is already showing
+    // or arrives while the quote is still loading.
     const swapInfoBtn = this.page.locator(
       "//button[.//span[.='Show details']]"
     );
-    await expect(swapInfoBtn, "Show Swap Info button is disabled!").toBeEnabled(
-      {
-        timeout: 15000,
-      }
-    );
+    try {
+      await expect(
+        swapInfoBtn,
+        "Show Swap Info button is disabled!"
+      ).toBeEnabled({
+        timeout: 30_000,
+      });
+    } catch (e) {
+      console.log(
+        `Show details stayed disabled. Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
+      throw e;
+    }
     await swapInfo.click({ timeout: 5000 });
   }
 

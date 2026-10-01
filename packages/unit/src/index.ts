@@ -1,6 +1,7 @@
 export * from "./coin";
 export * from "./coin-pretty";
 export * from "./coin-utils";
+export * from "./currency-types";
 export * from "./dec-utils";
 export * from "./decimal";
 export * from "./int";

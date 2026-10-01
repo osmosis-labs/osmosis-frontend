@@ -1,9 +1,8 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   isInsufficientFeeError,
   isSlippageErrorMessage,
 } from "@osmosis-labs/tx";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 import { MultiLanguageT } from "~/hooks";
 

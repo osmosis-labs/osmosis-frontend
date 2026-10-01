@@ -47,39 +47,18 @@ export default async function handler(
   };
 
   try {
-    // Decode messages first
-    const decodedMessages = messages.map((msg, i) => {
-      try {
-        return decodeAnyBase64(msg);
-      } catch (error) {
-        console.error(`Failed to decode message ${i}:`, error);
-        throw error;
-      }
-    });
+    const decodedMessages = messages.map(decodeAnyBase64);
 
-    // Apply temporary workaround for swap messages to prevent simulation failures
-    // Instead of complex protobuf manipulation, we'll adjust the gas multiplier for swap transactions
-    // to provide more tolerance during simulation
-    // See: https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee
-
-    const isSwapTransaction = decodedMessages.some((message) => {
-      return (
-        message.typeUrl &&
-        (message.typeUrl.includes("MsgSwapExactAmount") ||
-          message.typeUrl.includes("MsgSplitRouteSwapExactAmount"))
-      );
-    });
-
-    // For swap transactions, use a more conservative gas multiplier
+    // Swap simulations under-estimate often enough to fail on chain, so give
+    // them extra head-room. See FE-1170.
+    const isSwapTransaction = decodedMessages.some(
+      ({ typeUrl }) =>
+        typeUrl.includes("MsgSwapExactAmount") ||
+        typeUrl.includes("MsgSplitRouteSwapExactAmount")
+    );
     const adjustedGasMultiplier = isSwapTransaction
       ? Math.max(gasMultiplier * 1.5, 2.0)
       : gasMultiplier;
-
-    if (isSwapTransaction) {
-      console.log(
-        `Applying swap transaction workaround: increasing gas multiplier from ${gasMultiplier} to ${adjustedGasMultiplier}`
-      );
-    }
 
     const gasFee = await estimateGasFee({
       chainId,
@@ -96,28 +75,18 @@ export default async function handler(
     });
     return res.status(200).json(gasFee);
   } catch (e) {
-    const error = e as
-      | Error
-      | SimulateNotAvailableError
-      | InsufficientFeeError
-      | ApiClientError;
-    if (error instanceof SimulateNotAvailableError) {
-      return res.status(400).json({ message: error.message });
+    // Insufficient fee balance is the user's account state, not a server
+    // fault; the client reads `message` from these 400s.
+    if (
+      e instanceof SimulateNotAvailableError ||
+      e instanceof InsufficientFeeError
+    ) {
+      return res.status(400).json({ message: e.message });
     }
 
-    // The user does not hold a fee token with enough balance to pay the
-    // simulated gas. This is a client-side state issue (account balance), not
-    // a server fault, so respond with 400 + message — matching how the client
-    // expects to deserialize fee-selection errors.
-    if (error instanceof InsufficientFeeError) {
-      return res.status(400).json({ message: error.message });
-    }
-
-    /**
-     * It's a cosmos node error. Forward data as 200 to the client.
-     */
-    if (error instanceof ApiClientError && error.data?.code) {
-      return res.status(500).json(error.data);
+    // Forward the node's error body so the client can read its code.
+    if (e instanceof ApiClientError && e.data?.code) {
+      return res.status(500).json(e.data);
     }
 
     return res.status(500).json({ error: e instanceof Error ? e.message : e });

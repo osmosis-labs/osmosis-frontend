@@ -83,6 +83,9 @@ export const useAssetInfoConfig = (
       enabled: Boolean(coinMinimalDenom ?? denom),
       staleTime: realtime ? 3000 : 1000 * 60 * 3,
       cacheTime: realtime ? 3000 : 1000 * 60 * 6,
+      // The procedure's defaults skip focus refetches; realtime prices still
+      // need them.
+      refetchOnWindowFocus: Boolean(realtime),
       trpc: {
         context: {
           skipBatch: true,

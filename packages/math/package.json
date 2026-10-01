@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/math",
   "version": "5.1.0",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/math#readme",
   "repository": {
@@ -36,7 +37,6 @@
     ]
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "big-integer": "^1.6.48"
   },
