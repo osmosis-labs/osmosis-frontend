@@ -77,10 +77,17 @@ export function getKeplrCompatibleChain({
   };
 }
 
-function getContractCurrencyType(
+/**
+ * Only contract tokens carry a `type` key. Native denoms must not have one at all, not even
+ * `type: undefined`: Keplr's staking rewards query skips any currency where `"type" in
+ * currency`, so a `type` on `uosmo` hides every staking reward.
+ */
+function getContractTypeField(
   coinMinimalDenom: string
-): CW20Currency["type"] | Secret20Currency["type"] {
-  return coinMinimalDenom.startsWith("cw20:secret") ? "secret20" : "cw20";
+): { type: CW20Currency["type"] | Secret20Currency["type"] } | undefined {
+  if (coinMinimalDenom.startsWith("cw20:secret")) return { type: "secret20" };
+  if (coinMinimalDenom.startsWith("cw20:")) return { type: "cw20" };
+  return undefined;
 }
 
 function isContractDenom(coinMinimalDenom: string) {
@@ -109,7 +116,7 @@ function getCurrencies(chain: Chain): AppCurrency[] {
     const imageUrl = asset.coinImageUrl ?? "";
 
     return {
-      type: getContractCurrencyType(coinMinimalDenom),
+      ...getContractTypeField(coinMinimalDenom),
       coinDenom: asset.coinDenom,
       /**
        * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
@@ -173,7 +180,7 @@ function getFeeCurrencies(chain: Chain, assetList: AssetList): FeeCurrency[] {
     const imageUrl = asset.logoURIs?.svg ?? asset.logoURIs?.png;
 
     return {
-      type: getContractCurrencyType(coinMinimalDenom),
+      ...getContractTypeField(coinMinimalDenom),
       coinDenom: asset.symbol,
       coinMinimalDenom: isContractToken
         ? coinMinimalDenom + `:${asset.symbol}`
