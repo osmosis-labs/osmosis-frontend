@@ -406,7 +406,7 @@ const TransferDetails: FunctionComponent<{
           className="flex w-full flex-col gap-3 overflow-clip py-3 transition-height duration-300 ease-inOutBack"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              ? detailsHeight + detailsOffset + 46 // collapsed height
               : 36,
           }}
         >

@@ -50,9 +50,9 @@
     "prettier": "^2.8.8",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.4.14",
     "tsx": "^4.22.4",
-    "typescript": "5.4.5"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@cosmjs/amino": "0.36.2",

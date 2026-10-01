@@ -302,11 +302,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
               style={{
                 height: showPoolDetails
                   ? poolBreakdownHeight +
-                      poolHeaderHeight +
-                      poolDetailsContainerOffset +
-                      12 ?? // gap between header and breakdown
-                    178
-                  : poolHeaderHeight + poolDetailsContainerOffset ?? 100,
+                    poolHeaderHeight +
+                    poolDetailsContainerOffset +
+                    12 // gap between header and breakdown
+                  : poolHeaderHeight + poolDetailsContainerOffset,
               }}
             >
               <div
