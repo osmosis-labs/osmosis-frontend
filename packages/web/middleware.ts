@@ -10,10 +10,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths
-     */
-    "/(.*)",
-  ],
+  // The bot check protects API backends; avoid invoking middleware for pages and assets.
+  matcher: "/api/:path*",
 };

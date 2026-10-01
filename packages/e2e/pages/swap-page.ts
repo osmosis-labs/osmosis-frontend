@@ -42,12 +42,8 @@ export class SwapPage extends BasePage {
   }
 
   async goto() {
-    const assetPromise = this.page.waitForRequest('**/assets.json')
-    await this.page.goto('/')
-    const request = await assetPromise
-    expect(request).toBeTruthy()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.goto('/', { timeout: 30_000 })
+    await this.waitForTradeUi()
     const currentUrl = this.page.url()
     console.log(`FE opened at: ${currentUrl}`)
     await this.dismissVariantsPopupIfPresent()

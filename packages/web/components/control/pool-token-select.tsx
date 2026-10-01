@@ -24,7 +24,7 @@ export const PoolTokenSelect: FunctionComponent<
   );
   const tokenIndex = (denom: string) =>
     tokens.findIndex((token) => token.coinDenom === denom);
-  let [isToggleOpen, setToggleOpen] = useState(false);
+  const [isToggleOpen, setToggleOpen] = useState(false);
 
   if (!selectedToken) return null;
 

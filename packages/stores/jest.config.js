@@ -4,6 +4,14 @@ const esmModules = [
   "varuint-bitcoin",
   "@osmosis-labs/tx",
   "superjson",
+  "@cosmos-kit/core",
+  "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
+  "uuid",
+  "rettime",
+  "until-async",
+  "msw",
+  "@mswjs",
+  "@open-draft",
 ];
 
 module.exports = {
@@ -11,6 +19,9 @@ module.exports = {
   roots: ["<rootDir>/src/"],
   testMatch: ["**/__tests__/?(*.)+(spec|test).[jt]s?(x)"],
   testEnvironment: "../../jsdom-extended.js",
+  testEnvironmentOptions: {
+    customExportConditions: [""],
+  },
   testTimeout: 100000,
   watchPlugins: [
     "jest-watch-typeahead/filename",
@@ -18,10 +29,11 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^msw/node$": require.resolve("msw/node"),
   },
   transformIgnorePatterns: [`node_modules/(?!(${esmModules.join("|")})/)`],
   transform: {
-    "^.+\\.(js|jsx)?$": [
+    "^.+\\.(js|jsx|mjs)?$": [
       "babel-jest",
       { configFile: "../../babel.config.json" },
     ],

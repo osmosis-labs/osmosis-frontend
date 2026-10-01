@@ -44,7 +44,7 @@ export function ScaledCurrencyInput({
         contentWidth =
           (inputSizerRef.current?.offsetWidth || 0) +
           (tickerRef.current?.offsetWidth || 0);
-        let scale = Math.min(
+        const scale = Math.min(
           1,
           Math.max(
             minScale,

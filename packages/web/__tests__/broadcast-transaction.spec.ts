@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
 import broadcastTransactionHandler from "~/pages/api/broadcast-transaction";
@@ -77,12 +77,9 @@ it("should successfully broadcast transaction", async () => {
   } as unknown as Request;
 
   server.use(
-    rest.post(
-      "https://fake-endpoint.com/cosmos/tx/v1beta1/txs",
-      (_req, res, ctx) => {
-        return res(ctx.json({ data: "someData" }));
-      }
-    )
+    http.post("https://fake-endpoint.com/cosmos/tx/v1beta1/txs", () => {
+      return HttpResponse.json({ data: "someData" });
+    })
   );
 
   const result = await broadcastTransactionHandler(req);
@@ -120,10 +117,10 @@ it("should broadcast via path-prefixed REST endpoints", async () => {
   } as unknown as Request;
 
   server.use(
-    rest.post(
+    http.post(
       "https://rest.cosmos.directory/osmosis/cosmos/tx/v1beta1/txs",
-      (_req, res, ctx) => {
-        return res(ctx.json({ data: "pathPrefixedData" }));
+      () => {
+        return HttpResponse.json({ data: "pathPrefixedData" });
       }
     )
   );
@@ -145,12 +142,9 @@ it("should handle fetch errors gracefully", async () => {
   } as unknown as Request;
 
   server.use(
-    rest.post(
-      "https://fake-endpoint.com/cosmos/tx/v1beta1/txs",
-      (_req, res, ctx) => {
-        return res(ctx.status(500));
-      }
-    )
+    http.post("https://fake-endpoint.com/cosmos/tx/v1beta1/txs", () => {
+      return new HttpResponse(null, { status: 500 });
+    })
   );
 
   const result = await broadcastTransactionHandler(req);

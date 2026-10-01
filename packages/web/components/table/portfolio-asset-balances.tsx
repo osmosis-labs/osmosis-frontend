@@ -522,7 +522,7 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
-type Action = "deposit" | "withdraw" | "trade" | "earn";
+type Action = "deposit" | "withdraw" | "trade";
 
 const getActionOptions = (
   t: MultiLanguageT,
@@ -554,7 +554,6 @@ const getActionOptions = (
         ]
       : []),
     { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
-    { key: "earn", label: t("portfolio.earn"), icon: "chart-up" },
   ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
 };
 
@@ -600,8 +599,6 @@ const AssetActionsCell: AssetCellComponent<{
     if (action === "trade") {
       const to = coinMinimalDenom === "uosmo" ? ATOM_BASE_DENOM : "uosmo";
       router.push(`/?from=${coinMinimalDenom}&to=${to}`);
-    } else if (action === "earn") {
-      router.push(`/earn?search=${coinMinimalDenom}`);
     } else if (action === "deposit") {
       if (areDepositsHalted) return;
       bridgeAsset({

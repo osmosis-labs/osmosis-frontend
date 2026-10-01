@@ -1,5 +1,5 @@
 import type { Chain } from "@chain-registry/types";
-import type { AminoMsg } from "@cosmjs/amino/build/signdoc";
+import type { AminoMsg } from "@cosmjs/amino";
 import type { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,

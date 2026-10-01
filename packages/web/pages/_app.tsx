@@ -1,5 +1,5 @@
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
+import "../styles/globals.css";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
@@ -14,6 +14,7 @@ import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import {
   ComponentType,
   FunctionComponent,
@@ -25,7 +26,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
-import { CypherCardToast } from "~/components/alert/cypher-card-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
@@ -65,28 +65,18 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
-import dynamic from "next/dynamic";
-
-const MoonPayProvider = dynamic(
-  () => import("@moonpay/moonpay-react").then((mod) => mod.MoonPayProvider),
-  { ssr: false }
-);
-
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <MultiLanguageProvider
-        defaultLanguage={DEFAULT_LANGUAGE}
-        defaultTranslations={{ en }}
-      >
-        <StoreProvider>
-          <WalletSelectProvider>
-            <MoonPayProvider
-              apiKey={process.env.NEXT_PUBLIC_MOONPAY_PUBLIC_KEY ?? ""}
-              debug={process.env.NODE_ENV === "development"}
-            >
+    <NuqsAdapter>
+      <WagmiProvider config={wagmiConfig}>
+        <MultiLanguageProvider
+          defaultLanguage={DEFAULT_LANGUAGE}
+          defaultTranslations={{ en }}
+        >
+          <StoreProvider>
+            <WalletSelectProvider>
               <ErrorBoundary fallback={<ErrorFallback />}>
                 <SEO />
                 <SpeedInsights />
@@ -102,11 +92,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </MainLayoutWrapper>
                 <ImmersiveBridge />
               </ErrorBoundary>
-            </MoonPayProvider>
-          </WalletSelectProvider>
-        </StoreProvider>
-      </MultiLanguageProvider>
-    </WagmiProvider>
+            </WalletSelectProvider>
+          </StoreProvider>
+        </MultiLanguageProvider>
+      </WagmiProvider>
+    </NuqsAdapter>
   );
 }
 
@@ -124,7 +114,7 @@ const MainLayoutWrapper: FunctionComponent<{
       return [];
     }
 
-    let menuItems: (MainLayoutMenu | null)[] = [
+    const menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("limitOrders.trade"),
         link: "/",
@@ -143,14 +133,6 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="assets" className="h-6 w-6" />,
         selectionTest: /\/assets/,
       },
-      flags.earnPage
-        ? {
-            label: t("earnPage.title"),
-            link: "/earn",
-            icon: <Icon id="earn" className="h-6 w-6" />,
-            selectionTest: /\/earn/,
-          }
-        : null,
       flags.staking
         ? {
             label: t("menu.stake"),
@@ -190,7 +172,6 @@ const MainLayoutWrapper: FunctionComponent<{
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [
-    flags.earnPage,
     flags.staking,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
@@ -231,7 +212,6 @@ const MainLayoutWrapper: FunctionComponent<{
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
-      {flags.cypherCard && !flags.alloyedAssets && <CypherCardToast />}
     </MainLayout>
   );
 });

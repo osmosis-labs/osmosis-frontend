@@ -35,25 +35,25 @@ jobs:
         uses: actions/setup-node@v6
         with:
           package-manager-cache: false
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Cache dependencies
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-22.x-
+            ${{ runner.OS }}-24.x-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: corepack yarn install --immutable
 
       - name: Echo Current Server URL
         run: echo "SQS Server URL:${{ matrix.server-url }}"
 
       - name: Run Tests
         id: tests
-        run: yarn test:e2e --filter=@osmosis-labs/server
+        run: corepack yarn test:e2e --filter=@osmosis-labs/server
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}

@@ -23,6 +23,7 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
+  QueriesExternalStore,
   type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
@@ -42,7 +43,10 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { QueriesExternalStore } from "~/stores/queries-external";
+import {
+  getKeplrCompatibleChain,
+  withCosmosKitFields,
+} from "~/config/keplr-chain";
 
 import {
   TRANSFER_HISTORY_STORE_KEY,
@@ -79,7 +83,9 @@ export class RootStore {
     txEvents?: TxEvents;
   } = {}) {
     this.chainStore = new ChainStore(
-      ChainList.map((chain) => chain.keplrChain),
+      ChainList.map((chain) =>
+        getKeplrCompatibleChain({ chain, assetLists: AssetLists })
+      ),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
@@ -92,8 +98,12 @@ export class RootStore {
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
+      // These are Keplr store factories, not React Hooks.
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmosQueries.use(),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmQueries.use(),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       OsmosisQueries.use(
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
@@ -140,7 +150,8 @@ export class RootStore {
     );
 
     this.accountStore = new AccountStore(
-      ChainList,
+      // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
+      ChainList.map(withCosmosKitFields),
       this.chainStore.osmosis.chainId,
       AssetLists,
       /**
@@ -178,13 +189,17 @@ export class RootStore {
           },
         },
       },
+      // These are Keplr store factories, not React Hooks.
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       OsmosisAccount.use({
         queriesStore: this.queriesStore,
         queriesExternalStore: this.queriesExternalStore,
       }),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmosAccount.use({
         queriesStore: this.queriesStore,
       }),
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 

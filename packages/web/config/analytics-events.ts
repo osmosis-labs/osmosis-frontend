@@ -1,5 +1,5 @@
 /** # User Events Constants
- *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
+ *  Recorded in-process via useAmplitudeAnalytics (Amplitude SDK removed).
  */
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 
@@ -94,12 +94,6 @@ export type EventProperties = {
   squadSize: number;
   fromChainId: string;
   toChainId: string;
-};
-
-export type UserProperties = {
-  isWalletConnected: boolean;
-  connectedWallet: string;
-  myPoolsCount: number;
 };
 
 export type AmplitudeEvent =

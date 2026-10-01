@@ -76,13 +76,7 @@ export function useAddLiquidityConfig(
         reject(e.message);
       }
     });
-  }, [
-    account?.osmosis,
-    config.isSingleAmountIn,
-    config.singleAmountInConfig,
-    config.poolId,
-    config.shareOutAmount,
-  ]);
+  }, [account, config]);
 
   return { config, addLiquidity };
 }

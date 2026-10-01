@@ -5,6 +5,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ATOM_BASE_DENOM,
+  deferQueryCorrection,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -55,11 +57,15 @@ export const OrderTypeSelector = ({
   );
   const [base] = useQueryState(
     "from",
-    parseAsString.withDefault(initialBaseDenom)
+    parseAsString
+      .withDefault(initialBaseDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault(initialQuoteDenom)
+    parseAsString
+      .withDefault(initialQuoteDenom)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
 
   // The "from"/"quote" URL params hold either a symbol (?from=ATOM) or a
@@ -132,7 +138,7 @@ export const OrderTypeSelector = ({
         wasOrderbookJustCreated(resolvedBase, resolvedQuote)
       )
         return;
-      setType("market");
+      return deferQueryCorrection(() => setType("market"));
     } else if (
       type === "limit" &&
       !quoteSelectable &&
@@ -142,7 +148,9 @@ export const OrderTypeSelector = ({
       // list to catch up, or the user's fresh selection would be undone.
       !wasOrderbookJustCreated(resolvedBase, resolvedQuote)
     ) {
-      setQuote(selectableQuotes[0].coinMinimalDenom);
+      return deferQueryCorrection(() =>
+        setQuote(selectableQuotes[0].coinMinimalDenom)
+      );
     }
   }, [
     hasOrderbook,
@@ -155,6 +163,24 @@ export const OrderTypeSelector = ({
     resolvedQuote,
     isLoading,
   ]);
+
+  /**
+   * Switch to a quote the base's orderbooks support in the same update as
+   * the order type, so the limit tool never renders with an unsupported
+   * quote. The effect above only catches cases this click doesn't cover.
+   */
+  const selectType = (id: UITradeType["id"]) => {
+    if (
+      id === "limit" &&
+      selectableQuotes.length > 0 &&
+      !selectableQuotes.some(
+        (asset) => asset.coinMinimalDenom === quoteMinimalDenom
+      )
+    ) {
+      setQuote(selectableQuotes[0].coinMinimalDenom);
+    }
+    setType(id);
+  };
 
   const { data: baseAsset } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: base,
@@ -320,7 +346,7 @@ export const OrderTypeSelector = ({
                 if (isLimitWithCreate) {
                   setIsModalOpen(true);
                 } else {
-                  setType(id);
+                  selectType(id);
                 }
               }}
               className={classNames(

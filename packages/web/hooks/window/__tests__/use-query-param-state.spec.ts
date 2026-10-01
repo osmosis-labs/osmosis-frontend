@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { act, renderHook } from "@testing-library/react";
 import { useRouter as userRouterImport } from "next/router";
 const useRouter = userRouterImport as any;

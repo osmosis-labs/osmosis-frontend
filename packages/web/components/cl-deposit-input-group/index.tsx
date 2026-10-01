@@ -1,5 +1,10 @@
-import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { renderHook } from "@testing-library/react";
 

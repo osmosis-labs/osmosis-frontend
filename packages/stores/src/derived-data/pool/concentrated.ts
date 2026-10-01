@@ -1,9 +1,9 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   CoinPretty,
   Dec,
   DecUtils,
+  FiatCurrency,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
@@ -14,7 +14,6 @@ import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
 import {
   ObservableQueryActiveGauges,
-  ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolAprs,
   ObservableQueryPriceRangeAprs,
 } from "../../queries-external";
@@ -201,7 +200,6 @@ export class ObservableConcentratedPoolDetails extends HasMapStore<ObservableCon
     protected readonly externalQueries: {
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
     protected readonly accountStore: AccountStore,

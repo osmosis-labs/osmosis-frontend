@@ -123,7 +123,7 @@ export const MyPoolsCardsGrid = observer(() => {
               }) => {
                 const poolLiqudity_ = formatPretty(poolLiquidity);
 
-                let myPoolMetrics = [
+                const myPoolMetrics = [
                   {
                     label: t("pools.APR"),
                     value: isMobile ? (

@@ -50,7 +50,7 @@ function isObject(value: any): value is Record<any, any> {
  */
 const getStringifiedWallet = (wallet: Record<any, any>) => {
   const stringifyObject = (obj: any) => {
-    let val: any[] = [];
+    const val: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
       if (isFunction(value)) {
         val.push(`"${key}": ${value.toString()},`);

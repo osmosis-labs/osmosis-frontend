@@ -19,19 +19,23 @@ const config = {
   moduleNameMapper: {
     // Resolve absolute imports
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+    "^msw/node$": require.resolve("msw/node"),
   },
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "../../jsdom-extended.js",
+  testEnvironmentOptions: {
+    customExportConditions: [""],
+  },
   testPathIgnorePatterns: ["e2e"],
 };
 
 const esmModules = [
-  "@moonpay/moonpay-node",
   "superjson",
   "@cosmos-kit/core",
+  "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
   "uuid",
   "@keplr-wallet/unit",
   "@osmosis-labs/stores",
@@ -45,6 +49,12 @@ const esmModules = [
   "bitcoinjs-lib",
   "uint8array-tools",
   "varuint-bitcoin",
+  "nuqs",
+  "rettime",
+  "until-async",
+  "msw",
+  "@mswjs",
+  "@open-draft",
 ];
 
 module.exports = async () => ({

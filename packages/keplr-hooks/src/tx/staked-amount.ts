@@ -6,7 +6,6 @@ import {
 } from "@osmosis-labs/keplr-stores";
 import { override } from "mobx";
 import { Dec, CoinPretty } from "@osmosis-labs/unit";
-import { useState } from "react";
 import { AmountConfig } from "./amount";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 
@@ -44,25 +43,3 @@ export class StakedAmountConfig extends AmountConfig {
     return stakeBalanceCoinPretty;
   }
 }
-
-export const useStakedAmountConfig = (
-  chainGetter: ChainGetter,
-  queriesStore: IQueriesStore<CosmosQueries>,
-  chainId: string,
-  sender: string
-) => {
-  const [txConfig] = useState(
-    () =>
-      new StakedAmountConfig(
-        chainGetter,
-        queriesStore,
-        chainId,
-        sender,
-        undefined
-      )
-  );
-  txConfig.setChain(chainId);
-  txConfig.setSender(sender);
-
-  return txConfig;
-};

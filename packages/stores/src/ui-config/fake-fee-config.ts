@@ -1,12 +1,10 @@
-import type { StdFee } from "@cosmjs/amino";
-import { Currency } from "@keplr-wallet/types";
 import {
   DefaultGasPriceStep,
   FeeType,
   IFeeConfig,
 } from "@osmosis-labs/keplr-hooks";
 import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Currency, Dec, Int } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -129,14 +127,6 @@ export class FakeFeeConfig implements IFeeConfig {
 
   setFeeType(): void {
     // noop
-  }
-
-  toStdFee(): StdFee {
-    return {
-      gas: this.gas.toString(),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      amount: [this.getFeePrimitive()!],
-    };
   }
 
   isManual: boolean = false;

@@ -7,8 +7,8 @@ import { Fragment, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { AssetBreakdownChart } from "~/components/chart";
+import { Button } from "~/components/ui/button";
 import { Button as UIButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { IncentivizePoolModal } from "~/modals";

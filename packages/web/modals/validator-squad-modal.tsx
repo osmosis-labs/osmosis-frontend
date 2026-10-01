@@ -1,10 +1,9 @@
-import { Currency } from "@keplr-wallet/types";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Currency, Dec, RatePretty } from "@osmosis-labs/unit";
 import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
@@ -450,20 +449,26 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           usersValidatorSetPreferenceMap.keys()
         );
 
-        const defaultRowSelection = { ...rowSelection };
+        setRowSelection((currentRowSelection) => {
+          const defaultRowSelection = { ...currentRowSelection };
 
-        table.getRowModel().flatRows.forEach((row) => {
-          if (
-            defaultusersValidatorSetPreferenceMap.has(
-              row.original.operatorAddress
-            )
-          ) {
-            defaultRowSelection[row.id] = true;
-          }
+          table.getRowModel().flatRows.forEach((row) => {
+            if (
+              defaultusersValidatorSetPreferenceMap.has(
+                row.original.operatorAddress
+              )
+            ) {
+              defaultRowSelection[row.id] = true;
+            }
+          });
+
+          return Object.keys(defaultRowSelection).some(
+            (id) => defaultRowSelection[id] !== currentRowSelection[id]
+          )
+            ? defaultRowSelection
+            : currentRowSelection;
         });
-
-        setRowSelection(defaultRowSelection);
-      }, [usersValidatorSetPreferenceMap]);
+      }, [table, usersValidatorSetPreferenceMap]);
 
       const setSquadButtonDisabled = Object.keys(rowSelection).length === 0;
 

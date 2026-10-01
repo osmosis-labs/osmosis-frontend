@@ -6,11 +6,11 @@ import {
   observable,
   runInAction,
 } from "mobx";
-import { Bech32Config, BIP44, Currency } from "@keplr-wallet/types";
+import { Bech32Config, BIP44 } from "@osmosis-labs/types";
+import { Currency } from "@osmosis-labs/unit";
 import { ChainGetter } from "../common";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainIdHelper } from "../common/cosmos";
 import { DeepReadonly } from "utility-types";
-import { AxiosRequestConfig } from "axios";
 import { keepAlive } from "mobx-utils";
 import type { AppCurrency, ChainInfo } from "@osmosis-labs/types";
 
@@ -263,16 +263,8 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
     return this.raw.rest;
   }
 
-  get restConfig(): AxiosRequestConfig | undefined {
-    return this.raw.restConfig;
-  }
-
   get rpc(): string {
     return this.raw.rpc;
-  }
-
-  get rpcConfig(): AxiosRequestConfig | undefined {
-    return this.raw.rpcConfig;
   }
 
   get walletUrl(): string | undefined {

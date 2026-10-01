@@ -56,7 +56,9 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     await poll({
       fn: async () => {
         const tx = {
-          chainID: fromChainId.toString(),
+          // a later step of a multi-tx route is signed on an intermediate
+          // chain; its status must be polled there, not on the from chain
+          chainID: (snapshot.trackingChainId ?? fromChainId).toString(),
           txHash: sendTxHash,
           env: this.env,
         };
@@ -111,12 +113,21 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       toChain: { chainId: toChainId },
     } = snapshot;
 
-    if (typeof fromChainId === "number" || typeof toChainId === "number") {
+    // After a multi-tx route advances, sendTxHash is the intermediate
+    // chain's (cosmos) tx, even when the transfer originated on an EVM
+    // chain: the explorer must be the tracking chain's, or the link would
+    // be an AxelarScan GMP URL wrapping a cosmos hash.
+    const explorerChainId = snapshot.trackingChainId ?? fromChainId;
+
+    if (
+      snapshot.trackingChainId === undefined &&
+      (typeof fromChainId === "number" || typeof toChainId === "number")
+    ) {
       // EVM transfer
       return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
     } else {
       const chain = this.chainList.find(
-        (chain) => chain.chain_id === fromChainId
+        (chain) => chain.chain_id === explorerChainId
       );
 
       // Chain may no longer be in the registry (e.g. a delisted chain in an
@@ -125,7 +136,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       // but keep a breadcrumb so an unexpected missing chain is still visible.
       if (!chain) {
         console.warn(
-          `[SkipTransferStatus] Cannot build explorer URL, chain not found: ${fromChainId}`
+          `[SkipTransferStatus] Cannot build explorer URL, chain not found: ${explorerChainId}`
         );
         return "";
       }

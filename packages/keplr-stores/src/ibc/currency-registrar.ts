@@ -1,5 +1,5 @@
 import { flow, makeObservable, observable, runInAction } from "mobx";
-import { AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency } from "@osmosis-labs/unit";
 import { ChainInfoInner, ChainStore } from "../chain";
 import {
   CosmosQueries,
@@ -7,7 +7,9 @@ import {
   IQueriesStore,
   QueriesSetBase,
 } from "../query";
-import { DenomHelper, KVStore, toGenerator } from "@keplr-wallet/common";
+import { DenomHelper } from "../common/denom";
+import { KVStore } from "../common/kv-store";
+import { toGenerator } from "../common/mobx";
 import type { ChainInfo } from "@osmosis-labs/types";
 
 type CacheIBCDenomData = {

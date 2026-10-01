@@ -40,6 +40,13 @@ export type SkipRouteRequestBase = {
 
   cumulative_affiliate_fee_bps?: string;
   client_id?: string;
+  /**
+   * Allow routes requiring more than one user-signed transaction. Off by
+   * default: without it Skip errors with "no single-tx routes found" when
+   * only multi-tx routes exist (e.g. CCTP deposits ending in an Osmosis
+   * swap, where Noble's forwarding cannot carry the swap memo).
+   */
+  allow_multi_tx?: boolean;
   smart_swap_options?: {
     evm_swaps?: boolean;
     split_routes?: boolean;
@@ -70,6 +77,13 @@ export type SkipRouteResponse = {
 
   operations: SkipOperation[];
   chain_ids: string[];
+  /**
+   * Chains an address must be provided for in the `/msgs` address_list, in
+   * order. NOT the same as `chain_ids`: it can repeat a chain (e.g.
+   * ["42161","noble-1","osmosis-1","osmosis-1"] for a multi-tx route), so
+   * address lists must be built from this, not `chain_ids`.
+   */
+  required_chain_addresses?: string[];
 
   does_swap: boolean;
   estimated_amount_out?: string;
@@ -106,7 +120,24 @@ export type SkipEstimatedFee = {
 export type SkipOperation =
   | { transfer: SkipTransfer }
   | { swap: SkipSwap }
-  | { axelar_transfer: SkipAxelarTransfer };
+  | { evm_swap: SkipEvmSwap }
+  | { axelar_transfer: SkipAxelarTransfer }
+  | { cctp_transfer: SkipCctpTransfer };
+
+/** A swap performed on the destination EVM chain by the Axelar GMP executor. */
+export type SkipEvmSwap = {
+  input_token: string;
+  /**
+   * What the executor's calldata spends. Skip fixes this at the untoleranced
+   * quote, so it does not move with `slippage_tolerance_percent`.
+   */
+  amount_in: string;
+  amount_out: string;
+  swap_calldata: string;
+  from_chain_id: string;
+  denom_in: string;
+  denom_out: string;
+};
 
 export type SkipTransfer = {
   port: string;
@@ -154,6 +185,30 @@ export type SkipAxelarTransfer = {
   is_testnet: boolean;
 };
 
+/** A Circle CCTP burn-and-mint leg, used on the native USDC routes. */
+export type SkipCctpTransfer = {
+  from_chain_id: string;
+  to_chain_id: string;
+  burn_token: string;
+  denom_in: string;
+  denom_out: string;
+  bridge_id: string;
+  smart_relay: boolean;
+  /**
+   * Present when `smart_relay` is set, and Skip expects it back on the `/msgs`
+   * request: dropping it quotes a different relay fee to the one shown.
+   * Operations are passed through as received, so this is here to stop a typed
+   * reconstruction losing it.
+   */
+  smart_relay_fee_quote?: {
+    fee_amount: string;
+    fee_denom: string;
+    fee_payment_address: string;
+    relayer_address: string;
+    expiration: string;
+  };
+};
+
 export type SkipSwapExactCoinOut = {
   swap_venue: SkipSwapVenue;
   swap_operations: SkipSwapOperation[];
@@ -171,8 +226,15 @@ export type SkipMsgsRequest = {
   address_list: string[];
   operations: SkipOperation[];
 
+  /**
+   * Required, despite reading as a tuning knob: Skip rejects a `/msgs` build
+   * that omits it — or sends it empty — with `invalid
+   * slippage_tolerance_percent`. Kept non-optional so a new call site cannot
+   * forget it and fail only at runtime.
+   */
+  slippage_tolerance_percent: string;
+
   estimated_amount_out?: string;
-  slippage_tolerance_percent?: string;
   affiliates?: SkipAffiliate[];
 
   client_id?: string;
@@ -185,6 +247,27 @@ export type SkipAffiliate = {
 
 export type SkipMsgsResponse = {
   msgs: SkipMsg[];
+};
+
+/**
+ * The subset of a quoted multi-tx route needed to rebuild its later steps'
+ * msgs without re-routing. Serialized into quotes as `multiTxRouteData` and
+ * passed back verbatim to `getTransactionStep`.
+ */
+export type SkipMultiTxRouteData = {
+  source_asset_denom: string;
+  source_asset_chain_id: string;
+  dest_asset_denom: string;
+  dest_asset_chain_id: string;
+  amount_in: string;
+  amount_out: string;
+  operations: SkipOperation[];
+  required_chain_addresses: string[];
+  /**
+   * The tolerance the quote was built with, so later steps sign the same one.
+   * Absent on routes persisted before it was stored.
+   */
+  slippage_tolerance_percent?: string;
 };
 
 export type SkipMsg =

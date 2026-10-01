@@ -1,18 +1,12 @@
-import {
-  CONCENTRATED_LIQ_POOL_TYPE,
-  COSMWASM_POOL_TYPE,
-  PoolRaw,
-  STABLE_POOL_TYPE,
-  WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/pools/build/types";
-import { getPool } from "@osmosis-labs/server";
+import { getPool, PoolRawResponse } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { toLegacyPoolResponse } from "~/server/api/legacy-pool-response";
 
 type Response = {
-  pool: PoolRaw;
+  pool: PoolRawResponse;
 };
 
 export default async function pools(req: Request) {
@@ -26,26 +20,8 @@ export default async function pools(req: Request) {
     chainList: ChainList,
     assetLists: AssetLists,
     poolId,
-  }).then((pool) => {
-    if (pool.type === "weighted") {
-      return {
-        ...pool.raw,
-        ["@type"]: WEIGHTED_POOL_TYPE,
-      };
-    } else if (pool.type === "stable") {
-      return {
-        ...pool.raw,
-        ["@type"]: STABLE_POOL_TYPE,
-      };
-    } else if (pool.type === "concentrated") {
-      return {
-        ...pool.raw,
-        ["@type"]: CONCENTRATED_LIQ_POOL_TYPE,
-      };
-    }
-    return { ...pool.raw, ["@type"]: COSMWASM_POOL_TYPE };
-  });
-  const response: Response = { pool: pool as PoolRaw };
+  }).then(toLegacyPoolResponse);
+  const response: Response = { pool };
   return new Response(JSON.stringify(response), { status: 200 });
 }
 

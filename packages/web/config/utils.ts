@@ -1,11 +1,4 @@
-import { CW20Currency, Secret20Currency } from "@keplr-wallet/types";
-import type {
-  Asset,
-  AssetList,
-  Chain,
-  ChainInfo,
-  ChainInfoWithExplorer,
-} from "@osmosis-labs/types";
+import type { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";
@@ -23,12 +16,6 @@ export function getOsmosisChainId(environment: "testnet" | "mainnet") {
 }
 
 const tokensDir = "/tokens/generated";
-export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
-  const urlParts = imageUrl.split("/");
-  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
-  const fileType = fileNameSplit[fileNameSplit.length - 1];
-  return `${tokensDir}/${symbol.toLowerCase()}.${fileType}`;
-}
 
 function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
@@ -139,235 +126,10 @@ export async function saveAssetImageToTokensDir({
 }
 
 /** Generate a chain config compatible with Keplr wallet. */
-function getKeplrCompatibleChain({
-  chain,
-  assetLists,
-  environment,
-}: {
-  chain: Chain;
-  assetLists: AssetList[];
-  environment: "testnet" | "mainnet";
-}): ChainInfoWithExplorer | undefined {
-  const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
-  const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-    : chain.chain_id;
-  const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
-
-  if (!assetList && environment === "mainnet") {
-    console.error(
-      `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
-    );
-
-    return;
-  }
-
-  if (!assetList && environment === "testnet") {
-    console.warn(`Failed to find currencies for ${chain.chain_name}`);
-    return;
-  }
-
-  const stakingTokenDenom = chain.stakeCurrency?.coinMinimalDenom ?? "";
-  const stakeAsset = assetList!.assets.find(
-    (asset) => asset.coinMinimalDenom === stakingTokenDenom
-  );
-
-  const stakeDisplayDecimals = stakeAsset?.decimals;
-  const stakeCoinMinimalDenom = stakeAsset?.coinMinimalDenom;
-
-  const rpc = chain.apis ? chain.apis.rpc[0]?.address : "";
-  const rest = chain.apis ? chain.apis.rest[0]?.address : "";
-  const prettyChainName = chain.prettyName;
-
-  const stakeCurrencyImageUrl =
-    stakeAsset?.logoURIs?.svg ?? stakeAsset?.logoURIs?.png;
-
-  return {
-    rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
-    rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
-    chainId: isOsmosis
-      ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId ?? ""
-      : chainId ?? "",
-    chainName: chain.chain_name,
-    prettyChainName: isOsmosis
-      ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? prettyChainName
-      : prettyChainName,
-    bip44: {
-      coinType: chain?.slip44 ?? 118,
-    },
-    currencies: (chain.currencies ?? []).reduce<
-      ChainInfoWithExplorer["currencies"]
-    >((acc, asset) => {
-      const coinMinimalDenom = asset.coinMinimalDenom ?? "";
-      const displayDecimals = asset.coinDecimals;
-
-      const isCW20ContractToken =
-        coinMinimalDenom
-          .split(/(\w+):(\w+)/)
-          .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
-
-      let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-      if (coinMinimalDenom.startsWith("cw20:secret")) {
-        type = "secret20";
-      } else if (coinMinimalDenom.startsWith("cw20:")) {
-        type = "cw20";
-      }
-
-      // if (!asset.logoURIs.svg && !asset.logoURIs.png) {
-      //   throw new Error(
-      //     `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
-      //   );
-      // }
-
-      let gasPriceStep: ChainInfo["gasPriceStep"];
-      const matchingFeeCurrency = chain.feeCurrencies
-        ? chain.feeCurrencies.find(
-            (token) => token.coinMinimalDenom === coinMinimalDenom
-          )
-        : undefined;
-
-      if (
-        matchingFeeCurrency &&
-        matchingFeeCurrency.gasPriceStep?.low &&
-        matchingFeeCurrency.gasPriceStep.average &&
-        matchingFeeCurrency.gasPriceStep.high
-      ) {
-        gasPriceStep = {
-          low: matchingFeeCurrency.gasPriceStep.low,
-          average: matchingFeeCurrency.gasPriceStep.average,
-          high: matchingFeeCurrency.gasPriceStep.high,
-        };
-      }
-
-      const imageUrl = asset?.coinImageUrl ?? "";
-
-      acc.push({
-        type: type ?? "cw20",
-        coinDenom: asset.coinDenom,
-        /**
-         * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
-         */
-        coinMinimalDenom: isCW20ContractToken
-          ? coinMinimalDenom + `:${asset.coinDenom}`
-          : coinMinimalDenom,
-        contractAddress: isCW20ContractToken
-          ? coinMinimalDenom.split(":")[1]!
-          : "",
-        coinDecimals: displayDecimals,
-        coinGeckoId: asset.coinGeckoId,
-        coinImageUrl: imageUrl
-          ? getImageRelativeFilePath(imageUrl, asset.coinDenom)
-          : undefined,
-        base: asset.coinMinimalDenom,
-        // pegMechanism: asset.pegMechanism,
-        gasPriceStep,
-      });
-      return acc;
-    }, []),
-    stakeCurrency:
-      // Note: this is a hacky fix since it's possible for chains to have no staking token (i.e. Noble)
-      // Newever versions of Keplr made this nullable, but our Keplr stores are from an old version of Keplr.
-      // I don't anticipate this being an issue since we don't really use staking tokens on other chain in our FE features.
-      // Further, most chains have staking tokens.
-      // So, I add a placeholder token to stay compatible with the ChainInfo types that we imported into the keplr-* packages in the monorepo.
-      // Long term, once we remove the keplr stores for good and delete that code, we can upgrade our Keplr chain type to use the newer
-      // type that tolerates missing staking tokens. Then, we can suggest chains to Keplr wallet with Staking tokens missing.
-      stakeAsset &&
-      stakeDisplayDecimals &&
-      (stakeCoinMinimalDenom || stakingTokenDenom)
-        ? {
-            coinDecimals: stakeDisplayDecimals ?? 0,
-            coinDenom: stakeAsset.symbol ?? stakingTokenDenom,
-            coinMinimalDenom: stakeCoinMinimalDenom ?? stakingTokenDenom! ?? "",
-            coinGeckoId: stakeAsset.coingeckoId,
-            coinImageUrl: stakeCurrencyImageUrl
-              ? getImageRelativeFilePath(
-                  stakeCurrencyImageUrl,
-                  stakeAsset.symbol
-                )
-              : undefined,
-            base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
-          }
-        : {
-            coinDecimals: 0,
-            coinDenom: "STAKE",
-            coinMinimalDenom: "tempStakePlaceholder",
-          },
-    feeCurrencies: (chain.feeCurrencies ?? []).reduce<
-      ChainInfoWithExplorer["feeCurrencies"]
-    >((acc, token) => {
-      const asset = assetList?.assets.find(
-        (asset) => asset.coinMinimalDenom === token.coinMinimalDenom
-      );
-
-      if (!asset) {
-        return acc;
-      }
-
-      const coinMinimalDenom = asset.coinMinimalDenom;
-      const displayDecimals = asset.decimals;
-
-      const isContractToken =
-        coinMinimalDenom
-          .split(/(\w+):(\w+)/)
-          .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
-      let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-      if (coinMinimalDenom.startsWith("cw20:secret")) {
-        type = "secret20";
-      } else if (coinMinimalDenom.startsWith("cw20:")) {
-        type = "cw20";
-      }
-
-      let gasPriceStep: ChainInfo["gasPriceStep"];
-      const matchingFeeCurrency = chain.feeCurrencies
-        ? chain.feeCurrencies.find(
-            (token) => token.coinMinimalDenom === asset.coinMinimalDenom
-          )
-        : undefined;
-
-      if (
-        matchingFeeCurrency &&
-        matchingFeeCurrency.gasPriceStep?.low &&
-        matchingFeeCurrency.gasPriceStep.average &&
-        matchingFeeCurrency.gasPriceStep.high
-      ) {
-        gasPriceStep = {
-          low: matchingFeeCurrency.gasPriceStep.low,
-          average: matchingFeeCurrency.gasPriceStep.average,
-          high: matchingFeeCurrency.gasPriceStep.high,
-        };
-      }
-
-      const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
-
-      acc.push({
-        type: type ?? "cw20",
-        coinDenom: asset.symbol,
-        /**
-         * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
-         */
-        coinMinimalDenom: isContractToken
-          ? coinMinimalDenom + `:${asset.symbol}`
-          : coinMinimalDenom,
-        contractAddress: isContractToken ? coinMinimalDenom.split(":")[1] : "ƒ",
-        coinDecimals: displayDecimals,
-        coinGeckoId: asset.coingeckoId,
-        coinImageUrl: imageUrl
-          ? getImageRelativeFilePath(imageUrl, asset.symbol)
-          : undefined,
-        base: asset.coinMinimalDenom,
-        gasPriceStep,
-      });
-      return acc;
-    }, []),
-    bech32Config: chain.bech32Config,
-    explorerUrlToTx: chain.explorers
-      ? chain.explorers[0]?.txPage.replace("${", "{")
-      : "",
-    features: chain.features,
-  };
-}
-
+/**
+ * Chains in the generated list. `keplrChain` and CosmosKit's `fees`/`staking` are derived
+ * at runtime in `config/keplr-chain.ts` instead of being stored here.
+ */
 export function getChainList({
   assetLists,
   chains,
@@ -376,71 +138,44 @@ export function getChainList({
   assetLists: AssetList[];
   chains: Chain[];
   environment: "testnet" | "mainnet";
-}) {
-  return chains
-    .map(
-      (
-        chain
-      ):
-        | (Chain & {
-            keplrChain: ChainInfoWithExplorer;
-          })
-        | undefined => {
-        const isOsmosis =
-          chain.chain_name === "osmosis" ||
-          chain.chain_name === "osmosistestnet";
+}): Chain[] {
+  return chains.flatMap((chain) => {
+    const isOsmosis =
+      chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
+    const chainId = isOsmosis
+      ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+      : chain.chain_id;
 
-        const keplrChain = getKeplrCompatibleChain({
-          chain,
-          assetLists,
-          environment,
-        });
+    // The Keplr chain store needs each chain's currencies, which come from its asset list.
+    if (!assetLists.some(({ chain_id }) => chain_id === chainId)) {
+      const log = environment === "mainnet" ? console.error : console.warn;
+      log(
+        `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
+      );
+      return [];
+    }
 
-        if (!keplrChain) return undefined;
-
-        return {
-          ...chain,
-          features: chain.features ?? [],
-          /**
-           * Needed for CosmosKit to function correctly, otherwise
-           * chain suggestion won't work.
-           */
-          fees: {
-            fee_tokens: (chain.feeCurrencies ?? []).map((token) => ({
-              ...token,
-              denom: token.coinMinimalDenom,
-              fixed_min_gas_price: token.gasPriceStep?.low ?? 0,
-              low_gas_price: token.gasPriceStep?.low,
-              average_gas_price: token.gasPriceStep?.average,
-              high_gas_price: token.gasPriceStep?.high,
-            })),
-          },
-          staking: {
-            staking_tokens: chain.stakeCurrency ? [chain.stakeCurrency] : [],
-          },
-          chain_id: isOsmosis
-            ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-            : chain.chain_id,
-          prettyName: isOsmosis
-            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.prettyName
-            : chain.prettyName,
-          apis: {
-            rpc:
-              isOsmosis && OSMOSIS_RPC_OVERWRITE
-                ? [{ address: OSMOSIS_RPC_OVERWRITE }]
-                : chain.apis?.rpc ?? [],
-            rest:
-              isOsmosis && OSMOSIS_REST_OVERWRITE
-                ? [{ address: OSMOSIS_REST_OVERWRITE }]
-                : chain.apis?.rest ?? [],
-          },
-          explorers: (chain.explorers ?? []).map((explorer) => ({
-            ...explorer,
-            txPage: explorer.txPage.replace("${", "{"),
-          })),
-          keplrChain,
-        };
-      }
-    )
-    .filter((chain) => typeof chain !== "undefined");
+    return {
+      ...chain,
+      features: chain.features ?? [],
+      chain_id: chainId,
+      prettyName: isOsmosis
+        ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.prettyName
+        : chain.prettyName,
+      apis: {
+        rpc:
+          isOsmosis && OSMOSIS_RPC_OVERWRITE
+            ? [{ address: OSMOSIS_RPC_OVERWRITE }]
+            : chain.apis?.rpc ?? [],
+        rest:
+          isOsmosis && OSMOSIS_REST_OVERWRITE
+            ? [{ address: OSMOSIS_REST_OVERWRITE }]
+            : chain.apis?.rest ?? [],
+      },
+      explorers: (chain.explorers ?? []).map((explorer) => ({
+        ...explorer,
+        txPage: explorer.txPage.replace("${", "{"),
+      })),
+    };
+  });
 }

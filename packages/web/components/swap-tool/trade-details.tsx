@@ -373,7 +373,7 @@ function ExpectedRate(
   // Used for Limit inputs to override the price display
   priceOverride?: PricePretty
 ) {
-  var inBaseOutQuoteSpotPrice =
+  const inBaseOutQuoteSpotPrice =
     swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
   if (inBaseOutQuoteSpotPrice.isZero()) {
     console.warn("ExpectedRate: inBaseOutQuoteSpotPrice is Zero");
@@ -494,21 +494,21 @@ function RoutesTaken({
   // this prevents whiplash in the UI
   const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
 
-  split = isLoading ? latestSplitRef ?? split : split;
+  const displayedSplit = isLoading ? latestSplitRef ?? split : split;
 
   const tokenInTotal = useMemo(
     () =>
-      split.reduce(
+      displayedSplit.reduce(
         (sum, { initialAmount }) => sum.add(new Dec(initialAmount)),
         new Dec(0)
       ),
-    [split]
+    [displayedSplit]
   );
 
   const splitWithPercentages: RouteWithPercentage[] = useMemo(() => {
-    if (split.length === 1) return split;
+    if (displayedSplit.length === 1) return displayedSplit;
 
-    return split.map((route) => {
+    return displayedSplit.map((route) => {
       const percentage = new RatePretty(
         new Dec(route.initialAmount).quo(tokenInTotal).mul(new Dec(100))
       ).moveDecimalPointLeft(2);
@@ -518,7 +518,7 @@ function RoutesTaken({
         percentage,
       };
     });
-  }, [split, tokenInTotal]);
+  }, [displayedSplit, tokenInTotal]);
 
   return (
     <div className="flex flex-col gap-2">

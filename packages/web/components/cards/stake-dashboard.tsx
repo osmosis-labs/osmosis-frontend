@@ -1,7 +1,12 @@
-import { Currency } from "@keplr-wallet/types";
 import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  PricePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useState } from "react";

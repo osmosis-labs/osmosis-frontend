@@ -9,7 +9,7 @@ import {
 
 import { Alert, AlloyedAssetsAlert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -365,7 +365,11 @@ const AlloyedAssetsToast: FunctionComponent<
             >
               {t("alloyedAssets.dismiss")}
             </Button>
-            <Button className="text-white-full" onClick={onConvert}>
+            <Button
+              mode="primary"
+              className="text-white-full"
+              onClick={onConvert}
+            >
               {t("alloyedAssets.convert")}
             </Button>
           </div>

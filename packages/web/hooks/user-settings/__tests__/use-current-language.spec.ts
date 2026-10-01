@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { renderHook } from "@testing-library/react";
 
 import {

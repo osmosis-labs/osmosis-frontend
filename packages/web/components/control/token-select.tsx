@@ -1,5 +1,4 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef } from "react";

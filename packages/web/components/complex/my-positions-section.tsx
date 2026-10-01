@@ -14,9 +14,8 @@ const INITIAL_POSITION_CNT = 3;
 /** List of position cards for a user. Optionally show positions only for a give pool ID via `forPoolId` prop. */
 export const MyPositionsSection: FunctionComponent<{
   forPoolId?: string;
-  showRoi?: boolean;
   showSelectedRange?: boolean;
-}> = observer(({ forPoolId, showRoi = true, showSelectedRange = true }) => {
+}> = observer(({ forPoolId, showSelectedRange = true }) => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const { chainId } = chainStore.osmosis;
@@ -100,7 +99,6 @@ export const MyPositionsSection: FunctionComponent<{
               key={position.id}
               position={position}
               showLinkToPool={!Boolean(forPoolId)}
-              showRoi={showRoi}
               showSelectedRange={showSelectedRange}
             />
           ))}

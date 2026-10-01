@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/bridge",
   "version": "1.0.0",
   "main": "build/index.js",
+  "sideEffects": false,
   "author": "osmosis-labs",
   "repository": {
     "type": "git",
@@ -22,12 +23,12 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "prepare": "yarn build"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.14.0",
-    "@cosmjs/encoding": "0.32.3",
-    "@cosmjs/proto-signing": "0.32.3",
+    "@cosmjs/encoding": "0.36.2",
+    "@cosmjs/proto-signing": "0.36.2",
     "@osmosis-labs/proto-codecs": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/tx": "^1.0.0",
@@ -45,7 +46,10 @@
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
+    "eslint": "^9.39.5",
+    "jest": "^29.7.0",
     "jest-in-case": "^1.0.2",
+    "prettier": "^2.8.8",
     "ts-jest": "^29.1.2",
     "typescript": "5.4.5"
   },

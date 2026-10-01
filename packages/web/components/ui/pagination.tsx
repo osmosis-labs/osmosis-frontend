@@ -1,10 +1,11 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import Link from "next/link";
 import * as React from "react";
 
 import { Icon } from "~/components/assets";
-import { ButtonProps, buttonVariants } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
@@ -39,8 +40,11 @@ PaginationItem.displayName = "PaginationItem";
 
 type PaginationLinkProps = {
   isActive?: boolean;
-} & Pick<ButtonProps, "size"> &
-  React.ComponentProps<typeof Link>;
+  /** Pagination only renders shadcn-styled links, so this is the `buttonVariants`
+   *  size scale, not the wider `ButtonProps["size"]` that also admits the
+   *  legacy `mode` sizes. */
+  size?: VariantProps<typeof buttonVariants>["size"];
+} & React.ComponentProps<typeof Link>;
 
 const PaginationLink = ({
   className,

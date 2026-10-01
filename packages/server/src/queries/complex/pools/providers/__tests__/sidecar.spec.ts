@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { setupServer } from "msw/node";
 
@@ -41,8 +41,8 @@ describe("getPoolsFromSidecar", () => {
     });
 
     server.use(
-      rest.get(`${SIDECAR_BASE_URL}/pools`, (_req, res, ctx) => {
-        return res(ctx.json(mockSidecarResponse));
+      http.get(`${SIDECAR_BASE_URL}/pools`, () => {
+        return HttpResponse.json(mockSidecarResponse);
       })
     );
   });

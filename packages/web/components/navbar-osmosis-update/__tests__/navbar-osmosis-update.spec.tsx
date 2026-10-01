@@ -1,16 +1,29 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { resetLDMocks } from "jest-launchdarkly-mock";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import { mockFeatureFlags, renderWithProviders } from "~/__tests__/test-utils";
+import {
+  mockFeatureFlags,
+  renderWithProviders,
+  resetQueryClient,
+} from "~/__tests__/test-utils";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
+
+const osmosisUpdatesUrl =
+  "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json";
 
 beforeEach(() => {
   resetLDMocks();
+  resetQueryClient();
+  localStorage.removeItem("osmosis-updates-closed-url");
+  server.use(
+    http.get(osmosisUpdatesUrl, () =>
+      HttpResponse.json({ iframeUrl: "localhost.localdomain" })
+    )
+  );
 });
 
 it("should display osmosis updates and allow to close", async () => {
@@ -19,12 +32,9 @@ it("should display osmosis updates and allow to close", async () => {
   });
 
   server.use(
-    rest.get(
-      "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json",
-      (_req, res, ctx) => {
-        return res(ctx.json({ iframeUrl: "localhost.localdomain" }));
-      }
-    )
+    http.get(osmosisUpdatesUrl, () => {
+      return HttpResponse.json({ iframeUrl: "localhost.localdomain" });
+    })
   );
 
   const user = userEvent.setup();
@@ -57,11 +67,12 @@ it("should allow to close osmosis updates and not display them until a new url i
   });
 
   server.use(
-    rest.get(
-      "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json",
-      (_req, res, ctx) => {
-        return res.once(ctx.json({ iframeUrl: "localhost.localdomain" }));
-      }
+    http.get(
+      osmosisUpdatesUrl,
+      () => {
+        return HttpResponse.json({ iframeUrl: "localhost.localdomain" });
+      },
+      { once: true }
     )
   );
 
@@ -87,14 +98,12 @@ it("should allow to close osmosis updates and not display them until a new url i
 
   // Osmosis updates should be visible after loading since url is different
   server.use(
-    rest.get(
-      "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json",
-      (_req, res, ctx) => {
-        return res(ctx.json({ iframeUrl: "localhost.localdomain-new" }));
-      }
-    )
+    http.get(osmosisUpdatesUrl, () => {
+      return HttpResponse.json({ iframeUrl: "localhost.localdomain-new" });
+    })
   );
 
+  resetQueryClient();
   renderWithProviders(<NavbarOsmosisUpdate />);
 
   await screen.findByText("Osmosis updates!");

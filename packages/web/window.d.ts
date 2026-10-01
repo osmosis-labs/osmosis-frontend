@@ -1,10 +1,12 @@
-import { Window as KeplrWindow } from "@keplr-wallet/types";
-
 import type { widget } from "~/public/tradingview";
 
 declare global {
-  interface Window extends KeplrWindow {
+  interface Window {
     ethereum: EthereumProvider;
+    /** Injected by the Keplr extension and in-app browser. Wallet calls go through cosmos-kit. */
+    keplr?: {
+      readonly mode: "core" | "extension" | "mobile-web" | "walletconnect";
+    };
   }
 
   interface TradingView {

@@ -2,7 +2,7 @@ import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
@@ -133,10 +133,10 @@ describe("IbcBridgeProvider", () => {
 
   beforeEach(() => {
     server.use(
-      rest.get(
+      http.get(
         "https://raw.githubusercontent.com/osmosis-labs/assetlists/main/osmosis-1/generated/frontend/chainlist.json",
-        (_req, res, ctx) =>
-          res(ctx.json({ zone: "osmosis", chains: MockGeneratedChains }))
+        () =>
+          HttpResponse.json({ zone: "osmosis", chains: MockGeneratedChains })
       )
     );
     provider = new IbcBridgeProvider(mockContext);

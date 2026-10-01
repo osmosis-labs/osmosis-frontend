@@ -1,11 +1,10 @@
 import type { StdFee } from "@cosmjs/amino";
 import {
+  DEFAULT_VS_CURRENCY,
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-} from "@osmosis-labs/pools";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+} from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   getSwapMessages,
@@ -38,7 +37,10 @@ import {
   getParametersFromOverspendErrorMessage,
   isOverspendErrorMessage,
 } from "~/components/alert/prettify";
-import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
+import {
+  ATOM_BASE_DENOM,
+  TRADE_PAIR_QUERY_OPTIONS,
+} from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -1269,7 +1271,9 @@ function useToFromDenoms({
    */
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    parseAsString.withDefault(initialFromDenom ?? ATOM_BASE_DENOM)
+    parseAsString
+      .withDefault(initialFromDenom ?? ATOM_BASE_DENOM)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
@@ -1728,8 +1732,6 @@ export function useDynamicSlippageConfig({
               )
             );
           }
-        } else {
-          console.log("No amounts found");
         }
       }
     }

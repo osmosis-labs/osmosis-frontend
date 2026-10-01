@@ -156,7 +156,7 @@ export function useConvertVariant(
       }),
     [
       variant,
-      account?.address,
+      account,
       quote,
       accountStore,
       variantTransactionIdentifier,

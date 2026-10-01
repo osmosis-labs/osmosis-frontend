@@ -2,14 +2,15 @@
  * This file is used to generate the asset-list.ts and chain-list.ts files.
  *
  * Reasons we need to generate chain-list.ts:
- *  1. We need to add the `keplrChain` object to the chain list. This is used to keep compatibility with the Keplr stores.
+ *  1. We need to apply the Osmosis chain overwrites and drop chains without an asset list.
  *  2. We need to determine all the available chain ids for added type safety.
+ *
+ * The Keplr `ChainInfo` and CosmosKit fields are derived at runtime (see `keplr-chain.ts`), not stored.
  *
  * Reasons we need to generate asset-list.ts:
  *  1. We need to determine all the available asset symbols for added type safety.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
 import type {
   Asset,
@@ -23,7 +24,6 @@ import * as fs from "fs";
 
 import { generateTsFile } from "~/utils/codegen";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
@@ -31,10 +31,10 @@ import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "./env";
+import { getImageRelativeFilePath } from "./keplr-chain";
 import {
   codegenDir,
   getChainList,
-  getImageRelativeFilePath,
   getOsmosisChainId,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
@@ -46,6 +46,8 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
+
+const IMAGE_DOWNLOAD_CONCURRENCY = 16;
 
 function getFilePath({
   chainId,
@@ -101,8 +103,8 @@ async function generateChainListFile({
 
   if (!onlyTypes) {
     content += `
-      import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
-      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
+      import type { Chain } from "@osmosis-labs/types";
+      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
       getChainList({ assetLists, environment, chains: chainList.chains }),
       null,
       2
@@ -373,17 +375,37 @@ async function generateAssetImages({
   commitHash: string;
 }) {
   console.time("Successfully downloaded images");
-  for await (const asset of assetList.assets) {
+  // ~1300 images: downloading them one at a time dominated build time on
+  // fresh clones (~3 min), so fetch with a small pool of workers instead.
+  // Assets sharing a symbol write to the same file, so group them by path and
+  // download each group in order on one worker. That avoids concurrent writes
+  // to one path and keeps the previous sequential behavior: the last
+  // successful download wins, and a failed one leaves an earlier image.
+  const downloads = new Map<
+    string,
+    { imageUrl: string; asset: Pick<Asset, "symbol"> }[]
+  >();
+  for (const asset of assetList.assets) {
     const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
-
     if (!imageUrl) continue;
-
-    await saveAssetImageToTokensDir({
-      imageUrl,
-      asset,
-      currentAssetListHash: commitHash,
-    });
+    const filePath = getImageRelativeFilePath(imageUrl, asset.symbol);
+    const candidates = downloads.get(filePath) ?? [];
+    candidates.push({ imageUrl, asset });
+    downloads.set(filePath, candidates);
   }
+
+  const queue = Array.from(downloads.values());
+  const worker = async () => {
+    for (let group = queue.shift(); group; group = queue.shift()) {
+      for (const download of group) {
+        await saveAssetImageToTokensDir({
+          ...download,
+          currentAssetListHash: commitHash,
+        });
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
   console.timeEnd("Successfully downloaded images");
 }
 

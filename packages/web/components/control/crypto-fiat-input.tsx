@@ -143,7 +143,7 @@ export const CryptoFiatInput: FunctionComponent<{
       assetPrice.fiatCurrency,
       new Dec(safeInputToDec(fiatInputRaw))
     );
-  }, [assetPrice?.fiatCurrency, fiatInputRaw]);
+  }, [assetPrice, fiatInputRaw]);
 
   const inputCoin = useMemo(() => {
     if (!assetWithBalance) return;
@@ -217,7 +217,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
-      let nextValue = value;
+      const nextValue = value;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (assetPrice && assetWithBalance) {

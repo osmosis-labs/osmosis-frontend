@@ -5,6 +5,22 @@ import { DynamicLottieAnimation } from "~/components/animation";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 
+const ConditionalTooltip = ({
+  children,
+  disabled,
+  disabledTooltipContent,
+}: PropsWithChildren<{
+  disabled: boolean;
+  disabledTooltipContent?: string;
+}>) =>
+  disabled ? (
+    <Tooltip content={disabledTooltipContent} className="h-full w-full">
+      {children as ReactElement}
+    </Tooltip>
+  ) : (
+    <>{children}</>
+  );
+
 export const RewardsCard: React.FC<{
   title: string;
   disabledTooltipContent?: string;
@@ -20,15 +36,6 @@ export const RewardsCard: React.FC<{
   globalLottieFileKey,
   position,
 }) => {
-  const ConditionalTooltip = ({ children }: PropsWithChildren) =>
-    disabled ? (
-      <Tooltip content={disabledTooltipContent} className="h-full w-full">
-        {children as ReactElement}
-      </Tooltip>
-    ) : (
-      <>{children}</>
-    );
-
   const positionClasses =
     position === "right"
       ? `[mask-image:url('/images/folder-right-tab.svg')] bg-[url('/images/grid-right-tab.svg')]`
@@ -43,7 +50,10 @@ export const RewardsCard: React.FC<{
       className="relative !h-[150px] !max-h-[150px] !w-[300px] !max-w-[300px] !p-0 disabled:opacity-50"
       onClick={onClick}
     >
-      <ConditionalTooltip>
+      <ConditionalTooltip
+        disabled={disabled}
+        disabledTooltipContent={disabledTooltipContent}
+      >
         <div
           className={classNames(
             "relative h-full w-full bg-cover [mask-repeat:no-repeat] [mask-size:contain]",

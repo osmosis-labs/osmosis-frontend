@@ -10,7 +10,8 @@ import {
   reaction,
 } from "mobx";
 import Axios, { AxiosInstance } from "axios";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
+import { KVStore } from "../kv-store";
+import { toGenerator } from "../mobx";
 import { DeepReadonly } from "utility-types";
 import { HasMapStore } from "../map";
 import EventEmitter from "eventemitter3";

@@ -198,6 +198,7 @@ export function useAddConcentratedLiquidityConfig(
       poolId,
       account?.osmosis,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils.local.pools.getPool,
       config.baseDepositAmountIn.sendCurrency,
       config.baseDepositAmountIn.amount,
       config.quoteDepositAmountIn.sendCurrency,
@@ -264,6 +265,7 @@ export function useAddConcentratedLiquidityConfig(
     [
       poolId,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils.local.pools.getPool,
       config.baseDepositAmountIn,
       config.quoteDepositAmountIn,
       config.baseDepositOnly,

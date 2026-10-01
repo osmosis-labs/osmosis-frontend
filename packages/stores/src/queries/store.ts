@@ -1,5 +1,8 @@
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, QueriesSetBase } from "@osmosis-labs/keplr-stores";
+import {
+  ChainGetter,
+  KVStore,
+  QueriesSetBase,
+} from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import {
@@ -220,8 +223,6 @@ export class OsmosisQueriesImpl {
       chainId,
       webApiBaseUrl,
       chainGetter,
-      this.queryLiquiditiesInNetDirection,
-      queries.queryBalances,
       this.queryGammNumPools,
       poolIdBlacklist,
       transmuterCodeIds,

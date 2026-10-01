@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { act, renderHook, waitFor } from "@testing-library/react";
 
 import { mockStoreState } from "~/__tests__/zustand-utils";

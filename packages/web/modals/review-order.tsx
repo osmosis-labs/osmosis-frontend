@@ -20,11 +20,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
+import { Button } from "~/components/ui/button";
 import { Button as UIButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
@@ -79,6 +79,8 @@ interface ReviewOrderProps {
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
+  /** Effective order type; overrides the `type` URL param when provided. */
+  orderType?: "market" | "limit";
 }
 
 export function ReviewOrder({
@@ -109,6 +111,7 @@ export function ReviewOrder({
   isBeyondOppositePrice = false,
   quoteType,
   overspendErrorParams,
+  orderType: orderTypeProp,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -151,10 +154,11 @@ export function ReviewOrder({
     overspendErrorParams?.wouldSpendTotal,
   ]);
 
-  const [orderType] = useQueryState(
+  const [queryOrderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
   );
+  const orderType = orderTypeProp ?? queryOrderType;
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const isManualSlippageTooHigh =
@@ -171,9 +175,10 @@ export function ReviewOrder({
     []
   );
 
+  const [originalValue, setOriginalValue] = useState(initialOutput);
+
   const { diffGteSlippage, restart } = useMemo(
     () => {
-      let originalValue = initialOutput;
       return {
         diffGteSlippage: slippageConfig
           ? originalValue
@@ -182,7 +187,7 @@ export function ReviewOrder({
               .gte(slippageConfig?.slippage.toDec())
           : false,
         restart: () => {
-          originalValue = amountWithSlippage ?? new IntPretty(0);
+          setOriginalValue(amountWithSlippage ?? new IntPretty(0));
         },
       };
     },
@@ -194,8 +199,7 @@ export function ReviewOrder({
      * This is to monitor if the output amount changes too much from the original
      * quote so as to warn the user.
      */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amountWithSlippage, slippageConfig]
+    [amountWithSlippage, originalValue, slippageConfig]
   );
 
   const handleManualSlippageChange = useCallback(

@@ -1,5 +1,6 @@
 import { computed, makeObservable, override } from "mobx";
-import { DenomHelper, KVStore } from "@keplr-wallet/common";
+import { DenomHelper } from "../../common/denom";
+import { KVStore } from "../../common/kv-store";
 import { ChainGetter } from "../../common";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
 import { BalanceRegistry, ObservableQueryBalanceInner } from "../balances";

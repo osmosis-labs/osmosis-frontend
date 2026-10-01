@@ -5,7 +5,12 @@ import {
   expect,
 } from "@playwright/test";
 
-import { buildExplorerTxUrl, pollTxOnChain } from "../utils/tx-confirm";
+import {
+  SEQUENCE_RETRY_DELAY_MS,
+  buildExplorerTxUrl,
+  isSequenceMismatch,
+  pollTxOnChain,
+} from "../utils/tx-confirm";
 import { unfoldWalletMsgYaml } from "../utils/wallet-msg";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage, waitForKeplrApproval } from "./keplr-helper";
@@ -45,10 +50,56 @@ export class TradePage extends BasePage {
   readonly buySellTimeout = 30_000;
   /** Hash of the most recently broadcast tx, captured for the REST fallback. */
   private lastTxHash?: string;
+  /** Request and response of the most recent failed router quote, logged when the swap button shows "Error". */
+  private lastQuoteError?: string;
+  private quoteRequestCount = 0;
+  private lastQuoteErrorSeq = 0;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
+    // The swap button only ever reads "Error" when a quote fails, so keep the
+    // router's actual response to explain the failure in CI logs. Quotes come
+    // from the `local.quoteRouter` tRPC procedure, which runs in the browser
+    // and fetches the sidecar (SQS) directly, so watch the sidecar requests.
+    const isQuoteUrl = (url: string) =>
+      /\/router\/(quote|custom-direct-quote)$/.test(new URL(url).pathname);
+    const recordQuoteError = (seq: number, url: string, detail: string) => {
+      // Body reads can finish out of order; keep the latest-arriving failure.
+      if (seq < this.lastQuoteErrorSeq) return;
+      this.lastQuoteErrorSeq = seq;
+      // Quotes are GETs, so the request payload is the URL's query string.
+      const { pathname, search } = new URL(url);
+      this.lastQuoteError = `${new Date().toISOString()} ${pathname} request=${search} ${detail}`;
+    };
+    page.on("response", async (response) => {
+      if (!isQuoteUrl(response.url())) return;
+      const seq = ++this.quoteRequestCount;
+      const body = await response.text().catch(() => "");
+      // Like the app's apiClient, treat an error payload in a 200 as a failure.
+      let payloadError = false;
+      try {
+        const data = JSON.parse(body);
+        payloadError = Boolean(data?.code) || data?.status_code >= 400;
+      } catch {
+        payloadError = true;
+      }
+      if (response.ok() && !payloadError) return;
+      recordQuoteError(
+        seq,
+        response.url(),
+        `HTTP ${response.status()} response=${body}`
+      );
+    });
+    // Timeouts and connection failures never produce a response.
+    page.on("requestfailed", (request) => {
+      if (!isQuoteUrl(request.url())) return;
+      recordQuoteError(
+        ++this.quoteRequestCount,
+        request.url(),
+        `request failed: ${request.failure()?.errorText}`
+      );
+    });
     this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
     this.buyBtn = page.locator('//div[@class]/button[@class]/h6[.="Buy"]/..');
@@ -79,13 +130,12 @@ export class TradePage extends BasePage {
   }
 
   /**
-   * Navigate to the app home and wait for tokens to load.
+   * Navigate to the app home and wait for the trade widget to mount.
    *
    * Retries with backoff because the EU/SG monitoring suites load the app
-   * through an HTTP CONNECT proxy where the initial page load / `assets.json`
-   * fetch can intermittently stall — previously this surfaced as a hard
-   * `beforeAll` timeout (e.g. the 180s monitoring.limit hook on EU) instead of
-   * a recoverable retry.
+   * through an HTTP CONNECT proxy where the initial page load can stall —
+   * previously this surfaced as a hard `beforeAll` timeout instead of a
+   * recoverable retry.
    */
   async goto(retries = 2) {
     let lastError: unknown;
@@ -94,18 +144,8 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
-        // Wait for the assets.json *response* (not just the request being
-        // issued) and assert it loaded successfully, so a stalled/failed load
-        // surfaces as a retryable error rather than a false "ready". Using
-        // Promise.all ties both promises together, so if goto() throws the
-        // waitForResponse promise is still handled (no unhandled rejection).
-        const [assetResponse] = await Promise.all([
-          this.page.waitForResponse("**/assets.json", { timeout: 30_000 }),
-          this.page.goto("/"),
-        ]);
-        expect(assetResponse.ok()).toBeTruthy();
-        // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-        await this.page.waitForTimeout(2000);
+        await this.page.goto("/", { timeout: 30_000 });
+        await this.waitForTradeUi();
         const currentUrl = this.page.url();
         console.log(`FE opened at: ${currentUrl}`);
         await this.dismissVariantsPopupIfPresent();
@@ -389,6 +429,11 @@ export class TradePage extends BasePage {
       await expect(errorBtn).not.toBeVisible({ timeout: settleTimeout });
       return false;
     } catch {
+      console.log(
+        `Swap button shows "Error". Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
       return true;
     }
   }
@@ -400,15 +445,29 @@ export class TradePage extends BasePage {
     });
     // The disclosure renders as soon as there is an input amount but stays
     // disabled until the quote fills the out amount, so wait for it to be
-    // enabled rather than racing the quote with the click timeout.
+    // enabled rather than racing the quote with the click timeout. A failed
+    // router quote shows "Error" and keeps it disabled, but the swap tool
+    // refetches the quote every 5s, so a transient router error clears by
+    // itself; the wait covers that too, whether the error is already showing
+    // or arrives while the quote is still loading.
     const swapInfoBtn = this.page.locator(
       "//button[.//span[.='Show details']]"
     );
-    await expect(swapInfoBtn, "Show Swap Info button is disabled!").toBeEnabled(
-      {
-        timeout: 15000,
-      }
-    );
+    try {
+      await expect(
+        swapInfoBtn,
+        "Show Swap Info button is disabled!"
+      ).toBeEnabled({
+        timeout: 30_000,
+      });
+    } catch (e) {
+      console.log(
+        `Show details stayed disabled. Last failed quote response: ${
+          this.lastQuoteError ?? "none captured"
+        }`
+      );
+      throw e;
+    }
     await swapInfo.click({ timeout: 5000 });
   }
 
@@ -446,6 +505,7 @@ export class TradePage extends BasePage {
    * @param options.maxRetries - Maximum number of retry attempts on failure (default: 2, meaning 3 total attempts)
    * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after buy button click.
    * @param options.limit - Whether this is a limit order (default: false). Affects message validation logic.
+   * @param options.prepareRetry - Re-fills the form before a retry. The form resets after a failed attempt, so without it the button stays disabled.
    *
    * @returns Object containing msgContentAmount (string | undefined)
    *          - Returns message content if Keplr popup appears (standard wallet approval flow)
@@ -462,7 +522,12 @@ export class TradePage extends BasePage {
    */
   async buyAndGetWalletMsg(
     context: BrowserContext,
-    options?: { maxRetries?: number; slippagePercent?: string; limit?: boolean }
+    options?: {
+      maxRetries?: number;
+      slippagePercent?: string;
+      limit?: boolean;
+      prepareRetry?: () => Promise<void>;
+    }
   ) {
     const maxRetries = options?.maxRetries ?? 2;
     const slippagePercent = options?.slippagePercent;
@@ -480,17 +545,11 @@ export class TradePage extends BasePage {
           console.log(
             `🔄 Retry attempt ${attempt}/${maxRetries} for buy operation...`
           );
+          await options?.prepareRetry?.();
         }
 
         await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
-        });
-
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
         });
 
         await this.buyBtn.click();
@@ -501,6 +560,11 @@ export class TradePage extends BasePage {
           await this.setSlippageTolerance(slippagePercent);
         }
 
+        // Armed before the confirm click so a fast broadcast isn't missed.
+        // Unlike the toast alone, this reports a CheckTx rejection (such as a
+        // sequence mismatch) instead of timing out on it.
+        const confirmation = this.startTxConfirmation(40_000);
+        confirmation.catch(() => {});
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -539,7 +603,7 @@ export class TradePage extends BasePage {
         // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
         // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
         // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
-        await successPromise;
+        await confirmation;
 
         return { msgContentAmount };
       } catch (error: any) {
@@ -572,7 +636,9 @@ export class TradePage extends BasePage {
           .locator(".ReactModal__Overlay")
           .waitFor({ state: "hidden", timeout: 2000 })
           .catch(() => {});
-        await this.page.waitForTimeout(2000);
+        await this.page.waitForTimeout(
+          isSequenceMismatch(error) ? SEQUENCE_RETRY_DELAY_MS : 2000
+        );
       }
     }
 
@@ -589,6 +655,7 @@ export class TradePage extends BasePage {
    * @param options.maxRetries - Maximum number of retry attempts on failure (default: 2, meaning 3 total attempts)
    * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after sell button click.
    * @param options.limit - Whether this is a limit order (default: false). Affects message validation logic.
+   * @param options.prepareRetry - Re-fills the form before a retry. The form resets after a failed attempt, so without it the button stays disabled.
    *
    * @returns Object containing msgContentAmount (string | undefined)
    *          - Returns message content if Keplr popup appears (standard wallet approval flow)
@@ -605,7 +672,12 @@ export class TradePage extends BasePage {
    */
   async sellAndGetWalletMsg(
     context: BrowserContext,
-    options?: { maxRetries?: number; slippagePercent?: string; limit?: boolean }
+    options?: {
+      maxRetries?: number;
+      slippagePercent?: string;
+      limit?: boolean;
+      prepareRetry?: () => Promise<void>;
+    }
   ) {
     const maxRetries = options?.maxRetries ?? 2;
     const slippagePercent = options?.slippagePercent;
@@ -623,18 +695,12 @@ export class TradePage extends BasePage {
           console.log(
             `🔄 Retry attempt ${attempt}/${maxRetries} for sell operation...`
           );
+          await options?.prepareRetry?.();
         }
 
         // Make sure Sell button is enabled
         await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
-        });
-
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
         });
 
         await this.sellBtn.click();
@@ -645,6 +711,11 @@ export class TradePage extends BasePage {
           await this.setSlippageTolerance(slippagePercent);
         }
 
+        // Armed before the confirm click so a fast broadcast isn't missed.
+        // Unlike the toast alone, this reports a CheckTx rejection (such as a
+        // sequence mismatch) instead of timing out on it.
+        const confirmation = this.startTxConfirmation(40_000);
+        confirmation.catch(() => {});
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -683,7 +754,7 @@ export class TradePage extends BasePage {
         // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
         // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
         // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
-        await successPromise;
+        await confirmation;
 
         return { msgContentAmount };
       } catch (error: any) {
@@ -716,7 +787,9 @@ export class TradePage extends BasePage {
           .locator(".ReactModal__Overlay")
           .waitFor({ state: "hidden", timeout: 2000 })
           .catch(() => {});
-        await this.page.waitForTimeout(2000);
+        await this.page.waitForTimeout(
+          isSequenceMismatch(error) ? SEQUENCE_RETRY_DELAY_MS : 2000
+        );
       }
     }
 
@@ -753,7 +826,7 @@ export class TradePage extends BasePage {
     // hash but is never included → LCD "tx not found") is diagnosable from CI
     // logs. `code === 0` means accepted into the mempool; a non-zero `code` +
     // `raw_log`/`codespace` is the ante-handler rejection reason (sequence, fee,
-    // signature, etc.). Logged, not thrown, so the REST poll still runs.
+    // signature, etc.).
     console.log(
       `Broadcast response: httpStatus=${resp.status()} ` +
         `code=${txResponse?.code ?? body?.code ?? "?"} ` +
@@ -768,6 +841,18 @@ export class TradePage extends BasePage {
         `broadcast response contained no txhash (httpStatus=${resp.status()}, ` +
           `code=${txResponse?.code ?? body?.code ?? "?"}, ` +
           `message=${body?.message ?? txResponse?.raw_log ?? "none"})`
+      );
+    }
+    // A non-zero code here is a CheckTx rejection: a hash is returned but the
+    // tx never enters a block, so the LCD poll would spin until its budget
+    // expired and the test would die on Playwright's timeout with no reason
+    // attached. Fail now, carrying the ante-handler's own explanation.
+    const broadcastCode = txResponse?.code ?? body?.code;
+    if (typeof broadcastCode === "number" && broadcastCode !== 0) {
+      throw new Error(
+        `tx ${hash} rejected at CheckTx (code ${broadcastCode}, ` +
+          `codespace ${txResponse?.codespace ?? "-"}): ` +
+          `${txResponse?.raw_log ?? body?.message ?? "no log"}`
       );
     }
     return String(hash).toLowerCase();
@@ -842,14 +927,36 @@ export class TradePage extends BasePage {
       }).then(() => "REST LCD poll" as const);
     });
 
+    // A non-zero on-chain code is deterministic: the tx is included and failed,
+    // so the toast will never arrive. Racing that rejection against the pair
+    // below surfaces the chain error immediately instead of letting the toast
+    // branch run out its budget (which exceeds Playwright's test timeout and
+    // would report a generic timeout instead of the real reason).
+    const chainFailure = restPromise.then(
+      () => new Promise<never>(() => {}),
+      (err: Error) => {
+        if (
+          err?.message?.includes("failed on-chain") ||
+          err?.message?.includes("rejected at CheckTx")
+        ) {
+          throw err;
+        }
+        return new Promise<never>(() => {});
+      }
+    );
+
     // After Promise.any settles on the winner, the losing branch keeps running
     // and eventually rejects (the toast `waitFor` times out, or the REST poll
     // aborts). Attach no-op catches so that late rejection doesn't surface as
     // an unhandled promise rejection in Playwright/Node.
     toastPromise.catch(() => {});
     restPromise.catch(() => {});
+    chainFailure.catch(() => {});
 
-    return Promise.any([toastPromise, restPromise])
+    return Promise.race([
+      Promise.any([toastPromise, restPromise]),
+      chainFailure,
+    ])
       .then((winner) => {
         controller.abort();
         console.log(`Transaction confirmed via ${winner}.`);

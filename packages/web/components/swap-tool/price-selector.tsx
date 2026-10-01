@@ -12,6 +12,8 @@ import React, { Fragment, memo, useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import {
   ATOM_BASE_DENOM,
+  deferQueryCorrection,
+  TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDC_NOBLE_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -110,11 +112,15 @@ export const PriceSelector = memo(
     const [type] = useQueryState("type", parseAsString.withDefault("market"));
     const [quote, setQuote] = useQueryState(
       "quote",
-      parseAsString.withDefault(initialQuoteDenom)
+      parseAsString
+        .withDefault(initialQuoteDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [base, setBase] = useQueryState(
       "from",
-      parseAsString.withDefault(initialBaseDenom)
+      parseAsString
+        .withDefault(initialBaseDenom)
+        .withOptions(TRADE_PAIR_QUERY_OPTIONS)
     );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
@@ -162,13 +168,13 @@ export const PriceSelector = memo(
         quote === base ||
         (!!quoteMinimalDenom && quoteMinimalDenom === baseMinimalDenom);
       if (sameAsset) {
-        setBase(ATOM_BASE_DENOM);
+        return deferQueryCorrection(() => setBase(ATOM_BASE_DENOM));
       }
     }, [base, quote, baseMinimalDenom, quoteMinimalDenom, setBase]);
 
     useEffect(() => {
       if (!quoteAsset) {
-        setQuote(USDC_BASE_DENOM);
+        return deferQueryCorrection(() => setQuote(USDC_BASE_DENOM));
       }
     }, [quoteAsset, setQuote]);
 
@@ -427,6 +433,9 @@ export const PriceSelector = memo(
                 <Menu.Items className="absolute right-0 z-50 flex w-[384px] max-w-[calc(100vw-2.5rem)] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
                   <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
                     <SelectableQuotes
+                      base={base}
+                      quote={quote}
+                      setQuote={setQuote}
                       selectableQuotes={selectableQuotes}
                       userQuotes={userQuotes}
                       onOpenCreate={(asset) => {
@@ -722,12 +731,24 @@ const CreatableQuoteItem = observer(
   }
 );
 
+/**
+ * Takes the pair from PriceSelector rather than reading `from`/`quote` itself:
+ * with its own hooks it fell back to ATOM when `from` wasn't in the URL (as on
+ * asset pages), so limit mode enabled quotes that only ATOM's orderbooks
+ * support.
+ */
 const SelectableQuotes = observer(
   ({
+    base,
+    quote,
+    setQuote,
     selectableQuotes = [],
     userQuotes = [],
     onOpenCreate,
   }: {
+    base: string;
+    quote: string;
+    setQuote: (quote: string) => void;
     selectableQuotes?: AssetWithBalance[];
     userQuotes?: AssetWithBalance[];
     onOpenCreate: (asset: AssetWithBalance) => void;
@@ -736,14 +757,6 @@ const SelectableQuotes = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const [base] = useQueryState(
-      "from",
-      parseAsString.withDefault(ATOM_BASE_DENOM)
-    );
-    const [quote, setQuote] = useQueryState(
-      "quote",
-      parseAsString.withDefault(USDC_BASE_DENOM)
-    );
     const [type] = useQueryState("type", parseAsString.withDefault("market"));
 
     const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();

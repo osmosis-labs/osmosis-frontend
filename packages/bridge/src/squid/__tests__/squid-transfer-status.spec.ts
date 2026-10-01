@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http as httpMock, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
@@ -91,10 +91,11 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
-        return res(
-          ctx.json({ id: "testTxHash", squidTransactionStatus: "success" })
-        );
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return HttpResponse.json({
+          id: "testTxHash",
+          squidTransactionStatus: "success",
+        });
       })
     );
 
@@ -111,10 +112,11 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle failed transfer status", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
-        return res(
-          ctx.json({ id: "testTxHash", squidTransactionStatus: "needs_gas" })
-        );
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return HttpResponse.json({
+          id: "testTxHash",
+          squidTransactionStatus: "needs_gas",
+        });
       })
     );
 
@@ -131,8 +133,8 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle undefined transfer status", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
-        return res(ctx.status(404));
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return new HttpResponse(null, { status: 404 });
       })
     );
 

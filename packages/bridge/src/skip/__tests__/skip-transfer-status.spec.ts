@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
@@ -110,8 +110,8 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
-        return res(ctx.json({ state: "STATE_COMPLETED_SUCCESS" }));
+      http.get("https://api.skip.money/v2/tx/status", () => {
+        return HttpResponse.json({ state: "STATE_COMPLETED_SUCCESS" });
       })
     );
 
@@ -128,8 +128,8 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle failed transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
-        return res(ctx.json({ state: "STATE_COMPLETED_ERROR" }));
+      http.get("https://api.skip.money/v2/tx/status", () => {
+        return HttpResponse.json({ state: "STATE_COMPLETED_ERROR" });
       })
     );
 
@@ -146,8 +146,8 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle undefined transfer status", async () => {
     server.use(
-      rest.get("https://api.skip.money/v2/tx/status", (_req, res, ctx) => {
-        return res(ctx.status(404));
+      http.get("https://api.skip.money/v2/tx/status", () => {
+        return new HttpResponse(null, { status: 404 });
       })
     );
 

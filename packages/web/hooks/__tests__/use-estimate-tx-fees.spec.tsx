@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import {

@@ -1,5 +1,3 @@
-import { getAlloyedPoolCodeIds } from "@osmosis-labs/pools";
-
 import { IS_TESTNET } from "../../../env";
 
 /** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
@@ -7,7 +5,7 @@ export const TransmuterPoolCodeIds = IS_TESTNET
   ? ["3084", "4643", "8319", "11749"]
   : ["148"];
 /** Cosmwasm Code Ids confirmed to be alloyed pools in current env. */
-export const AlloyedPoolCodeIds = getAlloyedPoolCodeIds(IS_TESTNET);
+export const AlloyedPoolCodeIds = IS_TESTNET ? [] : ["814", "867", "996"];
 const AstroportPclPoolCodeIds = IS_TESTNET ? ["5005", "8611"] : ["842"];
 const WhitewhalePoolCodeIds = IS_TESTNET ? ["6688"] : ["503", "641"];
 /** Cosmwasm Code Ids confirmed to be orderbook pools in current env. */

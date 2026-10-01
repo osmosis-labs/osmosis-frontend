@@ -159,7 +159,9 @@ export const useBridgesSupportedAssets = ({
   // the chain resets to the short delays whenever failures clear and later
   // reappear.
   const resultsRef = useRef(supportedAssetsResults);
-  resultsRef.current = supportedAssetsResults;
+  useEffect(() => {
+    resultsRef.current = supportedAssetsResults;
+  }, [supportedAssetsResults]);
   useEffect(() => {
     if (!hasFailingQueries) return;
     const delaysMs = [5_000, 10_000, 20_000];

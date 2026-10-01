@@ -1,18 +1,18 @@
-import {
-  NotEnoughLiquidityError,
-  NotEnoughQuotedError,
-  PoolType,
-} from "@osmosis-labs/pools";
-import {
-  NoRouteError,
-  SplitTokenInQuote,
-  SplitTokenOutQuote,
-  Token,
-} from "@osmosis-labs/pools/build/router";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { SIDECAR_BASE_URL } from "../../env";
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "./errors";
+import {
+  SidecarQuotePoolType,
+  SplitTokenInQuote,
+  SplitTokenOutQuote,
+  Token,
+} from "./quote";
 import {
   SidecarInGivenOutQuoteResponse,
   SidecarPoolType,
@@ -190,7 +190,7 @@ class OsmosisSidecarRemoteRouter {
 
 function translatePoolTypeFromSidecar(
   sidecarPoolType: SidecarPoolType
-): PoolType {
+): SidecarQuotePoolType {
   switch (sidecarPoolType) {
     case SidecarPoolType.Weighted:
       return "weighted";

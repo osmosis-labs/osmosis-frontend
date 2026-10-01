@@ -166,6 +166,16 @@ export const BridgeProviderDropdown = ({
                               {t("transfer.fastest")}
                             </span>
                           ) : null}
+                          {data.quote.transactionSteps &&
+                            data.quote.transactionSteps.length > 1 && (
+                              <span className="body2 md:caption text-wosmongton-300">
+                                {t("transfer.multiTxBadge", {
+                                  steps: String(
+                                    data.quote.transactionSteps.length
+                                  ),
+                                })}
+                              </span>
+                            )}
                         </div>
                       </div>
                     </div>

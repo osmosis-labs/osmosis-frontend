@@ -57,13 +57,81 @@ const buttonVariants = cva(
   }
 );
 
+/** Exact classes from the pre-shadcn Button (`mode` API). Do not mix with `variant`. */
+const legacyButtonVariants = cva(
+  "flex w-full group place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
+  {
+    variants: {
+      mode: {
+        primary: [
+          "border-2",
+          "border-wosmongton-700",
+          "bg-wosmongton-700",
+          "hover:border-wosmongton-400",
+          "hover:bg-wosmongton-400",
+          "rounded-xl",
+          "disabled:border-2",
+          "disabled:border-osmoverse-500",
+          "disabled:bg-osmoverse-500",
+          "disabled:text-osmoverse-100",
+        ],
+        secondary: [
+          "border-2",
+          "bg-transparent",
+          "border-wosmongton-400",
+          "hover:border-wosmongton-200",
+          "rounded-xl",
+          "disabled:border-osmoverse-600",
+          "disabled:text-osmoverse-400",
+        ],
+        text: [
+          "text-wosmongton-200",
+          "hover:text-rust-200",
+          "disabled:text-osmoverse-500",
+        ],
+        "icon-primary": [
+          "text-osmoverse-400",
+          "hover:text-white-full",
+          "bg-osmoverse-700",
+          "hover:bg-osmoverse-600",
+          "rounded-xl",
+          "disabled:border-osmoverse-500",
+          "disabled:bg-osmoverse-500",
+        ],
+        unstyled: null,
+      },
+      size: {
+        "sm-no-padding": "h-10 button tracking-wide",
+        normal: "h-[56px] px-6 subtitle1 tracking-wide",
+        text: "w-auto h-auto block py-0 text-start tracking-wide",
+        unstyled: null,
+      },
+    },
+  }
+);
+
+const modeToDefaultSize: Partial<
+  Record<
+    NonNullable<VariantProps<typeof legacyButtonVariants>["mode"]>,
+    VariantProps<typeof legacyButtonVariants>["size"]
+  >
+> = {
+  text: "text",
+  unstyled: "unstyled",
+};
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+    Omit<VariantProps<typeof buttonVariants>, "size"> {
   asChild?: boolean;
   isLoading?: boolean;
   loadingText?: ReactNode;
   classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
+  /** Pre-shadcn API. When set, uses the original Button classes (not `variant`). */
+  mode?: VariantProps<typeof legacyButtonVariants>["mode"];
+  size?:
+    | VariantProps<typeof buttonVariants>["size"]
+    | VariantProps<typeof legacyButtonVariants>["size"];
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -72,6 +140,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant,
       size,
+      mode,
       asChild = false,
       isLoading,
       loadingText,
@@ -81,9 +150,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const Comp = asChild ? Slot : "button";
+    const computedClassName = mode
+      ? legacyButtonVariants({
+          mode,
+          size: (size ?? modeToDefaultSize[mode] ?? "normal") as VariantProps<
+            typeof legacyButtonVariants
+          >["size"],
+          className,
+        })
+      : buttonVariants({
+          variant,
+          size: size as VariantProps<typeof buttonVariants>["size"],
+          className,
+        });
     return (
       <Comp
-        className={classNames(buttonVariants({ variant, size, className }))}
+        className={classNames(computedClassName)}
         ref={ref}
         {...props}
         disabled={isLoading || props.disabled}

@@ -69,7 +69,7 @@ describe("simulateCosmosTxBody", () => {
       chainList,
       txBytes: expect.any(String),
     });
-    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
+    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [], events: [] });
   });
 
   it("should return gasUsed on successful vesting simulation", async () => {
@@ -104,7 +104,7 @@ describe("simulateCosmosTxBody", () => {
       chainList,
       txBytes: expect.any(String),
     });
-    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
+    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [], events: [] });
   });
 
   it("should throw an error if chain is not found", async () => {
