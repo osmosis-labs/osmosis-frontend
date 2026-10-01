@@ -291,6 +291,49 @@ describe("checkSolanaSignatureOutcome", () => {
     await expect(check()).resolves.toBe("dropped");
   });
 
+  /** Answers each getSignatureStatuses call with the next status in turn,
+   *  so a tx can be absent at the first read and present at a later one. */
+  const rpcSequence = (
+    statuses: (SolanaSignatureStatus | null | "error")[],
+    blockhashValid: boolean
+  ) => {
+    let statusCall = 0;
+    server.use(
+      http.post("*/api/solana-rpc", async ({ request }) => {
+        const { method } = (await request.json()) as { method: string };
+        if (method === "isBlockhashValid") {
+          return HttpResponse.json({
+            jsonrpc: "2.0",
+            id: 1,
+            result: { value: blockhashValid },
+          });
+        }
+        const next = statuses[Math.min(statusCall++, statuses.length - 1)];
+        if (next === "error") {
+          return HttpResponse.json(
+            { jsonrpc: "2.0", id: 1, error: { code: -32005, message: "busy" } },
+            { status: 503 }
+          );
+        }
+        return HttpResponse.json({
+          jsonrpc: "2.0",
+          id: 1,
+          result: { value: [next] },
+        });
+      })
+    );
+  };
+
+  it("re-reads history after expiry, so a tx that landed in between isn't called dropped", async () => {
+    rpcSequence([null, { err: null, confirmationStatus: "confirmed" }], false);
+    await expect(check()).resolves.toBe("confirmed");
+  });
+
+  it("proves nothing when the post-expiry history re-read goes unanswered", async () => {
+    rpcSequence([null, "error"], false);
+    await expect(check()).resolves.toBeUndefined();
+  });
+
   it("proves nothing while the blockhash is still valid, or without one", async () => {
     rpc({
       getSignatureStatuses: { value: [null] },

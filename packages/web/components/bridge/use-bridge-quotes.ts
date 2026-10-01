@@ -1212,6 +1212,10 @@ export const useBridgeQuotes = ({
         chainId: String(fromChain?.chainId ?? firstStep.chainId),
         txHash: sendTxHash,
         isActive: () => isMountedRef.current,
+        // Skip abandoning a landed Solana burn is a tracking timeout, not
+        // proof the funds are gone: keep the entry resumable (matches the
+        // resume flow in use-multi-tx-step).
+        abandonedIsFailed: firstStep.type !== "solana",
       });
       // the user closed the modal: leave the resumable entry in history
       if (arrival === "aborted" || arrival === "pending") return;

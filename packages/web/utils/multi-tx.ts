@@ -33,7 +33,9 @@ export const BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE =
  * `abandonedIsFailed` (default true) sets whether Skip abandoning the
  * route counts as failed. Pass false when the first leg can't be proven
  * failed by Skip alone (a Solana tx: abandonment is a tracking timeout,
- * and the funds may still arrive).
+ * and the funds may still arrive). Abandonment is terminal on Skip's side,
+ * so with false it returns "pending" at once rather than polling a state
+ * that will never change; callers leave the entry resumable.
  */
 export async function waitForSkipStepArrival({
   chainId,
@@ -72,11 +74,10 @@ export async function waitForSkipStepArrival({
         // modal) instead of leaving the resumable history entry.
         if (!isActive()) return "aborted";
         if (state === "STATE_COMPLETED_SUCCESS") return "success";
-        if (
-          state === "STATE_COMPLETED_ERROR" ||
-          (abandonedIsFailed && state === "STATE_ABANDONED")
-        )
-          return "failed";
+        if (state === "STATE_COMPLETED_ERROR") return "failed";
+        if (state === "STATE_ABANDONED") {
+          return abandonedIsFailed ? "failed" : "pending";
+        }
       }
     } catch {
       // transient errors: keep polling

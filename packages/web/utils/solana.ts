@@ -77,31 +77,41 @@ export async function checkSolanaSignatureOutcome({
   signature: string;
   recentBlockhash?: string;
 }): Promise<"confirmed" | "failed" | "dropped" | undefined> {
-  try {
+  const readStatus = async () => {
     const statuses = await clientSolanaRpc<{
       value?: (SolanaSignatureStatus | undefined)[];
     }>("getSignatureStatuses", [
       [signature],
       { searchTransactionHistory: true },
     ]);
-    const status = statuses?.value?.[0];
-
-    if (status) {
-      if (
-        status.confirmationStatus === "confirmed" ||
-        status.confirmationStatus === "finalized"
-      ) {
-        return status.err ? "failed" : "confirmed";
-      }
-      return undefined; // processed only: may still be on a skipped fork
+    return statuses?.value?.[0];
+  };
+  const settled = (status: NonNullable<SolanaSignatureStatus>) => {
+    if (
+      status.confirmationStatus === "confirmed" ||
+      status.confirmationStatus === "finalized"
+    ) {
+      return status.err ? "failed" : "confirmed";
     }
+    return undefined; // processed only: may still be on a skipped fork
+  };
+
+  try {
+    const status = await readStatus();
+    if (status) return settled(status);
 
     if (!recentBlockhash) return undefined;
     const validity = await clientSolanaRpc<{ value?: boolean }>(
       "isBlockhashValid",
       [recentBlockhash, { commitment: "confirmed" }]
     );
-    return validity?.value === false ? "dropped" : undefined;
+    if (validity?.value !== false) return undefined;
+
+    // The blockhash expired, but the tx may have landed between the status
+    // read above and the expiry check. Re-read full history before calling
+    // it dropped, as the live watcher (waitForSolanaSignature) does.
+    const finalStatus = await readStatus();
+    return finalStatus ? settled(finalStatus) : "dropped";
   } catch {
     return undefined; // unanswered: undecided, not negative
   }
