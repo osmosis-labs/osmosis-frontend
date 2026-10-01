@@ -259,6 +259,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   className="hidden xl:block"
                   title={title ?? asset.coinDenom}
                   denom={asset.coinDenom}
+                  coinMinimalDenom={asset.coinMinimalDenom}
                   contractAddress={asset.contract}
                 />
               ) : null}
@@ -278,6 +279,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   className="xl:hidden"
                   title={title ?? asset.coinDenom}
                   denom={asset.coinDenom}
+                  coinMinimalDenom={asset.coinMinimalDenom}
                   contractAddress={asset.contract}
                 />
               ) : null}

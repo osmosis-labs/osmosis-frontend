@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "Aktywa bazowe",
       "description": "{name} ( {denom} ) na osmozie składa się z {count} różne typy {name} .",
-      "of": "of {denom}"
+      "of": "of {denom}",
+      "viewBackingHistory": "Zobacz historię zabezpieczenia"
     }
   },
   "osmosisUpdates": {

@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "Ativos subjacentes",
       "description": "{name} ( {denom} ) no Osmose é composto por {count} diferentes tipos de {name} .",
-      "of": "de {denom}"
+      "of": "de {denom}",
+      "viewBackingHistory": "Ver histórico de lastro"
     }
   },
   "osmosisUpdates": {

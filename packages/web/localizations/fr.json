@@ -1205,7 +1205,8 @@
     "underlyingAssets": {
       "title": "Atouts sous-jacents",
       "description": "{name} ( {denom} ) sur Osmose est composé de {count} différents types de {name} .",
-      "of": "de {denom}"
+      "of": "de {denom}",
+      "viewBackingHistory": "Voir l'historique de la couverture"
     }
   },
   "osmosisUpdates": {

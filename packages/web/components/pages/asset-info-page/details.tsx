@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React, { FunctionComponent, ReactNode, useMemo, useState } from "react";
 
+import { getAlloyBackingHistoryUrl } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { SkeletonLoader } from "~/components/loaders";
@@ -224,7 +225,11 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
                 false
               )}
               {adminState ? (
-                <AdminBadge state={adminState} admin={admin ?? ""} />
+                <AdminBadge
+                  state={adminState}
+                  admin={admin ?? ""}
+                  coinMinimalDenom={asset.coinMinimalDenom}
+                />
               ) : null}
             </div>
           </div>
@@ -269,10 +274,11 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
   );
 });
 
-const AdminBadge: FunctionComponent<{ state: AdminState; admin: string }> = ({
-  state,
-  admin,
-}) => {
+const AdminBadge: FunctionComponent<{
+  state: AdminState;
+  admin: string;
+  coinMinimalDenom: string;
+}> = ({ state, admin, coinMinimalDenom }) => {
   const { t } = useTranslation();
 
   const { iconId, iconClassName, titleKey, bodyKey } = (() => {
@@ -315,12 +321,12 @@ const AdminBadge: FunctionComponent<{ state: AdminState; admin: string }> = ({
     }
   })();
 
-  const showLink = state.kind !== "renounced" && state.kind !== "alloyed";
+  const showAdmin = state.kind !== "renounced" && state.kind !== "alloyed";
   const tooltipContent = (
     <div className="flex max-w-[18rem] flex-col gap-1">
       <p className="body2 font-semibold text-osmoverse-100">{t(titleKey)}</p>
       <p className="caption text-osmoverse-300">{t(bodyKey)}</p>
-      {showLink && (
+      {showAdmin && (
         <p className="caption break-all text-osmoverse-400">{admin}</p>
       )}
     </div>
@@ -330,7 +336,16 @@ const AdminBadge: FunctionComponent<{ state: AdminState; admin: string }> = ({
     <Icon id={iconId} className={classNames("h-4 w-4", iconClassName)} />
   );
 
-  if (!showLink) {
+  // An alloyed asset links to its backing history on the alloy dashboard
+  // rather than to its admin address.
+  const href =
+    state.kind === "alloyed"
+      ? getAlloyBackingHistoryUrl(coinMinimalDenom)
+      : showAdmin
+      ? `https://www.mintscan.io/osmosis/address/${admin}`
+      : undefined;
+
+  if (!href) {
     return (
       <Tooltip content={tooltipContent}>
         <Button
@@ -353,11 +368,7 @@ const AdminBadge: FunctionComponent<{ state: AdminState; admin: string }> = ({
         aria-label={t(titleKey)}
         asChild
       >
-        <Link
-          href={`https://www.mintscan.io/osmosis/address/${admin}`}
-          target="_blank"
-          rel="noopener noreferrer external"
-        >
+        <Link href={href} target="_blank" rel="noopener noreferrer external">
           {iconEl}
         </Link>
       </Button>
