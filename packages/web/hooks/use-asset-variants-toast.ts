@@ -44,49 +44,59 @@ export const useAssetVariantsToast = () => {
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  api.local.portfolio.getPortfolioAssets.useQuery(
+  const { data, error } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
       enabled,
-      onSuccess: (data) => {
-        if (hasSeenToastThisSession) return;
-
-        // Eligibility and visibility live in alloyed-assets-toast-policy so the
-        // release-critical rules are assertable without a component or a tRPC
-        // client. Keep this callback to wiring only.
-        const variantGroupKeys = getToastEligibleVariantGroupKeys(
-          data?.assetVariants
-        );
-
-        if (
-          shouldDisplayAlloyedAssetsToast({
-            variantGroupKeys,
-            isAlloyedAssetsEnabled: alloyedAssets,
-            isMobile,
-            areAllGroupsDismissed,
-          })
-        ) {
-          displayToast(
-            {
-              titleTranslationKey: "alloyedAssets.title",
-              captionTranslationKey: "alloyedAssets.caption",
-              variantGroupKeys,
-            },
-            ToastType.ALLOYED_ASSETS,
-            {
-              position: "bottom-right",
-            }
-          );
-
-          markToastSeenThisSession();
-        }
-      },
-      onError: (error) => {
-        console.error(error);
-      },
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    if (!data) return;
+    if (hasSeenToastThisSession) return;
+
+    // Eligibility and visibility live in alloyed-assets-toast-policy so the
+    // release-critical rules are assertable without a component or a tRPC
+    // client. Keep this callback to wiring only.
+    const variantGroupKeys = getToastEligibleVariantGroupKeys(
+      data?.assetVariants
+    );
+
+    if (
+      shouldDisplayAlloyedAssetsToast({
+        variantGroupKeys,
+        isAlloyedAssetsEnabled: alloyedAssets,
+        isMobile,
+        areAllGroupsDismissed,
+      })
+    ) {
+      displayToast(
+        {
+          titleTranslationKey: "alloyedAssets.title",
+          captionTranslationKey: "alloyedAssets.caption",
+          variantGroupKeys,
+        },
+        ToastType.ALLOYED_ASSETS,
+        {
+          position: "bottom-right",
+        }
+      );
+
+      markToastSeenThisSession();
+    }
+  }, [
+    data,
+    hasSeenToastThisSession,
+    alloyedAssets,
+    isMobile,
+    areAllGroupsDismissed,
+    markToastSeenThisSession,
+  ]);
+
+  useEffect(() => {
+    if (error) console.error(error);
+  }, [error]);
 };

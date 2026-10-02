@@ -255,7 +255,7 @@ export const AmountScreen = observer(
         findChainNameOrId: accountStore.osmosisChainId,
       },
       {
-        useErrorBoundary: true,
+        throwOnError: true,
       }
     );
 

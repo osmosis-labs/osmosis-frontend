@@ -74,7 +74,7 @@ export const DepositAddressScreen = observer(
     const { t } = useTranslation();
     const [showQrCode, setShowQrCode] = useState(false);
 
-    const { data, isLoading, refetch, remove } =
+    const { data, isLoading, refetch } =
       api.bridgeTransfer.getDepositAddress.useQuery(
         {
           bridge,
@@ -87,8 +87,8 @@ export const DepositAddressScreen = observer(
         {
           enabled: !!osmosisAddress,
           refetchOnWindowFocus: false,
-          useErrorBoundary: true,
-          cacheTime: 0,
+          throwOnError: true,
+          gcTime: 0,
           staleTime: 0,
         }
       );
@@ -326,7 +326,6 @@ export const DepositAddressScreen = observer(
             <Button
               className="md:body1 text-h6 font-h6"
               onClick={() => {
-                remove();
                 refetch();
               }}
             >
