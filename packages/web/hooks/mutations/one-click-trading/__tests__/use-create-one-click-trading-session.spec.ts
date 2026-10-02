@@ -16,7 +16,7 @@ jest.mock("~/config", () => ({
 }));
 
 describe("isAuthenticatorOneClickTradingSession", () => {
-  const key = new PrivKeySecp256k1(Buffer.from("key"));
+  const key = new PrivKeySecp256k1(new TextEncoder().encode("key"));
   const allowedAmount = "1000";
   const allowedMessages: AvailableOneClickTradingMessages[] = [
     "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
