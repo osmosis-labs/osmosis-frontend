@@ -9,8 +9,9 @@ export function getChain<Chain extends ChainType>({
   chainId?: string;
   chainName?: string;
   /**
-   * WARNING: bech32 prefix may be the same across different chains,
-   * retulting in the use of an unintended chain.
+   * WARNING: bech32 prefixes are not unique. Two chains can share one (Terra
+   * Classic and Terra 2 are both `terra`), so an address alone cannot always
+   * identify a chain. Prefer passing `chainId` where the caller knows it.
    */
   destinationAddress?: string;
   chainList: Chain[];
@@ -19,13 +20,36 @@ export function getChain<Chain extends ChainType>({
     throw new Error("Missing chainId, chainName or destinationAddress");
   }
 
-  return chainList.find((chain) => {
-    return (
-      destinationAddress?.startsWith(chain.bech32Config.bech32PrefixAccAddr) ||
-      chain.chain_id === chainId ||
-      chain.chain_name === chainName
-    );
-  });
+  // An explicit identifier is unambiguous, so it always wins over the
+  // address-derived match below.
+  const byIdentifier = chainList.find(
+    (chain) => chain.chain_id === chainId || chain.chain_name === chainName
+  );
+  if (byIdentifier) return byIdentifier;
+
+  if (!destinationAddress) return undefined;
+
+  /**
+   * Match on the longest prefix rather than the first in list order. Several
+   * prefixes are prefixes of another (`n` for Nyx against `nibi`, `neutron`,
+   * `noble`, `nolus`; `bb` against `bbn`; `st` against `stride`), so a
+   * first-match-wins scan resolves e.g. a `nibi1...` address to Nyx purely
+   * because it appears earlier in the list.
+   */
+  let match: Chain | undefined;
+  let matchedPrefixLength = -1;
+  for (const chain of chainList) {
+    const prefix = chain.bech32Config.bech32PrefixAccAddr;
+    if (
+      destinationAddress.startsWith(prefix) &&
+      prefix.length > matchedPrefixLength
+    ) {
+      match = chain;
+      matchedPrefixLength = prefix.length;
+    }
+  }
+
+  return match;
 }
 
 export function getChainStakeTokenSourceDenom({
