@@ -1332,7 +1332,7 @@ export const WormholeRedeem: FunctionComponent = () => {
             innerTx.sign(signers);
           }
         } else {
-          const tx = innerTx;
+          const tx = innerTx as Transaction;
           if (
             !tx.recentBlockhash ||
             tx.recentBlockhash === PLACEHOLDER_BLOCKHASH

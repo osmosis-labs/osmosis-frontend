@@ -473,7 +473,8 @@ const TransferDetails: FunctionComponent<
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) +
+              ? detailsHeight +
+                detailsOffset +
                 collapsedHeight +
                 expandedPadding // collapsed height
               : collapsedHeight,
