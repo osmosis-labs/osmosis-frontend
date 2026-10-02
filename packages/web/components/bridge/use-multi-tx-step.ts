@@ -12,6 +12,7 @@ import {
   getChainBalance,
   waitForSkipStepArrival,
 } from "~/utils/multi-tx";
+import { checkSolanaSignatureOutcome } from "~/utils/solana";
 import { api, RouterInputs } from "~/utils/trpc";
 
 // re-exported for existing consumers; the implementations live in a
@@ -306,6 +307,26 @@ export const useMultiTxResume = () => {
             { autoClose: 5_000 }
           );
 
+        // A Solana first step that never landed is invisible to Skip, so
+        // Skip polling alone would report it in transit forever. Prove it
+        // from the chain first (the blockhash persisted at broadcast lets a
+        // dropped tx be proven after a reload).
+        const priorStepOnSolana = snapshot.fromChain.chainType === "solana";
+        if (priorStepOnSolana) {
+          const outcome = await checkSolanaSignatureOutcome({
+            signature: pendingStep.priorStepTxHash,
+            recentBlockhash: snapshot.solanaRecentBlockhash,
+          });
+          if (outcome === "failed" || outcome === "dropped") {
+            transferHistoryStore.receiveNewTxStatus(
+              snapshot.sendTxHash,
+              "failed",
+              undefined
+            );
+            return;
+          }
+        }
+
         const arrival = await waitForSkipStepArrival({
           chainId: String(snapshot.fromChain.chainId),
           txHash: pendingStep.priorStepTxHash,
@@ -316,6 +337,9 @@ export const useMultiTxResume = () => {
           // haven't arrived yet as soon as the first check says so, not
           // only after the whole budget is spent
           onWaiting: stillInTransitToast,
+          // Skip abandoning a landed Solana burn is a tracking timeout, not
+          // proof the funds are gone: keep the entry resumable.
+          abandonedIsFailed: !priorStepOnSolana,
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(

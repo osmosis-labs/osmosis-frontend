@@ -158,9 +158,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                           });
                         };
 
-                        const isConvert =
-                          false ??
-                          asset.coinMinimalDenom === asset.variantGroupKey;
+                        const isConvert = false;
                         const isSelected =
                           toAsset?.address === asset.coinMinimalDenom;
 

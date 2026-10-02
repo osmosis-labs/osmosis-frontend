@@ -37,6 +37,8 @@ export class CreateOneClickSessionError extends Error {
   }
 }
 
+const textEncoder = new TextEncoder();
+
 export function isAuthenticatorOneClickTradingSession({
   authenticator,
 }: {
@@ -80,7 +82,7 @@ export function getOneClickTradingSessionAuthenticator({
   };
 
   const spendLimitParams = toBase64(
-    Buffer.from(
+    textEncoder.encode(
       JSON.stringify({
         limit: allowedAmount,
         reset_period: "day" as OneClickTradingResetPeriods,
@@ -91,7 +93,7 @@ export function getOneClickTradingSessionAuthenticator({
   const spendLimit = {
     type: "CosmwasmAuthenticatorV1",
     config: toBase64(
-      Buffer.from(
+      textEncoder.encode(
         `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
       )
     ),
@@ -99,12 +101,12 @@ export function getOneClickTradingSessionAuthenticator({
 
   const messageFilters = allowedMessages.map((message) => ({
     type: "MessageFilter",
-    config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+    config: toBase64(textEncoder.encode(`{"@type":"${message}"}`)),
   }));
 
   const messageFilterAnyOf = {
     type: "AnyOf",
-    config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
+    config: toBase64(textEncoder.encode(JSON.stringify(messageFilters))),
   };
 
   const compositeAuthData = [
@@ -117,9 +119,7 @@ export function getOneClickTradingSessionAuthenticator({
   // not the structure of the authenticator returned from the chain.
   return {
     authenticatorType: "AllOf",
-    data: new Uint8Array(
-      Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
-    ),
+    data: textEncoder.encode(JSON.stringify(compositeAuthData)),
   };
 }
 

@@ -516,3 +516,13 @@ describe("Test CoinPretty", () => {
     }
   });
 });
+
+describe("CoinPretty JSON serialization", () => {
+  it("does not throw on nested bigint values", () => {
+    const coin = new CoinPretty(
+      { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 },
+      new Int(100)
+    );
+    expect(() => JSON.stringify(coin)).not.toThrow();
+  });
+});

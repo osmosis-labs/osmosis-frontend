@@ -37,8 +37,7 @@
     ]
   },
   "dependencies": {
-    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "big-integer": "^1.6.48"
+    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix"
   },
   "devDependencies": {
     "eslint": "^9.39.5",
@@ -46,7 +45,7 @@
     "jest-in-case": "^1.0.2",
     "lint-staged": "^12.1.3",
     "prettier": "^2.8.8",
-    "ts-jest": "^29.1.2",
-    "typescript": "5.4.5"
+    "ts-jest": "^29.4.14",
+    "typescript": "5.9.3"
   }
 }

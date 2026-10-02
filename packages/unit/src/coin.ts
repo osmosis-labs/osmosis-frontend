@@ -1,5 +1,3 @@
-import bigInteger from "big-integer";
-
 import { Int } from "./int";
 
 export class Coin {
@@ -18,7 +16,7 @@ export class Coin {
 
   public amount: Int;
 
-  constructor(denom: string, amount: Int | bigInteger.BigNumber) {
+  constructor(denom: string, amount: Int | number | string | bigint) {
     this.denom = denom;
     this.amount = amount instanceof Int ? amount : new Int(amount);
   }
