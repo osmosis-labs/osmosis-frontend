@@ -9,4 +9,3 @@ export * from "./ibc";
 export * from "./keybase";
 export * from "./osmosis";
 export * from "./sidecar";
-export * from "./twitter";
