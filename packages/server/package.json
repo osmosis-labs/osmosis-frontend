@@ -41,7 +41,7 @@
     "dataloader": "^2.2.3",
     "dayjs": "^1.11.23",
     "fuse.js": "^6.5.3",
-    "jest-util": "^30.5.2",
+    "jest-util": "^30.5.1",
     "lru-cache": "^10.0.1",
     "superjson": "^2.2.1",
     "viem": "^2.23.5",

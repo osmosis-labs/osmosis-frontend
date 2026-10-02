@@ -45,7 +45,7 @@
     "chain-registry": "^1.20.0",
     "eslint": "^9.39.5",
     "jest": "^30.5.2",
-    "lint-staged": "^12.1.3",
+    "lint-staged": "^17.6.0",
     "lru-cache": "^10.0.1",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",

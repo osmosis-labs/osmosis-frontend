@@ -59,12 +59,12 @@ describe("simulateCosmosTxBody", () => {
       bech32Address,
     });
 
-    expect(queryBaseAccount).toBeCalledWith({
+    expect(queryBaseAccount).toHaveBeenCalledWith({
       chainId,
       chainList,
       bech32Address,
     });
-    expect(sendTxSimulate).toBeCalledWith({
+    expect(sendTxSimulate).toHaveBeenCalledWith({
       chainId,
       chainList,
       txBytes: expect.any(String),
@@ -94,12 +94,12 @@ describe("simulateCosmosTxBody", () => {
       bech32Address,
     });
 
-    expect(queryBaseAccount).toBeCalledWith({
+    expect(queryBaseAccount).toHaveBeenCalledWith({
       chainId,
       chainList,
       bech32Address,
     });
-    expect(sendTxSimulate).toBeCalledWith({
+    expect(sendTxSimulate).toHaveBeenCalledWith({
       chainId,
       chainList,
       txBytes: expect.any(String),
@@ -331,24 +331,24 @@ describe("getGasFeeAmount", () => {
       .roundUp()
       .toString();
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom:
@@ -428,24 +428,24 @@ describe("getGasFeeAmount", () => {
       .roundUp()
       .toString();
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom:
@@ -515,24 +515,24 @@ describe("getGasFeeAmount", () => {
       .roundUp()
       .toString();
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom: "uion",
@@ -601,24 +601,24 @@ describe("getGasFeeAmount", () => {
       .roundUp()
       .toString();
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom: "uion",
@@ -688,24 +688,24 @@ describe("getGasFeeAmount", () => {
       .roundUp()
       .toString();
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom: "uion",
@@ -797,24 +797,24 @@ describe("getGasFeeAmount", () => {
 
     const expectedGasAmount = "1";
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
       denom: "uion",
@@ -907,12 +907,12 @@ describe("getGasFeeAmount", () => {
 
       // Verify the broken denom was attempted (and skipped),
       // and the healthy denom was picked.
-      expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
         chainId,
         chainList: MockChains,
         denom: "uion",
       });
-      expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
         chainId,
         chainList: MockChains,
         denom:
@@ -1035,7 +1035,7 @@ describe("getGasFeeAmount", () => {
       })
     ).rejects.toThrow(InsufficientFeeError);
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
@@ -1079,7 +1079,7 @@ describe("getGasFeeAmount", () => {
       })
     ).rejects.toThrow(InsufficientFeeError);
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
@@ -1172,18 +1172,18 @@ describe("getGasFeeAmount", () => {
       )
     );
 
-    expect(queryBalances).toBeCalledWith({
+    expect(queryBalances).toHaveBeenCalledWith({
       chainId,
       bech32Address: address,
       chainList: MockChains,
     });
-    expect(queryFeeTokens).toBeCalledWith({
+    expect(queryFeeTokens).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
 
     // would be called but exception is thrown before
-    expect(queryFeesBaseDenom).toBeCalledWith({
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,
       chainList: MockChains,
     });
