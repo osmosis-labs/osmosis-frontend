@@ -56,6 +56,22 @@ const PENDING_HEARTBEAT_MS = 1000 * 45;
  */
 const BROADCASTED_RETENTION_MS = Number.POSITIVE_INFINITY;
 
+/**
+ * Background discovery after the short post-create refresh misses the pair.
+ * Nothing polls the orderbook pools query, so without this a pool indexed a
+ * little later than the foreground retries stays invisible (the user is put
+ * in Limit mode with "no orderbook" after paying) until something else
+ * refetches. Bounded, and one per pair: module-level so it outlives the
+ * confirm modal and a remount.
+ */
+const DISCOVERY_RECONCILE_INTERVAL_MS = 1000 * 10;
+const DISCOVERY_RECONCILE_MAX_MS = 1000 * 60 * 5;
+const discoveryReconcilesInFlight = new Set<string>();
+/** Bumped by the test reset so a loop from an earlier case stops for good,
+ *  and its pending wait is cleared rather than left to fire later. */
+let discoveryGeneration = 0;
+const discoveryTimers = new Set<ReturnType<typeof setTimeout>>();
+
 type JustCreatedStatus = "pending" | "broadcasted" | "created";
 type JustCreatedEntry = {
   t: number;
@@ -105,6 +121,10 @@ let inMemoryJustCreated: Record<string, JustCreatedEntry> = {};
  *  otherwise leak between spec cases. */
 export function __resetJustCreatedOrderbooksForTesting() {
   inMemoryJustCreated = {};
+  discoveryReconcilesInFlight.clear();
+  discoveryGeneration++;
+  discoveryTimers.forEach((timer) => clearTimeout(timer));
+  discoveryTimers.clear();
 }
 
 function isLiveEntry(value: unknown, now: number): value is JustCreatedEntry {
@@ -294,6 +314,51 @@ export function useCreateOrderbook({
 
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
+  /** Keep checking, in the background, until the pair is discoverable, then
+   *  refetch the client caches; see DISCOVERY_RECONCILE_MAX_MS. */
+  const scheduleDiscoveryReconcile = useCallback(() => {
+    const pairKey = orderbookPairKey(baseDenom, quoteDenom);
+    if (discoveryReconcilesInFlight.has(pairKey)) return;
+    discoveryReconcilesInFlight.add(pairKey);
+    const startedAt = Date.now();
+    const generation = discoveryGeneration;
+    void (async () => {
+      try {
+        while (Date.now() - startedAt < DISCOVERY_RECONCILE_MAX_MS) {
+          await new Promise<void>((resolve) => {
+            const timer = setTimeout(() => {
+              discoveryTimers.delete(timer);
+              resolve();
+            }, DISCOVERY_RECONCILE_INTERVAL_MS);
+            discoveryTimers.add(timer);
+          });
+          if (generation !== discoveryGeneration) return;
+          try {
+            const verification =
+              await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
+                baseDenom,
+                quoteDenom,
+                fresh: true,
+              });
+            if (verification.orderbookExists) {
+              await Promise.all([
+                apiUtils.edge.orderbooks.getPools.invalidate(),
+                apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
+              ]);
+              return;
+            }
+          } catch {
+            // Transient: keep trying within the budget.
+          }
+        }
+      } finally {
+        if (generation === discoveryGeneration) {
+          discoveryReconcilesInFlight.delete(pairKey);
+        }
+      }
+    })();
+  }, [apiUtils, baseDenom, quoteDenom]);
+
   const refreshOrderbookCaches = useCallback(async () => {
     // The fresh verify bypasses AND repopulates the server-side
     // orderbook-pools LRU (cachified forceFresh writes the fresh value back,
@@ -323,8 +388,11 @@ export function useCreateOrderbook({
       apiUtils.edge.orderbooks.getPools.invalidate(),
       apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate(),
     ]);
+    // Indexing can outlast the retries above: keep reconciling in the
+    // background so the new book appears without a reload.
+    if (!orderbookExists) scheduleDiscoveryReconcile();
     return orderbookExists;
-  }, [apiUtils, baseDenom, quoteDenom]);
+  }, [apiUtils, baseDenom, quoteDenom, scheduleDiscoveryReconcile]);
 
   /** Marks the pair created (someone's tx delivered a pool), refreshes
    *  consumers, and lets the flow resolve as success. */
@@ -494,6 +562,17 @@ export function useCreateOrderbook({
               // here discards the signed tx without broadcasting it.
               await assertPairStillAbsent();
               signedTxHash = Buffer.from(txHash).toString("hex");
+              // Persist the signed hash BEFORE the POST, as a non-expiring
+              // "broadcasted" mark. If the tab dies after the node accepts the
+              // POST but before its response arrives, a "pending" mark would
+              // expire and a later attempt could sign a second paid creation;
+              // this one is reconciled by hash against the node instead.
+              // Proven rejections (CheckTx refusal, a refused POST) still
+              // release it through the owner-scoped rollback below.
+              markOrderbookJustCreated(baseDenom, quoteDenom, "broadcasted", {
+                owner: attemptOwner,
+                txHash: signedTxHash,
+              });
             },
             onBroadcasted: (txHash) => {
               // CheckTx accepted: the tx is in the mempool and may land even

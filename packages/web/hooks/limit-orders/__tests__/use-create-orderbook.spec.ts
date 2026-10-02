@@ -1194,4 +1194,213 @@ describe("useCreateOrderbook", () => {
       mockWalletAddress = "osmo1testaddress";
     });
   });
+
+  describe("createOrderbook — signed hash persisted before the POST", () => {
+    const storedEntry = () => {
+      const raw = window.localStorage.getItem(
+        `just-created-orderbook:${JSON.stringify(
+          [BASE_DENOM, QUOTE_DENOM].sort()
+        )}`
+      );
+      return raw ? JSON.parse(raw) : undefined;
+    };
+
+    it("writes a broadcasted mark with the signed hash before broadcasting", async () => {
+      let atPost: { s?: string; h?: string } | undefined;
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          // The point the real pipeline sends the POST.
+          atPost = storedEntry();
+          onTxEvents.onBroadcasted?.(SIGNED_TX_HASH);
+          await onTxEvents.onFulfill?.({ code: 0 });
+        }
+      );
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook();
+      });
+
+      expect(atPost).toMatchObject({ s: "broadcasted", h: SIGNED_TX_HASH_HEX });
+    });
+
+    it("does not sign a second creation after the tab dies mid-POST and the pending TTL passes", async () => {
+      // First attempt: signed and POSTed, then the tab dies before the
+      // response (the call never settles).
+      mockSignAndBroadcast.mockImplementationOnce(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          return new Promise(() => undefined);
+        }
+      );
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      const first = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      act(() => {
+        void first.result.current.createOrderbook().catch(() => undefined);
+      });
+      await act(async () => {
+        for (let i = 0; i < 5; i++) await flushAsync();
+      });
+      first.unmount();
+
+      // Reload (in-memory registry gone, storage kept), past the 2-minute
+      // pending TTL, with the sidecar still missing the new book.
+      __resetJustCreatedOrderbooksForTesting();
+      const realNow = Date.now();
+      const nowSpy = jest
+        .spyOn(Date, "now")
+        .mockImplementation(() => realNow + 121_000);
+      mockBroadcastSuccess();
+      try {
+        const second = renderHook(() =>
+          useCreateOrderbook({
+            baseDenom: BASE_DENOM,
+            quoteDenom: QUOTE_DENOM,
+          })
+        );
+        let thrown: unknown;
+        await act(async () => {
+          await second.result.current.createOrderbook().catch((e) => {
+            thrown = e;
+          });
+        });
+
+        expect(mockFetchTxStatus).toHaveBeenCalledWith({
+          txHash: SIGNED_TX_HASH_HEX,
+        });
+        expect(mockSignAndBroadcast).toHaveBeenCalledTimes(1);
+        expect((thrown as Error).message).toBe(
+          "limitOrders.creationAwaitingConfirmation"
+        );
+      } finally {
+        nowSpy.mockRestore();
+      }
+    }, 30_000);
+
+    it("still releases the pair when the node proves the POST was refused", async () => {
+      // onSign wrote the broadcasted mark; a refusal proves the tx never
+      // entered the mempool, so the pair is released for a retry.
+      mockSignAndBroadcast.mockImplementation(
+        async (
+          _chainId: string,
+          _type: string,
+          _msgs: unknown[],
+          _memo: unknown,
+          _fee: unknown,
+          _signOpts: unknown,
+          onTxEvents: OnTxEvents
+        ) => {
+          await onTxEvents.onSign?.(SIGNED_TX_HASH);
+          throw Object.assign(new Error("Request failed"), {
+            isAxiosError: true,
+            response: { status: 400 },
+          });
+        }
+      );
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await act(async () => {
+        await result.current.createOrderbook().catch(() => undefined);
+      });
+
+      expect(wasOrderbookJustCreated(BASE_DENOM, QUOTE_DENOM)).toBe(false);
+    });
+  });
+
+  describe("createOrderbook — background discovery after a delivered creation", () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    /** Run the flow under fake timers, stepping time until it settles. */
+    const createWithFakeTimers = async (
+      createOrderbook: () => Promise<void>
+    ) => {
+      let settled = false;
+      const run = createOrderbook().finally(() => {
+        settled = true;
+      });
+      for (let i = 0; i < 20 && !settled; i++) {
+        await act(async () => {
+          await jest.advanceTimersByTimeAsync(2_000);
+        });
+      }
+      await run;
+    };
+
+    it("keeps reconciling until the new book is discoverable, then refreshes the caches", async () => {
+      jest.useFakeTimers();
+      // Preflight + onSign absent, then 3 foreground refresh reads still
+      // absent, one background read absent, then the sidecar catches up.
+      mockFetchVerify
+        .mockReset()
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValueOnce(PAIR_ABSENT)
+        .mockResolvedValue(PAIR_PRESENT);
+      mockBroadcastSuccess();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await createWithFakeTimers(() => result.current.createOrderbook());
+      // The foreground refresh invalidated once against a still-stale list.
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(25_000);
+      });
+
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(2);
+      expect(mockInvalidateVerify).toHaveBeenCalledTimes(2);
+    });
+
+    it("stops after its time budget when the book never appears", async () => {
+      jest.useFakeTimers();
+      mockFetchVerify.mockReset().mockResolvedValue(PAIR_ABSENT);
+      mockBroadcastSuccess();
+
+      const { result } = renderHook(() =>
+        useCreateOrderbook({ baseDenom: BASE_DENOM, quoteDenom: QUOTE_DENOM })
+      );
+      await createWithFakeTimers(() => result.current.createOrderbook());
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(6 * 60_000);
+      });
+      const callsAfterBudget = mockFetchVerify.mock.calls.length;
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(5 * 60_000);
+      });
+
+      expect(mockFetchVerify.mock.calls.length).toBe(callsAfterBudget);
+      // Never found: no extra invalidation beyond the foreground one.
+      expect(mockInvalidateGetPools).toHaveBeenCalledTimes(1);
+    });
+  });
 });
