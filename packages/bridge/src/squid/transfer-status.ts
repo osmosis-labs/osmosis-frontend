@@ -20,7 +20,10 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly apiUrl: string;
   readonly squidScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
+  constructor(
+    env: BridgeEnvironment,
+    protected readonly chainList: Chain[]
+  ) {
     this.apiUrl =
       env === "mainnet"
         ? "https://v2.api.squidrouter.com"

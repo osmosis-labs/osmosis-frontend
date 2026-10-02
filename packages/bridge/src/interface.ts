@@ -509,8 +509,7 @@ export interface CosmosBridgeTransactionRequest {
 }
 
 export type BridgeTransactionRequest =
-  | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest;
+  EvmBridgeTransactionRequest | CosmosBridgeTransactionRequest;
 
 /**
  * One user-signed transaction of a multi-transaction route, tagged with the

@@ -14,11 +14,7 @@ import { isFunction } from "@osmosis-labs/utils";
 import * as prettier from "prettier";
 
 type UpdateWalletMode =
-  | "ledger"
-  | "extension"
-  | "wallet-connect"
-  | "social-login"
-  | undefined;
+  "ledger" | "extension" | "wallet-connect" | "social-login" | undefined;
 
 interface Wallet extends Omit<DefaultWallet, "mode"> {
   mode: UpdateWalletMode;
@@ -84,11 +80,14 @@ async function generateCosmosKitWalletList() {
    *  "wallet-name": walletData
    * }
    */
-  const registryObject = CosmosKitWalletList.reduce((acc, w) => {
-    w.logo = ""; // We'll override the logos in wallet-registry.ts
-    acc[w.name] = w;
-    return acc;
-  }, {} as Record<string, Wallet>);
+  const registryObject = CosmosKitWalletList.reduce(
+    (acc, w) => {
+      w.logo = ""; // We'll override the logos in wallet-registry.ts
+      acc[w.name] = w;
+      return acc;
+    },
+    {} as Record<string, Wallet>
+  );
 
   const content = `
       import {Wallet} from "@cosmos-kit/core"

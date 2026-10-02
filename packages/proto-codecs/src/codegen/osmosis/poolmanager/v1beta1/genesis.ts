@@ -594,8 +594,8 @@ export const GenesisState = {
       obj.pool_volumes = message.poolVolumes;
     }
     if (message.denomPairTakerFeeStore) {
-      obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore.map((e) =>
-        e ? DenomPairTakerFee.toAmino(e) : undefined
+      obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore.map(
+        (e) => (e ? DenomPairTakerFee.toAmino(e) : undefined)
       );
     } else {
       obj.denom_pair_taker_fee_store = message.denomPairTakerFeeStore;

@@ -196,8 +196,7 @@ export async function getSharePoolBondDurations({
 
         // get user unlocking shares
         let userUnlockingShares:
-          | { shares: CoinPretty; endTime?: Date }
-          | undefined = undefined;
+          { shares: CoinPretty; endTime?: Date } | undefined = undefined;
         const userUnlockingLocks = userDurationLocks
           .filter((userLock) => userLock.isCurrentlyUnlocking)
           .sort((a, b) => (a.endTime > b.endTime ? 1 : -1));

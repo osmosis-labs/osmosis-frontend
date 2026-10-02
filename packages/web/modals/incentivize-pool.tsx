@@ -348,8 +348,8 @@ export const IncentivizePoolModal: FunctionComponent<
                     countdown: epochCountdown,
                   })
                 : isDefaultStart
-                ? t("incentivizePool.epochsCaptionNoCountdown")
-                : t("incentivizePool.startCustomCaption")}
+                  ? t("incentivizePool.epochsCaptionNoCountdown")
+                  : t("incentivizePool.startCustomCaption")}
             </span>
           </div>
           <div className="flex flex-col items-end gap-2">

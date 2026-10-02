@@ -131,8 +131,8 @@ export const bridgeTransferRouter = createTRPCRouter({
           err instanceof Error
             ? err.message
             : typeof err === "string"
-            ? err
-            : "";
+              ? err
+              : "";
         const isOsmosisWithdrawal = input.fromChain.chainId === "osmosis-1";
         if (isOsmosisWithdrawal && isInsufficientFeeError(errorMessage)) {
           throw new TRPCError({
@@ -834,12 +834,12 @@ export const bridgeTransferRouter = createTRPCRouter({
                   url: withdrawUrl,
                 }
               : input.toChain?.chainId === "osmosis-1" && depositUrl
-              ? {
-                  urlProviderName: name,
-                  logo: getExternalInterfaceLogo(name, logoUri),
-                  url: depositUrl,
-                }
-              : undefined;
+                ? {
+                    urlProviderName: name,
+                    logo: getExternalInterfaceLogo(name, logoUri),
+                    url: depositUrl,
+                  }
+                : undefined;
 
           if (urlToAdd) {
             const existing = externalUrls.find(
@@ -872,7 +872,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       // alloy's variantGroupKey; no per-site hardcoding.
       const withdrawAlloy =
         input.fromChain?.chainId === "osmosis-1"
-          ? assetListFromAsset ?? null
+          ? (assetListFromAsset ?? null)
           : null;
 
       const externalUrlsWithConvert = externalUrls.map((externalUrl) => ({

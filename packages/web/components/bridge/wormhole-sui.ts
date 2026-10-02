@@ -107,10 +107,13 @@ export const SUI_WALLET_REGISTRY: readonly SuiWalletDescriptor[] = [
 ];
 
 const SUI_WALLET_BY_ID: Record<SuiWalletId, SuiWalletDescriptor> =
-  SUI_WALLET_REGISTRY.reduce((acc, descriptor) => {
-    acc[descriptor.id] = descriptor;
-    return acc;
-  }, {} as Record<SuiWalletId, SuiWalletDescriptor>);
+  SUI_WALLET_REGISTRY.reduce(
+    (acc, descriptor) => {
+      acc[descriptor.id] = descriptor;
+      return acc;
+    },
+    {} as Record<SuiWalletId, SuiWalletDescriptor>
+  );
 
 type SuiRedeemErrorCode =
   | "wallet_not_installed"

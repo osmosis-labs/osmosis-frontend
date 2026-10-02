@@ -128,10 +128,10 @@ export const AssetCategoriesSelectors: FunctionComponent<{
       width >= Breakpoint.xl
         ? 4
         : width < Breakpoint.xl && width >= Breakpoint.lg
-        ? 3 // some category names can be very long, so err on the side of caution
-        : width < Breakpoint.lg && width >= Breakpoint.md
-        ? 2
-        : 1;
+          ? 3 // some category names can be very long, so err on the side of caution
+          : width < Breakpoint.lg && width >= Breakpoint.md
+            ? 2
+            : 1;
 
     const visibleCategories = categories.slice(0, visibleCount);
     const dropdownCategories = categories.slice(visibleCount);

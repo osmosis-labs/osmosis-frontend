@@ -41,8 +41,8 @@ export const StepBase = observer(
           config.assetCountError ||
           config.scalingFactorError
         : step === 2
-        ? config.amountError
-        : config.swapFeeError || config.scalingFactorControllerError;
+          ? config.amountError
+          : config.swapFeeError || config.scalingFactorControllerError;
 
     const urgentErrorMessage =
       step === 1
@@ -63,16 +63,16 @@ export const StepBase = observer(
                   nbStep: "3",
                 })
             : step === 2
-            ? t("pools.createPool.step.two", {
-                step: step.toString(),
-                nbStep: "3",
-              })
-            : step === 3
-            ? t("pools.createPool.step.three", {
-                step: step.toString(),
-                nbStep: "3",
-              })
-            : null}{" "}
+              ? t("pools.createPool.step.two", {
+                  step: step.toString(),
+                  nbStep: "3",
+                })
+              : step === 3
+                ? t("pools.createPool.step.three", {
+                    step: step.toString(),
+                    nbStep: "3",
+                  })
+                : null}{" "}
         </span>
         <div>{children}</div>
         {step === 1 && (
@@ -93,8 +93,8 @@ export const StepBase = observer(
           {currentError
             ? t(...tError(currentError))
             : step === 3
-            ? t("pools.createPool.buttonCreate")
-            : t("pools.createPool.buttonNext")}
+              ? t("pools.createPool.buttonCreate")
+              : t("pools.createPool.buttonNext")}
         </Button>
       </div>
     );

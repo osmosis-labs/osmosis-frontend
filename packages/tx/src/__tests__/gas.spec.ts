@@ -241,7 +241,6 @@ describe("getGasFeeAmount", () => {
     } as Awaited<ReturnType<typeof queryBalances>>);
 
     const expectedGasAmount =
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       (MockChains.find(({ chain_id }) => chain_id === chainId)!
         .feeCurrencies[0]!.gasPriceStep!.high ?? 0.5) * gasLimit;
 

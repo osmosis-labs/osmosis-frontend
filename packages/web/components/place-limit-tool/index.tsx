@@ -408,8 +408,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           focused === "fiat"
             ? scaledQuote.toString()
             : swapState.priceState.price && !swapState.priceState.price.isZero()
-            ? scaledQuote.quo(swapState.priceState.price).toString()
-            : undefined;
+              ? scaledQuote.quo(swapState.priceState.price).toString()
+              : undefined;
         if (amount === undefined) return;
         setAmountSafe(focused, amount);
         setLimitBuyFraction(fraction);
@@ -543,10 +543,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 2
               )
             : shouldTrim(swapState.marketState.inAmountInput.inputAmount)
-            ? trimPlaceholderZeros(
-                swapState.marketState.inAmountInput.inputAmount
-              )
-            : swapState.marketState.inAmountInput.inputAmount ?? "";
+              ? trimPlaceholderZeros(
+                  swapState.marketState.inAmountInput.inputAmount
+                )
+              : (swapState.marketState.inAmountInput.inputAmount ?? "");
         } else {
           return focused === "fiat"
             ? transformAmount(
@@ -554,17 +554,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 2
               )
             : shouldTrim(swapState.marketState.outAmountInput.inputAmount)
-            ? trimPlaceholderZeros(
-                swapState.marketState.outAmountInput.inputAmount
-              )
-            : swapState.marketState.outAmountInput.inputAmount ?? "";
+              ? trimPlaceholderZeros(
+                  swapState.marketState.outAmountInput.inputAmount
+                )
+              : (swapState.marketState.outAmountInput.inputAmount ?? "");
         }
       }
       return focused === "fiat"
         ? transformAmount(fiatAmount, 2)
         : shouldTrim(swapState.inAmountInput.inputAmount)
-        ? trimPlaceholderZeros(swapState.inAmountInput.inputAmount)
-        : swapState.inAmountInput.inputAmount ?? "";
+          ? trimPlaceholderZeros(swapState.inAmountInput.inputAmount)
+          : (swapState.inAmountInput.inputAmount ?? "");
     }, [
       focused,
       tab,

@@ -48,7 +48,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                     <div className="md:caption text-sm font-semibold text-osmoverse-400 md:text-xs">
                       {config.poolType === "weighted"
                         ? `${percentage}%`
-                        : scalingFactor ?? "1"}
+                        : (scalingFactor ?? "1")}
                     </div>
                   </div>
                 </div>

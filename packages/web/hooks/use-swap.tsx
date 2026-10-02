@@ -608,8 +608,8 @@ export function useSwap(
                     ? "swapExactAmountIn"
                     : "splitRouteSwapExactAmountIn"
                   : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
+                    ? "swapExactAmountOut"
+                    : "splitRouteSwapExactAmountOut",
                 messages,
                 undefined,
                 undefined,
@@ -647,8 +647,8 @@ export function useSwap(
                     ? "swapExactAmountIn"
                     : "splitRouteSwapExactAmountIn"
                   : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
+                    ? "swapExactAmountOut"
+                    : "splitRouteSwapExactAmountOut",
                 messages,
                 undefined,
                 signOptions?.fee,
@@ -853,8 +853,8 @@ export function useSwap(
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
         : !quoteErrorMsg
-        ? quote
-        : undefined,
+          ? quote
+          : undefined,
     inBaseOutQuoteSpotPrice,
     totalFee,
     networkFee,
@@ -1037,7 +1037,7 @@ export function useSwapAssets({
   const selectableAssets = useMemo(
     () =>
       useOtherCurrencies
-        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        ? (selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [])
         : [],
     [selectableAssetPages?.pages, useOtherCurrencies]
   );
@@ -1546,10 +1546,7 @@ function useQueryRouterBestQuote(
 function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
-        | NoRouteError
-        | NotEnoughLiquidityError
-        | NotEnoughQuotedError
-        | Error;
+        NoRouteError | NotEnoughLiquidityError | NotEnoughQuotedError | Error;
       isUnexpected: boolean;
     }
   | undefined {

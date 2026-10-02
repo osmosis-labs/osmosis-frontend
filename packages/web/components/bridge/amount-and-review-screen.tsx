@@ -77,8 +77,8 @@ export const AmountAndReviewScreen = observer(
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
-      ? evmAddress
-      : toChainCosmosAccount?.address;
+        ? evmAddress
+        : toChainCosmosAccount?.address;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"

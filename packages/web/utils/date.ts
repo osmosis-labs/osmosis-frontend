@@ -20,8 +20,8 @@ export function humanizeTime(
               ? "timeUnitsShort.second"
               : "timeUnits.second"
             : useShortTimeUnits
-            ? "timeUnitsShort.seconds"
-            : "timeUnits.seconds",
+              ? "timeUnitsShort.seconds"
+              : "timeUnits.seconds",
       },
     ];
   }
@@ -37,8 +37,8 @@ export function humanizeTime(
               ? "timeUnitsShort.minute"
               : "timeUnits.minute"
             : useShortTimeUnits
-            ? "timeUnitsShort.minutes"
-            : "timeUnits.minutes",
+              ? "timeUnitsShort.minutes"
+              : "timeUnits.minutes",
       },
     ];
   }
@@ -55,8 +55,8 @@ export function humanizeTime(
               ? "timeUnitsShort.hour"
               : "timeUnits.hour"
             : useShortTimeUnits
-            ? "timeUnitsShort.hours"
-            : "timeUnits.hours",
+              ? "timeUnitsShort.hours"
+              : "timeUnits.hours",
       },
       {
         value: minutes,
@@ -66,8 +66,8 @@ export function humanizeTime(
               ? "timeUnitsShort.minute"
               : "timeUnits.minute"
             : useShortTimeUnits
-            ? "timeUnitsShort.minutes"
-            : "timeUnits.minutes",
+              ? "timeUnitsShort.minutes"
+              : "timeUnits.minutes",
       },
     ];
   }
@@ -84,8 +84,8 @@ export function humanizeTime(
               ? "timeUnitsShort.day"
               : "timeUnits.day"
             : useShortTimeUnits
-            ? "timeUnitsShort.days"
-            : "timeUnits.days",
+              ? "timeUnitsShort.days"
+              : "timeUnits.days",
       },
       {
         value: hours,
@@ -95,8 +95,8 @@ export function humanizeTime(
               ? "timeUnitsShort.hour"
               : "timeUnits.hour"
             : useShortTimeUnits
-            ? "timeUnitsShort.hours"
-            : "timeUnits.hours",
+              ? "timeUnitsShort.hours"
+              : "timeUnits.hours",
       },
     ];
   }

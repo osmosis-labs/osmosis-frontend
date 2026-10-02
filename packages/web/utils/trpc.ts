@@ -225,15 +225,17 @@ export const api = createTRPCNext<AppRouter>({
 });
 
 type inferRouterKeys<TRouter extends AnyRouter, Prefix extends string = ""> = {
-  [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
+  [
+    TKey in keyof TRouter["_def"]["record"]
+  ]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
     ? TRouterOrProcedure extends AnyRouter
       ? inferRouterKeys<
           TRouterOrProcedure,
           `${Prefix}${TKey extends string ? TKey : never}.`
         >
       : TRouterOrProcedure extends AnyProcedure
-      ? `${Prefix}${TKey extends string ? TKey : never}`
-      : never
+        ? `${Prefix}${TKey extends string ? TKey : never}`
+        : never
     : never;
 }[keyof TRouter["_def"]["record"]];
 

@@ -8,7 +8,7 @@ export type SuperfluidUndelegations = {
     {
       denom: string;
       amount: string;
-    }
+    },
   ];
   /** OSMO equivalent staked amount. */
   total_equivalent_staked_amount: {
