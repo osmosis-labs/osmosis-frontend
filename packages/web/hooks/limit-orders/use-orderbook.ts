@@ -294,11 +294,10 @@ const useOrdersQuery = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
-      cacheTime: refetchInterval,
+      gcTime: refetchInterval,
       staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0 && sqsActiveOrders,
       refetchOnMount: true,
-      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -326,11 +325,10 @@ const useOrdersQuery = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
-      cacheTime: refetchInterval,
+      gcTime: refetchInterval,
       staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0 && !sqsActiveOrders,
       refetchOnMount: true,
-      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -432,7 +430,6 @@ const useClaimableOrdersQuery = ({
         enabled:
           !!userAddress && addresses.length > 0 && !disabled && sqsActiveOrders,
         refetchOnMount: true,
-        keepPreviousData: false,
         trpc: {
           abortOnUnmount: true,
           context: {
@@ -454,7 +451,6 @@ const useClaimableOrdersQuery = ({
           !disabled &&
           !sqsActiveOrders,
         refetchOnMount: true,
-        keepPreviousData: false,
         trpc: {
           abortOnUnmount: true,
           context: {

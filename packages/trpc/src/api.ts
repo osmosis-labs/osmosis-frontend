@@ -109,7 +109,7 @@ export function localLink<TRouter extends AnyRouter>({
 }): TRPCLink<TRouter> {
   return () =>
     ({ op }) =>
-      observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
+      observable<OperationResultEnvelope<unknown, TRPCClientError<TRouter>>, TRPCClientError<TRouter>>(
         (observer) => {
           async function execute() {
             const createCaller = t.createCallerFactory(router);
@@ -155,10 +155,12 @@ export const makeSkipBatchLink = (
     // when condition is true, use normal request
     true: httpLink({
       url,
+      transformer: superjson,
     }),
     // when condition is false, use batching
     false: httpBatchLink({
       url,
+      transformer: superjson,
       maxURLLength: 10_000,
     }),
   });

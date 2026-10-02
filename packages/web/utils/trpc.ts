@@ -10,12 +10,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import type {
-  AnyProcedure,
-  AnyRouter,
-  inferRouterInputs,
-  inferRouterOutputs,
-} from "@trpc/server";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -47,6 +42,7 @@ const trpcLocalRouter = createTRPCRouter({
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
+  transformer: superjson,
   config() {
     const storage = makeIndexedKVStore("tanstack-query-cache");
 
@@ -69,7 +65,7 @@ export const api = createTRPCNext<AppRouter>({
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+          gcTime: 1000 * 60 * 60 * 24, // 24 hours
         },
       },
     });
@@ -82,8 +78,8 @@ export const api = createTRPCNext<AppRouter>({
         shouldDehydrateQuery: (query) => {
           const [key] = query.queryKey as [string[]];
           if (Array.isArray(key)) {
-            const trpcKey = key.join(".") as RouterKeys;
-            const excludedKeys: RouterKeys[] = [
+            const trpcKey = key.join(".");
+            const excludedKeys: string[] = [
               "local.bridgeTransfer.getSupportedAssetsBalances",
               "bridgeTransfer.getDepositAddress",
             ];
@@ -113,13 +109,6 @@ export const api = createTRPCNext<AppRouter>({
 
     return {
       queryClient,
-      /**
-       * Transformer used for data de-serialization from the server.
-       *
-       * @see https://trpc.io/docs/data-transformers
-       */
-      transformer: superjson,
-
       /**
        * Links used to determine request flow from client to server.
        *
@@ -224,19 +213,6 @@ export const api = createTRPCNext<AppRouter>({
   ssr: false,
 });
 
-type inferRouterKeys<TRouter extends AnyRouter, Prefix extends string = ""> = {
-  [TKey in keyof TRouter["_def"]["record"]]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
-    ? TRouterOrProcedure extends AnyRouter
-      ? inferRouterKeys<
-          TRouterOrProcedure,
-          `${Prefix}${TKey extends string ? TKey : never}.`
-        >
-      : TRouterOrProcedure extends AnyProcedure
-      ? `${Prefix}${TKey extends string ? TKey : never}`
-      : never
-    : never;
-}[keyof TRouter["_def"]["record"]];
-
 /**
  * Inference helper for inputs.
  *
@@ -250,10 +226,3 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  * @example type HelloOutput = RouterOutputs['example']['hello']
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
-
-/**
- * Inference helper for router keys.
- *
- * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
- */
-type RouterKeys = inferRouterKeys<AppRouter>;
