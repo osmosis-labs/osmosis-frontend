@@ -1318,7 +1318,11 @@ export const useBridgeQuotes = ({
     const { Connection, Transaction, VersionedTransaction } = await import(
       "@solana/web3.js"
     );
-    const txBytes = Buffer.from(transactionRequest.txBase64, "base64");
+    // A plain Uint8Array: since TypeScript 5.9, Buffer (Uint8Array<ArrayBufferLike>)
+    // no longer satisfies web3.js's Uint8Array<ArrayBuffer> parameters.
+    const txBytes = new Uint8Array(
+      Buffer.from(transactionRequest.txBase64, "base64")
+    );
     let solanaTx: unknown;
     let recentBlockhash: string | undefined;
     try {
