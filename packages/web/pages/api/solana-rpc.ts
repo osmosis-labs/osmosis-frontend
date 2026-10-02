@@ -42,8 +42,15 @@ export default async function solanaRpcHandler(req: Request) {
     return json({ error: "Method not allowed" }, 405);
   }
 
+  // Refuse a declared oversize body before reading it into memory, then
+  // measure the body actually read in UTF-8 bytes (string length counts
+  // UTF-16 code units, which undercounts multi-byte characters).
+  const declaredLength = Number(req.headers.get("content-length"));
+  if (declaredLength > MAX_BODY_BYTES) {
+    return json({ error: "Request too large" }, 413);
+  }
   const text = await req.text();
-  if (text.length > MAX_BODY_BYTES) {
+  if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) {
     return json({ error: "Request too large" }, 413);
   }
 

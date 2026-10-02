@@ -7,10 +7,11 @@ import solanaRpcHandler from "~/pages/api/solana-rpc";
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 const KEYED_RPC = "https://solana-provider.test/?api-key=secret";
 
-function post(body: unknown) {
+function post(body: unknown, headers: Record<string, string> = {}) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
   return {
     method: "POST",
+    headers: new Headers(headers),
     text: () => Promise.resolve(text),
   } as unknown as Request;
 }
@@ -44,6 +45,23 @@ it("rejects invalid JSON and oversized bodies", async () => {
   expect((await solanaRpcHandler(post("x".repeat(17 * 1024)))).status).toBe(
     413
   );
+});
+
+it("rejects a declared oversize body without reading it", async () => {
+  const text = jest.fn(() => Promise.resolve("{}"));
+  const request = {
+    method: "POST",
+    headers: new Headers({ "content-length": String(17 * 1024) }),
+    text,
+  } as unknown as Request;
+  expect((await solanaRpcHandler(request)).status).toBe(413);
+  expect(text).not.toHaveBeenCalled();
+});
+
+it("measures the body limit in bytes, not UTF-16 code units", async () => {
+  // 6k three-byte characters: under the limit in string length (6144),
+  // over it in UTF-8 bytes (18432).
+  expect((await solanaRpcHandler(post("€".repeat(6 * 1024)))).status).toBe(413);
 });
 
 it("forwards an allowed request to the public RPC when no provider is configured", async () => {

@@ -29,17 +29,25 @@ let phantomAddress: string | undefined;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((listener) => listener());
 
+// Bumped by every explicit session change (connect, disconnect, account
+// switch). The eager reconnect only applies its result if nothing changed
+// while it was in flight, so a late `onlyIfTrusted` answer can't overwrite a
+// manual connect or silently undo a disconnect.
+let sessionVersion = 0;
+
 let eventsWired = false;
 const wireProviderEvents = (provider: PhantomProvider) => {
   if (eventsWired) return;
   eventsWired = true;
   provider.on?.("accountChanged", (publicKey) => {
+    sessionVersion++;
     phantomAddress =
       (publicKey as { toBase58?: () => string } | null)?.toBase58?.() ??
       undefined;
     emit();
   });
   provider.on?.("disconnect", () => {
+    sessionVersion++;
     phantomAddress = undefined;
     emit();
   });
@@ -63,9 +71,11 @@ const eagerConnect = () => {
   const provider = getPhantomProvider();
   if (!provider) return;
   wireProviderEvents(provider);
+  const startedAt = sessionVersion;
   provider
     .connect({ onlyIfTrusted: true })
     .then((response) => {
+      if (sessionVersion !== startedAt) return;
       phantomAddress = response?.publicKey?.toBase58?.();
       emit();
     })
@@ -95,6 +105,7 @@ export const usePhantomWallet = () => {
       return undefined;
     }
     wireProviderEvents(provider);
+    sessionVersion++;
     const response = await provider.connect();
     phantomAddress = response?.publicKey?.toBase58?.();
     emit();
@@ -102,6 +113,7 @@ export const usePhantomWallet = () => {
   }, []);
 
   const disconnect = useCallback(async () => {
+    sessionVersion++;
     await getPhantomProvider()?.disconnect?.();
     phantomAddress = undefined;
     emit();

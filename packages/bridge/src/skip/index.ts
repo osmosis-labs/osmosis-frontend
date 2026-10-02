@@ -272,6 +272,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
         allowMultiTx,
+        // Part of the key even though the kill switch above runs first, so a
+        // cached Solana quote can never be served to a caller without it.
+        allowSolana,
       }),
       ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
