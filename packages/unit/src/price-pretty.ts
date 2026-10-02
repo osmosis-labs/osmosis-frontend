@@ -1,4 +1,3 @@
-import bigInteger from "big-integer";
 import { DeepReadonly } from "utility-types";
 
 import { FiatCurrency } from "./currency-types";
@@ -25,7 +24,7 @@ export class PricePretty {
 
   constructor(
     protected _fiatCurrency: FiatCurrency,
-    protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
+    protected amount: Dec | { toDec(): Dec } | number | string | bigint
   ) {
     this.intPretty = new IntPretty(amount)
       .maxDecimals(_fiatCurrency.maxDecimals)

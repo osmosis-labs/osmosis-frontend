@@ -5,7 +5,8 @@
     "outDir": "build",
     "declaration": true,
     "rootDir": "src",
-    "module": "esnext"
+    "module": "esnext",
+    "lib": ["es2020", "dom"]
   },
   "include": ["src/**/*"]
 }

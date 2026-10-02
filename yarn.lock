@@ -8663,7 +8663,6 @@ __metadata:
   resolution: "@osmosis-labs/math@workspace:packages/math"
   dependencies:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    big-integer: "npm:^1.6.48"
     eslint: "npm:^9.39.5"
     jest: "npm:^29.7.0"
     jest-in-case: "npm:^1.0.2"
@@ -8846,7 +8845,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@osmosis-labs/unit@workspace:packages/unit"
   dependencies:
-    big-integer: "npm:^1.6.48"
     eslint: "npm:^9.39.5"
     jest: "npm:^29.7.0"
     prettier: "npm:^2.8.8"
