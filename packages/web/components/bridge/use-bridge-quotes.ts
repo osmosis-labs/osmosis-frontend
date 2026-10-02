@@ -984,8 +984,7 @@ export const useBridgeQuotes = ({
       // of the drafted final msg (same chain and minimal denom as the fee).
       const draftToken = (
         finalStep.msgs[0]?.value as
-          | { token?: { denom?: string; amount?: string } }
-          | undefined
+          { token?: { denom?: string; amount?: string } } | undefined
       )?.token;
 
       // When the final step's fee isn't paid from the arriving funds (fee
@@ -1362,8 +1361,7 @@ export const useBridgeQuotes = ({
       finalStep.type === "cosmos"
         ? (
             finalStep.msgs[0]?.value as
-              | { token?: { denom?: string } }
-              | undefined
+              { token?: { denom?: string } } | undefined
           )?.token?.denom
         : undefined;
     return {
@@ -1510,8 +1508,9 @@ export const useBridgeQuotes = ({
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
       : fromChain?.chainType === "cosmos"
-      ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
-      : false;
+        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
+          false)
+        : false;
   const isDepositReady = isDeposit && isFromWalletConnected;
   const isWithdrawReady = direction === "withdraw";
   const userCanAdvance =

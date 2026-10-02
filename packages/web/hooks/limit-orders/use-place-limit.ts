@@ -498,16 +498,16 @@ export const usePlaceLimit = ({
 
     if (isMarket) {
       return quoteType === "out-given-in"
-        ? marketState.quote?.amount ??
+        ? (marketState.quote?.amount ??
             new CoinPretty(
               orderDirection === "ask" ? quoteAsset! : baseAsset!,
               new Dec(0)
-            )
-        : marketState.outAmountInput.amount ??
+            ))
+        : (marketState.outAmountInput.amount ??
             new CoinPretty(
               orderDirection === "ask" ? baseAsset! : quoteAsset!,
               new Dec(0)
-            );
+            ));
     }
     const preFeeAmount =
       orderDirection === "ask"
@@ -516,7 +516,7 @@ export const usePlaceLimit = ({
             paymentFiatValue?.quo(quoteAssetPrice?.toDec() ?? new Dec(1)) ??
               new Dec(1)
           ).mul(new Dec(Math.pow(10, quoteAsset!.coinDecimals)))
-        : inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
+        : (inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0)));
     return preFeeAmount.mul(new Dec(1).sub(makerFee));
   }, [
     inAmountInput.amount,
@@ -945,12 +945,10 @@ const useLimitPrice = ({
       return "limitOrders.priceTooHigh";
     }
 
-    if (
-      !(
-        isValidInputPrice ||
-        ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
-      )
-    ) {
+    if (!(
+      isValidInputPrice ||
+      ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
+    )) {
       return "limitOrders.invalidPrice";
     }
   }, [price, minPrice, maxPrice, isValidInputPrice, orderPrice, spotPrice]);

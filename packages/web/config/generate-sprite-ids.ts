@@ -24,7 +24,7 @@ async function generateSpriteIds() {
     .join(" | ")};`;
 
   const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = prettier.format(content, {
+  const formatted = await prettier.format(content, {
     ...prettierConfig,
     parser: "typescript",
   });

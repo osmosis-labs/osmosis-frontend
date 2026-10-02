@@ -285,11 +285,11 @@ export const CryptoFiatInput: FunctionComponent<{
 
     const additiveFeeMatchesInputDenom = Boolean(
       additiveTransferFee &&
-        isSameCoinDenom(additiveTransferFee, assetWithBalance.amount)
+      isSameCoinDenom(additiveTransferFee, assetWithBalance.amount)
     );
     const gasMatchesInputDenom = Boolean(
       transferGasCost &&
-        isSameCoinDenom(transferGasCost, assetWithBalance.amount)
+      isSameCoinDenom(transferGasCost, assetWithBalance.amount)
     );
 
     if (transferGasCost || additiveFeeMatchesInputDenom) {
