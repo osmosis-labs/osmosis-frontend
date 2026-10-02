@@ -2,10 +2,15 @@ import {
   BridgeFeeExceedsBudgetMessage,
   BridgeRouteExpiredMessage,
 } from "@osmosis-labs/bridge";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { http, HttpResponse } from "msw";
+
+import { server } from "~/__tests__/msw";
 
 import {
   BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
   BRIDGE_ROUTE_EXPIRED_MESSAGE,
+  waitForSkipStepArrival,
 } from "../multi-tx";
 
 /**
@@ -28,5 +33,61 @@ describe("bridge error message constants", () => {
     expect(BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE).toBe(
       BridgeFeeExceedsBudgetMessage
     );
+  });
+});
+
+describe("waitForSkipStepArrival", () => {
+  const skipState = (state: string) =>
+    server.use(
+      http.get("*/api/skip-track-tx", () => HttpResponse.json({})),
+      http.get("*/api/skip-tx-status", () => HttpResponse.json({ state }))
+    );
+
+  const arrival = (abandonedIsFailed?: boolean) =>
+    waitForSkipStepArrival({
+      chainId: "solana",
+      txHash: "signature",
+      maxAttempts: 1,
+      intervalMs: 0,
+      abandonedIsFailed,
+    });
+
+  it("treats an abandoned route as failed by default", async () => {
+    skipState("STATE_ABANDONED");
+    await expect(arrival()).resolves.toBe("failed");
+  });
+
+  it("keeps an abandoned route pending when abandonment doesn't prove failure", async () => {
+    // e.g. a Solana first leg: Skip abandoning is a tracking timeout, and
+    // the funds may still arrive, so the entry must stay resumable.
+    skipState("STATE_ABANDONED");
+    await expect(arrival(false)).resolves.toBe("pending");
+  });
+
+  it("stops polling an abandoned route instead of waiting it out", async () => {
+    // Abandonment is terminal on Skip's side. Without a polling budget (the
+    // live signing flow passes none) the poller must not spin on it.
+    let statusCalls = 0;
+    server.use(
+      http.get("*/api/skip-track-tx", () => HttpResponse.json({})),
+      http.get("*/api/skip-tx-status", () => {
+        statusCalls++;
+        return HttpResponse.json({ state: "STATE_ABANDONED" });
+      })
+    );
+    await expect(
+      waitForSkipStepArrival({
+        chainId: "solana",
+        txHash: "signature",
+        intervalMs: 0,
+        abandonedIsFailed: false,
+      })
+    ).resolves.toBe("pending");
+    expect(statusCalls).toBe(1);
+  });
+
+  it("still reports a completed error as failed", async () => {
+    skipState("STATE_COMPLETED_ERROR");
+    await expect(arrival(false)).resolves.toBe("failed");
   });
 });
