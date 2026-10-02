@@ -49,7 +49,7 @@ import {
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
-import { trpcHelpers } from "~/utils/helpers";
+import { createTrpcHelpers } from "~/utils/helpers";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -334,15 +334,12 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const denom = params?.denom as string[];
   const tokenDenom = denom.join("/");
+  const trpcHelpers = createTrpcHelpers();
 
   try {
     /**
      * Lookup for the current token
      */
-
-    await trpcHelpers.edge.assets.getUserAsset.prefetch({
-      findMinDenomOrSymbol: tokenDenom,
-    });
 
     const asset = await trpcHelpers.edge.assets.getUserAsset.fetch({
       findMinDenomOrSymbol: tokenDenom,
