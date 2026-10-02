@@ -382,6 +382,14 @@ export class BigDec {
     }`;
   }
 
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
+  }
+
   public round(): Int {
     return new Int(this.chopPrecisionAndRound());
   }

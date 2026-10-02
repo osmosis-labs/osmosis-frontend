@@ -61,6 +61,14 @@ export class Int {
     return this.int.toString(10);
   }
 
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
+  }
+
   public isNegative(): boolean {
     return this.int < BigInt(0);
   }
@@ -181,6 +189,14 @@ export class Uint {
 
   public toString(): string {
     return this.uint.toString(10);
+  }
+
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
   }
 
   public isZero(): boolean {

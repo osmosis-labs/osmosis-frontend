@@ -688,3 +688,12 @@ describe("Test decimals", () => {
     }
   });
 });
+
+describe("Dec JSON serialization", () => {
+  it("serializes as a decimal string", () => {
+    expect(JSON.stringify(new Dec("-1.5"))).toBe('"-1.500000000000000000"');
+    expect(JSON.stringify({ d: new Dec(0) })).toBe(
+      '{"d":"0.000000000000000000"}'
+    );
+  });
+});
