@@ -1,6 +1,7 @@
 export * from "./historical-limit-orders";
 export * from "./pool-aprs";
 export * from "./pools-fees";
+export * from "./portfolio-current";
 export * from "./portfolio-over-time";
 export * from "./position-performance";
 export * from "./price-range-apr";
