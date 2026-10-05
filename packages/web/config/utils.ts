@@ -55,11 +55,53 @@ export function writeCurrentAssetListHash(hash: string): void {
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
+const IMAGE_FETCH_ATTEMPTS = 4;
+const IMAGE_FETCH_BASE_DELAY_MS = 1_000;
+const IMAGE_FETCH_MAX_DELAY_MS = 30_000;
+
+/**
+ * Fetch an image, retrying rate limits (429), server errors (5xx) and network
+ * errors with exponential backoff, honouring `Retry-After` when the host sends
+ * one. Other statuses (e.g. a dead logo URL's 404) fail at once.
+ * @throws When the image could not be fetched.
+ */
+export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
+  let lastError = "";
+  for (let attempt = 1; attempt <= IMAGE_FETCH_ATTEMPTS; attempt++) {
+    let retryAfterMs: number | undefined;
+    try {
+      const response = await fetch(imageUrl);
+      if (response.ok) return response;
+
+      lastError = `${response.status} ${response.statusText}`;
+      if (response.status !== 429 && response.status < 500) break;
+
+      const retryAfterSeconds = Number(response.headers.get("retry-after"));
+      if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+        retryAfterMs = retryAfterSeconds * 1_000;
+      }
+    } catch (e) {
+      lastError = e instanceof Error ? e.message : String(e);
+    }
+
+    if (attempt < IMAGE_FETCH_ATTEMPTS) {
+      const delayMs = Math.min(
+        retryAfterMs ?? IMAGE_FETCH_BASE_DELAY_MS * 2 ** (attempt - 1),
+        IMAGE_FETCH_MAX_DELAY_MS
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error(`Failed to fetch image from ${imageUrl}: ${lastError}`);
+}
+
 /**
  * Download an image from the provided URL and save it to the local file system.
  * Only saves images if the current asset list hash differs from the stored hash or the file doesn't exist.
  * @param params An object containing the image URL, asset information, and current asset list hash.
  * @returns The filename of the saved image or null if skipped.
+ * @throws When the image could not be fetched or saved.
  */
 export async function saveAssetImageToTokensDir({
   imageUrl,
@@ -93,19 +135,9 @@ export async function saveAssetImageToTokensDir({
   }
 
   // Fetch the image from the URL.
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    console.error(
-      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
-    );
-    return null;
-  }
-
+  const response = await fetchImageWithRetry(imageUrl);
   if (!response.body) {
-    console.error(
-      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
-    );
-    return null;
+    throw new Error(`Failed to fetch image from ${imageUrl}: empty body`);
   }
 
   // Save the image to the file system.

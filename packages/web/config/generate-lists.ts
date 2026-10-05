@@ -48,6 +48,7 @@ interface ResponseAssetList {
 const repo = "osmosis-labs/assetlists";
 
 const IMAGE_DOWNLOAD_CONCURRENCY = 16;
+const IMAGE_DOWNLOAD_MAX_FAILURES = 10;
 
 function getFilePath({
   chainId,
@@ -395,18 +396,36 @@ async function generateAssetImages({
   }
 
   const queue = Array.from(downloads.values());
+  let failures = 0;
   const worker = async () => {
     for (let group = queue.shift(); group; group = queue.shift()) {
       for (const download of group) {
-        await saveAssetImageToTokensDir({
-          ...download,
-          currentAssetListHash: commitHash,
-        });
+        try {
+          await saveAssetImageToTokensDir({
+            ...download,
+            currentAssetListHash: commitHash,
+          });
+        } catch (e) {
+          failures++;
+          console.error(e instanceof Error ? e.message : e);
+        }
       }
     }
   };
   await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
   console.timeEnd("Successfully downloaded images");
+
+  // A few dead logo URLs in the asset list shouldn't block a deploy, but a
+  // wave of failures (a rate limit that outlasted the retries, a host outage)
+  // would otherwise ship with missing logos and exit 0.
+  if (failures > IMAGE_DOWNLOAD_MAX_FAILURES) {
+    throw new Error(
+      `${failures} asset images failed to download (more than ${IMAGE_DOWNLOAD_MAX_FAILURES} allowed).`
+    );
+  }
+  if (failures > 0) {
+    console.warn(`${failures} asset images failed to download.`);
+  }
 }
 
 async function getLatestCommitHash() {
