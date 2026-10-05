@@ -10,7 +10,7 @@ import { useHideDustUserSetting } from "../use-hide-dust-filter";
 // Helper to create PricePretty values
 const createPrice = (value: number) =>
   new PricePretty(
-    { currency: "usd", symbol: "$", maxDecimals: 2 },
+    { currency: "usd", symbol: "$", maxDecimals: 2, locale: "en-US" },
     new Dec(value)
   );
 
