@@ -600,6 +600,9 @@ export interface BridgeQuote {
      *  transaction requires `amount + fee` from the user's balance — rather
      *  than being deducted from the transferred amount in transit. */
     isAdditive?: boolean;
+    /** When true, the provider charges a fee that could not be quantified, so
+     *  `amount` is a placeholder and must not be shown as a zero fee. */
+    isUnknown?: boolean;
   };
   /**
    * The estimated time to execute the transfer, represented in seconds.

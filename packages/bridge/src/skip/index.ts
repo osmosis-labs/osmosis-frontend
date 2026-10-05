@@ -62,6 +62,7 @@ import {
   SkipOperation,
   SkipRouteResponse,
   SkipSvmTx,
+  SkipSwap,
 } from "./types";
 
 /**
@@ -142,6 +143,15 @@ function parseMemo(memo: unknown): Record<string, unknown> | undefined {
   }
 }
 
+function getSwapDenomOut(swap: SkipSwap | undefined): string | undefined {
+  if (!swap) return undefined;
+  const swapOperations =
+    "swap_in" in swap
+      ? swap.swap_in.swap_operations
+      : swap.swap_out.swap_operations;
+  return swapOperations[swapOperations.length - 1]?.denom_out;
+}
+
 export function raiseMinAssetToDestinationInput(
   msgs: SkipMsg[],
   operations: SkipOperation[]
@@ -150,17 +160,23 @@ export function raiseMinAssetToDestinationInput(
     (operation): operation is Extract<SkipOperation, { evm_swap: unknown }> =>
       "evm_swap" in operation
   )?.evm_swap;
-  const axelarTransfer = operations.find(
-    (
-      operation
-    ): operation is Extract<SkipOperation, { axelar_transfer: unknown }> =>
-      "axelar_transfer" in operation
-  )?.axelar_transfer;
+  const axelarIndex = operations.findIndex(
+    (operation) => "axelar_transfer" in operation
+  );
+  const axelarOperation = operations[axelarIndex];
+  const axelarTransfer =
+    axelarOperation && "axelar_transfer" in axelarOperation
+      ? axelarOperation.axelar_transfer
+      : undefined;
 
   if (!evmSwap || !axelarTransfer) return msgs;
 
   // The two are summed, so they have to be denominated in the same asset.
-  if (evmSwap.denom_in !== axelarTransfer.fee_asset?.denom) {
+  // Both are EVM contract addresses, which Skip does not case-normalize.
+  if (
+    evmSwap.denom_in.toLowerCase() !==
+    axelarTransfer.fee_asset?.denom?.toLowerCase()
+  ) {
     console.warn(
       "Skip: leaving min_asset alone, the destination swap input and the Axelar fee are different assets:",
       evmSwap.denom_in,
@@ -168,6 +184,21 @@ export function raiseMinAssetToDestinationInput(
     );
     return msgs;
   }
+
+  // The floor has to be on the asset handed to Axelar, which is what the last
+  // Cosmos swap before the Axelar hop produces. Axelar's own `denom_in` cannot
+  // be compared: it is Axelar's denom (`uusdt`), not the one on the swap chain.
+  // On a route with two Cosmos swaps the first floor is on an intermediate
+  // asset, and raising it by an amount in the bridged asset would be wrong.
+  const bridgedDenom = getSwapDenomOut(
+    operations
+      .slice(0, axelarIndex)
+      .reverse()
+      .find(
+        (operation): operation is Extract<SkipOperation, { swap: unknown }> =>
+          "swap" in operation
+      )?.swap
+  );
 
   const required =
     BigInt(evmSwap.amount_in) + BigInt(axelarTransfer.fee_amount);
@@ -186,6 +217,15 @@ export function raiseMinAssetToDestinationInput(
     if (!minAsset?.amount) return message;
 
     foundFloor = true;
+
+    if (!bridgedDenom || minAsset.denom !== bridgedDenom) {
+      console.warn(
+        "Skip: leaving min_asset alone, the floor is not on the asset handed to Axelar:",
+        minAsset.denom,
+        bridgedDenom
+      );
+      return message;
+    }
 
     if (BigInt(minAsset.amount) >= required) return message;
 
@@ -451,6 +491,13 @@ export class SkipBridgeProvider implements BridgeProvider {
           if ("axelar_transfer" in operation) {
             const feeAsset = operation.axelar_transfer.fee_asset;
 
+            // Without its decimals the amount can't be scaled, and guessing
+            // misstates the fee by orders of magnitude on an 18-decimal asset.
+            if (feeAsset.decimals === undefined) {
+              transferFee = { ...transferFee, isUnknown: true };
+              continue;
+            }
+
             transferFee = {
               amount: operation.axelar_transfer.fee_amount,
               denom: feeAsset.symbol ?? feeAsset.denom,
@@ -461,7 +508,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                 feeAsset.is_evm && !Boolean(feeAsset.token_contract)
                   ? NativeEVMTokenConstantAddress
                   : feeAsset.token_contract!,
-              decimals: feeAsset.decimals ?? 6,
+              decimals: feeAsset.decimals,
               coinGeckoId: feeAsset.coingecko_id,
               isAdditive: isAdditiveFee,
             };
@@ -506,7 +553,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           } else if (
             // Withdrawals through Noble CCTP pay the relayer on noble-1 in
             // uusdc, so report the fee in that asset when it is the only one.
-            // Without its decimals the amount can't be scaled, so stay "Free".
             otherAsset?.decimals !== undefined &&
             allRelayFees.every((fee) =>
               isSameAsset(fee, allRelayFees[0].chain_id, otherAsset.denom)
@@ -529,6 +575,11 @@ export class SkipBridgeProvider implements BridgeProvider {
                 (fee) => fee.fee_behavior === "FEE_BEHAVIOR_ADDITIONAL"
               ),
             };
+          } else if (allRelayFees.length > 0) {
+            // A relayer fee exists but can't be expressed as one scaled coin
+            // (no decimals, or several assets). Leaving the zero amount would
+            // tell the user the transfer is free.
+            transferFee = { ...transferFee, isUnknown: true };
           }
         }
 

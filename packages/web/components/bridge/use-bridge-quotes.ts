@@ -456,6 +456,9 @@ export const useBridgeQuotes = ({
               // fee charged on top of the input amount, so max-amount
               // inputs must leave room for it in the user's balance
               isAdditiveFee: transferFee.isAdditive === true,
+              // the provider charges a fee it could not quantify, so the zero
+              // amount must not be displayed as "Free"
+              isTransferFeeUnknown: transferFee.isUnknown === true,
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
