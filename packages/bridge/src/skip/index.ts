@@ -491,11 +491,24 @@ export class SkipBridgeProvider implements BridgeProvider {
           if ("axelar_transfer" in operation) {
             const feeAsset = operation.axelar_transfer.fee_asset;
 
-            // Without its decimals the amount can't be scaled, and guessing
-            // misstates the fee by orders of magnitude on an 18-decimal asset.
-            if (feeAsset.decimals === undefined) {
-              transferFee = { ...transferFee, isUnknown: true };
-              continue;
+            // Never guess decimals for money: a guessed exponent misstates
+            // an 18-decimal fee by orders of magnitude, and an additive fee
+            // has to be reserved from the balance at its real size. Fill
+            // them from Skip's asset registry, or fail the quote.
+            const decimals =
+              feeAsset.decimals ??
+              (
+                await this.getAssets(feeAsset.chain_id).catch(() => undefined)
+              )?.[feeAsset.chain_id]?.assets.find(
+                (asset) =>
+                  asset.denom.toLowerCase() === feeAsset.denom.toLowerCase()
+              )?.decimals;
+            if (decimals == null) {
+              throw new BridgeQuoteError({
+                bridgeId: SkipBridgeProvider.ID,
+                errorType: "UnsupportedQuoteError",
+                message: `Cannot resolve decimals for Axelar fee asset ${feeAsset.denom} on ${feeAsset.chain_id}`,
+              });
             }
 
             transferFee = {
@@ -508,7 +521,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                 feeAsset.is_evm && !Boolean(feeAsset.token_contract)
                   ? NativeEVMTokenConstantAddress
                   : feeAsset.token_contract!,
-              decimals: feeAsset.decimals,
+              decimals,
               coinGeckoId: feeAsset.coingecko_id,
               isAdditive: isAdditiveFee,
             };

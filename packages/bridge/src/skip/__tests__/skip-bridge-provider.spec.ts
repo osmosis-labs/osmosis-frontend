@@ -469,41 +469,14 @@ describe("SkipBridgeProvider", () => {
     expect(quote.transferFee.isAdditive).toBe(false);
   });
 
-  it("marks an Axelar fee whose asset has no decimals as unknown", async () => {
+  describe("Axelar fee asset without decimals", () => {
     const [axelarOperation] = ETH_OsmosisToEthereum_Route.operations.filter(
       (operation) => "axelar_transfer" in operation
     ) as { axelar_transfer: { fee_asset: Record<string, unknown> } }[];
     const { decimals: _, ...feeAsset } =
       axelarOperation.axelar_transfer.fee_asset;
 
-    server.use(
-      http.post("https://api.skip.money/v2/fungible/route", () =>
-        HttpResponse.json({
-          ...ETH_OsmosisToEthereum_Route,
-          operations: ETH_OsmosisToEthereum_Route.operations.map((operation) =>
-            "axelar_transfer" in operation
-              ? {
-                  ...operation,
-                  axelar_transfer: {
-                    ...operation.axelar_transfer,
-                    fee_asset: feeAsset,
-                  },
-                }
-              : operation
-          ),
-        })
-      ),
-      http.post("https://api.skip.money/v2/fungible/msgs", () =>
-        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
-      )
-    );
-
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      gas: "420000",
-      amount: [{ denom: "uosmo", amount: "1232" }],
-    });
-
-    const quote = await provider.getQuote({
+    const quoteParams: Parameters<SkipBridgeProvider["getQuote"]>[0] = {
       fromAmount: "10000000000000000000",
       fromAsset: {
         denom: "ETH",
@@ -525,11 +498,75 @@ describe("SkipBridgeProvider", () => {
       fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
       toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
       slippage: 1,
+    };
+
+    beforeEach(() => {
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json({
+            ...ETH_OsmosisToEthereum_Route,
+            operations: ETH_OsmosisToEthereum_Route.operations.map(
+              (operation) =>
+                "axelar_transfer" in operation
+                  ? {
+                      ...operation,
+                      axelar_transfer: {
+                        ...operation.axelar_transfer,
+                        fee_asset: feeAsset,
+                      },
+                    }
+                  : operation
+            ),
+          })
+        ),
+        http.post("https://api.skip.money/v2/fungible/msgs", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
     });
 
-    // never scaled with a guessed exponent
-    expect(quote.transferFee.amount).toBe("0");
-    expect(quote.transferFee.isUnknown).toBe(true);
+    it("fills the decimals from Skip's asset registry", async () => {
+      const quote = await provider.getQuote(quoteParams);
+
+      expect(quote.transferFee).toMatchObject({
+        amount: "7725420487422623",
+        decimals: 18,
+      });
+      expect(quote.transferFee.isUnknown).toBeUndefined();
+    });
+
+    it("fails the quote when the registry can't supply them", async () => {
+      const unlisted = "0x000000000000000000000000000000000000dEaD";
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json({
+            ...ETH_OsmosisToEthereum_Route,
+            operations: ETH_OsmosisToEthereum_Route.operations.map(
+              (operation) =>
+                "axelar_transfer" in operation
+                  ? {
+                      ...operation,
+                      axelar_transfer: {
+                        ...operation.axelar_transfer,
+                        fee_asset: { ...feeAsset, denom: unlisted },
+                      },
+                    }
+                  : operation
+            ),
+          })
+        )
+      );
+
+      // never quoted with a guessed exponent or an unreservable zero fee
+      await expect(provider.getQuote(quoteParams)).rejects.toThrow(
+        "Cannot resolve decimals for Axelar fee asset"
+      );
+    });
   });
 
   it("should handle unsupported asset error", async () => {
