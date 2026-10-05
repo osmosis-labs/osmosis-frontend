@@ -12,6 +12,11 @@
     ]
   },
   "scripts": {
+    "cf:build": "yarn workspace @osmosis-labs/web cf:build",
+    "cf:preview": "yarn workspace @osmosis-labs/web cf:preview",
+    "cf:dry-run": "yarn workspace @osmosis-labs/web cf:dry-run",
+    "cf:deploy": "yarn workspace @osmosis-labs/web cf:deploy",
+    "cf:cache:create": "yarn workspace @osmosis-labs/web cf:cache:create",
     "dev": "turbo dev --concurrency 15",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",

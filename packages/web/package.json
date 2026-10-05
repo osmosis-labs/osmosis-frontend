@@ -16,6 +16,8 @@
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "cf:deploy": "yarn cf:build && opennextjs-cloudflare deploy -- --keep-vars",
+    "cf:cache:create": "wrangler r2 bucket create osmosis-frontend-stage-cache",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "prettier --check \"**/*\" && eslint .",
     "lint:fix": "prettier --write \"**/*\" && eslint . --fix",
