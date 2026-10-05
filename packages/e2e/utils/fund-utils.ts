@@ -6,7 +6,9 @@
  * for `sendTokens()`, distribution calculation, topup deficit calculation,
  * and formatted console output helpers.
  *
- * Used by `scripts/migrate-funds.ts` and `scripts/topup-accounts.ts`.
+ * Used by `scripts/migrate-funds.ts`, `scripts/topup-accounts.ts`,
+ * `scripts/sweep-surplus.ts`, `scripts/report-fleet-balances.ts` and
+ * `scripts/cleanup-region-accounts.ts`.
  */
 
 import BigNumber from "bignumber.js";
@@ -159,6 +161,7 @@ export async function resolveRequirementsToTokenUnits(
 
 interface BalanceResponse {
   balances: Array<{ denom: string; amount: string }>;
+  pagination?: { next_key: string | null };
 }
 
 /**
@@ -194,6 +197,35 @@ export async function fetchAllKnownBalances(
   }
 
   return results;
+}
+
+/**
+ * Fetches every non-zero bank balance for an address, unfiltered. Unlike
+ * `fetchAllKnownBalances`, this includes denoms missing from `TOKEN_DENOMS`,
+ * so it is the one to use when an account must be emptied completely.
+ */
+export async function fetchAllBankBalances(address: string): Promise<Coin[]> {
+  const coins: Coin[] = [];
+  let nextKey: string | null | undefined;
+
+  do {
+    const params = new URLSearchParams({ "pagination.limit": "1000" });
+    if (nextKey) params.set("pagination.key", nextKey);
+    const url = `${REST_ENDPOINT}/cosmos/bank/v1beta1/balances/${address}?${params}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch balances: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const data = (await response.json()) as BalanceResponse;
+    coins.push(...data.balances.filter((b) => b.amount !== "0"));
+    nextKey = data.pagination?.next_key;
+  } while (nextKey);
+
+  return coins;
 }
 
 // ---------------------------------------------------------------------------

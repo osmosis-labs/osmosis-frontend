@@ -1,0 +1,78 @@
+name: "E2E: Clean Up Region Monitoring Accounts"
+
+# Empties the retired Monitoring US, EU and SG wallets into the topup holding
+# account, now that the production monitoring suites that used them are gone.
+#
+# One run goes through all three accounts. For each one it claims filled limit
+# orders and cancels the rest, reads every bank balance (including denoms the
+# e2e config doesn't know), and sends all of it to the topup account with the
+# fee taken from the OSMO being sent, so the account ends empty. Every
+# transaction's memo names the account and step, e.g.
+# "e2e cleanup: Monitoring SG -> topup".
+#
+# Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
+# Pull requests that touch this workflow or its script get a dry run only.
+#
+# Keep the TEST_PRIVATE_KEY_US/EU/SG secrets until the accounts are confirmed
+# empty; this workflow needs them.
+
+run-name: "${{ (github.event_name == 'workflow_dispatch' && (inputs.dry_run == false || inputs.dry_run == 'false')) && 'Clean up' || 'Dry run' }} — region monitoring accounts"
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no transactions sent)"
+        type: boolean
+        default: true
+  pull_request:
+    paths:
+      - .github/workflows/e2e-cleanup-region-accounts.yml
+      - packages/e2e/scripts/cleanup-region-accounts.ts
+
+concurrency:
+  group: e2e-cleanup-region-accounts
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: "${{ (github.event_name == 'workflow_dispatch' && (inputs.dry_run == false || inputs.dry_run == 'false')) && 'Clean up' || 'Dry run' }} — US, EU, SG"
+    # Secrets are not available to fork PRs.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.12.0.cjs
+            /packages/*/package.json
+            /packages/e2e/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Install dependencies
+        run: yarn workspaces focus app-osmosis-e2e
+
+      - name: Clean up accounts
+        env:
+          # Only a manual dispatch with "Dry run" unchecked sends transactions.
+          DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && (inputs.dry_run == false || inputs.dry_run == 'false')) && 'false' || 'true' }}
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+        run: npx tsx packages/e2e/scripts/cleanup-region-accounts.ts

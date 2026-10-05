@@ -136,6 +136,12 @@ export async function fetchActiveOrders(
 }
 
 /**
+ * Gas price used by `createSigningClient`. Exported for callers that compute
+ * an explicit fee instead of using `"auto"`.
+ */
+export const GAS_PRICE = GasPrice.fromString("0.035uosmo");
+
+/**
  * Creates a `SigningCosmWasmClient` connected to the Osmosis mainnet RPC,
  * configured with the given wallet and a default gas price.
  *
@@ -153,7 +159,7 @@ export async function createSigningClient(
   wallet: OfflineDirectSigner
 ): Promise<SigningCosmWasmClient> {
   return SigningCosmWasmClient.connectWithSigner(OSMOSIS_RPC, wallet, {
-    gasPrice: GasPrice.fromString("0.035uosmo"),
+    gasPrice: GAS_PRICE,
   });
 }
 
