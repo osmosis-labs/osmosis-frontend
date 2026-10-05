@@ -144,13 +144,7 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
-        // Don't wait for `load`: through the EU/SG proxy, Chromium 153+ can
-        // leave a subresource hanging so `load` never fires even though the
-        // app has rendered. waitForTradeUi() is the real readiness signal.
-        await this.page.goto("/", {
-          timeout: 30_000,
-          waitUntil: "domcontentloaded",
-        });
+        await this.page.goto("/", { timeout: 30_000 });
         await this.waitForTradeUi();
         const currentUrl = this.page.url();
         console.log(`FE opened at: ${currentUrl}`);
