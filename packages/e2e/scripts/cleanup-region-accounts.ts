@@ -144,7 +144,10 @@ async function closeOpenOrders(
     console.log(
       `      - ${o.order_direction} ${o.base_asset.symbol}/${o.quote_asset.symbol}, ` +
         `order_id=${o.order_id}, tick_id=${o.tick_id}, status=${o.status}, ` +
-        `filled=${o.percentFilled}%, orderbook=${o.orderbookAddress}`
+        // SQS reports percentFilled as a fraction (1 = fully filled).
+        `filled=${(parseFloat(o.percentFilled) * 100).toFixed(0)}%, orderbook=${
+          o.orderbookAddress
+        }`
     );
   }
 
