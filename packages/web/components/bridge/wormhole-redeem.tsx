@@ -13,7 +13,7 @@ import type {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
-import { createPublicClient, parseAbi } from "viem";
+import { createPublicClient, keccak256, parseAbi } from "viem";
 import { mainnet } from "viem/chains";
 
 import { Spinner } from "~/components/loaders";
@@ -101,6 +101,7 @@ async function fetchWithTimeout(
 }
 
 const TOKEN_BRIDGE_PROGRAM_ID = "wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb";
+const CORE_BRIDGE_PROGRAM_ID = "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth";
 
 // Wormhole chain IDs we render explicitly. See
 // https://docs.wormhole.com/wormhole/reference/constants
@@ -1234,11 +1235,22 @@ export const WormholeRedeem: FunctionComponent = () => {
       // Fail open: only a definite "expired" blocks the redeem button.
       setStatus("checking_guardians");
       const guardianSet = await checkGuardianSet(op);
+      let guardianCheckUnknown = guardianSet === "unknown";
       if (guardianSet === "expired") {
-        setStatus("guardian_set_expired");
-        return;
+        // Solana verifies signatures when the VAA is posted and completes the
+        // transfer in a later tx that never re-checks expiry, so a VAA posted
+        // while its set was live can still be redeemed.
+        const posted =
+          op.content.payload.toChain === CHAIN_ID.solana
+            ? await checkIfVaaPosted(op)
+            : false;
+        if (posted === false) {
+          setStatus("guardian_set_expired");
+          return;
+        }
+        guardianCheckUnknown = posted === null;
       }
-      setGuardianCheckUnavailable(guardianSet === "unknown");
+      setGuardianCheckUnavailable(guardianCheckUnknown);
       setStatus("ready");
     } catch (err: unknown) {
       setError({
@@ -1968,21 +1980,51 @@ export async function checkIfRedeemed(op: OperationData): Promise<boolean> {
       new PublicKey(TOKEN_BRIDGE_PROGRAM_ID)
     );
 
-    const res = await fetch(SOLANA_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "getAccountInfo",
-        params: [claimKey.toBase58(), { encoding: "base64" }],
-      }),
-    });
-
-    if (!res.ok) return false;
-    const json = await res.json();
-    return json.result?.value != null;
+    return await solanaAccountExists(claimKey.toBase58());
   } catch {
     return false;
   }
+}
+
+/**
+ * Whether the core bridge already holds this VAA's `PostedVAA` account.
+ * `null` means the lookup failed, so the caller can fail open.
+ */
+export async function checkIfVaaPosted(
+  op: OperationData
+): Promise<boolean | null> {
+  try {
+    const { PublicKey } = await import("@solana/web3.js");
+
+    // VAA header: version (1), guardian set index (4), signature count (1),
+    // then 66 bytes per signature before the body.
+    const vaaBytes = Buffer.from(op.vaa.raw, "base64");
+    const body = vaaBytes.subarray(6 + 66 * vaaBytes[5]);
+
+    const [postedVaaKey] = PublicKey.findProgramAddressSync(
+      [Buffer.from("PostedVAA"), keccak256(body, "bytes")],
+      new PublicKey(CORE_BRIDGE_PROGRAM_ID)
+    );
+
+    return await solanaAccountExists(postedVaaKey.toBase58());
+  } catch {
+    return null;
+  }
+}
+
+async function solanaAccountExists(address: string): Promise<boolean> {
+  const res = await fetch(SOLANA_RPC, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getAccountInfo",
+      params: [address, { encoding: "base64" }],
+    }),
+  });
+  if (!res.ok) throw new Error(`Solana RPC returned ${res.status}`);
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.message);
+  return json.result?.value != null;
 }

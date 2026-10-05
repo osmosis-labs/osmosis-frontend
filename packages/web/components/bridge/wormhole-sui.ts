@@ -159,10 +159,13 @@ export interface SuiClientLike {
     objectId: string;
     readMask: { paths: string[] };
   }): PromiseLike<GetObjectResult>;
-  getTransaction(input: {
-    digest: string;
-    readMask: { paths: string[] };
-  }): PromiseLike<unknown>;
+  getTransaction(
+    input: {
+      digest: string;
+      readMask: { paths: string[] };
+    },
+    options?: { abort?: AbortSignal }
+  ): PromiseLike<unknown>;
 }
 
 /**
@@ -589,11 +592,16 @@ export async function executeSuiRedeem({
   // `core.waitForTransaction` in @mysten/sui 1.45 can't parse the fullnode's
   // current GetTransaction response and spins until its timeout, so poll the
   // ledger service directly. Confirmation failure isn't necessarily fatal —
-  // the digest is already on-chain at this point.
+  // the digest is already on-chain at this point. Each attempt is aborted
+  // client-side: grpc-web only forwards `timeout` to the server as a header,
+  // so a stalled request would otherwise outlive the deadline.
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
     try {
-      await client.getTransaction({ digest, readMask: { paths: ["digest"] } });
+      await client.getTransaction(
+        { digest, readMask: { paths: ["digest"] } },
+        { abort: AbortSignal.timeout(Math.min(deadline - Date.now(), 10_000)) }
+      );
       break;
     } catch {
       await new Promise((resolve) => setTimeout(resolve, 2_000));

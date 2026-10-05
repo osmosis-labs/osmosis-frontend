@@ -52,6 +52,7 @@ jest.mock("@mysten/wallet-standard", () => ({
 const mockReadContract = jest.fn();
 jest.mock("viem", () => ({
   createPublicClient: jest.fn(() => ({ readContract: mockReadContract })),
+  keccak256: jest.fn(() => new Uint8Array(32)),
   parseAbi: jest.fn(() => []),
 }));
 jest.mock("viem/chains", () => ({ mainnet: { id: 1 } }));
@@ -1079,6 +1080,89 @@ describe("WormholeRedeem guardian_set_expired render guard", () => {
       await screen.findByText(/signed by Wormhole guardian set 4/)
     ).toBeInTheDocument();
     expect(screen.queryByText("Redeem on Sui")).not.toBeInTheDocument();
+  });
+
+  // Solana completes from the posted VAA account without re-checking
+  // guardian expiry, so an expired set only blocks VAAs that were never
+  // posted.
+  describe("for a Solana destination", () => {
+    const lookUpExpiredSolanaTransfer = async (
+      postedVaaResponse: () => Promise<unknown>
+    ) => {
+      mockedApiClient.mockResolvedValueOnce({
+        operations: [
+          makeOperation({
+            vaa: { raw: btoa("set-4-vaa"), guardianSetIndex: 4 },
+          }),
+        ],
+      });
+      const solanaResponses = [
+        // Claim PDA: not redeemed yet.
+        async () => ({
+          ok: true,
+          json: async () => ({ result: { value: null } }),
+        }),
+        postedVaaResponse,
+      ];
+      global.fetch = jest.fn(async (url: string) =>
+        url.includes("/guardianset/current")
+          ? { ok: true, json: async () => ({ guardianSet: { index: 7 } }) }
+          : solanaResponses.shift()!()
+      ) as unknown as typeof fetch;
+      mockReadContract.mockResolvedValue({ expirationTime: 1_772_728_559 });
+
+      renderWithI18n(<WormholeRedeem />);
+      fireEvent.change(
+        screen.getByPlaceholderText("Osmosis transaction hash..."),
+        { target: { value: WORMCHAIN_HASH } }
+      );
+      fireEvent.click(screen.getByText("Lookup"));
+    };
+
+    it("still offers the redeem when the VAA is already posted", async () => {
+      await lookUpExpiredSolanaTransfer(async () => ({
+        ok: true,
+        json: async () => ({ result: { value: { data: ["AAAA", "base64"] } } }),
+      }));
+
+      expect(
+        await screen.findByText(/VAA is signed and ready/)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/signed by Wormhole guardian set 4/)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/couldn't confirm this transfer/)
+      ).not.toBeInTheDocument();
+    });
+
+    it("explains the expiry when the VAA was never posted", async () => {
+      await lookUpExpiredSolanaTransfer(async () => ({
+        ok: true,
+        json: async () => ({ result: { value: null } }),
+      }));
+
+      expect(
+        await screen.findByText(/signed by Wormhole guardian set 4/)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/VAA is signed and ready/)
+      ).not.toBeInTheDocument();
+    });
+
+    it("fails open with a warning when the posted-VAA lookup fails", async () => {
+      await lookUpExpiredSolanaTransfer(async () => ({
+        ok: false,
+        status: 503,
+      }));
+
+      expect(
+        await screen.findByText(/VAA is signed and ready/)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/couldn't confirm this transfer/)
+      ).toBeInTheDocument();
+    });
   });
 });
 
