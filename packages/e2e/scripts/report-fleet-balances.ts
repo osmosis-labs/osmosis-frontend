@@ -1,7 +1,7 @@
 /**
  * @file report-fleet-balances.ts
  * @description Posts a periodic Slack report of total assets across all E2E
- * accounts (the two test accounts plus the topup holding account), valued in
+ * accounts (the preview test account plus the topup holding account), valued in
  * USD at current SQS prices.
  *
  * Read-only: derives addresses from the key secrets and queries balances —
@@ -17,8 +17,8 @@
  * only, unless `save_state` is requested).
  *
  * Environment variables:
- * - `E2E_PRIVATE_KEY_TOPUP`, `E2E_PRIVATE_KEY_PREVIEW`,
- *   `TEST_PRIVATE_KEY_US` — key (address derivation only).
+ * - `E2E_PRIVATE_KEY_TOPUP`, `E2E_PRIVATE_KEY_PREVIEW` — keys (address
+ *   derivation only).
  * - `MODE`                — "full" (per-token tables) or "compact" (one line
  *                           per account). Default "full".
  * - `REPORT_LABEL`        — Slack header label ("monthly" / "weekly" /
@@ -45,7 +45,6 @@ import {
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const ACCOUNTS = [
-  { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
   { envVar: "E2E_PRIVATE_KEY_TOPUP", label: "Topup / holding" },
 ] as const;
@@ -184,7 +183,7 @@ async function postSlack(
     console.log("  SLACK_WEBHOOK_URL not set — skipping Slack post.");
     return;
   }
-  // Slack caps section text at 3000 chars, so the full report (3 accounts x
+  // Slack caps section text at 3000 chars, so the full report (2 accounts x
   // token tables) must be split into one section block per account rather
   // than a single body. Truncate defensively in case a single section ever
   // outgrows the cap.

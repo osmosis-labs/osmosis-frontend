@@ -9,7 +9,7 @@ name: "E2E: Topup Test Accounts"
 # Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
 
 # The run-name encodes dry-run vs real so the auto-dispatch dedup guards
-# (in frontend-e2e / prod-frontend-e2e / monitoring-limit-geo) can exclude
+# (in frontend-e2e-tests) can exclude
 # dry runs via `gh run list --json displayTitle`. Without this, the run's
 # displayTitle would just be the workflow name and dry runs couldn't be told
 # apart from real top-ups.
@@ -75,7 +75,6 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run == true || inputs.dry_run == 'true' }}
           E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
           E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
           TOPUP_MULTIPLIER: ${{ inputs.topup_multiplier }}
           RESERVE_OSMO: ${{ inputs.reserve_osmo }}
           RESERVE_USDC: ${{ inputs.reserve_usdc }}

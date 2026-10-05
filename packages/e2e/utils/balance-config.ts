@@ -61,35 +61,4 @@ export const ACCOUNT_REQUIREMENTS: Record<
     { token: "INJ", minAmount: 0.011, warnAmount: 0.025, note: "~0.01 consumed (swap INJ)" },
     { token: "AKT", minAmount: 0.027, warnAmount: 0.06, note: "~0.025 consumed (swap AKT)" },
   ],
-
-  "Monitoring US": [
-    // monitoring.swap + monitoring.market + monitoring.limit
-    {
-      token: "USDC",
-      minAmount: 3.5,
-      warnAmount: 6.6,
-      note: "market buys ($0.55 x2) + limit buy ($1.10) + swap stables (1.10) ≈ 3.30/tick",
-    },
-    {
-      token: "OSMO",
-      minAmount: 1.8,
-      warnAmount: 3.6,
-      unit: "usd",
-      note: "market sell ($0.54) + limit sell ($1.10) OSMO + gas",
-    },
-    {
-      token: "BTC",
-      minAmount: 0.6,
-      warnAmount: 1.5,
-      unit: "usd",
-      note: "market sell BTC (fiat-mode ~$0.54)",
-    },
-    {
-      token: "USDC.eth.axl",
-      minAmount: 1,
-      warnAmount: 2,
-      note: "swap stables",
-    },
-    { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
-  ],
 };

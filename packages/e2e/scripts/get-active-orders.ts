@@ -7,7 +7,7 @@
  * Safe to run at any time without any risk of modifying on-chain state.
  *
  * @requires PRIVATE_KEY - Hex-encoded secp256k1 private key (with or without 0x prefix).
- * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "Monitoring US").
+ * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "E2E Test Account").
  *
  * Usage (from packages/e2e/):
  *   npx tsx scripts/get-active-orders.ts

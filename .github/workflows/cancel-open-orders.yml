@@ -1,14 +1,9 @@
 name: Cancel Open Limit Orders (E2E Test Accounts)
 
-# Manually triggered workflow to cancel all open limit orders for every e2e test account.
-#
-# Use this when monitoring tests have accumulated uncancelled open orders.
-# Each matrix entry runs in parallel, one per test account.
+# Manually triggered workflow to cancel all open limit orders for the preview
+# e2e test account.
 #
 # Defaults to dry run (no transactions sent). Uncheck "Dry run" to send real cancel transactions.
-#
-# For future reuse: this job can be added as a `needs:` precursor before
-# limit order test jobs in monitoring-e2e-tests.yml or monitoring-limit-geo-e2e-tests.yml.
 
 on:
   workflow_dispatch:
@@ -33,8 +28,6 @@ jobs:
         account:
           - label: "E2E Test Account"
             key_id: e2e
-          - label: "Monitoring US"
-            key_id: us
 
     steps:
       - name: Check out repository
@@ -62,11 +55,9 @@ jobs:
         env:
           KEY_ID: ${{ matrix.account.key_id }}
           PK_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          PK_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
         run: |
           case "$KEY_ID" in
             e2e) echo "PRIVATE_KEY=$PK_PREVIEW" >> "$GITHUB_ENV" ;;
-            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
             *)
               echo "Unknown key_id: $KEY_ID" >&2
               exit 1

@@ -1,7 +1,7 @@
 name: "E2E: Fleet Balance Report"
 
 # Posts a periodic Slack report of total assets across the E2E accounts
-# (US monitoring, preview, topup/holding), valued in USD at SQS prices.
+# (preview test account and topup/holding), valued in USD at SQS prices.
 # Read-only — no transactions.
 #
 # Cadence: weekly compact report (Mondays 09:00 UTC, an hour after the sweep
@@ -143,7 +143,6 @@ jobs:
           OUTPUT_STATE_PATH: ${{ github.workspace }}/fleet-state.json
           E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
           E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
         run: npx tsx packages/e2e/scripts/report-fleet-balances.ts
 

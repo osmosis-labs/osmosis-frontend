@@ -140,7 +140,6 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
           E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
           E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
           RESERVE_OSMO: ${{ inputs.reserve_osmo }}
           RESERVE_USDC: ${{ inputs.reserve_usdc }}
         run: npx tsx packages/e2e/scripts/migrate-funds.ts

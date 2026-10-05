@@ -31,8 +31,7 @@ All you need to add is a private key for the wallet being used:
 
 | Secret | Label | Address |
 |--------|-------|---------|
-| `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview + prod frontend tests) | `TBD` |
-| `TEST_PRIVATE_KEY_US` | Monitoring US (swap, trade, limit) | `TBD` |
+| `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview frontend tests) | `TBD` |
 
 All wallet addresses are derived from the private key at runtime using `deriveAddress()` in `utils/wallet-utils.ts`.
 
@@ -140,7 +139,7 @@ PRIVATE_KEY=<hex-key> ACCOUNT_LABEL="E2E Test Account" DRY_RUN=true npx tsx scri
 ### Manual Balance Report
 
 Trigger **Check E2E Account Balances** from the GitHub Actions tab to get a
-read-only balance report for both test accounts in parallel. The workflow
+read-only balance report for the preview test account. The workflow
 always succeeds — it's purely informational with no alerts or blocking.
 
 ### Automatic Pre-Test Checks in CI
@@ -153,43 +152,34 @@ alert at most per workflow run.
 | Workflow | Check job(s) | Gates test jobs | Account |
 |----------|-----------|----------------|---------|
 | `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `prod-frontend-e2e-tests.yml` | `check-balances` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `preflight-us` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
 
-`preflight-us` runs the balance pipeline (check → alert if low → expose
-`outcome` output) once per cron tick. Test jobs use
-`if: needs.preflight-us.outputs.outcome != 'fail'` to skip cleanly when the
-wallet is critically low.
+`check-balances` runs the balance pipeline (check → alert if low) once per
+workflow run. Wallet test jobs `needs` it and are skipped when the check
+fails critically.
 
 ### Topup dispatch model (dedup)
 
-Topup dispatch is decoupled from the balance check so the "E2E: Topup Test
-Accounts" workflow normally fires **about once per low-balance episode**
-instead of once per push. One topup run refills **both accounts** (preview +
-US). Note the dedup is **best-effort, not a hard guarantee**: the guard is a
-non-atomic `gh run list` check, so two dispatchers firing in the same instant can
-still both dispatch (harmless — the second run finds accounts already funded and
-sends nothing).
+The preview workflow dispatches "E2E: Topup Test Accounts" when its balance
+check reports `warn` or `fail`. One topup run refills the preview account.
+The dedup is **best-effort, not a hard guarantee**: the guard is a non-atomic
+`gh run list` check, so two dispatches in the same instant can both proceed
+(harmless — the second run finds the account already funded and sends nothing).
 
 | Workflow | Dispatches topup? | Notes |
 |----------|-------------------|-------|
-| `monitoring-limit-geo-e2e-tests.yml` | Yes — single `topup-dispatch` job | `needs` `preflight-us`; dispatches once if that wallet is `warn`/`fail`. This is the primary funding path (hourly cron) and keeps the preview account funded too. |
-| `prod-frontend-e2e-tests.yml` | Yes — `check-balances` job | Master-push path; same cooldown guard. |
-| `frontend-e2e-tests.yml` | **No** (Phase A / MTN-97) | Preview push keeps the low-balance Slack alert + critical-fail gate, but no longer dispatches — the hourly monitoring path already refills the preview account. |
+| `frontend-e2e-tests.yml` | Yes — `check-balances` job | Dispatches when the preview account is `warn` or `fail`. |
 
-Every dispatcher skips if a topup is already `queued`/`in_progress`, **or** a
+The dispatcher skips if a topup is already `queued`/`in_progress`, **or** a
 real successful topup (`conclusion == "success"`) whose run was **created within
 the last ~45 min** (`COOLDOWN_SECONDS=2700`). The window is keyed off the run's
 `createdAt` (≈ when it was dispatched/queued), not its completion time, because
-the intent is to rate-limit how often we dispatch. This removes cross-tick and
-cross-workflow repeats. 45 min is deliberately below the 60 min cron so a
-still-low account is still refilled on the next hourly tick. **Failed** runs do
-not count (so a bad/partial topup can be retried immediately), and **dry runs**
-do not count (they move no funds — excluded via the topup workflow's `run-name`,
+the intent is to rate-limit how often we dispatch. **Failed** runs do not count
+(so a bad/partial topup can be retried immediately), and **dry runs** do not
+count (they move no funds — excluded via the topup workflow's `run-name`,
 matched with `displayTitle | startswith("Dry run")`).
 
-The preflight Slack alert remains independent of dispatch, so a persistently
-low account still pages every cron tick even while dispatch is on cooldown.
+The Slack alert remains independent of dispatch, so a low account still pages
+on a later preview run even while dispatch is on cooldown.
 
 ### Exit Codes
 
@@ -246,18 +236,6 @@ stalled initial page load surfaces as a recoverable retry rather than a hard
 | INJ | 0.011 | 0.025 | token | ~0.01 consumed (swap INJ) |
 | AKT | 0.027 | 0.06 | token | ~0.025 consumed (swap AKT) |
 
-### Monitoring Account (`TEST_PRIVATE_KEY_US`)
-
-The US wallet runs all three suites (swap + market + limit):
-
-| Token | Min | Warn | Unit | Used By |
-|-------|-----|------|------|---------|
-| USDC | 3.5 | 6.6 | token | market buys ($0.55 x2) + limit buy ($1.10) + swap stables (1.10) |
-| OSMO | $1.80 | $3.60 | USD | market sell ($0.54) + limit sell ($1.10) OSMO + gas |
-| BTC | $0.60 | $1.50 | USD | market sell BTC (~$0.54) |
-| USDC.eth.axl | 1 | 2 | token | swap stables |
-| USDT | 1 | 1.2 | token | swap stables |
-
 ---
 
 ## Order Cleanup Scripts
@@ -276,7 +254,7 @@ npx tsx scripts/get-active-orders.ts
 
 Example output:
 ```text
-=== Active Orders: Monitoring US ===
+=== Active Orders: E2E Test Account ===
 Derived address: osmo1...
 
 3 active orders found:
@@ -305,7 +283,7 @@ npx tsx scripts/cancel-all-orders.ts
 ### How accounts are handled
 
 Each script processes **one account per invocation** — whichever `PRIVATE_KEY` is set in the environment at the time.
-The GitHub Actions workflow achieves full coverage by running both accounts in parallel, each injecting a different key secret.
+The GitHub Actions workflow runs the preview test account.
 
 To run against multiple accounts locally, either swap `PRIVATE_KEY` in `.env` between runs, or override it inline:
 
@@ -338,7 +316,7 @@ A single manually-triggered workflow handles both dry runs and real cancellation
 | **Cancel Open Limit Orders (E2E Test Accounts)** | `cancel-open-orders.yml` |
 
 The workflow has a **Dry run** checkbox (checked by default) so the safe path is always the default.
-Both test accounts run in parallel via matrix strategy.
+It runs the preview test account.
 
 **Recommended flow:**
 1. Trigger from the GitHub Actions tab → **Cancel Open Limit Orders (E2E Test Accounts)** → **Run workflow** (leave "Dry run" checked)
@@ -351,7 +329,6 @@ The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step**
 
 | Workflow | Job(s) | Account cleaned |
 |---|---|---|
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | `TEST_PRIVATE_KEY_US` (Monitoring US) |
 | `frontend-e2e-tests.yml` | `preview-trade-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
 
 The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
@@ -371,7 +348,7 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 | **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
 | **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
 | **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml` | Weekly (+ manual) sweep of surplus tokens back to the topup account |
-| **E2E: Fleet Balance Report** | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across all 3 accounts |
+| **E2E: Fleet Balance Report** | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across both accounts |
 
 All fund-moving workflows default to **dry run** on manual dispatch (the
 sweep's weekly cron runs live; the balance report is read-only). The
@@ -395,8 +372,8 @@ manual swap-back can be planned straight from the message.
 
 The fleet balance report (`scripts/report-fleet-balances.ts`) is the
 usage-visibility layer: every Monday it posts a compact per-account USD
-summary, and on the 1st a full per-token breakdown, covering all three
-accounts including topup/holding. Each scheduled run saves its numbers as a
+summary, and on the 1st a full per-token breakdown, covering the preview
+account and the topup/holding account. Each scheduled run saves its numbers as a
 `fleet-balance-state` artifact; the next run picks the prior artifact
 *closest to its target window* (7 days weekly / 30 days monthly) and scales
 the burn rate by the actual elapsed days — so extra manual runs neither
@@ -411,7 +388,6 @@ since the total conflates burn with price moves) plus estimated USDC runway.
 |---|---|
 | `E2E_PRIVATE_KEY_TOPUP` | All three workflows (topup/funding account) |
 | `E2E_PRIVATE_KEY_PREVIEW` | All three workflows (E2E Test Account) |
-| `TEST_PRIVATE_KEY_US` | All three workflows (Monitoring US) |
 | `TEST_PRIVATE_KEY` | Migrate only (old E2E Test Account) |
 | `TEST_PRIVATE_KEY_1` | Migrate only (old Monitoring SG) |
 | `TEST_PRIVATE_KEY_2` | Migrate only (old Monitoring EU) |
@@ -450,21 +426,14 @@ is capped, so all funds are utilized.
 rule**: top up only when `current < warnAmount`, and when topping up, refill
 all the way to `warnAmount × topup_multiplier` (the "target", default
 `3 × warnAmount`). When `warnAmount ≤ current < target`, the script reports
-`✓ ok (above warn, below target — no topup)` and skips the token. Measured
-on-chain (Mar–Jul 2026), the US monitoring wallet drained ~0.4 USDC/hr
-(~10/day) with the market + limit suites running hourly — a ~17 USDC topup
-every ~2 days. Since the market + limit suites moved to a 12-hourly cadence
-and trade legs were cut from ~$1.55 to ~$0.55 (Jul 2026), the expected US drain is roughly
-~12 USDC/month, so an auto-cron topup fires only every few weeks.
+`✓ ok (above warn, below target — no topup)` and skips the token.
 
-The hysteresis matters because the monitoring tests are cyclic (each cron tick
-runs Buy then Sell pairs that *should* net to ~0 USDC). Mid-cycle, between a
-Buy and its matching Sell, the wallet looks transiently lower than its true
-post-cycle floor. Without hysteresis, any topup dispatched mid-test (e.g. a
-manual run while `prod-fe-trade-us` is executing) would over-top-up because
-it sees the in-flight low. With hysteresis, only a real persistent shortfall
-(below warnAmount) triggers a refill, so manual dispatches are idempotent
-above warnAmount and safe to run any time.
+The hysteresis matters because the preview tests are cyclic (a buy and its
+matching sell should net to ~0). Mid-cycle the wallet looks lower than its
+true post-cycle floor. Without hysteresis, a topup dispatched mid-test would
+over-fill because it sees the in-flight low. With hysteresis, only a balance
+below warnAmount triggers a refill, so a manual dispatch is idempotent above
+warnAmount.
 
 When `reserve_usdc` / `reserve_osmo` leave less distributable than the sum of all
 accounts' targets, the post-run Slack summary annotates the affected token with
@@ -479,9 +448,8 @@ warning suggests lowering the relevant reserve input if it becomes persistent.
 
 **Who dispatches this workflow automatically?** See
 [Topup dispatch model (dedup)](#topup-dispatch-model-dedup) above — the
-monitoring `topup-dispatch` job and the prod-master `check-balances` job,
-both behind a shared in-flight + ~45 min success cooldown guard so only one
-auto-topup fires per low-balance episode.
+preview workflow's `check-balances` job, behind an in-flight + ~45 min success
+cooldown guard.
 
 ---
 
