@@ -12,7 +12,6 @@ import {
   MappedLimitOrder,
   maybeCachePaginatedItems,
   OrderStatus,
-  queryPoolmanagerParams,
   queryTx,
 } from "@osmosis-labs/server";
 import { Dec, Int } from "@osmosis-labs/unit";
@@ -278,17 +277,6 @@ export const orderbookRouter = createTRPCRouter({
 
       return { orderbookExists, endpointFunctional };
     }),
-  /**
-   * The chain's pool creation fee (charged by MsgCreateCosmWasmPool), as
-   * minimal-denom coins. Read live so the confirm modal shows and prechecks
-   * what the chain will actually charge rather than a hardcoded amount.
-   */
-  getPoolCreationFee: publicProcedure.query(async ({ ctx }) => {
-    const { params } = await queryPoolmanagerParams({
-      chainList: ctx.chainList,
-    });
-    return params.pool_creation_fee;
-  }),
   /**
    * Delivery status of a broadcast-accepted orderbook-creation tx, straight
    * from the node (`/cosmos/tx/v1beta1/txs/{hash}`) rather than the

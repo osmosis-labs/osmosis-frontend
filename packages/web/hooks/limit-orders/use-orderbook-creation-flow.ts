@@ -1,7 +1,8 @@
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useMemo, useState } from "react";
 
+import { POOL_CREATION_FEE_COIN } from "~/components/complex/pool/create";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useWalletSelect } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
@@ -13,8 +14,8 @@ import { api } from "~/utils/trpc";
 /**
  * The confirm-modal flow shared by every orderbook-creation entry point (the
  * Limit tab and the Pay With / Receive dropdown): modal and fee-acknowledgement
- * state, the wallet handoff, the confirm-time ratio guard, and the creation
- * fee read from chain with a balance precheck. Callers render
+ * state, the wallet handoff, the confirm-time ratio guard, and a balance
+ * precheck against the pool creation fee. Callers render
  * `CreateOrderbookModal` with `modalProps` and decide what success means for
  * their UI via `onCreated`.
  *
@@ -75,41 +76,18 @@ export function useOrderbookCreationFlow({
     quoteDecimals: quoteAsset?.decimals,
   });
 
-  // Fetched only while the modal is open: the fee is what the chain charges
-  // MsgCreateCosmWasmPool, so it must be known before a paid confirm.
-  const { data: poolCreationFee } =
-    api.edge.orderbooks.getPoolCreationFee.useQuery(undefined, {
-      enabled: isOpen,
-      staleTime: 1000 * 60 * 5,
-    });
-  const feeCoin = poolCreationFee?.[0];
-  const feeAsset = useMemo(
-    () =>
-      feeCoin
-        ? getAssetFromAssetList({
-            assetLists: AssetLists,
-            coinMinimalDenom: feeCoin.denom,
-          })
-        : undefined,
-    [feeCoin]
-  );
-  const feeLabel =
-    feeCoin && feeAsset
-      ? new CoinPretty(feeAsset.currency, new Dec(feeCoin.amount))
-          .trim(true)
-          .toString()
-      : undefined;
-
   const { data: balances, isFetching: isFetchingBalances } =
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       { enabled: isOpen && !!account?.address }
     );
   const hasInsufficientFeeBalance = useMemo(() => {
-    if (!feeCoin || !balances) return false;
-    const held = balances.find((b) => b.denom === feeCoin.denom)?.amount ?? "0";
-    return new Int(held).lt(new Int(feeCoin.amount));
-  }, [balances, feeCoin]);
+    if (!balances) return false;
+    const held =
+      balances.find((b) => b.denom === POOL_CREATION_FEE_COIN.denom)?.amount ??
+      "0";
+    return new Int(held).lt(new Int(POOL_CREATION_FEE_COIN.amount));
+  }, [balances]);
 
   // Every way the modal closes (dismiss, wallet handoff, success) goes through
   // here so the acknowledgement and any previous attempt's error never carry
@@ -128,7 +106,6 @@ export function useOrderbookCreationFlow({
     (!baseAsset ||
       !quoteAsset ||
       (isRatioBlocked && !isRatioTooLow) ||
-      !feeCoin ||
       !balances ||
       isFetchingBalances);
   const blockedReason = isRatioTooLow
@@ -172,7 +149,6 @@ export function useOrderbookCreationFlow({
       acknowledgeFee,
       onAcknowledgeFee: setAcknowledgeFee,
       onConfirm: confirm,
-      feeLabel,
       isConfirmPending,
       blockedReason,
     },

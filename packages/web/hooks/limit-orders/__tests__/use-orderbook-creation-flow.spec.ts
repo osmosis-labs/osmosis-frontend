@@ -1,22 +1,21 @@
 import { act, renderHook } from "@testing-library/react";
 
+import { POOL_CREATION_FEE_COIN } from "~/components/complex/pool/create";
+
 import { useOrderbookCreationFlow } from "../use-orderbook-creation-flow";
 
-// ATOM / allUSDC: real denoms, so decimals and the fee symbol resolve from
-// the generated asset list exactly as in the app.
+// ATOM / allUSDC: real denoms, so decimals resolve from the generated asset
+// list exactly as in the app.
 const ATOM =
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 const ALL_USDC =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
-/** Live poolmanager params: 20 allUSDC (6 decimals). */
-const FEE = [{ denom: ALL_USDC, amount: "20000000" }];
 
 const mockCreateOrderbook = jest.fn();
 const mockOpenWalletSelect = jest.fn();
 let mockWallet: { address?: string; isWalletConnected: boolean } | undefined;
 let mockBalances: { denom: string; amount: string }[] | undefined;
 let mockGuard = { isBlocked: false, isRatioTooLow: false };
-let mockFee: typeof FEE | undefined;
 
 jest.mock("~/stores", () => ({
   useStore: () => ({
@@ -50,11 +49,6 @@ jest.mock("~/hooks/limit-orders/use-orderbook-ratio-guard", () => ({
 
 jest.mock("~/utils/trpc", () => ({
   api: {
-    edge: {
-      orderbooks: {
-        getPoolCreationFee: { useQuery: () => ({ data: mockFee }) },
-      },
-    },
     local: {
       balances: {
         getUserBalances: {
@@ -82,12 +76,21 @@ describe("useOrderbookCreationFlow", () => {
     mockWallet = { address: "osmo1user", isWalletConnected: true };
     mockBalances = [{ denom: ALL_USDC, amount: "25000000" }];
     mockGuard = { isBlocked: false, isRatioTooLow: false };
-    mockFee = FEE;
   });
 
-  it("shows the creation fee read from chain", () => {
+  it("prechecks against the poolmanager fee: 20 allUSDC", () => {
+    // Live params as of this change; update with the display string if
+    // governance changes the fee.
+    expect(POOL_CREATION_FEE_COIN).toEqual({
+      denom: ALL_USDC,
+      amount: "20000000",
+    });
+  });
+
+  it("allows a balance of exactly the fee", () => {
+    mockBalances = [{ denom: ALL_USDC, amount: "20000000" }];
     const { result } = renderFlow();
-    expect(result.current.modalProps.feeLabel).toBe("20 USDC");
+    expect(result.current.modalProps.blockedReason).toBeUndefined();
   });
 
   it("creates and reports success when every check passes", async () => {
@@ -150,12 +153,6 @@ describe("useOrderbookCreationFlow", () => {
       "the price guard is still settling",
       () => {
         mockGuard = { isBlocked: true, isRatioTooLow: false };
-      },
-    ],
-    [
-      "the fee has not loaded",
-      () => {
-        mockFee = undefined;
       },
     ],
     [
