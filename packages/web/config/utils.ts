@@ -2,7 +2,7 @@ import type { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";
-import { finished } from "stream/promises";
+import { pipeline } from "stream/promises";
 
 import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -140,13 +140,28 @@ export async function saveAssetImageToTokensDir({
     throw new Error(`Failed to fetch image from ${imageUrl}: empty body`);
   }
 
-  // Save the image to the file system.
-  const fileStream = fs.createWriteStream(filePath, { flags: "w" });
-  await finished(
-    Readable.fromWeb(
-      response.body as import("stream/web").ReadableStream<any>
-    ).pipe(fileStream)
-  );
+  // Save the image through a temporary file and rename it into place only
+  // once complete. A download or write that fails part-way would otherwise
+  // leave a truncated file at `filePath`, which later builds skip because it
+  // exists and the asset list hash matches. `pipeline` (unlike `pipe`) also
+  // rejects when the response body errors mid-download.
+  const tempFilePath = `${filePath}.download`;
+  try {
+    await pipeline(
+      Readable.fromWeb(
+        response.body as import("stream/web").ReadableStream<any>
+      ),
+      fs.createWriteStream(tempFilePath, { flags: "w" })
+    );
+    fs.renameSync(tempFilePath, filePath);
+  } catch (e) {
+    fs.rmSync(tempFilePath, { force: true });
+    throw new Error(
+      `Failed to save image from ${imageUrl} to ${filePath}: ${
+        e instanceof Error ? e.message : String(e)
+      }`
+    );
+  }
 
   // Verify the image has been added
   if (!fs.existsSync(filePath)) {
