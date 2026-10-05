@@ -133,7 +133,6 @@ export async function getTransactions({
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
-
       const data = await queryTransactions({
         address,
         page,

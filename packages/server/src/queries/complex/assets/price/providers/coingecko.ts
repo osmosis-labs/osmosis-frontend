@@ -4,10 +4,7 @@ import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
-import {
-  CoingeckoVsCurrencies,
-  querySimplePrice,
-} from "../../../../coingecko";
+import { CoingeckoVsCurrencies, querySimplePrice } from "../../../../coingecko";
 
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
