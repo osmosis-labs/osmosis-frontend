@@ -75,8 +75,6 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run == true || inputs.dry_run == 'true' }}
           E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
           E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
-          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
           TOPUP_MULTIPLIER: ${{ inputs.topup_multiplier }}
           RESERVE_OSMO: ${{ inputs.reserve_osmo }}

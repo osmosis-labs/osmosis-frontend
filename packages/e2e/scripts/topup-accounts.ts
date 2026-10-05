@@ -12,8 +12,6 @@
  *
  * @requires E2E_PRIVATE_KEY_TOPUP   - Hex key of the topup account (sender).
  * @requires E2E_PRIVATE_KEY_PREVIEW - Hex key of the new E2E Test Account.
- * @requires TEST_PRIVATE_KEY_SG     - Hex key of new Monitoring SG.
- * @requires TEST_PRIVATE_KEY_EU     - Hex key of new Monitoring EU.
  * @requires TEST_PRIVATE_KEY_US     - Hex key of new Monitoring US.
  * @requires DRY_RUN                 - (optional) Defaults to "true". Set to "false" to send.
  * @requires TOPUP_MULTIPLIER        - (optional) Target = warnAmount × this. Default: 1.5.
@@ -217,8 +215,6 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const TARGET_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
   { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
 ] as const;
 

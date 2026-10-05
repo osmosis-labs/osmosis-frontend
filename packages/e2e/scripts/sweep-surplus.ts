@@ -21,7 +21,7 @@
  *
  * Environment variables:
  * - `E2E_PRIVATE_KEY_TOPUP`   — topup account key (destination address).
- * - `E2E_PRIVATE_KEY_PREVIEW`, `TEST_PRIVATE_KEY_SG/EU/US` — source signers.
+ * - `E2E_PRIVATE_KEY_PREVIEW`, `TEST_PRIVATE_KEY_US` — source signers.
  * - `SWEEP_MULTIPLIER`        — sweep when balance > warnAmount × this
  *                               (default 4, floored at 3.5 to stay above the
  *                               topup target of 3).
@@ -71,8 +71,6 @@ const MIN_SWEEP_MULTIPLIER = TOPUP_TARGET_MULTIPLIER + 0.5;
 
 const SOURCE_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
   { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
 ] as const;
 
