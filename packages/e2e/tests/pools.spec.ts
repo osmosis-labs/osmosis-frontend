@@ -32,17 +32,17 @@ test.describe('Test Select Pool feature', () => {
     await poolsPage.goto()
     expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10)
     const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity()
-    topLiquidity.every((element) => {
+    for (const element of topLiquidity) {
       expect(element).toBeGreaterThan(10_000)
-    })
+    }
     const topVolume = await poolsPage.getTopTenPoolsByVolume()
-    topVolume.every((element) => {
+    for (const element of topVolume) {
       expect(element).toBeGreaterThan(10_000)
-    })
+    }
     const topAPR = await poolsPage.getTopTenPoolsByAPR()
-    topAPR.every((element) => {
+    for (const element of topAPR) {
       expect(element).toContain('%')
-    })
+    }
   })
 
   test('User should be able to select ATOM/USDC pool', async () => {
