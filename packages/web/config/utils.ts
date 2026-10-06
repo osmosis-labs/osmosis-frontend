@@ -59,10 +59,22 @@ const IMAGE_FETCH_ATTEMPTS = 4;
 const IMAGE_FETCH_BASE_DELAY_MS = 1_000;
 const IMAGE_FETCH_MAX_DELAY_MS = 30_000;
 
+/** `Retry-After` as milliseconds: either delay-seconds or an HTTP-date. */
+function parseRetryAfterMs(header: string | null): number | undefined {
+  if (!header) return undefined;
+  const seconds = Number(header);
+  if (Number.isFinite(seconds) && seconds > 0) return seconds * 1_000;
+  const atMs = Date.parse(header);
+  if (Number.isNaN(atMs)) return undefined;
+  const delayMs = atMs - Date.now();
+  return delayMs > 0 ? delayMs : undefined;
+}
+
 /**
  * Fetch an image, retrying rate limits (429), server errors (5xx) and network
- * errors with exponential backoff, honouring `Retry-After` when the host sends
- * one. Other statuses (e.g. a dead logo URL's 404) fail at once.
+ * errors with exponential backoff, honouring `Retry-After` (delay-seconds or
+ * HTTP-date) when the host sends one, capped so one slow host cannot stall a
+ * build. Other statuses (e.g. a dead logo URL's 404) fail at once.
  * @throws When the image could not be fetched.
  */
 export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
@@ -74,12 +86,12 @@ export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
       if (response.ok) return response;
 
       lastError = `${response.status} ${response.statusText}`;
+      // Release the connection: an unread body keeps its socket busy, and 16
+      // workers retrying would otherwise exhaust the pool.
+      await response.body?.cancel().catch(() => undefined);
       if (response.status !== 429 && response.status < 500) break;
 
-      const retryAfterSeconds = Number(response.headers.get("retry-after"));
-      if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
-        retryAfterMs = retryAfterSeconds * 1_000;
-      }
+      retryAfterMs = parseRetryAfterMs(response.headers.get("retry-after"));
     } catch (e) {
       lastError = e instanceof Error ? e.message : String(e);
     }
