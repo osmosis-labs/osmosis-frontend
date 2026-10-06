@@ -244,7 +244,6 @@ export class TxTracer {
     }
 
     // @ts-ignore
-
     this.listeners[type]!.push(listener);
   }
 

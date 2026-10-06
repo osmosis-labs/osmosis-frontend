@@ -81,7 +81,10 @@ export class MockOnStartObservableQuery extends ObservableQuery<number> {
 }
 
 export class DelayMemoryKVStore extends MemoryKVStore {
-  constructor(prefix: string, public readonly delay: number) {
+  constructor(
+    prefix: string,
+    public readonly delay: number
+  ) {
     super(prefix);
   }
 
@@ -1208,7 +1211,8 @@ describe("Test observable query", () => {
     const query = new MockObservableQuery(memStore, port, {}, "/invalid");
 
     const queryController = new DeferInitialQueryController();
-    ObservableQueryBase.experimentalDeferInitialQueryController = queryController;
+    ObservableQueryBase.experimentalDeferInitialQueryController =
+      queryController;
 
     await new Promise((resolve) => {
       setTimeout(resolve, 50);
@@ -1309,7 +1313,8 @@ describe("Test observable query", () => {
     );
 
     const queryController = new DeferInitialQueryController();
-    ObservableQueryBase.experimentalDeferInitialQueryController = queryController;
+    ObservableQueryBase.experimentalDeferInitialQueryController =
+      queryController;
 
     await new Promise((resolve) => {
       setTimeout(resolve, 50);

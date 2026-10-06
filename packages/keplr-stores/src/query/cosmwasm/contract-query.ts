@@ -7,7 +7,7 @@ import { Buffer } from "buffer/";
 import { autorun } from "mobx";
 
 export class ObservableCosmwasmContractChainQuery<
-  T
+  T,
 > extends ObservableChainQuery<T> {
   protected disposer?: () => void;
 
