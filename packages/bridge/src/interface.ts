@@ -600,8 +600,11 @@ export interface BridgeQuote {
      *  transaction requires `amount + fee` from the user's balance — rather
      *  than being deducted from the transferred amount in transit. */
     isAdditive?: boolean;
-    /** When true, the provider charges a fee that could not be quantified, so
-     *  `amount` is a placeholder and must not be shown as a zero fee. */
+    /** When true, `amount` is not the whole provider fee: either a placeholder
+     *  zero for a fee that could not be quantified, or only the part charged
+     *  in the source asset while other parts are charged in assets this coin
+     *  can't carry. It must not be shown as the fee or summed into a total
+     *  used to rank quotes; `amount` is still what a Max input must reserve. */
     isUnknown?: boolean;
   };
   /**

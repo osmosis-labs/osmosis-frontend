@@ -1955,7 +1955,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     expect(quote.transferFee.isUnknown).toBe(true);
   });
 
-  it("quotes only the source-asset part of relayer fees split across assets", async () => {
+  it("keeps the source-asset part of relayer fees split across assets but marks the fee incomplete", async () => {
     useSingleTxRejectingRouteHandler(undefined, {
       ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
       estimated_fees: [cctpRelayFee, nobleRelayFee],
@@ -1966,11 +1966,13 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       allowMultiTx: true,
     });
 
+    // the source-asset part is kept so a Max input still reserves it...
     expect(quote.transferFee).toMatchObject({
       amount: "20000",
       address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     });
-    expect(quote.transferFee.isUnknown).toBeUndefined();
+    // ...but the Noble-side part is omitted, so the fee is not the whole fee
+    expect(quote.transferFee.isUnknown).toBe(true);
   });
 
   it("keeps a comparable single-tx route when multi-tx is allowed", async () => {

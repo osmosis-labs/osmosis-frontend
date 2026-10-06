@@ -557,10 +557,16 @@ export class SkipBridgeProvider implements BridgeProvider {
           const otherAsset = allRelayFees[0]?.origin_asset;
 
           if (relayFees.length > 0) {
+            // Keep the source-asset part: it is what a Max input must leave
+            // room for. If other fees are charged in assets this single coin
+            // can't carry, the amount is not the whole fee, so flag it rather
+            // than let a total that omits them rank this quote cheapest.
+            const omitsOtherAssets = relayFees.length < allRelayFees.length;
             transferFee = {
               ...transferFee,
               amount: sumAmounts(relayFees),
               isAdditive: isAdditive(relayFees),
+              ...(omitsOtherAssets ? { isUnknown: true } : {}),
             };
           } else if (
             // Withdrawals through Noble CCTP pay the relayer on noble-1 in
