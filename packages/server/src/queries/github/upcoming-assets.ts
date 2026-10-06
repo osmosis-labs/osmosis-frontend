@@ -23,7 +23,7 @@ export interface UpcomingAssets {
       {
         png?: string;
         svg?: string;
-      }
+      },
     ];
     socials?: {
       /**

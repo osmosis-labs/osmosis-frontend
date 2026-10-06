@@ -4,11 +4,7 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import type { LimitOrder } from "../../osmosis";
 
 export type OrderStatus =
-  | "open"
-  | "partiallyFilled"
-  | "filled"
-  | "fullyClaimed"
-  | "cancelled";
+  "open" | "partiallyFilled" | "filled" | "fullyClaimed" | "cancelled";
 
 export type MappedLimitOrder = Omit<
   LimitOrder,

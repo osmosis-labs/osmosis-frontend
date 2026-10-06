@@ -11,7 +11,7 @@ import { HasMapStore } from "../map";
  */
 export class ObservableJsonRPCQuery<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQuery<T, E> {
   @observable.ref
   protected _params: readonly any[];
@@ -99,7 +99,7 @@ const sha256_fn = (data: Uint8Array): Uint8Array => {
 
 export class ObservableJsonRPCQueryMap<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends HasMapStore<ObservableJsonRPCQuery<T, E>> {
   constructor(creater: (key: string) => ObservableJsonRPCQuery<T, E>) {
     super(creater);

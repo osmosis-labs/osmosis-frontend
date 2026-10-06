@@ -15,7 +15,7 @@
     "report-fleet-balances": "npx tsx scripts/report-fleet-balances.ts"
   },
   "dependencies": {
-    "@playwright/test": "1.55.1",
+    "@playwright/test": "1.63.0",
     "@xhmikosr/decompress": "11.1.4"
   },
   "devDependencies": {

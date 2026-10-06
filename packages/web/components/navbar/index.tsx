@@ -663,7 +663,7 @@ const AnnouncementBanner: FunctionComponent<{
       <div className="flex min-w-0 w-full flex-wrap place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
         <span className="min-w-0 [overflow-wrap:anywhere]">
           {isChainHalted
-            ? banner?.enTextOrLocalizationPath ?? ""
+            ? (banner?.enTextOrLocalizationPath ?? "")
             : interpolateBannerText(
                 getDeepValue<string>(
                   currentLanguageTranslations,

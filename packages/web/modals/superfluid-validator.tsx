@@ -120,11 +120,11 @@ export const SuperfluidValidatorModal: FunctionComponent<
             isDelegated: !showDelegated
               ? 1
               : userValidatorDelegations?.some(
-                  ({ delegation }) =>
-                    delegation.validator_address === operator_address
-                )
-              ? 1 // = new Dec(1)
-              : randomSortVals[index], // = new Dec(0..<1)
+                    ({ delegation }) =>
+                      delegation.validator_address === operator_address
+                  )
+                ? 1 // = new Dec(1)
+                : randomSortVals[index], // = new Dec(0..<1)
           };
         }
       ) ?? [],

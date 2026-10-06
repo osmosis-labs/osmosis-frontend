@@ -115,7 +115,6 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fiatCurrency = priceStore.getFiatCurrency(
         priceStore.defaultVsCurrency
       )!;
@@ -370,12 +369,12 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
                     .add(
                       // for internal incentives, higher bonding periods accrue incentives from prior gauges
                       priorDuration
-                        ? this.computeDailyRewardForDuration(
+                        ? (this.computeDailyRewardForDuration(
                             poolId,
                             priorDuration,
                             priceStore,
                             fiatCurrency
-                          ) ?? new Dec(0)
+                          ) ?? new Dec(0))
                         : new Dec(0)
                     );
                 }

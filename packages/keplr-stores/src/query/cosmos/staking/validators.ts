@@ -26,7 +26,7 @@ interface KeybaseResult {
           url?: string;
         };
       };
-    }
+    },
   ];
 }
 
