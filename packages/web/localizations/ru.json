@@ -870,7 +870,6 @@
     "reviewWithdraw": "Отзыв отзыва",
     "moreDepositOptions": "Больше вариантов депозита",
     "moreWithdrawOptions": "Больше вариантов вывода",
-    "convertTo": "Перевести в",
     "depositAs": "Депозит как",
     "withdrawAs": "Вывести как",
     "withdrawViaRoute": "через {route}",
