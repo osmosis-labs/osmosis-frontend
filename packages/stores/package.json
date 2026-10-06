@@ -41,7 +41,6 @@
     "@chain-registry/types": "^0.46.0",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
-    "chain-registry": "^1.20.0",
     "eslint": "^9.39.5",
     "jest": "^30.5.2",
     "lint-staged": "^17.6.0",
