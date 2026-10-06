@@ -20,6 +20,39 @@ interface CanonicalOrderbook {
   contract_address: string;
 }
 
+async function fetchCanonicalOrderbooks(): Promise<CanonicalOrderbook[]> {
+  const response = await fetch(`${SQS_BASE_URL}/pools/canonical-orderbooks`, {
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) {
+    throw new Error(`canonical-orderbooks: ${response.status}`);
+  }
+  return (await response.json()) as CanonicalOrderbook[];
+}
+
+/**
+ * First of `candidateDenoms` whose only canonical orderbook is base/`quoteDenom`
+ * (and which isn't the quote of any book), or `undefined` if none qualifies.
+ * Anyone can create an orderbook, so a pair that has a single book today can
+ * gain another later; tests read it live rather than hardcoding the asset.
+ * Throws if SQS can't be read.
+ */
+export async function findAssetWithOnlyOrderbookQuote(
+  candidateDenoms: string[],
+  quoteDenom: string
+): Promise<string | undefined> {
+  const orderbooks = await fetchCanonicalOrderbooks();
+  return candidateDenoms.find((denom) => {
+    const books = orderbooks.filter(
+      (o) => o.base === denom || o.quote === denom
+    );
+    return (
+      books.length > 0 &&
+      books.every((o) => o.base === denom && o.quote === quoteDenom)
+    );
+  });
+}
+
 /**
  * Best resting bid on the canonical base/quote orderbook, in display units
  * (quote per base). Returns `undefined` if the book or the price can't be
@@ -38,15 +71,7 @@ export async function getOrderbookBestBid({
   quoteExponent: number;
 }): Promise<number | undefined> {
   try {
-    const orderbooksResponse = await fetch(
-      `${SQS_BASE_URL}/pools/canonical-orderbooks`,
-      { signal: AbortSignal.timeout(15_000) }
-    );
-    if (!orderbooksResponse.ok) {
-      throw new Error(`canonical-orderbooks: ${orderbooksResponse.status}`);
-    }
-    const orderbooks =
-      (await orderbooksResponse.json()) as CanonicalOrderbook[];
+    const orderbooks = await fetchCanonicalOrderbooks();
     const orderbook = orderbooks.find(
       (o) => o.base === baseDenom && o.quote === quoteDenom
     );
