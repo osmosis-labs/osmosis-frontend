@@ -5,7 +5,6 @@ export * from "./cosmos";
 export * from "./cosmwasm";
 export * from "./data-services";
 export * from "./github";
-export * from "./ibc";
 export * from "./keybase";
 export * from "./osmosis";
 export * from "./sidecar";
