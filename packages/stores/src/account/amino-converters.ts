@@ -4,7 +4,6 @@ import {
   MsgBeginUnlockingAmino,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import type { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
-import Long from "long";
 
 let aminoConverters: Record<string, any>;
 
@@ -71,7 +70,6 @@ export async function getAminoConverters() {
         ...originalIbcAminoConverters[
           "/ibc.applications.transfer.v1.MsgTransfer"
         ],
-        // Remove timeout_timestamp as it is not used by our transactions.
         toAmino: ({
           sourcePort,
           sourceChannel,
@@ -80,6 +78,7 @@ export async function getAminoConverters() {
           receiver,
           timeoutHeight,
           timeoutTimestamp,
+          memo,
         }: MsgTransfer): MsgTransferAmino => ({
           source_port: sourcePort,
           source_channel: sourceChannel,
@@ -98,9 +97,11 @@ export async function getAminoConverters() {
                     : undefined,
               }
             : {},
-          ...(timeoutTimestamp && {
+          // Omit zero timestamps to preserve the chain's Amino signing JSON.
+          ...(timeoutTimestamp !== BigInt(0) && {
             timeout_timestamp: timeoutTimestamp.toString(),
           }),
+          ...(memo && { memo }),
         }),
         fromAmino: ({
           source_port,
@@ -110,6 +111,7 @@ export async function getAminoConverters() {
           receiver,
           timeout_height,
           timeout_timestamp,
+          memo,
         }: MsgTransferAmino): MsgTransfer => {
           return {
             sourcePort: source_port ?? "",
@@ -122,17 +124,12 @@ export async function getAminoConverters() {
             receiver: receiver ?? "",
             timeoutHeight: timeout_height
               ? {
-                  revisionHeight: Long.fromString(
-                    timeout_height.revision_height || "0",
-                    true
-                  ),
-                  revisionNumber: Long.fromString(
-                    timeout_height.revision_number || "0",
-                    true
-                  ),
+                  revisionHeight: BigInt(timeout_height.revision_height || "0"),
+                  revisionNumber: BigInt(timeout_height.revision_number || "0"),
                 }
-              : undefined,
-            timeoutTimestamp: Long.fromString(timeout_timestamp ?? "0"),
+              : { revisionHeight: BigInt(0), revisionNumber: BigInt(0) },
+            timeoutTimestamp: BigInt(timeout_timestamp ?? "0"),
+            memo: memo ?? "",
           };
         },
       },
