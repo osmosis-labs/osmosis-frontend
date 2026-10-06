@@ -2945,15 +2945,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "@chain-registry/types@npm:0.17.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/e4a32546e350240560b1339a3dcb6426eede1569ba9d17b0d6b5eeacd79fb643f347c21ea7f5ba147185c9ad2e19eea44dff248d8e1bf27e882511398812bfe4
-  languageName: node
-  linkType: hard
-
 "@chain-registry/types@npm:^0.46.0, @chain-registry/types@npm:^0.46.11":
   version: 0.46.15
   resolution: "@chain-registry/types@npm:0.46.15"
@@ -8159,7 +8150,6 @@ __metadata:
     axios: "npm:^0.33.0"
     buffer: "npm:^6.0.3"
     cachified: "npm:^3.5.4"
-    chain-registry: "npm:^1.20.0"
     cosmjs-types: "npm:^0.5.2"
     dayjs: "npm:^1.11.23"
     debounce: "npm:^1.2.1"
@@ -14706,16 +14696,6 @@ __metadata:
     preact: "npm:^10.16.0"
     sha.js: "npm:^2.4.11"
   checksum: 10c0/a34b7f3e84f1d12f8235d57b3fd2e06d04e9ad9d999944b43bf0a3b0e79bc1cff336e9097f4555f85e7085ac7a1be2907732cda6a79cad1b60521d996f390b99
-  languageName: node
-  linkType: hard
-
-"chain-registry@npm:^1.20.0":
-  version: 1.20.0
-  resolution: "chain-registry@npm:1.20.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-    "@chain-registry/types": "npm:^0.17.0"
-  checksum: 10c0/f2d4b23bc2b8607fc4de05fa34949eaa183a563afb07f718c039c2be151fa6fbd86e9a3c998dc6ca1b7ab9440bfbc1e1218aff51f0e681f9915788269e95a9da
   languageName: node
   linkType: hard
 
