@@ -446,7 +446,7 @@ export const usePlaceLimit = ({
     t,
   ]);
 
-  const { data, isLoading: isBalancesLoading } =
+  const { data, isFetched: isBalancesFetched } =
     api.edge.assets.getUserAssets.useQuery(
       {
         userOsmoAddress: account?.address ?? "",
@@ -673,7 +673,7 @@ export const usePlaceLimit = ({
     placeLimit,
     baseTokenBalance,
     quoteTokenBalance,
-    isBalancesFetched: !isBalancesLoading,
+    isBalancesFetched,
     insufficientFunds,
     paymentFiatValue,
     paymentTokenValue,

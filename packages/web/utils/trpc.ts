@@ -10,12 +10,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import type {
-  AnyProcedure,
-  AnyRouter,
-  inferRouterInputs,
-  inferRouterOutputs,
-} from "@trpc/server";
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -30,6 +25,7 @@ import {
   constructEdgeUrlPathname,
   EdgeRouterKey,
 } from "~/utils/trpc-edge";
+import { PERSIST_BUSTER, shouldPersistQuery } from "~/utils/trpc-persist";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -47,6 +43,7 @@ const trpcLocalRouter = createTRPCRouter({
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
+  transformer: superjson,
   config() {
     const storage = makeIndexedKVStore("tanstack-query-cache");
 
@@ -69,7 +66,7 @@ export const api = createTRPCNext<AppRouter>({
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+          gcTime: 1000 * 60 * 60 * 24, // 24 hours
         },
       },
     });
@@ -79,47 +76,18 @@ export const api = createTRPCNext<AppRouter>({
       queryClient,
       persister: localStoragePersister,
       dehydrateOptions: {
-        shouldDehydrateQuery: (query) => {
-          const [key] = query.queryKey as [string[]];
-          if (Array.isArray(key)) {
-            const trpcKey = key.join(".") as RouterKeys;
-            const excludedKeys: RouterKeys[] = [
-              "local.bridgeTransfer.getSupportedAssetsBalances",
-              "bridgeTransfer.getDepositAddress",
-            ];
-
-            /**
-             * If the key is in the excludedKeys, we don't want to persist it in the cache.
-             */
-            if (excludedKeys.includes(trpcKey)) {
-              return false;
-            }
-          }
-          return true;
-        },
+        shouldDehydrateQuery: shouldPersistQuery,
       },
       // !! IMPORTANT !!
-      // If you change a data model,
-      // it's important to bump this buster value
-      // so that the cache is invalidated
-      // and data respecting the new model is fetched from the server.
-      // Otherwise, the old data will be served from cache
-      // and unexpected data structures will be run through the app.
-      // v3: drop caches that may hold poisoned success-with-empty
-      // supported-assets results persisted before the Skip counterparty
-      // mutation fix.
-      buster: "v3",
+      // If you change a data model, bump PERSIST_BUSTER (utils/trpc-persist.ts)
+      // so the old cache is dropped and data respecting the new model is
+      // fetched from the server, instead of old data structures being run
+      // through the app.
+      buster: PERSIST_BUSTER,
     });
 
     return {
       queryClient,
-      /**
-       * Transformer used for data de-serialization from the server.
-       *
-       * @see https://trpc.io/docs/data-transformers
-       */
-      transformer: superjson,
-
       /**
        * Links used to determine request flow from client to server.
        *
@@ -224,21 +192,6 @@ export const api = createTRPCNext<AppRouter>({
   ssr: false,
 });
 
-type inferRouterKeys<TRouter extends AnyRouter, Prefix extends string = ""> = {
-  [
-    TKey in keyof TRouter["_def"]["record"]
-  ]: TRouter["_def"]["record"][TKey] extends infer TRouterOrProcedure
-    ? TRouterOrProcedure extends AnyRouter
-      ? inferRouterKeys<
-          TRouterOrProcedure,
-          `${Prefix}${TKey extends string ? TKey : never}.`
-        >
-      : TRouterOrProcedure extends AnyProcedure
-        ? `${Prefix}${TKey extends string ? TKey : never}`
-        : never
-    : never;
-}[keyof TRouter["_def"]["record"]];
-
 /**
  * Inference helper for inputs.
  *
@@ -252,10 +205,3 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  * @example type HelloOutput = RouterOutputs['example']['hello']
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
-
-/**
- * Inference helper for router keys.
- *
- * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
- */
-type RouterKeys = inferRouterKeys<AppRouter>;

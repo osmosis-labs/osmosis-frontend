@@ -485,7 +485,7 @@ const OneClickTradingProfileSection: FunctionComponent<{
       },
       {
         enabled: shouldFetchSessionAuthenticator,
-        cacheTime: 15_000, // 15 seconds
+        gcTime: 15_000, // 15 seconds
         staleTime: 15_000, // 15 seconds
         retry: false,
       }
@@ -511,7 +511,7 @@ const OneClickTradingProfileSection: FunctionComponent<{
         {isOneClickTradingExpired && oneClickTradingInfo && (
           <Button
             size="sm"
-            isLoading={create1CTSession.isLoading}
+            isLoading={create1CTSession.isPending}
             loadingText={null}
             classes={{
               spinner: "!h-4 !w-4",

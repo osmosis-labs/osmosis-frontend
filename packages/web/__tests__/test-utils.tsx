@@ -6,52 +6,45 @@ import type { AvailableFlags } from "@osmosis-labs/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
-import { createTRPCReact, httpLink } from "@trpc/react-query";
+import { httpLink } from "@trpc/react-query";
 import { mockFlags } from "jest-launchdarkly-mock";
 import { when } from "mobx";
 import { ReactNode } from "react";
 
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
+import { trpcReact } from "~/__tests__/trpc-react";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
-import { AppRouter } from "~/server/api/root-router";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
 
-const trpcReact = createTRPCReact<AppRouter>();
 let testRootStore: RootStore;
 
 const queryClient = new QueryClient();
+const trpcClient = trpcReact.createClient({
+  links: [
+    httpLink({
+      transformer: superjson,
+      url: "http://localhost:3000/trpc",
+    }),
+  ],
+});
 const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
-    <MultiLanguageProvider defaultLanguage="en">
-      <StoreProvider>
-        <storeContext.Consumer>
-          {(rootStore) => {
-            testRootStore = rootStore!;
-            return (
-              <WalletSelectProvider>
-                <trpcReact.Provider
-                  client={trpcReact.createClient({
-                    transformer: superjson,
-                    links: [
-                      httpLink({
-                        url: "http://localhost:3000/trpc",
-                      }),
-                    ],
-                  })}
-                  queryClient={queryClient}
-                >
-                  <QueryClientProvider client={queryClient}>
-                    {children}
-                  </QueryClientProvider>
-                </trpcReact.Provider>
-              </WalletSelectProvider>
-            );
-          }}
-        </storeContext.Consumer>
-      </StoreProvider>
-    </MultiLanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <trpcReact.Provider client={trpcClient} queryClient={queryClient}>
+        <MultiLanguageProvider defaultLanguage="en">
+          <StoreProvider>
+            <storeContext.Consumer>
+              {(rootStore) => {
+                testRootStore = rootStore!;
+                return <WalletSelectProvider>{children}</WalletSelectProvider>;
+              }}
+            </storeContext.Consumer>
+          </StoreProvider>
+        </MultiLanguageProvider>
+      </trpcReact.Provider>
+    </QueryClientProvider>
   );
 };
 

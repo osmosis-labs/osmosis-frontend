@@ -13,7 +13,7 @@ export function usePrice(
     {
       enabled:
         Boolean(currency) && !currency?.coinMinimalDenom.startsWith("gamm"),
-      cacheTime: 1000 * 3, // 3 second
+      gcTime: 1000 * 3, // 3 second
       staleTime: 1000 * 3, // 3 second
       ...options,
     }

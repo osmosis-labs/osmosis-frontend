@@ -110,7 +110,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       },
       {
         enabled: !isNil(selectedDenom),
-        cacheTime: 10 * 60 * 1000, // 10 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
         staleTime: 10 * 60 * 1000, // 10 minutes
       }
     );

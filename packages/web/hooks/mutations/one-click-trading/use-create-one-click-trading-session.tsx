@@ -373,15 +373,18 @@ export const useCreateOneClickTradingSession = ({
   queryOptions,
 }: {
   onBroadcasted?: () => void;
-  queryOptions?: UseMutationOptions<
-    unknown,
-    unknown,
-    {
-      spendLimitTokenDecimals: number | undefined;
-      transaction1CTParams: OneClickTradingTransactionParams | undefined;
-      additionalAuthenticatorsToRemove?: bigint[];
-    },
-    unknown
+  queryOptions?: Omit<
+    UseMutationOptions<
+      unknown,
+      unknown,
+      {
+        spendLimitTokenDecimals: number | undefined;
+        transaction1CTParams: OneClickTradingTransactionParams | undefined;
+        additionalAuthenticatorsToRemove?: bigint[];
+      },
+      unknown
+    >,
+    "mutationFn"
   >;
 } = {}) => {
   const { accountStore } = useStore();
@@ -389,11 +392,16 @@ export const useCreateOneClickTradingSession = ({
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    ...queryOptions,
+    mutationFn: async ({
       transaction1CTParams,
       spendLimitTokenDecimals,
       additionalAuthenticatorsToRemove,
+    }: {
+      transaction1CTParams: OneClickTradingTransactionParams | undefined;
+      spendLimitTokenDecimals: number | undefined;
+      additionalAuthenticatorsToRemove?: bigint[];
     }) => {
       const userOsmoAddress = accountStore.getWallet(
         accountStore.osmosisChainId
@@ -464,6 +472,5 @@ export const useCreateOneClickTradingSession = ({
         t,
       });
     },
-    queryOptions
-  );
+  });
 };

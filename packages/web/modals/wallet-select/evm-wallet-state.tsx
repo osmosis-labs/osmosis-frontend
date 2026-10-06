@@ -67,7 +67,7 @@ export const EvmWalletState: FunctionComponent<
     );
   }
 
-  if (status === "loading") {
+  if (status === "pending") {
     const title = t("walletSelect.connectingWallet");
     const desc = t("walletSelect.openExtension", {
       walletName: connector?.name ?? "",

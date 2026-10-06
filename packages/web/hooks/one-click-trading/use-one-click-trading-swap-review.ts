@@ -157,7 +157,7 @@ export function use1CTSwapReviewMessages() {
     },
     {
       enabled: enabledFetchingSessionAuthenticator,
-      cacheTime: 15_000, // 15 seconds
+      gcTime: 15_000, // 15 seconds
       staleTime: 15_000, // 15 seconds
       retry: false,
     }

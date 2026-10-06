@@ -259,7 +259,7 @@ export function useEstimateTxFees({
       });
     },
     staleTime: 3_000, // 3 seconds
-    cacheTime: 3_000, // 3 seconds
+    gcTime: 3_000, // 3 seconds
     retry: false,
     enabled:
       enabled &&

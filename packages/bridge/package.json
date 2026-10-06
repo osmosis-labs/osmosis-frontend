@@ -26,7 +26,6 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@0xsquid/sdk": "^1.14.0",
     "@cosmjs/encoding": "0.36.2",
     "@cosmjs/proto-signing": "0.36.2",
     "@osmosis-labs/proto-codecs": "^5.1.0",

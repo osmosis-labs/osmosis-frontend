@@ -109,32 +109,33 @@ export function localLink<TRouter extends AnyRouter>({
 }): TRPCLink<TRouter> {
   return () =>
     ({ op }) =>
-      observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
-        (observer) => {
-          async function execute() {
-            const createCaller = t.createCallerFactory(router);
-            const caller = createCaller({
-              assetLists,
-              chainList,
-            });
-            try {
-              // Attempt to execute the operation using the router's caller.
-              const data = await (
-                caller[op.path] as (input: unknown) => unknown
-              )(op.input);
-              // If successful, notify the observer with the result.
-              observer.next({ result: { data, type: "data" } });
-              observer.complete();
-            } catch (err) {
-              // If an error occurs, convert it to a TRPCClientError and notify the observer.
-              observer.error(TRPCClientError.from(err as Error));
-            }
+      observable<
+        OperationResultEnvelope<unknown, TRPCClientError<TRouter>>,
+        TRPCClientError<TRouter>
+      >((observer) => {
+        async function execute() {
+          const createCaller = t.createCallerFactory(router);
+          const caller = createCaller({
+            assetLists,
+            chainList,
+          });
+          try {
+            // Attempt to execute the operation using the router's caller.
+            const data = await (caller[op.path] as (input: unknown) => unknown)(
+              op.input
+            );
+            // If successful, notify the observer with the result.
+            observer.next({ result: { data, type: "data" } });
+            observer.complete();
+          } catch (err) {
+            // If an error occurs, convert it to a TRPCClientError and notify the observer.
+            observer.error(TRPCClientError.from(err as Error));
           }
-
-          // Execute the operation asynchronously.
-          void execute();
         }
-      );
+
+        // Execute the operation asynchronously.
+        void execute();
+      });
 }
 
 /**
@@ -155,10 +156,12 @@ export const makeSkipBatchLink = (
     // when condition is true, use normal request
     true: httpLink({
       url,
+      transformer: superjson,
     }),
     // when condition is false, use batching
     false: httpBatchLink({
       url,
+      transformer: superjson,
       maxURLLength: 10_000,
     }),
   });

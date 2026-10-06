@@ -80,7 +80,7 @@ export const useBridgesSupportedAssets = ({
           {
             enabled: !isNil(assets),
             staleTime: 30_000,
-            cacheTime: 30_000,
+            gcTime: 30_000,
             // Retry transient provider failures a couple of times. While
             // retries run, the query counts as loading, so the modal keeps
             // its loading state instead of settling into the external-only

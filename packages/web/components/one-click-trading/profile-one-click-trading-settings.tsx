@@ -31,7 +31,7 @@ export const ProfileOneClickTradingSettings = ({
     },
     {
       enabled: shouldFetchSessionAuthenticator,
-      cacheTime: 15_000, // 15 seconds
+      gcTime: 15_000, // 15 seconds
       staleTime: 15_000, // 15 seconds
       retry: false,
     }
@@ -66,7 +66,7 @@ export const ProfileOneClickTradingSettings = ({
           ? isLoadingSessionAuthenticator
           : false)
       }
-      isSendingTx={create1CTSession.isLoading}
+      isSendingTx={create1CTSession.isPending}
       onStartTrading={() => {
         create1CTSession.mutate(
           {
@@ -125,7 +125,7 @@ export const ProfileOneClickTradingSettings = ({
           }
         );
       }}
-      isEndingSession={removeSession.isLoading}
+      isEndingSession={removeSession.isPending}
     />
   );
 };
