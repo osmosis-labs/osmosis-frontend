@@ -25,7 +25,7 @@ import {
   constructEdgeUrlPathname,
   EdgeRouterKey,
 } from "~/utils/trpc-edge";
-import { shouldPersistQuery } from "~/utils/trpc-persist";
+import { PERSIST_BUSTER, shouldPersistQuery } from "~/utils/trpc-persist";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -79,18 +79,11 @@ export const api = createTRPCNext<AppRouter>({
         shouldDehydrateQuery: shouldPersistQuery,
       },
       // !! IMPORTANT !!
-      // If you change a data model,
-      // it's important to bump this buster value
-      // so that the cache is invalidated
-      // and data respecting the new model is fetched from the server.
-      // Otherwise, the old data will be served from cache
-      // and unexpected data structures will be run through the app.
-      // v3: drop caches that may hold poisoned success-with-empty
-      // supported-assets results persisted before the Skip counterparty
-      // mutation fix.
-      // v4: TanStack Query v5 cache format; v4 caches hold a "loading"
-      // status that v5 cannot restore.
-      buster: "v4",
+      // If you change a data model, bump PERSIST_BUSTER (utils/trpc-persist.ts)
+      // so the old cache is dropped and data respecting the new model is
+      // fetched from the server, instead of old data structures being run
+      // through the app.
+      buster: PERSIST_BUSTER,
     });
 
     return {

@@ -44,7 +44,7 @@ export const useAssetVariantsToast = () => {
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  const { data, error, isFetchedAfterMount } =
+  const { data, error, isFetchedAfterMount, isSuccess, isFetching } =
     api.local.portfolio.getPortfolioAssets.useQuery(
       {
         address: wallet?.address ?? "",
@@ -56,11 +56,12 @@ export const useAssetVariantsToast = () => {
     );
 
   useEffect(() => {
-    // Only a fetch this mount made while the gate was open counts: the query
-    // can expose cached or persisted data while disabled, which would toast
-    // before the session hydrates, twice per session, or for a stale
-    // portfolio.
-    if (!enabled || !isFetchedAfterMount || !data) return;
+    // Only a settled, successful fetch this mount made while the gate was open
+    // counts. The query can expose cached or persisted data while disabled,
+    // keeps old data when a refetch fails, and a late cache restore can mark
+    // it fetched mid-fetch; any of those would toast for a stale portfolio.
+    if (!enabled || !isSuccess || isFetching || !isFetchedAfterMount || !data)
+      return;
     if (hasSeenToastThisSession) return;
 
     // Eligibility and visibility live in alloyed-assets-toast-policy so the
@@ -94,6 +95,8 @@ export const useAssetVariantsToast = () => {
     }
   }, [
     enabled,
+    isSuccess,
+    isFetching,
     isFetchedAfterMount,
     data,
     hasSeenToastThisSession,

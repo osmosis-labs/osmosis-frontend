@@ -104,6 +104,10 @@ export const DepositAddressScreen = observer(
       : undefined;
 
     const isExpired = expirationTimeDayjs?.isBefore(dayjs());
+    // A disabled query (no wallet address) is not loading and has no data, so
+    // gate copying on the address itself rather than on `isLoading` alone.
+    const canCopyAddress =
+      !isLoading && !isExpired && !!data?.depositData?.depositAddress;
     const willExpireIn4Hours = expirationTimeDayjs?.isBefore(
       dayjs().add(4, "hour")
     );
@@ -181,7 +185,7 @@ export const DepositAddressScreen = observer(
                 </p>
                 <p className="body2 text-osmoverse-600">{t("transfer.or")}</p>
                 <button
-                  disabled={isLoading || isExpired}
+                  disabled={!canCopyAddress}
                   onClick={onCopy}
                   className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
                 >
@@ -245,7 +249,7 @@ export const DepositAddressScreen = observer(
                     onClick={() => {
                       setShowQrCode(true);
                     }}
-                    disabled={isLoading || isExpired}
+                    disabled={!canCopyAddress}
                   />
                 </Tooltip>
                 <Tooltip
@@ -271,7 +275,7 @@ export const DepositAddressScreen = observer(
                     onClick={() => {
                       onCopy();
                     }}
-                    disabled={isLoading || isExpired}
+                    disabled={!canCopyAddress}
                   />
                 </Tooltip>
               </div>

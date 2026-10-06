@@ -9,10 +9,21 @@ export const PERSIST_EXCLUDED_KEYS = [
 ];
 
 /**
+ * Version of the persisted cache. Bump it whenever the shape of persisted data
+ * changes, so older caches are dropped on restore instead of served.
+ * v3: drop caches that may hold poisoned success-with-empty supported-assets
+ * results persisted before the Skip counterparty mutation fix.
+ * v4: TanStack Query v5 cache format; v4 caches hold a "loading" status that v5
+ * cannot restore.
+ */
+export const PERSIST_BUSTER = "v4";
+
+/**
  * Which queries the persisted cache keeps. Only successful queries: v5
  * dehydrates a pending query together with its promise, which superjson
  * serializes as `{}`, so restoring it throws, wipes the stored cache and leaves
- * persistence off for the session.
+ * persistence off for the session. Errored queries are not kept either, even
+ * when they still hold data from an earlier success.
  */
 export function shouldPersistQuery(query: Query): boolean {
   if (!defaultShouldDehydrateQuery(query)) return false;
