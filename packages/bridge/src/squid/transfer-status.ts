@@ -1,4 +1,3 @@
-import type { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
@@ -10,6 +9,7 @@ import type {
   TxSnapshot,
 } from "../interface";
 import { SquidBridgeProvider } from ".";
+import type { SquidStatusResponse } from "./types";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
@@ -54,7 +54,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
             url.searchParams.append("toChainId", toChainId.toString());
           }
 
-          const data = await apiClient<StatusResponse>(url.toString());
+          const data = await apiClient<SquidStatusResponse>(url.toString());
 
           if (!data || !data.id || !data.squidTransactionStatus) {
             return;
