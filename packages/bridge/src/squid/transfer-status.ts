@@ -45,6 +45,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
       toChain: { chainId: toChainId },
+      quoteId,
     } = snapshot;
     await poll({
       fn: async () => {
@@ -56,6 +57,9 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           }
           if (toChainId) {
             url.searchParams.append("toChainId", toChainId.toString());
+          }
+          if (quoteId) {
+            url.searchParams.append("quoteId", quoteId);
           }
 
           const data = await apiClient<SquidStatusResponse>(url.toString(), {

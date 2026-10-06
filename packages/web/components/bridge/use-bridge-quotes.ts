@@ -837,6 +837,7 @@ export const useBridgeQuotes = ({
               }
             : undefined,
           nomicCheckpointIndex,
+          quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
         });

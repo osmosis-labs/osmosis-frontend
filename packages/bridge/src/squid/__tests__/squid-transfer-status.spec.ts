@@ -101,6 +101,12 @@ describe("SquidTransferStatusProvider", () => {
               { status: 401 }
             );
           }
+          if (new URL(request.url).searchParams.get("quoteId") !== "quote1") {
+            return HttpResponse.json(
+              { message: "No transaction found" },
+              { status: 404 }
+            );
+          }
           return HttpResponse.json({
             id: "testTxHash",
             squidTransactionStatus: "success",
@@ -109,7 +115,7 @@ describe("SquidTransferStatusProvider", () => {
       )
     );
 
-    const snapshot = createTxSnapshot();
+    const snapshot = createTxSnapshot({ quoteId: "quote1" });
 
     await provider.trackTxStatus(snapshot);
 

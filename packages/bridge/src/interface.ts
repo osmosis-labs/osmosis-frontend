@@ -610,6 +610,12 @@ export interface BridgeQuote {
    */
   estimatedGasFee?: BridgeCoin;
 
+  /**
+   * Provider-issued ID of this quote. Squid requires it on status requests to
+   * find the transfer, so it is persisted on the transfer's history snapshot.
+   */
+  quoteId?: string;
+
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
 
@@ -771,6 +777,8 @@ const txSnapshotSchema = z.object({
   ),
   estimatedArrivalUnix: z.number(),
   nomicCheckpointIndex: z.number().optional(),
+  /** The quote's `quoteId`, sent with Squid status requests. */
+  quoteId: z.string().optional(),
   /**
    * Chain to poll the status provider on when it differs from `fromChain` —
    * set when `sendTxHash` is a later step of a multi-tx route, signed on an
