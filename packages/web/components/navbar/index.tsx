@@ -116,7 +116,7 @@ export const NavBar: FunctionComponent<
           filePath: "cms/top-announcement-banner.json",
         }),
       staleTime: 1000 * 60 * 3, // 3 minutes
-      cacheTime: 1000 * 60 * 3, // 3 minutes
+      gcTime: 1000 * 60 * 3, // 3 minutes
     });
 
     useEffect(() => {
