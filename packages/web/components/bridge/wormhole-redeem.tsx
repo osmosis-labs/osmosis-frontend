@@ -2002,7 +2002,7 @@ export async function checkIfVaaPosted(
     const body = vaaBytes.subarray(6 + 66 * vaaBytes[5]);
 
     const [postedVaaKey] = PublicKey.findProgramAddressSync(
-      [Buffer.from("PostedVAA"), keccak256(body, "bytes")],
+      [Buffer.from("PostedVAA"), keccak256(new Uint8Array(body), "bytes")],
       new PublicKey(CORE_BRIDGE_PROGRAM_ID)
     );
 
