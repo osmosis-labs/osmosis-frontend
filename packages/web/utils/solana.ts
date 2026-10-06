@@ -1,5 +1,4 @@
 import {
-  SOLANA_PUBLIC_RPC_URL,
   SPL_TOKEN_2022_PROGRAM_ID,
   SPL_TOKEN_PROGRAM_ID,
 } from "@osmosis-labs/bridge/build/utils/solana";
@@ -20,14 +19,15 @@ export function getSolanaRpcProxyUrl(): string {
 }
 
 /**
- * Solana RPC endpoints for reads the browser makes, in preference order: the
- * app's RPC route (which holds the provider key server-side), then the
- * public endpoint in case the route itself fails. publicnode is deliberately
- * not listed: it rejects the indexed token-account queries that balances
- * depend on.
+ * Solana RPC endpoints for reads the browser makes: only the app's RPC route,
+ * which holds the provider key server-side. There is no public fallback:
+ * api.mainnet-beta.solana.com answers browsers with 403, so trying it only
+ * adds a failing request, and publicnode rejects the indexed token-account
+ * queries balances depend on. A route failure surfaces as the balance error
+ * or unknown outcome the callers already map it to, never as a zero.
  */
 export function getClientSolanaRpcUrls(): string[] {
-  return [getSolanaRpcProxyUrl(), SOLANA_PUBLIC_RPC_URL];
+  return [getSolanaRpcProxyUrl()];
 }
 
 /** Calls a Solana JSON-RPC method, trying each endpoint in order. Throws the
