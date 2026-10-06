@@ -17,8 +17,7 @@ const mockQueryState: Record<string, string> = {};
 const mockSetters: Record<string, jest.Mock> = {};
 const mockOpenCreation = jest.fn();
 let mockVerification:
-  | { orderbookExists: boolean; endpointFunctional: boolean }
-  | undefined;
+  { orderbookExists: boolean; endpointFunctional: boolean } | undefined;
 
 jest.mock("nuqs", () => {
   const parser = (defaultValue: unknown) => ({

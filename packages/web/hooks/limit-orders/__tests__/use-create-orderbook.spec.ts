@@ -161,7 +161,7 @@ describe("useCreateOrderbook", () => {
       const [, , msgs] = mockSignAndBroadcast.mock.calls[0] as [
         string,
         string,
-        Array<{ typeUrl: string; value: { instantiateMsg: Uint8Array } }>
+        Array<{ typeUrl: string; value: { instantiateMsg: Uint8Array } }>,
       ];
 
       const msg = msgs[0];
@@ -192,7 +192,7 @@ describe("useCreateOrderbook", () => {
       const [, , msgs] = mockSignAndBroadcast.mock.calls[0] as [
         string,
         string,
-        Array<{ typeUrl: string; value: { codeId: bigint } }>
+        Array<{ typeUrl: string; value: { codeId: bigint } }>,
       ];
 
       expect(msgs[0].value.codeId).toBe(BigInt(OrderbookPoolCodeIds[0]));

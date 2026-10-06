@@ -111,8 +111,8 @@ export function useOrderbookCreationFlow({
   const blockedReason = isRatioTooLow
     ? t("limitOrders.unavailable", { denom: baseAsset?.symbol ?? baseDenom })
     : isWalletConnected && hasInsufficientFeeBalance
-    ? t("errors.insufficientBal")
-    : undefined;
+      ? t("errors.insufficientBal")
+      : undefined;
 
   const confirm = async () => {
     if (!isWalletConnected) {

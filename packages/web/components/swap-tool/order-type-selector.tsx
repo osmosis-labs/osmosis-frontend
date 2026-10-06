@@ -99,7 +99,7 @@ export const OrderTypeSelector = ({
 
   const selectableQuotes = useMemo(() => {
     return baseMinimalDenom
-      ? selectableQuoteDenoms[baseMinimalDenom] ?? []
+      ? (selectableQuoteDenoms[baseMinimalDenom] ?? [])
       : [];
   }, [baseMinimalDenom, selectableQuoteDenoms]);
 
