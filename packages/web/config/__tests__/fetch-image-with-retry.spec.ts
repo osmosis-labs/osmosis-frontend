@@ -12,7 +12,7 @@ const makeResponse = (
     statusText: String(status),
     headers: new Headers(headers),
     body: { cancel: jest.fn(() => Promise.resolve()) },
-  } as unknown as Response);
+  }) as unknown as Response;
 
 const bodyCancel = (response: Response) =>
   (response.body as unknown as { cancel: jest.Mock }).cancel;
