@@ -269,7 +269,7 @@ export const AmountScreen = observer(
         findChainNameOrId: accountStore.osmosisChainId,
       },
       {
-        useErrorBoundary: true,
+        throwOnError: true,
       }
     );
 
@@ -292,13 +292,21 @@ export const AmountScreen = observer(
 
     // Set initial input unit based on price availability
     useEffect(() => {
-      if (isLoadingCanonicalAssetPrice) return;
+      // The price query stays disabled until the asset resolves, and a
+      // disabled query does not report loading, so wait for the asset first or
+      // a cold load flips to crypto before the price has been requested.
+      if (!canonicalAsset || isLoadingCanonicalAssetPrice) return;
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
         setInputUnit("crypto");
       }
-    }, [canonicalAssetPrice, isLoadingCanonicalAssetPrice, inputUnit]);
+    }, [
+      canonicalAsset,
+      canonicalAssetPrice,
+      isLoadingCanonicalAssetPrice,
+      inputUnit,
+    ]);
 
     const firstSupportedEvmChain = useMemo(
       () =>
@@ -1553,13 +1561,13 @@ export const AmountScreen = observer(
                     direction === "withdraw"
                       ? t("transfer.confirmAmount")
                       : pendingChainApproval
-                      ? t("transfer.pendingApproval")
-                      : t("transfer.connectTo", {
-                          network:
-                            direction === "deposit"
-                              ? fromChain?.prettyName ?? ""
-                              : toChain?.prettyName ?? "",
-                        })}
+                        ? t("transfer.pendingApproval")
+                        : t("transfer.connectTo", {
+                            network:
+                              direction === "deposit"
+                                ? (fromChain?.prettyName ?? "")
+                                : (toChain?.prettyName ?? ""),
+                          })}
                   </h6>
                 </Button>
               </Screen>

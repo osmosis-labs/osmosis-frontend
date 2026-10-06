@@ -273,10 +273,10 @@ export const ExpandDetailsControlContent: FunctionComponent<{
               warnUserOfSlippage
                 ? t("transfer.slippageWarning")
                 : warnUserOfUnknownSwapImpact
-                ? t("transfer.unknownSwapImpactDescription")
-                : t("transfer.priceImpactWarning", {
-                    priceImpact: selectedQuote.priceImpact.toString(),
-                  })
+                  ? t("transfer.unknownSwapImpactDescription")
+                  : t("transfer.priceImpactWarning", {
+                      priceImpact: selectedQuote.priceImpact.toString(),
+                    })
             }
           >
             <Icon id="alert-circle" className="h-6 w-6 text-rust-400" />

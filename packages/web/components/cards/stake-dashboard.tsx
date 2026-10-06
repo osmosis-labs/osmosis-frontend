@@ -48,9 +48,12 @@ export const StakeDashboard: React.FC<{
     const { rewards } =
       cosmosQueries.queryRewards.getQueryBech32Address(address);
 
-    const summedStakeRewards = rewards?.reduce((acc, reward) => {
-      return reward.add(acc);
-    }, new CoinPretty(osmo, 0));
+    const summedStakeRewards = rewards?.reduce(
+      (acc, reward) => {
+        return reward.add(acc);
+      },
+      new CoinPretty(osmo, 0)
+    );
 
     const fiatRewards =
       priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);

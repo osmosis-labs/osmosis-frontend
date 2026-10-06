@@ -99,7 +99,7 @@ const SwapAdsBanner = observer(() => {
     undefined,
     {
       staleTime: 1000 * 60 * 30, // 30 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
       select: (data) => ({
         ...data,
         banners: data.banners.filter((banner) =>

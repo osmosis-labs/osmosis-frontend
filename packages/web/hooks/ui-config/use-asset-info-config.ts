@@ -82,7 +82,7 @@ export const useAssetInfoConfig = (
     {
       enabled: Boolean(coinMinimalDenom ?? denom),
       staleTime: realtime ? 3000 : 1000 * 60 * 3,
-      cacheTime: realtime ? 3000 : 1000 * 60 * 6,
+      gcTime: realtime ? 3000 : 1000 * 60 * 6,
       // The procedure's defaults skip focus refetches; realtime prices still
       // need them.
       refetchOnWindowFocus: Boolean(realtime),
@@ -164,7 +164,7 @@ export const useAssetInfoConfig = (
       },
       enabled: enableCoinGecko,
       staleTime: 1000 * 60 * 3, // 3 minutes
-      cacheTime: 1000 * 60 * 6, // 6 minutes
+      gcTime: 1000 * 60 * 6, // 6 minutes
       trpc: {
         context: {
           skipBatch: true,
@@ -207,7 +207,7 @@ export const useAssetInfoConfig = (
       {
         enabled: Boolean(coinMinimalDenom ?? denom),
         staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60 * 30,
+        gcTime: 1000 * 60 * 30,
         trpc: { context: { skipBatch: true } },
       }
     );

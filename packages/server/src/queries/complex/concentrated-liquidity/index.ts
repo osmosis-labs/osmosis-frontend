@@ -658,8 +658,8 @@ export async function mapGetUserPositions({
             isUnbonding: false,
           })
         : isFullRange
-        ? "fullRange"
-        : undefined;
+          ? "fullRange"
+          : undefined;
 
       return {
         id: position.position_id,

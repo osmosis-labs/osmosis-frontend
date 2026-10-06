@@ -316,14 +316,14 @@ const SuperfluidBreakdownRow = ({
               {delegated
                 ? `~${delegated.trim(true).maxDecimals(7).toString()}`
                 : undelegating
-                ? `~${undelegating.trim(true).maxDecimals(7).toString()}`
-                : null}
+                  ? `~${undelegating.trim(true).maxDecimals(7).toString()}`
+                  : null}
               <span className="text-osmoverse-400">
                 {delegated
                   ? ` ${t("pool.delegated")}`
                   : undelegating
-                  ? ` ${t("pool.undelegating")}`
-                  : ""}
+                    ? ` ${t("pool.undelegating")}`
+                    : ""}
               </span>
             </span>
             {commission && (

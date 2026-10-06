@@ -121,7 +121,7 @@ export class FakeFeeConfig implements IFeeConfig {
 
   getFeeTypePretty(): CoinPretty {
     // noop
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     return new CoinPretty(this.feeCurrency!, new Dec(0));
   }
 

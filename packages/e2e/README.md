@@ -29,9 +29,9 @@ All you need to add is a private key for the wallet being used:
 
 ### CI Secrets — Account Mapping
 
-| Secret | Label | Address |
-|--------|-------|---------|
-| `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview frontend tests) | `TBD` |
+| Secret                    | Label                                     | Address |
+| ------------------------- | ----------------------------------------- | ------- |
+| `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview frontend tests) | `TBD`   |
 
 All wallet addresses are derived from the private key at runtime using `deriveAddress()` in `utils/wallet-utils.ts`.
 
@@ -149,8 +149,8 @@ job before any Playwright tests. All wallet-dependent test jobs depend on the
 balance-gate via `needs`, so a single check gates every test — one Slack
 alert at most per workflow run.
 
-| Workflow | Check job(s) | Gates test jobs | Account |
-|----------|-----------|----------------|---------|
+| Workflow                 | Check job(s)     | Gates test jobs                                                                                    | Account                                      |
+| ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------- |
 | `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
 
 `check-balances` runs the balance pipeline (check → alert if low) once per
@@ -165,8 +165,8 @@ The dedup is **best-effort, not a hard guarantee**: the guard is a non-atomic
 `gh run list` check, so two dispatches in the same instant can both proceed
 (harmless — the second run finds the account already funded and sends nothing).
 
-| Workflow | Dispatches topup? | Notes |
-|----------|-------------------|-------|
+| Workflow                 | Dispatches topup?          | Notes                                                    |
+| ------------------------ | -------------------------- | -------------------------------------------------------- |
 | `frontend-e2e-tests.yml` | Yes — `check-balances` job | Dispatches when the preview account is `warn` or `fail`. |
 
 The dispatcher skips if a topup is already `queued`/`in_progress`, **or** a
@@ -183,11 +183,11 @@ on a later preview run even while dispatch is on cooldown.
 
 ### Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| `0` | All balances healthy |
-| `1` | At least one balance below `minAmount` (critical — blocks tests) |
-| `2` | All above `minAmount` but at least one below `warnAmount` (Slack warning) |
+| Code | Meaning                                                                   |
+| ---- | ------------------------------------------------------------------------- |
+| `0`  | All balances healthy                                                      |
+| `1`  | At least one balance below `minAmount` (critical — blocks tests)          |
+| `2`  | All above `minAmount` but at least one below `warnAmount` (Slack warning) |
 
 The script also exits `2` (warn) when SQS pricing for any USD-denominated
 requirement is unavailable after retries — see "Price-Aware Checks" above.
@@ -227,14 +227,14 @@ stalled initial page load surfaces as a recoverable retry rather than a hard
 
 ### E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`)
 
-| Token | Min | Warn | Unit | Used By |
-|-------|-----|------|------|---------|
-| USDC | 1.7 | 3.5 | token | ~1.62 consumed (trade buy + swaps) |
-| ATOM | 2.27 | 4.5 | token | ~2.16 consumed (trade sell + limit + swaps) |
-| OSMO | 1.27 | 2.5 | token | ~1.21 consumed (limit sell + swap) |
-| TIA | 0.022 | 0.05 | token | ~0.02 consumed (swap TIA) |
-| INJ | 0.011 | 0.025 | token | ~0.01 consumed (swap INJ) |
-| AKT | 0.027 | 0.06 | token | ~0.025 consumed (swap AKT) |
+| Token | Min   | Warn  | Unit  | Used By                                     |
+| ----- | ----- | ----- | ----- | ------------------------------------------- |
+| USDC  | 1.7   | 3.5   | token | ~1.62 consumed (trade buy + swaps)          |
+| ATOM  | 2.27  | 4.5   | token | ~2.16 consumed (trade sell + limit + swaps) |
+| OSMO  | 1.27  | 2.5   | token | ~1.21 consumed (limit sell + swap)          |
+| TIA   | 0.022 | 0.05  | token | ~0.02 consumed (swap TIA)                   |
+| INJ   | 0.011 | 0.025 | token | ~0.01 consumed (swap INJ)                   |
+| AKT   | 0.027 | 0.06  | token | ~0.025 consumed (swap AKT)                  |
 
 ---
 
@@ -253,6 +253,7 @@ npx tsx scripts/get-active-orders.ts
 ```
 
 Example output:
+
 ```text
 === Active Orders: E2E Test Account ===
 Derived address: osmo1...
@@ -311,14 +312,15 @@ $env:PRIVATE_KEY="<key-2>"; npx tsx scripts/cancel-all-orders.ts
 
 A single manually-triggered workflow handles both dry runs and real cancellations:
 
-| Workflow | File |
-|---|---|
+| Workflow                                         | File                     |
+| ------------------------------------------------ | ------------------------ |
 | **Cancel Open Limit Orders (E2E Test Accounts)** | `cancel-open-orders.yml` |
 
 The workflow has a **Dry run** checkbox (checked by default) so the safe path is always the default.
 It runs the preview test account.
 
 **Recommended flow:**
+
 1. Trigger from the GitHub Actions tab → **Cancel Open Limit Orders (E2E Test Accounts)** → **Run workflow** (leave "Dry run" checked)
 2. Review the logs to confirm address derivation and order listing work correctly
 3. Trigger again with "Dry run" **unchecked** to send real cancel transactions
@@ -327,8 +329,8 @@ It runs the preview test account.
 
 The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step** before executing limit order tests. This ensures each test run starts with a clean slate, preventing order buildup from prior failed runs.
 
-| Workflow | Job(s) | Account cleaned |
-|---|---|---|
+| Workflow                 | Job(s)                | Account cleaned                              |
+| ------------------------ | --------------------- | -------------------------------------------- |
 | `frontend-e2e-tests.yml` | `preview-trade-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
 
 The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
@@ -343,12 +345,12 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 
 ### GitHub Actions Workflows
 
-| Workflow | File | Purpose |
-|---|---|---|
-| **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
-| **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
-| **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml` | Weekly (+ manual) sweep of surplus tokens back to the topup account |
-| **E2E: Fleet Balance Report** | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across both accounts |
+| Workflow                       | File                           | Purpose                                                                         |
+| ------------------------------ | ------------------------------ | ------------------------------------------------------------------------------- |
+| **E2E: Migrate Funds**         | `e2e-migrate-funds.yml`        | One-time extract/distribute for wallet rotation                                 |
+| **E2E: Topup Test Accounts**   | `e2e-topup-accounts.yml`       | Ongoing topup when accounts run low                                             |
+| **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml`       | Weekly (+ manual) sweep of surplus tokens back to the topup account             |
+| **E2E: Fleet Balance Report**  | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across both accounts |
 
 All fund-moving workflows default to **dry run** on manual dispatch (the
 sweep's weekly cron runs live; the balance report is read-only). The
@@ -375,7 +377,7 @@ usage-visibility layer: every Monday it posts a compact per-account USD
 summary, and on the 1st a full per-token breakdown, covering the preview
 account and the topup/holding account. Each scheduled run saves its numbers as a
 `fleet-balance-state` artifact; the next run picks the prior artifact
-*closest to its target window* (7 days weekly / 30 days monthly) and scales
+_closest to its target window_ (7 days weekly / 30 days monthly) and scales
 the burn rate by the actual elapsed days — so extra manual runs neither
 shrink the trend window nor pollute the baseline history (manual dispatches
 don't save state unless `save_state` is checked). The trend section shows the
@@ -384,24 +386,24 @@ since the total conflates burn with price moves) plus estimated USDC runway.
 
 **Required secrets:**
 
-| Secret | Used by |
-|---|---|
-| `E2E_PRIVATE_KEY_TOPUP` | All three workflows (topup/funding account) |
-| `E2E_PRIVATE_KEY_PREVIEW` | All three workflows (E2E Test Account) |
-| `TEST_PRIVATE_KEY` | Migrate only (old E2E Test Account) |
-| `TEST_PRIVATE_KEY_1` | Migrate only (old Monitoring SG) |
-| `TEST_PRIVATE_KEY_2` | Migrate only (old Monitoring EU) |
-| `TEST_PRIVATE_KEY_3` | Migrate only (old Monitoring US) |
+| Secret                    | Used by                                     |
+| ------------------------- | ------------------------------------------- |
+| `E2E_PRIVATE_KEY_TOPUP`   | All three workflows (topup/funding account) |
+| `E2E_PRIVATE_KEY_PREVIEW` | All three workflows (E2E Test Account)      |
+| `TEST_PRIVATE_KEY`        | Migrate only (old E2E Test Account)         |
+| `TEST_PRIVATE_KEY_1`      | Migrate only (old Monitoring SG)            |
+| `TEST_PRIVATE_KEY_2`      | Migrate only (old Monitoring EU)            |
+| `TEST_PRIVATE_KEY_3`      | Migrate only (old Monitoring US)            |
 
 **Workflow inputs:**
 
-| Input | Default | Description |
-|---|---|---|
-| `dry_run` | `true` | Simulate without broadcasting transactions |
-| `reserve_osmo` | `5` | OSMO to keep in topup account (distribute/topup phases) |
-| `reserve_usdc` | `100` | USDC to keep in topup account (distribute/topup phases) |
-| `topup_multiplier` | `3.0` | Target = warnAmount x this (topup workflow only) |
-| `sweep_multiplier` | `4` | Sweep when balance > warnAmount x this (sweep workflow only, min 3.5) |
+| Input              | Default | Description                                                           |
+| ------------------ | ------- | --------------------------------------------------------------------- |
+| `dry_run`          | `true`  | Simulate without broadcasting transactions                            |
+| `reserve_osmo`     | `5`     | OSMO to keep in topup account (distribute/topup phases)               |
+| `reserve_usdc`     | `100`   | USDC to keep in topup account (distribute/topup phases)               |
+| `topup_multiplier` | `3.0`   | Target = warnAmount x this (topup workflow only)                      |
+| `sweep_multiplier` | `4`     | Sweep when balance > warnAmount x this (sweep workflow only, min 3.5) |
 
 ### Migration flow (one-time)
 

@@ -8,7 +8,10 @@ import { DataProcessor } from "~/hooks/data/types";
 export class DataFilter<TData> implements DataProcessor<TData[]> {
   readonly searcher: Fuse<TData>;
 
-  constructor(readonly data: TData[], keys?: Fuse.FuseOptionKey<TData>[]) {
+  constructor(
+    readonly data: TData[],
+    keys?: Fuse.FuseOptionKey<TData>[]
+  ) {
     this.searcher = new Fuse(data, {
       keys,
       findAllMatches: true,

@@ -140,7 +140,7 @@ const AmountInput: FunctionComponent<{
 
   // amount text box value
   const inputAmount = addLiquidityConfig.isSingleAmountIn
-    ? addLiquidityConfig.singleAmountInConfig?.amount ?? "0"
+    ? (addLiquidityConfig.singleAmountInConfig?.amount ?? "0")
     : addLiquidityConfig.getAmountAt(index);
 
   const onInputAmount = (value: string) => {

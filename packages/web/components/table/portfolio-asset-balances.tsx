@@ -1,6 +1,7 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   CellContext,
   createColumnHelper,
@@ -129,7 +130,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     hasNextPage,
     isLoading,
     isFetching,
-    isPreviousData,
+    isPlaceholderData,
     isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
@@ -145,7 +146,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       enabled: !isLoadingWallet && Boolean(account?.address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
 
       // expensive query
       trpc: {
@@ -339,7 +340,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       />
       <table
         className={classNames(
-          isPreviousData &&
+          isPlaceholderData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}

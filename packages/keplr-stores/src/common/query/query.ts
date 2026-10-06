@@ -194,8 +194,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
    *
    */
   public static experimentalDeferInitialQueryController:
-    | DeferInitialQueryController
-    | undefined = undefined;
+    DeferInitialQueryController | undefined = undefined;
 
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
     "The network connection was lost.",
@@ -778,7 +777,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
  */
 export class ObservableQuery<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQueryBase<T, E> {
   protected static eventListener: EventEmitter = new EventEmitter();
 

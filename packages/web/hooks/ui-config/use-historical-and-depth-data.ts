@@ -364,8 +364,8 @@ export class ObservableHistoricalAndLiquidityData {
             spotPriceToConvert.gt(maxSpotPrice)
               ? maxSpotPrice
               : spotPriceToConvert.lt(minSpotPrice)
-              ? minSpotPrice
-              : spotPriceToConvert
+                ? minSpotPrice
+                : spotPriceToConvert
           ),
           data
         ),

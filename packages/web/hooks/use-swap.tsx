@@ -257,8 +257,7 @@ export function useSwap(
     outAmountInput.isEmpty,
   ]);
 
-  /** If a query is not enabled, it is considered loading.
-   *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
+  /** Only count a quote as loading while its query is enabled. */
   const isQuoteLoading =
     (isQuoteLoading_ && quoteQueryEnabled) ||
     (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
@@ -608,8 +607,8 @@ export function useSwap(
                     ? "swapExactAmountIn"
                     : "splitRouteSwapExactAmountIn"
                   : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
+                    ? "swapExactAmountOut"
+                    : "splitRouteSwapExactAmountOut",
                 messages,
                 undefined,
                 undefined,
@@ -647,8 +646,8 @@ export function useSwap(
                     ? "swapExactAmountIn"
                     : "splitRouteSwapExactAmountIn"
                   : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
+                    ? "swapExactAmountOut"
+                    : "splitRouteSwapExactAmountOut",
                 messages,
                 undefined,
                 signOptions?.fee,
@@ -853,8 +852,8 @@ export function useSwap(
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
         : !quoteErrorMsg
-        ? quote
-        : undefined,
+          ? quote
+          : undefined,
     inBaseOutQuoteSpotPrice,
     totalFee,
     networkFee,
@@ -1037,7 +1036,7 @@ export function useSwapAssets({
   const selectableAssets = useMemo(
     () =>
       useOtherCurrencies
-        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        ? (selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [])
         : [],
     [selectableAssetPages?.pages, useOtherCurrencies]
   );
@@ -1403,7 +1402,7 @@ function useQueryRouterBestQuote(
     // quotes should not be considered fresh for long, otherwise
     // the gas simulation will fail due to slippage and the user would see errors
     staleTime: 5_000,
-    cacheTime: 5_000,
+    gcTime: 5_000,
     refetchInterval: 5_000,
 
     // Disable retries, as useQueries
@@ -1437,7 +1436,7 @@ function useQueryRouterBestQuote(
 
         // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
         staleTime: 10_000,
-        cacheTime: 10_000,
+        gcTime: 10_000,
         refetchInterval: 10_000,
       }
     );
@@ -1546,10 +1545,7 @@ function useQueryRouterBestQuote(
 function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
-        | NoRouteError
-        | NotEnoughLiquidityError
-        | NotEnoughQuotedError
-        | Error;
+        NoRouteError | NotEnoughLiquidityError | NotEnoughQuotedError | Error;
       isUnexpected: boolean;
     }
   | undefined {

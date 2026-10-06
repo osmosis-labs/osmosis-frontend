@@ -70,7 +70,7 @@ export class NitroBridgeProvider implements BridgeProvider {
           const resolvedAddress =
             tronCounterparty.sourceDenom === "sun"
               ? NativeEVMTokenConstantAddress // Nitro uses the constant address to reference the native token
-              : address ?? tronCounterparty.sourceDenom;
+              : (address ?? tronCounterparty.sourceDenom);
 
           return [
             {

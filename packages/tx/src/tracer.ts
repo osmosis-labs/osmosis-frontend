@@ -243,9 +243,7 @@ export class TxTracer {
       this.listeners[type] = [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.listeners[type]!.push(listener);
   }
 
@@ -288,12 +286,10 @@ export class TxTracer {
         if (obj?.id) {
           if (this.pendingQueries.has(obj.id)) {
             if (obj.error) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               this.pendingQueries
                 .get(obj.id)!
                 .rejector(new Error(obj.error.data || obj.error.message));
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               this.pendingQueries.get(obj.id)!.resolver(obj.result);
             }
 
@@ -311,12 +307,10 @@ export class TxTracer {
           if (obj?.id) {
             if (this.txSubscribes.has(obj.id)) {
               if (obj.error) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.txSubscribes
                   .get(obj.id)!
                   .rejector(new Error(obj.error.data || obj.error.message));
               } else {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.txSubscribes
                   .get(obj.id)!
                   .resolver(obj.result.data.value.TxResult.result);

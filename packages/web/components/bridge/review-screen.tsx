@@ -110,7 +110,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       },
       {
         enabled: !isNil(selectedDenom),
-        cacheTime: 10 * 60 * 1000, // 10 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
         staleTime: 10 * 60 * 1000, // 10 minutes
       }
     );
@@ -193,12 +193,12 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
                     chain: quote.multiTx.intermediatePrettyName,
                   })
                 : quote.multiTxPhase === "step2-signing"
-                ? t("transfer.multiTxSignFinal", {
-                    chain: quote.multiTx.intermediatePrettyName,
-                  })
-                : t("transfer.multiTxDescription", {
-                    chain: quote.multiTx.intermediatePrettyName,
-                  })}
+                  ? t("transfer.multiTxSignFinal", {
+                      chain: quote.multiTx.intermediatePrettyName,
+                    })
+                  : t("transfer.multiTxDescription", {
+                      chain: quote.multiTx.intermediatePrettyName,
+                    })}
             </p>
             {quote.multiTx.finalStepGasWarning &&
               quote.multiTx.finalStepGasFeeDenom &&

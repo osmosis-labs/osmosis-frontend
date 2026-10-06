@@ -130,8 +130,8 @@ export const LockShares: FunctionComponent<
         (superfluidInEffect && !hasSuperfluidValidator
           ? t("lockToken.buttonNext")
           : superfluidInEffect
-          ? t("lockToken.buttonBondStake")
-          : t("lockToken.buttonBond") || undefined),
+            ? t("lockToken.buttonBondStake")
+            : t("lockToken.buttonBond") || undefined),
     },
     props.onRequestClose
   );
