@@ -142,19 +142,19 @@ test.describe("Test Trade feature", () => {
       baseExponent: 6,
       quoteExponent: 6,
     };
-    const [bestBid, swapSellPrice] = await Promise.all([
-      getOrderbookBestBid(pair),
-      getSwapSellPrice({ ...pair, baseAmount: 1 }),
-    ]);
-    const knownPrices = [bestBid, swapSellPrice].filter(
-      (price): price is number => price !== undefined
-    );
-    const floorPrice =
-      knownPrices.length > 0 ? Math.max(...knownPrices) : undefined;
-    // A retry re-fills the form and re-reads the price, since the market (and
-    // so the preset) can move between attempts.
+    // A retry re-fills the form and re-reads the prices, since the market (and
+    // so the preset, the book and the pools) can move between attempts.
     let limitPrice = "";
     const fillOrder = async () => {
+      const [bestBid, swapSellPrice] = await Promise.all([
+        getOrderbookBestBid(pair),
+        getSwapSellPrice({ ...pair, baseAmount: 1 }),
+      ]);
+      const knownPrices = [bestBid, swapSellPrice].filter(
+        (price): price is number => price !== undefined
+      );
+      const floorPrice =
+        knownPrices.length > 0 ? Math.max(...knownPrices) : undefined;
       await tradePage.enterAmount(amount);
       await tradePage.setLimitPriceChange("10%");
       // The preset is 10% above the app's market price, but that price can
