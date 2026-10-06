@@ -337,6 +337,9 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Check E2E tooling
+        working-directory: packages/e2e
+        run: yarn typecheck && yarn test:tooling
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"

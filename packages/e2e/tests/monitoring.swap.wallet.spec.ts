@@ -1,8 +1,9 @@
-import * as core from "@actions/core";
 import { type BrowserContext, expect, test } from "@playwright/test";
+
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { notice } from "../utils/github-notice";
 import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Swap Stables feature", () => {
@@ -35,7 +36,7 @@ test.describe("Test Swap Stables feature", () => {
     console.log(`Test [${testInfo.title}] status: ${testInfo.status}`);
     if (testInfo.status === "failed") {
       const name = testInfo.title;
-      core.notice(`Test ${name} failed.`);
+      notice(`Test ${name} failed.`);
     }
   });
 

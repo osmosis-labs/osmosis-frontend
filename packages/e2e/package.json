@@ -5,6 +5,8 @@
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf .next",
     "test": "npx playwright test",
+    "test:tooling": "playwright test tooling.spec.ts",
+    "typecheck": "tsc --noEmit",
     "setup": "yarn install && npx playwright install --with-deps chromium",
     "check-balances": "npx tsx scripts/check-balances.ts",
     "migrate-funds": "npx tsx scripts/migrate-funds.ts",
@@ -13,9 +15,8 @@
     "report-fleet-balances": "npx tsx scripts/report-fleet-balances.ts"
   },
   "dependencies": {
-    "@actions/core": "1.11.1",
     "@playwright/test": "1.63.0",
-    "decompress": "4.2.1"
+    "@xhmikosr/decompress": "11.1.4"
   },
   "devDependencies": {
     "@cosmjs/cosmwasm-stargate": "0.36.2",
