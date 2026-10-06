@@ -253,6 +253,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   amount: "0",
                 },
           estimatedTime: estimatedRouteDuration,
+          quoteId: data.route.quoteId,
           estimatedGasFee:
             gasCosts.length === 1
               ? {

@@ -21,6 +21,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly squidScanBaseUrl: string;
 
   constructor(
+    protected readonly integratorId: string,
     env: BridgeEnvironment,
     protected readonly chainList: Chain[]
   ) {
@@ -44,6 +45,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
       toChain: { chainId: toChainId },
+      quoteId,
     } = snapshot;
     await poll({
       fn: async () => {
@@ -56,8 +58,15 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           if (toChainId) {
             url.searchParams.append("toChainId", toChainId.toString());
           }
+          if (quoteId) {
+            url.searchParams.append("quoteId", quoteId);
+          }
 
-          const data = await apiClient<SquidStatusResponse>(url.toString());
+          const data = await apiClient<SquidStatusResponse>(url.toString(), {
+            headers: {
+              "x-integrator-id": this.integratorId,
+            },
+          });
 
           if (!data || !data.id || !data.squidTransactionStatus) {
             return;
