@@ -1,9 +1,10 @@
 import { type BrowserContext, expect, test } from "@playwright/test";
+
 import { TradePage } from "../pages/trade-page";
 import { TransactionsPage } from "../pages/transactions-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
-import { getOrderbookBestBid } from "../utils/orderbook";
+import { getOrderbookBestBid, getSwapSellPrice } from "../utils/orderbook";
 import { resolveAppUsdcDenom } from "../utils/usdc-identity";
 import { deriveAddress } from "../utils/wallet-utils";
 
@@ -50,6 +51,43 @@ test.describe("Test Trade feature", () => {
     await tradePage.logOut();
   });
 
+  // The cancel tests need an ask that rests on the book, priced the way a user
+  // would: with a preset. The preset is relative to the app's market price,
+  // but that price can lag the pools, and the thin orderbooks can hold bids
+  // above it. An ask at or below the best bid fills at placement, and an ask
+  // below the swap sell price is filled within a block by an arbitrageur
+  // selling into the pools. Either way nothing is left to cancel, so when the
+  // preset lands near or under either price, reprice 10% above the higher one.
+  const setAskAboveSellFloor = async (baseDenom: string, preset: string) => {
+    const pair = {
+      baseDenom,
+      quoteDenom: USDC,
+      baseExponent: 6,
+      quoteExponent: 6,
+    };
+    const [bestBid, swapSellPrice] = await Promise.all([
+      getOrderbookBestBid(pair),
+      getSwapSellPrice({ ...pair, baseAmount: 1 }),
+    ]);
+    // The swap sell price is the floor the arbitrage keys off. Without it the
+    // preset is the only price left, and that is the price that was sniped,
+    // so fail rather than hand the wallet's funds to a bot.
+    if (swapSellPrice === undefined) {
+      throw new Error(
+        `Could not read the swap sell price for ${baseDenom}; not placing an ask that could be filled at once.`
+      );
+    }
+    const floorPrice = Math.max(bestBid ?? 0, swapSellPrice);
+    await tradePage.setLimitPriceChange(preset);
+    if (Number(await tradePage.getLimitPrice()) <= floorPrice * 1.02) {
+      // 4 significant digits, matching how the app formats prices below 100.
+      await tradePage.setLimitPrice(
+        String(Number((floorPrice * 1.1).toPrecision(4)))
+      );
+    }
+    return tradePage.getLimitPrice();
+  };
+
   test("User should be able to Buy ATOM", async () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
@@ -94,13 +132,12 @@ test.describe("Test Trade feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
-    // A retry re-fills the form and re-reads the price, since the market (and
-    // so the preset) can move between attempts.
+    // A retry re-fills the form and re-reads the prices, since the market (and
+    // so the preset, the book and the pools) can move between attempts.
     let limitPrice = "";
     const fillOrder = async () => {
       await tradePage.enterAmount(amount);
-      await tradePage.setLimitPriceChange("5%");
-      limitPrice = await tradePage.getLimitPrice();
+      limitPrice = await setAskAboveSellFloor(ATOM, "5%");
     };
     await fillOrder();
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context, {
@@ -135,31 +172,12 @@ test.describe("Test Trade feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    const bestBid = await getOrderbookBestBid({
-      baseDenom: "uosmo",
-      quoteDenom: USDC,
-      baseExponent: 6,
-      quoteExponent: 6,
-    });
-    // A retry re-fills the form and re-reads the price, since the market (and
-    // so the preset) can move between attempts.
+    // A retry re-fills the form and re-reads the prices, since the market (and
+    // so the preset, the book and the pools) can move between attempts.
     let limitPrice = "";
     const fillOrder = async () => {
       await tradePage.enterAmount(amount);
-      await tradePage.setLimitPriceChange("10%");
-      // The preset is 10% above the market price, but the thin OSMO orderbook
-      // can hold bids above that. An ask at or below the best bid fills at
-      // placement and leaves nothing to cancel, so price it above the book.
-      if (
-        bestBid !== undefined &&
-        Number(await tradePage.getLimitPrice()) <= bestBid * 1.02
-      ) {
-        // 4 significant digits, matching how the app formats prices below 100.
-        await tradePage.setLimitPrice(
-          String(Number((bestBid * 1.1).toPrecision(4)))
-        );
-      }
-      limitPrice = await tradePage.getLimitPrice();
+      limitPrice = await setAskAboveSellFloor("uosmo", "10%");
     };
     await fillOrder();
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context, {

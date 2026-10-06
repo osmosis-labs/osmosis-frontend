@@ -166,8 +166,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       previousTrade.quoteDenom !== asset.coinMinimalDenom
         ? previousTrade.quoteDenom
         : asset.coinMinimalDenom === USDC_BASE_DENOM
-        ? USDT_BASE_DENOM
-        : USDC_BASE_DENOM;
+          ? USDT_BASE_DENOM
+          : USDC_BASE_DENOM;
 
     const tradeToolProps = {
       swapToolProps,

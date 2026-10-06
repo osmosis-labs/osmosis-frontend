@@ -444,10 +444,10 @@ const TableOrderRow = memo(
                     days: dayDiff.toString(),
                   })
                 : hourDiff > 0
-                ? t("limitOrders.hoursAgo", {
-                    hours: hourDiff.toString(),
-                  })
-                : "<1 hour ago"}
+                  ? t("limitOrders.hoursAgo", {
+                      hours: hourDiff.toString(),
+                    })
+                  : "<1 hour ago"}
             </span>
           );
         default:
@@ -527,11 +527,11 @@ const TableOrderRow = memo(
                       DEFAULT_VS_CURRENCY,
                       order_direction === "bid"
                         ? placed_quantity /
-                          Number(
-                            new Dec(10)
-                              .pow(new Int(quoteAsset?.decimals ?? 0))
-                              .toString()
-                          )
+                            Number(
+                              new Dec(10)
+                                .pow(new Int(quoteAsset?.decimals ?? 0))
+                                .toString()
+                            )
                         : output.quo(
                             new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
                           )

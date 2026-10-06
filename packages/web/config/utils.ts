@@ -202,7 +202,7 @@ export function getChainList({
     const isOsmosis =
       chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
     const chainId = isOsmosis
-      ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+      ? (OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id)
       : chain.chain_id;
 
     // The Keplr chain store needs each chain's currencies, which come from its asset list.
@@ -219,17 +219,17 @@ export function getChainList({
       features: chain.features ?? [],
       chain_id: chainId,
       prettyName: isOsmosis
-        ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.prettyName
+        ? (OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.prettyName)
         : chain.prettyName,
       apis: {
         rpc:
           isOsmosis && OSMOSIS_RPC_OVERWRITE
             ? [{ address: OSMOSIS_RPC_OVERWRITE }]
-            : chain.apis?.rpc ?? [],
+            : (chain.apis?.rpc ?? []),
         rest:
           isOsmosis && OSMOSIS_REST_OVERWRITE
             ? [{ address: OSMOSIS_REST_OVERWRITE }]
-            : chain.apis?.rest ?? [],
+            : (chain.apis?.rest ?? []),
       },
       explorers: (chain.explorers ?? []).map((explorer) => ({
         ...explorer,

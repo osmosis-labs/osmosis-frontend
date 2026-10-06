@@ -257,7 +257,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           network_type: chain.networkType,
           pretty_name: chain.prettyName,
           bech32_prefix: chain.bech32Prefix,
-        } as CosmologyChain)
+        }) as CosmologyChain
     );
   }
 
@@ -1032,9 +1032,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
-      import(
-        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-      ),
+      import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
       import("@cosmjs/proto-signing"),
@@ -1204,14 +1202,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       } satisfies EncodeObject;
     });
 
-    const msgs = normalizedMessages.map((msg) => {
-      const res = aminoTypes.toAmino(msg);
-      // Include the 'memo' field again because the 'registry' omits it
-      if (msg.value.memo) {
-        res.value.memo = msg.value.memo;
-      }
-      return res;
-    });
+    const msgs = normalizedMessages.map((msg) => aminoTypes.toAmino(msg));
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
@@ -1685,9 +1676,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
-    const { TxExtension } = await import(
-      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-    );
+    const { TxExtension } =
+      await import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx");
     return [
       {
         typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { MockKeplr } from "@keplr-wallet/provider-mock";
 
 export class MockKeplrWithFee extends MockKeplr {

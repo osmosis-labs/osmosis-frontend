@@ -25,7 +25,7 @@ const makeVariant = ({
   ({
     name: "Variant",
     canonicalAsset: { coinMinimalDenom: groupKey, isAlloyed },
-  } as unknown as AssetVariant);
+  }) as unknown as AssetVariant;
 
 describe("getToastEligibleVariantGroupKeys", () => {
   it("includes alloyed groups", () => {

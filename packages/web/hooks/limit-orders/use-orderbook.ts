@@ -164,7 +164,7 @@ export const useOrderbook = ({
   const selectableAssets = useMemo(
     () =>
       true
-        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        ? (selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [])
         : [],
     [selectableAssetPages?.pages]
   );

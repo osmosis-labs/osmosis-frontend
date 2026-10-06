@@ -524,7 +524,12 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [resolve-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
+      [
+        resolve-deployment,
+        preview-swap-osmo-tests,
+        preview-swap-usdc-tests,
+        check-balances,
+      ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6

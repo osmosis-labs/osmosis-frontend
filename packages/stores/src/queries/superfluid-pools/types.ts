@@ -23,7 +23,7 @@ export type SuperfluidAllAssets = {
     {
       denom: string;
       asset_type: string;
-    }
+    },
   ];
 };
 
@@ -42,7 +42,7 @@ export type SuperfluidDelegationsResponse = {
     {
       denom: string;
       amount: string;
-    }
+    },
   ];
 };
 
@@ -75,7 +75,7 @@ export type SuperfluidUndelegationsResponse = {
     {
       denom: string;
       amount: string;
-    }
+    },
   ];
 };
 

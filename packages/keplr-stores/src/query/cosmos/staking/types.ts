@@ -42,7 +42,7 @@ export type UnbondingDelegation = {
       completion_time: string;
       initial_balance: string;
       balance: string;
-    }
+    },
   ];
 };
 

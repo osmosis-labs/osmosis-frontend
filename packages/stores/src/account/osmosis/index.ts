@@ -708,7 +708,6 @@ export class OsmosisAccountImpl {
       // - If position is above current tick, consists only of token 0.
       if (!queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()) {
         const currentSqrtPrice =
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
           queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
 
         const currentTick = OsmosisMath.priceToTick(
@@ -1860,9 +1859,7 @@ export class OsmosisAccountImpl {
     }));
 
     const [{ Duration }, { LockQueryType }] = await Promise.all([
-      import(
-        "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration"
-      ),
+      import("@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration"),
       import("@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/lock"),
     ]);
 
@@ -2000,9 +1997,8 @@ export class OsmosisAccountImpl {
       };
     });
 
-    const { Duration } = await import(
-      "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration"
-    );
+    const { Duration } =
+      await import("@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration");
 
     const msg = await makeLockTokensMsg({
       owner: this.address,
@@ -2220,32 +2216,35 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msgs = await locks.reduce(async (msgsPromise, lock) => {
-      const msgs = await msgsPromise;
-      if (!lock.isSynthetic) {
-        // normal unlock
-        msgs.push(
-          await makeBeginUnlockingMsg({
-            owner: this.address,
-            iD: BigInt(lock.lockId),
-            coins: [],
-          })
-        );
-      } else {
-        // unbond and unlock
-        msgs.push(
-          await makeSuperfluidUndelegateMsg({
-            sender: this.address,
-            lockId: BigInt(lock.lockId),
-          }),
-          await makeSuperfluidUnbondLockMsg({
-            sender: this.address,
-            lockId: BigInt(lock.lockId),
-          })
-        );
-      }
-      return msgs;
-    }, Promise.resolve([] as EncodeObject[]));
+    const msgs = await locks.reduce(
+      async (msgsPromise, lock) => {
+        const msgs = await msgsPromise;
+        if (!lock.isSynthetic) {
+          // normal unlock
+          msgs.push(
+            await makeBeginUnlockingMsg({
+              owner: this.address,
+              iD: BigInt(lock.lockId),
+              coins: [],
+            })
+          );
+        } else {
+          // unbond and unlock
+          msgs.push(
+            await makeSuperfluidUndelegateMsg({
+              sender: this.address,
+              lockId: BigInt(lock.lockId),
+            }),
+            await makeSuperfluidUnbondLockMsg({
+              sender: this.address,
+              lockId: BigInt(lock.lockId),
+            })
+          );
+        }
+        return msgs;
+      },
+      Promise.resolve([] as EncodeObject[])
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,

@@ -430,9 +430,9 @@ export class SkipBridgeProvider implements BridgeProvider {
                   ? multi
                   : single
                 : multiOut * BigInt(10_000) >
-                  singleOut * (BigInt(10_000) + MULTI_TX_MIN_IMPROVEMENT_BPS)
-                ? multi
-                : single;
+                    singleOut * (BigInt(10_000) + MULTI_TX_MIN_IMPROVEMENT_BPS)
+                  ? multi
+                  : single;
           } else if (single || multi) {
             route = (single ?? multi)!;
           } else {
@@ -583,7 +583,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                 ? Number(otherAsset.chain_id)
                 : otherAsset.chain_id,
               address: otherAsset.is_evm
-                ? otherAsset.token_contract ?? NativeEVMTokenConstantAddress
+                ? (otherAsset.token_contract ?? NativeEVMTokenConstantAddress)
                 : otherAsset.denom,
               decimals: otherAsset.decimals,
               coinGeckoId: otherAsset.coingecko_id,
@@ -974,11 +974,11 @@ export class SkipBridgeProvider implements BridgeProvider {
               chainType: "evm" as const,
             }
           : !sharedOriginAsset.is_svm
-          ? {
-              chainId: sharedOriginAsset.chain_id as string,
-              chainType: "cosmos" as const,
-            }
-          : undefined;
+            ? {
+                chainId: sharedOriginAsset.chain_id as string,
+                chainType: "cosmos" as const,
+              }
+            : undefined;
 
         if (!chainInfo) continue;
 
@@ -1337,7 +1337,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       token?: { denom?: string; amount?: string };
       funds?: { denom?: string; amount?: string }[];
     };
-    const candidates = data?.token ? [data.token] : data?.funds ?? [];
+    const candidates = data?.token ? [data.token] : (data?.funds ?? []);
     const spend = candidates.find((coin) => coin?.denom === feeDenom);
     return spend?.denom && spend.amount
       ? { denom: spend.denom, amount: spend.amount }

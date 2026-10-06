@@ -36,7 +36,7 @@ const nobleUsdcCurrency = {
    asserts they flow through to signAndBroadcast in order, so the proto value
    shapes are irrelevant - cast past them. */
 const stubMsg = <T>(typeUrl: string) =>
-  ({ typeUrl, value: {} } as unknown as T);
+  ({ typeUrl, value: {} }) as unknown as T;
 const withdrawMessage =
   stubMsg<Awaited<ReturnType<typeof makeWithdrawPositionMsg>>>(
     "/test.withdraw"

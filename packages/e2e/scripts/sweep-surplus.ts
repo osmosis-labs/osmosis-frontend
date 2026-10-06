@@ -48,7 +48,11 @@ import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
  */
 const LEGACY_SWEEP_SYMBOLS = ["USDC.noble"];
 import { TOKEN_DENOMS } from "../utils/balance-checker";
-import { deriveAddress, createSigningClient, OSMOSIS_RPC } from "../utils/order-utils";
+import {
+  deriveAddress,
+  createSigningClient,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 import {
   type TokenBalance,
   fetchAllKnownBalances,
@@ -377,7 +381,7 @@ async function main(): Promise<void> {
   }
 
   // Slack: dry runs always post (they're manual — someone wants the plan);
-  // live runs post only when something was swept or failed, so the weekly
+  // live runs post only when something was swept or failed, so the daily
   // cron stays silent when there is no surplus.
   if (isDryRun || results.length > 0 || hasFailures) {
     let topupBalances: TokenBalance[] = [];

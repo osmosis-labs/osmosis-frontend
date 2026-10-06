@@ -1096,8 +1096,8 @@ const SuiRedeemPanel: FunctionComponent<{
                   wallet: connection.displayName,
                 })
               : status === "submitting"
-              ? t("transfer.wormholeRedeem.submittingOnSui")
-              : t("transfer.wormholeRedeem.redeemOnSui")}
+                ? t("transfer.wormholeRedeem.submittingOnSui")
+                : t("transfer.wormholeRedeem.redeemOnSui")}
           </button>
         </div>
       )}
@@ -1376,13 +1376,11 @@ export const WormholeRedeem: FunctionComponent = () => {
       const connection = new Connection(SOLANA_RPC);
 
       const { Wormhole } = await import("@wormhole-foundation/sdk-connect");
-      const { SolanaPlatform, isVersionedTransaction } = await import(
-        "@wormhole-foundation/sdk-solana"
-      );
+      const { SolanaPlatform, isVersionedTransaction } =
+        await import("@wormhole-foundation/sdk-solana");
       await import("@wormhole-foundation/sdk-solana-tokenbridge");
-      const { deserialize } = await import(
-        "@wormhole-foundation/sdk-definitions"
-      );
+      const { deserialize } =
+        await import("@wormhole-foundation/sdk-definitions");
 
       const wh = new Wormhole("Mainnet", [SolanaPlatform], {
         chains: { Solana: { rpc: SOLANA_RPC } },
@@ -1409,12 +1407,10 @@ export const WormholeRedeem: FunctionComponent = () => {
         vaa,
         isNativeUnwrap
       )) {
-        const latestBlockhash = await connection.getLatestBlockhash(
-          "confirmed"
-        );
+        const latestBlockhash =
+          await connection.getLatestBlockhash("confirmed");
         const innerTx = unsignedTx.transaction.transaction as
-          | Transaction
-          | VersionedTransaction;
+          Transaction | VersionedTransaction;
         const signers = unsignedTx.transaction.signers as Keypair[] | undefined;
         const PLACEHOLDER_BLOCKHASH = "11111111111111111111111111111111";
 

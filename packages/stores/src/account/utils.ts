@@ -24,7 +24,7 @@ export const createMsgOpts = <
   Dict extends Record<
     string,
     AccountMsgOpt | ((param: number) => AccountMsgOpt)
-  >
+  >,
 >(
   dict: Dict
 ) => dict;
@@ -32,16 +32,19 @@ export const createMsgOpts = <
 export const logger = new Logger("WARN");
 
 export function getWalletEndpoints(chains: Chain[]) {
-  return chains.reduce((endpoints, chain) => {
-    const newEndpoints: Record<ChainName, Endpoints> = {
-      ...endpoints,
-      [chain.chain_name]: {
-        rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
-        rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
-      },
-    };
-    return newEndpoints;
-  }, {} as Record<ChainName, Endpoints>);
+  return chains.reduce(
+    (endpoints, chain) => {
+      const newEndpoints: Record<ChainName, Endpoints> = {
+        ...endpoints,
+        [chain.chain_name]: {
+          rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
+          rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
+        },
+      };
+      return newEndpoints;
+    },
+    {} as Record<ChainName, Endpoints>
+  );
 }
 
 export function removeLastSlash(str: string) {

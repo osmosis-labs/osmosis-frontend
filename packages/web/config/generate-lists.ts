@@ -106,24 +106,24 @@ async function generateChainListFile({
     content += `
       import type { Chain } from "@osmosis-labs/types";
       export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
-      getChainList({ assetLists, environment, chains: chainList.chains }),
-      null,
-      2
-    )};
+        getChainList({ assetLists, environment, chains: chainList.chains }),
+        null,
+        2
+      )};
     `;
   }
 
   content += `
     export type ${chainIdTypeName} = ${Array.from(
-    new Set(allAvailableChains.map((c) => c.chain_id))
-  )
-    .map(
-      (chainId) =>
-        `"${chainId}" /** ${
-          allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-        } */`
+      new Set(allAvailableChains.map((c) => c.chain_id))
     )
-    .join(" | ")};
+      .map(
+        (chainId) =>
+          `"${chainId}" /** ${
+            allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
+          } */`
+      )
+      .join(" | ")};
   `;
 
   if (
@@ -145,8 +145,8 @@ function createOrAddToAssetList(
   const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
 
   const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? ""
-    : chain.chain_id ?? "";
+    ? (OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? "")
+    : (chain.chain_id ?? "");
   const chainName = chain.chain_name;
   const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
@@ -310,13 +310,14 @@ async function generateAssetListFile({
     export type ${
       environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
-    .map(
-      (symbol) =>
-        `"${symbol}" /** source denom: ${
-          assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
-        } */`
-    )
-    .join(" | ")};
+      .map(
+        (symbol) =>
+          `"${symbol}" /** source denom: ${
+            assetList.assets.find((asset) => asset.symbol === symbol)!
+              .sourceDenom
+          } */`
+      )
+      .join(" | ")};
   `;
 
   content += `    
@@ -325,24 +326,24 @@ async function generateAssetListFile({
         ? "TestnetVariantGroupKeys"
         : "MainnetVariantGroupKeys"
     } = ${Array.from(
-    new Set(assetList.assets.map((asset) => asset.variantGroupKey))
-  )
-    .filter((groupKey, index, self) => {
-      if (isNil(groupKey)) {
-        return false;
-      }
-
-      // remove duplicates
-      return self.indexOf(groupKey) === index;
-    })
-    .map(
-      (groupKey) =>
-        `"${groupKey}" /** Symbols: ${assetList.assets
-          .filter((asset) => asset.variantGroupKey === groupKey)!
-          .map((asset) => asset.symbol)
-          .join(",")} */`
+      new Set(assetList.assets.map((asset) => asset.variantGroupKey))
     )
-    .join(" | ")};
+      .filter((groupKey, index, self) => {
+        if (isNil(groupKey)) {
+          return false;
+        }
+
+        // remove duplicates
+        return self.indexOf(groupKey) === index;
+      })
+      .map(
+        (groupKey) =>
+          `"${groupKey}" /** Symbols: ${assetList.assets
+            .filter((asset) => asset.variantGroupKey === groupKey)!
+            .map((asset) => asset.symbol)
+            .join(",")} */`
+      )
+      .join(" | ")};
   `;
 
   const success = await generateTsFile(

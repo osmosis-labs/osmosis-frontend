@@ -215,7 +215,10 @@ export class ChainMockKeplrExtension extends ChainWalletBase {
 }
 
 export class TestWallet extends MainWalletBase {
-  constructor(walletInfo: Wallet, protected readonly mnemonic?: string) {
+  constructor(
+    walletInfo: Wallet,
+    protected readonly mnemonic?: string
+  ) {
     super(walletInfo, ChainMockKeplrExtension);
   }
 

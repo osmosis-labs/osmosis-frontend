@@ -163,7 +163,6 @@ export class ObservableQueryPools
         )
       )
       .map((raw) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.getPool("pool_id" in raw ? raw.pool_id : raw.id)!;
       });
   });
