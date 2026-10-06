@@ -42,6 +42,10 @@ const MAX_BODY_BYTES = 16 * 1024;
 const SOLANA_ROUTES_FLAG = "solana-skip-routes";
 /** How long a flag read is reused before asking LaunchDarkly again. */
 const FLAG_CACHE_MS = 60_000;
+/** A LaunchDarkly read that takes longer than this is treated as failed, so
+ *  a hung request falls through to the stale value (or fails closed) instead
+ *  of holding every RPC call. Covers the response body as well. */
+const FLAG_FETCH_TIMEOUT_MS = 2_000;
 /** If LaunchDarkly cannot be reached, a value this old is still trusted
  *  rather than failing closed on a transient error. */
 const FLAG_STALE_MS = 10 * 60_000;
@@ -81,7 +85,8 @@ async function isSolanaRouteEnabled(): Promise<boolean> {
       })
     );
     const response = await fetch(
-      `https://clientsdk.launchdarkly.com/sdk/evalx/${clientSideId}/contexts/${context}`
+      `https://clientsdk.launchdarkly.com/sdk/evalx/${clientSideId}/contexts/${context}`,
+      { signal: AbortSignal.timeout(FLAG_FETCH_TIMEOUT_MS) }
     );
     if (!response.ok) throw new Error(`LaunchDarkly ${response.status}`);
     const flags = (await response.json()) as Record<

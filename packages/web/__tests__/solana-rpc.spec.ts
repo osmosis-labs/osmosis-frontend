@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
 import solanaRpcHandler, {
@@ -115,6 +115,34 @@ describe("solana-skip-routes flag gate", () => {
 
     expect(reads).toBe(1);
   });
+
+  it("falls back to the stale value when LaunchDarkly hangs", async () => {
+    // first read: flag on, cached
+    launchDarklyServes({ "solana-skip-routes": true });
+    spyOnPublicRpc();
+    expect((await solanaRpcHandler(post(allowedRequest))).status).toBe(200);
+
+    // the fresh window expires and LaunchDarkly stops answering
+    const now = Date.now();
+    const nowSpy = jest.spyOn(Date, "now").mockReturnValue(now + 61_000);
+    server.use(http.get(LD_EVALX, async () => delay("infinite")));
+    try {
+      const result = await solanaRpcHandler(post(allowedRequest));
+      expect(result.status).toBe(200);
+    } finally {
+      nowSpy.mockRestore();
+    }
+  }, 10_000);
+
+  it("fails closed when LaunchDarkly hangs and nothing is cached", async () => {
+    server.use(http.get(LD_EVALX, async () => delay("infinite")));
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
+  }, 10_000);
 
   it("fails closed when LaunchDarkly is unreachable and nothing is cached", async () => {
     server.use(http.get(LD_EVALX, () => HttpResponse.error()));
