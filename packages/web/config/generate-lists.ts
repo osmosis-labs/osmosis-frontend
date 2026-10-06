@@ -36,6 +36,7 @@ import {
   codegenDir,
   getChainList,
   getOsmosisChainId,
+  runWithFailureLimit,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
 } from "./utils";
@@ -396,32 +397,31 @@ async function generateAssetImages({
     downloads.set(filePath, candidates);
   }
 
-  const queue = Array.from(downloads.values());
-  let failures = 0;
-  const worker = async () => {
-    for (let group = queue.shift(); group; group = queue.shift()) {
-      for (const download of group) {
-        try {
-          await saveAssetImageToTokensDir({
-            ...download,
-            currentAssetListHash: commitHash,
-          });
-        } catch (e) {
-          failures++;
-          console.error(e instanceof Error ? e.message : e);
-        }
-      }
-    }
-  };
-  await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
-  console.timeEnd("Successfully downloaded images");
-
   // A few dead logo URLs in the asset list shouldn't block a deploy, but a
   // wave of failures (a rate limit that outlasted the retries, a host outage)
-  // would otherwise ship with missing logos and exit 0.
+  // would otherwise ship with missing logos and exit 0. Once the limit is
+  // passed the build is going to fail anyway, so the pool stops taking new
+  // groups rather than spending up to three capped waits on each remaining
+  // image.
+  const { failures, skipped } = await runWithFailureLimit(
+    Array.from(downloads.values()),
+    {
+      concurrency: IMAGE_DOWNLOAD_CONCURRENCY,
+      maxFailures: IMAGE_DOWNLOAD_MAX_FAILURES,
+      run: (download) =>
+        saveAssetImageToTokensDir({
+          ...download,
+          currentAssetListHash: commitHash,
+        }),
+      onError: (e) => console.error(e instanceof Error ? e.message : e),
+    }
+  );
+  console.timeEnd("Successfully downloaded images");
+
   if (failures > IMAGE_DOWNLOAD_MAX_FAILURES) {
     throw new Error(
-      `${failures} asset images failed to download (more than ${IMAGE_DOWNLOAD_MAX_FAILURES} allowed).`
+      `${failures} asset images failed to download (more than ${IMAGE_DOWNLOAD_MAX_FAILURES} allowed); ` +
+        `stopped with ${skipped} image groups not attempted.`
     );
   }
   if (failures > 0) {

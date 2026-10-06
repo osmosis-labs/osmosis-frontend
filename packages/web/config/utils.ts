@@ -59,6 +59,48 @@ const IMAGE_FETCH_ATTEMPTS = 4;
 const IMAGE_FETCH_BASE_DELAY_MS = 1_000;
 const IMAGE_FETCH_MAX_DELAY_MS = 30_000;
 
+/**
+ * Runs `run` over `groups` with `concurrency` workers. One worker takes a
+ * whole group and processes its items in order (items in a group share a
+ * target, so they must not run concurrently). Each failed item counts once;
+ * once failures exceed `maxFailures`, workers stop taking new groups and the
+ * groups still queued are left unattempted, so a broad outage fails fast
+ * instead of draining the whole queue through every retry.
+ */
+export async function runWithFailureLimit<T>(
+  groups: T[][],
+  {
+    concurrency,
+    maxFailures,
+    run,
+    onError,
+  }: {
+    concurrency: number;
+    maxFailures: number;
+    run: (item: T) => Promise<unknown>;
+    onError?: (error: unknown, item: T) => void;
+  }
+): Promise<{ failures: number; skipped: number }> {
+  const queue = [...groups];
+  let failures = 0;
+  const worker = async () => {
+    while (failures <= maxFailures) {
+      const group = queue.shift();
+      if (!group) return;
+      for (const item of group) {
+        try {
+          await run(item);
+        } catch (e) {
+          failures++;
+          onError?.(e, item);
+        }
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  return { failures, skipped: queue.length };
+}
+
 /** `Retry-After` as milliseconds: either delay-seconds or an HTTP-date. */
 function parseRetryAfterMs(header: string | null): number | undefined {
   if (!header) return undefined;
