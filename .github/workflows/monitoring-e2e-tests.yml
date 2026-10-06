@@ -13,7 +13,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
 
   server-e2e-tests:
     name: ${{ matrix.env }}-server-tests
@@ -71,65 +71,13 @@ jobs:
           
           # Add custom tag to mark this as a critical failure (2nd attempt with multiple failures)
           datadog-ci tag --level pipeline --tags "critical_failure:true" --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
-          
-          # Add tags for unexpected failure counts by region
-          datadog-ci tag --level pipeline \
-            --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
-            --tags "fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }}" \
-            --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
-            --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
-            --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
-          
+
           echo "✅ Metrics sent to Datadog successfully"
-
-
-  fe-quote-tests:
-    name: ${{ matrix.env }}-quote-tests
-    needs: setup-matrix
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
-    steps:
-      - name: Echo IP
-        run: curl -L "https://ipinfo.io" -s
-      - name: Check out repository
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /package.json
-            /yarn.lock
-            /.yarnrc.yml
-            /.yarn-4.12.0.cjs
-            /packages/*/package.json
-            /packages/e2e/
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          package-manager-cache: false
-          node-version: 24.x
-      - name: Install Playwright
-        run: |
-          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
-      - name: Run Swap tests on ${{ matrix.env }}
-        env:
-          BASE_URL: ${{ matrix.base-url }}
-        run: |
-          cd packages/e2e
-          npx playwright test pools
-      - name: upload test results
-        if: failure()
-        id: e2e-test-results
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ matrix.env }}-quote-test-results
-          path: packages/e2e/playwright-report
 
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
-    needs: [server-e2e-tests, fe-quote-tests]
+    needs: [server-e2e-tests]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v8

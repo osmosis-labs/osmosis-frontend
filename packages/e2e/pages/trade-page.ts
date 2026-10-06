@@ -132,9 +132,8 @@ export class TradePage extends BasePage {
   /**
    * Navigate to the app home and wait for the trade widget to mount.
    *
-   * Retries with backoff because the EU/SG monitoring suites load the app
-   * through an HTTP CONNECT proxy where the initial page load can stall —
-   * previously this surfaced as a hard `beforeAll` timeout instead of a
+   * Retries with backoff because the initial page load can stall in CI.
+   * Previously this surfaced as a hard `beforeAll` timeout instead of a
    * recoverable retry.
    */
   async goto(retries = 2) {
@@ -381,9 +380,9 @@ export class TradePage extends BasePage {
       return trxUrl;
     } catch (error) {
       // The "View explorer" link lives in the same success toast that the WS
-      // TxTracer drives; over the geo proxies it may never render even when the
-      // tx is confirmed on-chain (see startTxConfirmation). Fall back to the
-      // hash captured from the broadcast response so the test can still proceed.
+      // TxTracer drives. The toast may never render even when the tx is
+      // confirmed on-chain (see startTxConfirmation). Fall back to the hash
+      // captured from the broadcast response so the test can still proceed.
       if (this.lastTxHash) {
         const fallbackUrl = buildExplorerTxUrl(this.lastTxHash);
         console.log(
@@ -860,16 +859,16 @@ export class TradePage extends BasePage {
 
   /**
    * Confirms a just-submitted transaction succeeded, resilient to WebSocket
-   * flakiness over the EU/SG geo proxies.
+   * flakiness.
    *
    * Two signals race:
    *   1. Primary (WebSocket): the in-app "Transaction Successful" toast, driven
-   *      by the app's WS `TxTracer`. Fast, but over the HTTP CONNECT proxy the
-   *      WebSocket often stalls/disconnects, so the toast may never render even
-   *      when the tx is included on-chain.
+   *      by the app's WS `TxTracer`. Fast, but the WebSocket can stall or
+   *      disconnect, so the toast may never render even when the tx is included
+   *      on-chain.
    *   2. Fallback (REST): capture the broadcast tx hash and poll the Osmosis LCD
-   *      `GET /cosmos/tx/v1beta1/txs/{hash}` directly from Node (NOT through the
-   *      browser proxy), passing as soon as the tx is on-chain with code 0.
+   *      `GET /cosmos/tx/v1beta1/txs/{hash}` directly from Node, passing as soon
+   *      as the tx is on-chain with code 0.
    *
    * Whichever confirms first wins; the loser is aborted. Only if BOTH fail does
    * this reject. This must be armed before the Keplr approval click (mirroring
@@ -984,7 +983,7 @@ export class TradePage extends BasePage {
    * - Waits for sell button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll (see startTxConfirmation)
    * - No retry logic - for retry support, use sellAndGetWalletMsg()
    */
   async sellAndApprove(
@@ -1023,7 +1022,7 @@ export class TradePage extends BasePage {
    * - Waits for buy button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll, armed before the confirm click (see startTxConfirmation)
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -1094,7 +1093,7 @@ export class TradePage extends BasePage {
    * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll, armed before the confirm click (see startTxConfirmation)
    * - Retries only on swap button disabled errors; other errors fail immediately
    */
   async swapAndApprove(
