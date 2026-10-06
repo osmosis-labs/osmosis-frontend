@@ -215,6 +215,7 @@ export class RootStore {
 
     const transferStatusProviders = [
       new SquidTransferStatusProvider(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
         IS_TESTNET ? "testnet" : "mainnet",
         ChainList
       ),

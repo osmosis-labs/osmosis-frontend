@@ -198,7 +198,7 @@ export const useBridgeQuotes = ({
     chainId: currentEvmChainId,
     chain: currentEvmChain,
   } = useEvmWalletAccount();
-  const { sendTransactionAsync, isLoading: isEthTxPending } =
+  const { sendTransactionAsync, isPending: isEthTxPending } =
     useSendEvmTransaction();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
@@ -368,7 +368,7 @@ export const useBridgeQuotes = ({
             // must have balance amount loaded, even if 0
             Boolean(availableBalance),
           staleTime: 5_000,
-          cacheTime: 5_000,
+          gcTime: 5_000,
           // Disable retries, as useQueries
           // will block successful quotes from being returned
           // if failed quotes are being returned
@@ -844,6 +844,7 @@ export const useBridgeQuotes = ({
               }
             : undefined,
           nomicCheckpointIndex,
+          quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
         });
