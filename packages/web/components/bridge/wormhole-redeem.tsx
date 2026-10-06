@@ -2013,7 +2013,7 @@ export async function checkIfVaaPosted(
 }
 
 async function solanaAccountExists(address: string): Promise<boolean> {
-  const res = await fetch(SOLANA_RPC, {
+  const res = await fetchWithTimeout(SOLANA_RPC, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -2026,5 +2026,9 @@ async function solanaAccountExists(address: string): Promise<boolean> {
   if (!res.ok) throw new Error(`Solana RPC returned ${res.status}`);
   const json = await res.json();
   if (json.error) throw new Error(json.error.message);
-  return json.result?.value != null;
+  // A missing account is `value: null`; no `value` at all is a bad response.
+  if (json.result?.value === undefined) {
+    throw new Error("Solana RPC returned no result");
+  }
+  return json.result.value !== null;
 }

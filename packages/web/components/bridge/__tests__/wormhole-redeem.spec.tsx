@@ -1150,19 +1150,22 @@ describe("WormholeRedeem guardian_set_expired render guard", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("fails open with a warning when the posted-VAA lookup fails", async () => {
-      await lookUpExpiredSolanaTransfer(async () => ({
-        ok: false,
-        status: 503,
-      }));
+    it.each([
+      ["errors", async () => ({ ok: false, status: 503 })],
+      ["returns no result", async () => ({ ok: true, json: async () => ({}) })],
+    ])(
+      "fails open with a warning when the posted-VAA lookup %s",
+      async (_, response) => {
+        await lookUpExpiredSolanaTransfer(response);
 
-      expect(
-        await screen.findByText(/VAA is signed and ready/)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/couldn't confirm this transfer/)
-      ).toBeInTheDocument();
-    });
+        expect(
+          await screen.findByText(/VAA is signed and ready/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/couldn't confirm this transfer/)
+        ).toBeInTheDocument();
+      }
+    );
   });
 });
 
