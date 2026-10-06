@@ -199,7 +199,6 @@ export const useBridgeQuotes = ({
   } = useEvmWalletAccount();
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
-  const { address: phantomAddress } = usePhantomWallet();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
   /**
@@ -254,6 +253,9 @@ export const useBridgeQuotes = ({
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
+  const { address: phantomAddress } = usePhantomWallet({
+    restoreSession: allowSolana,
+  });
 
   const quoteParams: Partial<
     Omit<
