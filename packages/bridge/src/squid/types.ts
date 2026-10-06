@@ -18,7 +18,7 @@ export interface SquidToken {
   address: string;
   symbol: string;
   decimals: number;
-  coingeckoId: string;
+  coingeckoId?: string;
   commonKey?: string;
   ibcDenom?: string;
 }
