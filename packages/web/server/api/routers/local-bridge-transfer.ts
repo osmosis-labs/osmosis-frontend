@@ -235,11 +235,24 @@ export const localBridgeTransferRouter = createTRPCRouter({
               });
 
               const decAmount = new Dec(balance.toString());
-              // Price via the Osmosis-side variant, mirroring the EVM branch
-              const usdValue = await calcAssetValue({
+              // Price via the Osmosis-side variant. The SPL amount is in the
+              // SPL mint's decimals, so scale it to the variant's before
+              // pricing (equal for USDC, but never assume it).
+              const representativeAsset = getAsset({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
-                amount: decAmount,
+              });
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: representativeAsset.coinMinimalDenom,
+                amount:
+                  asset.decimals === representativeAsset.coinDecimals
+                    ? decAmount
+                    : normalizeDecimals({
+                        amount: balance.toString(),
+                        fromDecimals: asset.decimals,
+                        toDecimals: representativeAsset.coinDecimals,
+                      }),
               }).catch((e) => captureErrorAndReturn(e, undefined));
 
               return {
