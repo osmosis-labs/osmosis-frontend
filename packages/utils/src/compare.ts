@@ -3,14 +3,7 @@ import { Dec, Int } from "@osmosis-labs/unit";
 import { isNil } from "./common-utils";
 
 export type CommonCompareType =
-  | number
-  | string
-  | Dec
-  | Int
-  | Date
-  | { toDec(): Dec }
-  | null
-  | undefined;
+  number | string | Dec | Int | Date | { toDec(): Dec } | null | undefined;
 /** -1: a before b, 1: b before a, 0: do nothing. */
 export type CompareResult = -1 | 1 | 0;
 

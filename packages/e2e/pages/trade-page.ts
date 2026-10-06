@@ -964,7 +964,7 @@ export class TradePage extends BasePage {
         controller.abort();
         const detail = err?.errors
           ? err.errors.map((e: any) => e?.message ?? String(e)).join(" | ")
-          : err?.message ?? String(err);
+          : (err?.message ?? String(err));
         throw new Error(
           `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
         );

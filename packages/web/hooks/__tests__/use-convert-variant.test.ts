@@ -93,7 +93,7 @@ describe("getConvertVariantMessages slippage", () => {
         tokenInDenom: VARIANT_DENOM,
         tokenOutDenoms: poolTypes.map(() => ALLOY_DENOM),
       })),
-    } as unknown as QuoteOutGivenIn);
+    }) as unknown as QuoteOutGivenIn;
 
   const slippageForQuote = async (quote: QuoteOutGivenIn) => {
     await getConvertVariantMessages(variant, quote, "osmo1address");

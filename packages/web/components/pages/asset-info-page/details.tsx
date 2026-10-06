@@ -336,8 +336,8 @@ const AdminBadge: FunctionComponent<{
     state.kind === "alloyed"
       ? getAlloyBackingHistoryUrl(coinMinimalDenom)
       : showAdmin
-      ? `https://www.mintscan.io/osmosis/address/${admin}`
-      : undefined;
+        ? `https://www.mintscan.io/osmosis/address/${admin}`
+        : undefined;
 
   if (!href) {
     return (

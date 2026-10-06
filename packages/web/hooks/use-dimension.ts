@@ -11,7 +11,7 @@ type UseDimensionRect = Pick<
 type UseDimensionRef<E extends Element = Element> = (element: E) => void;
 type UseDimensionResult<E extends Element = Element> = [
   UseDimensionRef<E>,
-  UseDimensionRect
+  UseDimensionRect,
 ];
 
 const defaultState: UseDimensionRect = {
@@ -41,7 +41,7 @@ function getDimensionObject(node: HTMLElement): UseDimensionRect {
 }
 
 function useDimensionImpl<
-  E extends Element = Element
+  E extends Element = Element,
 >(): UseDimensionResult<E> {
   const [element, ref] = useState<E | null>(null);
   const [rect, setRect] = useState<UseDimensionRect>(defaultState);

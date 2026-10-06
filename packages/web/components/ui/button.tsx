@@ -121,7 +121,8 @@ const modeToDefaultSize: Partial<
 };
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     Omit<VariantProps<typeof buttonVariants>, "size"> {
   asChild?: boolean;
   isLoading?: boolean;

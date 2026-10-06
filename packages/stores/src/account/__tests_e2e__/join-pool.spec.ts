@@ -161,7 +161,6 @@ describe("Join Pool Tx", () => {
       sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
-          // eslint-disable-next-line
           queryPool!.poolAssets.find(
             (a) => a.amount.toCoin().denom === coin.denom
           )!.amount.currency,

@@ -2,7 +2,7 @@ import { KVStore, ObservableQuery } from "@osmosis-labs/keplr-stores";
 import Axios from "axios";
 export class ObservableQueryExternalBase<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQuery<T, E> {
   constructor(kvStore: KVStore, baseURL: string, urlPath: string) {
     const instance = Axios.create({ baseURL });

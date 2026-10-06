@@ -104,9 +104,8 @@ export async function getUserPools(params: {
         );
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
-          (
-            pool.raw as WeightedPoolRawResponse | StablePoolRawResponse
-          ).total_shares.amount
+          (pool.raw as WeightedPoolRawResponse | StablePoolRawResponse)
+            .total_shares.amount
         );
         const rawShare = aggregateRawCoinsByDenom(
           lockedShares

@@ -7,7 +7,7 @@ import { HasMapStore } from "../common";
 
 export class ObservableChainQuery<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
@@ -43,7 +43,7 @@ export class ObservableChainQuery<
 
 export class ObservableChainQueryMap<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends HasMapStore<ObservableChainQuery<T, E>> {
   constructor(
     protected readonly kvStore: KVStore,

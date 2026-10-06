@@ -10,10 +10,7 @@ type DepositHaltReason =
 type WithdrawalHaltReason = "bridge_down" | "source_chain_killed" | "manual";
 
 type UnstableReason =
-  | "ibc_client"
-  | "source_chain_killed"
-  | "market"
-  | "manual";
+  "ibc_client" | "source_chain_killed" | "market" | "manual";
 
 /** Map a deposit-halt enum reason to its localisation key.
  *  Switch-case ensures every key is a literal string in source so the
