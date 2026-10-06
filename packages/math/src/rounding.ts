@@ -6,7 +6,7 @@ export function checkMultiplicativeErrorTolerance<
     quo(other: Decimal): Decimal;
     sub(other: Decimal): Decimal;
     isZero(): boolean;
-  }
+  },
 >(
   expected: Decimal,
   actual: Decimal,

@@ -59,7 +59,7 @@ export function EntityImage({
             "text-xxs": +width <= 20,
           })}
         >
-          {isChain ? name[0] : (symbol ?? denom)?.slice(0, 3) ?? "???"}
+          {isChain ? name[0] : ((symbol ?? denom)?.slice(0, 3) ?? "???")}
         </span>
       </div>
     );

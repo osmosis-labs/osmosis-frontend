@@ -36,7 +36,6 @@ export class BigDec {
       throw new Error("Too much precision");
     }
     if (BigDec.precisionMultipliers[prec.toString()]) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return BigDec.precisionMultipliers[prec.toString()]!;
     }
 
@@ -372,8 +371,7 @@ export class BigDec {
       this.isNegative() && !(integer === BigInt(0) && fractionStr.length === 0);
 
     const integerStr = locale
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      ? // @ts-ignore
         CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 

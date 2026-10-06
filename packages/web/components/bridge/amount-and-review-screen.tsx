@@ -75,20 +75,20 @@ export const AmountAndReviewScreen = observer(
       fromChain?.chainType === "evm"
         ? evmAddress
         : fromChain?.chainType === "solana"
-        ? phantomAddress
-        : fromChainCosmosAccount?.address;
+          ? phantomAddress
+          : fromChainCosmosAccount?.address;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
-      ? evmAddress
-      : toChainCosmosAccount?.address;
+        ? evmAddress
+        : toChainCosmosAccount?.address;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
         ? evmConnector?.icon
         : fromChain?.chainType === "solana"
-        ? undefined
-        : fromChainCosmosAccount?.walletInfo.logo;
+          ? undefined
+          : fromChainCosmosAccount?.walletInfo.logo;
     const toWalletIcon =
       toChain?.chainType === "evm"
         ? evmConnector?.icon

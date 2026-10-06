@@ -25,7 +25,7 @@ export function useSortedData<TData>(
   SortDirection,
   (sortDirection: SortDirection) => void,
   () => void,
-  TData[]
+  TData[],
 ] {
   const processor = useMemo(
     () => sorter ?? new DataSorter<TData>(data),
