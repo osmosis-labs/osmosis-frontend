@@ -1,3 +1,4 @@
+import { bigIntAbs as abs, bigIntPow as pow } from "./bigint-utils";
 import { CoinUtils } from "./coin-utils";
 import {
   exponentDecStringToDecString,
@@ -5,19 +6,6 @@ import {
   isValidDecimalString,
 } from "./etc";
 import { Int } from "./int";
-
-// `**` on bigint requires an ES2016+ target, so use square-and-multiply instead.
-const pow = (base: bigint, exp: bigint): bigint => {
-  let result = BigInt(1);
-  while (exp > BigInt(0)) {
-    if (exp % BigInt(2) === BigInt(1)) result *= base;
-    base *= base;
-    exp /= BigInt(2);
-  }
-  return result;
-};
-
-const abs = (n: bigint): bigint => (n < BigInt(0) ? -n : n);
 
 export class Dec {
   public static readonly precision = 18;
@@ -42,7 +30,6 @@ export class Dec {
       throw new Error("Too much precision");
     }
     if (Dec.precisionMultipliers[prec.toString()]) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return Dec.precisionMultipliers[prec.toString()]!;
     }
 
@@ -347,8 +334,7 @@ export class Dec {
       this.isNegative() && !(integer === BigInt(0) && fractionStr.length === 0);
 
     const integerStr = locale
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      ? // @ts-ignore
         CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 

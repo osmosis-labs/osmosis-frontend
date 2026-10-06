@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { Dec } from "./decimal";
 import { Int } from "./int";
 
@@ -686,6 +685,60 @@ describe("Test decimals", () => {
 
       expect(new Dec(test.num).equals(test.expect)).toBe(true);
     }
+  });
+});
+
+describe("Dec exponent string parsing", () => {
+  it("parses signed exponent strings", () => {
+    expect(new Dec("1e+5").toString()).toBe("100000.000000000000000000");
+    expect(new Dec("1e-5").toString()).toBe("0.000010000000000000");
+    expect(new Dec("-1.5e+3").toString()).toBe("-1500.000000000000000000");
+    expect(new Dec("1.23e-18").toString()).toBe("0.000000000000000001");
+  });
+
+  it("normalises an exponent string with no sign like a signed one", () => {
+    expect(new Dec("1e5").toString()).toBe("100000.000000000000000000");
+    expect(new Dec("1e5").toString()).toBe(new Dec("1e+5").toString());
+  });
+
+  it("rejects strings that are neither decimal nor exponent form", () => {
+    // `regexDecString` once had an unescaped `.`, which let "0x10" (and
+    // "1e5") pass as a decimal string and reach BigInt().
+    expect(() => new Dec("0x10")).toThrow();
+    expect(() => new Dec("1.2.3")).toThrow();
+  });
+});
+
+describe("Dec toString with locale", () => {
+  const tests: {
+    d1: Dec;
+    precision: number;
+    exp: string;
+  }[] = [
+    { d1: new Dec("0"), precision: 2, exp: "0.00" },
+    { d1: new Dec("123"), precision: 0, exp: "123" },
+    { d1: new Dec("1234"), precision: 0, exp: "1,234" },
+    { d1: new Dec("1234567.891"), precision: 2, exp: "1,234,567.89" },
+    { d1: new Dec("-1234567.891"), precision: 2, exp: "-1,234,567.89" },
+    { d1: new Dec("-1234567.891"), precision: 0, exp: "-1,234,567" },
+    {
+      d1: new Dec("1000000000000000000000"),
+      precision: 0,
+      exp: "1,000,000,000,000,000,000,000",
+    },
+    // The sign is dropped when every rendered digit is zero.
+    { d1: new Dec("-0.25"), precision: 0, exp: "0" },
+  ];
+
+  it("groups the integer part with en-US separators", () => {
+    for (const test of tests) {
+      expect(test.d1.toString(test.precision, true)).toBe(test.exp);
+    }
+  });
+
+  it("defaults to no grouping", () => {
+    expect(new Dec("1234567.891").toString(2)).toBe("1234567.89");
+    expect(new Dec("1234567.891").toString(2, false)).toBe("1234567.89");
   });
 });
 
