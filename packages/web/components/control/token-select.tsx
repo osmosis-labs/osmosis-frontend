@@ -47,8 +47,8 @@ export const TokenSelect: FunctionComponent<{
           ? token.currency.coinMinimalDenom
           : token.coinMinimalDenom
         : token instanceof CoinPretty
-        ? token.denom
-        : token.coinDenom;
+          ? token.denom
+          : token.coinDenom;
 
     // parent overrideable state
     const [isSelectOpenLocal, setIsSelectOpenLocal] =

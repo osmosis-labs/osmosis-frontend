@@ -1,9 +1,10 @@
 import { type BrowserContext, expect, test } from "@playwright/test";
+
 import { TradePage } from "../pages/trade-page";
 import { TransactionsPage } from "../pages/transactions-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
-import { getOrderbookBestBid } from "../utils/orderbook";
+import { getOrderbookBestBid, getSwapSellPrice } from "../utils/orderbook";
 import { resolveAppUsdcDenom } from "../utils/usdc-identity";
 import { deriveAddress } from "../utils/wallet-utils";
 
@@ -135,28 +136,40 @@ test.describe("Test Trade feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    const bestBid = await getOrderbookBestBid({
+    const pair = {
       baseDenom: "uosmo",
       quoteDenom: USDC,
       baseExponent: 6,
       quoteExponent: 6,
-    });
-    // A retry re-fills the form and re-reads the price, since the market (and
-    // so the preset) can move between attempts.
+    };
+    // A retry re-fills the form and re-reads the prices, since the market (and
+    // so the preset, the book and the pools) can move between attempts.
     let limitPrice = "";
     const fillOrder = async () => {
+      const [bestBid, swapSellPrice] = await Promise.all([
+        getOrderbookBestBid(pair),
+        getSwapSellPrice({ ...pair, baseAmount: 1 }),
+      ]);
+      const knownPrices = [bestBid, swapSellPrice].filter(
+        (price): price is number => price !== undefined
+      );
+      const floorPrice =
+        knownPrices.length > 0 ? Math.max(...knownPrices) : undefined;
       await tradePage.enterAmount(amount);
       await tradePage.setLimitPriceChange("10%");
-      // The preset is 10% above the market price, but the thin OSMO orderbook
-      // can hold bids above that. An ask at or below the best bid fills at
-      // placement and leaves nothing to cancel, so price it above the book.
+      // The preset is 10% above the app's market price, but that price can
+      // lag the pools, and the thin OSMO orderbook can hold bids above it. An
+      // ask at or below the best bid fills at placement, and an ask below the
+      // swap sell price is filled within a block by an arbitrageur selling
+      // into the pools. Either way nothing is left to cancel, so price it
+      // above both.
       if (
-        bestBid !== undefined &&
-        Number(await tradePage.getLimitPrice()) <= bestBid * 1.02
+        floorPrice !== undefined &&
+        Number(await tradePage.getLimitPrice()) <= floorPrice * 1.02
       ) {
         // 4 significant digits, matching how the app formats prices below 100.
         await tradePage.setLimitPrice(
-          String(Number((bestBid * 1.1).toPrecision(4)))
+          String(Number((floorPrice * 1.1).toPrecision(4)))
         );
       }
       limitPrice = await tradePage.getLimitPrice();

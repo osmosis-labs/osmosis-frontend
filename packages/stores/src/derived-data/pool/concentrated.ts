@@ -184,11 +184,14 @@ export class ObservableConcentratedPoolDetail {
     const queryPool = this.queryConcentratedPool;
     if (!queryPool) return new PricePretty(this._fiatCurrency, 0);
 
-    return this.userPoolAssets.reduce<PricePretty>((sum, { asset }) => {
-      const value = this.priceStore.calculatePrice(asset);
-      if (value) return sum.add(value);
-      return sum;
-    }, new PricePretty(this._fiatCurrency, 0));
+    return this.userPoolAssets.reduce<PricePretty>(
+      (sum, { asset }) => {
+        const value = this.priceStore.calculatePrice(asset);
+        if (value) return sum.add(value);
+        return sum;
+      },
+      new PricePretty(this._fiatCurrency, 0)
+    );
   }
 }
 

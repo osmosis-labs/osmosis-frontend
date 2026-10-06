@@ -104,8 +104,8 @@ export const AddLiquidityModal: FunctionComponent<
       children: config.error
         ? t(...tError(config.error))
         : isConcentrated && addConliqConfig.shouldBeSuperfluidStaked
-        ? t("addConcentratedLiquidity.buttonCreateAndStake")
-        : t("addLiquidity.title"),
+          ? t("addConcentratedLiquidity.buttonCreateAndStake")
+          : t("addLiquidity.title"),
     },
     props.onRequestClose
   );

@@ -66,14 +66,15 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
   const depositDisabledReason = isStrandedToken
     ? t("assets.strandedTokenDepositDisabled")
     : depositsHalted
-    ? asset.tooltipMessage ?? t(depositHaltReasonKey(asset.depositHaltReason))
-    : undefined;
+      ? (asset.tooltipMessage ??
+        t(depositHaltReasonKey(asset.depositHaltReason)))
+      : undefined;
   const withdrawDisabledReason = isStrandedToken
     ? t("assets.strandedTokenWithdrawDisabled")
     : withdrawalsHalted
-    ? asset.tooltipMessage ??
-      t(withdrawalHaltReasonKey(asset.withdrawalHaltReason))
-    : undefined;
+      ? (asset.tooltipMessage ??
+        t(withdrawalHaltReasonKey(asset.withdrawalHaltReason)))
+      : undefined;
 
   const ConditionalTooltip = ({
     children,

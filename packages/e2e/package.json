@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@actions/core": "1.11.1",
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "1.63.0",
     "decompress": "4.2.1"
   },
   "devDependencies": {

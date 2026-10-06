@@ -4,8 +4,10 @@
  *
  * The trade tool's limit price presets are relative to the asset's market
  * price, not to the orderbook. A thin orderbook can hold resting bids above
- * market, so a "market + 10%" ask can cross them and fill at placement. Tests
- * that need an order to stay open read the book's best bid from here.
+ * market, so a "market + 10%" ask can cross them and fill at placement. The
+ * market price behind the presets can also lag the pools, leaving the ask
+ * below what an arbitrageur can sell for elsewhere. Tests that need an order
+ * to stay open read the book's best bid and the swap sell price from here.
  */
 
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
@@ -112,6 +114,53 @@ export async function getOrderbookBestBid({
     return bestBid;
   } catch (error) {
     console.warn(`Could not read the orderbook best bid: ${error}`);
+    return undefined;
+  }
+}
+
+/**
+ * Price a seller of `baseAmount` base tokens gets by swapping into the quote
+ * right now, in display units (quote per base), from an SQS router quote
+ * across all pools. Returns `undefined` if the quote can't be read, so callers
+ * can keep their default behaviour instead of failing on a query outage.
+ */
+export async function getSwapSellPrice({
+  baseDenom,
+  quoteDenom,
+  baseExponent,
+  quoteExponent,
+  baseAmount,
+}: {
+  baseDenom: string;
+  quoteDenom: string;
+  baseExponent: number;
+  quoteExponent: number;
+  baseAmount: number;
+}): Promise<number | undefined> {
+  try {
+    const amountIn = BigInt(Math.round(baseAmount * 10 ** baseExponent));
+    const url = new URL("/router/quote", SQS_BASE_URL);
+    url.searchParams.set("tokenIn", `${amountIn}${baseDenom}`);
+    url.searchParams.set("tokenOutDenom", quoteDenom);
+    url.searchParams.set("singleRoute", "true");
+    const response = await fetch(url.toString(), {
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!response.ok) {
+      throw new Error(`router/quote: ${response.status}`);
+    }
+    const { amount_out } = (await response.json()) as { amount_out?: string };
+    const amountOut = Number(amount_out);
+    if (!Number.isFinite(amountOut) || amountOut <= 0) {
+      throw new Error(`unexpected amount_out: ${amount_out}`);
+    }
+
+    const price =
+      amountOut / 10 ** quoteExponent / (Number(amountIn) / 10 ** baseExponent);
+    console.log(`Swap sell price for ${baseAmount} ${baseDenom}: ${price}`);
+    return price;
+  } catch (error) {
+    console.warn(`Could not read the swap sell price: ${error}`);
     return undefined;
   }
 }

@@ -60,7 +60,7 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
 export async function mapGetAssetsWithUserBalances<
-  TAsset extends MinimalAsset & { liquidity?: number | PricePretty }
+  TAsset extends MinimalAsset & { liquidity?: number | PricePretty },
 >({
   poolId,
   ...params

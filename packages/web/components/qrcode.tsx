@@ -74,21 +74,17 @@ export const QRCode: FunctionComponent<{
     matrix.forEach((row: QRCodeUtil.QRCode[], i: number) => {
       row.forEach((_: any, j: number) => {
         if (matrix[i][j]) {
-          if (
-            !(
-              (i < 7 && j < 7) ||
-              (i > matrix.length - 8 && j < 7) ||
-              (i < 7 && j > matrix.length - 8)
-            )
-          ) {
-            if (
-              !(
-                i > matrixMiddleStart &&
-                i < matrixMiddleEnd &&
-                j > matrixMiddleStart &&
-                j < matrixMiddleEnd
-              )
-            ) {
+          if (!(
+            (i < 7 && j < 7) ||
+            (i > matrix.length - 8 && j < 7) ||
+            (i < 7 && j > matrix.length - 8)
+          )) {
+            if (!(
+              i > matrixMiddleStart &&
+              i < matrixMiddleEnd &&
+              j > matrixMiddleStart &&
+              j < matrixMiddleEnd
+            )) {
               dots.push(
                 <circle
                   cx={i * cellSize + cellSize / 2}

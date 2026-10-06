@@ -308,13 +308,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           Boolean(swapState.error) ||
           Boolean(
             swapState.networkFeeError &&
-              /**
-               * We can increase spend limit from the review order modal
-               * so the decision to disable the button should be made there
-               */
-              !isOverspendErrorMessage({
-                message: swapState.networkFeeError.message,
-              })
+            /**
+             * We can increase spend limit from the review order modal
+             * so the decision to disable the button should be made there
+             */
+            !isOverspendErrorMessage({
+              message: swapState.networkFeeError.message,
+            })
           )));
 
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);

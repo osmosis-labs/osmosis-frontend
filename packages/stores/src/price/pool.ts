@@ -169,10 +169,13 @@ export class PoolFallbackPriceStore
     const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
     if (!fiat) return;
 
-    return coins.reduce((sum, coin) => {
-      const coinPrice = this.calculatePrice(coin, vsCurrency);
-      if (coinPrice) return sum.add(coinPrice);
-      return sum;
-    }, new PricePretty(fiat, 0));
+    return coins.reduce(
+      (sum, coin) => {
+        const coinPrice = this.calculatePrice(coin, vsCurrency);
+        if (coinPrice) return sum.add(coinPrice);
+        return sum;
+      },
+      new PricePretty(fiat, 0)
+    );
   };
 }

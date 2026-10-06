@@ -501,8 +501,7 @@ export const getRangeMaxWithdrawAmounts = ({
   lowerTick: Int;
   upperTick: Int;
 }):
-  | { maxAmount0: Int; maxAmount1: Int; isInformative: boolean }
-  | undefined => {
+  { maxAmount0: Int; maxAmount1: Int; isInformative: boolean } | undefined => {
   let liquidityDec: Dec;
   try {
     liquidityDec = new Dec(liquidity);
@@ -624,7 +623,11 @@ export const rescalePositionValueUsd = ({
   const ratio0 = ratio(fresh0, rendered0);
   const ratio1 = ratio(fresh1, rendered1);
   const scale =
-    ratio0 && ratio1 ? (ratio0.gt(ratio1) ? ratio0 : ratio1) : ratio0 ?? ratio1;
+    ratio0 && ratio1
+      ? ratio0.gt(ratio1)
+        ? ratio0
+        : ratio1
+      : (ratio0 ?? ratio1);
   if (!scale || !scale.isPositive()) return 0;
 
   const rescaled = Number(

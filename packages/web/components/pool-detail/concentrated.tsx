@@ -307,7 +307,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       annotationDatum={{
                         price: currentPrice
                           ? Number(currentPrice.toString())
-                          : lastChartData?.close ?? 0,
+                          : (lastChartData?.close ?? 0),
                         depth: xRange[1],
                       }}
                       offset={{

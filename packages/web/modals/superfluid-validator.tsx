@@ -74,7 +74,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
   const {
     data: userValidatorDelegations,
     isLoading: isLoadingUserValidators,
-    isPreviousData,
+    isPlaceholderData,
   } = api.edge.staking.getUserDelegations.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
@@ -120,11 +120,11 @@ export const SuperfluidValidatorModal: FunctionComponent<
             isDelegated: !showDelegated
               ? 1
               : userValidatorDelegations?.some(
-                  ({ delegation }) =>
-                    delegation.validator_address === operator_address
-                )
-              ? 1 // = new Dec(1)
-              : randomSortVals[index], // = new Dec(0..<1)
+                    ({ delegation }) =>
+                      delegation.validator_address === operator_address
+                  )
+                ? 1 // = new Dec(1)
+                : randomSortVals[index], // = new Dec(0..<1)
           };
         }
       ) ?? [],
@@ -259,7 +259,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
             <table
               className={classNames(
                 "w-full bg-transparent",
-                isPreviousData &&
+                isPlaceholderData &&
                   isLoadingValidators &&
                   "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
               )}

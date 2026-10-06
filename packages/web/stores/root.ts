@@ -128,9 +128,8 @@ export class RootStore {
         },
       },
       "usd",
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryPools,
+      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
+        .queryPools,
       assets
     );
 
@@ -139,12 +138,10 @@ export class RootStore {
       this.priceStore,
       this.chainStore,
       this.chainStore.osmosis.chainId,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGauge,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryIncentivizedPools,
+      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
+        .queryGauge,
+      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
+        .queryIncentivizedPools,
       webApiBaseUrl,
       HISTORICAL_DATA_URL,
       HISTORICAL_DATA_URL
@@ -215,6 +212,7 @@ export class RootStore {
 
     const transferStatusProviders = [
       new SquidTransferStatusProvider(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
         IS_TESTNET ? "testnet" : "mainnet",
         ChainList
       ),

@@ -74,24 +74,25 @@ export const DepositAddressScreen = observer(
     const { t } = useTranslation();
     const [showQrCode, setShowQrCode] = useState(false);
 
-    const { data, isLoading, refetch, remove } =
-      api.bridgeTransfer.getDepositAddress.useQuery(
-        {
-          bridge,
-          fromChain,
-          toChain,
-          fromAsset,
-          toAsset,
-          toAddress: osmosisAddress!,
-        },
-        {
-          enabled: !!osmosisAddress,
-          refetchOnWindowFocus: false,
-          useErrorBoundary: true,
-          cacheTime: 0,
-          staleTime: 0,
-        }
-      );
+    const apiUtils = api.useUtils();
+    const depositAddressInput = {
+      bridge,
+      fromChain,
+      toChain,
+      fromAsset,
+      toAsset,
+      toAddress: osmosisAddress!,
+    };
+    const { data, isLoading } = api.bridgeTransfer.getDepositAddress.useQuery(
+      depositAddressInput,
+      {
+        enabled: !!osmosisAddress,
+        refetchOnWindowFocus: false,
+        throwOnError: true,
+        gcTime: 0,
+        staleTime: 0,
+      }
+    );
 
     const { hasCopied, onCopy } = useClipboard(
       data?.depositData?.depositAddress ?? "",
@@ -103,6 +104,10 @@ export const DepositAddressScreen = observer(
       : undefined;
 
     const isExpired = expirationTimeDayjs?.isBefore(dayjs());
+    // A disabled query (no wallet address) is not loading and has no data, so
+    // gate copying on the address itself rather than on `isLoading` alone.
+    const canCopyAddress =
+      !isLoading && !isExpired && !!data?.depositData?.depositAddress;
     const willExpireIn4Hours = expirationTimeDayjs?.isBefore(
       dayjs().add(4, "hour")
     );
@@ -180,7 +185,7 @@ export const DepositAddressScreen = observer(
                 </p>
                 <p className="body2 text-osmoverse-600">{t("transfer.or")}</p>
                 <button
-                  disabled={isLoading || isExpired}
+                  disabled={!canCopyAddress}
                   onClick={onCopy}
                   className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
                 >
@@ -244,7 +249,7 @@ export const DepositAddressScreen = observer(
                     onClick={() => {
                       setShowQrCode(true);
                     }}
-                    disabled={isLoading || isExpired}
+                    disabled={!canCopyAddress}
                   />
                 </Tooltip>
                 <Tooltip
@@ -270,7 +275,7 @@ export const DepositAddressScreen = observer(
                     onClick={() => {
                       onCopy();
                     }}
-                    disabled={isLoading || isExpired}
+                    disabled={!canCopyAddress}
                   />
                 </Tooltip>
               </div>
@@ -326,8 +331,12 @@ export const DepositAddressScreen = observer(
             <Button
               className="md:body1 text-h6 font-h6"
               onClick={() => {
-                remove();
-                refetch();
+                // Reset rather than refetch: the expiring address must leave
+                // `data` while the new one is generated, so the QR code and
+                // copy button can't hand out the old address mid-renewal.
+                apiUtils.bridgeTransfer.getDepositAddress.reset(
+                  depositAddressInput
+                );
               }}
             >
               {t("transfer.createNewDepositAddress")}

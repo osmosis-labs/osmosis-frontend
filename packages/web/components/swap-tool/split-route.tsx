@@ -181,15 +181,15 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                         type === "concentrated"
                           ? "clPositions.supercharged"
                           : type === "cosmwasm-transmuter" ||
-                            type === "cosmwasm-alloyed"
-                          ? "pool.transmuter"
-                          : type === "cosmwasm-astroport-pcl"
-                          ? "Astroport PCL"
-                          : type === "cosmwasm-whitewhale"
-                          ? "Skeleton Swap"
-                          : type === "cosmwasm"
-                          ? "pool.custom"
-                          : "pool.stableswapEnabled"
+                              type === "cosmwasm-alloyed"
+                            ? "pool.transmuter"
+                            : type === "cosmwasm-astroport-pcl"
+                              ? "Astroport PCL"
+                              : type === "cosmwasm-whitewhale"
+                                ? "Skeleton Swap"
+                                : type === "cosmwasm"
+                                  ? "pool.custom"
+                                  : "pool.stableswapEnabled"
                       )}
                     </div>
                   )}
