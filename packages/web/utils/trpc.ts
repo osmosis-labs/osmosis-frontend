@@ -25,6 +25,7 @@ import {
   constructEdgeUrlPathname,
   EdgeRouterKey,
 } from "~/utils/trpc-edge";
+import { shouldPersistQuery } from "~/utils/trpc-persist";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -75,24 +76,7 @@ export const api = createTRPCNext<AppRouter>({
       queryClient,
       persister: localStoragePersister,
       dehydrateOptions: {
-        shouldDehydrateQuery: (query) => {
-          const [key] = query.queryKey as [string[]];
-          if (Array.isArray(key)) {
-            const trpcKey = key.join(".");
-            const excludedKeys: string[] = [
-              "local.bridgeTransfer.getSupportedAssetsBalances",
-              "bridgeTransfer.getDepositAddress",
-            ];
-
-            /**
-             * If the key is in the excludedKeys, we don't want to persist it in the cache.
-             */
-            if (excludedKeys.includes(trpcKey)) {
-              return false;
-            }
-          }
-          return true;
-        },
+        shouldDehydrateQuery: shouldPersistQuery,
       },
       // !! IMPORTANT !!
       // If you change a data model,
@@ -104,7 +88,9 @@ export const api = createTRPCNext<AppRouter>({
       // v3: drop caches that may hold poisoned success-with-empty
       // supported-assets results persisted before the Skip counterparty
       // mutation fix.
-      buster: "v3",
+      // v4: TanStack Query v5 cache format; v4 caches hold a "loading"
+      // status that v5 cannot restore.
+      buster: "v4",
     });
 
     return {

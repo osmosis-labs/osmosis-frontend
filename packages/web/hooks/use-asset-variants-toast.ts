@@ -44,18 +44,23 @@ export const useAssetVariantsToast = () => {
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  const { data, error } = api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: wallet?.address ?? "",
-    },
-    {
-      enabled,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data, error, isFetchedAfterMount } =
+    api.local.portfolio.getPortfolioAssets.useQuery(
+      {
+        address: wallet?.address ?? "",
+      },
+      {
+        enabled,
+        refetchOnWindowFocus: false,
+      }
+    );
 
   useEffect(() => {
-    if (!data) return;
+    // Only a fetch this mount made while the gate was open counts: the query
+    // can expose cached or persisted data while disabled, which would toast
+    // before the session hydrates, twice per session, or for a stale
+    // portfolio.
+    if (!enabled || !isFetchedAfterMount || !data) return;
     if (hasSeenToastThisSession) return;
 
     // Eligibility and visibility live in alloyed-assets-toast-policy so the
@@ -88,6 +93,8 @@ export const useAssetVariantsToast = () => {
       markToastSeenThisSession();
     }
   }, [
+    enabled,
+    isFetchedAfterMount,
     data,
     hasSeenToastThisSession,
     alloyedAssets,

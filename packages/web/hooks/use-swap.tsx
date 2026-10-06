@@ -257,8 +257,7 @@ export function useSwap(
     outAmountInput.isEmpty,
   ]);
 
-  /** If a query is not enabled, it is considered loading.
-   *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
+  /** Only count a quote as loading while its query is enabled. */
   const isQuoteLoading =
     (isQuoteLoading_ && quoteQueryEnabled) ||
     (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
