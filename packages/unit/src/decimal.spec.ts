@@ -750,3 +750,33 @@ describe("Dec JSON serialization", () => {
     );
   });
 });
+
+describe("Dec half-to-even rounding", () => {
+  // Matches cosmos-sdk chopPrecisionAndRound: an exact half rounds to the
+  // even neighbour, so 2.5 -> 2 and 3.5 -> 4 (not always up).
+  it.each([
+    ["0.5", "0"],
+    ["1.5", "2"],
+    ["2.5", "2"],
+    ["3.5", "4"],
+    ["7.5", "8"],
+    ["8.5", "8"],
+    ["-2.5", "-2"],
+    ["-3.5", "-4"],
+  ])("rounds %s to %s", (input, expected) => {
+    expect(new Dec(input).round().toString()).toBe(expected);
+  });
+
+  it("applies the same tie-break at the 18th decimal of mul and quo", () => {
+    const half = new Dec("0.000000000000000005");
+    // 0.5 * 5e-18 = 2.5e-18: quotient 2 is even, stays 2e-18
+    expect(new Dec("0.5").mul(half).toString()).toBe("0.000000000000000002");
+    // 1.5 * 5e-18 = 7.5e-18: quotient 7 is odd, rounds to 8e-18
+    expect(new Dec("1.5").mul(half).toString()).toBe("0.000000000000000008");
+    // 5e-18 / 2 = 2.5e-18 -> 2e-18; 15e-18 / 2 = 7.5e-18 -> 8e-18
+    expect(half.quo(new Dec("2")).toString()).toBe("0.000000000000000002");
+    expect(new Dec("0.000000000000000015").quo(new Dec("2")).toString()).toBe(
+      "0.000000000000000008"
+    );
+  });
+});

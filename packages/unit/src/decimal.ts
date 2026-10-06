@@ -275,8 +275,9 @@ export class Dec {
     } else if (remainder > fivePrecision) {
       return quotient + BigInt(1);
     } else {
-      // always round to an even number
-      if (quotient / BigInt(2) === BigInt(0)) {
+      // Exactly half: round to the even neighbour, as cosmos-sdk's
+      // chopPrecisionAndRound does (quo.Bit(0) == 0 keeps quo).
+      if (quotient % BigInt(2) === BigInt(0)) {
         return quotient;
       } else {
         return quotient + BigInt(1);

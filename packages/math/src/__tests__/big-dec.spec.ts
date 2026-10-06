@@ -303,3 +303,22 @@ describe("BigDec arithmetic at 36 decimals", () => {
     expect(sub18.isZero()).toBe(false);
   });
 });
+
+describe("BigDec half-to-even rounding", () => {
+  it.each([
+    ["0.5", "0"],
+    ["1.5", "2"],
+    ["2.5", "2"],
+    ["3.5", "4"],
+    ["8.5", "8"],
+    ["-2.5", "-2"],
+  ])("rounds %s to %s", (input, expected) => {
+    expect(new BigDec(input).round().toString()).toBe(expected);
+  });
+
+  it("applies the same tie-break at the 36th decimal of mul", () => {
+    const half = new BigDec(`0.${"0".repeat(35)}5`);
+    expect(new BigDec("0.5").mul(half).toString()).toBe(`0.${"0".repeat(35)}2`);
+    expect(new BigDec("1.5").mul(half).toString()).toBe(`0.${"0".repeat(35)}8`);
+  });
+});
