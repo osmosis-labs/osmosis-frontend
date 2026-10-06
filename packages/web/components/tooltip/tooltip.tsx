@@ -31,7 +31,7 @@ export const Tooltip = ({
           rootClassNames
         )}
         content={content}
-        trigger={skipTrigger ? undefined : trigger ?? "mouseenter focus"}
+        trigger={skipTrigger ? undefined : (trigger ?? "mouseenter focus")}
         {...props}
       >
         <div

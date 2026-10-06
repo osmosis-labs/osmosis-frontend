@@ -196,7 +196,6 @@ export class ObservableSharePoolBonding {
             new IntPretty(lockedUserShares.quo(_queryPool.totalShare))
           )
         : new PricePretty(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
             new Dec(0)
           );
@@ -227,25 +226,20 @@ export class ObservableSharePoolBonding {
           : undefined;
 
       // one of the following must hold:
-      if (
-        !(
-          // are external incentives
-          (
-            externalGaugesOfDuration.length > 0 ||
-            // is internally incentivized
-            this.sharePoolDetail.isIncentivized ||
-            // is superfluid and is the longest duration
-            (this.superfluidPoolDetail.isSuperfluid &&
-              curDuration.asMilliseconds() ===
-                this.sharePoolDetail.longestDuration?.asMilliseconds()) ||
-            // this duration has duration locks containing locked shares
-            lockedUserShares.toDec().isPositive() ||
-            // same as above but for unlocking shares
-            (userUnlockingShares &&
-              userUnlockingShares.shares.toDec().isPositive())
-          )
-        )
-      ) {
+      if (!(
+        // are external incentives
+        externalGaugesOfDuration.length > 0 ||
+        // is internally incentivized
+        this.sharePoolDetail.isIncentivized ||
+        // is superfluid and is the longest duration
+        (this.superfluidPoolDetail.isSuperfluid &&
+          curDuration.asMilliseconds() ===
+            this.sharePoolDetail.longestDuration?.asMilliseconds()) ||
+        // this duration has duration locks containing locked shares
+        lockedUserShares.toDec().isPositive() ||
+        // same as above but for unlocking shares
+        (userUnlockingShares && userUnlockingShares.shares.toDec().isPositive())
+      )) {
         // if none of the above apply, return undefined
         return;
       }
@@ -277,8 +271,8 @@ export class ObservableSharePoolBonding {
       let superfluid: BondDuration["superfluid"] | undefined;
       const isSuperfluidDuration = Boolean(
         this.superfluidPoolDetail.isSuperfluid &&
-          sfsDuration &&
-          curDuration.asSeconds() === sfsDuration.asSeconds()
+        sfsDuration &&
+        curDuration.asSeconds() === sfsDuration.asSeconds()
       );
       if (isSuperfluidDuration && sfsDuration) {
         const delegation =

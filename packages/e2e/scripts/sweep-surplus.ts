@@ -48,7 +48,11 @@ import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
  */
 const LEGACY_SWEEP_SYMBOLS = ["USDC.noble"];
 import { TOKEN_DENOMS } from "../utils/balance-checker";
-import { deriveAddress, createSigningClient, OSMOSIS_RPC } from "../utils/order-utils";
+import {
+  deriveAddress,
+  createSigningClient,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 import {
   type TokenBalance,
   fetchAllKnownBalances,

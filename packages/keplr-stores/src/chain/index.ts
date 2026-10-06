@@ -18,9 +18,9 @@ type CurrencyRegistrar = (
   coinMinimalDenom: string
 ) => AppCurrency | [AppCurrency | undefined, boolean] | undefined;
 
-export class ChainInfoInner<C extends ChainInfo = ChainInfo>
-  implements ChainInfo
-{
+export class ChainInfoInner<
+  C extends ChainInfo = ChainInfo,
+> implements ChainInfo {
   @observable.ref
   protected _chainInfo: C;
 
@@ -254,8 +254,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   }
 
   get gasPriceStep():
-    | { low: number; average: number; high: number }
-    | undefined {
+    { low: number; average: number; high: number } | undefined {
     return this.raw.gasPriceStep;
   }
 
@@ -280,9 +279,9 @@ export type ChainInfoOverrider<C extends ChainInfo = ChainInfo> = (
   chainInfo: DeepReadonly<C>
 ) => C;
 
-export class ChainStore<C extends ChainInfo = ChainInfo>
-  implements ChainGetter
-{
+export class ChainStore<
+  C extends ChainInfo = ChainInfo,
+> implements ChainGetter {
   @observable.ref
   protected _chainInfos!: ChainInfoInner<C>[];
 

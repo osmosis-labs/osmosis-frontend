@@ -1561,13 +1561,13 @@ export const AmountScreen = observer(
                     direction === "withdraw"
                       ? t("transfer.confirmAmount")
                       : pendingChainApproval
-                      ? t("transfer.pendingApproval")
-                      : t("transfer.connectTo", {
-                          network:
-                            direction === "deposit"
-                              ? fromChain?.prettyName ?? ""
-                              : toChain?.prettyName ?? "",
-                        })}
+                        ? t("transfer.pendingApproval")
+                        : t("transfer.connectTo", {
+                            network:
+                              direction === "deposit"
+                                ? (fromChain?.prettyName ?? "")
+                                : (toChain?.prettyName ?? ""),
+                          })}
                   </h6>
                 </Button>
               </Screen>

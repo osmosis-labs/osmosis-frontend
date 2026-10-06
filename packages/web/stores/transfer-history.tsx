@@ -193,8 +193,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               )}
               chainPrettyName={
                 direction === "deposit"
-                  ? fromChain?.prettyName ?? ""
-                  : toChain?.prettyName ?? ""
+                  ? (fromChain?.prettyName ?? "")
+                  : (toChain?.prettyName ?? "")
               }
               isWithdraw={direction === "withdraw"}
               estimatedArrivalUnix={estimatedArrivalUnix}
@@ -329,8 +329,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const chainPrettyName =
       direction === "deposit"
-        ? fromChain?.prettyName ?? ""
-        : toChain?.prettyName ?? "";
+        ? (fromChain?.prettyName ?? "")
+        : (toChain?.prettyName ?? "");
 
     switch (status) {
       case "pending":

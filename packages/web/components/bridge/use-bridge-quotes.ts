@@ -73,7 +73,10 @@ class EvmTxRevertedError extends Error {
 /** A Solana transaction that definitively moved nothing: it executed with
  *  an error, or its blockhash expired before it landed. */
 class SolanaTxFailedError extends Error {
-  constructor(readonly txHash: string, readonly outcome: "failed" | "dropped") {
+  constructor(
+    readonly txHash: string,
+    readonly outcome: "failed" | "dropped"
+  ) {
     super(
       outcome === "failed"
         ? `Solana transaction ${txHash} failed on-chain`
@@ -1080,8 +1083,7 @@ export const useBridgeQuotes = ({
       // of the drafted final msg (same chain and minimal denom as the fee).
       const draftToken = (
         finalStep.msgs[0]?.value as
-          | { token?: { denom?: string; amount?: string } }
-          | undefined
+          { token?: { denom?: string; amount?: string } } | undefined
       )?.token;
 
       // When the final step's fee isn't paid from the arriving funds (fee
@@ -1316,9 +1318,8 @@ export const useBridgeQuotes = ({
       );
     }
 
-    const { Connection, Transaction, VersionedTransaction } = await import(
-      "@solana/web3.js"
-    );
+    const { Connection, Transaction, VersionedTransaction } =
+      await import("@solana/web3.js");
     // A plain Uint8Array: since TypeScript 5.9, Buffer (Uint8Array<ArrayBufferLike>)
     // no longer satisfies web3.js's Uint8Array<ArrayBuffer> parameters.
     const txBytes = new Uint8Array(
@@ -1600,8 +1601,8 @@ export const useBridgeQuotes = ({
       transactionRequest.type === "evm"
         ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
         : transactionRequest.type === "solana"
-        ? signAndBroadcastSolanaTx({ ...quote, transactionRequest })
-        : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
+          ? signAndBroadcastSolanaTx({ ...quote, transactionRequest })
+          : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
 
     await tx.catch((e) => {
       console.error(transactionRequest.type, "transaction failed", e);
@@ -1641,8 +1642,7 @@ export const useBridgeQuotes = ({
       finalStep.type === "cosmos"
         ? (
             finalStep.msgs[0]?.value as
-              | { token?: { denom?: string } }
-              | undefined
+              { token?: { denom?: string } } | undefined
           )?.token?.denom
         : undefined;
     return {
@@ -1790,7 +1790,8 @@ export const useBridgeQuotes = ({
     isEvmWalletConnected,
     isCosmosWalletConnected:
       fromChain?.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
+        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
+          false)
         : false,
     phantomAddress,
   });

@@ -483,7 +483,6 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
   // - Try changing the Dec usage to Number (float) in the codebase
   // - Make a priceStore function to calculate result in float
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     )!;

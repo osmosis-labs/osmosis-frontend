@@ -90,7 +90,7 @@ function powInt(base: Dec, power: Int): Dec {
   }
   let tmp = new Dec(1);
 
-  for (let i = power; i.gt(new Int(1)); ) {
+  for (let i = power; i.gt(new Int(1));) {
     if (!i.mod(new Int(2)).equals(new Int(0))) {
       tmp = tmp.mul(base);
     }

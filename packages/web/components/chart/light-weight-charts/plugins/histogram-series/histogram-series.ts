@@ -16,9 +16,9 @@ import { type HistogramData } from "./data";
 import { defaultOptions, type HistogramSeriesOptions } from "./options";
 import { HistogramSeriesRenderer } from "./renderer";
 
-export class HistogramSeries<TData extends HistogramData<Time>>
-  implements ICustomSeriesPaneView<Time, TData, HistogramSeriesOptions>
-{
+export class HistogramSeries<
+  TData extends HistogramData<Time>,
+> implements ICustomSeriesPaneView<Time, TData, HistogramSeriesOptions> {
   _renderer: HistogramSeriesRenderer<TData>;
 
   constructor(props: HistogramSeriesOptions) {

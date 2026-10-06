@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { WalletStatus } from "@cosmos-kit/core";
 import {
   CosmosQueries,
@@ -125,10 +124,7 @@ export function getAmountsTransferredMapFromEvent(attributes: any): any {
 
     let newMapValue = coin.amount;
     if (actualAmountsMapByDenom.has(coin.denom)) {
-      newMapValue = newMapValue.add(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        actualAmountsMapByDenom.get(coin.denom)!
-      );
+      newMapValue = newMapValue.add(actualAmountsMapByDenom.get(coin.denom)!);
     }
 
     actualAmountsMapByDenom.set(coin.denom, newMapValue);
@@ -219,7 +215,6 @@ export async function getLatestQueryPool(
 ): Promise<ObservableQueryPool> {
   // refresh stores
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const osmosisQueries = queryStore.get(chainId).osmosis!;
   const queryNumPools = osmosisQueries.queryGammNumPools;
   const queryPools = osmosisQueries.queryPools;
@@ -242,6 +237,5 @@ export async function getLatestQueryPool(
 
   // get query pool
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return osmosisQueries.queryPools.getPool(poolId)!;
 }

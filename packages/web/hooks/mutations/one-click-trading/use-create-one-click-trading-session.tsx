@@ -325,12 +325,15 @@ export async function makeCreate1CTSessionMessage({
           .filter((authenticator) =>
             isAuthenticatorOneClickTradingSession({ authenticator })
           )
-          .reduce((min, authenticator) => {
-            if (isNil(min)) return authenticator.id;
-            return new Dec(authenticator.id).lt(new Dec(min))
-              ? authenticator.id
-              : min;
-          }, null as string | null)
+          .reduce(
+            (min, authenticator) => {
+              if (isNil(min)) return authenticator.id;
+              return new Dec(authenticator.id).lt(new Dec(min))
+                ? authenticator.id
+                : min;
+            },
+            null as string | null
+          )
       : undefined;
 
   const authenticatorsToRemove = authenticatorToRemoveId
