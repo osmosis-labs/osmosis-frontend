@@ -60,7 +60,7 @@
     "@cosmjs/proto-signing": "0.36.2",
     "@cosmjs/stargate": "0.36.2",
     "@cosmos-kit/core": "^2.18.1",
-    "@keplr-wallet/crypto": "0.12.48",
+    "@keplr-wallet/crypto": "0.13.41",
     "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
@@ -72,6 +72,7 @@
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
     "axios": "^0.33.0",
+    "bitcoinjs-lib": "^6.1.7",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.10.1",
     "dayjs": "^1.11.23",
@@ -82,6 +83,7 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^7.6.5",
     "sha.js": "^2.4.11",
+    "starknet": "^8.0.0",
     "utility-types": "^3.10.0"
   },
   "resolutions": {
