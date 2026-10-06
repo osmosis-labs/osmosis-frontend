@@ -33,6 +33,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   onrampmoney: true,
   multiTxBridgeRoutes: true,
   positionMigration: true,
+  solanaSkipRoutes: false,
 };
 
 export function useFeatureFlags() {

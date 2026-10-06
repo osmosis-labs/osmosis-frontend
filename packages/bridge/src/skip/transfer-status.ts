@@ -27,6 +27,33 @@ export interface SkipStatusProvider {
   trackTransaction: ({ chainID, txHash, env }: Transaction) => Promise<void>;
 }
 
+/**
+ * Maps a Skip status to a transfer status.
+ *
+ * `STATE_ABANDONED` is not a failure: it means Skip stopped tracking, which
+ * it also does when a slow transfer times out while its funds can still
+ * arrive or be refunded. It stays pending; only proof of failure resolves
+ * it (see `SolanaSignatureCheck` for Solana-signed transfers).
+ */
+export function toTransferStatus(
+  state: SkipTxStatusResponse["state"]
+): TransferStatus {
+  if (state === "STATE_COMPLETED_SUCCESS") return "success";
+  if (state === "STATE_COMPLETED_ERROR") return "failed";
+  return "pending";
+}
+
+/**
+ * Proves the outcome of a Solana signature from the chain, independent of
+ * Skip: "failed" (error at confirmed or later) or "dropped" (no record in
+ * full history and the blockhash has expired). Anything unproven must come
+ * back undefined.
+ */
+export type SolanaSignatureCheck = (params: {
+  signature: string;
+  recentBlockhash?: string;
+}) => Promise<"confirmed" | "failed" | "dropped" | undefined>;
+
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly providerId = SkipBridgeProvider.ID;
@@ -39,7 +66,12 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   constructor(
     protected readonly env: BridgeEnvironment,
     protected readonly chainList: Chain[],
-    protected readonly skipStatusProvider: SkipStatusProvider
+    protected readonly skipStatusProvider: SkipStatusProvider,
+    /**
+     * Optional. Resolves Solana-signed transfers Skip can't: a tx that never
+     * landed is invisible to Skip, so without this it stays pending.
+     */
+    protected readonly checkSolanaSignature?: SolanaSignatureCheck
   ) {
     this.axelarScanBaseUrl =
       env === "mainnet"
@@ -63,6 +95,20 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           env: this.env,
         };
 
+        const isSolanaSigned = tx.chainID === "solana";
+
+        // A Solana tx that never landed is invisible to Skip, so check the
+        // chain first: it is the only proof of a dropped or failed tx.
+        if (isSolanaSigned && this.checkSolanaSignature) {
+          const outcome = await this.checkSolanaSignature({
+            signature: sendTxHash,
+            recentBlockhash: snapshot.solanaRecentBlockhash,
+          });
+          if (outcome === "failed" || outcome === "dropped") {
+            return { id: sendTxHash, status: "failed" as const };
+          }
+        }
+
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
@@ -74,20 +120,18 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
             }
 
             throw error;
+          })
+          // For a Solana-signed tx, Skip not knowing it yet (or erroring)
+          // is not an outcome: keep polling so the chain check above can
+          // still resolve it, rather than stopping on the error.
+          .catch((error) => {
+            if (isSolanaSigned) return undefined;
+            throw error;
           });
-
-        let status: TransferStatus = "pending";
-        if (txStatus.state === "STATE_COMPLETED_SUCCESS") {
-          status = "success";
-        }
-
-        if (txStatus.state === "STATE_COMPLETED_ERROR") {
-          status = "failed";
-        }
 
         return {
           id: sendTxHash,
-          status,
+          status: txStatus ? toTransferStatus(txStatus.state) : "pending",
         };
       },
       validate: (incomingStatus) => {
@@ -118,6 +162,13 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     // chain: the explorer must be the tracking chain's, or the link would
     // be an AxelarScan GMP URL wrapping a cosmos hash.
     const explorerChainId = snapshot.trackingChainId ?? fromChainId;
+
+    // A Solana-origin transfer's hash is a Solana signature until (for a
+    // multi-tx route) it advances onto the intermediate chain. Solana isn't
+    // in the cosmos chain list, so it needs its own explorer.
+    if (explorerChainId === "solana") {
+      return `https://solscan.io/tx/${sendTxHash}`;
+    }
 
     if (
       snapshot.trackingChainId === undefined &&

@@ -40,8 +40,8 @@ const priceEquals = (price: string | number) =>
  *     - Early listener registration: context.waitForEvent("page") is started BEFORE
  *       the click so fast-opening Keplr popups are never missed.
  *
- * Confirmation is proxy-safe. `startTxConfirmation()` races the WebSocket toast
- * against a REST poll of the LCD, mirroring `TradePage.startTxConfirmation()`.
+ * `startTxConfirmation()` races the WebSocket toast against a REST poll of the
+ * LCD, mirroring `TradePage.startTxConfirmation()`.
  */
 export class TransactionsPage extends BasePage {
   /** Hash of the most recently confirmed limit-order tx, for callers whose
@@ -278,11 +278,10 @@ export class TransactionsPage extends BasePage {
    *
    * Two signals race, mirroring `TradePage.startTxConfirmation()`:
    *   1. Primary (WebSocket): the in-app "Transaction Successful" toast. Fast,
-   *      but driven by the app's WS `TxTracer`, which stalls over the EU/SG
-   *      HTTP CONNECT proxy and has also been seen dropping on unproxied
-   *      preview runs - failing a tx that was included on-chain.
+   *      but driven by the app's WS `TxTracer`, which has been seen dropping
+   *      on preview runs and failing a tx that was included on-chain.
    *   2. Fallback (REST): capture the broadcast hash and poll the LCD from
-   *      Node, which does not go through the browser proxy.
+   *      Node.
    *
    * Whichever confirms first wins; the loser is aborted. Rejects early on a
    * deterministic failure (CheckTx rejection at broadcast, or the REST poll

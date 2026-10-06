@@ -1,4 +1,3 @@
-import bigInteger from "big-integer";
 import { DeepReadonly } from "utility-types";
 
 import { AppCurrency } from "./currency-types";
@@ -25,7 +24,7 @@ export class CoinPretty {
 
   constructor(
     protected _currency: AppCurrency,
-    protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
+    protected amount: Dec | { toDec(): Dec } | number | string | bigint
   ) {
     if (typeof this.amount === "object" && "toDec" in this.amount) {
       this.amount = this.amount.toDec();
