@@ -346,6 +346,21 @@ export const getBridgeSupportedAssetsParams = z.object({
    * The direction of the transfer.
    */
   direction: z.enum(["deposit", "withdraw"]),
+  /**
+   * Optional: Whether the caller can execute routes that need more than one
+   * user-signed transaction. Providers only advertise a source whose sole
+   * route is multi-tx when this is set; otherwise such a source would be
+   * offered and then fail to quote every time. Matches `allowMultiTx` on
+   * quote requests.
+   */
+  allowMultiTx: z.boolean().optional(),
+  /**
+   * Optional: Whether in-app Solana routes may be offered (Phantom-signed
+   * deposits and withdrawals to Solana addresses). A kill switch: without
+   * it, providers advertise no Solana counterparty. Matches `allowSolana`
+   * on quote requests.
+   */
+  allowSolana: z.boolean().optional(),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
@@ -455,6 +470,12 @@ export const getBridgeQuoteSchema = z.object({
    * providers return `transactionSteps` on the quote when the route needs it.
    */
   allowMultiTx: z.boolean().optional(),
+  /**
+   * Optional: Whether a route to or from Solana may be quoted. A kill switch
+   * matching `allowSolana` on supported-assets requests; providers refuse a
+   * Solana quote without it.
+   */
+  allowSolana: z.boolean().optional(),
 });
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
@@ -508,8 +529,22 @@ export interface CosmosBridgeTransactionRequest {
   };
 }
 
+export interface SolanaBridgeTransactionRequest {
+  type: "solana";
+  /** e.g. `solana` */
+  chainId: string;
+  /** The full transaction to sign, base64-encoded (Skip `svm_tx.tx`). The
+   *  provider builds it complete; the wallet only signs and sends it. */
+  txBase64: string;
+  /** The Solana account expected to sign, base58. Callers must verify the
+   *  connected wallet matches before signing. */
+  signerAddress: string;
+}
+
 export type BridgeTransactionRequest =
-  EvmBridgeTransactionRequest | CosmosBridgeTransactionRequest;
+  | EvmBridgeTransactionRequest
+  | CosmosBridgeTransactionRequest
+  | SolanaBridgeTransactionRequest;
 
 /**
  * One user-signed transaction of a multi-transaction route, tagged with the
@@ -519,6 +554,7 @@ export type BridgeTransactionRequest =
 export type BridgeTransactionStep = BridgeTransactionRequest & {
   chainId: number | string;
 };
+
 /**
  * Bridge asset with raw base amount (without decimals).
  */
@@ -741,6 +777,13 @@ const txSnapshotSchema = z.object({
    * intermediate chain (e.g. noble-1) rather than the route's from chain.
    */
   trackingChainId: z.string().optional(),
+  /**
+   * For a transfer whose tracked tx was signed on Solana: the tx's recent
+   * blockhash. A Solana tx that has not landed by the time its blockhash
+   * expires never will, so persisting this lets a restored entry prove a
+   * dropped tx instead of waiting on a status provider that never sees it.
+   */
+  solanaRecentBlockhash: z.string().optional(),
   /**
    * Present while a multi-transaction route is mid-flow: the next
    * user-signed step, so an interrupted transfer can be resumed from

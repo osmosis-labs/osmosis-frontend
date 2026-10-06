@@ -1,5 +1,3 @@
-import bigInteger from "big-integer";
-
 import { Dec } from "./decimal";
 import {
   exponentDecStringToDecString,
@@ -7,18 +5,31 @@ import {
   isValidIntegerString,
 } from "./etc";
 
+// `**` on bigint requires an ES2016+ target, so use square-and-multiply instead.
+const pow = (base: bigint, exp: bigint): bigint => {
+  let result = BigInt(1);
+  while (exp > BigInt(0)) {
+    if (exp % BigInt(2) === BigInt(1)) result *= base;
+    base *= base;
+    exp /= BigInt(2);
+  }
+  return result;
+};
+
+const abs = (n: bigint): bigint => (n < BigInt(0) ? -n : n);
+
 export class Int {
   // (2 ** 256) - 1
-  protected static maxInt = bigInteger(
+  protected static maxInt = BigInt(
     "115792089237316195423570985008687907853269984665640564039457584007913129639935"
   );
 
-  protected int: bigInteger.BigInteger;
+  protected int: bigint;
 
   /**
-   * @param int - Parse a number | bigInteger | string into a bigInt.
+   * @param int - Parse a number | bigint | string into a bigInt.
    */
-  constructor(int: bigInteger.BigNumber) {
+  constructor(int: number | string | bigint) {
     if (typeof int === "number") {
       int = int.toString();
     }
@@ -32,18 +43,16 @@ export class Int {
         }
       }
 
-      this.int = bigInteger(int);
-    } else if (typeof int === "bigint") {
-      this.int = bigInteger(int);
+      this.int = BigInt(int);
     } else {
-      this.int = bigInteger(int);
+      this.int = BigInt(int);
     }
 
     this.checkBitLen();
   }
 
   protected checkBitLen(): void {
-    if (this.int.abs().gt(Int.maxInt)) {
+    if (abs(this.int) > Int.maxInt) {
       throw new Error(`Integer out of range ${this.int.toString()}`);
     }
   }
@@ -52,90 +61,101 @@ export class Int {
     return this.int.toString(10);
   }
 
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
+  }
+
   public isNegative(): boolean {
-    return this.int.isNegative();
+    return this.int < BigInt(0);
   }
 
   public isPositive(): boolean {
-    return this.int.isPositive();
+    return this.int > BigInt(0);
   }
 
   public isZero(): boolean {
-    return this.int.eq(bigInteger(0));
+    return this.int === BigInt(0);
   }
 
   public equals(i: Int): boolean {
-    return this.int.equals(i.int);
+    return this.int === i.int;
   }
 
   public gt(i: Int): boolean {
-    return this.int.gt(i.int);
+    return this.int > i.int;
   }
 
   public gte(i: Int): boolean {
-    return this.int.greaterOrEquals(i.int);
+    return this.int >= i.int;
   }
 
   public lt(i: Int): boolean {
-    return this.int.lt(i.int);
+    return this.int < i.int;
   }
 
   public lte(i: Int): boolean {
-    return this.int.lesserOrEquals(i.int);
+    return this.int <= i.int;
   }
 
   public abs(): Int {
-    return new Int(this.int.abs());
+    return new Int(abs(this.int));
   }
 
   public absUInt(): Uint {
-    return new Uint(this.int.abs());
+    return new Uint(abs(this.int));
   }
 
   public add(i: Int): Int {
-    return new Int(this.int.add(i.int));
+    return new Int(this.int + i.int);
   }
 
   public sub(i: Int): Int {
-    return new Int(this.int.subtract(i.int));
+    return new Int(this.int - i.int);
   }
 
   public mul(i: Int): Int {
-    return new Int(this.int.multiply(i.int));
+    return new Int(this.int * i.int);
   }
 
   public div(i: Int): Int {
-    return new Int(this.int.divide(i.int));
+    return new Int(this.int / i.int);
   }
 
   public mod(i: Int): Int {
-    return new Int(this.int.mod(i.int));
+    return new Int(this.int % i.int);
   }
 
   public neg(): Int {
-    return new Int(this.int.negate());
+    return new Int(-this.int);
   }
 
   public pow(i: Uint): Int {
-    return new Int(this.int.pow(i.toBigNumber()));
+    return new Int(pow(this.int, i.toBigNumber()));
   }
 
   public toDec(): Dec {
     return new Dec(this);
   }
 
-  public toBigNumber(): bigInteger.BigInteger {
+  public toBigNumber(): bigint {
     return this.int;
   }
 }
 
 export class Uint {
-  protected uint: bigInteger.BigInteger;
+  // (2 ** 256) - 1
+  protected static maxUint = (BigInt(1) << BigInt(256)) - BigInt(1);
+
+  protected uint: bigint;
 
   /**
-   * @param uint - Parse a number | bigInteger | string into a bigUint.
+   * @param uint - Parse a number | bigint | string into a bigUint.
    */
-  constructor(uint: bigInteger.BigNumber) {
+  constructor(uint: number | string | bigint) {
     if (typeof uint === "number") {
       uint = uint.toString();
     }
@@ -149,14 +169,12 @@ export class Uint {
         }
       }
 
-      this.uint = bigInteger(uint);
-    } else if (typeof uint === "bigint") {
-      this.uint = bigInteger(uint);
+      this.uint = BigInt(uint);
     } else {
-      this.uint = bigInteger(uint);
+      this.uint = BigInt(uint);
     }
 
-    if (this.uint.isNegative()) {
+    if (this.uint < BigInt(0)) {
       throw new TypeError("Uint should not be negative");
     }
 
@@ -164,7 +182,7 @@ export class Uint {
   }
 
   protected checkBitLen(): void {
-    if (this.uint.abs().bitLength().gt(256)) {
+    if (this.uint > Uint.maxUint) {
       throw new Error(`Integer out of range ${this.uint.toString()}`);
     }
   }
@@ -173,59 +191,67 @@ export class Uint {
     return this.uint.toString(10);
   }
 
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
+  }
+
   public isZero(): boolean {
-    return this.uint.eq(bigInteger(0));
+    return this.uint === BigInt(0);
   }
 
   public equals(i: Uint): boolean {
-    return this.uint.equals(i.uint);
+    return this.uint === i.uint;
   }
 
   public gt(i: Uint): boolean {
-    return this.uint.gt(i.uint);
+    return this.uint > i.uint;
   }
 
   public gte(i: Uint): boolean {
-    return this.uint.greaterOrEquals(i.uint);
+    return this.uint >= i.uint;
   }
 
   public lt(i: Uint): boolean {
-    return this.uint.lt(i.uint);
+    return this.uint < i.uint;
   }
 
   public lte(i: Uint): boolean {
-    return this.uint.lesserOrEquals(i.uint);
+    return this.uint <= i.uint;
   }
 
   public add(i: Uint): Uint {
-    return new Uint(this.uint.add(i.uint));
+    return new Uint(this.uint + i.uint);
   }
 
   public sub(i: Uint): Uint {
-    return new Uint(this.uint.subtract(i.uint));
+    return new Uint(this.uint - i.uint);
   }
 
   public mul(i: Uint): Uint {
-    return new Uint(this.uint.multiply(i.uint));
+    return new Uint(this.uint * i.uint);
   }
 
   public div(i: Uint): Uint {
-    return new Uint(this.uint.divide(i.uint));
+    return new Uint(this.uint / i.uint);
   }
 
   public mod(i: Uint): Uint {
-    return new Uint(this.uint.mod(i.uint));
+    return new Uint(this.uint % i.uint);
   }
 
   public pow(i: Uint): Uint {
-    return new Uint(this.uint.pow(i.toBigNumber()));
+    return new Uint(pow(this.uint, i.toBigNumber()));
   }
 
   public toDec(): Dec {
     return new Dec(new Int(this.toString()));
   }
 
-  public toBigNumber(): bigInteger.BigInteger {
+  public toBigNumber(): bigint {
     return this.uint;
   }
 }

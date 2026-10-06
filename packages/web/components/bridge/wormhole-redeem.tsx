@@ -1,12 +1,20 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
-import { apiClient, getSolanaExplorerUrl, shorten } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  EthereumChainInfo,
+  getEvmRpcTransport,
+  getSolanaExplorerUrl,
+  shorten,
+} from "@osmosis-labs/utils";
 import type {
   Keypair,
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { createPublicClient, keccak256, parseAbi } from "viem";
+import { mainnet } from "viem/chains";
 
 import { Spinner } from "~/components/loaders";
 import { type MultiLanguageT, t, useTranslation } from "~/hooks/language";
@@ -93,6 +101,7 @@ async function fetchWithTimeout(
 }
 
 const TOKEN_BRIDGE_PROGRAM_ID = "wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb";
+const CORE_BRIDGE_PROGRAM_ID = "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth";
 
 // Wormhole chain IDs we render explicitly. See
 // https://docs.wormhole.com/wormhole/reference/constants
@@ -186,6 +195,8 @@ type RedeemStatus =
   | "looking_up"
   | "already_redeemed"
   | "checking_solana"
+  | "checking_guardians"
+  | "guardian_set_expired"
   | "ready"
   | "governor_delayed"
   | "signing"
@@ -757,6 +768,70 @@ export async function fetchGovernorDelay(
   return null;
 }
 
+// Governance rotates the guardian set; every chain's core contract keeps
+// accepting the outgoing set for 24h, then rejects its signatures for good, so
+// a VAA signed only by an expired set can't be redeemed until the guardians
+// re-observe the source tx. Ethereum's core contract is the reference copy of
+// the expiry. Other chains apply the same upgrade separately, so allow a margin
+// before treating a set as expired everywhere.
+const ETHEREUM_CORE_BRIDGE = "0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B";
+const GUARDIAN_SET_ABI = parseAbi([
+  "function getGuardianSet(uint32 index) view returns ((address[] keys, uint32 expirationTime))",
+]);
+const GUARDIAN_EXPIRY_MARGIN_SECONDS = 24 * 60 * 60;
+
+interface CurrentGuardianSetResponse {
+  guardianSet?: { index?: number };
+}
+
+export type GuardianSetCheck = "valid" | "expired" | "unknown";
+
+/**
+ * Whether the guardian set that signed this VAA can still be verified.
+ * `expired` is only returned on a definite answer; anything we can't confirm
+ * is `unknown`, and the caller lets the user attempt the redeem anyway.
+ */
+export async function checkGuardianSet(
+  operation: OperationData
+): Promise<GuardianSetCheck> {
+  const vaaSetIndex = operation.vaa.guardianSetIndex;
+  try {
+    const res = await fetchWithTimeout(
+      `${WORMHOLESCAN_LEGACY_API}/guardianset/current`
+    );
+    if (!res.ok) return "unknown";
+    const json = (await res.json()) as CurrentGuardianSetResponse;
+    const currentIndex = json.guardianSet?.index;
+    if (typeof currentIndex !== "number" || typeof vaaSetIndex !== "number") {
+      return "unknown";
+    }
+    if (vaaSetIndex >= currentIndex) return "valid";
+
+    const ethereum = EthereumChainInfo.find(({ id }) => id === mainnet.id);
+    if (!ethereum) return "unknown";
+    const client = createPublicClient({
+      chain: ethereum,
+      transport: getEvmRpcTransport(ethereum, {
+        timeout: FETCH_TIMEOUT_MS,
+        retryCount: 0,
+      }),
+    });
+    const { expirationTime } = await client.readContract({
+      address: ETHEREUM_CORE_BRIDGE,
+      abi: GUARDIAN_SET_ABI,
+      functionName: "getGuardianSet",
+      args: [vaaSetIndex],
+    });
+    const now = Math.floor(Date.now() / 1000);
+    if (expirationTime === 0 || expirationTime > now) return "valid";
+    return now - expirationTime > GUARDIAN_EXPIRY_MARGIN_SECONDS
+      ? "expired"
+      : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 /**
  * Format a Unix release timestamp as a short countdown for the delay badge.
  * Returns `"Releases shortly"` when ≤ 60 seconds remain so the copy doesn't
@@ -1047,6 +1122,8 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [governorDelay, setGovernorDelay] = useState<GovernorDelay | null>(
     null
   );
+  const [guardianCheckUnavailable, setGuardianCheckUnavailable] =
+    useState(false);
   // Forces the countdown to re-render every minute while in the delay
   // state. Cheap and avoids a second `useEffect` boundary inside the
   // render branch.
@@ -1108,6 +1185,7 @@ export const WormholeRedeem: FunctionComponent = () => {
     setResolvedTxHash(null);
     setDerivedFromOsmosis(false);
     setGovernorDelay(null);
+    setGuardianCheckUnavailable(false);
 
     try {
       const {
@@ -1145,15 +1223,34 @@ export const WormholeRedeem: FunctionComponent = () => {
       }
 
       // The on-chain claim-PDA check is Solana-specific. For other chains
-      // we rely on Wormholescan's targetChain status above and fall
-      // straight through to the ready state.
+      // we rely on Wormholescan's targetChain status above.
       if (op.content.payload.toChain === CHAIN_ID.solana) {
         setStatus("checking_solana");
-        const redeemed = await checkIfRedeemed(op);
-        setStatus(redeemed ? "already_redeemed" : "ready");
-        return;
+        if (await checkIfRedeemed(op)) {
+          setStatus("already_redeemed");
+          return;
+        }
       }
 
+      // Fail open: only a definite "expired" blocks the redeem button.
+      setStatus("checking_guardians");
+      const guardianSet = await checkGuardianSet(op);
+      let guardianCheckUnknown = guardianSet === "unknown";
+      if (guardianSet === "expired") {
+        // Solana verifies signatures when the VAA is posted and completes the
+        // transfer in a later tx that never re-checks expiry, so a VAA posted
+        // while its set was live can still be redeemed.
+        const posted =
+          op.content.payload.toChain === CHAIN_ID.solana
+            ? await checkIfVaaPosted(op)
+            : false;
+        if (posted === false) {
+          setStatus("guardian_set_expired");
+          return;
+        }
+        guardianCheckUnknown = posted === null;
+      }
+      setGuardianCheckUnavailable(guardianCheckUnknown);
       setStatus("ready");
     } catch (err: unknown) {
       setError({
@@ -1395,6 +1492,7 @@ export const WormholeRedeem: FunctionComponent = () => {
   const isLoading = [
     "looking_up",
     "checking_solana",
+    "checking_guardians",
     "signing",
     "submitting",
   ].includes(status);
@@ -1564,6 +1662,27 @@ export const WormholeRedeem: FunctionComponent = () => {
               </div>
             )}
 
+            {status === "checking_guardians" && (
+              <div className="flex items-center gap-2 text-sm text-osmoverse-300">
+                <Spinner className="h-4 w-4" />
+                {t("transfer.wormholeRedeem.checkingGuardians")}
+              </div>
+            )}
+
+            {status === "guardian_set_expired" && (
+              <div className="rounded-lg border border-rust-600 bg-rust-600/10 p-3 text-sm text-rust-200">
+                {t("transfer.wormholeRedeem.guardianSetExpired", {
+                  index: String(operation.vaa.guardianSetIndex),
+                })}
+              </div>
+            )}
+
+            {status === "ready" && guardianCheckUnavailable && (
+              <div className="rounded-lg border border-ammelia-600 bg-ammelia-600/10 p-3 text-sm text-ammelia-200">
+                {t("transfer.wormholeRedeem.guardianCheckUnavailable")}
+              </div>
+            )}
+
             {status === "governor_delayed" && governorDelay && (
               <div className="space-y-3">
                 <div className="rounded-lg border border-rust-600 bg-rust-600/10 p-3 text-sm text-rust-200">
@@ -1720,6 +1839,7 @@ export const WormholeRedeem: FunctionComponent = () => {
             {status !== "already_redeemed" &&
               status !== "success" &&
               status !== "governor_delayed" &&
+              status !== "guardian_set_expired" &&
               operation.content.payload.toChain === CHAIN_ID.sui &&
               resolvedTxHash && (
                 <SuiRedeemPanel
@@ -1856,21 +1976,55 @@ export async function checkIfRedeemed(op: OperationData): Promise<boolean> {
       new PublicKey(TOKEN_BRIDGE_PROGRAM_ID)
     );
 
-    const res = await fetch(SOLANA_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "getAccountInfo",
-        params: [claimKey.toBase58(), { encoding: "base64" }],
-      }),
-    });
-
-    if (!res.ok) return false;
-    const json = await res.json();
-    return json.result?.value != null;
+    return await solanaAccountExists(claimKey.toBase58());
   } catch {
     return false;
   }
+}
+
+/**
+ * Whether the core bridge already holds this VAA's `PostedVAA` account.
+ * `null` means the lookup failed, so the caller can fail open.
+ */
+export async function checkIfVaaPosted(
+  op: OperationData
+): Promise<boolean | null> {
+  try {
+    const { PublicKey } = await import("@solana/web3.js");
+
+    // VAA header: version (1), guardian set index (4), signature count (1),
+    // then 66 bytes per signature before the body.
+    const vaaBytes = Buffer.from(op.vaa.raw, "base64");
+    const body = vaaBytes.subarray(6 + 66 * vaaBytes[5]);
+
+    const [postedVaaKey] = PublicKey.findProgramAddressSync(
+      [Buffer.from("PostedVAA"), keccak256(new Uint8Array(body), "bytes")],
+      new PublicKey(CORE_BRIDGE_PROGRAM_ID)
+    );
+
+    return await solanaAccountExists(postedVaaKey.toBase58());
+  } catch {
+    return null;
+  }
+}
+
+async function solanaAccountExists(address: string): Promise<boolean> {
+  const res = await fetchWithTimeout(SOLANA_RPC, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getAccountInfo",
+      params: [address, { encoding: "base64" }],
+    }),
+  });
+  if (!res.ok) throw new Error(`Solana RPC returned ${res.status}`);
+  const json = await res.json();
+  if (json.error) throw new Error(json.error.message);
+  // A missing account is `value: null`; no `value` at all is a bad response.
+  if (json.result?.value === undefined) {
+    throw new Error("Solana RPC returned no result");
+  }
+  return json.result.value !== null;
 }

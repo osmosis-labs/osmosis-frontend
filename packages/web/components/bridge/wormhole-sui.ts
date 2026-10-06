@@ -17,7 +17,7 @@
  *   5. token_bridge::coin_utils::return_nonzero<CoinType>
  *
  * Package IDs are resolved dynamically from each state object's
- * `upgrade_cap.fields.package`, so we don't have to redeploy this
+ * `upgrade_cap.package`, so we don't have to redeploy this
  * widget on Wormhole contract upgrades.
  *
  * Wallet integration speaks the Sui Wallet Standard protocol directly
@@ -30,6 +30,7 @@
 import type { WalletWithRequiredFeatures } from "@mysten/wallet-standard";
 import { getWallets } from "@mysten/wallet-standard";
 
+// Public fullnodes have retired JSON-RPC; this is only reached over gRPC-web.
 export const SUI_RPC = "https://fullnode.mainnet.sui.io:443";
 export const SUI_MAINNET_CHAIN = "sui:mainnet" as const;
 export const SUI_CLOCK_OBJECT_ID = "0x6";
@@ -139,59 +140,56 @@ export interface SuiPackageIds {
   tokenBridgePackageId: string;
 }
 
+/** `google.protobuf.Value` as protobuf-ts decodes it (Move object JSON). */
+export type ProtoValue = {
+  kind: {
+    oneofKind: string | undefined;
+    structValue?: { fields: Record<string, ProtoValue> };
+    stringValue?: string;
+  };
+};
+
+interface GetObjectResult {
+  response: { object?: { json?: ProtoValue } };
+}
+
 /**
- * Minimal structural type so the tests can stub the Sui client without
- * importing all of `@mysten/sui`. The real `SuiClient` satisfies this.
+ * Minimal structural slice of `SuiGrpcClient["ledgerService"]` so the tests
+ * can stub the Sui client without importing all of `@mysten/sui`.
  */
 export interface SuiClientLike {
   getObject(input: {
-    id: string;
-    options: { showContent: true };
-  }): Promise<unknown>;
-  waitForTransaction(input: {
-    digest: string;
-    timeout?: number;
-  }): Promise<unknown>;
+    objectId: string;
+    readMask: { paths: string[] };
+  }): PromiseLike<GetObjectResult>;
+  getTransaction(
+    input: {
+      digest: string;
+      readMask: { paths: string[] };
+    },
+    options?: { abort?: AbortSignal }
+  ): PromiseLike<unknown>;
 }
 
 /**
  * Read the current package IDs out of each Wormhole state object.
  * On Sui, package upgrades produce a new package ID; the state's
- * `upgrade_cap.fields.package` is the canonical pointer to the
+ * `upgrade_cap.package` is the canonical pointer to the
  * currently active version.
  */
 export async function getSuiPackageIds(
   client: Pick<SuiClientLike, "getObject">
 ): Promise<SuiPackageIds> {
-  const [coreState, tokenBridgeState] = await Promise.all([
-    client.getObject({
-      id: WORMHOLE_SUI_CORE_STATE,
-      options: { showContent: true },
-    }),
-    client.getObject({
-      id: WORMHOLE_SUI_TOKEN_BRIDGE_STATE,
-      options: { showContent: true },
-    }),
-  ]);
+  const [coreState, tokenBridgeState] = await Promise.all(
+    [WORMHOLE_SUI_CORE_STATE, WORMHOLE_SUI_TOKEN_BRIDGE_STATE].map((objectId) =>
+      client.getObject({ objectId, readMask: { paths: ["json"] } })
+    )
+  );
 
-  const extract = (response: unknown, label: string): string => {
-    const data = (response as { data?: { content?: unknown } } | undefined)
-      ?.data;
-    const content = data?.content as
-      | {
-          dataType?: string;
-          fields?: { upgrade_cap?: { fields?: { package?: string } } };
-        }
-      | undefined;
-    if (content?.dataType !== "moveObject") {
-      throw new SuiRedeemError(
-        "rpc_error",
-        `Could not read ${label} state object (got dataType=${
-          content?.dataType ?? "undefined"
-        })`
-      );
-    }
-    const pkg = content.fields?.upgrade_cap?.fields?.package;
+  const extract = ({ response }: GetObjectResult, label: string): string => {
+    const pkg =
+      response.object?.json?.kind.structValue?.fields.upgrade_cap?.kind
+        .structValue?.fields.package?.kind.stringValue;
     if (typeof pkg !== "string" || !pkg.startsWith("0x")) {
       throw new SuiRedeemError(
         "rpc_error",
@@ -534,8 +532,9 @@ export async function executeSuiRedeem({
   if (suiClient) {
     client = suiClient;
   } else {
-    const { SuiClient } = await import("@mysten/sui/client");
-    client = new SuiClient({ url: SUI_RPC }) as SuiClientLike;
+    const { SuiGrpcClient } = await import("@mysten/sui/grpc");
+    client = new SuiGrpcClient({ network: "mainnet", baseUrl: SUI_RPC })
+      .ledgerService;
   }
 
   const packageIds = await getSuiPackageIds(client);
@@ -593,11 +592,23 @@ export async function executeSuiRedeem({
     );
   }
 
-  try {
-    await client.waitForTransaction({ digest, timeout: 60_000 });
-  } catch {
-    // Confirmation failure isn't necessarily fatal — the digest is
-    // already on-chain at this point. Surface it but don't error.
+  // `core.waitForTransaction` in @mysten/sui 1.45 can't parse the fullnode's
+  // current GetTransaction response and spins until its timeout, so poll the
+  // ledger service directly. Confirmation failure isn't necessarily fatal —
+  // the digest is already on-chain at this point. Each attempt is aborted
+  // client-side: grpc-web only forwards `timeout` to the server as a header,
+  // so a stalled request would otherwise outlive the deadline.
+  const deadline = Date.now() + 60_000;
+  while (Date.now() < deadline) {
+    try {
+      await client.getTransaction(
+        { digest, readMask: { paths: ["digest"] } },
+        { abort: AbortSignal.timeout(Math.min(deadline - Date.now(), 10_000)) }
+      );
+      break;
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
   }
 
   return digest;

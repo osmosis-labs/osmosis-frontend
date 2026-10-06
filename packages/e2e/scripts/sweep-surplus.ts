@@ -21,7 +21,7 @@
  *
  * Environment variables:
  * - `E2E_PRIVATE_KEY_TOPUP`   — topup account key (destination address).
- * - `E2E_PRIVATE_KEY_PREVIEW`, `TEST_PRIVATE_KEY_SG/EU/US` — source signers.
+ * - `E2E_PRIVATE_KEY_PREVIEW` — source signer.
  * - `SWEEP_MULTIPLIER`        — sweep when balance > warnAmount × this
  *                               (default 4, floored at 3.5 to stay above the
  *                               topup target of 3).
@@ -48,7 +48,11 @@ import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
  */
 const LEGACY_SWEEP_SYMBOLS = ["USDC.noble"];
 import { TOKEN_DENOMS } from "../utils/balance-checker";
-import { deriveAddress, createSigningClient, OSMOSIS_RPC } from "../utils/order-utils";
+import {
+  deriveAddress,
+  createSigningClient,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 import {
   type TokenBalance,
   fetchAllKnownBalances,
@@ -62,8 +66,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 
 /** Matches the auto-topup refill target (topup_multiplier 3.0, now dispatched
- * uniformly by every auto-dispatcher: monitoring-limit-geo, frontend-e2e and
- * prod-frontend-e2e). */
+ * by the preview frontend e2e workflow). */
 const TOPUP_TARGET_MULTIPLIER = 3.0;
 /** Derived from the topup target so the floor stays above it even if the
  * target changes — sweeping below it would trigger auto-topup ping-pong. */
@@ -71,9 +74,6 @@ const MIN_SWEEP_MULTIPLIER = TOPUP_TARGET_MULTIPLIER + 0.5;
 
 const SOURCE_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
-  { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
 ] as const;
 
 interface SweepResult {

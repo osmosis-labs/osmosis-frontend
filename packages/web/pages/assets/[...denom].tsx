@@ -1,8 +1,6 @@
 import {
   getActiveCoingeckoCoins,
   getAssetMarketActivity,
-  RichTweet,
-  Twitter,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -32,7 +30,6 @@ import {
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetOrderHistory } from "~/components/pages/asset-info-page/orders";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
-import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import {
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -77,7 +74,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
 );
 
 const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
-  ({ tweets }) => {
+  () => {
     const { t } = useTranslation();
     const router = useRouter();
     const [previousTrade, setPreviousTrade] =
@@ -252,7 +249,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   contractAddress={asset.contract}
                 />
               ) : null}
-              <TwitterSection tweets={tweets} />
             </div>
 
             <div className="flex flex-col gap-11 sm:gap-10">
@@ -331,7 +327,6 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
 };
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
-  let tweets: RichTweet[] = [];
   const denom = params?.denom as string[];
   const tokenDenom = denom.join("/");
   const trpcHelpers = createTrpcHelpers();
@@ -341,38 +336,15 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
      * Lookup for the current token
      */
 
-    const asset = await trpcHelpers.edge.assets.getUserAsset.fetch({
+    await trpcHelpers.edge.assets.getUserAsset.fetch({
       findMinDenomOrSymbol: tokenDenom,
     });
-
-    if (tokenDenom) {
-      try {
-        const tokenDetails = await trpcHelpers.local.cms.getTokenInfos.fetch({
-          coinMinimalDenom: asset.coinMinimalDenom,
-        });
-
-        if (tokenDetails) {
-          if (tokenDetails.twitterURL) {
-            const userId = tokenDetails.twitterURL.split("/").pop();
-
-            if (userId) {
-              const twitter = new Twitter();
-
-              tweets = await twitter.getUserTweets(userId);
-            }
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
   } catch (e) {
     console.error(e);
   }
 
   return {
     props: {
-      tweets,
       trpcState: trpcHelpers.dehydrate(),
     },
     // Next.js will attempt to re-generate the page:

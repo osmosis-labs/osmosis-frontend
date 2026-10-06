@@ -7,7 +7,7 @@
  * Safe to run at any time without any risk of modifying on-chain state.
  *
  * @requires PRIVATE_KEY - Hex-encoded secp256k1 private key (with or without 0x prefix).
- * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "Monitoring EU").
+ * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "E2E Test Account").
  *
  * Usage (from packages/e2e/):
  *   npx tsx scripts/get-active-orders.ts
@@ -21,7 +21,11 @@
 
 import * as dotenv from "dotenv";
 import * as path from "path";
-import { SQS_BASE_URL, deriveAddress, fetchActiveOrders } from "../utils/order-utils";
+import {
+  SQS_BASE_URL,
+  deriveAddress,
+  fetchActiveOrders,
+} from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -54,7 +58,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`${orders.length} active order${orders.length === 1 ? "" : "s"} found:\n`);
+  console.log(
+    `${orders.length} active order${orders.length === 1 ? "" : "s"} found:\n`
+  );
 
   orders.forEach((order, i) => {
     const pairLabel =

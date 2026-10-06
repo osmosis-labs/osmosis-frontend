@@ -8,6 +8,7 @@ import { getAddress } from "viem";
 import { Screen, useScreenManager } from "~/components/screen-manager";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -68,12 +69,14 @@ export const AmountAndReviewScreen = observer(
         ? accountStore.getWallet(toChain.chainId)
         : undefined;
 
-    // Note on below: they are only used when chains are EVM or Cosmos
-    // Going to need to add support or Bitcoin or Solana wallets
+    const { address: phantomAddress } = usePhantomWallet();
+
     const fromAddress =
       fromChain?.chainType === "evm"
         ? evmAddress
-        : fromChainCosmosAccount?.address;
+        : fromChain?.chainType === "solana"
+          ? phantomAddress
+          : fromChainCosmosAccount?.address;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
@@ -83,7 +86,9 @@ export const AmountAndReviewScreen = observer(
     const fromWalletIcon =
       fromChain?.chainType === "evm"
         ? evmConnector?.icon
-        : fromChainCosmosAccount?.walletInfo.logo;
+        : fromChain?.chainType === "solana"
+          ? undefined
+          : fromChainCosmosAccount?.walletInfo.logo;
     const toWalletIcon =
       toChain?.chainType === "evm"
         ? evmConnector?.icon

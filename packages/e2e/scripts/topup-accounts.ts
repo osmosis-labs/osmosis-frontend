@@ -12,9 +12,6 @@
  *
  * @requires E2E_PRIVATE_KEY_TOPUP   - Hex key of the topup account (sender).
  * @requires E2E_PRIVATE_KEY_PREVIEW - Hex key of the new E2E Test Account.
- * @requires TEST_PRIVATE_KEY_SG     - Hex key of new Monitoring SG.
- * @requires TEST_PRIVATE_KEY_EU     - Hex key of new Monitoring EU.
- * @requires TEST_PRIVATE_KEY_US     - Hex key of new Monitoring US.
  * @requires DRY_RUN                 - (optional) Defaults to "true". Set to "false" to send.
  * @requires TOPUP_MULTIPLIER        - (optional) Target = warnAmount × this. Default: 1.5.
  * @requires RESERVE_OSMO            - (optional) OSMO to keep in topup account. Default: 5.
@@ -125,16 +122,16 @@ async function sendSlackSummary(
   const allSymbols = [
     ...remaining.map((b) => b.symbol),
     ...gaps
-      .filter((g) => g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol))
+      .filter(
+        (g) => g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)
+      )
       .map((g) => g.symbol),
   ];
   const maxSym = Math.max(...allSymbols.map((s) => s.length), 6);
 
   lines.push("*Remaining topup account balances:*");
   lines.push("```");
-  lines.push(
-    `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`
-  );
+  lines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`);
   lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
 
   let anyGap = false;
@@ -217,9 +214,6 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const TARGET_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
-  { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
 ] as const;
 
 async function main(): Promise<void> {
@@ -291,10 +285,14 @@ async function main(): Promise<void> {
     });
 
     console.log(`  ${acct.label}: ${address}`);
-    printBalanceTable("  Current balances (target = warnAmount x " + multiplier + ")", currentBalances);
+    printBalanceTable(
+      "  Current balances (target = warnAmount x " + multiplier + ")",
+      currentBalances
+    );
 
     for (const req of resolvedReqs) {
-      const current = currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
+      const current =
+        currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
       const warn = req.warnAmount;
       const target = req.warnAmount * multiplier;
       const deficit = target - current;
@@ -324,7 +322,12 @@ async function main(): Promise<void> {
   }
 
   // Calculate topup amounts
-  const distribution = calculateTopup(topupBalances, targets, reserves, multiplier);
+  const distribution = calculateTopup(
+    topupBalances,
+    targets,
+    reserves,
+    multiplier
+  );
   printDistributionPlan(distribution);
 
   const hasAnythingToSend = distribution.some((d) => d.coins.length > 0);
@@ -334,9 +337,7 @@ async function main(): Promise<void> {
   }
 
   if (isDryRun) {
-    console.log(
-      "\n  Dry run complete. Set DRY_RUN=false to broadcast."
-    );
+    console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
 

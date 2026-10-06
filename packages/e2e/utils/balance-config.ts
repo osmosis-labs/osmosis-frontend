@@ -44,116 +44,50 @@ export interface AccountBalanceRequirement {
  *
  * Labels match the values used in the cancel-open-orders and CI workflows.
  */
-export const ACCOUNT_REQUIREMENTS: Record<
-  string,
-  AccountBalanceRequirement[]
-> = {
-  "E2E Test Account": [
-    // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
-    // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
-    // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
-    // swap.usdc.wallet.spec.ts: 0.5 USDC, 0.015 ATOM, 0.02 TIA, 0.01 INJ, 0.025 AKT
-    // swap.osmo.wallet.spec.ts: 0.2 OSMO, 0.01 ATOM
-    { token: "USDC", minAmount: 1.7, warnAmount: 3.5, note: "~1.62 consumed (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it." },
-    { token: "ATOM", minAmount: 2.27, warnAmount: 4.5, note: "~2.16 consumed (trade sell + limit + swaps)" },
-    { token: "OSMO", minAmount: 1.3, warnAmount: 2.5, unit: "usd", note: "USD-denominated (MTN-157): the limit sell is fiat-mode (~$1.01), so required OSMO scales inversely with price. Fixed token thresholds went stale as OSMO fell and created a topup dead-zone (3.4 OSMO cleared the old 2.5-token gate yet starved the sells). min covers the fiat sell (~$1.01) PLUS the swap.osmo 0.2 OSMO swap (token-denominated), with deliberate price headroom: at $1.3 the USD floor still funds the fixed 0.2 OSMO swap until OSMO reaches ~$1.45 (1.01 + 0.2*1.45 = 1.30), well above the current ~$0.04; warn≈2x. NB: the 0.2 OSMO swap is a fixed token need, so this USD floor under-provisions only once OSMO climbs past ~$1.45; revisit then. NB: the check-balances auto-topup dispatches --ref stage, so the scaled target only applies once this is merged to stage." },
-    { token: "TIA", minAmount: 0.022, warnAmount: 0.05, note: "~0.02 consumed (swap TIA)" },
-    { token: "INJ", minAmount: 0.011, warnAmount: 0.025, note: "~0.01 consumed (swap INJ)" },
-    { token: "AKT", minAmount: 0.027, warnAmount: 0.06, note: "~0.025 consumed (swap AKT)" },
-  ],
-
-  "Monitoring SG": [
-    // Only monitoring.swap runs in SG (see monitoring-limit-geo workflow);
-    // OSMO/BTC entries cover gas + manual market-spec runs.
-    {
-      token: "USDC",
-      minAmount: 1.2,
-      warnAmount: 2.3,
-      note: "swap stables (~1.10 forward legs/tick)",
-    },
-    {
-      token: "OSMO",
-      minAmount: 1.2,
-      warnAmount: 2.4,
-      unit: "usd",
-      note: "gas + market sell OSMO (manual runs)",
-    },
-    {
-      token: "BTC",
-      minAmount: 0.6,
-      warnAmount: 1.5,
-      unit: "usd",
-      note: "market sell BTC (fiat-mode ~$0.54, manual runs)",
-    },
-    {
-      token: "USDC.eth.axl",
-      minAmount: 1,
-      warnAmount: 2,
-      note: "swap stables",
-    },
-    { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
-  ],
-
-  "Monitoring EU": [
-    // Only monitoring.swap runs in EU (see monitoring-limit-geo workflow);
-    // OSMO/BTC entries cover gas + manual market/limit-spec runs.
-    {
-      token: "USDC",
-      minAmount: 1.2,
-      warnAmount: 2.3,
-      note: "swap stables (~1.10 forward legs/tick)",
-    },
-    {
-      token: "OSMO",
-      minAmount: 1.2,
-      warnAmount: 2.4,
-      unit: "usd",
-      note: "gas + market/limit sell OSMO (manual runs)",
-    },
-    {
-      token: "BTC",
-      minAmount: 0.6,
-      warnAmount: 1.5,
-      unit: "usd",
-      note: "market sell BTC (fiat-mode ~$0.54, manual runs)",
-    },
-    {
-      token: "USDC.eth.axl",
-      minAmount: 1,
-      warnAmount: 2,
-      note: "swap stables",
-    },
-    { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
-  ],
-
-  "Monitoring US": [
-    // monitoring.swap + monitoring.market + monitoring.limit
-    {
-      token: "USDC",
-      minAmount: 3.5,
-      warnAmount: 6.6,
-      note: "market buys ($0.55 x2) + limit buy ($1.10) + swap stables (1.10) ≈ 3.30/tick",
-    },
-    {
-      token: "OSMO",
-      minAmount: 1.8,
-      warnAmount: 3.6,
-      unit: "usd",
-      note: "market sell ($0.54) + limit sell ($1.10) OSMO + gas",
-    },
-    {
-      token: "BTC",
-      minAmount: 0.6,
-      warnAmount: 1.5,
-      unit: "usd",
-      note: "market sell BTC (fiat-mode ~$0.54)",
-    },
-    {
-      token: "USDC.eth.axl",
-      minAmount: 1,
-      warnAmount: 2,
-      note: "swap stables",
-    },
-    { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
-  ],
-};
+export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
+  {
+    "E2E Test Account": [
+      // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
+      // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
+      // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
+      // swap.usdc.wallet.spec.ts: 0.5 USDC, 0.015 ATOM, 0.02 TIA, 0.01 INJ, 0.025 AKT
+      // swap.osmo.wallet.spec.ts: 0.2 OSMO, 0.01 ATOM
+      {
+        token: "USDC",
+        minAmount: 1.7,
+        warnAmount: 3.5,
+        note: "~1.62 consumed (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it.",
+      },
+      {
+        token: "ATOM",
+        minAmount: 2.27,
+        warnAmount: 4.5,
+        note: "~2.16 consumed (trade sell + limit + swaps)",
+      },
+      {
+        token: "OSMO",
+        minAmount: 1.3,
+        warnAmount: 2.5,
+        unit: "usd",
+        note: "USD-denominated (MTN-157): the limit sell is fiat-mode (~$1.01), so required OSMO scales inversely with price. Fixed token thresholds went stale as OSMO fell and created a topup dead-zone (3.4 OSMO cleared the old 2.5-token gate yet starved the sells). min covers the fiat sell (~$1.01) PLUS the swap.osmo 0.2 OSMO swap (token-denominated), with deliberate price headroom: at $1.3 the USD floor still funds the fixed 0.2 OSMO swap until OSMO reaches ~$1.45 (1.01 + 0.2*1.45 = 1.30), well above the current ~$0.04; warn≈2x. NB: the 0.2 OSMO swap is a fixed token need, so this USD floor under-provisions only once OSMO climbs past ~$1.45; revisit then. NB: the check-balances auto-topup dispatches --ref stage, so the scaled target only applies once this is merged to stage.",
+      },
+      {
+        token: "TIA",
+        minAmount: 0.022,
+        warnAmount: 0.05,
+        note: "~0.02 consumed (swap TIA)",
+      },
+      {
+        token: "INJ",
+        minAmount: 0.011,
+        warnAmount: 0.025,
+        note: "~0.01 consumed (swap INJ)",
+      },
+      {
+        token: "AKT",
+        minAmount: 0.027,
+        warnAmount: 0.06,
+        note: "~0.025 consumed (swap AKT)",
+      },
+    ],
+  };

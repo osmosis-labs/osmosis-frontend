@@ -1,7 +1,7 @@
 /**
  * @file report-fleet-balances.ts
  * @description Posts a periodic Slack report of total assets across all E2E
- * accounts (the four test accounts plus the topup holding account), valued in
+ * accounts (the preview test account plus the topup holding account), valued in
  * USD at current SQS prices.
  *
  * Read-only: derives addresses from the key secrets and queries balances —
@@ -17,8 +17,8 @@
  * only, unless `save_state` is requested).
  *
  * Environment variables:
- * - `E2E_PRIVATE_KEY_TOPUP`, `E2E_PRIVATE_KEY_PREVIEW`,
- *   `TEST_PRIVATE_KEY_SG/EU/US` — keys (address derivation only).
+ * - `E2E_PRIVATE_KEY_TOPUP`, `E2E_PRIVATE_KEY_PREVIEW` — keys (address
+ *   derivation only).
  * - `MODE`                — "full" (per-token tables) or "compact" (one line
  *                           per account). Default "full".
  * - `REPORT_LABEL`        — Slack header label ("monthly" / "weekly" /
@@ -45,9 +45,6 @@ import {
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const ACCOUNTS = [
-  { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
   { envVar: "E2E_PRIVATE_KEY_TOPUP", label: "Topup / holding" },
 ] as const;
@@ -79,7 +76,8 @@ interface FleetState {
 const fmtUsd = (n: number): string =>
   `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const fmtDelta = (n: number): string => `${n >= 0 ? "+" : "−"}${fmtUsd(Math.abs(n))}`;
+const fmtDelta = (n: number): string =>
+  `${n >= 0 ? "+" : "−"}${fmtUsd(Math.abs(n))}`;
 
 async function buildAccountReport(
   label: string,
@@ -186,7 +184,7 @@ async function postSlack(
     console.log("  SLACK_WEBHOOK_URL not set — skipping Slack post.");
     return;
   }
-  // Slack caps section text at 3000 chars, so the full report (5 accounts x
+  // Slack caps section text at 3000 chars, so the full report (2 accounts x
   // token tables) must be split into one section block per account rather
   // than a single body. Truncate defensively in case a single section ever
   // outgrows the cap.
@@ -215,7 +213,9 @@ async function postSlack(
     signal: AbortSignal.timeout(15_000),
   });
   if (!resp.ok) {
-    throw new Error(`Slack webhook responded ${resp.status}: ${await resp.text()}`);
+    throw new Error(
+      `Slack webhook responded ${resp.status}: ${await resp.text()}`
+    );
   }
   console.log("  Slack report sent.");
 }
@@ -228,7 +228,11 @@ async function main(): Promise<void> {
 
   // Resolve all accounts and fetch balances first, then price every denom in
   // one SQS call.
-  const resolved: { label: string; address: string; balances: TokenBalance[] }[] = [];
+  const resolved: {
+    label: string;
+    address: string;
+    balances: TokenBalance[];
+  }[] = [];
   for (const acct of ACCOUNTS) {
     const key = process.env[acct.envVar];
     if (!key) {
@@ -256,7 +260,9 @@ async function main(): Promise<void> {
 
   const reports: AccountReport[] = [];
   for (const r of resolved) {
-    reports.push(await buildAccountReport(r.label, r.address, prices, r.balances));
+    reports.push(
+      await buildAccountReport(r.label, r.address, prices, r.balances)
+    );
   }
 
   const grandTotalUsd = reports.reduce((s, r) => s + r.totalUsd, 0);
@@ -278,12 +284,18 @@ async function main(): Promise<void> {
     const acctLines: string[] = [];
     const base = baselineByLabel.get(r.label);
     const delta = base ? `  (Δ ${fmtDelta(r.totalUsd - base.totalUsd)})` : "";
-    acctLines.push(`*${r.label}*: ${fmtUsd(r.totalUsd)}${delta} — \`${r.address}\``);
+    acctLines.push(
+      `*${r.label}*: ${fmtUsd(r.totalUsd)}${delta} — \`${r.address}\``
+    );
     if (mode === "full" && r.rows.length > 0) {
       const maxSym = Math.max(...r.rows.map((t) => t.symbol.length), 6);
       acctLines.push("```");
-      acctLines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  ${"USD".padStart(12)}`);
-      acctLines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(12)}`);
+      acctLines.push(
+        `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  ${"USD".padStart(12)}`
+      );
+      acctLines.push(
+        `${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(12)}`
+      );
       for (const t of r.rows) {
         const d = t.amount >= 1000 ? 2 : 4;
         acctLines.push(
@@ -307,7 +319,9 @@ async function main(): Promise<void> {
   const repo = process.env.GITHUB_REPOSITORY;
   const runId = process.env.GITHUB_RUN_ID;
   if (serverUrl && repo && runId) {
-    tailLines.push(`*Details:* <${serverUrl}/${repo}/actions/runs/${runId}|View run logs>`);
+    tailLines.push(
+      `*Details:* <${serverUrl}/${repo}/actions/runs/${runId}|View run logs>`
+    );
   }
   sections.push(tailLines.join("\n"));
 

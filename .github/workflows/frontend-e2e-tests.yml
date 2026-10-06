@@ -222,15 +222,9 @@ jobs:
                 }
               ]
             }
-      # Auto-dispatch a topup when the preview account is low (restored in
-      # MTN-110). Phase A (MTN-97) removed this and delegated funding to the
-      # hourly monitoring-limit-geo topup-dispatch job, but that job only gates
-      # on the US/EU/SG preflight balances — it never checks the preview
-      # account. The preview workflow runs on every dev push and burns OSMO
-      # fastest, so when US/EU/SG stay healthy the preview account drains to
-      # critical and is never refilled. The shared cooldown guard below (same as
-      # prod-frontend-e2e / monitoring-limit-geo, keyed off the "E2E: Topup Test
-      # Accounts" recent runs) means this does NOT reintroduce per-push bursts.
+      # Auto-dispatch a topup when the preview account is low. The cooldown
+      # guard below is keyed off recent "E2E: Topup Test Accounts" runs so
+      # repeated preview pushes do not each broadcast a topup.
       - name: Trigger automatic topup
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -527,7 +521,12 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [resolve-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
+      [
+        resolve-deployment,
+        preview-swap-osmo-tests,
+        preview-swap-usdc-tests,
+        check-balances,
+      ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
