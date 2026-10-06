@@ -250,9 +250,10 @@ export const Staking: React.FC = observer(() => {
     userValidatorPreferences,
   ]);
 
-  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
-    .truncate()
-    .toString()}% ${t("stake.alertTitleEnd")}`;
+  // one decimal place, truncated so the banner never overstates the APR
+  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR.toString(
+    1
+  )}% ${t("stake.alertTitleEnd")}`;
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
