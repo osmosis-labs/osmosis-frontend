@@ -58,6 +58,7 @@ export interface SquidRouteResponse {
       gasCosts: SquidCost[];
     };
     transactionRequest?: SquidTransactionRequest;
+    quoteId?: string;
   };
 }
 
