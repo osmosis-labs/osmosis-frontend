@@ -61,12 +61,15 @@ export const BridgeProviderDropdown = ({
 
     const minFee = quotesWithFiatValues
       .map((q) => q.data.totalFeeFiatValue!.toDec())
-      .reduce((acc, fee) => {
-        if (acc === null || fee.lt(acc)) {
-          return fee;
-        }
-        return acc;
-      }, null as Dec | null);
+      .reduce(
+        (acc, fee) => {
+          if (acc === null || fee.lt(acc)) {
+            return fee;
+          }
+          return acc;
+        },
+        null as Dec | null
+      );
 
     const uniqueCheapestQuotes = quotesWithFiatValues.filter((q) => {
       const feeDec = q.data.totalFeeFiatValue!.toDec();

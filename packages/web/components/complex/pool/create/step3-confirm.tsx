@@ -25,12 +25,12 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         currency: asset.amountConfig.sendCurrency,
         percentage:
           config.poolType === "weighted"
-            ? asset.percentage ?? "1"
+            ? (asset.percentage ?? "1")
             : asset.scalingFactor
-            ? new Dec(asset.scalingFactor)
-                .quo(new Dec(config.assets.length))
-                .toString()
-            : "1",
+              ? new Dec(asset.scalingFactor)
+                  .quo(new Dec(config.assets.length))
+                  .toString()
+              : "1",
         amount: asset.amountConfig.amount,
       }))
     );
@@ -108,7 +108,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                       <span className="body1 md:caption text-osmoverse-500 md:text-sm">
                         {config.poolType === "weighted"
                           ? `${percentage}%`
-                          : scalingFactor ?? "1"}
+                          : (scalingFactor ?? "1")}
                       </span>
                     </div>
                   </div>

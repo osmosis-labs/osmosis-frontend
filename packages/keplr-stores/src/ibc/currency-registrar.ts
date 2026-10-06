@@ -58,8 +58,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     },
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
     protected readonly cosmwasmQueriesStore:
-      | IQueriesStore<CosmwasmQueries>
-      | undefined,
+      IQueriesStore<CosmwasmQueries> | undefined,
     protected readonly coinDenomGenerator: (
       denomTrace: {
         denom: string;

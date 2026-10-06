@@ -120,7 +120,7 @@ export const MyPoolsCardsGrid = observer(() => {
                   {
                     label: t("pools.APR"),
                     value: isMobile ? (
-                      apr.upper?.maxDecimals(0).toString() ?? ""
+                      (apr.upper?.maxDecimals(0).toString() ?? "")
                     ) : (
                       <h6>{apr.upper?.maxDecimals(2).toString()}</h6>
                     ),

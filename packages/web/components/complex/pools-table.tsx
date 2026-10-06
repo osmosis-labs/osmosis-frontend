@@ -159,17 +159,20 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       // These are all of the pools that we support fetching.
       // When transmuter is selected, include both transmuter and alloyed pools
       types: [
-        ...filters.poolTypesFilter.reduce((acc, type) => {
-          if (type === "cosmwasm-transmuter") {
-            acc.push(
-              "cosmwasm-transmuter" as const,
-              "cosmwasm-alloyed" as const
-            );
-          } else {
-            acc.push(type);
-          }
-          return acc;
-        }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
+        ...filters.poolTypesFilter.reduce(
+          (acc, type) => {
+            if (type === "cosmwasm-transmuter") {
+              acc.push(
+                "cosmwasm-transmuter" as const,
+                "cosmwasm-alloyed" as const
+              );
+            } else {
+              acc.push(type);
+            }
+            return acc;
+          },
+          [] as (PoolTypeFilter | "cosmwasm-alloyed")[]
+        ),
         "cosmwasm",
       ],
       incentiveTypes: filters.poolIncentivesFilter ?? incentiveTypes,
@@ -423,10 +426,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           <p className=" text-body1 font-body1 text-osmoverse-300">
             {isError
               ? t("errors.fallbackText1")
-              : emptyResultsText ??
+              : (emptyResultsText ??
                 t("search.noResultsFor", {
                   query: filters.searchQuery ?? "",
-                })}
+                }))}
           </p>
         </div>
       ) : (

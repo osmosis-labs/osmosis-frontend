@@ -18,10 +18,10 @@ export type PhantomProvider = {
 export const getPhantomProvider = (): PhantomProvider | undefined =>
   typeof window === "undefined"
     ? undefined
-    : (window as unknown as { phantom?: { solana?: PhantomProvider } }).phantom
+    : ((window as unknown as { phantom?: { solana?: PhantomProvider } }).phantom
         ?.solana ??
       (window as unknown as { solana?: PhantomProvider }).solana ??
-      undefined;
+      undefined);
 
 // Module-level connection state so every consumer (amount screen, wallet
 // select modal, quote flow) observes the same Phantom session.

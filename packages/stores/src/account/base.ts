@@ -257,7 +257,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           network_type: chain.networkType,
           pretty_name: chain.prettyName,
           bech32_prefix: chain.bech32Prefix,
-        } as CosmologyChain)
+        }) as CosmologyChain
     );
   }
 
@@ -392,7 +392,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           continue;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
@@ -1033,9 +1032,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
-      import(
-        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-      ),
+      import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
       import("@cosmjs/proto-signing"),
@@ -1686,9 +1683,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
-    const { TxExtension } = await import(
-      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-    );
+    const { TxExtension } =
+      await import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx");
     return [
       {
         typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",

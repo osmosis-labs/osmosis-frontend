@@ -122,16 +122,16 @@ async function sendSlackSummary(
   const allSymbols = [
     ...remaining.map((b) => b.symbol),
     ...gaps
-      .filter((g) => g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol))
+      .filter(
+        (g) => g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)
+      )
       .map((g) => g.symbol),
   ];
   const maxSym = Math.max(...allSymbols.map((s) => s.length), 6);
 
   lines.push("*Remaining topup account balances:*");
   lines.push("```");
-  lines.push(
-    `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`
-  );
+  lines.push(`${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`);
   lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
 
   let anyGap = false;
@@ -285,10 +285,14 @@ async function main(): Promise<void> {
     });
 
     console.log(`  ${acct.label}: ${address}`);
-    printBalanceTable("  Current balances (target = warnAmount x " + multiplier + ")", currentBalances);
+    printBalanceTable(
+      "  Current balances (target = warnAmount x " + multiplier + ")",
+      currentBalances
+    );
 
     for (const req of resolvedReqs) {
-      const current = currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
+      const current =
+        currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
       const warn = req.warnAmount;
       const target = req.warnAmount * multiplier;
       const deficit = target - current;
@@ -318,7 +322,12 @@ async function main(): Promise<void> {
   }
 
   // Calculate topup amounts
-  const distribution = calculateTopup(topupBalances, targets, reserves, multiplier);
+  const distribution = calculateTopup(
+    topupBalances,
+    targets,
+    reserves,
+    multiplier
+  );
   printDistributionPlan(distribution);
 
   const hasAnythingToSend = distribution.some((d) => d.coins.length > 0);
@@ -328,9 +337,7 @@ async function main(): Promise<void> {
   }
 
   if (isDryRun) {
-    console.log(
-      "\n  Dry run complete. Set DRY_RUN=false to broadcast."
-    );
+    console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
 

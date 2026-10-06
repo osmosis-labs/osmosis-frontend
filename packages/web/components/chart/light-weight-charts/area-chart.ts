@@ -14,7 +14,7 @@ import { ChartController, ChartControllerParams } from "./chart-controller";
 
 export class AreaChartController<
   T = TimeChartOptions,
-  K = Time
+  K = Time,
 > extends ChartController<T, K> {
   series: ISeriesApi<
     "Area",
