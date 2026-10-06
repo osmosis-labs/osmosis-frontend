@@ -111,14 +111,6 @@ export type PoolRawResponse =
   | ConcentratedPoolRawResponse
   | CosmwasmPoolRawResponse;
 
-export type PoolsResponse = {
-  pools: PoolRawResponse[];
-};
-
-export const queryPoolsChain = createNodeQuery<PoolsResponse>({
-  path: "/osmosis/poolmanager/v1beta1/all-pools",
-});
-
 export type PoolResponse = {
   pool: PoolRawResponse;
 };
