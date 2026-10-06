@@ -133,7 +133,7 @@ describe("simulateCosmosTxBody", () => {
         body: { messages: encodedMessages },
         bech32Address,
       })
-    ).rejects.toThrow("Invalid sequence number: NaN");
+    ).rejects.toThrow("Invalid sequence number: invalid");
   });
 
   it("should throw SimulateNotAvailableError if chain does not support tx simulation", async () => {

@@ -32,7 +32,7 @@
     "@osmosis-labs/utils": "^1.0.0",
     "buffer": "^6.0.3",
     "cachified": "^3.5.4",
-    "cosmjs-types": "^0.5.2",
+    "cosmjs-types": "^0.10.1",
     "lru-cache": "^10.0.1"
   },
   "devDependencies": {

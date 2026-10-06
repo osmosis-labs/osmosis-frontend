@@ -8295,7 +8295,7 @@ __metadata:
     "@types/ws": "npm:^7.4.1"
     axios: "npm:^0.33.0"
     buffer: "npm:^6.0.3"
-    cosmjs-types: "npm:^0.5.2"
+    cosmjs-types: "npm:^0.10.1"
     dayjs: "npm:^1.11.23"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
@@ -8342,7 +8342,7 @@ __metadata:
     "@osmosis-labs/utils": "npm:^1.0.0"
     buffer: "npm:^6.0.3"
     cachified: "npm:^3.5.4"
-    cosmjs-types: "npm:^0.5.2"
+    cosmjs-types: "npm:^0.10.1"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
     lru-cache: "npm:^10.0.1"
@@ -15985,16 +15985,6 @@ __metadata:
   version: 0.10.1
   resolution: "cosmjs-types@npm:0.10.1"
   checksum: 10c0/f114cd1a0636034d93b97f61b049c5dc4929c81ff63855c6e56b0335be2b2d35475eee862ea5bd504288b33d3a918952dab11d4b6bed6bc2829f401cb5e6c797
-  languageName: node
-  linkType: hard
-
-"cosmjs-types@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "cosmjs-types@npm:0.5.2"
-  dependencies:
-    long: "npm:^4.0.0"
-    protobufjs: "npm:~6.11.2"
-  checksum: 10c0/88bc5fd23339abeaf08a7d63cb34eb96e04a36776c7dba585ae03ceb364b436526dadafc709ba0494cb7d53d9a8b9cd4233c4d6b45cce323042366d4f8781812
   languageName: node
   linkType: hard
 
