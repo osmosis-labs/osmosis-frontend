@@ -1,3 +1,4 @@
+import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 export const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
@@ -9,7 +10,9 @@ export type PhantomProvider = {
     onlyIfTrusted?: boolean;
   }) => Promise<{ publicKey?: { toBase58: () => string } }>;
   disconnect?: () => Promise<void>;
-  signTransaction?: (tx: unknown) => Promise<unknown>;
+  signTransaction?: <Tx extends Transaction | VersionedTransaction>(
+    tx: Tx
+  ) => Promise<Tx>;
   signAndSendTransaction?: (tx: unknown) => Promise<{ signature: string }>;
   on?: (event: string, handler: (arg: unknown) => void) => void;
   off?: (event: string, handler: (arg: unknown) => void) => void;

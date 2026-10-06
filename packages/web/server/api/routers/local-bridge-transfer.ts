@@ -4,6 +4,7 @@ import {
   BridgeSupportedAsset,
   bridgeSupportedAssetSchema,
 } from "@osmosis-labs/bridge/build/interface";
+import { SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID } from "@osmosis-labs/bridge/build/utils/solana";
 import {
   calcAssetValue,
   captureErrorAndReturn,
@@ -393,9 +394,6 @@ export const localBridgeTransferRouter = createTRPCRouter({
     }),
 });
 
-/** The associated token account program. */
-const SOLANA_ATA_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
-
 /**
  * SPL token balance (minimal units) of `mint` in `owner`'s associated token
  * account. Only that account counts: Skip's burn spends from it, so a Max
@@ -429,7 +427,7 @@ async function getSolanaTokenBalance({
   const { PublicKey } = await import("@solana/web3.js");
   const ownerKey = new PublicKey(owner);
   const mintKey = new PublicKey(mint);
-  const ataProgram = new PublicKey(SOLANA_ATA_PROGRAM_ID);
+  const ataProgram = new PublicKey(SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID);
   const associatedAddress = (tokenProgram: string) =>
     PublicKey.findProgramAddressSync(
       [

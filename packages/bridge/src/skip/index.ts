@@ -51,7 +51,7 @@ import {
   SolanaBridgeTransactionRequest,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
-import { getSolanaTxFeeLamports } from "../utils/solana";
+import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
 import { SkipApiClient } from "./client";
 import {
   SkipEstimatedFee,
@@ -259,7 +259,6 @@ export function raiseMinAssetToDestinationInput(
 /** Native SOL, as the fee asset of Solana-signed steps. Solana has no
  *  native-mint address in the SPL sense; this is the conventional
  *  wrapped-SOL mint, used only as a stable identifier for pricing. */
-const SOLANA_NATIVE_DENOM = "So11111111111111111111111111111111111111112";
 
 export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";

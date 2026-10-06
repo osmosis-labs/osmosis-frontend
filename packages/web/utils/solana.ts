@@ -1,3 +1,8 @@
+import {
+  SOLANA_PUBLIC_RPC_URL,
+  SPL_TOKEN_2022_PROGRAM_ID,
+  SPL_TOKEN_PROGRAM_ID,
+} from "@osmosis-labs/bridge/build/utils/solana";
 import { apiClient } from "@osmosis-labs/utils";
 
 /** This app's Solana RPC route (pages/api/solana-rpc), which forwards to the
@@ -22,7 +27,7 @@ export function getSolanaRpcProxyUrl(): string {
  * depend on.
  */
 export function getClientSolanaRpcUrls(): string[] {
-  return [getSolanaRpcProxyUrl(), "https://api.mainnet-beta.solana.com"];
+  return [getSolanaRpcProxyUrl(), SOLANA_PUBLIC_RPC_URL];
 }
 
 /** Calls a Solana JSON-RPC method, trying each endpoint in order. Throws the
@@ -120,8 +125,8 @@ export async function checkSolanaSignatureOutcome({
 /** The SPL Token and Token-2022 programs, which own every token account
  *  and mint. */
 const SPL_TOKEN_PROGRAM_IDS = new Set([
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+  SPL_TOKEN_PROGRAM_ID,
+  SPL_TOKEN_2022_PROGRAM_ID,
 ]);
 
 /**

@@ -10,6 +10,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
 import { type MultiLanguageT, t, useTranslation } from "~/hooks/language";
+import { getPhantomProvider } from "~/hooks/use-phantom-wallet";
 import { formatPretty } from "~/utils/formatter";
 
 import {
@@ -1063,8 +1064,7 @@ export const WormholeRedeem: FunctionComponent = () => {
   );
 
   useEffect(() => {
-    const detect = () =>
-      (window as any).phantom?.solana ?? (window as any).solana ?? null;
+    const detect = () => getPhantomProvider() ?? null;
 
     const provider = detect();
     if (provider) {

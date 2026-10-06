@@ -15,6 +15,7 @@ import {
   getNomicRelayerUrl,
   isNil,
 } from "@osmosis-labs/utils";
+import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
@@ -1326,7 +1327,7 @@ export const useBridgeQuotes = ({
     const txBytes = new Uint8Array(
       Buffer.from(transactionRequest.txBase64, "base64")
     );
-    let solanaTx: unknown;
+    let solanaTx: Transaction | VersionedTransaction;
     let recentBlockhash: string | undefined;
     try {
       const versioned = VersionedTransaction.deserialize(txBytes);
@@ -1370,9 +1371,7 @@ export const useBridgeQuotes = ({
     if (phantom.signAndSendTransaction) {
       ({ signature } = await phantom.signAndSendTransaction(solanaTx));
     } else if (phantom.signTransaction) {
-      const signed = (await phantom.signTransaction(solanaTx)) as {
-        serialize: () => Uint8Array;
-      };
+      const signed = await phantom.signTransaction(solanaTx);
       signature = await connection.sendRawTransaction(signed.serialize());
     } else {
       throw new Error("Phantom provider cannot sign transactions");
