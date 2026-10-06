@@ -39,6 +39,7 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import {
+  getRedelegationDefaultSelection,
   getRedelegationPreferenceUpdate,
   getTopThirdValidators,
   InactiveDelegation,
@@ -211,6 +212,24 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
+      // the bonded validators the picker lists (and so can be selected)
+      const eligibleValidators = useMemo(
+        () =>
+          validators
+            .filter(({ description }) => Boolean(description.moniker))
+            .filter(
+              (validator) => !getIsAPRTooHigh(getCommissions(validator)) // don't include validators where commissions >20%
+            ),
+        [validators, getCommissions, getIsAPRTooHigh]
+      );
+      const eligibleAddresses = useMemo(
+        () =>
+          new Set(
+            eligibleValidators.map(({ operator_address }) => operator_address)
+          ),
+        [eligibleValidators]
+      );
+
       const topThird = useMemo(
         () => getTopThirdValidators(validators),
         [validators]
@@ -258,14 +277,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           };
         };
 
-        const bondedRows = validators
-          .filter(({ description }) => Boolean(description.moniker))
-          .filter((validator) => {
-            const commissions = getCommissions(validator);
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
-            return !isAPRTooHigh; // don't include validators where commissions >20%
-          })
-          .map((validator) => toRow(validator));
+        const bondedRows = eligibleValidators.map((validator) =>
+          toRow(validator)
+        );
 
         // the user's own inactive validators are listed (unselectable) whatever
         // their commission, so they can see the stake that needs moving
@@ -317,13 +331,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         };
       }, [
         validators,
+        eligibleValidators,
         getVotingPower,
         getMyStake,
         getFormattedVotingPower,
         getFormattedMyStake,
         getCommissions,
         getFormattedCommissions,
-        getIsAPRTooHigh,
         getFormattedWebsite,
         inactiveDelegations,
         delegatorValidators,
@@ -546,22 +560,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       useEffect(() => {
         if (!isOpen || !isRedelegating) return;
 
-        const squad = usersValidatorSetPreferenceMap.size
-          ? [...usersValidatorSetPreferenceMap.keys()]
-          : [...usersValidatorsMap.keys()];
-        const bondedAddresses = new Set(
-          validators.map(({ operator_address }) => operator_address)
-        );
-
         setRowSelection(
           Object.fromEntries(
-            squad
-              .filter(
-                (address) =>
-                  !inactiveAddresses.has(address) &&
-                  bondedAddresses.has(address)
-              )
-              .map((address) => [address, true])
+            getRedelegationDefaultSelection({
+              preference: [...usersValidatorSetPreferenceMap.keys()],
+              delegatedValidators: [...usersValidatorsMap.keys()],
+              selectableValidators: eligibleAddresses,
+            }).map((address) => [address, true])
           )
         );
       }, [
@@ -569,17 +574,18 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         isRedelegating,
         usersValidatorSetPreferenceMap,
         usersValidatorsMap,
-        validators,
-        inactiveAddresses,
+        eligibleAddresses,
       ]);
 
       const selectedOperatorAddresses = useMemo(
         () =>
           Object.keys(rowSelection).filter(
             (address) =>
-              rowSelection[address] && !inactiveAddresses.has(address)
+              rowSelection[address] &&
+              !inactiveAddresses.has(address) &&
+              eligibleAddresses.has(address)
           ),
-        [rowSelection, inactiveAddresses]
+        [rowSelection, inactiveAddresses, eligibleAddresses]
       );
 
       const setSquadButtonDisabled = selectedOperatorAddresses.length === 0;

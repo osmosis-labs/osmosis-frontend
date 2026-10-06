@@ -28,6 +28,10 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 
+/** Stable fallback, so the preference map below keeps its identity. */
+const NO_VALIDATOR_PREFERENCES: { val_oper_address: string; weight: string }[] =
+  [];
+
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
@@ -53,12 +57,11 @@ export const Staking: React.FC = observer(() => {
       address
     ).hasValidatorPreferences;
 
-  const userValidatorPreferences = useMemo(() => {
-    return (
-      osmosisQueries?.queryUsersValidatorPreferences.get(address)
-        .validatorPreferences || []
-    );
-  }, [osmosisQueries, address]);
+  // read in render so the observer picks up the query once it resolves; a memo
+  // keyed on the address alone kept the empty list from before it loaded
+  const userValidatorPreferences =
+    osmosisQueries?.queryUsersValidatorPreferences.get(address)
+      .validatorPreferences ?? NO_VALIDATOR_PREFERENCES;
 
   const isFetchingValPrefs =
     osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;

@@ -5,6 +5,7 @@ import {
   getInactiveDelegations,
   getInactiveDelegationsToAlert,
   getInactiveValidatorAlertDismissalId,
+  getRedelegationDefaultSelection,
   getRedelegationPreferenceUpdate,
   getTopThirdValidators,
   getValidatorRewardStatus,
@@ -256,5 +257,40 @@ describe("getInactiveDelegationsToAlert", () => {
     expect(
       getInactiveValidatorAlertDismissalId("osmo1a", "osmovaloper1b")
     ).toBe("osmo1a/osmovaloper1b");
+  });
+});
+
+describe("getRedelegationDefaultSelection", () => {
+  const selectableValidators = new Set(["a", "b", "c"]);
+
+  it("starts from the stored preference when there is one", () => {
+    expect(
+      getRedelegationDefaultSelection({
+        preference: ["a", "jailed"],
+        delegatedValidators: ["b", "jailed"],
+        selectableValidators,
+      })
+    ).toEqual(["a"]);
+  });
+
+  it("falls back to the delegated validators without a preference", () => {
+    expect(
+      getRedelegationDefaultSelection({
+        preference: [],
+        delegatedValidators: ["b", "jailed", "c"],
+        selectableValidators,
+      })
+    ).toEqual(["b", "c"]);
+  });
+
+  it("never preselects a validator the picker hides", () => {
+    // e.g. a squad member over the commission cap or without a moniker
+    expect(
+      getRedelegationDefaultSelection({
+        preference: ["a", "high-commission", "no-moniker"],
+        delegatedValidators: [],
+        selectableValidators,
+      })
+    ).toEqual(["a"]);
   });
 });

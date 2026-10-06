@@ -205,3 +205,23 @@ export function getInactiveDelegationsToAlert(
       )
   );
 }
+
+/**
+ * The validators preselected when redelegating off inactive validators: the
+ * stored preference if there is one, else the validators the user delegates
+ * to, kept only where the squad picker shows a selectable row. Anything else
+ * (inactive, or hidden from the picker for missing a moniker or charging over
+ * the commission cap) would receive stake the user can't see or deselect.
+ */
+export function getRedelegationDefaultSelection({
+  preference,
+  delegatedValidators,
+  selectableValidators,
+}: {
+  preference: string[];
+  delegatedValidators: string[];
+  selectableValidators: Set<string>;
+}): string[] {
+  const squad = preference.length ? preference : delegatedValidators;
+  return squad.filter((address) => selectableValidators.has(address));
+}
