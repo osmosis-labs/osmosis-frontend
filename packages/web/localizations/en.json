@@ -692,7 +692,21 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "This is a validator with high voting power, consider selecting a different validator to help promote decentralization.",
+    "inactiveValidators": {
+      "title": "Some of your stake isn't earning rewards",
+      "squadDescription": "These validators have left the active set, so the OSMO staked with them earns nothing. Redelegate it to active validators to start earning again. Redelegating takes effect straight away, with no unbonding period.",
+      "statusInactive": "Inactive: not earning rewards",
+      "statusJailed": "Jailed: not earning rewards",
+      "redelegate": "Redelegate",
+      "stakeWarning": "Your stake squad includes validators that aren't earning rewards, so part of any new stake would earn nothing.",
+      "editSquad": "Update your squad",
+      "redelegateDescription": "Choose the validators to move {amount} to. It's split evenly between them, and the rest of your stake stays where it is.",
+      "topThirdHidden": "The largest validators, together holding a third of all stake, are hidden by default to help keep Osmosis decentralized.",
+      "topThirdShown": "These are the largest validators, together holding a third of all stake. Choosing smaller validators helps keep Osmosis decentralized.",
+      "alertDescription": "These validators you delegate to are no longer in the active set, so the OSMO staked with them earns no rewards. You can move it to active validators from the Stake page.",
+      "dismiss": "Dismiss",
+      "goToStake": "Go to Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "What is staking?",

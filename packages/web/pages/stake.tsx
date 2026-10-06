@@ -11,6 +11,7 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
+import { StakeToInactiveValidatorsWarning } from "~/components/stake/inactive-delegations-warning";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
 import {
@@ -20,6 +21,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
+import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
@@ -29,6 +31,7 @@ import { useStore } from "~/stores";
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [isRedelegating, setIsRedelegating] = useState(false);
   const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
@@ -217,6 +220,36 @@ export const Staking: React.FC = observer(() => {
   );
   const activeValidators = queryValidators.validators;
 
+  const { inactiveDelegations } = useInactiveDelegations();
+
+  const openRedelegate = useCallback(() => {
+    setIsRedelegating(true);
+    setShowValidatorModal(true);
+  }, []);
+
+  // New stake follows the stored preference, or the existing delegations when
+  // there is none, so either can send fresh OSMO to a validator earning nothing.
+  const stakeTargetsInactiveValidators = useMemo(() => {
+    if (!isWalletConnected) return false;
+    if (!userHasValPrefs) return inactiveDelegations.length > 0;
+    if (!queryValidators.response) return false;
+
+    const bondedAddresses = new Set(
+      activeValidators.map(({ operator_address }) => operator_address)
+    );
+    return userValidatorPreferences.some(
+      ({ val_oper_address }: { val_oper_address: string }) =>
+        !bondedAddresses.has(val_oper_address)
+    );
+  }, [
+    isWalletConnected,
+    userHasValPrefs,
+    inactiveDelegations,
+    queryValidators.response,
+    activeValidators,
+    userValidatorPreferences,
+  ]);
+
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
@@ -315,6 +348,17 @@ export const Staking: React.FC = observer(() => {
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
             stakingAPR={stakingAPR}
+            stakeWarning={
+              stakeTargetsInactiveValidators && (
+                <StakeToInactiveValidatorsWarning
+                  onRedelegate={
+                    inactiveDelegations.length
+                      ? openRedelegate
+                      : () => setShowValidatorModal(true)
+                  }
+                />
+              )
+            }
           />
         </div>
         <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
@@ -337,6 +381,8 @@ export const Staking: React.FC = observer(() => {
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={unstakeTabAmountConfig.balance}
+              inactiveDelegations={inactiveDelegations}
+              onRedelegate={openRedelegate}
             />
           )}
         </div>
@@ -348,13 +394,17 @@ export const Staking: React.FC = observer(() => {
       )}
       <ValidatorSquadModal
         isOpen={showValidatorModal}
-        onRequestClose={() => setShowValidatorModal(false)}
+        onRequestClose={() => {
+          setShowValidatorModal(false);
+          setIsRedelegating(false);
+        }}
         usersValidatorsMap={usersValidatorsMap}
         usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
         action={validatorSquadModalAction}
         coin={coin}
         queryValidators={queryValidators}
+        isRedelegating={isRedelegating}
       />
       <ValidatorNextStepModal
         setShowStakeLearnMoreModal={() => setShowStakeLearnMoreModal(true)}

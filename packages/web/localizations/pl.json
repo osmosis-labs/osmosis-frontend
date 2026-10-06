@@ -692,7 +692,21 @@
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
     "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
+    "inactiveValidators": {
+      "title": "Część Twojego stake'u nie zarabia nagród",
+      "squadDescription": "Ci walidatorzy opuścili aktywny zestaw, więc OSMO u nich stakowane nic nie zarabia. Przedeleguj je do aktywnych walidatorów, aby znów zarabiać. Redelegacja działa od razu, bez okresu odblokowania.",
+      "statusInactive": "Nieaktywny: brak nagród",
+      "statusJailed": "Uwięziony: brak nagród",
+      "redelegate": "Przedeleguj",
+      "stakeWarning": "Twój skład stakingowy zawiera walidatorów, którzy nie zarabiają nagród, więc część każdego nowego stake'u nic by nie zarobiła.",
+      "editSquad": "Zaktualizuj skład",
+      "redelegateDescription": "Wybierz walidatorów, do których przenieść {amount}. Kwota zostanie podzielona po równo, a reszta Twojego stake'u zostanie tam, gdzie jest.",
+      "topThirdHidden": "Najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u, są domyślnie ukryci, aby pomóc utrzymać decentralizację Osmosis.",
+      "topThirdShown": "To najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u. Wybieranie mniejszych walidatorów pomaga utrzymać decentralizację Osmosis.",
+      "alertDescription": "Ci walidatorzy, do których delegujesz, nie są już w aktywnym zestawie, więc OSMO u nich stakowane nie zarabia nagród. Możesz przenieść je do aktywnych walidatorów na stronie Stake.",
+      "dismiss": "Zamknij",
+      "goToStake": "Przejdź do Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Co to jest stawkowanie?",

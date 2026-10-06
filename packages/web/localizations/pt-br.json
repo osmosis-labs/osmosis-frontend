@@ -692,7 +692,21 @@
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
     "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
+    "inactiveValidators": {
+      "title": "Parte do seu stake não está rendendo recompensas",
+      "squadDescription": "Esses validadores saíram do conjunto ativo, então o OSMO delegado a eles não rende nada. Redelegue para validadores ativos para voltar a ganhar recompensas. A redelegação é imediata, sem período de desvinculação.",
+      "statusInactive": "Inativo: sem recompensas",
+      "statusJailed": "Preso: sem recompensas",
+      "redelegate": "Redelegar",
+      "stakeWarning": "Seu esquadrão de stake inclui validadores que não rendem recompensas, então parte de qualquer novo stake não renderia nada.",
+      "editSquad": "Atualize seu esquadrão",
+      "redelegateDescription": "Escolha os validadores para onde mover {amount}. O valor é dividido igualmente entre eles, e o resto do seu stake fica onde está.",
+      "topThirdHidden": "Os maiores validadores, que juntos detêm um terço de todo o stake, ficam ocultos por padrão para ajudar a manter a Osmosis descentralizada.",
+      "topThirdShown": "Estes são os maiores validadores, que juntos detêm um terço de todo o stake. Escolher validadores menores ajuda a manter a Osmosis descentralizada.",
+      "alertDescription": "Esses validadores para os quais você delega não estão mais no conjunto ativo, então o OSMO delegado a eles não rende recompensas. Você pode movê-lo para validadores ativos na página de Stake.",
+      "dismiss": "Dispensar",
+      "goToStake": "Ir para Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "O que é piquetagem?",

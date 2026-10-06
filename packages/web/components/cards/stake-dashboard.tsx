@@ -16,6 +16,7 @@ import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
+import { InactiveDelegation } from "~/utils/inactive-delegations";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
 
@@ -26,6 +27,8 @@ export const StakeDashboard: React.FC<{
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
+  inactiveDelegations?: InactiveDelegation[];
+  onRedelegate?: () => void;
 }> = observer(
   ({
     hasInsufficientBalance,
@@ -34,6 +37,8 @@ export const StakeDashboard: React.FC<{
     usersValidatorsMap,
     balance,
     setShowStakeLearnMoreModal,
+    inactiveDelegations,
+    onRedelegate,
   }) => {
     const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
@@ -145,6 +150,8 @@ export const StakeDashboard: React.FC<{
           setShowValidatorModal={setShowValidatorModal}
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
+          inactiveDelegations={inactiveDelegations}
+          onRedelegate={onRedelegate}
         />
         <div className="flex flex-row items-center gap-2 xl:flex-col">
           <RewardsCard

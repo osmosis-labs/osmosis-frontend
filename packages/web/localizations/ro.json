@@ -692,7 +692,21 @@
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
+    "inactiveValidators": {
+      "title": "O parte din stake-ul tău nu câștigă recompense",
+      "squadDescription": "Acești validatori au ieșit din setul activ, așa că OSMO delegat la ei nu câștigă nimic. Redelegă-l către validatori activi pentru a câștiga din nou. Redelegarea are efect imediat, fără perioadă de deblocare.",
+      "statusInactive": "Inactiv: fără recompense",
+      "statusJailed": "Încarcerat: fără recompense",
+      "redelegate": "Redelegă",
+      "stakeWarning": "Echipa ta de staking include validatori care nu câștigă recompense, așa că o parte din orice stake nou nu ar câștiga nimic.",
+      "editSquad": "Actualizează echipa",
+      "redelegateDescription": "Alege validatorii către care să muți {amount}. Suma se împarte în mod egal între ei, iar restul stake-ului tău rămâne unde este.",
+      "topThirdHidden": "Cei mai mari validatori, care împreună dețin o treime din tot stake-ul, sunt ascunși implicit pentru a ajuta la menținerea descentralizării Osmosis.",
+      "topThirdShown": "Aceștia sunt cei mai mari validatori, care împreună dețin o treime din tot stake-ul. Alegerea unor validatori mai mici ajută la menținerea descentralizării Osmosis.",
+      "alertDescription": "Acești validatori la care delegi nu mai sunt în setul activ, așa că OSMO delegat la ei nu câștigă recompense. Îl poți muta către validatori activi din pagina Stake.",
+      "dismiss": "Închide",
+      "goToStake": "Mergi la Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Ce este miza?",
