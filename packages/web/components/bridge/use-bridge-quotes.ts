@@ -841,6 +841,7 @@ export const useBridgeQuotes = ({
                 address: quote.transferFee.amount.currency.coinMinimalDenom,
                 decimals: quote.transferFee.amount.currency.coinDecimals,
                 amount: quote.transferFee.amount.toCoin().amount,
+                ...(quote.transferFee.isUnknown ? { isUnknown: true } : {}),
               }
             : undefined,
           nomicCheckpointIndex,

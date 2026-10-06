@@ -759,6 +759,8 @@ const txSnapshotSchema = z.object({
     .extend({
       amount: z.string(),
       imageUrl: z.string().optional(),
+      /** The amount is not the whole fee (see `BridgeQuote.transferFee.isUnknown`). */
+      isUnknown: z.boolean().optional(),
     })
     .optional(),
   fromAsset: bridgeAssetSchema.extend({
