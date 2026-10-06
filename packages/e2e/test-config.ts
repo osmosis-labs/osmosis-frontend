@@ -3,13 +3,10 @@ export class TestConfig {
     const viewport = { width: 1440, height: 1280 };
     const args = this.getArgs(headless, pathToExtension);
 
-    // Playwright's headless flag must always be false for extension configs.
-    // When headless=true Playwright selects the Chromium Headless Shell binary
-    // which is a stripped build that does NOT support extensions. Instead we
-    // tell Playwright to launch the full Chromium (headless: false) and let
-    // Chrome's own --headless=new flag (injected via getArgs) handle headless
-    // rendering while retaining full extension support.
+    // Use the full bundled Chromium for extension support. Keep the existing
+    // --headless=new argument for headless runs instead of the Headless Shell.
     return {
+      channel: "chromium",
       headless: false,
       args: args,
       viewport: viewport,

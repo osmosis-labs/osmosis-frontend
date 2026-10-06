@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES6", // Specify ECMAScript target version
+    "lib": ["ES2022", "DOM"],
     "module": "commonjs", // Specify module code generation
     "strict": true, // Enable all strict type-checking options
     "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules
@@ -11,6 +12,7 @@
   "include": [
     "pages/**/*",
     "tests/**/*",
+    "types/**/*",
     "test-config.ts",
     "unzip-extension.ts",
     "playwright.config.ts"
