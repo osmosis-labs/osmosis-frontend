@@ -6,11 +6,17 @@
  * mainnet-beta endpoint as rate-limited and unsuitable for production, which
  * is the fallback when no provider is configured.
  *
- * Only the methods the Solana bridge flow uses are forwarded, one request at
- * a time, so the route can't be used as a general proxy for our key.
+ * Three things keep the route from being a general proxy for our key:
+ * - It answers 404 while the `solana-skip-routes` flag is off, read from
+ *   LaunchDarkly server-side, so the pathway does not exist until Solana
+ *   routes are offered (and the flag is a kill switch for it afterwards).
+ * - It only accepts same-origin browser requests: browsers always send
+ *   `Origin` on a POST fetch, so a missing or foreign origin is refused.
+ * - Only the methods the Solana bridge flow uses are forwarded, one request
+ *   at a time.
  */
 
-const SOLANA_PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
+import { SOLANA_PUBLIC_RPC_URL } from "@osmosis-labs/bridge/build/utils/solana";
 
 /** Methods the in-app Solana bridge flow calls from the browser. */
 export const ALLOWED_SOLANA_RPC_METHODS = new Set([
@@ -31,6 +37,101 @@ export const ALLOWED_SOLANA_RPC_METHODS = new Set([
  *  base64 and the JSON envelope. */
 const MAX_BODY_BYTES = 16 * 1024;
 
+/** LaunchDarkly flag that offers Solana routes in the app (`solanaSkipRoutes`
+ *  in code). The route is only reachable while it is on. */
+const SOLANA_ROUTES_FLAG = "solana-skip-routes";
+/** How long a flag read is reused before asking LaunchDarkly again. */
+const FLAG_CACHE_MS = 60_000;
+/** If LaunchDarkly cannot be reached, a value this old is still trusted
+ *  rather than failing closed on a transient error. */
+const FLAG_STALE_MS = 10 * 60_000;
+
+let flagCache: { value: boolean; readAt: number } | undefined;
+
+/** Test-only: forget the cached flag read. */
+export function resetSolanaRpcFlagCache() {
+  flagCache = undefined;
+}
+
+const base64url = (s: string) =>
+  btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+/**
+ * Reads `solana-skip-routes` for the server through LaunchDarkly's
+ * client-side evaluation endpoint, which needs no SDK (the Node client SDK
+ * does not run on the Edge runtime) and only the public client-side id the
+ * browser already ships with. Without a client-side id (local development)
+ * nothing can be evaluated and the route stays open.
+ */
+async function isSolanaRouteEnabled(): Promise<boolean> {
+  const clientSideId = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+  if (!clientSideId) return true;
+
+  const now = Date.now();
+  if (flagCache && now - flagCache.readAt < FLAG_CACHE_MS) {
+    return flagCache.value;
+  }
+
+  try {
+    const context = base64url(
+      JSON.stringify({
+        kind: "user",
+        key: "osmosis-frontend-server",
+        anonymous: true,
+      })
+    );
+    const response = await fetch(
+      `https://clientsdk.launchdarkly.com/sdk/evalx/${clientSideId}/contexts/${context}`
+    );
+    if (!response.ok) throw new Error(`LaunchDarkly ${response.status}`);
+    const flags = (await response.json()) as Record<
+      string,
+      { value?: unknown } | undefined
+    >;
+    const value = flags[SOLANA_ROUTES_FLAG]?.value === true;
+    flagCache = { value, readAt: now };
+    return value;
+  } catch {
+    if (flagCache && now - flagCache.readAt < FLAG_STALE_MS) {
+      return flagCache.value;
+    }
+    return false;
+  }
+}
+
+/** The request's own host, as the browser addressed it. Vercel and the CDN in
+ *  front of it forward the public host in `x-forwarded-host`. */
+function requestHosts(req: Request): Set<string> {
+  const hosts = new Set<string>();
+  for (const header of ["x-forwarded-host", "host"]) {
+    const value = req.headers.get(header);
+    if (value) hosts.add(value.split(",")[0]!.trim().toLowerCase());
+  }
+  try {
+    hosts.add(new URL(req.url).host.toLowerCase());
+  } catch {
+    // req.url may be relative in tests
+  }
+  return hosts;
+}
+
+/** Whether the request comes from this app's own pages. Browsers send
+ *  `Origin` on every POST fetch; `Referer` is accepted as a fallback. */
+function isSameOrigin(req: Request): boolean {
+  const hosts = requestHosts(req);
+  if (hosts.size === 0) return false;
+  for (const header of ["origin", "referer"]) {
+    const value = req.headers.get(header);
+    if (!value) continue;
+    try {
+      return hosts.has(new URL(value).host.toLowerCase());
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
 const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), {
     status,
@@ -40,6 +141,16 @@ const json = (body: unknown, status: number) =>
 export default async function solanaRpcHandler(req: Request) {
   if (req.method !== "POST") {
     return json({ error: "Method not allowed" }, 405);
+  }
+
+  // Hidden, not forbidden: while Solana routes are off the route does not
+  // exist, so a probe learns nothing about it.
+  if (!(await isSolanaRouteEnabled())) {
+    return json({ error: "Not found" }, 404);
+  }
+
+  if (!isSameOrigin(req)) {
+    return json({ error: "Forbidden" }, 403);
   }
 
   // Refuse a declared oversize body before reading it into memory, then
@@ -84,7 +195,7 @@ export default async function solanaRpcHandler(req: Request) {
     return json({ error: "Invalid params" }, 400);
   }
 
-  const upstream = process.env.SOLANA_RPC_URL?.trim() || SOLANA_PUBLIC_RPC;
+  const upstream = process.env.SOLANA_RPC_URL?.trim() || SOLANA_PUBLIC_RPC_URL;
 
   try {
     const response = await fetch(upstream, {
