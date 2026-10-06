@@ -7,6 +7,7 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { useEffect, useMemo, useRef } from "react";
 
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const supportedAssetsBridges: Bridge[] = [
@@ -52,6 +53,14 @@ export const useBridgesSupportedAssets = ({
   chain: BridgeChain;
   direction: "deposit" | "withdraw";
 }) => {
+  // Sources whose only route is multi-tx (e.g. Solana USDC into an alloy)
+  // are advertised only where the flow can execute them: deposits, with the
+  // flag on. Mirrors the quote-side `allowMultiTx` gating in useBridgeQuotes.
+  const { multiTxBridgeRoutes, solanaSkipRoutes } = useFeatureFlags();
+  const allowMultiTx = multiTxBridgeRoutes === true && direction === "deposit";
+  // Kill switch for the Phantom-signed Solana routes, in both directions.
+  const allowSolana = solanaSkipRoutes === true;
+
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
       (assets ?? []).map((asset) =>
@@ -65,6 +74,8 @@ export const useBridgesSupportedAssets = ({
             },
             direction,
             chain,
+            allowMultiTx,
+            allowSolana,
           },
           {
             enabled: !isNil(assets),

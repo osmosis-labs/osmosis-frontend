@@ -15,16 +15,15 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { KVStore } from "@keplr-wallet/common";
-import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import {
+  BaseAccount,
   ChainedFunctionifyTuple,
   ChainGetter,
   CosmosQueries,
   CosmwasmQueries,
   Functionify,
+  KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
@@ -40,9 +39,9 @@ import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,
-  createMultiEndpointClient,
   getChain,
   isNil,
+  MultiEndpointClient,
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
@@ -644,7 +643,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         const restUrls = this.getChainRestUrls(wallet);
         if (restUrls.length > 1) {
           try {
-            const client = createMultiEndpointClient(
+            const client = new MultiEndpointClient(
               restUrls.map((url) => ({ address: url }))
             );
             const { endpointAddress } = await client.fetchWithEndpoint(
@@ -715,7 +714,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           : [getEndpointString(await wallet.getRpcEndpoint(true))];
       if (rpcUrls.length > 1) {
         try {
-          const client = createMultiEndpointClient(
+          const client = new MultiEndpointClient(
             rpcUrls.map((url) => ({ address: url }))
           );
           const { endpointAddress } = await client.fetchWithEndpoint("/status");
@@ -1030,7 +1029,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { TxExtension },
       { fromBase64 },
       { Int53 },
-      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
+      { makeAuthInfoBytes, makeSignBytes, makeSignDoc, encodePubkey },
       { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
@@ -1051,7 +1050,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.keplrChain?.bip44.coinType ?? 0,
+          ?.slip44 ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1093,18 +1092,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber as unknown as number
     );
 
-    const sig = privateKey.signDigest32(
-      Hash.sha256(
-        SignDoc.encode(
-          SignDoc.fromPartial({
-            bodyBytes: signDoc.bodyBytes,
-            authInfoBytes: signDoc.authInfoBytes,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber.toString(),
-          })
-        ).finish()
-      )
-    );
+    const sig = privateKey.signDigest32(Hash.sha256(makeSignBytes(signDoc)));
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
@@ -1186,7 +1174,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.keplrChain?.bip44.coinType ?? 0,
+          ?.slip44 ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1354,7 +1342,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.keplrChain?.bip44.coinType ?? 0,
+          ?.slip44 ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1452,7 +1440,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     let endpoint: string;
     if (restUrls.length > 1) {
       try {
-        const client = createMultiEndpointClient(
+        const client = new MultiEndpointClient(
           restUrls.map((url) => ({ address: url }))
         );
         const { endpointAddress } = await client.fetchWithEndpoint(

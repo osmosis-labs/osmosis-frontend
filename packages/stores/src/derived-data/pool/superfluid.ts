@@ -1,11 +1,10 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import {
   CosmosQueries,
   HasMapStore,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { BondStatus } from "@osmosis-labs/types";
-import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, FiatCurrency, RatePretty } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";

@@ -3,9 +3,7 @@ import React from "react";
 
 import { Icon } from "~/components/assets";
 import { IconLink } from "~/components/cards/icon-link";
-import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
 
 export const HeroCard: React.FunctionComponent<{
   title: string;
@@ -28,7 +26,6 @@ export const HeroCard: React.FunctionComponent<{
   twitterUrl,
 }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const utmParams = new URLSearchParams({
     utm_source: "OsmosisAppStore",
@@ -39,10 +36,6 @@ export const HeroCard: React.FunctionComponent<{
   const externalUrlWithUTM = externalUrl + `?${utmParams}`;
 
   const handleAppClicked = () => {
-    logEvent([
-      EventName.AppStore.appClicked,
-      { appName: title, isFeatured: true, isBanner: true },
-    ]);
     window.open(externalUrlWithUTM, "_blank", "noopener noreferrer");
   };
 

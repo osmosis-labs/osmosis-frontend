@@ -1,6 +1,5 @@
-import { AppCurrency } from "@keplr-wallet/types";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../../queries-external/pools";

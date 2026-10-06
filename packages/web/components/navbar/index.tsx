@@ -394,7 +394,6 @@ const WalletInfo: FunctionComponent<
         <Button
           size="md"
           onClick={() => {
-            // logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect({
               walletOptions: [
                 { walletType: "cosmos", chainId: accountStore.osmosisChainId },

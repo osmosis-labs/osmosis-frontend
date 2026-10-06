@@ -923,6 +923,7 @@
     "multiTxRouteExpiredTitle": "Rota de transferência expirada",
     "multiTxRouteExpired": "A rota salva desta transferência expirou e não pode mais ser assinada. Seus fundos estão seguros na sua conta {chain}.",
     "multiTxFeeShortfall": "Sua conta {chain} não pode cobrir a taxa de rede desta etapa. Adicione fundos para gás na {chain} e pressione Continuar novamente.",
+    "solanaNeedsSol": "Você precisa de SOL na sua carteira Solana para pagar a taxa de rede e o aluguel de conta desta transação. Adicione SOL e tente novamente.",
     "multiTxStepFailedTitle": "A transferência final não foi concluída",
     "multiTxStepFailed": "A transferência final na {chain} não foi concluída. Seus fundos estão seguros na {chain}; pressione Continuar no seu histórico de transações para tentar novamente.",
     "multiTxRecordFailed": "O progresso desta transferência não pôde ser salvo, então a etapa final na {chain} não pode ser oferecida. Seus fundos ainda chegarão na {chain}; entre em contato com o suporte para concluir a transferência.",
@@ -966,9 +967,12 @@
     "feesReserved": "Uma pequena quantia do seu saldo total de {assetName} foi reservada para pagar taxas em {networkName} .",
     "verifyAddressWarning": "Verifique o endereço para o qual você está retirando seus fundos. Fornecer um endereço incorreto resultará em perda de fundos.",
     "recipientAddress": "Endereço do destinatário em {chain}",
+    "fillFromPhantom": "Preencher da Phantom Wallet",
     "enterAddress": "Insira um endereço",
     "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
+    "solanaTokenAccountAddress": "Este é o endereço de uma conta de token. Insira o endereço da carteira Solana à qual ela pertence.",
+    "solanaAddressUnverified": "Não foi possível verificar este endereço Solana. Tente novamente.",
     "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
     "acknowledgementWithoutExchange": "Reconheço e aceito os riscos de perda de fundos se eu fornecer um endereço de destinatário incorreto.",
     "done": "Feito",
@@ -1181,7 +1185,6 @@
       "collapse": "Colapso",
       "moreStats": "Mais estatísticas"
     },
-    "followTheConversation": "Acompanhe a conversa",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
@@ -1205,7 +1208,8 @@
     "underlyingAssets": {
       "title": "Ativos subjacentes",
       "description": "{name} ( {denom} ) no Osmose é composto por {count} diferentes tipos de {name} .",
-      "of": "de {denom}"
+      "of": "de {denom}",
+      "viewBackingHistory": "Ver histórico de lastro"
     }
   },
   "osmosisUpdates": {

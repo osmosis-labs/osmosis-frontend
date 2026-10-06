@@ -1,7 +1,7 @@
 import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
 import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { ChainIdHelper, createMultiEndpointClient } from "@osmosis-labs/utils";
+import { ChainIdHelper, MultiEndpointClient } from "@osmosis-labs/utils";
 
 import {
   TransferStatus,
@@ -119,7 +119,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     let sortedDestUrls = destRpcUrls;
     let probeSucceeded = false;
     try {
-      const client = createMultiEndpointClient(
+      const client = new MultiEndpointClient(
         destRpcUrls.map((url) => ({ address: url }))
       );
       const { endpointAddress } = await client.fetchWithEndpoint("/status");

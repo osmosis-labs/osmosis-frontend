@@ -1,7 +1,11 @@
-import { Currency } from "@keplr-wallet/types";
 import { Staking } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  PricePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useState } from "react";
@@ -10,9 +14,7 @@ import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
-import { EventName } from "~/config";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
@@ -35,7 +37,6 @@ export const StakeDashboard: React.FC<{
   }) => {
     const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
-    const { logEvent } = useAmplitudeAnalytics();
 
     const osmosisChainId = chainStore.osmosis.chainId;
     const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
@@ -75,18 +76,12 @@ export const StakeDashboard: React.FC<{
     );
 
     const collectRewards = useCallback(() => {
-      logEvent([EventName.Stake.collectRewardsStarted]);
-
       if (account?.osmosis) {
         account.osmosis
-          .sendWithdrawDelegationRewardsMsg("", (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([EventName.Stake.collectRewardsCompleted]);
-            }
-          })
+          .sendWithdrawDelegationRewardsMsg("")
           .catch(console.error);
       }
-    }, [account, logEvent]);
+    }, [account]);
 
     const osmoPrice = priceStore
       .calculatePrice(
@@ -108,8 +103,6 @@ export const StakeDashboard: React.FC<{
       .lte(collectRewardsMinimumOsmo);
 
     const collectAndReinvestRewards = useCallback(() => {
-      logEvent([EventName.Stake.collectAndReinvestStarted]);
-
       const collectAndReinvestCoin: { amount: string; denom: Currency } = {
         amount: osmoRewardsAmount,
         denom: osmo,
@@ -119,16 +112,11 @@ export const StakeDashboard: React.FC<{
         account.osmosis
           .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
             collectAndReinvestCoin,
-            "",
-            (tx: DeliverTxResponse) => {
-              if (tx.code === 0) {
-                logEvent([EventName.Stake.collectAndReinvestCompleted]);
-              }
-            }
+            ""
           )
           .catch(console.error);
       }
-    }, [account, logEvent, osmo, osmoRewardsAmount]);
+    }, [account, osmo, osmoRewardsAmount]);
 
     return (
       <GenericMainCard

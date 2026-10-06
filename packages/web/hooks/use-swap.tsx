@@ -57,7 +57,6 @@ import {
   useOneClickTradingSession,
 } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -118,7 +117,6 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
-  const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -583,7 +581,6 @@ export function useSwap(
                           oneClickMessages.transaction1CTParams,
                         allowedAmount: oneClickMessages.allowedAmount,
                         t,
-                        logEvent,
                       });
                     } else if (
                       shouldSend1CTTx &&
@@ -593,7 +590,6 @@ export function useSwap(
                       await onEnd1CTSession({
                         accountStore,
                         authenticatorId: oneClickMessages.authenticatorId,
-                        logEvent,
                       });
                     }
                   }
@@ -685,7 +681,6 @@ export function useSwap(
                           oneClickMessages.transaction1CTParams,
                         allowedAmount: oneClickMessages.allowedAmount,
                         t,
-                        logEvent,
                       });
                     } else if (
                       shouldSend1CTTx &&
@@ -695,7 +690,6 @@ export function useSwap(
                       onEnd1CTSession({
                         accountStore,
                         authenticatorId: oneClickMessages.authenticatorId,
-                        logEvent,
                       });
                     }
 
@@ -726,7 +720,6 @@ export function useSwap(
       inAmountInput,
       isLedger,
       isOneClickTradingEnabled,
-      logEvent,
       maxSlippage,
       messages,
       networkFee,
@@ -1732,8 +1725,6 @@ export function useDynamicSlippageConfig({
               )
             );
           }
-        } else {
-          console.log("No amounts found");
         }
       }
     }

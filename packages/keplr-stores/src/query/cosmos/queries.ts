@@ -1,5 +1,5 @@
 import { QueriesSetBase } from "../queries";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../common/kv-store";
 import { ChainGetter } from "../../common";
 import { ObservableQueryAccount } from "./account";
 import {

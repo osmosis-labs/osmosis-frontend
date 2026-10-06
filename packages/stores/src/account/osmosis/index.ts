@@ -1,6 +1,5 @@
 import type { StdFee } from "@cosmjs/amino";
 import type { EncodeObject } from "@cosmjs/proto-signing";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   ChainGetter,
   CosmosQueries,
@@ -42,7 +41,15 @@ import {
   makeWithdrawPositionMsg,
 } from "@osmosis-labs/tx";
 import { BondStatus } from "@osmosis-labs/types";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
+import {
+  AppCurrency,
+  Coin,
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  Int,
+} from "@osmosis-labs/unit";
 import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";

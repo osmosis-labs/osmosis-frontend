@@ -2,9 +2,7 @@ import { useCallback } from "react";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
@@ -26,30 +24,25 @@ export const ValidatorNextStepModal: FunctionComponent<
 }) => {
   const { t } = useTranslation();
 
-  const { logEvent } = useAmplitudeAnalytics();
-
   const title = isNewUser
     ? t("stake.validatorNextStep.newUser.title")
     : t("stake.validatorNextStep.existingUser.title");
 
   const handleNewUserClick = useCallback(() => {
-    logEvent([EventName.Stake.buildSquadClicked]);
     onRequestClose();
     setShowValidatorModal(); // select squad and stake
-  }, [logEvent, setShowValidatorModal, onRequestClose]);
+  }, [setShowValidatorModal, onRequestClose]);
 
   const handleExistingUserKeepClick = useCallback(() => {
-    logEvent([EventName.Stake.squadOptionClicked, { option: "keep" }]);
     localStorage.setItem("keepValidators", "true");
     onRequestClose();
     stakeCall();
-  }, [logEvent, onRequestClose, stakeCall]);
+  }, [onRequestClose, stakeCall]);
 
   const handleExistingUserSelectClick = useCallback(() => {
-    logEvent([EventName.Stake.squadOptionClicked, { option: "new" }]);
     onRequestClose();
     setShowValidatorModal();
-  }, [logEvent, onRequestClose, setShowValidatorModal]);
+  }, [onRequestClose, setShowValidatorModal]);
 
   return (
     <ModalBase

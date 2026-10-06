@@ -1,7 +1,7 @@
 import { ChainGetter } from "../../../../common";
 import { ObservableChainQuery } from "../../../chain-query";
 import { MintParmas } from "./types";
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from "../../../../common/kv-store";
 import { computed, makeObservable } from "mobx";
 import { Dec } from "@osmosis-labs/unit";
 

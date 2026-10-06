@@ -26,10 +26,8 @@ import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config/analytics-events";
 import {
   ObservableAddConcentratedLiquidityConfig,
-  useAmplitudeAnalytics,
   useTranslation,
 } from "~/hooks";
 import {
@@ -542,8 +540,6 @@ const PresetStrategyCard: FunctionComponent<
       setMinRange,
       setMaxRange,
     } = addLiquidityConfig;
-    const { logEvent } = useAmplitudeAnalytics();
-
     /** Disabled for inactive pools (to force passive and custom strategies only). */
     const disabled = disabledForInactivePool === true;
 
@@ -564,13 +560,6 @@ const PresetStrategyCard: FunctionComponent<
     );
 
     const onClick = () => {
-      if (type !== null)
-        logEvent([
-          EventName.ConcentratedLiquidity.strategyPicked,
-          {
-            strategy: type,
-          },
-        ]);
       switch (type) {
         case "passive":
           setFullRange(true);

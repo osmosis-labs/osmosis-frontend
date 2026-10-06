@@ -14,7 +14,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@cosmjs/encoding": "0.32.3",
+    "@cosmjs/encoding": "0.36.2",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@ton/core": "^0.61.0",
@@ -34,8 +34,8 @@
     "jest": "^29.7.0",
     "jest-in-case": "^1.0.2",
     "prettier": "^2.8.8",
-    "ts-jest": "^29.1.2",
-    "typescript": "5.4.5",
+    "ts-jest": "^29.4.14",
+    "typescript": "5.9.3",
     "whatwg-fetch": "^3.6.2"
   },
   "lint-staged": {

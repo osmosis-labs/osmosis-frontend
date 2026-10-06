@@ -4,8 +4,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
 const WormholeRedeem = dynamic(
@@ -269,8 +268,6 @@ const Wormhole: FunctionComponent = () => {
   // keeps showing the stale balance. Bumping this re-mounts the widget div and
   // re-injects (cache-busted) the bundle so it re-reads balances from scratch.
   const [reloadKey, setReloadKey] = useState(0);
-
-  useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
 
   const fromNetwork = router.query.from as string;
   const toNetwork = router.query.to as string;

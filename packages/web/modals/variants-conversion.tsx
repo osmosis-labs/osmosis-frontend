@@ -13,13 +13,7 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
-import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useAssetVariantsToast,
-  useTranslation,
-  useWindowSize,
-} from "~/hooks";
+import { useAssetVariantsToast, useTranslation, useWindowSize } from "~/hooks";
 import {
   getConvertVariantMessages,
   useConvertVariant,
@@ -100,7 +94,6 @@ const FeeContent: React.FC<{
 };
 
 export const AssetVariantsConversionModal = observer(() => {
-  const { logEvent } = useAmplitudeAnalytics();
   const { isOpen, variantCoinMinimalDenom, setIsOpen } =
     useAssetVariantsModalStore();
   useAssetVariantsToast();
@@ -179,13 +172,6 @@ export const AssetVariantsConversionModal = observer(() => {
       setIsOpen(false);
     }
   }, [portfolioAssetsData, isOpen, setIsOpen]);
-
-  // Log when opened
-  useEffect(() => {
-    if (isOpen) {
-      logEvent([EventName.ConvertVariants.startFlow]);
-    }
-  }, [isOpen, logEvent]);
 
   // should close toast if screen size changes to mobile while shown
   useEffect(() => {
@@ -276,7 +262,6 @@ const AssetVariantRow: React.FC<{
 }> = observer(
   ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
     const { t } = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
     const { accountStore } = useStore();
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -306,16 +291,7 @@ const AssetVariantRow: React.FC<{
 
       if (!Array.isArray(messages)) return;
 
-      await accountStore
-        .estimateFee({ wallet: account, messages })
-        .catch((e) => {
-          logEvent([
-            EventName.ConvertVariants.variantUnavailable,
-            { fromToken: variant.amount.currency.coinDenom },
-          ]);
-
-          throw e;
-        });
+      await accountStore.estimateFee({ wallet: account, messages });
     });
 
     const isUnavailable = Boolean(simulation?.error) || isError;

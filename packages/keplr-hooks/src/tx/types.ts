@@ -1,6 +1,5 @@
-import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { CoinPretty } from "@osmosis-labs/unit";
+import { CoinPretty, AppCurrency, Currency } from "@osmosis-labs/unit";
 
 export interface ITxChainSetter {
   chainId: string;

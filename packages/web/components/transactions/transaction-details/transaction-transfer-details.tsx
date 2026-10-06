@@ -15,8 +15,8 @@ import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
-import { EventName, IS_TESTNET } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { IS_TESTNET } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
 import { HistoryBridgeTransaction } from "~/hooks/use-transaction-history";
@@ -61,8 +61,6 @@ export const TransactionTransferDetails = ({
   const { cosmosChain: cosmosFromChain } = useTransactionChain({
     chain: transaction.fromChain,
   });
-
-  const { logEvent } = useAmplitudeAnalytics();
 
   const mainAsset =
     transaction.direction === "deposit"
@@ -373,19 +371,7 @@ export const TransactionTransferDetails = ({
           </div>
         </div>
         {explorerUrl && (
-          <Button
-            size="default"
-            variant="secondary"
-            asChild
-            onClick={() =>
-              logEvent([
-                EventName.TransactionsPage.explorerClicked,
-                {
-                  source: "modal",
-                },
-              ])
-            }
-          >
+          <Button size="default" variant="secondary" asChild>
             <a rel="noopener noreferrer" target="_blank" href={explorerUrl}>
               <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
             </a>

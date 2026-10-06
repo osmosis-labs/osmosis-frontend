@@ -7,11 +7,9 @@ import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { PrivateText } from "~/components/privacy";
-import { EventName } from "~/config";
 import {
   Breakpoint,
   MultiLanguageT,
-  useAmplitudeAnalytics,
   useHideDustUserSetting,
   useTranslation,
   useWindowSize,
@@ -60,7 +58,6 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
 export const Allocation: FunctionComponent<{
   assets?: PortfolioAssets;
 }> = ({ assets }) => {
-  const { logEvent } = useAmplitudeAnalytics();
   const { width } = useWindowSize();
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
@@ -107,10 +104,6 @@ export const Allocation: FunctionComponent<{
             <AllocationTabs
               setTab={(option) => {
                 setSelectedOption(option);
-                logEvent([
-                  EventName.Portfolio.allocationClicked,
-                  { allocationType: option },
-                ]);
               }}
               activeTab={selectedOption}
             />

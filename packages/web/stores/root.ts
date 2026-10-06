@@ -43,6 +43,11 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import {
+  getKeplrCompatibleChain,
+  withCosmosKitFields,
+} from "~/config/keplr-chain";
+import { checkSolanaSignatureOutcome } from "~/utils/solana";
 
 import {
   TRANSFER_HISTORY_STORE_KEY,
@@ -79,7 +84,9 @@ export class RootStore {
     txEvents?: TxEvents;
   } = {}) {
     this.chainStore = new ChainStore(
-      ChainList.map((chain) => chain.keplrChain),
+      ChainList.map((chain) =>
+        getKeplrCompatibleChain({ chain, assetLists: AssetLists })
+      ),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
@@ -144,7 +151,8 @@ export class RootStore {
     );
 
     this.accountStore = new AccountStore(
-      ChainList,
+      // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
+      ChainList.map(withCosmosKitFields),
       this.chainStore.osmosis.chainId,
       AssetLists,
       /**
@@ -238,7 +246,10 @@ export class RootStore {
             }
             return responseJson;
           },
-        }
+        },
+        // Resolves Solana-signed transfers from the chain: a tx that never
+        // landed is invisible to Skip, including after a reload.
+        checkSolanaSignatureOutcome
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
       new NomicTransferStatusProvider(

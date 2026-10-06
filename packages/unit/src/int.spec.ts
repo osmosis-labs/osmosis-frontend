@@ -211,3 +211,11 @@ describe("Test Int/Uint", () => {
     }
   });
 });
+
+describe("Int/Uint JSON serialization", () => {
+  it("serializes as decimal strings", () => {
+    expect(JSON.stringify(new Int("-123"))).toBe('"-123"');
+    expect(JSON.stringify(new Uint("123"))).toBe('"123"');
+    expect(JSON.stringify({ a: [new Int(1)] })).toBe('{"a":["1"]}');
+  });
+});

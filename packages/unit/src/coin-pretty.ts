@@ -1,7 +1,6 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import bigInteger from "big-integer";
 import { DeepReadonly } from "utility-types";
 
+import { AppCurrency } from "./currency-types";
 import { DecUtils } from "./dec-utils";
 import { Dec } from "./decimal";
 import { IntPretty, IntPrettyOptions } from "./int-pretty";
@@ -25,7 +24,7 @@ export class CoinPretty {
 
   constructor(
     protected _currency: AppCurrency,
-    protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
+    protected amount: Dec | { toDec(): Dec } | number | string | bigint
   ) {
     if (typeof this.amount === "object" && "toDec" in this.amount) {
       this.amount = this.amount.toDec();
