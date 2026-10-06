@@ -9,6 +9,15 @@ import {
   isValidDecimalString,
 } from "@osmosis-labs/unit";
 
+// These helpers used to be defined here and are part of this package's public
+// surface; they now live in unit and are re-exported unchanged.
+export {
+  exponentDecStringToDecString,
+  isExponentDecString,
+  isValidDecimalString,
+  isValidIntegerString,
+} from "@osmosis-labs/unit";
+
 export class BigDec {
   public static readonly precision = 36;
   // Bytes required to represent the above precision is 36.
