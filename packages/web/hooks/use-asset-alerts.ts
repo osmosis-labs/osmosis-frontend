@@ -49,7 +49,7 @@ export const useAssetAlerts = () => {
         filePath: "cms/asset-alerts.json",
       }),
     staleTime: 1000 * 60 * 3, // 3 minutes
-    cacheTime: 1000 * 60 * 3, // 3 minutes
+    gcTime: 1000 * 60 * 3, // 3 minutes
     enabled: assetAlerts && isWalletConnected,
   });
 

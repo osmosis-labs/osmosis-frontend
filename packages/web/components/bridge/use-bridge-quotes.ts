@@ -196,7 +196,7 @@ export const useBridgeQuotes = ({
     chainId: currentEvmChainId,
     chain: currentEvmChain,
   } = useEvmWalletAccount();
-  const { sendTransactionAsync, isLoading: isEthTxPending } =
+  const { sendTransactionAsync, isPending: isEthTxPending } =
     useSendEvmTransaction();
   const { address: phantomAddress } = usePhantomWallet();
   const { t } = useTranslation();
@@ -364,7 +364,7 @@ export const useBridgeQuotes = ({
             // must have balance amount loaded, even if 0
             Boolean(availableBalance),
           staleTime: 5_000,
-          cacheTime: 5_000,
+          gcTime: 5_000,
           // Disable retries, as useQueries
           // will block successful quotes from being returned
           // if failed quotes are being returned

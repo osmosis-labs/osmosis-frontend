@@ -18,7 +18,7 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
     },
     {
       enabled: chain?.chainType === "cosmos",
-      useErrorBoundary: false,
+      throwOnError: false,
     }
   );
   const { data: evmChain } = api.edge.chains.getEvmChain.useQuery(
@@ -27,7 +27,7 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
     },
     {
       enabled: chain?.chainType === "evm",
-      useErrorBoundary: false,
+      throwOnError: false,
     }
   );
 

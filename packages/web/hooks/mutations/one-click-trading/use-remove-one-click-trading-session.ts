@@ -5,11 +5,9 @@ import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { displayToast, ToastType } from "~/components/alert";
 import { useStore } from "~/stores";
 
-type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
-  void,
-  unknown,
-  { authenticatorId: string },
-  unknown
+type UseRemoveOneClickTradingMutationOptions = Omit<
+  UseMutationOptions<void, unknown, { authenticatorId: string }, unknown>,
+  "mutationFn"
 >;
 
 export async function onEnd1CTSession({
@@ -41,44 +39,47 @@ export const useRemoveOneClickTradingSession = ({
 } = {}) => {
   const { accountStore } = useStore();
 
-  return useMutation(async ({ authenticatorId }) => {
-    const userOsmoAddress = accountStore.getWallet(
-      accountStore.osmosisChainId
-    )?.address;
+  return useMutation({
+    ...queryOptions,
+    mutationFn: async ({ authenticatorId }: { authenticatorId: string }) => {
+      const userOsmoAddress = accountStore.getWallet(
+        accountStore.osmosisChainId
+      )?.address;
 
-    if (!userOsmoAddress) {
-      throw new Error("User Osmo address not found");
-    }
+      if (!userOsmoAddress) {
+        throw new Error("User Osmo address not found");
+      }
 
-    const msg = await makeRemoveAuthenticatorMsg({
-      id: BigInt(authenticatorId),
-      sender: userOsmoAddress,
-    });
+      const msg = await makeRemoveAuthenticatorMsg({
+        id: BigInt(authenticatorId),
+        sender: userOsmoAddress,
+      });
 
-    await new Promise<DeliverTxResponse>((resolve, reject) => {
-      accountStore
-        .signAndBroadcast(
-          accountStore.osmosisChainId,
-          "addOrRemoveAuthenticators",
-          [msg],
-          "",
-          undefined,
-          { preferNoSetFee: true },
-          {
-            onFulfill: (tx) => {
-              if (tx.code === 0) {
-                resolve(tx);
-              } else {
-                reject(new Error("Transaction failed"));
-              }
-            },
-          }
-        )
-        .catch((error) => {
-          reject(error);
-        });
-    });
+      await new Promise<DeliverTxResponse>((resolve, reject) => {
+        accountStore
+          .signAndBroadcast(
+            accountStore.osmosisChainId,
+            "addOrRemoveAuthenticators",
+            [msg],
+            "",
+            undefined,
+            { preferNoSetFee: true },
+            {
+              onFulfill: (tx) => {
+                if (tx.code === 0) {
+                  resolve(tx);
+                } else {
+                  reject(new Error("Transaction failed"));
+                }
+              },
+            }
+          )
+          .catch((error) => {
+            reject(error);
+          });
+      });
 
-    onEnd1CTSession({ accountStore, authenticatorId });
-  }, queryOptions);
+      onEnd1CTSession({ accountStore, authenticatorId });
+    },
+  });
 };
