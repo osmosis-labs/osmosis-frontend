@@ -64,6 +64,11 @@ function launchDarklyServes(flags: Record<string, unknown>) {
 
 beforeEach(() => {
   resetSolanaRpcFlagCache();
+  // The route fails closed without a client-side id outside development, so
+  // every test runs as a deployed build with the flag on unless it says
+  // otherwise.
+  process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID = LD_CLIENT_ID;
+  launchDarklyServes({ "solana-skip-routes": true });
 });
 
 afterEach(() => {
@@ -154,13 +159,27 @@ describe("solana-skip-routes flag gate", () => {
     expect(calls).toHaveLength(0);
   });
 
-  it("stays open without a client-side id (local development)", async () => {
+  it("stays open without a client-side id in local development only", async () => {
     delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
     spyOnPublicRpc();
+    const nodeEnv = process.env.NODE_ENV;
+    try {
+      (process.env as Record<string, string>).NODE_ENV = "development";
+      expect((await solanaRpcHandler(post(allowedRequest))).status).toBe(200);
+    } finally {
+      (process.env as Record<string, string>).NODE_ENV = nodeEnv ?? "test";
+    }
+  });
 
+  it("fails closed without a client-side id in any deployed build", async () => {
+    delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+    const calls = spyOnPublicRpc();
+
+    // Jest runs with NODE_ENV=test, which is not development
     const result = await solanaRpcHandler(post(allowedRequest));
 
-    expect(result.status).toBe(200);
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
   });
 });
 
@@ -170,6 +189,17 @@ describe("same-origin check", () => {
 
     const result = await solanaRpcHandler(
       post(allowedRequest, {}, { origin: null })
+    );
+
+    expect(result.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("refuses the same host over another scheme", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(allowedRequest, {}, { origin: `http://${APP_HOST}` })
     );
 
     expect(result.status).toBe(403);

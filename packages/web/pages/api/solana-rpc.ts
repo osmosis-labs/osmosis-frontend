@@ -64,12 +64,13 @@ const base64url = (s: string) =>
  * Reads `solana-skip-routes` for the server through LaunchDarkly's
  * client-side evaluation endpoint, which needs no SDK (the Node client SDK
  * does not run on the Edge runtime) and only the public client-side id the
- * browser already ships with. Without a client-side id (local development)
- * nothing can be evaluated and the route stays open.
+ * browser already ships with. Without a client-side id nothing can be
+ * evaluated: local development stays open, any deployed build fails closed
+ * rather than exposing the proxy because an env var went missing.
  */
 async function isSolanaRouteEnabled(): Promise<boolean> {
   const clientSideId = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
-  if (!clientSideId) return true;
+  if (!clientSideId) return process.env.NODE_ENV === "development";
 
   const now = Date.now();
   if (flagCache && now - flagCache.readAt < FLAG_CACHE_MS) {
@@ -104,32 +105,50 @@ async function isSolanaRouteEnabled(): Promise<boolean> {
   }
 }
 
-/** The request's own host, as the browser addressed it. Vercel and the CDN in
- *  front of it forward the public host in `x-forwarded-host`. */
-function requestHosts(req: Request): Set<string> {
+/** The origins this request could legitimately have come from: the scheme
+ *  the browser used (forwarded by the CDN and Vercel) with the request's own
+ *  host, including the public host in `x-forwarded-host`. Localhost also
+ *  accepts plain http for development. */
+function trustedOrigins(req: Request): Set<string> {
+  let requestUrl: URL | undefined;
+  try {
+    requestUrl = new URL(req.url);
+  } catch {
+    // req.url may be relative in tests
+  }
+  const scheme =
+    req.headers.get("x-forwarded-proto")?.split(",")[0]!.trim().toLowerCase() ??
+    requestUrl?.protocol.replace(":", "") ??
+    "https";
+
   const hosts = new Set<string>();
   for (const header of ["x-forwarded-host", "host"]) {
     const value = req.headers.get(header);
     if (value) hosts.add(value.split(",")[0]!.trim().toLowerCase());
   }
-  try {
-    hosts.add(new URL(req.url).host.toLowerCase());
-  } catch {
-    // req.url may be relative in tests
+  if (requestUrl) hosts.add(requestUrl.host.toLowerCase());
+
+  const origins = new Set<string>();
+  for (const host of hosts) {
+    origins.add(`${scheme}://${host}`);
+    if (/^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host)) {
+      origins.add(`http://${host}`);
+    }
   }
-  return hosts;
+  return origins;
 }
 
-/** Whether the request comes from this app's own pages. Browsers send
- *  `Origin` on every POST fetch; `Referer` is accepted as a fallback. */
+/** Whether the request comes from this app's own pages: the `Origin` (or, as
+ *  a fallback, the `Referer`) must match a trusted origin exactly, scheme and
+ *  port included. Browsers send `Origin` on every POST fetch. */
 function isSameOrigin(req: Request): boolean {
-  const hosts = requestHosts(req);
-  if (hosts.size === 0) return false;
+  const origins = trustedOrigins(req);
+  if (origins.size === 0) return false;
   for (const header of ["origin", "referer"]) {
     const value = req.headers.get(header);
     if (!value) continue;
     try {
-      return hosts.has(new URL(value).host.toLowerCase());
+      return origins.has(new URL(value).origin.toLowerCase());
     } catch {
       return false;
     }
