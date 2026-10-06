@@ -1,4 +1,5 @@
 import { Registry } from "@cosmjs/proto-signing";
+import { AminoTypes } from "@cosmjs/stargate";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { MsgTransfer as LocalMsgTransfer } from "@osmosis-labs/proto-codecs/build/codegen/ibc/applications/transfer/v1/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
@@ -56,32 +57,38 @@ describe("IBC transfer Amino conversion", () => {
     expect(amino).not.toHaveProperty("memo");
   });
 
-  it("omits zero timestamps after registry normalization for height-only transfers", async () => {
-    const typeUrl = "/ibc.applications.transfer.v1.MsgTransfer";
-    const registry = new Registry(ibcProtoRegistry);
-    const message = LocalMsgTransfer.fromPartial({
-      sourcePort: "transfer",
-      sourceChannel: "channel-0",
-      sender: "osmo1sender",
-      receiver: "cosmos1receiver",
-      token: { denom: "uosmo", amount: "123" },
-      timeoutHeight: {
-        revisionNumber: BigInt(1),
-        revisionHeight: BigInt(12345),
-      },
-    });
-    const normalized = registry.decode({
-      typeUrl,
-      value: registry.encode({ typeUrl, value: message }),
-    });
-    const converter = (await getAminoConverters())[typeUrl];
-    expect(converter.toAmino(normalized)).toEqual({
-      source_port: "transfer",
-      source_channel: "channel-0",
-      sender: "osmo1sender",
-      receiver: "cosmos1receiver",
-      token: { denom: "uosmo", amount: "123" },
-      timeout_height: { revision_number: "1", revision_height: "12345" },
-    });
-  });
+  it.each(["", '{"forward":{"receiver":"destination"}}'])(
+    "preserves signing JSON after registry normalization with memo %s",
+    async (memo) => {
+      const typeUrl = "/ibc.applications.transfer.v1.MsgTransfer";
+      const registry = new Registry(ibcProtoRegistry);
+      const message = LocalMsgTransfer.fromPartial({
+        sourcePort: "transfer",
+        sourceChannel: "channel-0",
+        sender: "osmo1sender",
+        receiver: "cosmos1receiver",
+        token: { denom: "uosmo", amount: "123" },
+        timeoutHeight: {
+          revisionNumber: BigInt(1),
+          revisionHeight: BigInt(12345),
+        },
+        memo,
+      });
+      const normalized = registry.decode({
+        typeUrl,
+        value: registry.encode({ typeUrl, value: message }),
+      });
+      const aminoTypes = new AminoTypes(await getAminoConverters());
+      const aminoMessage = aminoTypes.toAmino({ typeUrl, value: normalized });
+      expect(aminoMessage.value).toEqual({
+        source_port: "transfer",
+        source_channel: "channel-0",
+        sender: "osmo1sender",
+        receiver: "cosmos1receiver",
+        token: { denom: "uosmo", amount: "123" },
+        timeout_height: { revision_number: "1", revision_height: "12345" },
+        ...(memo && { memo }),
+      });
+    }
+  );
 });

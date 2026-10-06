@@ -1205,14 +1205,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       } satisfies EncodeObject;
     });
 
-    const msgs = normalizedMessages.map((msg) => {
-      const res = aminoTypes.toAmino(msg);
-      // Include the 'memo' field again because the 'registry' omits it
-      if (msg.value.memo) {
-        res.value.memo = msg.value.memo;
-      }
-      return res;
-    });
+    const msgs = normalizedMessages.map((msg) => aminoTypes.toAmino(msg));
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
