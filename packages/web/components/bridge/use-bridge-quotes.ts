@@ -29,6 +29,7 @@ import {
   deriveMemoFlags,
   LossFigures,
   needsAcknowledgement,
+  normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
@@ -412,7 +413,7 @@ export const useBridgeQuotes = ({
             // check assume larger = worse, so compare magnitudes; a negative
             // figure would silently never trip the gate.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact).abs()
+              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
