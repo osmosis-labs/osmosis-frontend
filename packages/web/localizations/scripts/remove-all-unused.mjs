@@ -116,10 +116,10 @@ localizationObjs.forEach(([, obj]) => {
 console.log("Removed", removeCount, "keys");
 
 // Write the updated JS objects back to the files as stringified JSON
-localizationObjs.forEach(([fileName, obj]) => {
+for (const [fileName, obj] of localizationObjs) {
   const filePath = path.join(process.cwd(), fileName);
   const jsonString = JSON.stringify(obj, null, 2);
   // No need to resolve config since it's just JSON
-  const formattedJson = prettier.format(jsonString, { parser: "json" });
+  const formattedJson = await prettier.format(jsonString, { parser: "json" });
   fs.writeFileSync(filePath, formattedJson);
-});
+}

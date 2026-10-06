@@ -132,9 +132,7 @@ async function runExtract(isDryRun: boolean): Promise<void> {
   }
 
   if (isDryRun) {
-    console.log(
-      "\n  Dry run complete. Set DRY_RUN=false to broadcast."
-    );
+    console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
 
@@ -244,9 +242,7 @@ async function runDistribute(
   printDistributionPlan(distribution);
 
   if (isDryRun) {
-    console.log(
-      "\n  Dry run complete. Set DRY_RUN=false to broadcast."
-    );
+    console.log("\n  Dry run complete. Set DRY_RUN=false to broadcast.");
     return;
   }
 
@@ -313,10 +309,7 @@ async function runDistribute(
       console.log(`  ✅ TX: ${result.transactionHash}`);
     } catch (err) {
       hasFailures = true;
-      console.error(
-        `  ❌ Failed:`,
-        err instanceof Error ? err.message : err
-      );
+      console.error(`  ❌ Failed:`, err instanceof Error ? err.message : err);
     }
   }
 

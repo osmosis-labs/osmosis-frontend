@@ -446,23 +446,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                       noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
                     })
                   : // A full-range or ultra-wide position makes the edge
-                  // maxima astronomical noise; show the position-scaled
-                  // bound instead: the sized message amounts are a fixed
-                  // ceiling at ~the position's own sides, approximated by
-                  // the polled composition plus drift headroom and clamped
-                  // by the wallet balance.
-                  balancesReady && walletBalances && baseCoin && nobleCoin
-                  ? t("clPositions.migrateMaxWalletDrawWideRange", {
-                      base: formatWalletDrawCap(
-                        drawCapForWideRange(baseCoin)!,
-                        6
-                      ),
-                      noble: formatWalletDrawCap(
-                        drawCapForWideRange(nobleCoin)!,
-                        2
-                      ),
-                    })
-                  : "..."}
+                    // maxima astronomical noise; show the position-scaled
+                    // bound instead: the sized message amounts are a fixed
+                    // ceiling at ~the position's own sides, approximated by
+                    // the polled composition plus drift headroom and clamped
+                    // by the wallet balance.
+                    balancesReady && walletBalances && baseCoin && nobleCoin
+                    ? t("clPositions.migrateMaxWalletDrawWideRange", {
+                        base: formatWalletDrawCap(
+                          drawCapForWideRange(baseCoin)!,
+                          6
+                        ),
+                        noble: formatWalletDrawCap(
+                          drawCapForWideRange(nobleCoin)!,
+                          2
+                        ),
+                      })
+                    : "..."}
               </span>
             </div>
           )}

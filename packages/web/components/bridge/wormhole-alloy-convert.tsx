@@ -41,24 +41,27 @@ type ResolvedConvertAsset = {
 };
 
 const resolvedConvertAssetsByNetwork: Record<string, ResolvedConvertAsset> =
-  WORMHOLE_CONVERT_ASSETS.reduce((acc, { whSymbol, toNetwork }) => {
-    const variant = getAssetFromAssetList({
-      symbol: whSymbol,
-      assetLists: AssetLists,
-    });
-    const variantMinimalDenom = variant?.coinMinimalDenom;
-    const alloyMinimalDenom = variant?.rawAsset.variantGroupKey;
-    const pageToken = whSymbol.replace(/\.wh$/, "");
-    if (variantMinimalDenom && alloyMinimalDenom) {
-      acc[toNetwork] = {
-        toNetwork,
-        pageToken,
-        variantMinimalDenom,
-        alloyMinimalDenom,
-      };
-    }
-    return acc;
-  }, {} as Record<string, ResolvedConvertAsset>);
+  WORMHOLE_CONVERT_ASSETS.reduce(
+    (acc, { whSymbol, toNetwork }) => {
+      const variant = getAssetFromAssetList({
+        symbol: whSymbol,
+        assetLists: AssetLists,
+      });
+      const variantMinimalDenom = variant?.coinMinimalDenom;
+      const alloyMinimalDenom = variant?.rawAsset.variantGroupKey;
+      const pageToken = whSymbol.replace(/\.wh$/, "");
+      if (variantMinimalDenom && alloyMinimalDenom) {
+        acc[toNetwork] = {
+          toNetwork,
+          pageToken,
+          variantMinimalDenom,
+          alloyMinimalDenom,
+        };
+      }
+      return acc;
+    },
+    {} as Record<string, ResolvedConvertAsset>
+  );
 
 /**
  * Pre-gate shown on the /wormhole page for an Osmosis → {Solana,Sui,Aptos}

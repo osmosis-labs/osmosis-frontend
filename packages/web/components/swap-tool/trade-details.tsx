@@ -494,7 +494,7 @@ function RoutesTaken({
   // this prevents whiplash in the UI
   const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
 
-  const displayedSplit = isLoading ? latestSplitRef ?? split : split;
+  const displayedSplit = isLoading ? (latestSplitRef ?? split) : split;
 
   const tokenInTotal = useMemo(
     () =>

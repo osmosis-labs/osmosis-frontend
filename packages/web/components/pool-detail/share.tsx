@@ -699,14 +699,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                               bondDuration.duration.asDays()
                             ? "/images/small-vial.svg"
                             : sharePool.lockableDurations.length > 1 &&
-                              sharePool.lockableDurations[1].asDays() ===
-                                bondDuration.duration.asDays()
-                            ? "/images/medium-vial.svg"
-                            : sharePool.lockableDurations.length > 2 &&
-                              sharePool.lockableDurations[2].asDays() ===
-                                bondDuration.duration.asDays()
-                            ? "/images/large-vial.svg"
-                            : undefined
+                                sharePool.lockableDurations[1].asDays() ===
+                                  bondDuration.duration.asDays()
+                              ? "/images/medium-vial.svg"
+                              : sharePool.lockableDurations.length > 2 &&
+                                  sharePool.lockableDurations[2].asDays() ===
+                                    bondDuration.duration.asDays()
+                                ? "/images/large-vial.svg"
+                                : undefined
                           : undefined
                       }
                     />

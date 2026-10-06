@@ -81,8 +81,8 @@ export function useAmountInput({
       currency && rawCurrencyBalance
         ? new CoinPretty(currency, rawCurrencyBalance)
         : currency && balances // user has 0 balance
-        ? new CoinPretty(currency, 0)
-        : undefined,
+          ? new CoinPretty(currency, 0)
+          : undefined,
     [currency, balances, rawCurrencyBalance]
   );
 

@@ -60,12 +60,17 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
 
   @computed
   get totalEarnedValue(): PricePretty {
-    return this.totalEarned.reduce((sum, coin) => {
-      const price = this.priceStore.calculatePrice(coin);
-      if (price) return sum.add(price);
-      else return sum;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    }, new PricePretty(this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!, 0));
+    return this.totalEarned.reduce(
+      (sum, coin) => {
+        const price = this.priceStore.calculatePrice(coin);
+        if (price) return sum.add(price);
+        else return sum;
+      },
+      new PricePretty(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
   }
 
   @computed

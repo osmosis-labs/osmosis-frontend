@@ -11,7 +11,7 @@ import { Currency, IBCCurrency } from "@osmosis-labs/unit";
 type OriginChainCurrencyInfo = [
   string, // chain ID
   string, // coinMinimalDenom
-  { portId: string; channelId: string }[] // IBC path (configured)
+  { portId: string; channelId: string }[], // IBC path (configured)
 ];
 
 /** Will register IBC currencies to the Osmosis chain in the chain store, without querying for IBC trace denom from IBC module.

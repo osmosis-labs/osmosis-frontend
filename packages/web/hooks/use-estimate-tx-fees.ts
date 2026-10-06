@@ -155,12 +155,11 @@ async function getFallbackFeeEstimate({
   }
 
   const baseFeeCurrency = chain?.feeCurrencies?.[0] as
-    | { gasPriceStep?: { high?: number } }
-    | undefined;
+    { gasPriceStep?: { high?: number } } | undefined;
   const baseGasPrice =
     baseFeeDenom === BASE_GAS_DENOM_UOSMO
       ? DEFAULT_GAS_PRICE_UOSMO
-      : baseFeeCurrency?.gasPriceStep?.high ?? DEFAULT_GAS_PRICE_UOSMO;
+      : (baseFeeCurrency?.gasPriceStep?.high ?? DEFAULT_GAS_PRICE_UOSMO);
 
   const baseGasPriceDec = new Dec(baseGasPrice.toString());
   const balances = await apiUtils.local.balances.getUserBalances.fetch({

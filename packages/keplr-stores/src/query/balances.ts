@@ -9,7 +9,7 @@ import { computedFn } from "mobx-utils";
 
 export abstract class ObservableQueryBalanceInner<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableChainQuery<T, E> {
   protected constructor(
     kvStore: KVStore,
