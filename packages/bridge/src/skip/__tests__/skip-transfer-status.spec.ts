@@ -12,6 +12,7 @@ import { SkipApiClient } from "../client";
 import {
   SkipStatusProvider,
   SkipTransferStatusProvider,
+  toTransferStatus,
 } from "../transfer-status";
 
 jest.mock("@osmosis-labs/utils", () => ({
@@ -144,6 +145,126 @@ describe("SkipTransferStatusProvider", () => {
     );
   });
 
+  describe("Solana-signed transfers", () => {
+    const solanaSnapshot: TxSnapshot = {
+      ...baseTxSnapshot,
+      sendTxHash: "solanaSignature",
+      fromChain: {
+        chainId: "solana",
+        prettyName: "Solana",
+        chainType: "solana",
+      },
+      solanaRecentBlockhash: "recentBlockhash",
+    };
+
+    const withCheck = (
+      outcome: "confirmed" | "failed" | "dropped" | undefined
+    ) => {
+      const check = jest.fn(async () => outcome);
+      const solanaProvider = new SkipTransferStatusProvider(
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        SkipStatusProvider,
+        check
+      );
+      solanaProvider.statusReceiverDelegate = mockReceiver;
+      return { check, solanaProvider };
+    };
+
+    const skipState = (state: string) =>
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ state })
+        )
+      );
+
+    it("does not resolve an abandoned transfer as failed on Skip's word alone", async () => {
+      // Skip abandons tracking on a timeout; the source tx may have landed
+      // and the funds may still arrive.
+      skipState("STATE_ABANDONED");
+      const { solanaProvider } = withCheck("confirmed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+
+    it("resolves a restored transfer as failed once the chain proves it was dropped", async () => {
+      // Reload-before-confirmation regression: a fresh provider has only the
+      // persisted snapshot, including the blockhash recorded at broadcast.
+      skipState("STATE_PENDING");
+      const { check, solanaProvider } = withCheck("dropped");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(check).toHaveBeenCalledWith({
+        signature: "solanaSignature",
+        recentBlockhash: "recentBlockhash",
+      });
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "failed",
+        undefined
+      );
+    });
+
+    it("resolves as failed when the tx failed onchain", async () => {
+      skipState("STATE_ABANDONED");
+      const { solanaProvider } = withCheck("failed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "failed",
+        undefined
+      );
+    });
+
+    it("keeps polling when Skip errors and the chain proves nothing yet", async () => {
+      // Skip can't see a Solana tx that hasn't landed; its error must not
+      // end tracking, or a later dropped proof could never resolve it.
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ message: "tx not found" }, { status: 404 })
+        )
+      );
+      const { solanaProvider } = withCheck(undefined);
+
+      await expect(
+        solanaProvider.trackTxStatus(solanaSnapshot)
+      ).resolves.toBeUndefined();
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+
+    it("still reports Skip's own terminal success", async () => {
+      skipState("STATE_COMPLETED_SUCCESS");
+      const { solanaProvider } = withCheck("confirmed");
+
+      await solanaProvider.trackTxStatus(solanaSnapshot);
+
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "solanaSignature",
+        "success",
+        undefined
+      );
+    });
+  });
+
+  describe("toTransferStatus", () => {
+    it("maps completed states", () => {
+      expect(toTransferStatus("STATE_COMPLETED_SUCCESS")).toBe("success");
+      expect(toTransferStatus("STATE_COMPLETED_ERROR")).toBe("failed");
+    });
+
+    it("keeps abandoned and in-flight states pending", () => {
+      // Skip also abandons slow transfers whose funds can still arrive.
+      expect(toTransferStatus("STATE_ABANDONED")).toBe("pending");
+      expect(toTransferStatus("STATE_PENDING")).toBe("pending");
+      expect(toTransferStatus("STATE_SUBMITTED")).toBe("pending");
+    });
+  });
+
   it("should handle undefined transfer status", async () => {
     server.use(
       http.get("https://api.skip.money/v2/tx/status", () => {
@@ -211,5 +332,35 @@ describe("SkipTransferStatusProvider", () => {
     };
     const url = cosmosProvider.makeExplorerUrl(snapshot);
     expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
+  });
+
+  it("links a Solana-origin transfer to Solscan, then to the intermediate chain once advanced", () => {
+    // Solana isn't in the cosmos chain list, so without its own explorer the
+    // row would render no link (and warn on every render).
+    const solanaSnapshot: TxSnapshot = {
+      ...baseTxSnapshot,
+      sendTxHash: "5SolanaSig",
+      fromChain: {
+        chainId: "solana",
+        prettyName: "Solana",
+        chainType: "solana",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+    };
+    expect(provider.makeExplorerUrl(solanaSnapshot)).toBe(
+      "https://solscan.io/tx/5SolanaSig"
+    );
+
+    // a multi-tx transfer that advanced onto Noble links the Noble tx
+    const advanced: TxSnapshot = {
+      ...solanaSnapshot,
+      sendTxHash: "NOBLETX",
+      trackingChainId: "cosmoshub-4",
+    };
+    expect(provider.makeExplorerUrl(advanced)).not.toContain("solscan");
   });
 });

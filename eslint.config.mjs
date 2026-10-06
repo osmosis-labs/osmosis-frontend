@@ -48,6 +48,7 @@ const webRules = {
       "error",
       {
         devDependencies: [
+          "**/open-next.config.ts",
           "**/*.spec.ts",
           "**/*.spec.tsx",
           "**/*.spec.js",
@@ -116,6 +117,7 @@ export default [
       files: [
         "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
         "packages/web/playwright.config.ts",
+        "packages/web/open-next.config.ts",
       ],
     })),
   ...compat
