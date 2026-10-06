@@ -25,8 +25,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "dayjs": "^1.11.23"
+    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix"
   },
   "devDependencies": {
     "eslint": "^9.39.5",

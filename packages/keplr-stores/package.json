@@ -26,6 +26,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "devDependencies": {
+    "@types/sha.js": "^2.4.0",
     "eslint": "^9.39.5",
     "jest": "^30.5.2",
     "prettier": "^3.6.2",

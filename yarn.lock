@@ -8159,12 +8159,10 @@ __metadata:
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
-    "@types/jest-in-case": "npm:^1.0.6"
     base-x: "npm:^5.0.0"
     cachified: "npm:^3.5.4"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
-    jest-in-case: "npm:^1.0.2"
     launchdarkly-node-client-sdk: "npm:^3.4.3"
     long: "npm:^5.2.3"
     lru-cache: "npm:^10.0.1"
@@ -8199,6 +8197,7 @@ __metadata:
   dependencies:
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
+    "@types/sha.js": "npm:^2.4.0"
     axios: "npm:^0.33.0"
     buffer: "npm:^6.0.3"
     deepmerge: "npm:^4.2.2"
@@ -8237,7 +8236,6 @@ __metadata:
   dependencies:
     "@cosmjs/amino": "npm:0.36.2"
     "@cosmjs/encoding": "npm:0.36.2"
-    "@cosmjs/math": "npm:0.36.2"
     "@cosmjs/proto-signing": "npm:0.36.2"
     "@cosmjs/stargate": "npm:0.36.2"
     "@cosmjs/tendermint-rpc": "npm:0.36.2"
@@ -8248,8 +8246,6 @@ __metadata:
     jest: "npm:^30.5.2"
     lint-staged: "npm:^17.6.0"
     prettier: "npm:^3.6.2"
-    protobufjs: "npm:^7.6.5"
-    regenerator-runtime: "npm:^0.13.11"
     rimraf: "npm:^5.0.0"
     ts-jest: "npm:^29.4.14"
     tsx: "npm:^4.22.4"
@@ -8289,7 +8285,6 @@ __metadata:
   dependencies:
     "@chain-registry/types": "npm:^0.46.0"
     "@cosmjs/amino": "npm:0.36.2"
-    "@cosmjs/cosmwasm-stargate": "npm:0.36.2"
     "@cosmjs/encoding": "npm:0.36.2"
     "@cosmjs/math": "npm:0.36.2"
     "@cosmjs/proto-signing": "npm:0.36.2"
@@ -8297,7 +8292,6 @@ __metadata:
     "@cosmos-kit/core": "npm:^2.18.1"
     "@keplr-wallet/crypto": "npm:0.12.48"
     "@keplr-wallet/provider-mock": "npm:0.12.12"
-    "@osmosis-labs/bridge": "npm:^1.0.0"
     "@osmosis-labs/keplr-hooks": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/keplr-stores": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/math": "npm:^5.1.0"
@@ -8310,22 +8304,16 @@ __metadata:
     "@types/ws": "npm:^7.4.1"
     axios: "npm:^0.33.0"
     buffer: "npm:^6.0.3"
-    cachified: "npm:^3.5.4"
     chain-registry: "npm:^1.20.0"
     cosmjs-types: "npm:^0.5.2"
     dayjs: "npm:^1.11.23"
-    debounce: "npm:^1.2.1"
-    deepmerge: "npm:^4.2.2"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
     lint-staged: "npm:^17.6.0"
     long: "npm:^5.2.3"
-    lru-cache: "npm:^10.0.1"
     mobx: "npm:^6.3.10"
     mobx-utils: "npm:^6.0.4"
     prettier: "npm:^3.6.2"
-    protobufjs: "npm:^7.6.5"
-    sha.js: "npm:^2.4.11"
     ts-jest: "npm:^29.4.14"
     typescript: "npm:5.9.3"
     utility-types: "npm:^3.10.0"
@@ -8344,10 +8332,8 @@ __metadata:
     "@osmosis-labs/utils": "npm:^1.0.0"
     "@trpc/client": "npm:^11.19.0"
     "@trpc/server": "npm:^11.19.0"
-    "@types/jest-in-case": "npm:^1.0.6"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
-    jest-in-case: "npm:^1.0.2"
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.14"
     typescript: "npm:5.9.3"
@@ -8359,25 +8345,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@osmosis-labs/tx@workspace:packages/tx"
   dependencies:
-    "@cosmjs/proto-signing": "npm:0.36.2"
-    "@cosmjs/stargate": "npm:0.36.2"
     "@osmosis-labs/proto-codecs": "npm:^5.1.0"
     "@osmosis-labs/server": "npm:^1.0.0"
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
-    "@types/jest-in-case": "npm:^1.0.6"
     buffer: "npm:^6.0.3"
     cachified: "npm:^3.5.4"
     cosmjs-types: "npm:^0.5.2"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
-    jest-in-case: "npm:^1.0.2"
     lru-cache: "npm:^10.0.1"
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.14"
     typescript: "npm:5.9.3"
-    utility-types: "npm:^3.10.0"
   languageName: unknown
   linkType: soft
 
@@ -8386,7 +8367,6 @@ __metadata:
   resolution: "@osmosis-labs/types@workspace:packages/types"
   dependencies:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    dayjs: "npm:^1.11.23"
     eslint: "npm:^9.39.5"
     jest: "npm:^30.5.2"
     prettier: "npm:^3.6.2"
@@ -8500,7 +8480,6 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-input-autosize": "npm:^2.2.1"
     "@types/react-modal": "npm:^3.13.1"
-    "@types/sha.js": "npm:^2.4.0"
     "@vercel/speed-insights": "npm:^1.0.12"
     "@visx/curve": "npm:^2.17.0"
     "@visx/gradient": "npm:^3.3.0"
@@ -8566,7 +8545,6 @@ __metadata:
     react-modal: "npm:^3.16.1"
     react-toastify: "npm:^10.0.5"
     react-use: "npm:^17.6.1"
-    sha.js: "npm:^2.4.11"
     sharp: "npm:^0.35.5"
     tailwindcss: "npm:^3.2.4"
     ts-jest: "npm:^29.4.14"
@@ -9216,21 +9194,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobufjs/codegen@npm:^2.0.4, @protobufjs/codegen@npm:^2.0.5":
+"@protobufjs/codegen@npm:^2.0.4":
   version: 2.0.5
   resolution: "@protobufjs/codegen@npm:2.0.5"
   checksum: 10c0/1b8a2ae56ee60a56e9d205cd4b6072a1503c5069b8ebb905710f974ff0098a0d0700641c137e0a8d98dedf14423156a106a9433695cbf52574810f55000fdcab
   languageName: node
   linkType: hard
 
-"@protobufjs/eventemitter@npm:^1.1.0, @protobufjs/eventemitter@npm:^1.1.1":
+"@protobufjs/eventemitter@npm:^1.1.0":
   version: 1.1.1
   resolution: "@protobufjs/eventemitter@npm:1.1.1"
   checksum: 10c0/8e06193d4629c5e7c09d4f8c2ddba8fc4dfa739f0149f33a1d901568d35bb7b8b5277a4e8452baf3bdd0b302fd599cf255d193267aa93a0a4747e23cd073c4ac
   languageName: node
   linkType: hard
 
-"@protobufjs/fetch@npm:^1.1.0, @protobufjs/fetch@npm:^1.1.1":
+"@protobufjs/fetch@npm:^1.1.0":
   version: 1.1.1
   resolution: "@protobufjs/fetch@npm:1.1.1"
   dependencies:
@@ -9267,7 +9245,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobufjs/utf8@npm:^1.1.0, @protobufjs/utf8@npm:^1.1.1":
+"@protobufjs/utf8@npm:^1.1.0":
   version: 1.1.1
   resolution: "@protobufjs/utf8@npm:1.1.1"
   checksum: 10c0/641fc145f00626405e8984b6e90b9edcbcc072ffc82d0647ca3176e09c730b2d022f988e65f011a7a17e2e4d77cde7733643aa10d8ac2bfa30f134dbcad553fd
@@ -23195,7 +23173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:*, long@npm:^3 || ^4 || ^5, long@npm:^5.0.0, long@npm:^5.2.0, long@npm:^5.2.1, long@npm:^5.2.3, long@npm:^5.3.2":
+"long@npm:*, long@npm:^3 || ^4 || ^5, long@npm:^5.0.0, long@npm:^5.2.0, long@npm:^5.2.1, long@npm:^5.2.3":
   version: 5.3.2
   resolution: "long@npm:5.3.2"
   checksum: 10c0/7130fe1cbce2dca06734b35b70d380ca3f70271c7f8852c922a7c62c86c4e35f0c39290565eca7133c625908d40e126ac57c02b1b1a4636b9457d77e1e60b981
@@ -26915,25 +26893,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.6.5":
-  version: 7.6.5
-  resolution: "protobufjs@npm:7.6.5"
-  dependencies:
-    "@protobufjs/aspromise": "npm:^1.1.2"
-    "@protobufjs/base64": "npm:^1.1.2"
-    "@protobufjs/codegen": "npm:^2.0.5"
-    "@protobufjs/eventemitter": "npm:^1.1.1"
-    "@protobufjs/fetch": "npm:^1.1.1"
-    "@protobufjs/float": "npm:^1.0.2"
-    "@protobufjs/path": "npm:^1.1.2"
-    "@protobufjs/pool": "npm:^1.1.0"
-    "@protobufjs/utf8": "npm:^1.1.1"
-    "@types/node": "npm:>=13.7.0"
-    long: "npm:^5.3.2"
-  checksum: 10c0/863eaca9c6f45bfcfb8787c545f53e9c6696507e328e3981b4643c12d35df7f2826021c10e3fd30bef342c13a8e9d306547bac9c0849ee3bf50f770a12f01dc5
-  languageName: node
-  linkType: hard
-
 "protocols@npm:^2.0.0, protocols@npm:^2.0.1":
   version: 2.0.1
   resolution: "protocols@npm:2.0.1"
@@ -27629,13 +27588,6 @@ __metadata:
   version: 1.4.2
   resolution: "regenerate@npm:1.4.2"
   checksum: 10c0/f73c9eba5d398c818edc71d1c6979eaa05af7a808682749dd079f8df2a6d91a9b913db216c2c9b03e0a8ba2bba8701244a93f45211afbff691c32c7b275db1b8
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.13.11":
-  version: 0.13.11
-  resolution: "regenerator-runtime@npm:0.13.11"
-  checksum: 10c0/12b069dc774001fbb0014f6a28f11c09ebfe3c0d984d88c9bced77fdb6fedbacbca434d24da9ae9371bfbf23f754869307fb51a4c98a8b8b18e5ef748677ca24
   languageName: node
   linkType: hard
 
