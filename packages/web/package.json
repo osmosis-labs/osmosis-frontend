@@ -169,6 +169,6 @@
     "tsx": "^4.22.4",
     "typescript": "5.9.3",
     "use-debugger-hooks": "^1.3.0",
-    "wrangler": "^4.144.0"
+    "wrangler": "^4.148.0"
   }
 }
