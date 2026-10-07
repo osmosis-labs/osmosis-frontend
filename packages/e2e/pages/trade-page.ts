@@ -282,9 +282,11 @@ export class TradePage extends BasePage {
    * re-arms (unticks) the box.
    */
   async acknowledgeLossIfNeeded() {
-    const lossCheckbox = this.page
-      .getByRole("dialog")
-      .getByRole("checkbox", { name: /I understand this trade may lose/ });
+    // Located via its sibling label: in the CI browser the checkbox exposes no
+    // accessible name, so getByRole's name filter never matches it.
+    const lossCheckbox = this.page.locator(
+      '//div[@role="dialog"]//label[contains(., "I understand this trade may lose")]/../button[@role="checkbox"]'
+    );
     const isGated = await lossCheckbox
       .waitFor({ state: "visible", timeout: 1000 })
       .then(() => true)
