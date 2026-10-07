@@ -24,9 +24,8 @@ import dayjs from "dayjs";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
-import { EventName, SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
+import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -37,6 +36,8 @@ export class CreateOneClickSessionError extends Error {
     this.name = "WalletSelectOneClickError";
   }
 }
+
+const textEncoder = new TextEncoder();
 
 export function isAuthenticatorOneClickTradingSession({
   authenticator,
@@ -81,7 +82,7 @@ export function getOneClickTradingSessionAuthenticator({
   };
 
   const spendLimitParams = toBase64(
-    Buffer.from(
+    textEncoder.encode(
       JSON.stringify({
         limit: allowedAmount,
         reset_period: "day" as OneClickTradingResetPeriods,
@@ -92,7 +93,7 @@ export function getOneClickTradingSessionAuthenticator({
   const spendLimit = {
     type: "CosmwasmAuthenticatorV1",
     config: toBase64(
-      Buffer.from(
+      textEncoder.encode(
         `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
       )
     ),
@@ -100,12 +101,12 @@ export function getOneClickTradingSessionAuthenticator({
 
   const messageFilters = allowedMessages.map((message) => ({
     type: "MessageFilter",
-    config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+    config: toBase64(textEncoder.encode(`{"@type":"${message}"}`)),
   }));
 
   const messageFilterAnyOf = {
     type: "AnyOf",
-    config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
+    config: toBase64(textEncoder.encode(JSON.stringify(messageFilters))),
   };
 
   const compositeAuthData = [
@@ -118,9 +119,7 @@ export function getOneClickTradingSessionAuthenticator({
   // not the structure of the authenticator returned from the chain.
   return {
     authenticatorType: "AllOf",
-    data: new Uint8Array(
-      Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
-    ),
+    data: textEncoder.encode(JSON.stringify(compositeAuthData)),
   };
 }
 
@@ -183,7 +182,6 @@ export async function onAdd1CTSession({
   transaction1CTParams,
   allowedAmount,
   t,
-  logEvent,
 }: {
   privateKey: PrivKeySecp256k1;
   tx: DeliverTxResponse;
@@ -198,7 +196,6 @@ export async function onAdd1CTSession({
   transaction1CTParams: OneClickTradingTransactionParams;
   allowedAmount: string;
   t: ReturnType<typeof useTranslation>["t"];
-  logEvent: ReturnType<typeof useAmplitudeAnalytics>["logEvent"];
 }) {
   const publicKey = toBase64(privateKey.getPubKey().toBytes());
 
@@ -244,13 +241,6 @@ export async function onAdd1CTSession({
     },
     ToastType.ONE_CLICK_TRADING
   );
-  logEvent([
-    EventName.OneClickTrading.startSession,
-    {
-      spendLimit: Number(transaction1CTParams.spendLimit.toDec().toString()),
-      sessionPeriod: transaction1CTParams.sessionPeriod.end,
-    },
-  ]);
 }
 
 export async function makeCreate1CTSessionMessage({
@@ -392,7 +382,6 @@ export const useCreateOneClickTradingSession = ({
   >;
 } = {}) => {
   const { accountStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
@@ -470,7 +459,6 @@ export const useCreateOneClickTradingSession = ({
         transaction1CTParams,
         allowedAmount,
         t,
-        logEvent,
       });
     },
     queryOptions

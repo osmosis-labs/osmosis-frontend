@@ -25,10 +25,8 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { EventName } from "~/config";
 import {
   OneClickTradingParamsChanges,
-  useAmplitudeAnalytics,
   useDisclosure,
   useOneClickTradingSession,
   useTranslation,
@@ -152,7 +150,6 @@ export const OneClickTradingSettings = ({
     useState<OneClickTradingTransactionParams>();
 
   const { chainStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -386,11 +383,6 @@ export const OneClickTradingSettings = ({
                             throw new Error("1CT Params is undefined");
 
                           const nextValue = !params.isOneClickEnabled;
-                          if (nextValue) {
-                            logEvent([
-                              EventName.OneClickTrading.enableOneClickTrading,
-                            ]);
-                          }
 
                           return {
                             ...params,

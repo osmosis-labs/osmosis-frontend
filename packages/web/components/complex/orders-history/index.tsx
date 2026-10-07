@@ -17,10 +17,8 @@ import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { EventName } from "~/config";
 import {
   Breakpoint,
-  useAmplitudeAnalytics,
   useFeatureFlags,
   useTranslation,
   useWalletSelect,
@@ -61,9 +59,6 @@ const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
 export const OrderHistory = observer(() => {
-  const { logEvent } = useAmplitudeAnalytics({
-    onLoadEvent: [EventName.LimitOrder.pageViewed],
-  });
   const featureFlags = useFeatureFlags();
   const { accountStore } = useStore();
   const { t } = useTranslation();
@@ -129,22 +124,12 @@ export const OrderHistory = observer(() => {
 
   const claimOrders = useCallback(async () => {
     try {
-      logEvent([EventName.LimitOrder.claimOrdersStarted]);
       await claimAllOrders();
       await refetch();
-      logEvent([EventName.LimitOrder.claimOrdersCompleted]);
-    } catch (error) {
-      if (error instanceof Error && error.message === "Request rejected") {
-        // don't log when the user rejects in wallet
-        return;
-      }
-      const { message } = error as Error;
-      logEvent([
-        EventName.LimitOrder.claimOrdersFailed,
-        { errorMessage: message },
-      ]);
+    } catch {
+      // Intentionally swallowed: this handler previously only logged analytics.
     }
-  }, [claimAllOrders, logEvent, refetch]);
+  }, [claimAllOrders, refetch]);
 
   const showConnectWallet = !wallet?.isWalletConnected && !isWalletLoading;
 

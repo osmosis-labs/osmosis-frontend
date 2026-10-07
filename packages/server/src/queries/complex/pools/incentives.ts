@@ -52,38 +52,8 @@ export const IncentivePoolFilterSchema = z.object({
   incentiveTypes: z.array(z.enum(allPoolIncentiveTypes)).optional(),
 });
 
-/** Params for filtering pools. */
-export type IncentivePoolFilter = z.infer<typeof IncentivePoolFilterSchema>;
-
 export function getPoolIncentives(poolId: string) {
   return getCachedPoolIncentivesMap().then((map) => map.get(poolId));
-}
-
-/** Checks a pool's incentive data againt a given filter to determine if it's filtered out. */
-export function isIncentivePoolFiltered(
-  incentives: PoolIncentives,
-  filter: IncentivePoolFilter
-) {
-  // Filter pools if incentive types are specified.
-  // Any type in the given list of types has to be included at least once in the pool types.
-  if (filter.incentiveTypes && incentives) {
-    const hasIncentiveType = filter.incentiveTypes.some((type) =>
-      incentives.incentiveTypes?.includes(type)
-    );
-    if (!hasIncentiveType) return true;
-  } else if (
-    filter.incentiveTypes &&
-    !incentives &&
-    !filter.incentiveTypes.includes("none")
-  ) {
-    // "none" is a special case, where it includes pools that
-    // don't have an incentives of any type, where the pool incentives map
-    // returns nothing for that pool.
-    // Though, if numia indexes swap fee rewards, none will be filtered above.
-    return true;
-  }
-
-  return false;
 }
 
 const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });

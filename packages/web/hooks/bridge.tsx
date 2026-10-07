@@ -1,6 +1,8 @@
 import { Transition } from "@headlessui/react";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import dynamic, { DynamicOptionsLoadingProps } from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useMount, useSearchParam } from "react-use";
@@ -9,22 +11,95 @@ import { combine } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
-import { AmountAndReviewScreen } from "~/components/bridge/amount-and-review-screen";
-import { AssetSelectScreen } from "~/components/bridge/asset-select-screen";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { GeneralErrorScreen } from "~/components/error/general-error-screen";
+import { Spinner } from "~/components/loaders";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
-import { IconButton } from "~/components/ui/button";
-import { EventName } from "~/config";
+import { Button, IconButton } from "~/components/ui/button";
 import { useTranslation, useWindowKeyActions } from "~/hooks";
-import {
-  logAmplitudeEvent,
-  useAmplitudeAnalytics,
-} from "~/hooks/use-amplitude-analytics";
 import { FiatRampKey } from "~/integrations";
+import { ModalBase } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
-import { FiatRampsModal } from "~/modals/fiat-ramps";
+
+// The bridge screens pull in every bridge provider's client code (Nomic, TON,
+// Bitcoin, Solana wallets, ...). They only render while the bridge is open, so
+// load them on first open instead of shipping them in the shared _app chunk.
+//
+// `next/dynamic` hands a failed chunk download (typically a stale hash after a
+// deploy) to the loading component rather than the nearest error boundary, and
+// keeps that failure until `retry` is called. Without a retry the bridge would
+// spin forever, even after closing and reopening it.
+const ChunkLoadFallback = ({
+  error,
+  retry,
+  showSpinner,
+}: DynamicOptionsLoadingProps & { showSpinner: boolean }) => {
+  const { t } = useTranslation();
+
+  if (error) {
+    // Mirrors GeneralErrorScreen, which handles render-time errors for these
+    // same screens; the bridge frame already provides the close button.
+    return (
+      <div className="text-white flex flex-col items-center gap-6 py-20">
+        <Image
+          src="/images/leaking-beaker.svg"
+          alt="Leaking beaker"
+          width={224}
+          height={168}
+        />
+        <h1 className="text-2xl font-bold leading-9">
+          {t("errors.uhOhSomethingWentWrong")}
+        </h1>
+        <p className="text-center">{t("errors.sorryForTheInconvenience")}</p>
+        <Button variant="secondary" onClick={retry}>
+          {t("walletSelect.retry")}
+        </Button>
+      </div>
+    );
+  }
+
+  return showSpinner ? (
+    <div className="flex justify-center py-20">
+      <Spinner />
+    </div>
+  ) : null;
+};
+const ScreenLoader = (props: DynamicOptionsLoadingProps) => (
+  <ChunkLoadFallback {...props} showSpinner />
+);
+/** The modal is an overlay, so render nothing while it loads. A failed load is
+ *  shown inside a modal shell of its own: the selection modal has already
+ *  closed, and the bridge frame this renders in may sit offscreen. */
+const ModalLoader = ({ error, retry }: DynamicOptionsLoadingProps) => {
+  if (!error) return null;
+  return (
+    <ModalBase
+      isOpen
+      onRequestClose={() => useBridgeStore.getState().setFiatRampParams(null)}
+    >
+      <ChunkLoadFallback error={error} retry={retry} showSpinner={false} />
+    </ModalBase>
+  );
+};
+const AssetSelectScreen = dynamic(
+  () =>
+    import("~/components/bridge/asset-select-screen").then(
+      (module) => module.AssetSelectScreen
+    ),
+  { ssr: false, loading: ScreenLoader }
+);
+const AmountAndReviewScreen = dynamic(
+  () =>
+    import("~/components/bridge/amount-and-review-screen").then(
+      (module) => module.AmountAndReviewScreen
+    ),
+  { ssr: false, loading: ScreenLoader }
+);
+const FiatRampsModal = dynamic(
+  () => import("~/modals/fiat-ramps").then((module) => module.FiatRampsModal),
+  { ssr: false, loading: ModalLoader }
+);
 
 export const enum BridgeScreen {
   Asset = "0",
@@ -53,14 +128,6 @@ export const useBridgeStore = create(
         set({ direction });
       },
       setSelectedAssetDenom: (denom: string | undefined) => {
-        if (!isNil(denom)) {
-          logAmplitudeEvent([
-            EventName.DepositWithdraw.assetSelected,
-            {
-              tokenName: denom,
-            },
-          ]);
-        }
         set({ selectedAssetDenom: denom });
       },
       startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
@@ -73,14 +140,6 @@ export const useBridgeStore = create(
         anyDenom: string | undefined;
         direction: "deposit" | "withdraw" | undefined;
       }) => {
-        if (anyDenom) {
-          logAmplitudeEvent([
-            EventName.DepositWithdraw.assetSelected,
-            {
-              tokenName: anyDenom,
-            },
-          ]);
-        }
         set({
           isVisible: true,
           direction,
@@ -123,7 +182,6 @@ export const useBridgeStore = create(
 /** Provides a globally accessible bridge UX that is initiated via the `useBridge` hook. */
 export const ImmersiveBridge = () => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const transferDirectionSearchParam = useSearchParam("transferDirection");
   const transferAssetSearchParam = useSearchParam("transferAsset");
   const { isReady: isRouterReady } = useRouter();
@@ -415,9 +473,6 @@ export const ImmersiveBridge = () => {
       <FiatOnrampSelectionModal
         isOpen={isFiatOnRampSelectionOpen}
         onRequestClose={() => toggleFiatOnRampSelection(false)}
-        onSelectRamp={() => {
-          logEvent([EventName.ProfileModal.buyTokensClicked]);
-        }}
       />
     </>
   );

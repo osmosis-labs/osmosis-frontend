@@ -8,8 +8,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import {
   formatPretty,
@@ -72,8 +71,6 @@ export const MyPositionCard: FunctionComponent<{
     }
   );
 
-  const { logEvent } = useAmplitudeAnalytics();
-
   return (
     <div
       className={classNames(
@@ -83,8 +80,6 @@ export const MyPositionCard: FunctionComponent<{
         }
       )}
       onClick={() => {
-        if (collapsed)
-          logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
         setCollapsed(false);
       }}
     >

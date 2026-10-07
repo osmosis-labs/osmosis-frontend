@@ -923,6 +923,7 @@
     "multiTxRouteExpiredTitle": "전송 경로 만료",
     "multiTxRouteExpired": "이 전송의 저장된 경로가 만료되어 더 이상 서명할 수 없습니다. 자금은 {chain} 계정에 안전하게 보관되어 있습니다.",
     "multiTxFeeShortfall": "{chain} 계정으로 이 단계의 네트워크 수수료를 지불할 수 없습니다. {chain}에 가스용 자금을 추가한 후 계속하기를 다시 누르세요.",
+    "solanaNeedsSol": "이 거래의 네트워크 수수료와 계정 임대료를 지불하려면 Solana 지갑에 SOL이 필요합니다. SOL을 추가한 후 다시 시도하세요.",
     "multiTxStepFailedTitle": "최종 전송이 완료되지 않음",
     "multiTxStepFailed": "{chain}에서 최종 전송이 완료되지 않았습니다. 자금은 {chain}에 안전하게 있습니다. 거래 내역에서 계속하기를 눌러 다시 시도하세요.",
     "multiTxRecordFailed": "이 전송의 진행 상황을 저장할 수 없어 최종 {chain} 단계를 제공할 수 없습니다. 자금은 {chain}에 도착합니다. 전송을 완료하려면 지원팀에 문의하세요.",
@@ -966,9 +967,12 @@
     "feesReserved": "귀하의 총 {assetName} 잔액 중 소액이 {networkName} 에 대한 수수료를 지불하기 위해 예약되었습니다.",
     "verifyAddressWarning": "자금을 인출할 주소를 확인하세요. 잘못된 주소를 제공하면 자금이 손실될 수 있습니다.",
     "recipientAddress": "{chain} 의 수신자 주소",
+    "fillFromPhantom": "Phantom 지갑에서 채우기",
     "enterAddress": "주소를 입력하세요",
     "sendToAnotherAddress": "다른 주소로 보내기",
     "invalidAddress": "잘못된 {chain} 주소",
+    "solanaTokenAccountAddress": "토큰 계정 주소입니다. 이 계정을 소유한 Solana 지갑 주소를 입력하세요.",
+    "solanaAddressUnverified": "이 Solana 주소를 확인할 수 없습니다. 다시 시도해 주세요.",
     "acknowledgement": "나는 잘못된 수취인 주소를 제공하거나 거래소로 출금을 시도할 경우 자금 손실의 위험을 인정하고 받아들입니다.",
     "acknowledgementWithoutExchange": "수취인 주소를 잘못 입력할 경우 자금 손실 위험이 발생할 수 있음을 인지하고 수락합니다.",
     "done": "완료",
@@ -1059,6 +1063,9 @@
       "date": "날짜",
       "wormchainReceive": "Wormchain 수신",
       "checkingSolana": "Solana에서 청구 상태를 확인하는 중...",
+      "checkingGuardians": "Wormhole에서 이 전송을 확인하는 중입니다. 잠시 기다려 주세요...",
+      "guardianSetExpired": "이 전송은 Wormhole 가디언 세트 {index}에 의해 서명되었으나 해당 세트가 만료되어 현재 상태로는 청구할 수 없습니다. Wormhole 가디언이 원래 트랜잭션을 다시 관측하고 재서명해야 합니다. 트랜잭션 해시와 함께 Wormhole에 문의해 주세요.",
+      "guardianCheckUnavailable": "지금은 Wormhole에서 이 전송을 확인할 수 없습니다. 그래도 청구를 시도할 수 있으며, 실패하더라도 네트워크 수수료만 잃게 됩니다.",
       "dailyLimitExceeded": "일일 한도 초과",
       "governorBodyEnqueued": "Wormhole이 {chain}의 일일 전송 한도에 도달했기 때문에 이 전송을 완료하는 데 최대 {hours}시간이 걸립니다. 이는 Wormhole 네트워크의 정상적이고 일시적인 보안 기능입니다.",
       "governorBodyLikelyEnqueued": "이 전송의 가치(~{amount})가 {chain}의 사용 가능한 여유(~{available} 남음)를 초과합니다. Wormhole 가디언이 최대 {hours}시간 동안 대기열에 넣을 가능성이 높습니다.",
@@ -1181,7 +1188,6 @@
       "collapse": "무너지다",
       "moreStats": "더 많은 통계"
     },
-    "followTheConversation": "대화를 따라가세요",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
@@ -1205,7 +1211,8 @@
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",
-      "of": "{denom} 의"
+      "of": "{denom} 의",
+      "viewBackingHistory": "담보 자산 내역 보기"
     }
   },
   "osmosisUpdates": {

@@ -1,5 +1,3 @@
-import bigInteger from "big-integer";
-
 import { CoinUtils } from "./coin-utils";
 import {
   exponentDecStringToDecString,
@@ -7,6 +5,19 @@ import {
   isValidDecimalString,
 } from "./etc";
 import { Int } from "./int";
+
+// `**` on bigint requires an ES2016+ target, so use square-and-multiply instead.
+const pow = (base: bigint, exp: bigint): bigint => {
+  let result = BigInt(1);
+  while (exp > BigInt(0)) {
+    if (exp % BigInt(2) === BigInt(1)) result *= base;
+    base *= base;
+    exp /= BigInt(2);
+  }
+  return result;
+};
+
+const abs = (n: bigint): bigint => (n < BigInt(0) ? -n : n);
 
 export class Dec {
   public static readonly precision = 18;
@@ -16,16 +27,14 @@ export class Dec {
   // Max bit length for `Dec` is 256 + 60(decimalPrecisionBits)
   // The int in the `Dec` is handled as integer assuming that it has 18 precision.
   // (2 ** (256 + 60) - 1)
-  protected static readonly maxDec = bigInteger(
+  protected static readonly maxDec = BigInt(
     "133499189745056880149688856635597007162669032647290798121690100488888732861290034376435130433535"
   );
 
   protected static readonly precisionMultipliers: {
-    [key: string]: bigInteger.BigInteger | undefined;
+    [key: string]: bigint | undefined;
   } = {};
-  protected static calcPrecisionMultiplier(
-    prec: number
-  ): bigInteger.BigInteger {
+  protected static calcPrecisionMultiplier(prec: number): bigint {
     if (prec < 0) {
       throw new Error("Invalid prec");
     }
@@ -38,7 +47,7 @@ export class Dec {
     }
 
     const zerosToAdd = Dec.precision - prec;
-    const multiplier = bigInteger(10).pow(zerosToAdd);
+    const multiplier = pow(BigInt(10), BigInt(zerosToAdd));
     Dec.precisionMultipliers[prec.toString()] = multiplier;
     return multiplier;
   }
@@ -70,15 +79,15 @@ export class Dec {
     };
   }
 
-  protected int: bigInteger.BigInteger;
+  protected int: bigint;
 
   /**
    * Create a new Dec from integer with decimal place at prec
-   * @param int - Parse a number | bigInteger | string into a Dec.
+   * @param int - Parse a number | bigint | string into a Dec.
    * If int is string and contains dot(.), prec is ignored and automatically calculated.
    * @param prec - Precision
    */
-  constructor(int: bigInteger.BigNumber | Int, prec: number = 0) {
+  constructor(int: number | string | bigint | Int, prec: number = 0) {
     if (typeof int === "number") {
       int = int.toString();
     }
@@ -107,90 +116,88 @@ export class Dec {
         prec = int.length - int.indexOf(".") - 1;
         int = int.replace(".", "");
       }
-      this.int = bigInteger(int);
+      this.int = BigInt(int);
     } else if (int instanceof Int) {
-      this.int = bigInteger(int.toString());
-    } else if (typeof int === "bigint") {
-      this.int = bigInteger(int);
+      this.int = BigInt(int.toString());
     } else {
-      this.int = bigInteger(int);
+      this.int = BigInt(int);
     }
 
-    this.int = this.int.multiply(Dec.calcPrecisionMultiplier(prec));
+    this.int = this.int * Dec.calcPrecisionMultiplier(prec);
 
     this.checkBitLen();
   }
 
   protected checkBitLen(): void {
-    if (this.int.abs().gt(Dec.maxDec)) {
+    if (abs(this.int) > Dec.maxDec) {
       throw new Error(`Integer out of range ${this.int.toString()}`);
     }
   }
 
   public isZero(): boolean {
-    return this.int.eq(bigInteger(0));
+    return this.int === BigInt(0);
   }
 
   public isNegative(): boolean {
-    return this.int.isNegative();
+    return this.int < BigInt(0);
   }
 
   public isPositive(): boolean {
-    return this.int.isPositive();
+    return this.int > BigInt(0);
   }
 
   public equals(d2: Dec): boolean {
-    return this.int.eq(d2.int);
+    return this.int === d2.int;
   }
 
   /**
    * Alias for the greater method.
    */
   public gt(d2: Dec): boolean {
-    return this.int.gt(d2.int);
+    return this.int > d2.int;
   }
 
   /**
    * Alias for the greaterOrEquals method.
    */
   public gte(d2: Dec): boolean {
-    return this.int.geq(d2.int);
+    return this.int >= d2.int;
   }
 
   /**
    * Alias for the lesser method.
    */
   public lt(d2: Dec): boolean {
-    return this.int.lt(d2.int);
+    return this.int < d2.int;
   }
 
   /**
    * Alias for the lesserOrEquals method.
    */
   public lte(d2: Dec): boolean {
-    return this.int.leq(d2.int);
+    return this.int <= d2.int;
   }
 
   /**
    * reverse the decimal sign.
    */
   public neg(): Dec {
-    return new Dec(this.int.negate(), Dec.precision);
+    return new Dec(-this.int, Dec.precision);
   }
 
   /**
    * Returns the absolute value of a decimals.
    */
   public abs(): Dec {
-    return new Dec(this.int.abs(), Dec.precision);
+    return new Dec(abs(this.int), Dec.precision);
   }
 
   public add(d2: Dec): Dec {
-    return new Dec(this.int.add(d2.int), Dec.precision);
+    return new Dec(this.int + d2.int, Dec.precision);
   }
 
   public sub(d2: Dec): Dec {
-    return new Dec(this.int.subtract(d2.int), Dec.precision);
+    return new Dec(this.int - d2.int, Dec.precision);
   }
 
   public pow(n: Int): Dec {
@@ -224,7 +231,7 @@ export class Dec {
   }
 
   protected mulRaw(d2: Dec): Dec {
-    return new Dec(this.int.multiply(d2.int), Dec.precision);
+    return new Dec(this.int * d2.int, Dec.precision);
   }
 
   public quo(d2: Dec): Dec {
@@ -243,80 +250,82 @@ export class Dec {
     const precision = Dec.calcPrecisionMultiplier(0);
 
     // multiply precision twice
-    const mul = this.int.multiply(precision).multiply(precision);
-    return new Dec(mul.divide(d2.int), Dec.precision);
+    const mul = this.int * precision * precision;
+    return new Dec(mul / d2.int, Dec.precision);
   }
 
   public isInteger(): boolean {
     const precision = Dec.calcPrecisionMultiplier(0);
-    return this.int.remainder(precision).equals(bigInteger(0));
+    return this.int % precision === BigInt(0);
   }
 
   /**
    * Remove a Precision amount of rightmost digits and perform bankers rounding
    * on the remainder (gaussian rounding) on the digits which have been removed.
    */
-  protected chopPrecisionAndRound(): bigInteger.BigInteger {
+  protected chopPrecisionAndRound(): bigint {
     // Remove the negative and add it back when returning
     if (this.isNegative()) {
       const absoulteDec = this.abs();
       const choped = absoulteDec.chopPrecisionAndRound();
-      return choped.negate();
+      return -choped;
     }
 
     const precision = Dec.calcPrecisionMultiplier(0);
-    const fivePrecision = precision.divide(bigInteger(2));
+    const fivePrecision = precision / BigInt(2);
 
     // Get the truncated quotient and remainder
-    const { quotient, remainder } = this.int.divmod(precision);
+    const quotient = this.int / precision;
+    const remainder = this.int % precision;
 
     // If remainder is zero
-    if (remainder.equals(bigInteger(0))) {
+    if (remainder === BigInt(0)) {
       return quotient;
     }
 
-    if (remainder.lt(fivePrecision)) {
+    if (remainder < fivePrecision) {
       return quotient;
-    } else if (remainder.gt(fivePrecision)) {
-      return quotient.add(bigInteger(1));
+    } else if (remainder > fivePrecision) {
+      return quotient + BigInt(1);
     } else {
       // always round to an even number
-      if (quotient.divide(bigInteger(2)).equals(bigInteger(0))) {
+      if (quotient / BigInt(2) === BigInt(0)) {
         return quotient;
       } else {
-        return quotient.add(bigInteger(1));
+        return quotient + BigInt(1);
       }
     }
   }
 
-  protected chopPrecisionAndRoundUp(): bigInteger.BigInteger {
+  protected chopPrecisionAndRoundUp(): bigint {
     // Remove the negative and add it back when returning
     if (this.isNegative()) {
       const absoulteDec = this.abs();
       // truncate since d is negative...
       const choped = absoulteDec.chopPrecisionAndTruncate();
-      return choped.negate();
+      return -choped;
     }
 
     const precision = Dec.calcPrecisionMultiplier(0);
 
     // Get the truncated quotient and remainder
-    const { quotient, remainder } = this.int.divmod(precision);
+    const quotient = this.int / precision;
+    const remainder = this.int % precision;
 
     // If remainder is zero
-    if (remainder.equals(bigInteger(0))) {
+    if (remainder === BigInt(0)) {
       return quotient;
     }
 
-    return quotient.add(bigInteger(1));
+    return quotient + BigInt(1);
   }
 
   /**
    * Similar to chopPrecisionAndRound, but always rounds down
    */
-  protected chopPrecisionAndTruncate(): bigInteger.BigInteger {
+  protected chopPrecisionAndTruncate(): bigint {
     const precision = Dec.calcPrecisionMultiplier(0);
-    return this.int.divide(precision);
+    return this.int / precision;
   }
 
   public toString(
@@ -324,8 +333,9 @@ export class Dec {
     locale: boolean = false
   ): string {
     const precision = Dec.calcPrecisionMultiplier(0);
-    const int = this.int.abs();
-    const { quotient: integer, remainder: fraction } = int.divmod(precision);
+    const int = abs(this.int);
+    const integer = int / precision;
+    const fraction = int % precision;
 
     let fractionStr = fraction.toString(10);
     for (let i = 0, l = fractionStr.length; i < Dec.precision - l; i++) {
@@ -334,8 +344,7 @@ export class Dec {
     fractionStr = fractionStr.substring(0, prec);
 
     const isNegative =
-      this.isNegative() &&
-      !(integer.eq(bigInteger(0)) && fractionStr.length === 0);
+      this.isNegative() && !(integer === BigInt(0) && fractionStr.length === 0);
 
     const integerStr = locale
       ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -346,6 +355,14 @@ export class Dec {
     return `${isNegative ? "-" : ""}${integerStr}${
       fractionStr.length > 0 ? "." + fractionStr : ""
     }`;
+  }
+
+  /**
+   * Serialize as a decimal string. Native `bigint` fields make
+   * `JSON.stringify` throw otherwise.
+   */
+  public toJSON(): string {
+    return this.toString();
   }
 
   public round(): Int {

@@ -34,6 +34,47 @@ yarn lint:fix
 yarn build && yarn start
 ```
 
+### Cloudflare staging
+
+Use Node 24 and install the locked dependencies with `yarn install --immutable`.
+The following commands work from the repository root or this package:
+
+```bash
+yarn cf:build
+yarn cf:dry-run
+yarn cf:preview
+```
+
+`cf:preview` populates the local R2 cache before starting the Worker. Asset detail
+pages revalidate after two hours and `/apps` after one day. R2 stores generated
+pages; the Durable Object queue coordinates background regeneration.
+
+For the first remote deployment, authenticate Wrangler with `yarn workspace
+@osmosis-labs/web exec wrangler login`, or set `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID` in CI. Enable R2 on that account, then create the staging
+cache bucket once:
+
+```bash
+yarn cf:cache:create
+```
+
+Configure public `NEXT_PUBLIC_*` values and any build-time API credentials in the
+build environment. Set runtime variables and secrets on the
+`osmosis-frontend-stage` Worker in Cloudflare. Then deploy:
+
+```bash
+yarn cf:deploy
+```
+
+This rebuilds the app, populates the remote R2 cache, and deploys the staging
+Worker with its Durable Object migration. `--keep-vars` preserves dashboard
+variables. The Worker self-reference and R2 bucket in `wrangler.jsonc` both point
+to staging resources.
+
+`public/_headers` gives versioned Next assets a one-year immutable browser cache
+and the favicon a ten-day cache. Files with stable names, including token images,
+keep the default revalidation policy.
+
 ### Analyze
 
 View the size of the various webpack bundles on both the server and the client.

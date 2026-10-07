@@ -17,9 +17,6 @@
  * @requires PRIVATE_KEY        - (extract) Hex key of the old account to drain.
  * @requires E2E_PRIVATE_KEY_TOPUP   - Hex key of the topup holding account.
  * @requires E2E_PRIVATE_KEY_PREVIEW - (distribute) Hex key of the new E2E Test Account.
- * @requires TEST_PRIVATE_KEY_SG     - (distribute) Hex key of new Monitoring SG.
- * @requires TEST_PRIVATE_KEY_EU     - (distribute) Hex key of new Monitoring EU.
- * @requires TEST_PRIVATE_KEY_US     - (distribute) Hex key of new Monitoring US.
  * @requires ACCOUNT_LABEL      - (extract, optional) Label for logging.
  * @requires DRY_RUN            - (optional) Defaults to "true". Set to "false" to send.
  * @requires RESERVE_OSMO       - (distribute only) OSMO to keep in topup account. Default: 5.
@@ -58,9 +55,6 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const NEW_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },
-  { envVar: "TEST_PRIVATE_KEY_SG", label: "Monitoring SG" },
-  { envVar: "TEST_PRIVATE_KEY_EU", label: "Monitoring EU" },
-  { envVar: "TEST_PRIVATE_KEY_US", label: "Monitoring US" },
 ] as const;
 
 // ---------------------------------------------------------------------------

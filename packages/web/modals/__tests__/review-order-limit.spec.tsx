@@ -45,7 +45,6 @@ jest.mock("~/hooks", () => {
   const actual = jest.requireActual("~/hooks");
   return {
     ...actual,
-    useAmplitudeAnalytics: () => ({ logEvent: jest.fn() }),
     useFeatureFlags: () => ({ oneClickTrading: false }),
     useOneClickTradingSwapReview: () => ({
       isEnabled: false,

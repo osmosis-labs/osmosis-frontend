@@ -13,12 +13,7 @@ import {
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
-import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useFeatureFlags,
-  useTranslation,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { api } from "~/utils/trpc";
 
@@ -38,10 +33,6 @@ const Home = () => {
 
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
-
-  useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
-  });
 
   return (
     <main className="relative flex overflow-auto pb-2 pt-8 h-content md:h-content-mobile">
@@ -68,7 +59,6 @@ const Home = () => {
             {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
             <ClientOnly>
               <TradeTool
-                page="Swap Page"
                 previousTrade={previousTrade}
                 setPreviousTrade={setPreviousTrade}
               />
@@ -84,7 +74,6 @@ const Home = () => {
 const TopGainers = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
     api.edge.assets.getTopGainerAssets.useQuery({
@@ -99,13 +88,8 @@ const TopGainers = () => {
       isLoading={isTopGainerAssetsLoading}
       assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
       onClickSeeAll={() => {
-        logEvent([EventName.Swap.checkTopGainers, { token: "All" }]);
         router.push(`/assets?category=topGainers`);
       }}
-      onClickAsset={(asset) => {
-        logEvent([EventName.Swap.checkTopGainers, { token: asset.coinDenom }]);
-      }}
-      highlight="topGainers"
     />
   );
 };

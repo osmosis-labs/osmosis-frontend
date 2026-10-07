@@ -4,7 +4,7 @@ This file contains complex query functions: the combination of raw query data fr
 
 ## Caching
 
-Functions are often wrapped in a caching layer to prevent unnecessary database calls and data processing. This is done using the [`cachified`](https://github.com/epicweb-dev/cachified) library. Most functions, except those that rely on real-time user data (such as bank balances), are wrapped. The actual cache implementation is passed to `cachified` to store the data: for in-memory caching we use [`lru-cache`](https://github.com/isaacs/node-lru-cache). For caching data in a remote server, we have a proxy object called `RemoteCache` that behaves similarly.
+Functions are often wrapped in a caching layer to prevent unnecessary database calls and data processing. This is done using the [`cachified`](https://github.com/epicweb-dev/cachified) library. Most functions, except those that rely on real-time user data (such as bank balances), are wrapped. The actual cache implementation is passed to `cachified` to store the data: for in-memory caching we use [`lru-cache`](https://github.com/isaacs/node-lru-cache).
 
 The `key` value should include all stringified inputs that needed are in `getFreshValue`.
 
@@ -57,4 +57,3 @@ Recommendations:
   - The name of the function should correspond roughly to the type of data it returns, rather then the feature that is using it.
   - Prefer returning all the data returned by underlying queries, instead of specific values needed by your feature. This allows the function and its returned data to more readibly be reused in other features.
   - If it includes many params, especially optional params, it should accept an object as a parameter. Otherwise, one or two function parameters are fine.
-- If values will not exceed 1MB and are especially expensive to query or calculate, the `RemoteCache` can be used. This will be shared amongst all server runtimes. Due to networking overhead, it is recommeneded to use `LRUCache` for smaller or more critical values, or values that exceed 1MB. See [Vercel limitations](https://vercel.com/docs/functions/limitations) for more information.

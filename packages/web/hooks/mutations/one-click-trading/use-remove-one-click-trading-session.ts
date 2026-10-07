@@ -3,8 +3,6 @@ import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 
 type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
@@ -17,11 +15,9 @@ type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
 export async function onEnd1CTSession({
   accountStore,
   authenticatorId,
-  logEvent,
 }: {
   accountStore: ReturnType<typeof useStore>["accountStore"];
   authenticatorId: string;
-  logEvent: ReturnType<typeof useAmplitudeAnalytics>["logEvent"];
 }) {
   const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
 
@@ -36,7 +32,6 @@ export async function onEnd1CTSession({
       ToastType.ONE_CLICK_TRADING
     );
   }
-  logEvent([EventName.OneClickTrading.endSession]);
 }
 
 export const useRemoveOneClickTradingSession = ({
@@ -45,7 +40,6 @@ export const useRemoveOneClickTradingSession = ({
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
   const { accountStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
 
   return useMutation(async ({ authenticatorId }) => {
     const userOsmoAddress = accountStore.getWallet(
@@ -85,6 +79,6 @@ export const useRemoveOneClickTradingSession = ({
         });
     });
 
-    onEnd1CTSession({ accountStore, authenticatorId, logEvent });
+    onEnd1CTSession({ accountStore, authenticatorId });
   }, queryOptions);
 };

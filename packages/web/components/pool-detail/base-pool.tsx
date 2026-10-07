@@ -78,11 +78,10 @@ export const BasePoolDetails: FunctionComponent<{
             style={{
               height: showPoolDetails
                 ? poolHeaderHeight +
-                    poolDetailsContainerOffset +
-                    poolBreakdownHeight +
-                    12 ?? // gap between header and breakdown
-                  178
-                : poolHeaderHeight + poolDetailsContainerOffset ?? 100,
+                  poolDetailsContainerOffset +
+                  poolBreakdownHeight +
+                  12 // gap between header and breakdown
+                : poolHeaderHeight + poolDetailsContainerOffset,
             }}
           >
             <div

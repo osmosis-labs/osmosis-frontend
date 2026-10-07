@@ -12,6 +12,11 @@
     ]
   },
   "scripts": {
+    "cf:build": "yarn workspace @osmosis-labs/web cf:build",
+    "cf:preview": "yarn workspace @osmosis-labs/web cf:preview",
+    "cf:dry-run": "yarn workspace @osmosis-labs/web cf:dry-run",
+    "cf:deploy": "yarn workspace @osmosis-labs/web cf:deploy",
+    "cf:cache:create": "yarn workspace @osmosis-labs/web cf:cache:create",
     "dev": "turbo dev --concurrency 15",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",
@@ -48,10 +53,10 @@
   "devDependencies": {
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
-    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/eslintrc": "^3.3.7",
     "@inlang/cli": "^2.11.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
     "babel-jest": "^29.7.0",
     "dotenv-cli": "^7.2.1",
     "eslint": "^9.39.5",
@@ -72,9 +77,9 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.8",
     "sherif": "1.13.0",
-    "ts-jest": "^29.1.2",
-    "turbo": "^2.10.13",
-    "typescript": "5.4.5"
+    "ts-jest": "^29.4.14",
+    "turbo": "^2.11.6",
+    "typescript": "5.9.3"
   },
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
   "resolutions": {

@@ -40,14 +40,13 @@ import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
 import { PrivateText } from "~/components/privacy";
 import { ArrowButton, Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import {
   getParametersFromOneClickTradingInfo,
   useFeatureFlags,
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { useDisclosure, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
@@ -68,7 +67,6 @@ export const ProfileModal: FunctionComponent<
   const { width } = useWindowSize();
   const { accountStore } = useStore();
   const { currentAvatar, setCurrentAvatar } = useProfileStore();
-  const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
   const featureFlags = useFeatureFlags();
@@ -111,7 +109,6 @@ export const ProfileModal: FunctionComponent<
 
   const onCopyAddress = () => {
     copyToClipboard(address);
-    logEvent([EventName.ProfileModal.copyWalletAddressClicked]);
     setHasCopied(true);
     reset();
   };
@@ -181,10 +178,6 @@ export const ProfileModal: FunctionComponent<
                           isSelected={currentAvatar === "wosmongton"}
                           onSelect={() => {
                             onCloseAvatarSelect();
-                            logEvent([
-                              EventName.ProfileModal.selectAvatarClicked,
-                              { avatar: "wosmongton" },
-                            ]);
                             setCurrentAvatar("wosmongton");
                           }}
                           className="outline-none"
@@ -200,10 +193,6 @@ export const ProfileModal: FunctionComponent<
                           isSelected={currentAvatar === "ammelia"}
                           onSelect={() => {
                             onCloseAvatarSelect();
-                            logEvent([
-                              EventName.ProfileModal.selectAvatarClicked,
-                              { avatar: "ammelia" },
-                            ]);
                             setCurrentAvatar("ammelia");
                           }}
                           className="outline-none"
@@ -377,11 +366,6 @@ export const ProfileModal: FunctionComponent<
                       target="blank"
                       className="group"
                       rel="noopener noreferrer"
-                      onClick={() => {
-                        logEvent([
-                          EventName.ProfileModal.blockExplorerLinkOutClicked,
-                        ]);
-                      }}
                     >
                       <ExternalLinkIcon isAnimated />
                     </ActionButton>
@@ -389,7 +373,6 @@ export const ProfileModal: FunctionComponent<
                     <Drawer
                       isOpen={isQROpen}
                       onOpen={() => {
-                        logEvent([EventName.ProfileModal.qrCodeClicked]);
                         onOpenQR();
                       }}
                       onClose={onCloseQR}
@@ -443,7 +426,6 @@ export const ProfileModal: FunctionComponent<
                     <ActionButton
                       title="Log Out"
                       onClick={async () => {
-                        logEvent([EventName.ProfileModal.logOutClicked]);
                         try {
                           setIsDisconnecting(true);
                           await wallet?.disconnect(true);
@@ -485,7 +467,6 @@ const OneClickTradingProfileSection: FunctionComponent<{
   setShow1CTSettings: (value: boolean) => void;
   onRestartSession: () => void;
 }> = ({ setShow1CTSettings, onRestartSession }) => {
-  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const { t } = useTranslation();
   const { isOneClickTradingExpired, oneClickTradingInfo } =
@@ -514,12 +495,6 @@ const OneClickTradingProfileSection: FunctionComponent<{
     <div
       onClick={() => {
         setShow1CTSettings(true);
-        logEvent([
-          EventName.OneClickTrading.accessed,
-          {
-            source: "profile-section",
-          },
-        ]);
       }}
       className="group flex w-full cursor-pointer items-center justify-between rounded-b-2xl border border-t-0 border-osmoverse-700 bg-osmoverse-800 px-5 py-3"
     >

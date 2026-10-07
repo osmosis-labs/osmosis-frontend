@@ -23,6 +23,8 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { clientSolanaRpc } from "~/utils/solana";
+
 /**
  * Normalizes an amount between different decimal precisions
  * Used primarily for cross-chain asset normalization when comparing or displaying values
@@ -118,7 +120,10 @@ export const localBridgeTransferRouter = createTRPCRouter({
           createAssetObject("evm", UserEvmAddressSchema),
           createAssetObject("cosmos", UserCosmosAddressSchema),
           createAssetObject("bitcoin", z.object({})),
-          createAssetObject("solana", z.object({})),
+          createAssetObject(
+            "solana",
+            z.object({ userSolanaAddress: z.string().optional() })
+          ),
           createAssetObject("tron", z.object({})),
           createAssetObject("penumbra", z.object({})),
           createAssetObject("doge", z.object({})),
@@ -170,6 +175,66 @@ export const localBridgeTransferRouter = createTRPCRouter({
                *
                * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
                */
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: Object.keys(asset.supportedVariants)[0],
+                amount: decAmount,
+              }).catch((e) => captureErrorAndReturn(e, undefined));
+
+              return {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  decAmount
+                ),
+                usdValue: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  usdValue ?? new Dec(0)
+                ),
+              };
+            })
+        );
+      } else if (input.source.type === "solana") {
+        const solanaAddress = input.source.userSolanaAddress;
+        return Promise.all(
+          input.source.assets
+            .filter(
+              (
+                asset
+              ): asset is Extract<typeof asset, { chainType: "solana" }> =>
+                asset.chainType === "solana"
+            )
+            .map(async (asset) => {
+              const emptyBalance = {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  0
+                ),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+              };
+
+              if (!solanaAddress) return emptyBalance;
+
+              // No catch: an RPC failure must fail the query, so React Query
+              // retries and the UI shows a balance error. Swallowing it into
+              // an empty balance would be a successful false zero that hides
+              // funded USDC and is never retried.
+              const balance = await getSolanaTokenBalance({
+                owner: solanaAddress,
+                mint: asset.address,
+              });
+
+              const decAmount = new Dec(balance.toString());
+              // Price via the Osmosis-side variant, mirroring the EVM branch
               const usdValue = await calcAssetValue({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
@@ -327,3 +392,61 @@ export const localBridgeTransferRouter = createTRPCRouter({
       }
     }),
 });
+
+/** The associated token account program. */
+const SOLANA_ATA_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+
+/**
+ * SPL token balance (minimal units) of `mint` in `owner`'s associated token
+ * account. Only that account counts: Skip's burn spends from it, so a Max
+ * that also counted other token accounts of the same mint would fail at
+ * signing. This router runs in the browser, so it reads through the app's
+ * Solana RPC route, which holds the provider key server-side (see
+ * `getClientSolanaRpcUrls`), and throws when no endpoint answers: an
+ * unanswered read is not a zero balance.
+ */
+async function getSolanaTokenBalance({
+  owner,
+  mint,
+}: {
+  owner: string;
+  mint: string;
+}): Promise<bigint> {
+  const result = await clientSolanaRpc<{
+    value?: {
+      pubkey?: string;
+      account?: {
+        // the token program that owns this token account
+        owner?: string;
+        data?: {
+          parsed?: { info?: { tokenAmount?: { amount?: string } } };
+        };
+      };
+    }[];
+  }>("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed" }]);
+
+  // Loaded on demand: this router ships to the browser.
+  const { PublicKey } = await import("@solana/web3.js");
+  const ownerKey = new PublicKey(owner);
+  const mintKey = new PublicKey(mint);
+  const ataProgram = new PublicKey(SOLANA_ATA_PROGRAM_ID);
+  const associatedAddress = (tokenProgram: string) =>
+    PublicKey.findProgramAddressSync(
+      [
+        ownerKey.toBuffer(),
+        new PublicKey(tokenProgram).toBuffer(),
+        mintKey.toBuffer(),
+      ],
+      ataProgram
+    )[0].toBase58();
+
+  const associated = (result?.value ?? []).find(
+    (tokenAccount) =>
+      tokenAccount?.pubkey &&
+      tokenAccount.account?.owner &&
+      tokenAccount.pubkey === associatedAddress(tokenAccount.account.owner)
+  );
+  return BigInt(
+    associated?.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0"
+  );
+}

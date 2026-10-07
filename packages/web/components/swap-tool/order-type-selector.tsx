@@ -9,8 +9,7 @@ import {
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { api } from "~/utils/trpc";
 
@@ -32,7 +31,6 @@ export const OrderTypeSelector = ({
   initialBaseDenom = ATOM_BASE_DENOM,
 }: OrderTypeSelectorProps) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   const [type, setType] = useQueryState(
     "type",
@@ -104,23 +102,6 @@ export const OrderTypeSelector = ({
   const { data: baseAsset } = api.edge.assets.getUserAsset.useQuery({
     findMinDenomOrSymbol: base,
   });
-
-  useEffect(() => {
-    switch (type) {
-      case "market":
-        logEvent([EventName.LimitOrder.marketOrderSelected]);
-        break;
-      case "limit":
-        logEvent([EventName.LimitOrder.limitOrderSelected]);
-        break;
-    }
-    /**
-     * Dependencies are disabled for this hook as we only want to emit
-     * events when the user changes order types.
-     */
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [

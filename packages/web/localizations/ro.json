@@ -923,6 +923,7 @@
     "multiTxRouteExpiredTitle": "Ruta de transfer a expirat",
     "multiTxRouteExpired": "Ruta salvată a acestui transfer a expirat și nu mai poate fi semnată. Fondurile dvs. sunt în siguranță în contul dvs. {chain}.",
     "multiTxFeeShortfall": "Contul dvs. {chain} nu poate acoperi taxa de rețea a acestui pas. Adăugați fonduri pentru gaz pe {chain}, apoi apăsați din nou Continuați.",
+    "solanaNeedsSol": "Aveți nevoie de SOL în portofelul Solana pentru a plăti taxa de rețea și chiria contului acestei tranzacții. Adăugați SOL, apoi încercați din nou.",
     "multiTxStepFailedTitle": "Transferul final nu s-a finalizat",
     "multiTxStepFailed": "Transferul final pe {chain} nu s-a finalizat. Fondurile dvs. sunt în siguranță pe {chain}; apăsați Continuați în istoricul tranzacțiilor pentru a încerca din nou.",
     "multiTxRecordFailed": "Progresul acestui transfer nu a putut fi salvat, deci pasul final pe {chain} nu poate fi oferit. Fondurile dvs. vor ajunge totuși pe {chain}; vă rugăm să contactați asistența pentru a finaliza transferul.",
@@ -966,9 +967,12 @@
     "feesReserved": "O mică parte din soldul dvs. total {assetName} a fost rezervată pentru a plăti taxe pentru {networkName} .",
     "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",
     "recipientAddress": "Adresa destinatarului pe {chain}",
+    "fillFromPhantom": "Completați din Phantom Wallet",
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
+    "solanaTokenAccountAddress": "Aceasta este adresa unui cont de token. Introdu adresa portofelului Solana care îl deține.",
+    "solanaAddressUnverified": "Această adresă Solana nu a putut fi verificată. Te rugăm să încerci din nou.",
     "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "acknowledgementWithoutExchange": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului.",
     "done": "Terminat",
@@ -1059,6 +1063,9 @@
       "date": "Data",
       "wormchainReceive": "Recepție Wormchain",
       "checkingSolana": "Se verifică starea revendicării pe Solana...",
+      "checkingGuardians": "Se verifică acest transfer cu Wormhole, vă rugăm așteptați...",
+      "guardianSetExpired": "Acest transfer a fost semnat de setul de gardieni Wormhole {index}, care a expirat între timp, așa că nu poate fi revendicat în forma actuală. Gardienii Wormhole trebuie să re-observe tranzacția inițială și să o semneze din nou. Vă rugăm să contactați Wormhole cu hash-ul tranzacției.",
+      "guardianCheckUnavailable": "Nu am putut confirma acum acest transfer cu Wormhole. Puteți încerca totuși să îl revendicați; dacă eșuează, pierdeți doar taxa de rețea.",
       "dailyLimitExceeded": "Limita zilnică depășită",
       "governorBodyEnqueued": "Acest transfer va dura până la {hours} ore, deoarece Wormhole a atins limita zilnică de transfer pentru {chain}. Aceasta este o funcție de securitate normală și temporară a rețelei Wormhole.",
       "governorBodyLikelyEnqueued": "Valoarea acestui transfer (~{amount}) depășește marja disponibilă pe {chain} (~{available} rămase). Gardienii Wormhole îl vor pune probabil în coadă pentru până la {hours} ore.",
@@ -1181,7 +1188,6 @@
       "collapse": "Colaps",
       "moreStats": "Mai multe statistici"
     },
-    "followTheConversation": "Urmăriți conversația",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
@@ -1205,7 +1211,8 @@
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",
-      "of": "din {denom}"
+      "of": "din {denom}",
+      "viewBackingHistory": "Vezi istoricul acoperirii"
     }
   },
   "osmosisUpdates": {
