@@ -88,8 +88,8 @@ export function calcSigmaRange({
     anchor === undefined
       ? [mean, mean]
       : Array.isArray(anchor)
-      ? [Number(anchor[0].toString()), Number(anchor[1].toString())]
-      : [Number(anchor.toString()), Number(anchor.toString())];
+        ? [Number(anchor[0].toString()), Number(anchor[1].toString())]
+        : [Number(anchor.toString()), Number(anchor.toString())];
   if (
     !Number.isFinite(anchorLo) ||
     !Number.isFinite(anchorHi) ||

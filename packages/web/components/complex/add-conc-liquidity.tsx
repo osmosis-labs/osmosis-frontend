@@ -193,12 +193,12 @@ const AddConcLiqView: FunctionComponent<
       advancedLookbackDays <= 1 / 24
         ? "1h"
         : advancedLookbackDays <= 1
-        ? "1d"
-        : advancedLookbackDays <= 7
-        ? "7d"
-        : advancedLookbackDays <= 30
-        ? "1mo"
-        : "1y";
+          ? "1d"
+          : advancedLookbackDays <= 7
+            ? "7d"
+            : advancedLookbackDays <= 30
+              ? "1mo"
+              : "1y";
     if (chartConfig.historicalRange !== target)
       chartConfig.setHistoricalRange(target);
   }, [advancedEnabled, advancedLookbackDays, chartConfig]);
@@ -608,27 +608,30 @@ const percentFromPos = (pos: number): number =>
   pos <= 0
     ? 0
     : pos < PERCENT_ZERO_SEGMENT
-    ? (pos / PERCENT_ZERO_SEGMENT) * PERCENT_MIN
-    : PERCENT_MIN *
-      Math.pow(10, (pos - PERCENT_ZERO_SEGMENT) / PERCENT_POSITIONS_PER_DECADE);
+      ? (pos / PERCENT_ZERO_SEGMENT) * PERCENT_MIN
+      : PERCENT_MIN *
+        Math.pow(
+          10,
+          (pos - PERCENT_ZERO_SEGMENT) / PERCENT_POSITIONS_PER_DECADE
+        );
 const posFromPercent = (percent: number): number =>
   percent <= 0
     ? 0
     : percent < PERCENT_MIN
-    ? Math.round((percent / PERCENT_MIN) * PERCENT_ZERO_SEGMENT)
-    : PERCENT_ZERO_SEGMENT +
-      Math.round(
-        Math.log10(Math.min(percent, PERCENT_MAX) / PERCENT_MIN) *
-          PERCENT_POSITIONS_PER_DECADE
-      );
+      ? Math.round((percent / PERCENT_MIN) * PERCENT_ZERO_SEGMENT)
+      : PERCENT_ZERO_SEGMENT +
+        Math.round(
+          Math.log10(Math.min(percent, PERCENT_MAX) / PERCENT_MIN) *
+            PERCENT_POSITIONS_PER_DECADE
+        );
 /** Landmark dots: 0 plus a 1-2-5 series. */
 const PERCENT_DOT_STOPS = [0, 0.5, 1, 5, 10, 20, 50, 100, 200, 500];
 const formatPercentStop = (percent: number): string =>
   percent > 0 && percent < 1
     ? percent.toFixed(1)
     : percent < 10
-    ? (Math.round(percent * 10) / 10).toString()
-    : Math.round(percent).toString();
+      ? (Math.round(percent * 10) / 10).toString()
+      : Math.round(percent).toString();
 const percentDetentLabel = (pos: number): string | undefined => {
   if (pos === 0) return "0%";
   const percent = percentFromPos(pos);
@@ -828,8 +831,6 @@ const AdvancedRangeControls: FunctionComponent<{
     fullRange,
     allHistoricalPricesInDisplayUnits,
   } = props.addLiquidityConfig;
-  const { logEvent } = useAmplitudeAnalytics();
-
   // Within a single modal session, user tweaks survive toggling Advanced
   // off and back on — only a fresh modal mount returns to the defaults
   // (7d lookback, 2σ beyond the observed range).
@@ -868,8 +869,8 @@ const AdvancedRangeControls: FunctionComponent<{
       center === "range" && windowInfo !== undefined
         ? [windowInfo.min, windowInfo.max]
         : center === "mean" && windowInfo !== undefined
-        ? [windowInfo.mean, windowInfo.mean]
-        : [currentPriceWithDecimals, currentPriceWithDecimals];
+          ? [windowInfo.mean, windowInfo.mean]
+          : [currentPriceWithDecimals, currentPriceWithDecimals];
     if (!anchor[0].isPositive()) return;
     setFullRange(false);
 
@@ -959,20 +960,9 @@ const AdvancedRangeControls: FunctionComponent<{
     historicalPrices.length,
   ]);
 
-  const logStrategy = useCallback(
-    (strategy: string) => {
-      logEvent([EventName.ConcentratedLiquidity.strategyPicked, { strategy }]);
-    },
-    [logEvent]
-  );
-
-  const onCenterChange = useCallback(
-    (next: "range" | "mean" | "spot") => {
-      setCenter(next);
-      logStrategy(`sliders-center-${next}`);
-    },
-    [logStrategy]
-  );
+  const onCenterChange = useCallback((next: "range" | "mean" | "spot") => {
+    setCenter(next);
+  }, []);
 
   // Touching a width slider makes it the active width control ("last
   // touched wins"); the other stays at its position but dims.
@@ -988,24 +978,16 @@ const AdvancedRangeControls: FunctionComponent<{
 
   /** Deliberate keyboard entry beside each width slider; also makes the
    *  edited slider the active width control. */
-  const onSigmaEntry = useCallback(
-    (value: number) => {
-      setWidthMode("sigma");
-      const perMille = Math.min(999, Math.max(0, Math.round(value * 10)));
-      setSigmaCoverage(perMille);
-      logStrategy(`sliders-sigma-cov-${(perMille / 10).toFixed(1)}`);
-    },
-    [logStrategy]
-  );
-  const onPercentEntry = useCallback(
-    (value: number) => {
-      setWidthMode("percent");
-      const clamped = Math.min(PERCENT_MAX, Math.max(0, value));
-      setPercent(clamped);
-      logStrategy(`sliders-percent-${formatPercentStop(clamped)}`);
-    },
-    [logStrategy]
-  );
+  const onSigmaEntry = useCallback((value: number) => {
+    setWidthMode("sigma");
+    const perMille = Math.min(999, Math.max(0, Math.round(value * 10)));
+    setSigmaCoverage(perMille);
+  }, []);
+  const onPercentEntry = useCallback((value: number) => {
+    setWidthMode("percent");
+    const clamped = Math.min(PERCENT_MAX, Math.max(0, value));
+    setPercent(clamped);
+  }, []);
 
   // How concentrated the chosen range is versus full range, at current spot.
   const capitalEfficiency = useMemo(() => {
@@ -1040,11 +1022,6 @@ const AdvancedRangeControls: FunctionComponent<{
               detents={LOOKBACK_DAYS_STOPS.map((_, i) => i)}
               detentLabel={lookbackDetentLabel}
               onChange={(idx) => setLookbackDays(LOOKBACK_DAYS_STOPS[idx])}
-              onCommit={(idx) =>
-                logStrategy(
-                  `sliders-lookback-${formatLookback(LOOKBACK_DAYS_STOPS[idx])}`
-                )
-              }
             />
           </SliderRow>
         </div>
@@ -1105,9 +1082,6 @@ const AdvancedRangeControls: FunctionComponent<{
               detents={SIGMA_DETENTS}
               detentLabel={sigmaDetentLabel}
               onChange={onSigmaChange}
-              onCommit={(perMille) =>
-                logStrategy(`sliders-sigma-cov-${(perMille / 10).toFixed(1)}`)
-              }
             />
           </SliderRow>
         </div>
@@ -1136,11 +1110,6 @@ const AdvancedRangeControls: FunctionComponent<{
               detents={PERCENT_DOT_STOPS.map(posFromPercent)}
               detentLabel={percentDetentLabel}
               onChange={onPercentChange}
-              onCommit={(pos) =>
-                logStrategy(
-                  `sliders-percent-${formatPercentStop(percentFromPos(pos))}`
-                )
-              }
             />
           </SliderRow>
         </div>
@@ -1227,12 +1196,6 @@ const PresetStrategyCard: FunctionComponent<
 
     const onClick = () => {
       onBeforeClick?.();
-      if (type !== null)
-        logEvent([
-          {
-            strategy: type,
-          },
-        ]);
       switch (type) {
         case "passive":
           setFullRange(true);
@@ -1394,7 +1357,7 @@ const SliderRow: FunctionComponent<{
         {typeof valueLabel === "string" ? (
           <span className="text-sm text-osmoverse-100">{valueLabel}</span>
         ) : (
-          valueLabel ?? null
+          (valueLabel ?? null)
         )}
       </div>
     )}
