@@ -1,7 +1,7 @@
 import { RatePretty } from "@osmosis-labs/unit";
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
-import { ReactNode, useState } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 
 import {
   CopyIcon,
@@ -63,7 +63,7 @@ const Component = ({
   children,
 }: {
   title: string;
-  children: JSX.Element;
+  children: ReactElement;
 }) => (
   <div className="flex flex-grow flex-col gap-2">
     <p>{title}</p>
