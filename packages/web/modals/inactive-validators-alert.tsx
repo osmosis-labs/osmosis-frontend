@@ -113,7 +113,7 @@ export const InactiveValidatorsAlertModal = observer(() => {
       onRequestClose={dismiss}
       className="flex max-w-[500px] flex-col gap-6"
     >
-      <p className="body1 mt-4 text-osmoverse-300">
+      <p className="body1 text-osmoverse-300">
         {t("stake.inactiveValidators.alertDescription")}
       </p>
       <InactiveDelegationsList

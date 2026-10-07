@@ -1,6 +1,7 @@
 import { Staking } from "@osmosis-labs/keplr-stores";
 import { BondStatus } from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
@@ -9,7 +10,8 @@ import { FallbackImg } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import {
   InactiveDelegationsWarning,
-  inactiveStatusTranslationKey,
+  inactiveStatusTextClass,
+  useInactiveStatusLabel,
 } from "~/components/stake/inactive-delegations-warning";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
@@ -34,6 +36,7 @@ export const ValidatorSquadCard: React.FC<{
     onRedelegate,
   }) => {
     const { t } = useTranslation();
+    const statusLabel = useInactiveStatusLabel();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
@@ -96,37 +99,48 @@ export const ValidatorSquadCard: React.FC<{
               thumbnails aren't in the bonded list, so they use the fallback */}
           {inactiveDelegations
             .slice(0, maxVisibleValidators)
-            .map(({ operatorAddress, moniker, status, amount }) => (
-              <div
-                className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-rust-500"
-                key={operatorAddress}
-              >
-                <Tooltip
-                  content={
-                    <div className="flex flex-col gap-1 p-1">
-                      <span className="text-osmoverse-100">{moniker}</span>
-                      <span className="text-xs text-rust-300">
-                        {t(inactiveStatusTranslationKey(status))}
-                      </span>
-                      <span className="text-xs text-osmoverse-200">
-                        {`${new CoinPretty(totalStakePool.currency, amount)
-                          .maxDecimals(2)
-                          .hideDenom(true)
-                          .toString()} ${t("stake.dashboardStakedOsmo")}`}
-                      </span>
-                    </div>
-                  }
+            .map((delegation) => {
+              const { operatorAddress, moniker, status, amount } = delegation;
+              return (
+                <div
+                  className={classNames(
+                    "h-10 w-10 overflow-hidden rounded-full ring-2",
+                    status === "jailed" ? "ring-rust-600" : "ring-rust-400"
+                  )}
+                  key={operatorAddress}
                 >
-                  <FallbackImg
-                    alt={moniker}
-                    src="/icons/question-mark.svg"
-                    fallbacksrc="/icons/question-mark.svg"
-                    height={40}
-                    width={40}
-                  />
-                </Tooltip>
-              </div>
-            ))}
+                  <Tooltip
+                    content={
+                      <div className="flex flex-col gap-1 p-1">
+                        <span className="text-osmoverse-100">{moniker}</span>
+                        <span
+                          className={classNames(
+                            "text-xs",
+                            inactiveStatusTextClass(status)
+                          )}
+                        >
+                          {statusLabel(delegation)}
+                        </span>
+                        <span className="text-xs text-osmoverse-200">
+                          {`${new CoinPretty(totalStakePool.currency, amount)
+                            .maxDecimals(2)
+                            .hideDenom(true)
+                            .toString()} ${t("stake.dashboardStakedOsmo")}`}
+                        </span>
+                      </div>
+                    }
+                  >
+                    <FallbackImg
+                      alt={moniker}
+                      src="/icons/question-mark.svg"
+                      fallbacksrc="/icons/question-mark.svg"
+                      height={40}
+                      width={40}
+                    />
+                  </Tooltip>
+                </div>
+              );
+            })}
           {myValidators
             ?.slice(
               0,

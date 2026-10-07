@@ -355,6 +355,9 @@ export const Staking: React.FC = observer(() => {
             stakeWarning={
               stakeTargetsInactiveValidators && (
                 <StakeToInactiveValidatorsWarning
+                  hasJailed={inactiveDelegations.some(
+                    ({ status }) => status === "jailed"
+                  )}
                   onRedelegate={
                     inactiveDelegations.length
                       ? openRedelegate

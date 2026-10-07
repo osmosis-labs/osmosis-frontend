@@ -10,6 +10,8 @@ export type InactiveDelegation = {
   status: Exclude<ValidatorRewardStatus, "active">;
   /** Delegated amount in the staking denom's minimal units. */
   amount: Int;
+  /** The validator's total stake, in minimal units. */
+  validatorTokens?: Int;
 };
 
 /**
@@ -60,6 +62,7 @@ export function getInactiveDelegations(
       moniker: validator.description.moniker || operatorAddress,
       status,
       amount,
+      validatorTokens: new Int(validator.tokens),
     });
   }
 
@@ -101,6 +104,28 @@ export function getTopThirdValidators(
   }
 
   return topThird;
+}
+
+/**
+ * Stake (minimal units) an unjailed validator outside the active set still
+ * needs to rank into it: the set holds the top `maxValidators` by stake,
+ * re-sorted every block, so it has to pass the smallest validator that would
+ * stay in. Zero when the set has a free slot. A live estimate: the cutoff
+ * moves with every delegation.
+ */
+export function getStakeToEnterActiveSet(
+  validatorTokens: Int,
+  bondedTokens: Int[],
+  maxValidators: number
+): Int {
+  if (bondedTokens.length < maxValidators) return new Int(0);
+
+  const sorted = [...bondedTokens].sort((a, b) =>
+    a.gt(b) ? -1 : a.lt(b) ? 1 : 0
+  );
+  const cutoff = sorted[maxValidators - 1];
+  const needed = cutoff.sub(validatorTokens);
+  return needed.isPositive() ? needed : new Int(0);
 }
 
 export type Redelegation = {
@@ -187,8 +212,9 @@ export function getInactiveValidatorAlertDismissalId(
   return `${delegatorAddress}/${operatorAddress}`;
 }
 
-/** Inactive delegations at or above `minAmount` that this wallet hasn't
- *  dismissed the alert for. */
+/** Jailed delegations at or above `minAmount` that this wallet hasn't
+ *  dismissed the alert for. Validators merely outside the active set may be
+ *  working their way back in, so they're only flagged on the stake page. */
 export function getInactiveDelegationsToAlert(
   inactiveDelegations: InactiveDelegation[],
   delegatorAddress: string,
@@ -198,7 +224,8 @@ export function getInactiveDelegationsToAlert(
   const dismissed = new Set(dismissedIds);
 
   return inactiveDelegations.filter(
-    ({ operatorAddress, amount }) =>
+    ({ operatorAddress, amount, status }) =>
+      status === "jailed" &&
       amount.gte(minAmount) &&
       !dismissed.has(
         getInactiveValidatorAlertDismissalId(delegatorAddress, operatorAddress)

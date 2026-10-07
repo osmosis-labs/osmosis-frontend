@@ -7,6 +7,7 @@ import {
   getInactiveValidatorAlertDismissalId,
   getRedelegationDefaultSelection,
   getRedelegationPreferenceUpdate,
+  getStakeToEnterActiveSet,
   getTopThirdValidators,
   getValidatorRewardStatus,
   splitRedelegations,
@@ -218,16 +219,35 @@ describe("getInactiveDelegationsToAlert", () => {
     {
       operatorAddress: "dust",
       moniker: "Dust",
-      status: "inactive" as const,
+      status: "jailed" as const,
       amount: new Int(999_999),
     },
     {
       operatorAddress: "exact",
       moniker: "Exact",
-      status: "inactive" as const,
+      status: "jailed" as const,
       amount: new Int(1_000_000),
     },
   ];
+
+  it("only alerts for jailed validators, not ones merely outside the set", () => {
+    expect(
+      getInactiveDelegationsToAlert(
+        [
+          ...inactive,
+          {
+            operatorAddress: "outside-set",
+            moniker: "Outside",
+            status: "inactive" as const,
+            amount: new Int(50_000_000),
+          },
+        ],
+        DELEGATOR,
+        [],
+        oneOsmo
+      ).map(({ operatorAddress }) => operatorAddress)
+    ).toEqual(["jailed", "exact"]);
+  });
 
   it("skips delegations under the threshold", () => {
     expect(
@@ -292,5 +312,35 @@ describe("getRedelegationDefaultSelection", () => {
         selectableValidators,
       })
     ).toEqual(["a"]);
+  });
+});
+
+describe("getStakeToEnterActiveSet", () => {
+  const bonded = [500, 400, 300, 200, 100].map((n) => new Int(n));
+
+  it("needs the gap to the smallest validator that would stay in", () => {
+    // cap of 3: the 3rd largest (300) is the cutoff
+    expect(getStakeToEnterActiveSet(new Int(120), bonded, 3).toString()).toBe(
+      "180"
+    );
+  });
+
+  it("needs nothing once it already has more than the cutoff", () => {
+    expect(getStakeToEnterActiveSet(new Int(350), bonded, 3).toString()).toBe(
+      "0"
+    );
+  });
+
+  it("needs nothing while the set has a free slot", () => {
+    expect(getStakeToEnterActiveSet(new Int(1), bonded, 7).toString()).toBe(
+      "0"
+    );
+  });
+
+  it("doesn't depend on the order of the bonded list", () => {
+    const shuffled = [200, 500, 100, 300, 400].map((n) => new Int(n));
+    expect(getStakeToEnterActiveSet(new Int(120), shuffled, 3).toString()).toBe(
+      "180"
+    );
   });
 });

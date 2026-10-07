@@ -30,6 +30,7 @@ import {
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
+import { inactiveStatusTextClass } from "~/components/stake/inactive-delegations-warning";
 import { StakeOrEdit } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -404,7 +405,14 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                           {truncateName(props.row.original.validatorName)}
                         </div>
                         {props.row.original.inactiveStatus && (
-                          <span className="caption text-left text-rust-300">
+                          <span
+                            className={classNames(
+                              "caption text-left",
+                              inactiveStatusTextClass(
+                                props.row.original.inactiveStatus
+                              )
+                            )}
+                          >
                             {t(
                               props.row.original.inactiveStatus === "jailed"
                                 ? "stake.inactiveValidators.statusJailed"
@@ -796,7 +804,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                         className={classNames(
                           row.getCanSelect()
                             ? `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-700`
-                            : "bg-rust-800/20",
+                            : row.original.inactiveStatus === "jailed"
+                              ? "bg-rust-800/20"
+                              : "bg-rust-400/10",
                           row.getIsSelected()
                             ? "bg-osmoverse-700"
                             : row.original.isTopThird && "bg-osmoverse-800",

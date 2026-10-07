@@ -1,8 +1,11 @@
-import { useMemo } from "react";
+import { BondStatus } from "@osmosis-labs/types";
+import { Int } from "@osmosis-labs/unit";
+import { useCallback, useMemo } from "react";
 
 import { useStore } from "~/stores";
 import {
   getInactiveDelegations,
+  getStakeToEnterActiveSet,
   InactiveDelegation,
 } from "~/utils/inactive-delegations";
 
@@ -44,4 +47,38 @@ export function useInactiveDelegations({
   );
 
   return { inactiveDelegations, isLoaded };
+}
+
+/**
+ * Returns the stake (minimal units) a validator outside the active set needs to
+ * rank back into it, or undefined until the bonded validators and staking
+ * params have loaded. Call from an observer component.
+ */
+export function useStakeToEnterActiveSet(): (
+  validatorTokens: Int
+) => Int | undefined {
+  const { chainStore, queriesStore } = useStore();
+  const cosmosQueries = queriesStore.get(chainStore.osmosis.chainId).cosmos;
+  const bondedQuery = cosmosQueries.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
+  const { maxValidators } = cosmosQueries.queryStakingParams;
+
+  const isLoaded =
+    Boolean(bondedQuery.response) &&
+    Boolean(cosmosQueries.queryStakingParams.response);
+  const { validators } = bondedQuery;
+
+  const bondedTokens = useMemo(
+    () => validators.map(({ tokens }) => new Int(tokens)),
+    [validators]
+  );
+
+  return useCallback(
+    (validatorTokens: Int) =>
+      isLoaded
+        ? getStakeToEnterActiveSet(validatorTokens, bondedTokens, maxValidators)
+        : undefined,
+    [isLoaded, bondedTokens, maxValidators]
+  );
 }
