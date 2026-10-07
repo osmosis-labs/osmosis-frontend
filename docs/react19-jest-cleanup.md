@@ -1,8 +1,22 @@
-# React 19 Jest lifecycle repair
+# Jest lifecycle repair on stage (React 18)
 
-Branch: `fix/react19-test-cleanup`, starting at `f1aa45bbb4f04a93768a0d0129874f59b3749b7c`.
-Node **24.21.0**, checked-in Yarn **4.12.0**. Independent, directory-valued
-`node_modules` in both assigned worktrees; no shared module writes or Turbo.
+Branch: `fix/jest-cosmos-kit-lifecycle`, based on current stage
+`812d1275729db20b4581cf5efc56e275ca3d5003` (four commits newer than the
+original migration base). This PR extracts only lifecycle commit
+`4610fefecfbd0bf1710c71e29de5d18308a0a8cc` with `git cherry-pick -x`, plus
+this evidence correction. The filename is historical: **this PR does not
+include the React 19 migration**.
+
+Validation used Node **24.21.0**, checked-in Yarn **4.12.0**, and independent,
+directory-valued root/web `node_modules` in
+`/Users/markobaricevic/code/cosmos/osmosis-frontend-react19-worktrees/stack-jest`.
+Installed versions resolved from the web workspace:
+
+- `react` / `react-dom`: **18.3.1** / **18.3.1**
+- `@types/react` / `@types/react-dom`: **18.3.31** / **18.3.7**
+
+Root/web manifests, React ranges/resolutions, and `yarn.lock` remain identical
+to stage. No production source, dependency upgrades, or Turbo changes are included.
 
 ## Cause and scoped fix
 
@@ -12,15 +26,14 @@ list is absent. `RootStore` constructs `AccountStore`, whose Cosmos Kit
 `cjs/repository.js` starts `ChainRegistryFetcher.fetchUrls()` in the constructor.
 That promise is neither exposed nor cancelled by `onUnmounted()` (which only
 removes wallet event listeners). The fetcher uses **cross-fetch/node-fetch**, not
-just the global fetch. Closing MSW/JSDOM before it finishes leaves a GitHub fetch
-that fails with `read EINVAL` and warns after Jest teardown.
+just the global fetch. Closing MSW/JSDOM before it finishes can leave a GitHub
+fetch that fails with `read EINVAL` and warns after Jest teardown.
 
-This is **reproduced baseline behavior, not introduced by React 19**:
-
-| Unmodified checkout                                                 | Full Jest result                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Integrated migration, `f1aa45bbb`                                   | 77 suites / 841 tests pass; **exit 1**, late dungeon1 fetch/log failures |
-| Detached original stage, `194460081a07a2c4b53e79f39a970c0c30ad989b` | 68 suites / 794 tests pass; **exit 1**, same late fetch/log failures     |
+The original investigation reproduced this leak on **unmodified React 18 stage
+`194460081a07a2c4b53e79f39a970c0c30ad989b`**: 68 suites / 794 tests passed,
+but Jest exited 1 with late dungeon1 fetch/log failures. That is historical
+baseline evidence, **not a rerun on the current stage base**. Historical React 19
+integration results are not validation for this extracted PR.
 
 Only test infrastructure changes:
 
@@ -38,19 +51,21 @@ Only test infrastructure changes:
 - Eight regressions verify exact mocked network routing, delayed response/state
   settlement before teardown, caught-fetch failure propagation, query abort/cache
   clearing, wallet listener/session-timer removal, and successful/timed-out/missing
-  account waits. No signing or broadcasting occurs in the new tests.
+  account waits. Wallet connections in the regression use only `TestWallet` and
+  the provider mock; no real connection, signing or broadcasting occurs.
 
-No production code, root/web manifests, lockfile, React peers, or unrelated
-branches/checkouts were changed. All original assertions are retained.
+All original assertions are retained. No `--forceExit`, console suppression,
+ignored network failures, or generic success-response interceptors were used.
 
-## Commands and results
+## Current validation commands and results
 
-Commands were run after `cd` to these absolute worktree roots:
+Every command below ran after:
 
-- Fix: `/Users/markobaricevic/code/cosmos/osmosis-frontend-react19-worktrees/test-cleanup`
-- Baseline: `/Users/markobaricevic/code/cosmos/osmosis-frontend-react19-worktrees/stage-baseline`
+```sh
+cd /Users/markobaricevic/code/cosmos/osmosis-frontend-react19-worktrees/stack-jest
+```
 
-Both worktrees independently ran:
+Installation and builds (no Turbo):
 
 ```sh
 node .yarn-4.12.0.cjs install --immutable
@@ -58,53 +73,43 @@ for name in proto-codecs unit math types utils server tx bridge keplr-stores kep
   node .yarn-4.12.0.cjs workspace "@osmosis-labs/$name" run build
 done
 node .yarn-4.12.0.cjs workspace @osmosis-labs/web run generate
-node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand
 ```
 
-Immutable install, all 12 direct library builds, and generation **pass** in both.
-Generation retains missing-currency warnings. The unmodified Jest failures are
-listed above. Baseline tracked source remains clean and no baseline commit was
-created. Registry metadata GETs independently confirmed installed stable versions
-`@cosmos-kit/core@2.18.1`, `@chain-registry/client@1.53.345`, and `msw@2.15.0`
-(MSW TypeScript peer `>=4.8.x`; registry client depends on cross-fetch `^3.1.5`;
-Cosmos Kit/core and registry/client publish no peer dependencies). Current registry
-latest tags are respectively `2.18.1`, `2.0.281`, and `3.0.2`; this repair keeps the
-installed stable APIs rather than upgrading unrelated packages.
-Published/local implementations were inspected; no dependency changes are needed.
+**All exit 0**. Installation executed normal lifecycle scripts, including root
+`postinstall` workspace lint. Existing peer warnings remain (React, TypeScript,
+and missing `prop-types`). Generation retained missing-currency warnings and
+successfully wrote the lists, Cosmos Kit wallet list, and sprite IDs.
 
-After the fix, from the fix worktree:
+| Exact command                                                                                                                | Current result                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web run typecheck`                                                            | **Exit 0**; explicit `tsc --noEmit -p tsconfig.typecheck.json` (current config includes tests). No pre-existing typecheck failures observed on this base. |
+| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand --runTestsByPath __tests__/test-lifecycle.spec.tsx` | **Exit 0**, 1 suite / 8 tests; 3.703s.                                                                                                                    |
+| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand` (first run)                                        | **Exit 0**, 79 suites / 923 tests; 143.786s.                                                                                                              |
+| Same full Jest command (second run)                                                                                          | **Exit 0**, 79 suites / 923 tests; 142.101s.                                                                                                              |
+| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand --detectOpenHandles`                                | **Exit 0**, 79 suites / 923 tests; 167.821s; no open handles reported.                                                                                    |
+| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec lint-staged --diff=812d1275729db20b4581cf5efc56e275ca3d5003..HEAD`   | **Exit 0**, normal web Prettier and `next lint` tasks checked all five changed test files.                                                                |
 
-| Exact command                                                                                                                                                                                                                         | Result                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand --runTestsByPath __tests__/test-lifecycle.spec.tsx`                                                                                                          | **PASS exit 0**, 8 regressions, no console errors            |
-| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand` (twice with regressions)                                                                                                                                    | **PASS exit 0**, 78 suites / 849 tests, 61.812s and 61.140s  |
-| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web exec jest --runInBand --detectOpenHandles`                                                                                                                                         | **PASS exit 0**, 78 / 849, 81.960s; no open handles reported |
-| `node .yarn-4.12.0.cjs workspace @osmosis-labs/web run typecheck`                                                                                                                                                                     | **PASS exit 0** (application config excludes tests)          |
-| `node .yarn-4.12.0.cjs install --immutable` (final)                                                                                                                                                                                   | **PASS**; unchanged peer warnings                            |
-| `node .yarn-4.12.0.cjs exec eslint packages/web/__tests__/setup-tests.ts packages/web/__tests__/msw.ts packages/web/__tests__/test-utils.tsx packages/web/__tests__/test-lifecycle.ts packages/web/__tests__/test-lifecycle.spec.tsx` | **PASS**, 0 errors/warnings                                  |
-| `node .yarn-4.12.0.cjs exec prettier --check` with the same five paths                                                                                                                                                                | **PASS**                                                     |
-| `git diff --check`                                                                                                                                                                                                                    | **PASS**                                                     |
+Direct checks from the worktree root:
 
-Validation logs/configs and generated/library artifacts remain ignored under
-`.yarn/jest-cleanup-validation/`, workspace build directories and generated config.
-No `--forceExit`, console suppression, ignored network failures, or generic
-success-response interceptors were used. Normal `git commit` hooks **passed**, without bypass: root `pre-commit` ran Lerna's
-four configured package targets, including web lint-staged's Prettier and
-`next lint` checks for all five scoped test files.
+```sh
+node .yarn-4.12.0.cjs exec eslint packages/web/__tests__/setup-tests.ts packages/web/__tests__/msw.ts packages/web/__tests__/test-utils.tsx packages/web/__tests__/test-lifecycle.ts packages/web/__tests__/test-lifecycle.spec.tsx
+node .yarn-4.12.0.cjs exec prettier --check packages/web/__tests__/setup-tests.ts packages/web/__tests__/msw.ts packages/web/__tests__/test-utils.tsx packages/web/__tests__/test-lifecycle.ts packages/web/__tests__/test-lifecycle.spec.tsx docs/react19-jest-cleanup.md
+git diff --check
+```
 
-## Remaining limitations
+**All exit 0**, no ESLint errors/warnings. The evidence correction was committed
+with normal root `pre-commit` / Lerna package hooks enabled (no bypass).
 
-A separate, test-inclusive diagnostic check
-`node .yarn-4.12.0.cjs exec tsc --noEmit -p .yarn/jest-cleanup-validation/tsconfig-tests.json`
-**exits 2 in both worktrees**, solely at the unchanged `__tests__/test-wallet.ts`
-lines 184 and 221: the provider mock returns `Long` where the current Cosmos Kit /
-CosmJS `signDirect` interface expects `bigint`. The local config extends web's
-normal tsconfig, disables incremental output, includes the scoped tests/helpers
-plus `window.d.ts`/`next-env.d.ts`, and excludes no imported dependencies. This
-pre-existing signing-mock incompatibility is outside lifecycle ownership, not a
-passing test typecheck. No diagnostics originate in the changed files.
+Logs remain locally ignored under `.validation-logs/`; library/generated outputs
+remain ignored. The final diff against the stage base contains only this document
+and the five lifecycle test/helper/setup files, with no manifest or lockfile diff.
 
-No Next build was rerun for this test-only correction. No E2E suite, browser
-wallet/signing flow, deployment, or real transaction was run. This proves unit
-suite lifecycle stability, not wallet signing compatibility or release readiness.
-React transitive peer remediation remains owned by the separate peer agent.
+## Limitations
+
+The current unmodified stage baseline was not rerun; the leak explanation above
+retains clearly labelled historical React 18 baseline evidence. These new passing
+results validate this fix on the actual current-stage React 18 runtime, not React 19.
+
+No Next production build, E2E suite, real wallet connection/signature/transaction,
+financial flow, deployment, or secret inspection was run. This proves unit suite
+lifecycle stability, not wallet signing compatibility or release readiness.
