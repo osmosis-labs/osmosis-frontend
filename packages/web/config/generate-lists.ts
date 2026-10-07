@@ -1,5 +1,6 @@
 /**
- * This file is used to generate the asset-list.ts and chain-list.ts files.
+ * This file generates asset-lists.ts and chain-list.ts. Assets are fetched and
+ * embedded as a lossless compact table, decoded once into the existing API.
  *
  * Reasons we need to generate chain-list.ts:
  *  1. We need to apply the Osmosis chain overwrites and drop chains without an asset list.
@@ -7,23 +8,19 @@
  *
  * The Keplr `ChainInfo` and CosmosKit fields are derived at runtime (see `keplr-chain.ts`), not stored.
  *
- * Reasons we need to generate asset-list.ts:
+ * Reasons we need to generate asset-lists.ts:
  *  1. We need to determine all the available asset symbols for added type safety.
  */
 
 import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
-import type {
-  Asset,
-  AssetList,
-  Chain,
-  ChainList,
-  IbcTransferMethod,
-} from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import type { Asset, AssetList, Chain, ChainList } from "@osmosis-labs/types";
+import { ApiClientError, isNil } from "@osmosis-labs/utils";
 import * as fs from "fs";
 
 import { generateTsFile } from "~/utils/codegen";
 
+import { resolveAssetChain } from "./asset-chain";
+import { encodeAssetLists } from "./compact-asset-list";
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
@@ -32,6 +29,8 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "./env";
 import { getImageRelativeFilePath } from "./keplr-chain";
+import type { ResponseAssetList } from "./load-asset-list";
+import { loadBuildAssetList } from "./load-asset-list";
 import {
   codegenDir,
   getChainList,
@@ -40,11 +39,6 @@ import {
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
 } from "./utils";
-
-interface ResponseAssetList {
-  chainName: string;
-  assets: Omit<Asset, "chain_id">[];
-}
 
 const repo = "osmosis-labs/assetlists";
 
@@ -58,13 +52,18 @@ function getFilePath({
   chainId: string;
   fileType: "assetlist" | "chainlist";
 }) {
-  // // TEMPORARY
-  // // use legacy chain list
-  // if (fileType === "chainlist") {
-  //   return `${chainId}/${chainId}.${fileType}.json`;
-  // }
-
   return `${chainId}/generated/frontend/${fileType}.json`;
+}
+
+async function queryBuildAssetList(chainId: string, commitHash: string) {
+  return loadBuildAssetList({
+    chainId,
+    commitHash,
+    queryFile: (filePath, hash) =>
+      queryGithubFile({ repo, filePath, commitHash: hash }),
+    isNotFound: (error) =>
+      error instanceof ApiClientError && error.status === 404,
+  });
 }
 
 async function generateChainListFile({
@@ -96,7 +95,9 @@ async function generateChainListFile({
           },
         ]
       : []),
-  ];
+  ].filter(
+    (chain) => typeof chain.chain_id === "string" && chain.chain_id.length > 0
+  );
 
   let content: string = "";
 
@@ -198,98 +199,7 @@ async function generateAssetListFile({
   const osmosisChainId = getOsmosisChainId(environment);
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
-    /** If it's from the first chain, assume it's an Osmosis asset */
-    if (asset.chainName === chains[0].chain_name) {
-      const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
-
-      if (!chain) {
-        throw new Error("Failed to find chain osmosis");
-      }
-
-      return createOrAddToAssetList(acc, chain, asset, environment);
-    }
-
-    /** Check if asset has any transfer methods at all */
-    if (!asset.transferMethods || asset.transferMethods.length === 0) {
-      // Asset has no transfer methods - could be:
-      // 1. Native Osmosis asset (no counterparty) - silent
-      // 2. Factory token (sourceDenom starts with factory/) - silent
-      // 3. Stranded from defunct chain (has counterparty, not factory) - warn
-      const hasCounterparty =
-        asset.counterparty && asset.counterparty.length > 0;
-      const isFactoryToken = asset.sourceDenom?.startsWith("factory/");
-
-      // Only warn for truly stranded tokens (not factory tokens)
-      if (hasCounterparty && !isFactoryToken) {
-        console.warn(
-          `[${environment.toUpperCase()}] Asset ${
-            asset.symbol
-          } has no transfer methods - adding as Osmosis-based asset (not bridgeable)`
-        );
-      }
-
-      const osmosisChain = chains.find(
-        (chain) => chain.chain_id === osmosisChainId
-      );
-
-      if (!osmosisChain) {
-        throw new Error("Failed to find chain osmosis");
-      }
-
-      return createOrAddToAssetList(acc, osmosisChain, asset, environment);
-    }
-
-    /** Otherwise, look for IBC transfer method to determine counterparty chain */
-    const cosmosCounterparty = [...asset.transferMethods]
-      .reverse()
-      .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
-
-    if (!cosmosCounterparty) {
-      // Asset has transfer methods but no IBC method (e.g., bridge methods)
-      // Look for counterparty chain info in the asset's counterparty array
-      const assetCounterparty = asset.counterparty?.[0];
-
-      if (assetCounterparty && "chainName" in assetCounterparty) {
-        // Found cosmos counterparty with chain name
-        const chain = chains.find(
-          (c) => c.chain_name === assetCounterparty.chainName
-        );
-
-        if (!chain) {
-          console.error(
-            `Failed to find chain ${assetCounterparty.chainName}. ${asset.symbol} for that chain will be skipped.`
-          );
-          return acc;
-        }
-
-        return createOrAddToAssetList(acc, chain, asset, environment);
-      }
-
-      // No counterparty info found, add to Osmosis as fallback
-      const osmosisChain = chains.find(
-        (chain) => chain.chain_id === osmosisChainId
-      );
-
-      if (!osmosisChain) {
-        throw new Error("Failed to find chain osmosis");
-      }
-
-      return createOrAddToAssetList(acc, osmosisChain, asset, environment);
-    }
-
-    const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
-
-    const chain = chains.find(
-      (chain) => chain.chain_name === counterpartyChainName
-    );
-
-    if (!chain) {
-      console.error(
-        `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
-      );
-      return acc;
-    }
-
+    const chain = resolveAssetChain(asset, chains, osmosisChainId);
     return createOrAddToAssetList(acc, chain, asset, environment);
   }, [] as AssetList[]);
 
@@ -297,12 +207,10 @@ async function generateAssetListFile({
 
   if (!onlyTypes) {
     content += `
-      import type { AssetList } from "@osmosis-labs/types";
-      export const AssetLists: AssetList[] = ${JSON.stringify(
-        assetLists,
-        null,
-        2
-      )};    
+      import { decodeAssetLists } from "../compact-asset-list";
+      export const AssetLists = decodeAssetLists(${JSON.stringify(
+        encodeAssetLists(assetLists)
+      )});
     `;
   }
 
@@ -482,22 +390,8 @@ async function main() {
       }),
       commitHash: mainLatestCommitHash,
     }),
-    queryGithubFile<ResponseAssetList>({
-      repo,
-      filePath: getFilePath({
-        chainId: mainnetOsmosisChainId,
-        fileType: "assetlist",
-      }),
-      commitHash: mainLatestCommitHash,
-    }),
-    queryGithubFile<ResponseAssetList>({
-      repo,
-      filePath: getFilePath({
-        chainId: testnetOsmosisChainId,
-        fileType: "assetlist",
-      }),
-      commitHash: mainLatestCommitHash,
-    }),
+    queryBuildAssetList(mainnetOsmosisChainId, mainLatestCommitHash),
+    queryBuildAssetList(testnetOsmosisChainId, mainLatestCommitHash),
   ]);
 
   await generateAssetImages({
