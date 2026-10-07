@@ -338,8 +338,8 @@ export function useAddConcentratedLiquidityConfig(
   // quietly costs several percent is flagged.
   const zapHighCost = Boolean(
     config.singleAssetMode &&
-      zapTotalCostPercent &&
-      zapTotalCostPercent.toDec().gte(new Dec(0.05))
+    zapTotalCostPercent &&
+    zapTotalCostPercent.toDec().gte(new Dec(0.05))
   );
 
   const addLiquidity = useCallback(
@@ -482,18 +482,6 @@ export function useAddConcentratedLiquidityConfig(
           const baseCurrency = config.baseDepositAmountIn.sendCurrency;
           const quoteCurrency = config.quoteDepositAmountIn.sendCurrency;
 
-          const baseEvent = {
-            isSingleAsset: true,
-            volatilityType: config.currentStrategy ?? "",
-            poolId,
-            rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
-            rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
-          };
-          logEvent([
-            EventName.ConcentratedLiquidity.addLiquidityStarted,
-            baseEvent,
-          ]);
-
           const onFulfill = (tx: {
             code?: number | string;
             rawLog?: string;
@@ -508,10 +496,6 @@ export function useAddConcentratedLiquidityConfig(
               ])
                 .then(() => resolve())
                 .catch(reject);
-              logEvent([
-                EventName.ConcentratedLiquidity.addLiquidityCompleted,
-                baseEvent,
-              ]);
             }
           };
 
@@ -742,7 +726,6 @@ export function useAddConcentratedLiquidityConfig(
       config,
       zapQuote.quote,
       zapSlippageConfig,
-      logEvent,
     ]
   );
 
@@ -1220,11 +1203,7 @@ export class ObservableAddConcentratedLiquidityConfig {
    */
   @computed
   get singleAssetInputState():
-    | undefined
-    | "empty"
-    | "too-small"
-    | "one-sided"
-    | "swap" {
+    undefined | "empty" | "too-small" | "one-sided" | "swap" {
     if (!this._singleAssetMode || !this.pool) return undefined;
 
     const inputConfig =

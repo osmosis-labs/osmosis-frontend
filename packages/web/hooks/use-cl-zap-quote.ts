@@ -68,7 +68,7 @@ export function useClZapQuote({
       // Quotes go stale quickly — a stale quote makes the swap leg's gas
       // simulation fail on slippage. Mirror the swap-tool's cadence.
       staleTime: 5_000,
-      cacheTime: 5_000,
+      gcTime: 5_000,
       refetchInterval: 5_000,
       retry: false,
       trpc: {

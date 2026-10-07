@@ -868,7 +868,7 @@ export class OsmosisAccountImpl {
     }
 
     const clInfo = queryPool.concentratedLiquidityPoolInfo;
-    if (queryPool.pool.type !== "concentrated" || !clInfo) {
+    if (queryPool.type !== "concentrated" || !clInfo) {
       throw new Error("Must be concentrated pool");
     }
 
