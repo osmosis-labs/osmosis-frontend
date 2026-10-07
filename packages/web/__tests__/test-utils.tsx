@@ -11,7 +11,7 @@ import { mockFlags } from "jest-launchdarkly-mock";
 import { when } from "mobx";
 import { ReactNode } from "react";
 
-import { registerTestCleanup } from "~/__tests__/test-lifecycle";
+import { registerTestCleanup } from "~/__tests__/setup-tests";
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { trpcReact } from "~/__tests__/trpc-react";
 import { MultiLanguageProvider } from "~/hooks/language/context";
