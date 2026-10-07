@@ -101,6 +101,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0"
+    "@types/react-dom": "^18.3.0",
+    "wagmi@npm:2.12.17/use-sync-external-store": "1.7.0",
+    "zustand@npm:4.4.1/use-sync-external-store": "1.7.0",
+    "valtio@npm:1.11.2/use-sync-external-store": "1.7.0"
   }
 }
