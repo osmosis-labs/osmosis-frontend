@@ -18,6 +18,8 @@
 
 import { SOLANA_PUBLIC_RPC_URL } from "@osmosis-labs/bridge/build/utils/solana";
 
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
+
 /** Methods the in-app Solana bridge flow calls from the browser. */
 export const ALLOWED_SOLANA_RPC_METHODS = new Set([
   // SPL balances of a deposit source
@@ -62,10 +64,9 @@ const base64url = (s: string) =>
 
 /**
  * Reads `solana-skip-routes` for the server through LaunchDarkly's
- * client-side evaluation endpoint, which needs no SDK (the Node client SDK
- * does not run on the Edge runtime) and only the public client-side id the
- * browser already ships with. Without a client-side id nothing can be
- * evaluated: local development stays open, any deployed build fails closed
+ * client-side evaluation endpoint, which needs no SDK and only the public
+ * client-side id the browser already ships with. Without a client-side id
+ * nothing can be evaluated: local development stays open, any deployed build fails closed
  * rather than exposing the proxy because an env var went missing.
  */
 async function isSolanaRouteEnabled(): Promise<boolean> {
@@ -162,7 +163,7 @@ const json = (body: unknown, status: number) =>
     headers: { "Content-Type": "application/json" },
   });
 
-export default async function solanaRpcHandler(req: Request) {
+export async function solanaRpcHandler(req: Request) {
   if (req.method !== "POST") {
     return json({ error: "Method not allowed" }, 405);
   }
@@ -246,6 +247,8 @@ export default async function solanaRpcHandler(req: Request) {
   }
 }
 
+export default toNodeApiHandler(solanaRpcHandler);
+
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };
