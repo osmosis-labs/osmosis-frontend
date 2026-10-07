@@ -130,9 +130,13 @@ export const HistoricalPriceChart: FunctionComponent<{
     const { formatYTick, leftMargin } = useYAxisTickLayout(domain);
 
     return (
+      // Visx 4 measures an inner div which clips overflow by default. Compact
+      // charts need both that wrapper and the SVG to allow axis labels outside.
       <ParentSize
         className={`flex-shrink-1 flex-1 ${
-          !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
+          !minimal
+            ? "overflow-hidden"
+            : "[&>div]:!overflow-visible [&>div>svg]:overflow-visible"
         }`}
       >
         {({ height, width }) => (
