@@ -1,4 +1,5 @@
 import { SortDirection } from "@osmosis-labs/utils";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   CellContext,
   createColumnHelper,
@@ -142,7 +143,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     isSuccess,
     isError,
     isFetching,
-    isPreviousData,
+    isPlaceholderData,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -158,17 +159,20 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       // These are all of the pools that we support fetching.
       // When transmuter is selected, include both transmuter and alloyed pools
       types: [
-        ...filters.poolTypesFilter.reduce((acc, type) => {
-          if (type === "cosmwasm-transmuter") {
-            acc.push(
-              "cosmwasm-transmuter" as const,
-              "cosmwasm-alloyed" as const
-            );
-          } else {
-            acc.push(type);
-          }
-          return acc;
-        }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
+        ...filters.poolTypesFilter.reduce(
+          (acc, type) => {
+            if (type === "cosmwasm-transmuter") {
+              acc.push(
+                "cosmwasm-transmuter" as const,
+                "cosmwasm-alloyed" as const
+              );
+            } else {
+              acc.push(type);
+            }
+            return acc;
+          },
+          [] as (PoolTypeFilter | "cosmwasm-alloyed")[]
+        ),
         "cosmwasm",
       ],
       incentiveTypes: filters.poolIncentivesFilter ?? incentiveTypes,
@@ -187,7 +191,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
 
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
 
       // expensive query
       trpc: {
@@ -258,7 +262,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               />
             ),
           }
-        ) as (typeof allColumns)[number]
+        ) as unknown as (typeof allColumns)[number]
       );
     }
 
@@ -279,7 +283,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             />
           ),
         }
-      ) as (typeof allColumns)[number]
+      ) as unknown as (typeof allColumns)[number]
     );
 
     // Only show fees if more than half of the pools have fees data.
@@ -301,7 +305,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               />
             ),
           }
-        ) as (typeof allColumns)[number]
+        ) as unknown as (typeof allColumns)[number]
       );
     }
 
@@ -422,17 +426,17 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           <p className=" text-body1 font-body1 text-osmoverse-300">
             {isError
               ? t("errors.fallbackText1")
-              : emptyResultsText ??
+              : (emptyResultsText ??
                 t("search.noResultsFor", {
                   query: filters.searchQuery ?? "",
-                })}
+                }))}
           </p>
         </div>
       ) : (
         <table
           className={classNames(
             "table-auto",
-            isPreviousData &&
+            isPlaceholderData &&
               isFetching &&
               "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
           )}
@@ -481,7 +485,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                     <td
                       className={classNames(
                         "transition-colors duration-200 ease-in-out xs:px-1",
-                        isPreviousData && isFetching && "cursor-progress"
+                        isPlaceholderData && isFetching && "cursor-progress"
                       )}
                       key={cell.id}
                     >
@@ -493,7 +497,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                         passHref
                         prefetch={false}
                         className={classNames(
-                          isPreviousData && isFetching && "cursor-progress"
+                          isPlaceholderData && isFetching && "cursor-progress"
                         )}
                       >
                         {flexRender(

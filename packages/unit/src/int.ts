@@ -1,22 +1,10 @@
+import { bigIntAbs as abs, bigIntPow as pow } from "./bigint-utils";
 import { Dec } from "./decimal";
 import {
   exponentDecStringToDecString,
   isExponentDecString,
   isValidIntegerString,
 } from "./etc";
-
-// `**` on bigint requires an ES2016+ target, so use square-and-multiply instead.
-const pow = (base: bigint, exp: bigint): bigint => {
-  let result = BigInt(1);
-  while (exp > BigInt(0)) {
-    if (exp % BigInt(2) === BigInt(1)) result *= base;
-    base *= base;
-    exp /= BigInt(2);
-  }
-  return result;
-};
-
-const abs = (n: bigint): bigint => (n < BigInt(0) ? -n : n);
 
 export class Int {
   // (2 ** 256) - 1

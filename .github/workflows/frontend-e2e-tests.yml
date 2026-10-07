@@ -111,9 +111,12 @@ jobs:
 
             # Only test the latest commit of an open PR. Deployments of
             # superseded commits that finish late are skipped, as are stage
-            # deployments, which the push trigger above handles.
+            # deployments, which the push trigger above handles. The head.ref
+            # filter is what excludes stage explicitly: deployment.ref is the
+            # SHA, not the branch, and this endpoint only leaves out the open
+            # stage -> master release PR while stage is the default branch.
             PR=$(gh api "repos/$REPO/commits/$SHA/pulls" \
-              --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0] // empty")
+              --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\" and .head.ref != \"stage\")][0] // empty")
             [ -n "$PR" ] || skip "$SHA is not the head of an open PR."
             [ "$(jq -r '.draft' <<< "$PR")" = "false" ] || skip "PR is a draft."
             # Fork PRs have no access to the E2E secrets.
@@ -521,7 +524,12 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [resolve-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
+      [
+        resolve-deployment,
+        preview-swap-osmo-tests,
+        preview-swap-usdc-tests,
+        check-balances,
+      ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6

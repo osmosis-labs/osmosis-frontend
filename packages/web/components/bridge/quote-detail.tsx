@@ -65,7 +65,9 @@ export const ProviderFeesRow: FunctionComponent<{
       label={t("transfer.providerFees")}
       isLoading={isRefetchingQuote}
     >
-      {selectedQuote.transferFee.toDec().isZero() ? (
+      {selectedQuote.isTransferFeeUnknown ? (
+        <p className="text-osmoverse-300">{t("transfer.unknown")}</p>
+      ) : selectedQuote.transferFee.toDec().isZero() ? (
         <p className="text-bullish-400">{t("transfer.free")}</p>
       ) : (
         <p className="text-osmoverse-100">
@@ -273,10 +275,10 @@ export const ExpandDetailsControlContent: FunctionComponent<{
               warnUserOfSlippage
                 ? t("transfer.slippageWarning")
                 : warnUserOfUnknownSwapImpact
-                ? t("transfer.unknownSwapImpactDescription")
-                : t("transfer.priceImpactWarning", {
-                    priceImpact: selectedQuote.priceImpact.toString(),
-                  })
+                  ? t("transfer.unknownSwapImpactDescription")
+                  : t("transfer.priceImpactWarning", {
+                      priceImpact: selectedQuote.priceImpact.toString(),
+                    })
             }
           >
             <Icon id="alert-circle" className="h-6 w-6 text-rust-400" />

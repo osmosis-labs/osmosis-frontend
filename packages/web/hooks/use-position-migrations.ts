@@ -48,7 +48,7 @@ export const usePositionMigrations = () => {
     queryFn: queryLatestPositionMigrations,
     refetchInterval: 1000 * 60, // the kill-switch propagation bound
     staleTime: 1000 * 60,
-    cacheTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 5, // 5 minutes
     enabled: positionMigration,
   });
 

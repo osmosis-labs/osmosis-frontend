@@ -178,8 +178,8 @@ const OrderDetails = observer(
       return order?.status === "open"
         ? "limitOrders.cancel"
         : order?.percentFilled > order?.percentClaimed
-        ? "limitOrders.claimAndClose"
-        : "limitOrders.close";
+          ? "limitOrders.claimAndClose"
+          : "limitOrders.close";
     }, [order]);
 
     const orderAmount = useMemo(() => {
@@ -188,14 +188,14 @@ const OrderDetails = observer(
           DEFAULT_VS_CURRENCY,
           order?.order_direction === "bid"
             ? order?.placed_quantity /
-              Number(
-                new Dec(10)
-                  .pow(new Int(order?.quoteAsset?.decimals ?? 0))
-                  .toString()
-              )
-            : order?.output.quo(
+                Number(
+                  new Dec(10)
+                    .pow(new Int(order?.quoteAsset?.decimals ?? 0))
+                    .toString()
+                )
+            : (order?.output.quo(
                 new Dec(10).pow(new Int(order?.quoteAsset?.decimals ?? 0))
-              ) ?? new Dec(0)
+              ) ?? new Dec(0))
         ),
         2
       );

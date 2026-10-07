@@ -870,7 +870,6 @@
     "reviewWithdraw": "بازبینی برداشت",
     "moreDepositOptions": "گزینه های سپرده بیشتر",
     "moreWithdrawOptions": "گزینه های برداشت بیشتر",
-    "convertTo": "تبدیل به",
     "depositAs": "سپرده گذاری به عنوان",
     "withdrawAs": "برداشت به عنوان",
     "withdrawViaRoute": "از طریق {route}",
@@ -1397,7 +1396,14 @@
       "filled": "سفارشات تکمیل شده برای ادعا"
     },
     "priceReaches": "اگر قیمت {denom} به {price} برسد.",
-    "belowMinimumAmount": "حداقل {amount}"
+    "belowMinimumAmount": "حداقل {amount}",
+    "noOrderbookForPair": "هیچ orderbook برای {base}/{quote} وجود ندارد. یکی بسازید تا limit orders برای این جفت فعال شود.",
+    "createOrderbook": "ایجاد Orderbook",
+    "noOrderbookExists": "بدون orderbook برای {denom}",
+    "clickToCreateOrderbook": "برای ایجاد یک orderbook برای این جفت کلیک کنید.",
+    "creationInProgress": "ایجاد دفتر سفارش برای این جفت در برگه دیگری در حال انجام است",
+    "creationAwaitingConfirmation": "ایجاد قبلی دفتر سفارش برای این جفت هنوز در انتظار تأیید روی زنجیره است. چند دقیقه دیگر دوباره تلاش کنید.",
+    "createOrderbookDescription": "ایجاد یک orderbook pool امکان ثبت limit orders برای این جفت معاملاتی در Osmosis را فراهم می‌کند."
   },
   "tradeDetails": {
     "priceImpact": {

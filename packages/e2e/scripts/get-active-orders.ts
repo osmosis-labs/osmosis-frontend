@@ -21,7 +21,11 @@
 
 import * as dotenv from "dotenv";
 import * as path from "path";
-import { SQS_BASE_URL, deriveAddress, fetchActiveOrders } from "../utils/order-utils";
+import {
+  SQS_BASE_URL,
+  deriveAddress,
+  fetchActiveOrders,
+} from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -54,7 +58,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log(`${orders.length} active order${orders.length === 1 ? "" : "s"} found:\n`);
+  console.log(
+    `${orders.length} active order${orders.length === 1 ? "" : "s"} found:\n`
+  );
 
   orders.forEach((order, i) => {
     const pairLabel =

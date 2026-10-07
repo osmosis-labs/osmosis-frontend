@@ -15,6 +15,7 @@ import {
   getNomicRelayerUrl,
   isNil,
 } from "@osmosis-labs/utils";
+import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
@@ -28,6 +29,7 @@ import {
   deriveMemoFlags,
   LossFigures,
   needsAcknowledgement,
+  normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
@@ -73,7 +75,10 @@ class EvmTxRevertedError extends Error {
 /** A Solana transaction that definitively moved nothing: it executed with
  *  an error, or its blockhash expired before it landed. */
 class SolanaTxFailedError extends Error {
-  constructor(readonly txHash: string, readonly outcome: "failed" | "dropped") {
+  constructor(
+    readonly txHash: string,
+    readonly outcome: "failed" | "dropped"
+  ) {
     super(
       outcome === "failed"
         ? `Solana transaction ${txHash} failed on-chain`
@@ -196,9 +201,8 @@ export const useBridgeQuotes = ({
     chainId: currentEvmChainId,
     chain: currentEvmChain,
   } = useEvmWalletAccount();
-  const { sendTransactionAsync, isLoading: isEthTxPending } =
+  const { sendTransactionAsync, isPending: isEthTxPending } =
     useSendEvmTransaction();
-  const { address: phantomAddress } = usePhantomWallet();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
   /**
@@ -253,6 +257,9 @@ export const useBridgeQuotes = ({
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
+  const { address: phantomAddress } = usePhantomWallet({
+    restoreSession: allowSolana,
+  });
 
   const quoteParams: Partial<
     Omit<
@@ -364,7 +371,7 @@ export const useBridgeQuotes = ({
             // must have balance amount loaded, even if 0
             Boolean(availableBalance),
           staleTime: 5_000,
-          cacheTime: 5_000,
+          gcTime: 5_000,
           // Disable retries, as useQueries
           // will block successful quotes from being returned
           // if failed quotes are being returned
@@ -409,7 +416,7 @@ export const useBridgeQuotes = ({
             // check assume larger = worse, so compare magnitudes; a negative
             // figure would silently never trip the gate.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact).abs()
+              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
@@ -456,6 +463,9 @@ export const useBridgeQuotes = ({
               // fee charged on top of the input amount, so max-amount
               // inputs must leave room for it in the user's balance
               isAdditiveFee: transferFee.isAdditive === true,
+              // the provider charges a fee it could not quantify, so the zero
+              // amount must not be displayed as "Free"
+              isTransferFeeUnknown: transferFee.isUnknown === true,
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
@@ -834,9 +844,11 @@ export const useBridgeQuotes = ({
                 address: quote.transferFee.amount.currency.coinMinimalDenom,
                 decimals: quote.transferFee.amount.currency.coinDecimals,
                 amount: quote.transferFee.amount.toCoin().amount,
+                ...(quote.transferFee.isUnknown ? { isUnknown: true } : {}),
               }
             : undefined,
           nomicCheckpointIndex,
+          quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
         });
@@ -1079,8 +1091,7 @@ export const useBridgeQuotes = ({
       // of the drafted final msg (same chain and minimal denom as the fee).
       const draftToken = (
         finalStep.msgs[0]?.value as
-          | { token?: { denom?: string; amount?: string } }
-          | undefined
+          { token?: { denom?: string; amount?: string } } | undefined
       )?.token;
 
       // When the final step's fee isn't paid from the arriving funds (fee
@@ -1315,15 +1326,14 @@ export const useBridgeQuotes = ({
       );
     }
 
-    const { Connection, Transaction, VersionedTransaction } = await import(
-      "@solana/web3.js"
-    );
+    const { Connection, Transaction, VersionedTransaction } =
+      await import("@solana/web3.js");
     // A plain Uint8Array: since TypeScript 5.9, Buffer (Uint8Array<ArrayBufferLike>)
     // no longer satisfies web3.js's Uint8Array<ArrayBuffer> parameters.
     const txBytes = new Uint8Array(
       Buffer.from(transactionRequest.txBase64, "base64")
     );
-    let solanaTx: unknown;
+    let solanaTx: Transaction | VersionedTransaction;
     let recentBlockhash: string | undefined;
     try {
       const versioned = VersionedTransaction.deserialize(txBytes);
@@ -1367,9 +1377,7 @@ export const useBridgeQuotes = ({
     if (phantom.signAndSendTransaction) {
       ({ signature } = await phantom.signAndSendTransaction(solanaTx));
     } else if (phantom.signTransaction) {
-      const signed = (await phantom.signTransaction(solanaTx)) as {
-        serialize: () => Uint8Array;
-      };
+      const signed = await phantom.signTransaction(solanaTx);
       signature = await connection.sendRawTransaction(signed.serialize());
     } else {
       throw new Error("Phantom provider cannot sign transactions");
@@ -1599,8 +1607,8 @@ export const useBridgeQuotes = ({
       transactionRequest.type === "evm"
         ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
         : transactionRequest.type === "solana"
-        ? signAndBroadcastSolanaTx({ ...quote, transactionRequest })
-        : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
+          ? signAndBroadcastSolanaTx({ ...quote, transactionRequest })
+          : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
 
     await tx.catch((e) => {
       console.error(transactionRequest.type, "transaction failed", e);
@@ -1640,8 +1648,7 @@ export const useBridgeQuotes = ({
       finalStep.type === "cosmos"
         ? (
             finalStep.msgs[0]?.value as
-              | { token?: { denom?: string } }
-              | undefined
+              { token?: { denom?: string } } | undefined
           )?.token?.denom
         : undefined;
     return {
@@ -1789,7 +1796,8 @@ export const useBridgeQuotes = ({
     isEvmWalletConnected,
     isCosmosWalletConnected:
       fromChain?.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
+        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
+          false)
         : false,
     phantomAddress,
   });

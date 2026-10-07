@@ -17,7 +17,8 @@ interface Button extends ButtonProps, CustomClasses, Disableable {
 type ClassVariants = "container" | "label" | "input" | "trailingSymbol";
 
 interface Props
-  extends Optional<InputProps<string>, "currentValue">,
+  extends
+    Optional<InputProps<string>, "currentValue">,
     Disableable,
     CustomClasses {
   inputKey?: string;

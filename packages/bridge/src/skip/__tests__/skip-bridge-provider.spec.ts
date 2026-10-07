@@ -469,6 +469,106 @@ describe("SkipBridgeProvider", () => {
     expect(quote.transferFee.isAdditive).toBe(false);
   });
 
+  describe("Axelar fee asset without decimals", () => {
+    const [axelarOperation] = ETH_OsmosisToEthereum_Route.operations.filter(
+      (operation) => "axelar_transfer" in operation
+    ) as { axelar_transfer: { fee_asset: Record<string, unknown> } }[];
+    const { decimals: _, ...feeAsset } =
+      axelarOperation.axelar_transfer.fee_asset;
+
+    const quoteParams: Parameters<SkipBridgeProvider["getQuote"]>[0] = {
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      slippage: 1,
+    };
+
+    beforeEach(() => {
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json({
+            ...ETH_OsmosisToEthereum_Route,
+            operations: ETH_OsmosisToEthereum_Route.operations.map(
+              (operation) =>
+                "axelar_transfer" in operation
+                  ? {
+                      ...operation,
+                      axelar_transfer: {
+                        ...operation.axelar_transfer,
+                        fee_asset: feeAsset,
+                      },
+                    }
+                  : operation
+            ),
+          })
+        ),
+        http.post("https://api.skip.money/v2/fungible/msgs", () =>
+          HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
+        )
+      );
+
+      (estimateGasFee as jest.Mock).mockResolvedValue({
+        gas: "420000",
+        amount: [{ denom: "uosmo", amount: "1232" }],
+      });
+    });
+
+    it("fills the decimals from Skip's asset registry", async () => {
+      const quote = await provider.getQuote(quoteParams);
+
+      expect(quote.transferFee).toMatchObject({
+        amount: "7725420487422623",
+        decimals: 18,
+      });
+      expect(quote.transferFee.isUnknown).toBeUndefined();
+    });
+
+    it("fails the quote when the registry can't supply them", async () => {
+      const unlisted = "0x000000000000000000000000000000000000dEaD";
+      server.use(
+        http.post("https://api.skip.money/v2/fungible/route", () =>
+          HttpResponse.json({
+            ...ETH_OsmosisToEthereum_Route,
+            operations: ETH_OsmosisToEthereum_Route.operations.map(
+              (operation) =>
+                "axelar_transfer" in operation
+                  ? {
+                      ...operation,
+                      axelar_transfer: {
+                        ...operation.axelar_transfer,
+                        fee_asset: { ...feeAsset, denom: unlisted },
+                      },
+                    }
+                  : operation
+            ),
+          })
+        )
+      );
+
+      // never quoted with a guessed exponent or an unreservable zero fee
+      await expect(provider.getQuote(quoteParams)).rejects.toThrow(
+        "Cannot resolve decimals for Axelar fee asset"
+      );
+    });
+  });
+
   it("should handle unsupported asset error", async () => {
     // the global fixture serves a POPULATED chain-1 registry that simply
     // lacks the requested asset: that is what "unsupported" means. (An
@@ -1247,8 +1347,17 @@ describe("raiseMinAssetToDestinationInput", () => {
 
   const BRIDGED_ASSET = "0xaxlUSDC";
 
+  const swapToBridgedAsset = {
+    swap: {
+      swap_in: {
+        swap_venue: {},
+        swap_operations: [{ denom_in: "uosmo", denom_out: "ibc/USDC" }],
+      },
+    },
+  };
+
   const operations = [
-    { swap: { swap_in: { swap_venue: {}, swap_operations: [] } } },
+    swapToBridgedAsset,
     {
       axelar_transfer: {
         fee_amount: AXELAR_FEE,
@@ -1378,6 +1487,60 @@ describe("raiseMinAssetToDestinationInput", () => {
     ] as unknown as typeof operations;
 
     expect(raiseMinAssetToDestinationInput(msgs, mismatched)).toBe(msgs);
+  });
+
+  it("compares the swap input and the Axelar fee asset case-insensitively", () => {
+    const mixedCase = [
+      swapToBridgedAsset,
+      {
+        axelar_transfer: {
+          fee_amount: AXELAR_FEE,
+          fee_asset: { denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" },
+        },
+      },
+      {
+        evm_swap: {
+          amount_in: DESTINATION_INPUT,
+          denom_in: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        },
+      },
+    ] as unknown as typeof operations;
+
+    expect(
+      readMinAsset(
+        raiseMinAssetToDestinationInput(makeMsgs("59892649"), mixedCase)
+      )
+    ).toBe(REQUIRED);
+  });
+
+  it("leaves a floor alone that is not on the asset handed to Axelar", () => {
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    // Two Cosmos swaps: the floor Skip signs on Osmosis is on the intermediate
+    // asset, while the Axelar fee and destination input are in another one.
+    const twoSwaps = [
+      swapToBridgedAsset,
+      {
+        swap: {
+          swap_in: {
+            swap_venue: {},
+            swap_operations: [
+              { denom_in: "ibc/USDC", denom_out: "ibc/NEUTRON_USDT" },
+            ],
+          },
+        },
+      },
+      ...operations.slice(1),
+    ] as unknown as typeof operations;
+    const msgs = makeMsgs("59892649");
+
+    expect(raiseMinAssetToDestinationInput(msgs, twoSwaps)).toBe(msgs);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("not on the asset handed to Axelar"),
+      "ibc/USDC",
+      "ibc/NEUTRON_USDT"
+    );
+
+    warn.mockRestore();
   });
 
   it("warns when a swapping route carries no floor to raise", () => {
@@ -1776,7 +1939,7 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     });
   });
 
-  it("leaves out a relayer fee in another asset with unknown decimals", async () => {
+  it("marks a relayer fee in another asset with unknown decimals as unknown, not free", async () => {
     const { decimals: _, ...originAsset } = nobleRelayFee.origin_asset;
     useSingleTxRejectingRouteHandler(undefined, {
       ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
@@ -1789,9 +1952,10 @@ describe("SkipBridgeProvider multi-tx routes", () => {
     });
 
     expect(quote.transferFee.amount).toBe("0");
+    expect(quote.transferFee.isUnknown).toBe(true);
   });
 
-  it("quotes only the source-asset part of relayer fees split across assets", async () => {
+  it("keeps the source-asset part of relayer fees split across assets but marks the fee incomplete", async () => {
     useSingleTxRejectingRouteHandler(undefined, {
       ...USDC_EthereumToOsmosisAlloy_MultiTxRoute,
       estimated_fees: [cctpRelayFee, nobleRelayFee],
@@ -1802,10 +1966,13 @@ describe("SkipBridgeProvider multi-tx routes", () => {
       allowMultiTx: true,
     });
 
+    // the source-asset part is kept so a Max input still reserves it...
     expect(quote.transferFee).toMatchObject({
       amount: "20000",
       address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     });
+    // ...but the Noble-side part is omitted, so the fee is not the whole fee
+    expect(quote.transferFee.isUnknown).toBe(true);
   });
 
   it("keeps a comparable single-tx route when multi-tx is allowed", async () => {

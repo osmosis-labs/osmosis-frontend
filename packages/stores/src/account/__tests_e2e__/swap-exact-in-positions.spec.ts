@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { BigDec } from "@osmosis-labs/math/src/big-dec";
 import {

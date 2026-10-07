@@ -49,7 +49,7 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
  */
 export function getValueAtPath<
   TRecord extends Record<string, any>,
-  TValue = any
+  TValue = any,
 >(record: TRecord, keyPath: string): TValue | undefined {
   const keys = keyPath.split(".");
   let result: any = record;

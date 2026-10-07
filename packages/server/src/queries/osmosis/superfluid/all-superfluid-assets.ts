@@ -5,7 +5,7 @@ interface SuperfluidAllAssets {
     {
       denom: string;
       asset_type: string;
-    }
+    },
   ];
 }
 

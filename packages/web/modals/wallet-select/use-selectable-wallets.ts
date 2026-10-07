@@ -54,10 +54,13 @@ export const useSelectableWallets = ({
 
     return (
       connectors
-        .reduce((acc, wallet) => {
-          const walletToAdd = { ...wallet, walletType: "evm" as const };
-          return [...acc, getDisplayableEvmConnector(walletToAdd)];
-        }, [] as (Connector & { walletType: "evm" })[])
+        .reduce(
+          (acc, wallet) => {
+            const walletToAdd = { ...wallet, walletType: "evm" as const };
+            return [...acc, getDisplayableEvmConnector(walletToAdd)];
+          },
+          [] as (Connector & { walletType: "evm" })[]
+        )
         // type === "injected" should come first
         .sort((a, b) => {
           if (a.type === "injected" && b.type !== "injected") return -1;
@@ -72,57 +75,63 @@ export const useSelectableWallets = ({
     return (
       CosmosWalletRegistry
         // If mobile, filter out browser wallets
-        .reduce((acc, wallet, _index, array) => {
-          if (isMobile) {
-            /**
-             * If an extension wallet is found in mobile, this means that we are inside an app browser.
-             * Therefore, we should only show that compatible extension wallet.
-             * */
-            if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
-              return acc;
+        .reduce(
+          (acc, wallet, _index, array) => {
+            if (isMobile) {
+              /**
+               * If an extension wallet is found in mobile, this means that we are inside an app browser.
+               * Therefore, we should only show that compatible extension wallet.
+               * */
+              if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+                return acc;
+              }
+
+              const _window = window as Record<string, any>;
+              const mobileWebModeName = "mobile-web";
+
+              /**
+               * If on mobile and `cdc_wallet` is in `window`, it means that the user enters
+               * the frontend from Crypto.com's app in app browser. So, there is no need
+               * to use wallet connect, as it resembles the extension's usage.
+               */
+              if (
+                _window?.cdc_wallet?.cosmos &&
+                _window?.cdc_wallet?.cosmos.mode === mobileWebModeName
+              ) {
+                return array
+                  .filter(
+                    (wallet) =>
+                      wallet.name === AvailableCosmosWallets.CryptocomWallet
+                  )
+                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+              }
+
+              /**
+               * If on mobile and `keplr` is in `window`, it means that the user enters
+               * the frontend from Keplr's app in app browser. So, there is no need
+               * to use wallet connect, as it resembles the extension's usage.
+               */
+              if (
+                _window?.keplr &&
+                _window?.keplr?.mode === mobileWebModeName
+              ) {
+                return array
+                  .filter(
+                    (wallet) => wallet.name === AvailableCosmosWallets.Keplr
+                  )
+                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+              }
+
+              /**
+               * If user is in a normal mobile browser, show only wallet connect
+               */
+              return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
             }
 
-            const _window = window as Record<string, any>;
-            const mobileWebModeName = "mobile-web";
-
-            /**
-             * If on mobile and `cdc_wallet` is in `window`, it means that the user enters
-             * the frontend from Crypto.com's app in app browser. So, there is no need
-             * to use wallet connect, as it resembles the extension's usage.
-             */
-            if (
-              _window?.cdc_wallet?.cosmos &&
-              _window?.cdc_wallet?.cosmos.mode === mobileWebModeName
-            ) {
-              return array
-                .filter(
-                  (wallet) =>
-                    wallet.name === AvailableCosmosWallets.CryptocomWallet
-                )
-                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-            }
-
-            /**
-             * If on mobile and `keplr` is in `window`, it means that the user enters
-             * the frontend from Keplr's app in app browser. So, there is no need
-             * to use wallet connect, as it resembles the extension's usage.
-             */
-            if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
-              return array
-                .filter(
-                  (wallet) => wallet.name === AvailableCosmosWallets.Keplr
-                )
-                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-            }
-
-            /**
-             * If user is in a normal mobile browser, show only wallet connect
-             */
-            return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
-          }
-
-          return [...acc, wallet];
-        }, [] as (typeof CosmosWalletRegistry)[number][])
+            return [...acc, wallet];
+          },
+          [] as (typeof CosmosWalletRegistry)[number][]
+        )
         .map((wallet) => ({
           ...wallet,
           walletType: "cosmos" as const,

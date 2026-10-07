@@ -258,9 +258,6 @@ const isClientIdValid = Boolean(myID);
 
 const ldConfig: ProviderConfig = {
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
-  user: {
-    anonymous: true,
-  },
   options: {
     bootstrap: "localStorage",
   },

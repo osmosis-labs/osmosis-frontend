@@ -184,7 +184,7 @@ function OrderRow({
     DEFAULT_VS_CURRENCY,
     order_direction === "bid"
       ? placed_quantity /
-        Number(new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0)).toString())
+          Number(new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0)).toString())
       : output.quo(new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0)))
   );
 

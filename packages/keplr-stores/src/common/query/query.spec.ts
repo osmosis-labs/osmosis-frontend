@@ -81,7 +81,10 @@ export class MockOnStartObservableQuery extends ObservableQuery<number> {
 }
 
 export class DelayMemoryKVStore extends MemoryKVStore {
-  constructor(prefix: string, public readonly delay: number) {
+  constructor(
+    prefix: string,
+    public readonly delay: number
+  ) {
     super(prefix);
   }
 
@@ -226,7 +229,7 @@ describe("Test observable query", () => {
       await query.waitFreshResponse();
       expect(query.response?.data).toBe(1);
 
-      expect(abortSpy).toBeCalledTimes(0);
+      expect(abortSpy).toHaveBeenCalledTimes(0);
 
       abortSpy.mockRestore();
 
@@ -271,7 +274,7 @@ describe("Test observable query", () => {
     const res = await query.waitResponse();
     expect(res?.data).toBe(0);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -308,7 +311,7 @@ describe("Test observable query", () => {
     const res = await query.waitResponse();
     expect(res?.data).toBe(0);
 
-    expect(abortSpy).toBeCalledTimes(1);
+    expect(abortSpy).toHaveBeenCalledTimes(1);
 
     abortSpy.mockRestore();
 
@@ -347,7 +350,7 @@ describe("Test observable query", () => {
     const res = await query.waitFreshResponse();
     expect(res?.data).toBe(1);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -386,7 +389,7 @@ describe("Test observable query", () => {
     const res = await query.waitFreshResponse();
     expect(res?.data).toBe(1);
 
-    expect(abortSpy).toBeCalledTimes(1);
+    expect(abortSpy).toHaveBeenCalledTimes(1);
 
     abortSpy.mockRestore();
 
@@ -415,7 +418,7 @@ describe("Test observable query", () => {
     res = await query.waitFreshResponse();
     expect(res?.data).toBe(2);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -477,7 +480,7 @@ describe("Test observable query", () => {
     expect(query.error).toBeUndefined();
     expect(query.response).toBeUndefined();
 
-    expect(abortSpy).toBeCalledTimes(1);
+    expect(abortSpy).toHaveBeenCalledTimes(1);
 
     abortSpy.mockRestore();
 
@@ -568,7 +571,7 @@ describe("Test observable query", () => {
     expect(query.response?.data).toBe(1);
     expect(query.response?.staled).toBe(false);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -645,7 +648,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     disposer = autorun(
       () => {
@@ -681,7 +684,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -757,7 +760,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -885,7 +888,7 @@ describe("Test observable query", () => {
       });
     }
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -946,7 +949,7 @@ describe("Test observable query", () => {
       });
     }
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1018,7 +1021,7 @@ describe("Test observable query", () => {
     await query.waitResponse();
     expect(query.response?.data).toBe(2);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1095,7 +1098,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1141,7 +1144,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1189,7 +1192,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1208,7 +1211,8 @@ describe("Test observable query", () => {
     const query = new MockObservableQuery(memStore, port, {}, "/invalid");
 
     const queryController = new DeferInitialQueryController();
-    ObservableQueryBase.experimentalDeferInitialQueryController = queryController;
+    ObservableQueryBase.experimentalDeferInitialQueryController =
+      queryController;
 
     await new Promise((resolve) => {
       setTimeout(resolve, 50);
@@ -1252,7 +1256,7 @@ describe("Test observable query", () => {
       setTimeout(resolve, 50);
     });
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
     expect(getNum()).toBe(0);
 
     expect(query.isObserved).toBe(true);
@@ -1279,7 +1283,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1309,7 +1313,8 @@ describe("Test observable query", () => {
     );
 
     const queryController = new DeferInitialQueryController();
-    ObservableQueryBase.experimentalDeferInitialQueryController = queryController;
+    ObservableQueryBase.experimentalDeferInitialQueryController =
+      queryController;
 
     await new Promise((resolve) => {
       setTimeout(resolve, 50);
@@ -1353,7 +1358,7 @@ describe("Test observable query", () => {
       setTimeout(resolve, 50);
     });
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
     expect(getNum()).toBe(0);
 
     expect(query.isObserved).toBe(true);
@@ -1380,7 +1385,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1448,7 +1453,7 @@ describe("Test observable query", () => {
     expect(query.error).toBeUndefined();
     expect(query.response).toBeUndefined();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
     expect(getNum()).toBe(0);
 
     await new Promise((resolve) => {
@@ -1467,7 +1472,7 @@ describe("Test observable query", () => {
 
     expect(getNum()).toBe(1);
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1536,7 +1541,7 @@ describe("Test observable query", () => {
     expect(query.error).toBeUndefined();
     expect(query.response).toBeUndefined();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
     expect(getNum()).toBe(0);
 
     await new Promise((resolve) => {
@@ -1578,7 +1583,7 @@ describe("Test observable query", () => {
     });
 
     expect(getNum()).toBe(1);
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1634,7 +1639,7 @@ describe("Test observable query", () => {
     expect(query.error).toBeUndefined();
     expect(query.response).toBeUndefined();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
     expect(getNum()).toBe(0);
 
     disposer();
@@ -1650,7 +1655,7 @@ describe("Test observable query", () => {
     expect(query.response).toBeUndefined();
 
     expect(getNum()).toBe(0);
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1730,7 +1735,7 @@ describe("Test observable query", () => {
     disposer();
 
     expect(getNum()).toBe(2);
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1828,7 +1833,7 @@ describe("Test observable query", () => {
     disposer();
 
     expect(getNum()).toBe(2);
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 
@@ -1902,7 +1907,7 @@ describe("Test observable query", () => {
 
     disposer();
 
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     abortSpy.mockRestore();
 

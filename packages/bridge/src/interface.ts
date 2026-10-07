@@ -600,6 +600,12 @@ export interface BridgeQuote {
      *  transaction requires `amount + fee` from the user's balance — rather
      *  than being deducted from the transferred amount in transit. */
     isAdditive?: boolean;
+    /** When true, `amount` is not the whole provider fee: either a placeholder
+     *  zero for a fee that could not be quantified, or only the part charged
+     *  in the source asset while other parts are charged in assets this coin
+     *  can't carry. It must not be shown as the fee or summed into a total
+     *  used to rank quotes; `amount` is still what a Max input must reserve. */
+    isUnknown?: boolean;
   };
   /**
    * The estimated time to execute the transfer, represented in seconds.
@@ -609,6 +615,12 @@ export interface BridgeQuote {
    * The estimated gas fee for the transfer.
    */
   estimatedGasFee?: BridgeCoin;
+
+  /**
+   * Provider-issued ID of this quote. Squid requires it on status requests to
+   * find the transfer, so it is persisted on the transfer's history snapshot.
+   */
+  quoteId?: string;
 
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
@@ -747,6 +759,8 @@ const txSnapshotSchema = z.object({
     .extend({
       amount: z.string(),
       imageUrl: z.string().optional(),
+      /** The amount is not the whole fee (see `BridgeQuote.transferFee.isUnknown`). */
+      isUnknown: z.boolean().optional(),
     })
     .optional(),
   fromAsset: bridgeAssetSchema.extend({
@@ -771,6 +785,8 @@ const txSnapshotSchema = z.object({
   ),
   estimatedArrivalUnix: z.number(),
   nomicCheckpointIndex: z.number().optional(),
+  /** The quote's `quoteId`, sent with Squid status requests. */
+  quoteId: z.string().optional(),
   /**
    * Chain to poll the status provider on when it differs from `fromChain` —
    * set when `sendTxHash` is a later step of a multi-tx route, signed on an

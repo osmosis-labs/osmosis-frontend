@@ -15,7 +15,9 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+// The CommonJS barrel also loads mnemonic/BIP32 code and browser crypto polyfills.
+import { Hash } from "@keplr-wallet/crypto/build/hash";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import {
   BaseAccount,
   ChainedFunctionifyTuple,
@@ -84,6 +86,7 @@ import {
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
+  runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -257,7 +260,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           network_type: chain.networkType,
           pretty_name: chain.prettyName,
           bech32_prefix: chain.bech32Prefix,
-        } as CosmologyChain)
+        }) as CosmologyChain
     );
   }
 
@@ -392,7 +395,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           continue;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
@@ -556,7 +558,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
-          onSign?: () => Promise<void> | void;
+          /** Runs immediately before the broadcast POST with the hash of the
+           *  signed tx, which is known before broadcast (sha256 of the tx
+           *  bytes). A throw aborts the broadcast and discards the signed tx. */
+          onSign?: (txHash: Uint8Array) => Promise<void> | void;
         },
     memoFlags?: TxFeMemoFlags,
     /** Expiry-bind a direct-signed transaction; see {@link sign}. */
@@ -587,7 +592,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
-      let onSign: (() => Promise<void> | void) | undefined;
+      let onSign: ((txHash: Uint8Array) => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -679,7 +684,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onSign) {
-        await onSign();
+        // Callers persisting in-flight state (duplicate-creation guards) need
+        // the hash before the POST: if the POST fails ambiguously (timeout,
+        // 5xx after the node accepted), it is the only handle to reconcile.
+        await onSign(Hash.sha256(encodedTx));
       }
 
       const res = await axios.post<{
@@ -706,6 +714,26 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const broadcasted = res.data.tx_response;
 
+      if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
+      }
+
+      // The POST returning code 0 IS acceptance: record it via onBroadcasted
+      // before any tracer setup, whose endpoint resolution can itself fail —
+      // callers persisting acceptance state (e.g. duplicate-creation guards)
+      // must learn the tx hash even when everything after this point throws.
+      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
+
+      // The per-call callback records acceptance and must not be skipped
+      // because the store-wide one (toasts, analytics) threw.
+      runBroadcastedCallbacks({
+        chainId: chainNameOrId,
+        txHash: txHashBuffer,
+        preTxEvent: this.options.preTxEvents?.onBroadcasted,
+        perCall: onBroadcasted,
+      });
+
       // Pass all RPC endpoints to TxTracer for WebSocket failover.
       const rpcUrls = this.getChainRpcUrls(wallet);
       let sortedRpcUrls: string[] =
@@ -730,21 +758,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
-
-      if (broadcasted.code) {
-        const { BroadcastTxError } = await import("@cosmjs/stargate");
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
-      }
-
-      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
-
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
 
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
@@ -1033,9 +1046,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
-      import(
-        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-      ),
+      import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
       import("@cosmjs/proto-signing"),
@@ -1050,7 +1061,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1174,7 +1185,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1205,14 +1216,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       } satisfies EncodeObject;
     });
 
-    const msgs = normalizedMessages.map((msg) => {
-      const res = aminoTypes.toAmino(msg);
-      // Include the 'memo' field again because the 'registry' omits it
-      if (msg.value.memo) {
-        res.value.memo = msg.value.memo;
-      }
-      return res;
-    });
+    const msgs = normalizedMessages.map((msg) => aminoTypes.toAmino(msg));
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
@@ -1342,7 +1346,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1686,9 +1690,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
-    const { TxExtension } = await import(
-      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-    );
+    const { TxExtension } =
+      await import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx");
     return [
       {
         typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",

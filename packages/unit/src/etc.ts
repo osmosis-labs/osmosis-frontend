@@ -1,6 +1,7 @@
 const regexIntString = /^-?\d+$/;
-const regexDecString = /^-?\d+.?\d*$/;
-const regexExponentDecString = /^(-?)([\d.]+)e([-+])([\d]+)$/;
+const regexDecString = /^-?\d+\.?\d*$/;
+// The exponent sign is optional: `1e5` is as valid as `1e+5`.
+const regexExponentDecString = /^(-?)([\d.]+)e([-+]?)([\d]+)$/;
 
 export function isValidIntegerString(str: string): boolean {
   return regexIntString.test(str);

@@ -24,7 +24,7 @@ export const createMsgOpts = <
   Dict extends Record<
     string,
     AccountMsgOpt | ((param: number) => AccountMsgOpt)
-  >
+  >,
 >(
   dict: Dict
 ) => dict;
@@ -32,16 +32,19 @@ export const createMsgOpts = <
 export const logger = new Logger("WARN");
 
 export function getWalletEndpoints(chains: Chain[]) {
-  return chains.reduce((endpoints, chain) => {
-    const newEndpoints: Record<ChainName, Endpoints> = {
-      ...endpoints,
-      [chain.chain_name]: {
-        rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
-        rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
-      },
-    };
-    return newEndpoints;
-  }, {} as Record<ChainName, Endpoints>);
+  return chains.reduce(
+    (endpoints, chain) => {
+      const newEndpoints: Record<ChainName, Endpoints> = {
+        ...endpoints,
+        [chain.chain_name]: {
+          rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
+          rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
+        },
+      };
+      return newEndpoints;
+    },
+    {} as Record<ChainName, Endpoints>
+  );
 }
 
 export function removeLastSlash(str: string) {
@@ -175,6 +178,36 @@ export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
     ? process.env.TIMEOUT_HEIGHT_OFFSET
     : defaultTimeoutHeightOffset
 );
+
+/**
+ * Runs the store-wide `preTxEvents.onBroadcasted` and the per-call
+ * `onBroadcasted` for an accepted transaction. The per-call callback is where
+ * callers record acceptance (e.g. the duplicate-creation guard persists the tx
+ * hash), so it must run even if the store-wide callback throws; the store-wide
+ * error is re-thrown afterwards so it still surfaces to the caller.
+ */
+export function runBroadcastedCallbacks({
+  chainId,
+  txHash,
+  preTxEvent,
+  perCall,
+}: {
+  chainId: string;
+  txHash: Uint8Array;
+  preTxEvent?: (chainId: string, txHash: Uint8Array) => void;
+  perCall?: (txHash: Uint8Array) => void;
+}) {
+  let preTxEventError: unknown;
+  let preTxEventThrew = false;
+  try {
+    preTxEvent?.(chainId, txHash);
+  } catch (e) {
+    preTxEventThrew = true;
+    preTxEventError = e;
+  }
+  perCall?.(txHash);
+  if (preTxEventThrew) throw preTxEventError;
+}
 
 export class AccountStoreNoBroadcastErrorEvent extends Error {
   constructor(message: string) {

@@ -79,6 +79,7 @@ describe("SquidTransferStatusProvider", () => {
 
   beforeEach(() => {
     provider = new SquidTransferStatusProvider(
+      "integratorId",
       "mainnet" as BridgeEnvironment,
       MockChains
     );
@@ -91,15 +92,30 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
-        return HttpResponse.json({
-          id: "testTxHash",
-          squidTransactionStatus: "success",
-        });
-      })
+      httpMock.get(
+        "https://v2.api.squidrouter.com/v2/status",
+        ({ request }) => {
+          if (request.headers.get("x-integrator-id") !== "integratorId") {
+            return HttpResponse.json(
+              { message: "x-integrator-id header is missing" },
+              { status: 401 }
+            );
+          }
+          if (new URL(request.url).searchParams.get("quoteId") !== "quote1") {
+            return HttpResponse.json(
+              { message: "No transaction found" },
+              { status: 404 }
+            );
+          }
+          return HttpResponse.json({
+            id: "testTxHash",
+            squidTransactionStatus: "success",
+          });
+        }
+      )
     );
 
-    const snapshot = createTxSnapshot();
+    const snapshot = createTxSnapshot({ quoteId: "quote1" });
 
     await provider.trackTxStatus(snapshot);
 
@@ -157,6 +173,7 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should generate correct explorer URL for testnet", () => {
     const testnetProvider = new SquidTransferStatusProvider(
+      "integratorId",
       "testnet" as BridgeEnvironment,
       MockChains
     );
@@ -175,6 +192,7 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should generate correct explorer URL for a cosmos chain", () => {
     const cosmosProvider = new SquidTransferStatusProvider(
+      "integratorId",
       "mainnet" as BridgeEnvironment,
       MockChains
     );

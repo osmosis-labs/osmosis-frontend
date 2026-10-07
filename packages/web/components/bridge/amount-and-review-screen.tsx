@@ -8,6 +8,7 @@ import { getAddress } from "viem";
 import { Screen, useScreenManager } from "~/components/screen-manager";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
@@ -69,26 +70,29 @@ export const AmountAndReviewScreen = observer(
         ? accountStore.getWallet(toChain.chainId)
         : undefined;
 
-    const { address: phantomAddress } = usePhantomWallet();
+    const featureFlags = useFeatureFlags();
+    const { address: phantomAddress } = usePhantomWallet({
+      restoreSession: featureFlags.solanaSkipRoutes === true,
+    });
 
     const fromAddress =
       fromChain?.chainType === "evm"
         ? evmAddress
         : fromChain?.chainType === "solana"
-        ? phantomAddress
-        : fromChainCosmosAccount?.address;
+          ? phantomAddress
+          : fromChainCosmosAccount?.address;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
-      ? evmAddress
-      : toChainCosmosAccount?.address;
+        ? evmAddress
+        : toChainCosmosAccount?.address;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
         ? evmConnector?.icon
         : fromChain?.chainType === "solana"
-        ? undefined
-        : fromChainCosmosAccount?.walletInfo.logo;
+          ? undefined
+          : fromChainCosmosAccount?.walletInfo.logo;
     const toWalletIcon =
       toChain?.chainType === "evm"
         ? evmConnector?.icon
@@ -101,9 +105,9 @@ export const AmountAndReviewScreen = observer(
         },
         {
           enabled: !isNil(selectedAssetDenom),
-          cacheTime: 10 * 60 * 1000, // 10 minutes
+          gcTime: 10 * 60 * 1000, // 10 minutes
           staleTime: 10 * 60 * 1000, // 10 minutes
-          useErrorBoundary: true,
+          throwOnError: true,
         }
       );
 

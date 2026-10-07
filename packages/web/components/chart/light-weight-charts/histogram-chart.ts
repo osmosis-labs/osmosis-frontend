@@ -24,7 +24,7 @@ interface Series {
 export class HistogramChartController<
   T = TimeChartOptions,
   K = Time,
-  N = Series
+  N = Series,
 > extends ChartController<T, K, N> {
   series: ISeriesApi<
     "Custom",

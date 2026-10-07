@@ -31,9 +31,9 @@ function cumulativeBuildUp(arr: number[]): number[] {
   });
 }
 
-export class HistogramSeriesRenderer<TData extends HistogramData>
-  implements ICustomSeriesPaneRenderer
-{
+export class HistogramSeriesRenderer<
+  TData extends HistogramData,
+> implements ICustomSeriesPaneRenderer {
   private _data: PaneRendererCustomData<Time, TData> | null = null;
   private _options: HistogramSeriesOptions | null = null;
   private _props: HistogramSeriesOptions;

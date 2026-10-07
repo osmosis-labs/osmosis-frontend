@@ -158,7 +158,6 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                           });
                         };
 
-                        const isConvert = false;
                         const isSelected =
                           toAsset?.address === asset.coinMinimalDenom;
 
@@ -185,10 +184,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               </div>
                               <div className="flex flex-col">
                                 <p className="body1 md:body2">
-                                  {isConvert
-                                    ? t("transfer.convertTo")
-                                    : t("transfer.depositAs")}{" "}
-                                  {asset.coinDenom}
+                                  {t("transfer.depositAs")} {asset.coinDenom}
                                 </p>
                                 {isCanonicalAsset && (
                                   <p className="body2 text-osmoverse-300">
