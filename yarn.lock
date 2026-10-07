@@ -8450,7 +8450,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.1.4"
     "@testing-library/react": "npm:^16.3.3"
     "@testing-library/user-event": "npm:^14.6.7"
-    "@tippyjs/react": "npm:^4.2.6"
+    "@tippyjs/react": "patch:@tippyjs/react@npm%3A4.2.6#~/.yarn/patches/@tippyjs-react-npm-4.2.6-baf0b2fd6a.patch"
     "@trpc/client": "npm:^11.19.0"
     "@trpc/next": "npm:^11.19.0"
     "@trpc/react-query": "npm:^11.19.0"
@@ -8494,7 +8494,7 @@ __metadata:
     fake-indexeddb: "npm:5.0.2"
     fancy-canvas: "npm:^2.1.0"
     fast-deep-equal: "npm:^3.1.3"
-    focus-trap-react: "npm:^10.0.2"
+    focus-trap-react: "npm:^12.0.3"
     fuse.js: "npm:^6.5.3"
     glob: "npm:^9.3.4"
     highcharts: "npm:^9.1.0"
@@ -8525,7 +8525,7 @@ __metadata:
     react-error-boundary: "npm:^4.0.13"
     react-input-autosize: "npm:^3.0.0"
     react-markdown: "npm:8.0.7"
-    react-modal: "npm:^3.16.1"
+    react-modal: "npm:^3.16.3"
     react-toastify: "npm:^10.0.5"
     react-use: "npm:^17.6.1"
     sharp: "npm:^0.35.5"
@@ -10796,7 +10796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tippyjs/react@npm:^4.2.6":
+"@tippyjs/react@npm:4.2.6":
   version: 4.2.6
   resolution: "@tippyjs/react@npm:4.2.6"
   dependencies:
@@ -10805,6 +10805,18 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: 10c0/b174f2fbd27c16c5a8554ee8b26f3cc61bc37507669a1cef3e3333bfb3db85c84a57a93003c972ede8007786cf0e813d489781aa9caf46fb3bf1b851e3f4daba
+  languageName: node
+  linkType: hard
+
+"@tippyjs/react@patch:@tippyjs/react@npm%3A4.2.6#~/.yarn/patches/@tippyjs-react-npm-4.2.6-baf0b2fd6a.patch":
+  version: 4.2.6
+  resolution: "@tippyjs/react@patch:@tippyjs/react@npm%3A4.2.6#~/.yarn/patches/@tippyjs-react-npm-4.2.6-baf0b2fd6a.patch::version=4.2.6&hash=fab7fb"
+  dependencies:
+    tippy.js: "npm:^6.3.1"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10c0/0b1925fcdadee41671ee5bf9471d790e89f9c887c4facb13d63366a4795cbbe26e549541f55f07198c05a3fa2d7c718c89a930e101a80a733d9da98dc90e6ba3
   languageName: node
   linkType: hard
 
@@ -19006,26 +19018,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"focus-trap-react@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "focus-trap-react@npm:10.0.2"
+"focus-trap-react@npm:^12.0.3":
+  version: 12.0.3
+  resolution: "focus-trap-react@npm:12.0.3"
   dependencies:
-    focus-trap: "npm:^7.2.0"
-    tabbable: "npm:^6.0.1"
+    focus-trap: "npm:^8.2.2"
+    tabbable: "npm:^6.5.0"
   peerDependencies:
-    prop-types: ^15.8.1
-    react: ">=16.3.0"
-    react-dom: ">=16.3.0"
-  checksum: 10c0/985eebb422d002b95ff08fb4a96558fc78504daadd826216dedc84388813a95df7c78400dc02f54a0d20c4dd64f5b14f71ad8d345955a0a61b55d9e019369161
+    "@types/react": ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10c0/513b196c3f4f0fdb2404871e2ae4fd960f0102dfd4903a765a054e5621ec9c1b63f412e4988dd19675f562a76c33cc21300c1bc9d35d31250b9a1fc0ba5da946
   languageName: node
   linkType: hard
 
-"focus-trap@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "focus-trap@npm:7.2.0"
+"focus-trap@npm:^8.2.2":
+  version: 8.2.3
+  resolution: "focus-trap@npm:8.2.3"
   dependencies:
-    tabbable: "npm:^6.0.1"
-  checksum: 10c0/badd7a7fab1579ae45a734a7ac20f1ede6a9298c3847c07e5948601a5ced439904d1f9d32d45d730d6198cf4f779d03516898a3f3b2168d4ada0d5996b5e7ca6
+    tabbable: "npm:^6.5.0"
+  checksum: 10c0/cac5ae20ef7058f60c811d0b31a3191fa2fbb1ed73898e4c0f70c00c22169e861dae9c91f5599d8041fdb79b4041950816e2714bce3553f011fa9cddfbd5f0c9
   languageName: node
   linkType: hard
 
@@ -27172,18 +27185,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-modal@npm:^3.16.1":
-  version: 3.16.1
-  resolution: "react-modal@npm:3.16.1"
+"react-modal@npm:^3.16.3":
+  version: 3.16.3
+  resolution: "react-modal@npm:3.16.3"
   dependencies:
     exenv: "npm:^1.2.0"
     prop-types: "npm:^15.7.2"
     react-lifecycles-compat: "npm:^3.0.0"
     warning: "npm:^4.0.3"
   peerDependencies:
-    react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
-    react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
-  checksum: 10c0/7b56e2c505b2b924736c471a34754a4211df40ac2d6fb0949cf095aea5e65d3326bd9f111fa7898acf40afa54f526809ad8aa47e02b8328663d11422568dc7b1
+    react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
+    react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
+  checksum: 10c0/b541c91aef680c51ee9edf4ec14b3be29787e34d4df174150361b1d42b2416b28336e2280abdc71df082b1380d0786fe2122cdca31e19a74b54b49d17855a0f2
   languageName: node
   linkType: hard
 
@@ -29991,10 +30004,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tabbable@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "tabbable@npm:6.0.1"
-  checksum: 10c0/0455492c01e77092d8ccc506e83709cbd28c280e9dd3b12cbebd273c25d72d909d45470f8066e40519fd1c7b04868c47c7b467c85f3b943c52a10a6260e2f3e8
+"tabbable@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "tabbable@npm:6.5.0"
+  checksum: 10c0/7d778af05a3093800265831198cad9d0024f3d65cdd4405007490f7430b42ff4e80060b4679f45281fb96ddbddc5fb895e8ea36e3ebdc811051e14acc9c7c02c
   languageName: node
   linkType: hard
 
