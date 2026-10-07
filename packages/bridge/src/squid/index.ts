@@ -39,6 +39,7 @@ import {
   GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
+import { SquidProviderId } from "./constants";
 import { getSquidErrors } from "./error";
 import type {
   SquidChainsResponse,
@@ -51,7 +52,7 @@ import type {
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static readonly ID = "Squid";
+  static readonly ID = SquidProviderId;
   readonly providerName = SquidBridgeProvider.ID;
 
   protected readonly apiURL: string;

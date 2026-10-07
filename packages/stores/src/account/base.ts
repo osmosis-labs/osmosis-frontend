@@ -15,7 +15,9 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+// The CommonJS barrel also loads mnemonic/BIP32 code and browser crypto polyfills.
+import { Hash } from "@keplr-wallet/crypto/build/hash";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import {
   BaseAccount,
   ChainedFunctionifyTuple,

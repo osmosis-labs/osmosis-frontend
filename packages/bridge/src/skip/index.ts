@@ -53,6 +53,7 @@ import {
 import { BridgeAssetMap } from "../utils/asset";
 import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
 import { SkipApiClient } from "./client";
+import { SkipProviderId } from "./constants";
 import {
   SkipEstimatedFee,
   SkipEvmTx,
@@ -261,7 +262,7 @@ export function raiseMinAssetToDestinationInput(
  *  wrapped-SOL mint, used only as a stable identifier for pricing. */
 
 export class SkipBridgeProvider implements BridgeProvider {
-  static readonly ID = "Skip";
+  static readonly ID = SkipProviderId;
   readonly providerName = SkipBridgeProvider.ID;
 
   readonly skipClient: SkipApiClient;
