@@ -1,27 +1,32 @@
-import type { LottieProps } from "lottie-react";
+import type { LottieSvgProps } from "lottie-react";
 import dynamic from "next/dynamic";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const Lottie = dynamic<LottieProps>(
-  () => import("lottie-react").then((module) => module.Lottie),
+// The svg build carries one renderer and keeps the expression engine, which
+// step1.json relies on.
+const Lottie = dynamic<LottieSvgProps>(
+  () => import("lottie-react").then((module) => module.LottieSvg),
   { ssr: false }
 );
 
-const lotties = new Map<string, Record<string, any>>();
+const lotties = new Map<string, Promise<Record<string, any>>>();
 
-/** Dynamically imports an animation file once per global key. */
-async function loadLottie(
+/** Dynamically imports an animation file once per global key. Concurrent
+ *  mounts with the same key share the in-flight import. */
+function loadLottie(
   globalKey: string,
   importFn: () => Promise<Record<string, any>>
 ) {
-  if (!lotties.has(globalKey)) {
-    const animationModule = await importFn();
-    const lottie = animationModule.default ?? animationModule;
+  let lottie = lotties.get(globalKey);
+  if (!lottie) {
+    lottie = importFn().then(
+      (animationModule) => animationModule.default ?? animationModule
+    );
+    // Forget failed imports so a later mount can retry.
+    lottie.catch(() => lotties.delete(globalKey));
     lotties.set(globalKey, lottie);
-    return lottie;
   }
-
-  return lotties.get(globalKey);
+  return lottie;
 }
 
 /** Loads the lottie library component, and its
@@ -30,7 +35,7 @@ export const DynamicLottieAnimation: FunctionComponent<
   {
     globalLottieFileKey: string;
     importFn: () => Promise<Record<string, any>>;
-  } & Omit<LottieProps, "src">
+  } & Omit<LottieSvgProps, "src">
 > = ({
   globalLottieFileKey,
   importFn,
@@ -59,8 +64,19 @@ export const DynamicLottieAnimation: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalLottieFileKey]);
 
-  // v3 requires a valid source; do not mount its player before JSON has loaded.
-  if (!lottie || lottie.key !== globalLottieFileKey) return null;
+  // v3 requires a valid source, so the player cannot mount before the JSON has
+  // loaded. Keep the caller's sized, interactive box in place meanwhile.
+  if (!lottie || lottie.key !== globalLottieFileKey) {
+    const { className, style, onMouseEnter, onMouseLeave } = props;
+    return (
+      <div
+        className={className}
+        style={style}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      />
+    );
+  }
 
   // v3 defaults both to false, unlike the previous lottie-web-backed defaults.
   return (
