@@ -154,11 +154,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // materially.
   const slippageMultiplier = new Dec(1).sub(zapSlippageConfig.slippage.toDec());
   const displayedSwapIn: CoinPretty | undefined = requiredSwap
-    ? swapExecutedIn ??
+    ? (swapExecutedIn ??
       new CoinPretty(
         requiredSwap.tokenInCurrency,
         new Dec(requiredSwap.swapInAmount).mul(slippageMultiplier).truncate()
-      )
+      ))
     : undefined;
 
   // Price of the side being swapped, used to value the swapped slice and to

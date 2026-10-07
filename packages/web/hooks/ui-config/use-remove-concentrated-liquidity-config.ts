@@ -447,16 +447,6 @@ export function useRemoveConcentratedLiquidityConfig(
           if (tokenOutMinAmount.lte(new Int(0)))
             return rejectPreflight("Swap output floor rounds to zero");
 
-          logEvent([
-            EventName.ConcentratedLiquidity.removeLiquidityClicked,
-            {
-              liquidityUSD: Number(liquidity.toString()),
-              poolId,
-              positionId: position.id,
-              isSingleAsset: true,
-            },
-          ]);
-
           broadcastAttempted = true;
           await account.osmosis.sendZapOutOfConcentratedPositionMsg(
             position.id,
@@ -470,16 +460,6 @@ export function useRemoveConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                logEvent([
-                  EventName.ConcentratedLiquidity.removeLiquidityCompleted,
-                  {
-                    liquidityUSD: Number(liquidity.toString()),
-                    poolId,
-                    positionId: position.id,
-                    percentage: config.percentage.toString(),
-                    isSingleAsset: true,
-                  },
-                ]);
                 apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
                   .invalidate({ poolId })
                   .finally(() => resolve());
@@ -501,7 +481,6 @@ export function useRemoveConcentratedLiquidityConfig(
       quotedSwap,
       swapExecution,
       slippageMultiplier,
-      logEvent,
       poolId,
       position.id,
       apiUtils,
