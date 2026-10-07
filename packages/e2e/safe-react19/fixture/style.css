@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body {
+  background: #090524;
+  color: white;
+  font-family: sans-serif;
+}
+section {
+  margin: 16px;
+  padding: 16px;
+  border: 1px solid #565081;
+}
+button {
+  padding: 8px;
+  margin: 4px;
+  background: #462adf;
+  color: white;
+}
+input {
+  color: black;
+  font: 24px serif;
+}
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 150ms ease-in;
+}
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+/* Minimal local tooltip skin; production styles are not asserted here. */
+.tippy-box {
+  position: relative;
+  background: #333;
+  color: white;
+  border-radius: 4px;
+  padding: 5px;
+  transition-property: transform, visibility, opacity;
+}
+.tippy-box[data-state="hidden"] {
+  opacity: 0;
+}

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["dom", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["../../../web/*"],
+      "~/hooks": ["hooks.ts"],
+      "~/components/assets": ["visuals.tsx"],
+      "~/components/ui/button": ["visuals.tsx"],
+      "~/components/buttons/icon-button": ["visuals.tsx"],
+      "~/components/loaders/skeleton-loader": ["visuals.tsx"]
+    },
+    "incremental": true
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../../../web/window.d.ts"],
+  "exclude": ["node_modules"]
+}

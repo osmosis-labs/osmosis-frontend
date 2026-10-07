@@ -1,0 +1,5 @@
+/* Fixture-only override: no Google Fonts import from production custom-limit.css.
+   Vendor JS/CSS bundles and their iframe-local React remain unmodified. */
+:root {
+  --tv-color-platform-background: #090524;
+}

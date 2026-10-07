@@ -1,6 +1,8 @@
 # React 19 integration status
 
-**Ready for the constrained browser phase; not release-validated.** Combined
+**Ready for scoped migration review; not release-validated.** Safe localhost
+browser/component evidence is recorded below; the real app diagnostic still
+fails on font/API/resource behavior. Combined
 immutable installation, all library builds, generation, explicit application
 typechecking, full Jest twice, focused suites, Next compilation and sitemap
 postbuild pass. Wallet adapter peers, signing-mock types and browser behavior
@@ -206,15 +208,49 @@ wagmi registration; imported signing mocks expose the known Long/bigint issue.
 The separate peer config includes only that regression. No secrets/dotenv values
 were read or dumped.
 
+## Safe browser follow-up
+
+The assigned worktree started clean at `275b255ad`. Added a reusable LOCAL-only
+Playwright config and separately built Next test fixture, with no production debug
+route, production source/vendor edits, or dependency/lockfile changes.
+[Browser evidence](react19-browser-smoke.md) records exact commands, failed
+attempts, mocks, remaining warnings and cleanup; the fixture README explains its
+execution boundary.
+
+- **PASS:** final production-fixture browser suite twice, **12 tests / exit 0**,
+  26.6s/26.4s; desktop and touch/reduced-motion viewports. Real autosize/font/caret
+  measurement, ModalBase delayed Escape/focus return, drawer transition/focus
+  cycling, patched Tippy singleton, Stepper, Zustand UI updates, Visx/Spring
+  resize/tooltip/drag, Lottie hover/reduced motion, and unchanged vendor TradingView
+  v27.006 iframe initialization/unmount/remount with offline datafeed.
+- **PASS:** fixture/test TypeScript, explicit web typecheck, focused **6 Jest
+  suites / 38 tests**, final immutable install, scoped ESLint/Prettier and diff
+  checks. Final fixture browser runs have no pageerror/console.error/network/HTTP
+  failures or React/ref/hydration warnings. Exact vendor study-property warning
+  remains and is recorded rather than claimed resolved.
+- **LIMITED real-app evidence:** with only Google Fonts stylesheets explicitly
+  stubbed, the real disconnected wallet-selection modal opens, closes on Escape
+  and returns focus. No adapter selected. Zero React/ref/hydration errors in that
+  session does not imply general wallet/runtime compatibility.
+- **FAIL, not a clean-app pass:** production diagnostic returns **exit 1** with
+  34 quote/portfolio/resource console errors and local Speed Insights 404/aborted
+  request. Unstubbed app font requests hang/fail inconsistently in this environment;
+  production font/API/Edge/network behavior is not release-validated.
+- All launched fixture/production servers and browsers were cleaned up; final
+  listener checks are empty. No stage/parent/shared modules, wallet secrets,
+  signatures, approvals, transactions, push, PR or deployment were involved.
+
 ## Outstanding checks and caveats
 
-1. **Browser phase remains required**: chart sizing/animation/drag/tooltip
-   flipping; drawer transitions/focus cycling/Escape policy; delayed modal close
-   and focus return; singleton tooltips; autosize font/layout/hydration/mobile
-   decimal keyboards; limit-price/slippage/spend-limit editing; rewards/tutorial
-   Lottie hover restarts/sizing/reduced motion; disconnected wallet/store updates.
-   No browser/E2E run occurred in this phase. Do not run the unsafe wholesale E2E
-   suite or perform real wallet signatures, approvals, swaps/orders or transfers.
+1. **Browser coverage is constrained, not release approval.** Core migrated
+   components now have safe local browser evidence, with explicitly mocked
+   translation/flags/visual barrels and in-memory TradingView datafeed. Actual
+   limit-price/slippage/spend-limit forms, complete tutorials/rewards card UX,
+   production CSS/font delivery, physical mobile keyboards/devices, real flags,
+   datafeeds and production APIs remain untested or blocked. The real app probe
+   fails overall despite limited wallet-modal UI success. Do not run the unsafe
+   wholesale E2E suite or perform real wallet signatures, approvals, swaps/orders
+   or transfers as part of this validation.
 2. **Wallet adapter peers are not fully remediated.** Audited residual requests:
    `pb6aed0` connectors → MetaMask SDK/modal/react-native-webview missing React;
    SDK/modal explicitly require React `^18.2.0`. `pcdf427` is optional missing
@@ -233,8 +269,8 @@ were read or dumped.
    ignored workspace-local resolutions and other non-React missing peers remain.
    Next computedFn warnings remain; earlier Edge Node-API import warnings require
    runtime checks. Build success does not verify deployed API/Edge/external services.
-5. Integration is ready for **safe, non-signing browser validation only**, not
-   release/deployment. Scoped source/manifest/lockfile changes are committed.
+5. Integration is ready for **scoped review with safe browser evidence**, not
+   release/deployment. Scoped migration and browser source/tests/docs are committed.
    Parent checkout, stage/stage-cf, unrelated upgrade branch and source worktrees
-   were not changed; no push/PR/merge into stage/deployment occurred. No servers
-   or background processes were launched, so none need handoff cleanup.
+   were not changed; no push/PR/merge into stage/deployment occurred. Browser-phase
+   servers were launched only locally and were all cleaned up before handoff.
