@@ -2,8 +2,8 @@ import { Chain } from "@osmosis-labs/types";
 import { Int } from "@osmosis-labs/unit";
 import {
   ChainIdHelper,
-  createMultiEndpointClient,
   getChain,
+  MultiEndpointClient,
 } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -257,7 +257,7 @@ async function queryBlockTimeSeconds({
 
   // Constructed outside the try so a client misconfiguration surfaces rather
   // than being mistaken for an unreachable node.
-  const client = createMultiEndpointClient(
+  const client = new MultiEndpointClient(
     rpcUrls.map((url) => ({ address: url }))
   );
 
