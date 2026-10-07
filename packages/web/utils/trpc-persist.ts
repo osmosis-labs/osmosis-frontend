@@ -15,8 +15,10 @@ export const PERSIST_EXCLUDED_KEYS = [
  * results persisted before the Skip counterparty mutation fix.
  * v4: TanStack Query v5 cache format; v4 caches hold a "loading" status that v5
  * cannot restore.
+ * v5: discard plain unit-class field dumps cached before the OpenNext
+ * SuperJSON registry/constructor-identity fix.
  */
-export const PERSIST_BUSTER = "v4";
+export const PERSIST_BUSTER = "v5";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

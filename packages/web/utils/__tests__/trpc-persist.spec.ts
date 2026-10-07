@@ -1,5 +1,6 @@
 import { superjson } from "@osmosis-labs/server";
 import { makeIndexedKVStore } from "@osmosis-labs/stores";
+import { PricePretty } from "@osmosis-labs/unit";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import {
@@ -99,6 +100,43 @@ describe("persisted query cache", () => {
     expect(
       target.getQueryState([["edge", "assets", "getAssetPrice"]])
     ).toBeUndefined();
+  });
+
+  it("restores market prices as live unit objects", async () => {
+    const persister = makePersister("persist-spec-market-price");
+    const source = new QueryClient();
+    const key = [["edge", "assets", "getMarketAsset"]];
+    const price = new PricePretty(
+      { currency: "usd", symbol: "$", maxDecimals: 2, locale: "en-US" },
+      "0.03423563438382369"
+    );
+    source.setQueryData(key, { currentPrice: price });
+    await save(source, persister);
+
+    const target = await restore(persister);
+    const restored = target.getQueryData<{ currentPrice: PricePretty }>(key);
+    expect(restored?.currentPrice).toBeInstanceOf(PricePretty);
+    expect(restored?.currentPrice.toDec().toString()).toBe(
+      price.toDec().toString()
+    );
+  });
+
+  it("discards v4 caches containing plain market-price field dumps", async () => {
+    const persister = makePersister("persist-spec-field-dump");
+    const source = new QueryClient();
+    const key = [["edge", "assets", "getMarketAsset"]];
+    source.setQueryData(key, {
+      currentPrice: {
+        _fiatCurrency: { currency: "usd", symbol: "$" },
+        amount: 0.034,
+        intPretty: { dec: "0.034" },
+      },
+    });
+    await save(source, persister, "v4");
+
+    const target = await restore(persister);
+    expect(target.getQueryData(key)).toBeUndefined();
+    expect(await persister.restoreClient()).toBeUndefined();
   });
 
   it("drops a cache saved under an older buster", async () => {
