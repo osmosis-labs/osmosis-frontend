@@ -47,7 +47,7 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "5.9.3",
-    "ws": "^7.4.5"
+    "ws": "^7.5.11"
   },
   "dependencies": {
     "@cosmjs/amino": "0.36.2",
@@ -66,7 +66,7 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
-    "axios": "^0.33.0",
+    "axios": "^0.34.0",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.10.1",
     "dayjs": "^1.11.23",
