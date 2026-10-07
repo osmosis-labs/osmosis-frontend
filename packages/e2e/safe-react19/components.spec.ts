@@ -392,6 +392,27 @@ test("untouched TradingView v27 iframe initializes with offline bars and cleans 
   await expect(
     page.frameLocator("[data-testid='vendor'] iframe").locator("canvas").first()
   ).toBeVisible();
+  // Actual Next client navigation must unmount the app wrapper, not just a toggle.
+  await page.evaluate(() => {
+    delete document.body.dataset.feedUnsubscribed;
+  });
+  await page.getByRole("link", { name: "Leave smoke page" }).click();
+  await expect(page.getByRole("heading")).toHaveText("Fixture away");
+  await expect(page.locator("iframe")).toHaveCount(0);
+  await expect(page.locator("body")).toHaveAttribute(
+    "data-feed-unsubscribed",
+    "true"
+  );
+  await page.getByRole("link", { name: "Return to smoke page" }).click();
+  await expect(page.getByTestId("hydrated")).toHaveAttribute(
+    "data-ready",
+    "true"
+  );
+  await toggle.click();
+  await expect(iframe).toBeVisible();
+  await expect(
+    page.frameLocator("[data-testid='vendor'] iframe").locator("canvas").first()
+  ).toBeVisible();
   await toggle.click();
   await expect(page.locator("iframe")).toHaveCount(0);
 });

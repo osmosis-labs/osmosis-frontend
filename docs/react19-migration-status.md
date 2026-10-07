@@ -218,16 +218,21 @@ attempts, mocks, remaining warnings and cleanup; the fixture README explains its
 execution boundary.
 
 - **PASS:** final production-fixture browser suite twice, **12 tests / exit 0**,
-  26.6s/26.4s; desktop and touch/reduced-motion viewports. Real autosize/font/caret
+  27.0s/27.1s; desktop and touch/reduced-motion viewports. Real autosize/font/caret
   measurement, ModalBase delayed Escape/focus return, drawer transition/focus
   cycling, patched Tippy singleton, Stepper, Zustand UI updates, Visx/Spring
   resize/tooltip/drag, Lottie hover/reduced motion, and unchanged vendor TradingView
-  v27.006 iframe initialization/unmount/remount with offline datafeed.
+  v27.006 iframe initialization/unmount/remount and actual Next client navigation
+  cleanup with offline datafeed.
 - **PASS:** fixture/test TypeScript, explicit web typecheck, focused **6 Jest
   suites / 38 tests**, final immutable install, scoped ESLint/Prettier and diff
   checks. Final fixture browser runs have no pageerror/console.error/network/HTTP
   failures or React/ref/hydration warnings. Exact vendor study-property warning
-  remains and is recorded rather than claimed resolved.
+  remains and is recorded rather than claimed resolved. A navigation-inclusive
+  run failed on the vendor's sampled Google Analytics request (2% conditional in
+  unchanged vendor code); later unchanged runs passed, but that telemetry remains
+  nondeterministic and strictly fails the suite when attempted. No telemetry mock,
+  random override, vendor edit or error suppression was added.
 - **LIMITED real-app evidence:** with only Google Fonts stylesheets explicitly
   stubbed, the real disconnected wallet-selection modal opens, closes on Escape
   and returns focus. No adapter selected. Zero React/ref/hydration errors in that

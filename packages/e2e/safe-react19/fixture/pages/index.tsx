@@ -1,6 +1,7 @@
 import Tippy, { useSingleton } from "@tippyjs/react";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import Link from "next/link";
 import {
   useEffect,
   useRef,
@@ -139,6 +140,9 @@ export default function Smoke() {
   return (
     <main data-testid="hydrated" data-ready={hydrated}>
       <h1>Local React {version} component smoke</h1>
+      <Link href="/away" prefetch={false}>
+        Leave smoke page
+      </Link>
       <section>
         <AutosizeInput
           aria-label="Decimal amount"

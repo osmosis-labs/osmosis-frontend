@@ -37,8 +37,13 @@ cd /Users/markobaricevic/code/cosmos/osmosis-frontend-react19-worktrees/integrat
   This is emulation, not an OS decimal-keyboard or physical mobile-device test.
 - TradingView uses the **unchanged** app `AdvancedChart` wrapper, vendor v27
   script/bundles and isolated iframe, with an in-memory bar datafeed and initialized
-  flag. A fixture-only `custom_css_url` avoids production Google Fonts. No RPC,
+  flag, including actual Next client navigation cleanup. A fixture-only `custom_css_url` avoids production Google Fonts. No RPC,
   real market data, broker/order API or vendor React modification.
+- Unchanged v27 vendor code conditionally samples Google Analytics at 2%.
+  A navigation run failed on that blocked external request; subsequent runs
+  passed without source changes. Inputs are deterministic, **vendor telemetry is
+  not**. The audit intentionally fails if it is sampled; there is no random
+  override, vendor modification, telemetry-success mock or automatic retry.
 - The offline suite does not import wallet providers/adapters. Store updates are
   real Zustand UI subscriptions, **not** wallet signing/connection validation.
 - Build output, browsers and results stay under `.yarn/react19-browser`.
