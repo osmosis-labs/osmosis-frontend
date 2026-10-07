@@ -877,8 +877,8 @@ export function useSwap(
         : inAmountInput.isTyping)
         ? positivePrevQuote
         : !activeQuoteError
-        ? quote
-        : undefined,
+          ? quote
+          : undefined,
     inBaseOutQuoteSpotPrice,
     totalFee,
     networkFee,

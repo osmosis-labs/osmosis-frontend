@@ -21,7 +21,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
@@ -186,10 +185,10 @@ export const ReviewOrder = observer(function ReviewOrder({
     manualSlippage !== ""
       ? manualSlippage
       : presetSlippagePct !== undefined
-      ? presetSlippagePct
-      : isAutoAdjusted && !isEditingSlippage
-      ? autoAdjustedSlippage!
-      : "";
+        ? presetSlippagePct
+        : isAutoAdjusted && !isEditingSlippage
+          ? autoAdjustedSlippage!
+          : "";
 
   const isManualSlippageTooHigh =
     (!!displayedSlippage && parseFloat(displayedSlippage) > 25) ||
