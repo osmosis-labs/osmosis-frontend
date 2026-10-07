@@ -236,19 +236,27 @@ export function getInactiveDelegationsToAlert(
 /**
  * The validators preselected when redelegating off inactive validators: the
  * stored preference if there is one, else the validators the user delegates
- * to, kept only where the squad picker shows a selectable row. Anything else
+ * at least `minDelegation` to (a leftover dust delegation isn't a validator the
+ * user still means to back, so it shouldn't get an even share). Either way,
+ * kept only where the squad picker shows a selectable row. Anything else
  * (inactive, or hidden from the picker for missing a moniker or charging over
  * the commission cap) would receive stake the user can't see or deselect.
  */
 export function getRedelegationDefaultSelection({
   preference,
   delegatedValidators,
+  minDelegation,
   selectableValidators,
 }: {
   preference: string[];
-  delegatedValidators: string[];
+  delegatedValidators: { operatorAddress: string; amount: Int }[];
+  minDelegation: Int;
   selectableValidators: Set<string>;
 }): string[] {
-  const squad = preference.length ? preference : delegatedValidators;
+  const squad = preference.length
+    ? preference
+    : delegatedValidators
+        .filter(({ amount }) => amount.gte(minDelegation))
+        .map(({ operatorAddress }) => operatorAddress);
   return squad.filter((address) => selectableValidators.has(address));
 }

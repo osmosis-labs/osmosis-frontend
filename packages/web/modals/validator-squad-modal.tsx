@@ -3,7 +3,14 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Currency, Dec, Int, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  Int,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
@@ -565,6 +572,16 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           ),
         [inactiveDelegations]
       );
+      // dust (under 1 OSMO, the popup's threshold) isn't preselected
+      const minPreselectDelegation = useMemo(
+        () =>
+          new Int(1).mul(
+            DecUtils.getTenExponentN(
+              totalStakePool.currency.coinDecimals
+            ).truncate()
+          ),
+        [totalStakePool.currency.coinDecimals]
+      );
       useEffect(() => {
         if (!isOpen || !isRedelegating) return;
 
@@ -572,7 +589,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           Object.fromEntries(
             getRedelegationDefaultSelection({
               preference: [...usersValidatorSetPreferenceMap.keys()],
-              delegatedValidators: [...usersValidatorsMap.keys()],
+              delegatedValidators: [...usersValidatorsMap.entries()].map(
+                ([operatorAddress, { balance }]) => ({
+                  operatorAddress,
+                  amount: new Int(balance.amount),
+                })
+              ),
+              minDelegation: minPreselectDelegation,
               selectableValidators: eligibleAddresses,
             }).map((address) => [address, true])
           )
@@ -583,6 +606,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         usersValidatorSetPreferenceMap,
         usersValidatorsMap,
         eligibleAddresses,
+        minPreselectDelegation,
       ]);
 
       const selectedOperatorAddresses = useMemo(

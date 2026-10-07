@@ -281,13 +281,20 @@ describe("getInactiveDelegationsToAlert", () => {
 });
 
 describe("getRedelegationDefaultSelection", () => {
-  const selectableValidators = new Set(["a", "b", "c"]);
+  const selectableValidators = new Set(["a", "b", "c", "dust"]);
+  const oneOsmo = new Int(1_000_000);
+  const delegated = (...entries: [string, number][]) =>
+    entries.map(([operatorAddress, amount]) => ({
+      operatorAddress,
+      amount: new Int(amount),
+    }));
 
   it("starts from the stored preference when there is one", () => {
     expect(
       getRedelegationDefaultSelection({
         preference: ["a", "jailed"],
-        delegatedValidators: ["b", "jailed"],
+        delegatedValidators: delegated(["b", 5_000_000], ["jailed", 9_000_000]),
+        minDelegation: oneOsmo,
         selectableValidators,
       })
     ).toEqual(["a"]);
@@ -297,10 +304,27 @@ describe("getRedelegationDefaultSelection", () => {
     expect(
       getRedelegationDefaultSelection({
         preference: [],
-        delegatedValidators: ["b", "jailed", "c"],
+        delegatedValidators: delegated(
+          ["b", 5_000_000],
+          ["jailed", 9_000_000],
+          ["c", 1_000_000]
+        ),
+        minDelegation: oneOsmo,
         selectableValidators,
       })
     ).toEqual(["b", "c"]);
+  });
+
+  it("skips dust delegations, which aren't a validator the user still backs", () => {
+    // e.g. 2 uosmo left on a validator the user already moved away from
+    expect(
+      getRedelegationDefaultSelection({
+        preference: [],
+        delegatedValidators: delegated(["dust", 2], ["a", 5_000_000]),
+        minDelegation: oneOsmo,
+        selectableValidators,
+      })
+    ).toEqual(["a"]);
   });
 
   it("never preselects a validator the picker hides", () => {
@@ -309,6 +333,7 @@ describe("getRedelegationDefaultSelection", () => {
       getRedelegationDefaultSelection({
         preference: ["a", "high-commission", "no-moniker"],
         delegatedValidators: [],
+        minDelegation: oneOsmo,
         selectableValidators,
       })
     ).toEqual(["a"]);
