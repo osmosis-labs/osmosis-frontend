@@ -11,6 +11,7 @@ import { mockFlags } from "jest-launchdarkly-mock";
 import { when } from "mobx";
 import { ReactNode } from "react";
 
+import { registerTestCleanup } from "~/__tests__/test-lifecycle";
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { trpcReact } from "~/__tests__/trpc-react";
 import { MultiLanguageProvider } from "~/hooks/language/context";
@@ -19,6 +20,7 @@ import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
 
 let testRootStore: RootStore;
+const testRootStores = new Set<RootStore>();
 
 const queryClient = new QueryClient();
 const trpcClient = trpcReact.createClient({
@@ -29,6 +31,21 @@ const trpcClient = trpcReact.createClient({
     }),
   ],
 });
+registerTestCleanup(async () => {
+  await queryClient.cancelQueries();
+  queryClient.clear();
+  for (const rootStore of testRootStores) {
+    const manager = rootStore.accountStore.walletManager;
+    manager.onUnmounted();
+    // Cosmos Kit exposes the session timer but has no session disposal method.
+    if (manager.session.timeoutId !== undefined) {
+      clearTimeout(manager.session.timeoutId as ReturnType<typeof setTimeout>);
+    }
+  }
+  testRootStores.clear();
+  localStorage.clear();
+});
+
 const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -38,6 +55,7 @@ const withTRPC = ({ children }: { children?: ReactNode }) => {
             <storeContext.Consumer>
               {(rootStore) => {
                 testRootStore = rootStore!;
+                testRootStores.add(testRootStore);
                 return <WalletSelectProvider>{children}</WalletSelectProvider>;
               }}
             </storeContext.Consumer>
@@ -82,33 +100,20 @@ export function mockFeatureFlags(
   return mockFlags(flags);
 }
 
-async function waitTestAccountLoaded(
+export async function waitTestAccountLoaded(
   account: ReturnType<AccountStore["getWallet"]>
 ) {
   if (!account) {
-    console.error("Test account does not exist");
-    return;
+    throw new Error("Test account does not exist");
   }
-  if (account?.isReadyToSendTx) {
-    return;
-  }
-
-  const resolution = when(
+  // MobX owns/cancels both the reaction and timeout on resolution or rejection.
+  // The old helper left its 10s timeout live and did not handle cancel rejection.
+  await when(
     () =>
-      account.isReadyToSendTx && account.walletStatus === WalletStatus.Connected
+      account.isReadyToSendTx &&
+      account.walletStatus === WalletStatus.Connected,
+    { timeout: 10_000 }
   );
-
-  return new Promise<void>((resolve, reject) => {
-    setTimeout(() => {
-      resolution.cancel();
-      reject(new Error("Timeout waitAccountLoaded"));
-    }, 10_000);
-
-    resolution.then(() => {
-      console.log("!");
-      resolve();
-    });
-  });
 }
 
 export async function connectTestWallet({
