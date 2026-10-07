@@ -22,7 +22,7 @@ const chainList = [
       chain_id,
       chain_name,
       bech32Config: { bech32PrefixAccAddr: prefix },
-    } as unknown as Chain)
+    }) as unknown as Chain
 );
 
 describe("getChain", () => {
