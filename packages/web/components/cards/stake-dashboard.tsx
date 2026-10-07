@@ -16,9 +16,15 @@ import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
+import { formatCoinBalance } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
+
+/** Above these USD values the headline numbers no longer fit side by side, so
+ *  all three step down a size together. */
+const COMPACT_STAKED_BALANCE_USD = 100_000;
+const COMPACT_REWARDS_USD = 10_000;
 
 export const StakeDashboard: React.FC<{
   hasInsufficientBalance: boolean;
@@ -126,6 +132,10 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, osmo, osmoRewardsAmount]);
 
+    const isCompact =
+      Boolean(fiatBalance?.toDec().gte(new Dec(COMPACT_STAKED_BALANCE_USD))) ||
+      fiatRewards.toDec().gte(new Dec(COMPACT_REWARDS_USD));
+
     return (
       <GenericMainCard
         title={t("stake.dashboard")}
@@ -134,16 +144,20 @@ export const StakeDashboard: React.FC<{
       >
         <div className="flex w-full flex-row gap-2 py-10 xl:flex-col xl:gap-6 xl:py-4">
           <StakeBalances
+            compact={isCompact}
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
             osmoAmount={balance}
           />
           <StakeBalances
+            compact={isCompact}
             title={t("stake.rewardsTitle")}
             dollarAmount={fiatRewards}
             osmoAmount={summedStakeRewards}
           />
-          {balance.toDec().isPositive() && <NextRewardCountdown />}
+          {balance.toDec().isPositive() && (
+            <NextRewardCountdown compact={isCompact} />
+          )}
         </div>
         <ValidatorSquadCard
           hasInsufficientBalance={hasInsufficientBalance}
@@ -184,7 +198,7 @@ export const StakeDashboard: React.FC<{
   }
 );
 
-const NextRewardCountdown: React.FC = () => {
+const NextRewardCountdown: React.FC<{ compact: boolean }> = ({ compact }) => {
   const { t } = useTranslation();
   const timeRemaining = useDailyEpochCountdown();
 
@@ -195,7 +209,14 @@ const NextRewardCountdown: React.FC = () => {
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {t("pool.nextRewardIn")}
       </span>
-      <h3 className="whitespace-nowrap bg-superfluid bg-clip-text text-h3 tabular-nums text-transparent xl:text-h4 lg:text-h5">
+      <h3
+        className={classNames(
+          "whitespace-nowrap bg-superfluid bg-clip-text tabular-nums text-transparent",
+          compact
+            ? "text-h4 xl:text-h5 lg:text-h6"
+            : "text-h3 xl:text-h4 lg:text-h5"
+        )}
+      >
         {timeRemaining}
       </h3>
     </div>
@@ -206,7 +227,8 @@ const StakeBalances: React.FC<{
   title: string;
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
-}> = observer(({ title, dollarAmount, osmoAmount }) => {
+  compact: boolean;
+}> = observer(({ title, dollarAmount, osmoAmount, compact }) => {
   const [flashDollar, setFlashDollar] = useState(false);
   const [flashOsmo, setFlashOsmo] = useState(false);
 
@@ -231,7 +253,10 @@ const StakeBalances: React.FC<{
       </span>
       <h3
         className={classNames(
-          "whitespace-nowrap text-h3 xl:text-h4 lg:text-h5",
+          "whitespace-nowrap",
+          compact
+            ? "text-h4 xl:text-h5 lg:text-h6"
+            : "text-h3 xl:text-h4 lg:text-h5",
           flashDollar ? "animate-flash" : ""
         )}
       >
@@ -243,7 +268,7 @@ const StakeBalances: React.FC<{
           flashOsmo ? "animate-flash" : ""
         )}
       >
-        {osmoAmount?.trim(true)?.toString() ?? ""}
+        {osmoAmount ? formatCoinBalance(osmoAmount) : ""}
       </span>
     </div>
   );
