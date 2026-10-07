@@ -208,7 +208,7 @@ export class SwapPage extends BasePage {
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]',
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400" or @class="text-osmoverse-100" or @class="text-rust-400"]',
     )
     return await priceInpactSpan.textContent()
   }
