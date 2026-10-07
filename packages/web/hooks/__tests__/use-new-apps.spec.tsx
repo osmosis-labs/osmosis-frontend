@@ -3,10 +3,7 @@ import { waitFor } from "@testing-library/react";
 import dayjs from "dayjs";
 
 import { server, trpcQuery } from "~/__tests__/msw";
-import {
-  renderHookWithProviders,
-  resetQueryClient,
-} from "~/__tests__/test-utils";
+import { renderHookWithProviders } from "~/__tests__/test-utils";
 import { useNewApps } from "~/hooks/use-new-apps";
 
 function makeApp(title: string, projectListingDate: string): AppStoreApp {
@@ -25,10 +22,6 @@ function makeApp(title: string, projectListingDate: string): AppStoreApp {
 }
 
 describe("useNewApps", () => {
-  beforeEach(() => {
-    resetQueryClient();
-  });
-
   it("returns all apps and filters apps listed within the last 31 days", async () => {
     server.use(
       trpcQuery("local.cms.getAppStore", () => ({

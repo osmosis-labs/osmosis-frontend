@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
 import { AccountStore } from "@osmosis-labs/stores";
 import type { AvailableFlags } from "@osmosis-labs/types";
@@ -21,6 +21,9 @@ import { RootStore } from "~/stores/root";
 
 let testRootStore: RootStore;
 const testRootStores = new Set<RootStore>();
+// AccountStore.addWallet replaces its WalletManager, so track every manager a
+// test touched, not only the one current at teardown.
+const testWalletManagers = new Set<WalletManager>();
 
 const queryClient = new QueryClient();
 const trpcClient = trpcReact.createClient({
@@ -35,13 +38,16 @@ registerTestCleanup(async () => {
   await queryClient.cancelQueries();
   queryClient.clear();
   for (const rootStore of testRootStores) {
-    const manager = rootStore.accountStore.walletManager;
+    testWalletManagers.add(rootStore.accountStore.walletManager);
+  }
+  for (const manager of testWalletManagers) {
     manager.onUnmounted();
     // Cosmos Kit exposes the session timer but has no session disposal method.
     if (manager.session.timeoutId !== undefined) {
       clearTimeout(manager.session.timeoutId as ReturnType<typeof setTimeout>);
     }
   }
+  testWalletManagers.clear();
   testRootStores.clear();
   localStorage.clear();
 });
@@ -100,19 +106,20 @@ export function mockFeatureFlags(
   return mockFlags(flags);
 }
 
-export async function waitTestAccountLoaded(
+async function waitTestAccountLoaded(
   account: ReturnType<AccountStore["getWallet"]>
 ) {
   if (!account) {
     throw new Error("Test account does not exist");
   }
   // MobX owns/cancels both the reaction and timeout on resolution or rejection.
-  // The old helper left its 10s timeout live and did not handle cancel rejection.
+  // Keep the timeout below Jest's default 5s test timeout so this descriptive
+  // rejection, not a generic test timeout, reports a wallet that never connects.
   await when(
     () =>
       account.isReadyToSendTx &&
       account.walletStatus === WalletStatus.Connected,
-    { timeout: 10_000 }
+    { timeout: 4_000 }
   );
 }
 
@@ -123,15 +130,13 @@ export async function connectTestWallet({
   accountStore: AccountStore<any>;
   chainId: string;
 }) {
+  testWalletManagers.add(accountStore.walletManager);
   const walletManager = await accountStore.addWallet(
     new TestWallet(testWalletInfo)
   );
+  testWalletManagers.add(walletManager);
   await walletManager.onMounted();
   await accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
   const account = accountStore.getWallet(chainId);
   await waitTestAccountLoaded(account);
-}
-
-export async function cleanupTestWallets() {
-  localStorage.clear();
 }
