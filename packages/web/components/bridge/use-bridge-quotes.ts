@@ -15,6 +15,7 @@ import {
   getNomicRelayerUrl,
   isNil,
 } from "@osmosis-labs/utils";
+import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
@@ -28,6 +29,7 @@ import {
   deriveMemoFlags,
   LossFigures,
   needsAcknowledgement,
+  normalizePriceImpact,
 } from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
 import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
@@ -201,7 +203,6 @@ export const useBridgeQuotes = ({
   } = useEvmWalletAccount();
   const { sendTransactionAsync, isPending: isEthTxPending } =
     useSendEvmTransaction();
-  const { address: phantomAddress } = usePhantomWallet();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
   /**
@@ -256,6 +257,9 @@ export const useBridgeQuotes = ({
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
+  const { address: phantomAddress } = usePhantomWallet({
+    restoreSession: allowSolana,
+  });
 
   const quoteParams: Partial<
     Omit<
@@ -412,7 +416,7 @@ export const useBridgeQuotes = ({
             // check assume larger = worse, so compare magnitudes; a negative
             // figure would silently never trip the gate.
             const priceImpact = new RatePretty(
-              new Dec(expectedOutput.priceImpact).abs()
+              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
@@ -459,6 +463,9 @@ export const useBridgeQuotes = ({
               // fee charged on top of the input amount, so max-amount
               // inputs must leave room for it in the user's balance
               isAdditiveFee: transferFee.isAdditive === true,
+              // the provider charges a fee it could not quantify, so the zero
+              // amount must not be displayed as "Free"
+              isTransferFeeUnknown: transferFee.isUnknown === true,
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
@@ -837,6 +844,7 @@ export const useBridgeQuotes = ({
                 address: quote.transferFee.amount.currency.coinMinimalDenom,
                 decimals: quote.transferFee.amount.currency.coinDecimals,
                 amount: quote.transferFee.amount.toCoin().amount,
+                ...(quote.transferFee.isUnknown ? { isUnknown: true } : {}),
               }
             : undefined,
           nomicCheckpointIndex,
@@ -1325,7 +1333,7 @@ export const useBridgeQuotes = ({
     const txBytes = new Uint8Array(
       Buffer.from(transactionRequest.txBase64, "base64")
     );
-    let solanaTx: unknown;
+    let solanaTx: Transaction | VersionedTransaction;
     let recentBlockhash: string | undefined;
     try {
       const versioned = VersionedTransaction.deserialize(txBytes);
@@ -1369,9 +1377,7 @@ export const useBridgeQuotes = ({
     if (phantom.signAndSendTransaction) {
       ({ signature } = await phantom.signAndSendTransaction(solanaTx));
     } else if (phantom.signTransaction) {
-      const signed = (await phantom.signTransaction(solanaTx)) as {
-        serialize: () => Uint8Array;
-      };
+      const signed = await phantom.signTransaction(solanaTx);
       signature = await connection.sendRawTransaction(signed.serialize());
     } else {
       throw new Error("Phantom provider cannot sign transactions");

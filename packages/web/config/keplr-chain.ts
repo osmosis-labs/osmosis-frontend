@@ -185,7 +185,7 @@ function getFeeCurrencies(chain: Chain, assetList: AssetList): FeeCurrency[] {
       coinMinimalDenom: isContractToken
         ? coinMinimalDenom + `:${asset.symbol}`
         : coinMinimalDenom,
-      contractAddress: isContractToken ? coinMinimalDenom.split(":")[1] : "ƒ",
+      contractAddress: isContractToken ? coinMinimalDenom.split(":")[1] : "",
       coinDecimals: asset.decimals,
       coinGeckoId: asset.coingeckoId,
       coinImageUrl: imageUrl

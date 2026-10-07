@@ -2,7 +2,7 @@ import type { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import fs from "fs";
 import path from "path";
 import { Readable } from "stream";
-import { finished } from "stream/promises";
+import { pipeline } from "stream/promises";
 
 import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -55,11 +55,107 @@ export function writeCurrentAssetListHash(hash: string): void {
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
+const IMAGE_FETCH_ATTEMPTS = 4;
+const IMAGE_FETCH_BASE_DELAY_MS = 1_000;
+const IMAGE_FETCH_MAX_DELAY_MS = 30_000;
+
+/**
+ * Runs `run` over `groups` with `concurrency` workers. One worker takes a
+ * whole group and processes its items in order (items in a group share a
+ * target, so they must not run concurrently). Each failed item counts once;
+ * once failures exceed `maxFailures`, workers stop taking new groups and the
+ * groups still queued are left unattempted, so a broad outage fails fast
+ * instead of draining the whole queue through every retry.
+ */
+export async function runWithFailureLimit<T>(
+  groups: T[][],
+  {
+    concurrency,
+    maxFailures,
+    run,
+    onError,
+  }: {
+    concurrency: number;
+    maxFailures: number;
+    run: (item: T) => Promise<unknown>;
+    onError?: (error: unknown, item: T) => void;
+  }
+): Promise<{ failures: number; skipped: number }> {
+  const queue = [...groups];
+  let failures = 0;
+  const worker = async () => {
+    while (failures <= maxFailures) {
+      const group = queue.shift();
+      if (!group) return;
+      for (const item of group) {
+        try {
+          await run(item);
+        } catch (e) {
+          failures++;
+          onError?.(e, item);
+        }
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  return { failures, skipped: queue.length };
+}
+
+/** `Retry-After` as milliseconds: either delay-seconds or an HTTP-date. */
+function parseRetryAfterMs(header: string | null): number | undefined {
+  if (!header) return undefined;
+  const seconds = Number(header);
+  if (Number.isFinite(seconds) && seconds > 0) return seconds * 1_000;
+  const atMs = Date.parse(header);
+  if (Number.isNaN(atMs)) return undefined;
+  const delayMs = atMs - Date.now();
+  return delayMs > 0 ? delayMs : undefined;
+}
+
+/**
+ * Fetch an image, retrying rate limits (429), server errors (5xx) and network
+ * errors with exponential backoff, honouring `Retry-After` (delay-seconds or
+ * HTTP-date) when the host sends one, capped so one slow host cannot stall a
+ * build. Other statuses (e.g. a dead logo URL's 404) fail at once.
+ * @throws When the image could not be fetched.
+ */
+export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
+  let lastError = "";
+  for (let attempt = 1; attempt <= IMAGE_FETCH_ATTEMPTS; attempt++) {
+    let retryAfterMs: number | undefined;
+    try {
+      const response = await fetch(imageUrl);
+      if (response.ok) return response;
+
+      lastError = `${response.status} ${response.statusText}`;
+      // Release the connection: an unread body keeps its socket busy, and 16
+      // workers retrying would otherwise exhaust the pool.
+      await response.body?.cancel().catch(() => undefined);
+      if (response.status !== 429 && response.status < 500) break;
+
+      retryAfterMs = parseRetryAfterMs(response.headers.get("retry-after"));
+    } catch (e) {
+      lastError = e instanceof Error ? e.message : String(e);
+    }
+
+    if (attempt < IMAGE_FETCH_ATTEMPTS) {
+      const delayMs = Math.min(
+        retryAfterMs ?? IMAGE_FETCH_BASE_DELAY_MS * 2 ** (attempt - 1),
+        IMAGE_FETCH_MAX_DELAY_MS
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error(`Failed to fetch image from ${imageUrl}: ${lastError}`);
+}
+
 /**
  * Download an image from the provided URL and save it to the local file system.
  * Only saves images if the current asset list hash differs from the stored hash or the file doesn't exist.
  * @param params An object containing the image URL, asset information, and current asset list hash.
  * @returns The filename of the saved image or null if skipped.
+ * @throws When the image could not be fetched or saved.
  */
 export async function saveAssetImageToTokensDir({
   imageUrl,
@@ -93,28 +189,33 @@ export async function saveAssetImageToTokensDir({
   }
 
   // Fetch the image from the URL.
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    console.error(
-      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
-    );
-    return null;
-  }
-
+  const response = await fetchImageWithRetry(imageUrl);
   if (!response.body) {
-    console.error(
-      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
-    );
-    return null;
+    throw new Error(`Failed to fetch image from ${imageUrl}: empty body`);
   }
 
-  // Save the image to the file system.
-  const fileStream = fs.createWriteStream(filePath, { flags: "w" });
-  await finished(
-    Readable.fromWeb(
-      response.body as import("stream/web").ReadableStream<any>
-    ).pipe(fileStream)
-  );
+  // Save the image through a temporary file and rename it into place only
+  // once complete. A download or write that fails part-way would otherwise
+  // leave a truncated file at `filePath`, which later builds skip because it
+  // exists and the asset list hash matches. `pipeline` (unlike `pipe`) also
+  // rejects when the response body errors mid-download.
+  const tempFilePath = `${filePath}.download`;
+  try {
+    await pipeline(
+      Readable.fromWeb(
+        response.body as import("stream/web").ReadableStream<any>
+      ),
+      fs.createWriteStream(tempFilePath, { flags: "w" })
+    );
+    fs.renameSync(tempFilePath, filePath);
+  } catch (e) {
+    fs.rmSync(tempFilePath, { force: true });
+    throw new Error(
+      `Failed to save image from ${imageUrl} to ${filePath}: ${
+        e instanceof Error ? e.message : String(e)
+      }`
+    );
+  }
 
   // Verify the image has been added
   if (!fs.existsSync(filePath)) {

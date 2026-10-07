@@ -870,7 +870,6 @@
     "reviewWithdraw": "Bewertung zurückziehen",
     "moreDepositOptions": "Mehr Einzahlungsmöglichkeiten",
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
-    "convertTo": "Konvertieren zu",
     "depositAs": "Einzahlung als",
     "withdrawAs": "Abheben als",
     "withdrawViaRoute": "über {route}",

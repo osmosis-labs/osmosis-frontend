@@ -1059,7 +1059,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1183,7 +1183,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1344,7 +1344,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;

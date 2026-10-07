@@ -870,7 +870,6 @@
     "reviewWithdraw": "Recenzja wycofana",
     "moreDepositOptions": "Więcej opcji depozytu",
     "moreWithdrawOptions": "Więcej opcji wypłat",
-    "convertTo": "Konwertuj na",
     "depositAs": "Wpłać jako",
     "withdrawAs": "Wycofaj jako",
     "withdrawViaRoute": "przez {route}",

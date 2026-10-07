@@ -42,6 +42,20 @@ export interface LossFigures {
   swapImpactUnknown: boolean;
 }
 
+/**
+ * Providers disagree on the sign of price impact (Nomic reports a loss as
+ * negative, Squid as positive). The high-impact gate and the acknowledgement
+ * re-arm check assume larger = worse, so compare magnitudes: a negative
+ * figure would otherwise silently never trip the gate.
+ *
+ * Exported (rather than inlined at the call site) so this sign contract is
+ * test-enforced: a regression here does not throw or misrender, it just stops
+ * the gate firing for bundled-swap providers.
+ */
+export function normalizePriceImpact(priceImpact: Dec): Dec {
+  return priceImpact.abs();
+}
+
 /** Whether any warning requiring acknowledgement is active. */
 export function hasActiveWarning(figures: LossFigures): boolean {
   return (

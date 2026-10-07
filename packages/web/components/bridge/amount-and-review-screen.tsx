@@ -8,6 +8,7 @@ import { getAddress } from "viem";
 import { Screen, useScreenManager } from "~/components/screen-manager";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
@@ -69,7 +70,10 @@ export const AmountAndReviewScreen = observer(
         ? accountStore.getWallet(toChain.chainId)
         : undefined;
 
-    const { address: phantomAddress } = usePhantomWallet();
+    const featureFlags = useFeatureFlags();
+    const { address: phantomAddress } = usePhantomWallet({
+      restoreSession: featureFlags.solanaSkipRoutes === true,
+    });
 
     const fromAddress =
       fromChain?.chainType === "evm"

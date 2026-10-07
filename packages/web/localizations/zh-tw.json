@@ -870,7 +870,6 @@
     "reviewWithdraw": "審查撤回",
     "moreDepositOptions": "更多存款選擇",
     "moreWithdrawOptions": "更多提款選項",
-    "convertTo": "轉換成",
     "depositAs": "存款為",
     "withdrawAs": "提款為",
     "withdrawViaRoute": "經由 {route}",

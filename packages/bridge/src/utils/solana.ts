@@ -1,21 +1,37 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+/** Solana's public mainnet-beta endpoint. Server-side development fallback
+ *  only, and not a dependable one: it answers many clients with 403. */
+export const SOLANA_PUBLIC_RPC_URL = "https://api.mainnet-beta.solana.com";
+
+/** The wrapped SOL mint, which Skip uses as the native asset's denom. */
+export const SOLANA_NATIVE_DENOM =
+  "So11111111111111111111111111111111111111112";
+
+/** The SPL Token program. */
+export const SPL_TOKEN_PROGRAM_ID =
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+/** The Token-2022 program. */
+export const SPL_TOKEN_2022_PROGRAM_ID =
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+/** The associated token account program. */
+export const SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID =
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+
 /**
  * Solana RPC endpoints for server-side reads, in preference order.
  *
  * `SOLANA_RPC_URL` should be a production RPC provider: Solana documents
  * its public mainnet-beta endpoint as rate-limited and unsuitable for
- * production traffic. The public endpoint is kept only as a fallback so
- * development works without configuration. publicnode is deliberately not
- * listed: it rejects the indexed token-account queries balances depend on
- * ("Indexed requests require a personal token").
+ * production traffic, and it answers many clients with 403 outright. The
+ * public endpoint is kept only so development without configuration has
+ * somewhere to try. publicnode is deliberately not listed: it rejects the
+ * indexed token-account queries balances depend on ("Indexed requests
+ * require a personal token").
  */
 export function getSolanaRpcUrls(): string[] {
   const configured = process.env.SOLANA_RPC_URL?.trim();
-  return [
-    ...(configured ? [configured] : []),
-    "https://api.mainnet-beta.solana.com",
-  ];
+  return [...(configured ? [configured] : []), SOLANA_PUBLIC_RPC_URL];
 }
 
 /** Calls a Solana JSON-RPC method, trying each endpoint in order. Throws

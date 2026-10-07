@@ -870,7 +870,6 @@
     "reviewWithdraw": "Retrait de l'avis",
     "moreDepositOptions": "Plus d'options de dépôt",
     "moreWithdrawOptions": "Plus d'options de retrait",
-    "convertTo": "Convertir en",
     "depositAs": "Dépôt comme",
     "withdrawAs": "Se retirer comme",
     "withdrawViaRoute": "via {route}",

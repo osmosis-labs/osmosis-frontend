@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { parseAsStringEnum, useQueryState } from "nuqs";
+import { parseAsStringEnum, parseAsStringLiteral, useQueryState } from "nuqs";
 import {
   FunctionComponent,
   PropsWithChildren,
@@ -12,8 +12,12 @@ import {
 
 import { Icon } from "~/components/assets";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
+import { deferQueryCorrection } from "~/components/place-limit-tool/defaults";
 import { SwapTool, SwapToolProps } from "~/components/swap-tool";
-import { OrderTypeSelector } from "~/components/swap-tool/order-type-selector";
+import {
+  OrderTypeSelector,
+  TRADE_TYPES,
+} from "~/components/swap-tool/order-type-selector";
 import {
   SwapToolTab,
   SwapToolTabs,
@@ -71,6 +75,20 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> =
     const featureFlags = useFeatureFlags();
     const limitOrdersDisabled =
       featureFlags._isInitialized && !featureFlags.limitOrders;
+
+    // With the toggle hidden, a stale `type=limit` in the URL can't be
+    // cleared by the user, and readers of the param other than PlaceLimitTool
+    // (e.g. the quote selector) would still act on it. Correct the URL so
+    // every reader agrees on a market order.
+    const [type, setType] = useQueryState(
+      "type",
+      parseAsStringLiteral(TRADE_TYPES).withDefault("market")
+    );
+    useEffect(() => {
+      if (limitOrdersDisabled && type === "limit") {
+        return deferQueryCorrection(() => setType("market"));
+      }
+    }, [limitOrdersDisabled, type, setType]);
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);

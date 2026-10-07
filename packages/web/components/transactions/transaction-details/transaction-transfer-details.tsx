@@ -343,7 +343,9 @@ export const TransactionTransferDetails = ({
           {transaction.providerFee && (
             <div className="body2 flex justify-between gap-3 py-3">
               <div>{t("transactions.transfer.providerFee")}</div>
-              {transaction.providerFee.amount === "0" ? (
+              {transaction.providerFee.isUnknown ? (
+                <p className="text-osmoverse-300">{t("transfer.unknown")}</p>
+              ) : transaction.providerFee.amount === "0" ? (
                 <p className="text-bullish-400">{t("transfer.free")}</p>
               ) : (
                 <p className="text-osmoverse-300">
