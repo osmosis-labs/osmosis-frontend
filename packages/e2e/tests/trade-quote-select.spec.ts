@@ -98,7 +98,7 @@ test.describe("Test trade tool quote selection on asset pages", () => {
     await expect(quoteMenuButton()).toContainText("USDC.noble");
   });
 
-  test("Limit orders can't pick a quote without an orderbook", async () => {
+  test("Limit offers to create an orderbook for quotes without one", async () => {
     await openUsdcNobleOnlyAssetPage();
     await selectLimit();
 
@@ -108,8 +108,14 @@ test.describe("Test trade tool quote selection on asset pages", () => {
       .getByRole("menuitem")
       .filter({ hasNotText: "another asset" });
     await expect(quotes.first()).toBeVisible();
+    // Rows stay disabled until the pair's verification confirms there is no
+    // orderbook yet, then offer creation instead of switching the quote.
     for (const quote of await quotes.all()) {
-      await expect(quote).toBeDisabled();
+      await expect(quote).toContainText(
+        "Click to create an orderbook for this pair.",
+        { timeout: 30_000 }
+      );
+      await expect(quote).toBeEnabled();
     }
     await expectResponsive(page);
   });
