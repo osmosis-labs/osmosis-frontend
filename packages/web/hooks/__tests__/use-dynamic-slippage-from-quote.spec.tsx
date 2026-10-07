@@ -3,8 +3,6 @@ import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { act, renderHook } from "@testing-library/react";
 
-import { DefaultSlippage } from "~/config/swap";
-
 import { useDynamicSlippageFromQuote } from "../use-dynamic-slippage-from-quote";
 
 /** Adverse price impact is negative in SQS quotes; pass the signed value. */
@@ -53,21 +51,16 @@ describe("useDynamicSlippageFromQuote", () => {
     expect(slippageConfig.manualSlippageStr).toBe("7");
   });
 
-  it("pins exact-out to the default, correcting the store's legacy 0.5% boot value", () => {
+  it("selects a tier from price impact for exact-out quotes", () => {
     const slippageConfig = new ObservableSlippageConfig();
-    // The store boots in manual mode at 0.5% before any hook touches it.
-    expect(slippageConfig.manualSlippageStr).toBe("0.5");
-
     const { result } = render({
       quote: impactQuote("-0.2"),
       slippageConfig,
       quoteType: "in-given-out",
     });
 
-    // Display and submitted tolerance must both be the static default,
-    // regardless of how extreme the (untrustworthy) exact-out impact is.
-    expect(result.current.autoAdjustedSlippage).toBe(DefaultSlippage);
-    expect(slippageConfig.manualSlippageStr).toBe(DefaultSlippage);
+    expect(result.current.autoAdjustedSlippage).toBe("5.0");
+    expect(slippageConfig.manualSlippageStr).toBe("5.0");
   });
 
   it("preserves an exact-out user override", () => {
@@ -83,7 +76,7 @@ describe("useDynamicSlippageFromQuote", () => {
     expect(slippageConfig.manualSlippageStr).toBe("7");
   });
 
-  it("unwinds an exact-in auto-set when the direction switches to exact-out", () => {
+  it("keeps the auto-set tier when the direction switches to exact-out", () => {
     const slippageConfig = new ObservableSlippageConfig();
     const { rerender } = render({
       quote: impactQuote("-0.2"),
@@ -97,7 +90,7 @@ describe("useDynamicSlippageFromQuote", () => {
       slippageConfig,
       quoteType: "in-given-out",
     });
-    expect(slippageConfig.manualSlippageStr).toBe(DefaultSlippage);
+    expect(slippageConfig.manualSlippageStr).toBe("5.0");
   });
 
   it("does not touch a preset selected by the error hook", () => {
