@@ -29,7 +29,7 @@
     "pre-commit": "lerna run pre-commit --concurrency 1",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
-    "lint:workspace": "sherif --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e",
+    "lint:workspace": "sherif --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e --ignore-dependency bitcoinjs-lib@^6.1.7",
     "lint:workspace:fix": "yarn lint:workspace -f",
     "postinstall": "yarn lint:workspace"
   },

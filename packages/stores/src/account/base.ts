@@ -83,6 +83,7 @@ import {
   makeSignDocAmino,
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
+  padSessionKeyBytes,
   removeLastSlash,
   runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
@@ -1081,7 +1082,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }) as Uint8Array;
 
     const privateKey = new PrivKeySecp256k1(
-      fromBase64(oneClickTradingInfo.sessionKey)
+      padSessionKeyBytes(fromBase64(oneClickTradingInfo.sessionKey))
     );
 
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
