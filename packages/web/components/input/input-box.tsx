@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
-import AutosizeInput from "react-input-autosize";
 import { Optional } from "utility-types";
 
 import { ButtonProps } from "~/components/buttons/types";
+import { AutosizeInput } from "~/components/input/autosize-input";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useControllableState } from "~/hooks/use-controllable-state";
 
@@ -124,18 +124,23 @@ export const InputBox: FunctionComponent<Props> = ({
         {isAutosize ? (
           <AutosizeInput
             key={inputKey}
-            inputRef={(ref) => {
-              if (inputRef) {
-                inputRef.current = ref;
-              }
-            }}
+            inputRef={inputRef}
+            id="text-input"
+            placeholder={placeholder ?? ""}
+            autoComplete="off"
+            type={type}
+            inputMode={inputMode}
+            disabled={disabled}
             onWheel={(e) => (e.target as HTMLInputElement).blur()}
             inputClassName={inputClassName_}
             minWidth={0}
-            value={inputValue}
-            onInput={(e: any) => setValue(e.target.value)}
-            onBlur={onBlur}
-            onFocus={(e: any) => {
+            value={inputValue ?? ""}
+            onInput={(e) => setValue(e.currentTarget.value)}
+            onBlur={(e) => {
+              setInputFocused(false);
+              onBlur && onBlur(e);
+            }}
+            onFocus={(e) => {
               setInputFocused(true);
               onFocus && onFocus(e);
             }}
