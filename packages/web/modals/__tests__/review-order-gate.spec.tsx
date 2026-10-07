@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import "@testing-library/jest-dom";
 
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@osmosis-labs/unit";
@@ -83,7 +82,7 @@ const slippageConfigStub = (slippage: Dec) =>
     slippage: new RatePretty(slippage),
     defaultManualSlippage: "0.5",
     setManualSlippage: jest.fn(),
-  } as any);
+  }) as any;
 
 type Props = React.ComponentProps<typeof ReviewOrder>;
 

@@ -25,13 +25,6 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import {
-  deriveBridgeMemoFlags,
-  LossFigures,
-  needsAcknowledgement,
-  normalizePriceImpact,
-} from "~/components/loss-acknowledgement";
-import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
 import {
   getChainBalance,
@@ -39,6 +32,13 @@ import {
   useMultiTxFinalStep,
   waitForSkipStepArrival,
 } from "~/components/bridge/use-multi-tx-step";
+import {
+  deriveBridgeMemoFlags,
+  LossFigures,
+  needsAcknowledgement,
+  normalizePriceImpact,
+} from "~/components/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
