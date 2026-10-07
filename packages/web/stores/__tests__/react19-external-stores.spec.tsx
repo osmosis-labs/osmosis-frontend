@@ -1,3 +1,5 @@
+// Import only pure chain data, never the app config with live wallet adapters.
+import { EthereumChainInfo } from "@osmosis-labs/utils/build/ethereum";
 import {
   QueryClient,
   QueryClientProvider,
@@ -16,7 +18,7 @@ import { renderToString } from "react-dom/server";
 // Valtio is deliberately exercised through the existing WalletConnect dependency.
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { proxy, useSnapshot } from "valtio";
-import { custom } from "viem";
+import { fallback, http } from "viem";
 import { mainnet } from "viem/chains";
 import { createConfig, createStorage, useAccount, WagmiProvider } from "wagmi";
 import { create, useStore } from "zustand";
@@ -151,9 +153,17 @@ it("hydrates wagmi offline and releases account subscriptions without RPC or con
   const request = jest.fn(async () => {
     throw new Error("Unexpected RPC in offline test");
   });
+  // Preserve the registered fallback/http transport shape, but every fetch throws.
+  const offlineTransports = [
+    http("http://offline.invalid", { onFetchRequest: request, retryCount: 0 }),
+  ];
+  const offlineTransport = fallback(offlineTransports, { retryCount: 0 });
   const config = createConfig({
-    chains: [mainnet],
-    transports: { [mainnet.id]: custom({ request }) },
+    // Match the app's globally registered chain tuple without loading its config.
+    chains: EthereumChainInfo,
+    transports: Object.fromEntries(
+      EthereumChainInfo.map((chain) => [chain.id, offlineTransport])
+    ),
     connectors: [],
     multiInjectedProviderDiscovery: false,
     // ssr hydration expects a persist-enabled store in this wagmi version.

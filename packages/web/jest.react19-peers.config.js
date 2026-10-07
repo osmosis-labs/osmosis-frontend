@@ -2,6 +2,7 @@ const nextJest = require("next/jest");
 
 // Offline dependency/store regressions: no app providers, MSW or wallet adapters.
 // Keep production Next transforms without importing the global test lifecycle.
+// Build @osmosis-labs/utils first for the offline shared-chain fixture.
 const createConfig = nextJest({ dir: "./" })({
   testEnvironment: "../../jsdom-extended.js",
   setupFilesAfterEnv: ["@testing-library/jest-dom"],
