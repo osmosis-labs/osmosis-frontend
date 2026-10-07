@@ -47,15 +47,29 @@ function mockStatus({
   });
 }
 
-/** A `/block` response whose timestamp implies `blockTimeSeconds`. */
-function priorBlockResponse(blockTimeSeconds: number) {
-  const elapsedMs = blockTimeSeconds * SAMPLE_SIZE * 1_000;
+/** Heights the module samples: the start of the window and its midpoint. */
+const PRIOR_HEIGHT = LATEST_HEIGHT - SAMPLE_SIZE;
+const MID_HEIGHT = LATEST_HEIGHT - SAMPLE_SIZE / 2;
+/** `/block` fetches made per measurement (prior and midpoint blocks). */
+const FETCHES_PER_MEASUREMENT = 2;
+
+/**
+ * A chain halt: no blocks for `seconds` after block `afterHeight`, so every
+ * block at or below `afterHeight` is that much older.
+ */
+type Halt = { afterHeight: number; seconds: number };
+
+/** A `/block` response for `path` on a chain producing a block every `blockTimeSeconds`. */
+function blockResponse(path: string, blockTimeSeconds: number, halt?: Halt) {
+  const height = Number(new URLSearchParams(path.split("?")[1]).get("height"));
+  const haltMs = halt && height <= halt.afterHeight ? halt.seconds * 1_000 : 0;
+  const elapsedMs = (LATEST_HEIGHT - height) * blockTimeSeconds * 1_000;
   return {
     result: {
       block: {
         header: {
           time: new Date(
-            new Date(LATEST_TIME).getTime() - elapsedMs
+            new Date(LATEST_TIME).getTime() - elapsedMs - haltMs
           ).toISOString(),
         },
       },
@@ -63,21 +77,23 @@ function priorBlockResponse(blockTimeSeconds: number) {
   };
 }
 
-/** Mocks the prior-block fetch so that block time resolves to `blockTimeSeconds`. */
-function mockPriorBlock(blockTimeSeconds: number | undefined) {
+/** Mocks the block fetches so that block time resolves to `blockTimeSeconds`. */
+function mockPriorBlock(blockTimeSeconds: number | undefined, halt?: Halt) {
   (MultiEndpointClient as jest.Mock).mockReturnValue({
-    fetch: jest.fn().mockImplementation(async () => {
+    fetch: jest.fn().mockImplementation(async (path: string) => {
       if (blockTimeSeconds === undefined) throw new Error("unreachable node");
-      return priorBlockResponse(blockTimeSeconds);
+      return blockResponse(path, blockTimeSeconds, halt);
     }),
   });
 }
 
-/** As {@link mockPriorBlock}, returning the fetch spy for call-count assertions. */
+/** As {@link mockPriorBlock}, returning the fetch spy for call assertions. */
 function mockPriorBlockWithSpy(blockTimeSeconds: number) {
   const fetch = jest
     .fn()
-    .mockImplementation(async () => priorBlockResponse(blockTimeSeconds));
+    .mockImplementation(async (path: string) =>
+      blockResponse(path, blockTimeSeconds)
+    );
   (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
   return fetch;
 }
@@ -170,6 +186,82 @@ describe("getTimeoutHeight", () => {
       expect(offset * blockTime).toBeGreaterThanOrEqual(WINDOW_SECONDS);
       expect(offset * blockTime).toBeLessThan(WINDOW_SECONDS + blockTime);
     }
+  });
+
+  it("samples the prior and midpoint blocks from the chain's RPC endpoints", async () => {
+    const fetch = mockPriorBlockWithSpy(1.79);
+
+    await getTimeoutHeight({ chainList: MockChains, chainId: "osmosis-1" });
+
+    expect(fetch).toHaveBeenCalledWith(`/block?height=${PRIOR_HEIGHT}`);
+    expect(fetch).toHaveBeenCalledWith(`/block?height=${MID_HEIGHT}`);
+    const osmosis = MockChains.find((c) => c.chain_id === "osmosis-1")!;
+    expect(MultiEndpointClient).toHaveBeenCalledWith(
+      osmosis.apis.rpc.map(({ address }) => ({ address }))
+    );
+  });
+
+  it("does not shorten the window when a halt falls inside the sample", async () => {
+    // A ~1.2s chain resuming from a 10h halt: averaged over the whole sample
+    // this measures ~37s blocks and a ~30s window. The halt can only land in
+    // one half, so the other half must win, whichever side it is on.
+    const blockTime = 1.2;
+    const tenHours = 10 * 60 * 60;
+    for (const afterHeight of [LATEST_HEIGHT - 100, PRIOR_HEIGHT + 100]) {
+      resetBlockTimeCacheForTests();
+      mockPriorBlock(blockTime, { afterHeight, seconds: tenHours });
+
+      const result = await getTimeoutHeight({
+        chainList: MockChains,
+        chainId: "osmosis-1",
+      });
+
+      expect(result.revisionHeight).toBe(expectedHeight(blockTime));
+    }
+  });
+
+  it("uses the faster half when the chain's pace changed within the sample", async () => {
+    // Older half at 6s, recent half at 1.2s (e.g. just after a block time
+    // retune): the faster pace gives the longer, safe window.
+    (MultiEndpointClient as jest.Mock).mockReturnValue({
+      fetch: jest.fn().mockImplementation(async (path: string) => {
+        const height = Number(
+          new URLSearchParams(path.split("?")[1]).get("height")
+        );
+        const recentMs = (SAMPLE_SIZE / 2) * 1.2 * 1_000;
+        const olderMs = height < MID_HEIGHT ? (SAMPLE_SIZE / 2) * 6 * 1_000 : 0;
+        return {
+          result: {
+            block: {
+              header: {
+                time: new Date(
+                  new Date(LATEST_TIME).getTime() - recentMs - olderMs
+                ).toISOString(),
+              },
+            },
+          },
+        };
+      }),
+    });
+
+    const result = await getTimeoutHeight({
+      chainList: MockChains,
+      chainId: "osmosis-1",
+    });
+
+    expect(result.revisionHeight).toBe(expectedHeight(1.2));
+  });
+
+  it("falls back when the latest block time is missing from status", async () => {
+    mockStatus({ latestBlockTime: "" });
+    mockPriorBlock(1.79);
+
+    const result = await getTimeoutHeight({
+      chainList: MockChains,
+      chainId: "osmosis-1",
+    });
+
+    expect(result.revisionHeight).toBe(String(LATEST_HEIGHT + FALLBACK_OFFSET));
   });
 
   it("falls back to the flat offset when the prior block can't be fetched", async () => {
@@ -266,7 +358,7 @@ describe("getTimeoutHeight", () => {
       await getTimeoutHeight({ chainList: MockChains, chainId: "osmosis-1" });
       await getTimeoutHeight({ chainList: MockChains, chainId: "osmosis-1" });
 
-      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT);
     });
 
     it("still advances revisionHeight with the live block height while cached", async () => {
@@ -314,7 +406,7 @@ describe("getTimeoutHeight", () => {
       expect(second.revisionHeight).toBe(
         String(LATEST_HEIGHT + FALLBACK_OFFSET)
       );
-      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT);
     });
 
     it("re-measures a failure after a minute, not an hour", async () => {
@@ -325,7 +417,9 @@ describe("getTimeoutHeight", () => {
         const fetch = jest
           .fn()
           .mockRejectedValueOnce(new Error("transient RPC failure"))
-          .mockImplementation(async () => priorBlockResponse(1.79));
+          .mockImplementation(async (path: string) =>
+            blockResponse(path, 1.79)
+          );
         (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
 
         const failed = await getTimeoutHeight({
@@ -361,7 +455,7 @@ describe("getTimeoutHeight", () => {
 
         await getTimeoutHeight({ chainList: MockChains, chainId: "osmosis-1" });
 
-        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT);
       } finally {
         jest.useRealTimers();
       }
