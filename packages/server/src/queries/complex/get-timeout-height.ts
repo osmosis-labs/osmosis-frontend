@@ -48,6 +48,9 @@ const FALLBACK_HEIGHT_OFFSET = 200;
  * How many blocks back to sample when measuring block time. Large enough to
  * smooth over individual slow blocks, small enough to stay within the recent
  * history every node retains and to reflect the chain's *current* pace.
+ *
+ * The sample is measured as two halves and the faster half wins (see
+ * {@link queryBlockTimeSeconds}), so this must be even.
  */
 const BLOCK_TIME_SAMPLE_SIZE = 1000;
 
@@ -228,8 +231,17 @@ async function getHeightOffset({
 }
 
 /**
- * Measures average seconds per block from the interval between the latest block
- * and one {@link BLOCK_TIME_SAMPLE_SIZE} blocks earlier.
+ * Measures seconds per block over the last {@link BLOCK_TIME_SAMPLE_SIZE}
+ * blocks, split into two halves at the midpoint block, and returns the faster
+ * half.
+ *
+ * A single average over the whole sample is not safe: a chain halt inside it
+ * counts as block time, adding `haltSeconds / BLOCK_TIME_SAMPLE_SIZE` to every
+ * block. A ~1.2s chain resuming from a 10h halt would measure ~37s blocks and
+ * get a ~30s window, cached for an hour while relayers catch up. A halt is one
+ * gap between two consecutive blocks, so it can only land in one half; taking
+ * the faster half discards it. Erring fast is the safe direction, since a
+ * shorter block time yields a larger offset and so a longer window.
  *
  * The retained range reported in `sync_info` is deliberately not used: it is
  * bounded by each node's pruning config, so it varies between endpoints for the
@@ -250,6 +262,8 @@ async function queryBlockTimeSeconds({
   if (!latestBlockTime) return undefined;
 
   const latestHeight = Number(latestBlockHeight);
+  const halfSample = BLOCK_TIME_SAMPLE_SIZE / 2;
+  const midHeight = latestHeight - halfSample;
   const priorHeight = latestHeight - BLOCK_TIME_SAMPLE_SIZE;
 
   // Chain too young to sample; the fallback offset is the safer choice.
@@ -261,24 +275,42 @@ async function queryBlockTimeSeconds({
     rpcUrls.map((url) => ({ address: url }))
   );
 
-  let priorBlockTime: string | undefined;
-  try {
+  const fetchBlockTime = async (height: number) => {
     const response = await client.fetch<{
       result?: { block?: { header?: { time?: string } } };
-    }>(`/block?height=${priorHeight}`);
-    priorBlockTime = response?.result?.block?.header?.time;
+    }>(`/block?height=${height}`);
+    return response?.result?.block?.header?.time;
+  };
+
+  let priorBlockTime: string | undefined;
+  let midBlockTime: string | undefined;
+  try {
+    [priorBlockTime, midBlockTime] = await Promise.all([
+      fetchBlockTime(priorHeight),
+      fetchBlockTime(midHeight),
+    ]);
   } catch {
     // Every endpoint has pruned this height or is unreachable; fall back below.
     return undefined;
   }
 
-  if (!priorBlockTime) return undefined;
+  if (!priorBlockTime || !midBlockTime) return undefined;
 
-  const elapsedMs =
-    new Date(latestBlockTime).getTime() - new Date(priorBlockTime).getTime();
-  if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) return undefined;
+  const olderHalfMs =
+    new Date(midBlockTime).getTime() - new Date(priorBlockTime).getTime();
+  const recentHalfMs =
+    new Date(latestBlockTime).getTime() - new Date(midBlockTime).getTime();
+  if (
+    !Number.isFinite(olderHalfMs) ||
+    !Number.isFinite(recentHalfMs) ||
+    olderHalfMs <= 0 ||
+    recentHalfMs <= 0
+  ) {
+    return undefined;
+  }
 
-  const blockTimeSeconds = elapsedMs / 1_000 / BLOCK_TIME_SAMPLE_SIZE;
+  const blockTimeSeconds =
+    Math.min(olderHalfMs, recentHalfMs) / 1_000 / halfSample;
 
   // Guard against nonsense values from a stalled or misreporting node.
   if (
