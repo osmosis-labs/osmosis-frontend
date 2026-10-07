@@ -1,4 +1,4 @@
-import { createMultiEndpointClient } from "@osmosis-labs/utils";
+import { MultiEndpointClient } from "@osmosis-labs/utils";
 
 import { MockChains } from "../../__tests__/mock-chains";
 import { queryRPCStatus } from "../../cosmos";
@@ -14,7 +14,7 @@ jest.mock("../../cosmos", () => ({
 
 jest.mock("@osmosis-labs/utils", () => ({
   ...jest.requireActual("@osmosis-labs/utils"),
-  createMultiEndpointClient: jest.fn(),
+  MultiEndpointClient: jest.fn(),
 }));
 
 const LATEST_HEIGHT = 1_000_000;
@@ -65,7 +65,7 @@ function priorBlockResponse(blockTimeSeconds: number) {
 
 /** Mocks the prior-block fetch so that block time resolves to `blockTimeSeconds`. */
 function mockPriorBlock(blockTimeSeconds: number | undefined) {
-  (createMultiEndpointClient as jest.Mock).mockReturnValue({
+  (MultiEndpointClient as jest.Mock).mockReturnValue({
     fetch: jest.fn().mockImplementation(async () => {
       if (blockTimeSeconds === undefined) throw new Error("unreachable node");
       return priorBlockResponse(blockTimeSeconds);
@@ -78,7 +78,7 @@ function mockPriorBlockWithSpy(blockTimeSeconds: number) {
   const fetch = jest
     .fn()
     .mockImplementation(async () => priorBlockResponse(blockTimeSeconds));
-  (createMultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
+  (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
   return fetch;
 }
 
@@ -297,7 +297,7 @@ describe("getTimeoutHeight", () => {
       const fetch = jest
         .fn()
         .mockRejectedValue(new Error("height is not available"));
-      (createMultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
+      (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
 
       const first = await getTimeoutHeight({
         chainList: MockChains,
@@ -326,7 +326,7 @@ describe("getTimeoutHeight", () => {
           .fn()
           .mockRejectedValueOnce(new Error("transient RPC failure"))
           .mockImplementation(async () => priorBlockResponse(1.79));
-        (createMultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
+        (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
 
         const failed = await getTimeoutHeight({
           chainList: MockChains,
