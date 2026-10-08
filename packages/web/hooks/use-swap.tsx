@@ -272,6 +272,12 @@ export function useSwap(
     (isQuoteLoading_ && quoteQueryEnabled) ||
     (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
 
+  /** Error and input state for the direction the user is quoting in. */
+  const activeQuoteError =
+    quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
+  const activeAmountInput =
+    quoteType === "in-given-out" ? outAmountInput : inAmountInput;
+
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
@@ -296,8 +302,7 @@ export function useSwap(
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
-    let error =
-      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
+    let error = activeQuoteError;
 
     // only show spot price error if there's no quote
     if (
@@ -313,13 +318,11 @@ export function useSwap(
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
   }, [
-    quoteErrorMsg,
+    activeQuoteError,
     quote,
     spotPriceQuoteErrorMsg,
     inAmountInput.error,
     inAmountInput.isEmpty,
-    inGivenOutQuoteError,
-    quoteType,
   ]);
 
   const networkFeeQueryEnabled =
@@ -756,15 +759,18 @@ export function useSwap(
     ]
   );
 
+  // Held per quote direction, so a quote from the other direction is never
+  // shown while the new direction's first quote loads.
   const positivePrevQuote = usePreviousWhen(
     quote,
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
-    )
+        !activeQuoteError &&
+        !activeAmountInput.isEmpty,
+      [quote, activeQuoteError, activeAmountInput.isEmpty]
+    ),
+    quoteType
   );
 
   const quoteBaseOutSpotPrice = useMemo(() => {
@@ -871,9 +877,9 @@ export function useSwap(
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
-      isQuoteLoading || inAmountInput.isTyping
+      isQuoteLoading || activeAmountInput.isTyping
         ? positivePrevQuote
-        : !quoteErrorMsg
+        : !activeQuoteError
           ? quote
           : undefined,
     inBaseOutQuoteSpotPrice,
@@ -1657,7 +1663,8 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage > balance && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) &&
+        !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 
