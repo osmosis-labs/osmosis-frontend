@@ -1,3 +1,4 @@
+import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -91,7 +92,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const { t } = useTranslation();
 
   return (
-    <>
+    // Only one pool tooltip is open at a time while hovering across the route.
+    <FloatingDelayGroup delay={0}>
       <div className="absolute flex w-full justify-evenly">
         {pools.map(
           (
@@ -217,7 +219,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           )
         )}
       </div>
-    </>
+    </FloatingDelayGroup>
   );
 });
 

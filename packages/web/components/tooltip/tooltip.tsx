@@ -2,6 +2,7 @@ import {
   arrow as positionArrow,
   autoUpdate,
   flip,
+  FloatingArrow,
   FloatingFocusManager,
   FloatingPortal,
   offset,
@@ -9,6 +10,7 @@ import {
   safePolygon,
   shift,
   useClick,
+  useDelayGroup,
   useDismiss,
   useFloating,
   useFocus,
@@ -36,7 +38,7 @@ export const Tooltip = ({
   hideOnClick = true,
   maxWidth = 350,
   placement = "top",
-  arrow = true,
+  arrow = false,
 }: PropsWithChildren<
   TooltipProps &
     CustomClasses & {
@@ -53,20 +55,29 @@ export const Tooltip = ({
     }
 >) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
+  const [arrowElement, setArrowElement] = useState<SVGSVGElement | null>(null);
+  const [pointerType, setPointerType] = useState<string>();
   const open = !disabled && (visible ?? isOpen);
   const enabled = !disabled && !skipTrigger && visible === undefined;
   const triggers = trigger.split(/\s+/);
   const clicks = triggers.includes("click");
+
+  // Interaction hooks stop tracking while disabled, so a pending close would be lost.
+  if (!enabled && isOpen) setIsOpen(false);
+
   const {
     refs: { setReference, setFloating },
     floatingStyles,
     context,
-    middlewareData,
-    placement: side,
   } = useFloating({
     open,
-    onOpenChange: setIsOpen,
+    onOpenChange: (nextOpen, _event, reason) => {
+      // A tap opens hover/focus tooltips; its trailing click must not close them again.
+      if (reason === "reference-press" && pointerType !== "mouse") {
+        return;
+      }
+      setIsOpen(nextOpen);
+    },
     placement,
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
@@ -77,15 +88,14 @@ export const Tooltip = ({
       arrow && positionArrow({ element: arrowElement }),
     ],
   });
+  const { delay } = useDelayGroup(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, {
       enabled: enabled && triggers.includes("mouseenter"),
+      delay,
       handleClose: interactive ? safePolygon() : undefined,
     }),
-    useFocus(context, {
-      enabled: enabled && triggers.includes("focus"),
-      visibleOnly: false,
-    }),
+    useFocus(context, { enabled: enabled && triggers.includes("focus") }),
     useClick(context, { enabled: enabled && clicks, toggle: hideOnClick }),
     useDismiss(context, {
       enabled,
@@ -95,12 +105,6 @@ export const Tooltip = ({
     }),
     useRole(context, { role: interactive ? "dialog" : "tooltip" }),
   ]);
-  const arrowSide = {
-    top: "bottom",
-    right: "left",
-    bottom: "top",
-    left: "right",
-  }[side.split("-")[0] as "top" | "right" | "bottom" | "left"];
 
   return (
     <>
@@ -108,9 +112,10 @@ export const Tooltip = ({
         ref={setReference}
         className={classNames("flex cursor-pointer align-middle", className)}
         {...getReferenceProps({
-          tabIndex:
-            enabled && (clicks || triggers.includes("focus")) ? 0 : undefined,
+          // Focus on focusable children bubbles here; only click triggers need their own tab stop.
+          tabIndex: enabled && clicks ? 0 : undefined,
           role: clicks ? "button" : undefined,
+          onPointerDown: (e) => setPointerType(e.pointerType),
           onClick: enablePropagation ? undefined : (e) => e.stopPropagation(),
         })}
       >
@@ -140,14 +145,11 @@ export const Tooltip = ({
             >
               {content}
               {arrow && (
-                <div
+                <FloatingArrow
                   ref={setArrowElement}
-                  className="pointer-events-none absolute h-2 w-2 rotate-45 bg-inherit"
-                  style={{
-                    left: middlewareData.arrow?.x,
-                    top: middlewareData.arrow?.y,
-                    [arrowSide]: -4,
-                  }}
+                  context={context}
+                  className="fill-osmoverse-1000 stroke-osmoverse-100"
+                  strokeWidth={1}
                 />
               )}
             </div>
