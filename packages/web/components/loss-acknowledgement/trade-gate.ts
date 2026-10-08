@@ -4,7 +4,7 @@ import { Dec, RatePretty } from "@osmosis-labs/unit";
 
 import {
   LossFigures,
-  normalizePriceImpact,
+  priceImpactLoss,
 } from "~/components/loss-acknowledgement";
 import {
   HighPriceImpactGate,
@@ -16,8 +16,8 @@ export type TradeOrderType = "market" | "limit";
 
 export interface TradeWarningInput {
   /**
-   * Price impact from the router quote. Sign is normalized here, so callers
-   * pass the quote's value through untouched.
+   * Price impact from the router quote, negative for a loss. Converted to a
+   * loss here, so callers pass the quote's value through untouched.
    */
   priceImpactTokenOut?: RatePretty;
   /** Configured slippage tolerance as a fraction (0..1), e.g. 0.005 = 0.5%. */
@@ -33,19 +33,21 @@ export interface TradeWarningInput {
 }
 
 /**
- * The single source of truth for which loss warnings a trade triggers, shared by
- * the review-order modal and the alloy conversion modal (MTN-150).
+ * The single source of truth for which loss warnings a trade triggers (MTN-150).
  *
  * Returns the figure/warning half of `LossFigures`, so a surface builds its
  * acknowledgement input as `{ identityKey, ...getTradeWarnings(...) }` and the
  * displayed warning and the gated figure cannot drift apart.
  *
- * Two behaviours are deliberate and load-bearing:
+ * Three behaviours are deliberate and load-bearing:
  *
- * - **Price impact is normalized to a magnitude.** Router quotes report impact
- *   negatively (`Quote.priceImpactTokenOut`), and every gate assumes larger =
- *   worse, so an un-normalized figure fails `gte` silently and the gate simply
- *   never fires. That is the bug this indirection exists to prevent.
+ * - **Price impact is read as a loss.** Router quotes report a loss negatively
+ *   (`Quote.priceImpactTokenOut`), and every gate assumes larger = worse, so a
+ *   raw figure fails `gte` silently and the gate never fires, while a magnitude
+ *   would gate a favourable impact. See `priceImpactLoss`.
+ * - **A true limit order gates only on filling at market.** A resting order
+ *   executes at its own price, so the market quote's impact and the market
+ *   slippage tolerance say nothing about it.
  * - **Missing price-impact data fails open**, never closed: no impact figure
  *   means no impact gate, rather than a checkbox the user has no way to clear.
  *   Slippage is gated independently, so a quote without impact data is still
@@ -58,15 +60,16 @@ export function getTradeWarnings({
   percentAdjusted,
   orderType,
 }: TradeWarningInput): Omit<LossFigures, "identityKey"> {
-  const priceImpact = priceImpactTokenOut
-    ? normalizePriceImpact(priceImpactTokenOut.toDec())
-    : undefined;
-  const tolerance = slippage ?? new Dec(0);
+  const isLimit = orderType === "limit";
+  const priceImpact =
+    priceImpactTokenOut && !isLimit
+      ? priceImpactLoss(priceImpactTokenOut.toDec())
+      : undefined;
+  const tolerance = !isLimit && slippage ? slippage : new Dec(0);
 
   // Only a true limit order can be priced past the book; a market-type order
   // fills at market by definition and has nothing to acknowledge here.
-  const warnMarketFill =
-    orderType === "limit" && Boolean(isBeyondOppositePrice);
+  const warnMarketFill = isLimit && Boolean(isBeyondOppositePrice);
 
   return {
     slippage: tolerance,
@@ -75,10 +78,10 @@ export function getTradeWarnings({
     priceImpact: priceImpact ?? new Dec(0),
     warnPriceImpact: priceImpact?.gte(HighPriceImpactGate) ?? false,
 
+    // The sign of `percentAdjusted` follows the order direction, not gain or
+    // loss, so the distance past market is its magnitude.
     marketFillDistance:
-      warnMarketFill && percentAdjusted
-        ? normalizePriceImpact(percentAdjusted)
-        : undefined,
+      warnMarketFill && percentAdjusted ? percentAdjusted.abs() : undefined,
     warnMarketFill,
   };
 }

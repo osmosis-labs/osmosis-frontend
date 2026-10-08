@@ -4,7 +4,7 @@ import {
   deriveBridgeMemoFlags,
   hasActiveWarning,
   needsAcknowledgement,
-  normalizePriceImpact,
+  priceImpactLoss,
   shouldResetAcknowledgement,
 } from "~/components/loss-acknowledgement";
 import {
@@ -14,34 +14,37 @@ import {
 
 import { baseFigures, warnedSlippage } from "./loss-figures.fixture";
 
-describe("normalizePriceImpact", () => {
-  it("converts a negative provider-reported impact to a positive magnitude", () => {
-    expect(normalizePriceImpact(new Dec("-0.12")).toString()).toBe(
+describe("priceImpactLoss", () => {
+  it("converts a negative (loss) impact to a positive loss", () => {
+    expect(priceImpactLoss(new Dec("-0.12")).toString()).toBe(
       new Dec("0.12").toString()
     );
   });
 
-  it("leaves an already-positive impact unchanged", () => {
-    expect(normalizePriceImpact(new Dec("0.12")).toString()).toBe(
-      new Dec("0.12").toString()
-    );
+  it("reads a favourable impact as no loss", () => {
+    expect(priceImpactLoss(new Dec("0.12")).isZero()).toBe(true);
   });
 
-  // The regression this guards: Nomic (a bundled-swap provider) reports
-  // impact negatively, so an un-normalized figure fails `gte` against the gate
-  // and the warning silently never fires: no error, no misrender, just an
-  // ungated high-loss transfer.
+  // The regression this guards: quotes report a loss negatively, so a raw
+  // figure fails `gte` against the gate and the warning silently never fires:
+  // no error, no misrender, just an ungated high-loss trade.
   it("makes a negative impact beyond the gate trip it, where the raw value would not", () => {
     const raw = HighPriceImpactGate.add(new Dec(0.05)).neg();
 
     expect(raw.gte(HighPriceImpactGate)).toBe(false);
-    expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(true);
+    expect(priceImpactLoss(raw).gte(HighPriceImpactGate)).toBe(true);
+  });
+
+  it("does not trip the gate for a favourable impact beyond it", () => {
+    const raw = HighPriceImpactGate.add(new Dec(0.05));
+
+    expect(priceImpactLoss(raw).gte(HighPriceImpactGate)).toBe(false);
   });
 
   it("does not trip the gate for a small negative impact", () => {
     const raw = HighPriceImpactGate.quo(new Dec(2)).neg();
 
-    expect(normalizePriceImpact(raw).gte(HighPriceImpactGate)).toBe(false);
+    expect(priceImpactLoss(raw).gte(HighPriceImpactGate)).toBe(false);
   });
 });
 
@@ -134,18 +137,20 @@ describe("shouldResetAcknowledgement", () => {
   });
 
   describe("worsening beyond tolerance", () => {
-    it("does not reset when slippage worsens within tolerance", () => {
+    // No tolerance for slippage: raising a trade's tolerance from 2% to 3% after
+    // ticking would otherwise sign the 3% bound under a `slip=2.00` memo.
+    it("resets when slippage increases at all", () => {
       const current = baseFigures({
-        slippage: warnedSlippage.add(AckReArmTolerance),
-      });
-      expect(shouldResetAcknowledgement(baseFigures(), current)).toBe(false);
-    });
-
-    it("resets when slippage worsens beyond tolerance", () => {
-      const current = baseFigures({
-        slippage: warnedSlippage.add(AckReArmTolerance).add(new Dec(0.0001)),
+        slippage: warnedSlippage.add(new Dec(0.0001)),
       });
       expect(shouldResetAcknowledgement(baseFigures(), current)).toBe(true);
+    });
+
+    it("does not reset when slippage decreases", () => {
+      const current = baseFigures({
+        slippage: warnedSlippage.sub(new Dec(0.0001)),
+      });
+      expect(shouldResetAcknowledgement(baseFigures(), current)).toBe(false);
     });
 
     it("resets when price impact worsens beyond tolerance", () => {

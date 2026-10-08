@@ -32,7 +32,7 @@ import {
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
-import { normalizePriceImpact } from "~/components/loss-acknowledgement";
+import { priceImpactLoss } from "~/components/loss-acknowledgement";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import {
   AmountPresetFraction,
@@ -178,7 +178,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     // about what counts as high impact — including at the boundary, which the
     // previous `lt(new Dec(-0.05))` form got wrong by one tick.
     const showPriceImpactWarning = quotedPriceImpact
-      ? normalizePriceImpact(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
+      ? priceImpactLoss(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
       : false;
 
     // token select dropdown

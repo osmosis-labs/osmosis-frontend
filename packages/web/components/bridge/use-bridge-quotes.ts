@@ -36,7 +36,7 @@ import {
   deriveBridgeMemoFlags,
   LossFigures,
   needsAcknowledgement,
-  normalizePriceImpact,
+  priceImpactLoss,
 } from "~/components/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
@@ -411,12 +411,11 @@ export const useBridgeQuotes = ({
               (fee) => fee.amount.maxDecimals(8)
             );
 
-            // Nomic reports price impact as a negative fraction, Squid as
-            // positive. The high-impact gate and the acknowledgement re-arm
-            // check assume larger = worse, so compare magnitudes; a negative
-            // figure would silently never trip the gate.
+            // Providers report a loss as a negative fraction. The high-impact
+            // gate and the acknowledgement re-arm check assume larger = worse,
+            // so read it as a loss; a favourable impact counts as none.
             const priceImpact = new RatePretty(
-              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
+              priceImpactLoss(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined

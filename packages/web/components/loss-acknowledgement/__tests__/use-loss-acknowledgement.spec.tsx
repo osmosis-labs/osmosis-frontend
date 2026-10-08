@@ -72,9 +72,7 @@ describe("useLossAcknowledgement", () => {
     );
 
     act(() => result.current.setLossAcknowledged(true));
-    rerender({
-      current: figures({ slippage: warnedSlippage.add(AckReArmTolerance) }),
-    });
+    rerender({ current: figures({ priceImpact: AckReArmTolerance }) });
 
     expect(result.current.hasAcknowledgedLoss).toBe(true);
     expect(result.current.warningNeedsAcknowledgement).toBe(false);

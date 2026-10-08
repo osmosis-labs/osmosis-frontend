@@ -26,8 +26,8 @@ import { Dec } from "@osmosis-labs/unit";
  * | Key       | Acknowledged quantity                     | Surface              |
  * | --------- | ----------------------------------------- | -------------------- |
  * | `loss`    | total value lost across the transfer      | bridge withdrawal    |
- * | `pi`      | price impact magnitude                    | swap, limit, convert |
- * | `slip`    | slippage tolerance the user allowed       | swap, limit          |
+ * | `pi`      | price impact, as a loss                   | bridge, market trade |
+ * | `slip`    | slippage tolerance the user allowed       | market trade         |
  * | `mktfill` | distance past market the price was set    | true limit order     |
  *
  * Fixed key order when several are present: `loss`, `pi`, `slip`, `mktfill`.
@@ -77,9 +77,9 @@ export interface TxFeMemoFlags {
    */
   totalLoss?: Dec;
   /**
-   * Acknowledged price impact as a positive magnitude fraction (0..1) —
-   * stamped as `pi=<pct>`. Providers disagree on sign, so callers normalize
-   * before snapshotting.
+   * Acknowledged price-impact loss as a positive fraction (0..1) — stamped as
+   * `pi=<pct>`. Quotes report a loss as negative, so callers convert it to a
+   * loss before snapshotting.
    */
   priceImpact?: Dec;
   /**

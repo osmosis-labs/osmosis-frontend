@@ -43,9 +43,9 @@ export interface LossFigures {
    */
   slippage: Dec;
   /**
-   * Price impact as a positive magnitude fraction (0..1). Callers must
-   * normalize provider sign conventions before snapshotting — the worsening
-   * comparison assumes larger = worse.
+   * Price-impact loss as a positive fraction (0..1), zero for a favourable
+   * impact. Callers convert the quote's figure with `priceImpactLoss` before
+   * snapshotting — the worsening comparison assumes larger = worse.
    */
   priceImpact: Dec;
 
@@ -70,17 +70,22 @@ export interface LossFigures {
 }
 
 /**
- * Sources disagree on the sign of price impact (Nomic and our own swap router
- * report a loss as negative, Squid as positive). The high-impact gate and the
- * acknowledgement re-arm check assume larger = worse, so compare magnitudes: a
- * negative figure would otherwise silently never trip the gate.
+ * The loss a price impact represents, as a positive fraction (0..1), or zero
+ * for an impact in the user's favour.
+ *
+ * Every source reports a loss as negative: our swap router does, Nomic passes
+ * the router's figure through, and the Squid provider negates Squid's
+ * positive-loss convention at the boundary. The high-impact gate and the
+ * acknowledgement re-arm check assume larger = worse, so they read this rather
+ * than the raw figure — a raw negative loss would silently never trip the gate,
+ * and a magnitude would gate a favourable impact as though it were a loss.
  *
  * Exported (rather than inlined at the call site) so this sign contract is
  * test-enforced: a regression here does not throw or misrender, it just stops
- * the gate firing for bundled-swap providers.
+ * the gate firing.
  */
-export function normalizePriceImpact(priceImpact: Dec): Dec {
-  return priceImpact.abs();
+export function priceImpactLoss(priceImpact: Dec): Dec {
+  return priceImpact.isNegative() ? priceImpact.neg() : new Dec(0);
 }
 
 /** Whether any warning requiring acknowledgement is active. */
@@ -116,8 +121,9 @@ export function needsAcknowledgement(
  * 1. The operation's `identityKey` changed — a different thing to sign.
  * 2. A warning type is active now that was not active at acknowledgement time
  *    (the user never saw it).
- * 3. A loss figure worsened by more than `AckReArmTolerance` (absolute
- *    percentage points). Improvements never reset.
+ * 3. The slippage figure increased at all, or another loss figure worsened by
+ *    more than `AckReArmTolerance` (absolute percentage points). Improvements
+ *    never reset.
  */
 export function shouldResetAcknowledgement(
   acknowledged: LossFigures,
@@ -130,9 +136,11 @@ export function shouldResetAcknowledgement(
   if (current.warnMarketFill && !acknowledged.warnMarketFill) return true;
   if (current.swapImpactUnknown && !acknowledged.swapImpactUnknown) return true;
 
-  if (current.slippage.sub(acknowledged.slippage).gt(AckReArmTolerance)) {
-    return true;
-  }
+  // No tolerance for slippage. On a trade it is a tolerance the user typed, so a
+  // tolerated increase would sign a looser bound than the memo claims; on the
+  // bridge it is a total loss that only moves on the 30s requote, so re-asking
+  // on any worsening costs at most one tick per refresh.
+  if (current.slippage.gt(acknowledged.slippage)) return true;
   if (current.priceImpact.sub(acknowledged.priceImpact).gt(AckReArmTolerance)) {
     return true;
   }

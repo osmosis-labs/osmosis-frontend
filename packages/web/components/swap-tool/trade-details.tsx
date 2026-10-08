@@ -9,7 +9,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
-import { normalizePriceImpact } from "~/components/loss-acknowledgement";
+import { priceImpactLoss } from "~/components/loss-acknowledgement";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -73,7 +73,7 @@ export const TradeDetails = observer(
     const isPriceImpactHigh = useMemo(
       () =>
         priceImpact
-          ? normalizePriceImpact(priceImpact.toDec()).gte(HighPriceImpactGate)
+          ? priceImpactLoss(priceImpact.toDec()).gte(HighPriceImpactGate)
           : undefined,
       [priceImpact]
     );

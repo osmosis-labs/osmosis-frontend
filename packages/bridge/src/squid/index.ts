@@ -226,8 +226,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           expectedOutput: {
             ...toAsset,
             amount: toAmount,
+            // Squid reports a loss as a positive percentage; the interface
+            // wants a fraction, negative for a loss.
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
+              .neg()
               .toString(),
           },
           fromChain,

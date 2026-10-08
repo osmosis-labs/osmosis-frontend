@@ -287,11 +287,17 @@ export class TradePage extends BasePage {
     const lossCheckbox = this.page.locator(
       '//div[@role="dialog"]//label[contains(., "I understand this trade may lose")]/../button[@role="checkbox"]'
     );
-    const isGated = await lossCheckbox
-      .waitFor({ state: "visible", timeout: 1000 })
-      .then(() => true)
-      .catch(() => false);
-    if (isGated) {
+    // Wait for the dialog to settle into one of its two states rather than
+    // probing for the checkbox on a fixed timer: a slow render would otherwise
+    // read as "not gated" and leave Confirm disabled.
+    const enabledConfirm = this.page.locator(
+      '//div[@class]/button[.="Confirm" and not(@disabled)]'
+    );
+    await lossCheckbox
+      .or(enabledConfirm)
+      .first()
+      .waitFor({ state: "visible", timeout: 15000 });
+    if (await lossCheckbox.isVisible()) {
       await lossCheckbox.check({ timeout: 3000 });
       console.log("Ticked the high-loss acknowledgement checkbox.");
     }

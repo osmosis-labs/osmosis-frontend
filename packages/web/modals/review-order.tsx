@@ -1,5 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import {
+  formatWarnPct,
   InsufficientBalanceForFeeError,
   ObservableSlippageConfig,
   TxFeMemoFlags,
@@ -238,13 +239,21 @@ export function ReviewOrder({
    * drift on every 5s requote and belong to the tolerance-governed figures
    * instead. The limit price is safe to include because opening this modal locks
    * it (see the `limitSetPriceLock` effect above).
+   *
+   * The amount is the side the user fixed. On an exact-out market trade that is
+   * the output: the input is the quoted figure, rewritten on every requote, so
+   * keying on it would re-arm the checkbox whenever it moved by one base unit.
    */
+  const fixedAmount =
+    orderType !== "limit" && quoteType === "in-given-out"
+      ? expectedOutput
+      : inAmountToken;
   const currentLossFigures = useMemo(
     () => ({
       identityKey: [
         fromAsset?.coinMinimalDenom,
         toAsset?.coinMinimalDenom,
-        inAmountToken?.toCoin().amount,
+        fixedAmount?.toCoin().amount,
         orderType,
         quoteType,
         orderType === "limit" ? limitPriceFiat?.toDec().toString() : "",
@@ -260,7 +269,7 @@ export function ReviewOrder({
     [
       fromAsset?.coinMinimalDenom,
       toAsset?.coinMinimalDenom,
-      inAmountToken,
+      fixedAmount,
       orderType,
       quoteType,
       limitPriceFiat,
@@ -899,10 +908,11 @@ export function ReviewOrder({
                     <span>{t("limitOrders.highPriceImpact.title")}</span>
                     <span className="text-osmoverse-300">
                       {t("limitOrders.highPriceImpact.description", {
-                        impact: formatPretty(
-                          new RatePretty(currentLossFigures.priceImpact),
-                          { maxDecimals: 2 }
-                        ),
+                        // Same rounding as the memo's `pi=`, so the figure the
+                        // user is shown is the figure the tx records.
+                        impact: `${formatWarnPct(
+                          currentLossFigures.priceImpact
+                        )}%`,
                       })}
                     </span>
                   </div>
@@ -951,9 +961,10 @@ export function ReviewOrder({
                           : "primary"
                       }
                       onClick={() => {
-                        // Quotes refetch every 5s while this modal is open, so a
-                        // render-time `disabled` can be one tick stale. Re-check
-                        // against the same predicate before firing the tx.
+                        // Defence in depth only: this reads the same render as
+                        // `disabled`, so it cannot catch a quote that has not
+                        // rendered yet. It guards the sign path against a
+                        // future change that enables the button some other way.
                         if (
                           needsAcknowledgement(
                             acknowledgedBasis,

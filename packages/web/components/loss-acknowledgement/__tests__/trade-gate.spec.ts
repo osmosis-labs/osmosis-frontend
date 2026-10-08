@@ -47,12 +47,13 @@ describe("getTradeWarnings", () => {
       ).toBe(false);
     });
 
-    it("gates a positively-reported impact identically", () => {
-      expect(
-        getTradeWarnings({
-          priceImpactTokenOut: new RatePretty(HighPriceImpactGate),
-        }).warnPriceImpact
-      ).toBe(true);
+    it("does not gate a favourable impact beyond the threshold", () => {
+      const { priceImpact, warnPriceImpact } = getTradeWarnings({
+        priceImpactTokenOut: new RatePretty(HighPriceImpactGate.add(epsilon)),
+      });
+
+      expect(priceImpact.isZero()).toBe(true);
+      expect(warnPriceImpact).toBe(false);
     });
 
     // Fails open, never closed: a checkbox the user cannot clear is worse than
@@ -235,7 +236,22 @@ describe("deriveTradeMemoFlags", () => {
     ).toBeUndefined();
   });
 
-  it("stamps every acknowledged figure at once", () => {
+  it("stamps every acknowledged market figure at once", () => {
+    const flags = deriveTradeMemoFlags(
+      basis({
+        priceImpactTokenOut: quotedImpact(new Dec("0.124")),
+        slippage: HighSlippageToleranceGate,
+        orderType: "market",
+      })
+    );
+
+    expect(flags?.priceImpact).toBeDefined();
+    expect(flags?.slippageTolerance).toBeDefined();
+    expect(flags?.marketFillDistance).toBeUndefined();
+    expect(flags?.totalLoss).toBeUndefined();
+  });
+
+  it("stamps only the market fill on a marketable limit order", () => {
     const flags = deriveTradeMemoFlags(
       basis({
         priceImpactTokenOut: quotedImpact(new Dec("0.124")),
@@ -246,10 +262,7 @@ describe("deriveTradeMemoFlags", () => {
       })
     );
 
-    expect(flags?.priceImpact).toBeDefined();
-    expect(flags?.slippageTolerance).toBeDefined();
-    expect(flags?.marketFillDistance).toBeDefined();
-    expect(flags?.totalLoss).toBeUndefined();
+    expect(flags).toEqual({ marketFillDistance: expect.any(Dec) });
   });
 });
 

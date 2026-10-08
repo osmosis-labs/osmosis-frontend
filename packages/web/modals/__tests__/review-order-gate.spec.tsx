@@ -327,6 +327,87 @@ describe("ReviewOrder acknowledgement gate", () => {
     expect(confirmButton()).toBeDisabled();
   });
 
+  it("re-arms when the user raises slippage, even within the drift tolerance", () => {
+    const props = {
+      ...baseProps(),
+      slippageConfig: slippageConfigStub(HighSlippageToleranceGate),
+      priceImpactTokenOut: lowImpact,
+    };
+    const { rerenderWith } = renderModal(props);
+
+    fireEvent.click(checkbox()!);
+    expect(confirmButton()).toBeEnabled();
+
+    rerenderWith({
+      ...props,
+      slippageConfig: slippageConfigStub(
+        HighSlippageToleranceGate.add(new Dec("0.005"))
+      ),
+    });
+
+    expect(checkbox()).not.toBeChecked();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  it("does not gate a favourable price impact", () => {
+    renderModal({
+      ...baseProps(),
+      priceImpactTokenOut: new RatePretty(
+        HighPriceImpactGate.add(new Dec("0.02"))
+      ),
+    });
+
+    expect(checkbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeEnabled();
+  });
+
+  it("shows the impact rounded the same way as the memo", () => {
+    renderModal({
+      ...baseProps(),
+      priceImpactTokenOut: quotedImpact(new Dec("0.05555")),
+    });
+
+    expect(screen.getByText(/5\.56%/)).toBeInTheDocument();
+  });
+
+  // On an exact-out quote the input is the quoted side and moves on every
+  // requote; only the output is the user's.
+  describe("exact-out trades", () => {
+    const exactOutProps = () => ({
+      ...baseProps(),
+      quoteType: "in-given-out" as const,
+      expectedOutput: new CoinPretty(atom, new Dec("16000000")),
+      priceImpactTokenOut: highImpact,
+    });
+
+    it("keeps the acknowledgement when a requote moves the quoted input", () => {
+      const props = exactOutProps();
+      const { rerenderWith } = renderModal(props);
+
+      fireEvent.click(checkbox()!);
+      rerenderWith({
+        ...props,
+        inAmountToken: new CoinPretty(osmo, new Dec("1000004")),
+      });
+
+      expect(checkbox()).toBeChecked();
+      expect(confirmButton()).toBeEnabled();
+    });
+
+    it("re-arms when the user changes the output amount", () => {
+      const props = exactOutProps();
+      const { rerenderWith } = renderModal(props);
+
+      fireEvent.click(checkbox()!);
+      rerenderWith({
+        ...props,
+        expectedOutput: new CoinPretty(atom, new Dec("17000000")),
+      });
+
+      expect(checkbox()).not.toBeChecked();
+    });
+  });
+
   it("re-arms when the trade itself changes, with the figures unchanged", () => {
     const props = { ...baseProps(), priceImpactTokenOut: highImpact };
     const { rerenderWith } = renderModal(props);
@@ -447,6 +528,20 @@ describe("ReviewOrder acknowledgement gate", () => {
       expect(flags.marketFillDistance.toString()).toBe(
         new Dec("0.0325").toString()
       );
+    });
+
+    // A resting order executes at its own price, so the market quote's impact
+    // and the market slippage tolerance say nothing about it.
+    it("does not gate a resting order on market impact or slippage", () => {
+      renderModal({
+        ...baseProps(),
+        slippageConfig: slippageConfigStub(HighSlippageToleranceGate),
+        priceImpactTokenOut: highImpact,
+        isBeyondOppositePrice: false,
+      });
+
+      expect(checkbox()).not.toBeInTheDocument();
+      expect(confirmButton()).toBeEnabled();
     });
 
     it("does not gate an order resting on its own side of the book", () => {
