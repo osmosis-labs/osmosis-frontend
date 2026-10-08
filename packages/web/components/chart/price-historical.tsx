@@ -102,10 +102,6 @@ export const HistoricalPriceChart: FunctionComponent<{
   onPointerOut?: () => void;
   showGradient?: boolean;
   /**
-   * Renders a more compact graph with less information on the screen
-   */
-  minimal?: boolean;
-  /**
    * specifies the tick count of the horizontal asset
    */
   xNumTicks?: number;
@@ -122,7 +118,6 @@ export const HistoricalPriceChart: FunctionComponent<{
     onPointerHover,
     onPointerOut,
     showGradient = true,
-    minimal = false,
     xNumTicks = 4,
     showTooltip = false,
     fiatSymbol,
@@ -130,23 +125,11 @@ export const HistoricalPriceChart: FunctionComponent<{
     const { formatYTick, leftMargin } = useYAxisTickLayout(domain);
 
     return (
-      // Visx 4 measures an inner div which clips overflow by default. Compact
-      // charts need both that wrapper and the SVG to allow axis labels outside.
-      <ParentSize
-        className={`flex-shrink-1 flex-1 ${
-          !minimal
-            ? "overflow-hidden"
-            : "[&>div]:!overflow-visible [&>div>svg]:overflow-visible"
-        }`}
-      >
+      <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
         {({ height, width }) => (
           <XYChart
             key="line-chart"
-            margin={
-              minimal
-                ? { top: 0, right: 0, bottom: 24, left: 0 }
-                : { top: 0, right: 0, bottom: 24, left: leftMargin }
-            }
+            margin={{ top: 0, right: 0, bottom: 24, left: leftMargin }}
             height={height}
             width={width}
             xScale={{
@@ -196,23 +179,14 @@ export const HistoricalPriceChart: FunctionComponent<{
               },
             })}
           >
+            <AnimatedAxis orientation="bottom" numTicks={xNumTicks} />
             <AnimatedAxis
-              orientation="bottom"
-              numTicks={xNumTicks}
-              hideTicks={minimal}
-              hideZero={minimal}
+              orientation="left"
+              numTicks={NUM_Y_TICKS}
+              strokeWidth={0}
+              tickFormat={formatYTick}
             />
-            {!minimal && (
-              <AnimatedAxis
-                orientation="left"
-                numTicks={NUM_Y_TICKS}
-                strokeWidth={0}
-                tickFormat={formatYTick}
-              />
-            )}
-            {!minimal && (
-              <AnimatedGrid columns={false} numTicks={NUM_Y_TICKS} />
-            )}
+            <AnimatedGrid columns={false} numTicks={NUM_Y_TICKS} />
 
             {showGradient ? (
               <>
