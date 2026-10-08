@@ -4,16 +4,15 @@ import {
   MutableRefObject,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
-
-const useIsomorphicLayoutEffect =
-  typeof window === "undefined" ? useEffect : useLayoutEffect;
+import { useIsomorphicLayoutEffect } from "react-use";
 
 const sizerStyle: CSSProperties = {
   position: "absolute",
+  top: 0,
+  left: 0,
   visibility: "hidden",
   height: 0,
   overflow: "hidden",
@@ -44,6 +43,25 @@ function assignInputRef(
 ) {
   if (typeof ref === "function") ref(node);
   else if (ref) ref.current = node;
+}
+
+/** Copies the input's font metrics onto the hidden sizers so their width matches the input text. */
+function copyFontStyles(
+  input: HTMLInputElement,
+  sizers: (HTMLDivElement | null)[]
+) {
+  const computed = window.getComputedStyle(input);
+  for (const node of sizers) {
+    if (!node) continue;
+    node.style.fontFamily = computed.fontFamily;
+    node.style.fontSize = computed.fontSize;
+    node.style.fontWeight = computed.fontWeight;
+    node.style.fontStyle = computed.fontStyle;
+    node.style.fontStretch = computed.fontStretch;
+    node.style.fontVariant = computed.fontVariant;
+    node.style.letterSpacing = computed.letterSpacing;
+    node.style.textTransform = computed.textTransform;
+  }
 }
 
 /** Controlled text input: measurement never rewrites its value or selection.
@@ -81,19 +99,6 @@ export function AutosizeInput({
 
   const measure = useCallback(() => {
     if (!input.current || !sizer.current) return;
-    const computed = window.getComputedStyle(input.current);
-    for (const node of [sizer.current, placeholderSizer.current]) {
-      if (!node) continue;
-      // Copy on every measurement, including responsive styles and late fonts.
-      node.style.fontFamily = computed.fontFamily;
-      node.style.fontSize = computed.fontSize;
-      node.style.fontWeight = computed.fontWeight;
-      node.style.fontStyle = computed.fontStyle;
-      node.style.fontStretch = computed.fontStretch;
-      node.style.fontVariant = computed.fontVariant;
-      node.style.letterSpacing = computed.letterSpacing;
-      node.style.textTransform = computed.textTransform;
-    }
     const textWidth = sizer.current.scrollWidth;
     const placeholderWidth =
       placeholder && (!value || placeholderIsMinWidth)
@@ -109,10 +114,16 @@ export function AutosizeInput({
     );
   }, [value, placeholder, placeholderIsMinWidth, minWidth, extraWidth, type]);
 
-  // Measure after every commit so changes to classes/inherited styles are read.
-  useIsomorphicLayoutEffect(() => {
+  const syncAndMeasure = useCallback(() => {
+    if (!input.current) return;
+    copyFontStyles(input.current, [sizer.current, placeholderSizer.current]);
     measure();
-  });
+  }, [measure]);
+
+  // Re-copy styles only when they can have changed: the input class changed,
+  // or the placeholder sizer just mounted (placeholder is a `measure` dep).
+  // Viewport and font changes are handled by the listeners below.
+  useIsomorphicLayoutEffect(syncAndMeasure, [syncAndMeasure, inputClassName]);
 
   useIsomorphicLayoutEffect(() => {
     if (previousWidth.current !== width) {
@@ -121,10 +132,16 @@ export function AutosizeInput({
     }
   }, [width, onAutosize]);
 
+  // Subscribe once; listeners call the latest closure through this ref.
+  const latestSyncAndMeasure = useRef(syncAndMeasure);
+  useIsomorphicLayoutEffect(() => {
+    latestSyncAndMeasure.current = syncAndMeasure;
+  }, [syncAndMeasure]);
+
   useEffect(() => {
     let active = true;
     const remeasure = () => {
-      if (active) measure();
+      if (active) latestSyncAndMeasure.current();
     };
     window.addEventListener("resize", remeasure);
     const fonts = document.fonts;
@@ -142,7 +159,7 @@ export function AutosizeInput({
       fonts?.removeEventListener("loadingdone", remeasure);
       observer?.disconnect();
     };
-  }, [measure]);
+  }, []);
 
   return (
     <div className={className} style={{ display: "inline-block", ...style }}>

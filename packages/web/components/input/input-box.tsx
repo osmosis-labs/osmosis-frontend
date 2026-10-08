@@ -1,5 +1,10 @@
 import classNames from "classnames";
-import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
+import {
+  FunctionComponent,
+  HTMLInputTypeAttribute,
+  useId,
+  useState,
+} from "react";
 import { Optional } from "utility-types";
 
 import { ButtonProps } from "~/components/buttons/types";
@@ -76,6 +81,7 @@ export const InputBox: FunctionComponent<Props> = ({
   onClick,
   inputMode,
 }) => {
+  const inputId = useId();
   const [inputFocused, setInputFocused] = useState(false);
   const [inputValue, setValue] = useControllableState({
     value: currentValue,
@@ -119,16 +125,17 @@ export const InputBox: FunctionComponent<Props> = ({
           classes?.label
         )}
         style={styles?.label}
-        htmlFor="text-input"
+        htmlFor={inputId}
       >
         {isAutosize ? (
+          // `type` is intentionally not forwarded: autosize inputs have always
+          // rendered as text, and `type="number"` reports "" for partial entries.
           <AutosizeInput
             key={inputKey}
             inputRef={inputRef}
-            id="text-input"
+            id={inputId}
             placeholder={placeholder ?? ""}
             autoComplete="off"
-            type={type}
             inputMode={inputMode}
             disabled={disabled}
             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -151,7 +158,7 @@ export const InputBox: FunctionComponent<Props> = ({
           <input
             key={inputKey}
             ref={inputRef}
-            id="text-input"
+            id={inputId}
             className={inputClassName_}
             value={currentValue}
             placeholder={placeholder ?? ""}
