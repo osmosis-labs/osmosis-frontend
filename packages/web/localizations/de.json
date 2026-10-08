@@ -784,7 +784,9 @@
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
     "routes": "Routen",
-    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage",
+    "extremeDisparityAcknowledgement": "Mir ist bewusst, dass ich deutlich weniger Wert erhalte, als ich sende.",
+    "amountTooSmallForSlippage": "Betrag zu klein für einen Swap mit dieser Slippage. Erhöhen Sie den Betrag oder verringern Sie die Slippage."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

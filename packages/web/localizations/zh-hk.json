@@ -784,7 +784,9 @@
     "noRoutes": "沒有找到路線",
     "route": "路線",
     "routes": "路線",
-    "slippageOverBalance": "資金不足以彌補滑點"
+    "slippageOverBalance": "資金不足以彌補滑點",
+    "extremeDisparityAcknowledgement": "我明白我收到的價值遠低於我發送的價值。",
+    "amountTooSmallForSlippage": "金額太小，無法以此滑點進行兌換。請增加金額或降低滑點。"
   },
   "walletSelect": {
     "gettingStarted": "入門",
