@@ -534,7 +534,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
       useEffect(() => {
-        if (isRedelegating) return;
+        if (!isOpen || isRedelegating) return;
 
         const defaultusersValidatorSetPreferenceMap = new Set(
           usersValidatorSetPreferenceMap.keys()
@@ -560,7 +560,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             ? defaultRowSelection
             : currentRowSelection;
         });
-      }, [table, usersValidatorSetPreferenceMap, isRedelegating]);
+      }, [table, usersValidatorSetPreferenceMap, isRedelegating, isOpen]);
 
       // when redelegating, start from the squad minus its inactive validators:
       // the stored preference if there is one, else the active validators the
@@ -583,7 +583,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         [totalStakePool.currency.coinDecimals]
       );
       useEffect(() => {
-        if (!isOpen || !isRedelegating) return;
+        if (!isOpen) {
+          // the modal stays mounted, so don't carry one opening's selection
+          // into the next
+          setRowSelection({});
+          return;
+        }
+        if (!isRedelegating) return;
 
         setRowSelection(
           Object.fromEntries(
