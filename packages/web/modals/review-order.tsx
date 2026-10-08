@@ -57,6 +57,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { SlippageSource } from "~/utils/slippage";
 import {
   formatSlippagePercent,
   parseSlippageInput,
@@ -113,6 +114,12 @@ interface ReviewOrderProps {
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
+  /** Where the submitted slippage came from, when the caller chooses it
+   *  automatically. */
+  slippageSource?: SlippageSource;
+  /** True when an automatic slippage was chosen without knowing the route's
+   *  liquidity. */
+  slippageLiquidityUnknown?: boolean;
 }
 
 export function ReviewOrder({
@@ -146,6 +153,8 @@ export function ReviewOrder({
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
+  slippageSource,
+  slippageLiquidityUnknown = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const [manualSlippage, setManualSlippage] = useState("");
@@ -214,6 +223,14 @@ export function ReviewOrder({
   const isManualSlippageTooHigh =
     effectiveSlippage?.gte(HighSlippageToleranceGate) ?? false;
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+
+  // The review notes an auto-adjusted tolerance, and one picked without
+  // knowing route liquidity, only while the user has not typed their own.
+  const showAutoAdjusted = manualSlippage === "" && slippageSource === "auto";
+  const showLiquidityUnknown =
+    manualSlippage === "" &&
+    slippageLiquidityUnknown &&
+    (slippageSource === "auto" || slippageSource === "default");
 
   /**
    * The quote the user is reviewing, which later quotes are compared against.
@@ -380,6 +397,11 @@ export function ReviewOrder({
     setLossAcknowledged(false);
   }, [amountWithSlippage, setLossAcknowledged]);
 
+  // Typed slippage belongs to one review. Cleared after the exit transition,
+  // so the next review's first render already shows the submitted value as
+  // the placeholder.
+  const clearTypedSlippage = useCallback(() => setManualSlippage(""), []);
+
   const handleManualSlippageChange = useCallback(
     (value: string) => {
       const parsed = parseSlippageInput(value);
@@ -387,14 +409,20 @@ export function ReviewOrder({
 
       setManualSlippage(parsed.display);
       if (parsed.display === "") {
-        // Clearing hands control back to the tool's own slippage (its preset,
-        // or one the fee-error path selected), shown as the placeholder.
-        slippageConfig?.setIsManualSlippage(false);
+        // Clearing hands control back to the tool's own slippage, shown as
+        // the placeholder. A caller that sets slippage automatically picks it
+        // up from the cleared override; otherwise fall back to the preset
+        // (or one the fee-error path selected).
+        slippageConfig?.clearUserOverride();
+        if (slippageSource === undefined) {
+          slippageConfig?.setIsManualSlippage(false);
+        }
       } else if (parsed.commit !== undefined) {
+        slippageConfig?.markUserOverride();
         slippageConfig?.setManualSlippage(parsed.commit);
       }
     },
-    [slippageConfig]
+    [slippageConfig, slippageSource]
   );
 
   // Leaving the field with an incomplete value ("1.", "0", "0.") must not
@@ -408,12 +436,16 @@ export function ReviewOrder({
     const value = Number(manualSlippage);
     if (value > 0) {
       setManualSlippage(String(value));
+      slippageConfig?.markUserOverride();
       slippageConfig?.setManualSlippage(String(value));
     } else {
       setManualSlippage("");
-      slippageConfig?.setIsManualSlippage(false);
+      slippageConfig?.clearUserOverride();
+      if (slippageSource === undefined) {
+        slippageConfig?.setIsManualSlippage(false);
+      }
     }
-  }, [manualSlippage, slippageConfig]);
+  }, [manualSlippage, slippageConfig, slippageSource]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -484,6 +516,7 @@ export function ReviewOrder({
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
+      onAfterClose={clearTypedSlippage}
       hideCloseButton
       className={
         show1CT && showOneClickTradingSettings
@@ -784,7 +817,21 @@ export function ReviewOrder({
                     <RecapRow
                       left={t("swap.settings.slippage")}
                       right={
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          {showAutoAdjusted && (
+                            <GenericDisclaimer
+                              title={t("swap.slippageAutoAdjustedTitle")}
+                              body={t("swap.slippageAutoAdjustedBody")}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                label={t("swap.slippageAutoAdjustedTitle")}
+                                width={16}
+                                height={16}
+                                className="text-ammelia-400"
+                              />
+                            </GenericDisclaimer>
+                          )}
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
@@ -832,6 +879,11 @@ export function ReviewOrder({
                         </div>
                       }
                     />
+                    {showLiquidityUnknown && (
+                      <p className="caption text-ammelia-400">
+                        {t("swap.routeLiquidityUnknown")}
+                      </p>
+                    )}
                     {isManualSlippageTooHigh && (
                       <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                         <Icon
