@@ -132,11 +132,13 @@ export function useSwapSlippage({
 
   return {
     source: resolved.source,
-    /** True when the auto tier was picked without knowing route liquidity. */
+    /** True when the current quote's route liquidity is unknown. Read from
+     *  the live quote even while the tier is latched for the review, so a
+     *  refresh that loses the route's pricing still shows the warning. */
     liquidityUnknown:
       quoteType === "out-given-in" &&
       quote !== undefined &&
-      auto.liquidityUnknown,
+      liveAuto.liquidityUnknown,
     resetForReview,
     reset,
   };

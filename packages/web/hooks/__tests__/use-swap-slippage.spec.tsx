@@ -273,6 +273,25 @@ describe("useSwapSlippage", () => {
       expect(pct(result.current.slippageConfig)).toBe("2.0");
     });
 
+    it("reports live route liquidity while the tier stays latched", () => {
+      const { result, rerender } = render({
+        quote: quote("-0.003"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+      });
+      expect(result.current.liquidityUnknown).toBe(false);
+
+      // A refresh loses the route's pricing: the warning must appear even
+      // though the tolerance stays at the tier latched when the review opened.
+      rerender({
+        quote: quote("-0.003", "0"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+      });
+      expect(result.current.liquidityUnknown).toBe(true);
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+    });
+
     it("still applies a typed value", () => {
       const { result, rerender } = render({
         quote: quote("-0.003"),

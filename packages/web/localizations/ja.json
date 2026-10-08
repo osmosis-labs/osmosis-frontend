@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。",
     "slippageAutoAdjustedTitle": "スリッページが自動調整されました",
     "slippageAutoAdjustedBody": "価格への影響が大きい、または流動性が低いため、この取引のデフォルトのスリッページが引き上げられました。",
-    "routeLiquidityUnknown": "このルートの流動性を確認できなかったため、スリッページは価格インパクトのみに基づいて設定されています。確定する前に最低受取額をご確認ください。"
+    "routeLiquidityUnknown": "このルートの流動性を確認できませんでした。確定する前に最低受取額をご確認ください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

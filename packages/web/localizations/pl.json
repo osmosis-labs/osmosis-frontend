@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "Kwota zbyt mała, aby dokonać wymiany przy tym poślizgu. Zwiększ kwotę lub zmniejsz poślizg.",
     "slippageAutoAdjustedTitle": "Poślizg dostosowany automatycznie",
     "slippageAutoAdjustedBody": "Domyślny poślizg dla tej transakcji został podniesiony z powodu dużego wpływu na cenę lub niskiej płynności.",
-    "routeLiquidityUnknown": "Nie udało się zweryfikować płynności tej trasy, więc poślizg ustalono wyłącznie na podstawie wpływu na cenę. Przed potwierdzeniem sprawdź minimalną otrzymaną kwotę."
+    "routeLiquidityUnknown": "Nie udało się zweryfikować płynności tej trasy. Przed potwierdzeniem sprawdź minimalną otrzymaną kwotę."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

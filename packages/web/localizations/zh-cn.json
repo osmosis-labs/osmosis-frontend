@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "金额太小，无法以此滑点进行兑换。请增加金额或降低滑点。",
     "slippageAutoAdjustedTitle": "滑点已自动调整",
     "slippageAutoAdjustedBody": "由于价格影响较大或流动性较低，此交易的默认滑点已上调。",
-    "routeLiquidityUnknown": "无法验证此路径的流动性，因此滑点仅根据价格影响设定。确认前请检查最少收到数量。"
+    "routeLiquidityUnknown": "无法验证此路径的流动性。确认前请检查最少收到数量。"
   },
   "walletSelect": {
     "gettingStarted": "入门",

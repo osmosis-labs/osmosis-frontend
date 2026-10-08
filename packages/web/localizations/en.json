@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage.",
     "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
     "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity.",
-    "routeLiquidityUnknown": "Couldn't verify this route's liquidity, so slippage is set from price impact only. Check the minimum received before confirming."
+    "routeLiquidityUnknown": "Couldn't verify this route's liquidity. Check the minimum received before confirming."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

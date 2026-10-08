@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "Betrag zu klein für einen Swap mit dieser Slippage. Erhöhen Sie den Betrag oder verringern Sie die Slippage.",
     "slippageAutoAdjustedTitle": "Slippage automatisch angepasst",
     "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht.",
-    "routeLiquidityUnknown": "Die Liquidität dieser Route konnte nicht überprüft werden, daher basiert die Slippage nur auf der Preisauswirkung. Prüfen Sie vor dem Bestätigen den Mindestbetrag."
+    "routeLiquidityUnknown": "Die Liquidität dieser Route konnte nicht überprüft werden. Prüfen Sie vor dem Bestätigen den Mindestbetrag."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

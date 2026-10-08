@@ -789,7 +789,7 @@
     "amountTooSmallForSlippage": "Valor muito pequeno para trocar com este deslizamento. Aumente o valor ou reduza o deslizamento.",
     "slippageAutoAdjustedTitle": "Deslizamento ajustado automaticamente",
     "slippageAutoAdjustedBody": "O deslizamento padrão desta operação foi aumentado devido ao alto impacto no preço ou à baixa liquidez.",
-    "routeLiquidityUnknown": "Não foi possível verificar a liquidez desta rota, então o slippage foi definido apenas pelo impacto no preço. Confira o mínimo a receber antes de confirmar."
+    "routeLiquidityUnknown": "Não foi possível verificar a liquidez desta rota. Confira o mínimo a receber antes de confirmar."
   },
   "walletSelect": {
     "gettingStarted": "Começando",
