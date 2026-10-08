@@ -799,7 +799,8 @@
     "noRoutes": "Nenhuma rota encontrada",
     "route": "rota",
     "routes": "rotas",
-    "slippageOverBalance": "Fundos insuficientes para cobrir o deslizamento"
+    "slippageOverBalance": "Fundos insuficientes para cobrir o deslizamento",
+    "amountTooSmallForSlippage": "Valor muito pequeno para trocar com este deslizamento. Aumente o valor ou reduza o deslizamento."
   },
   "walletSelect": {
     "gettingStarted": "Começando",

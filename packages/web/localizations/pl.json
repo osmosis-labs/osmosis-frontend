@@ -799,7 +799,8 @@
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
     "routes": "trasy",
-    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu",
+    "amountTooSmallForSlippage": "Kwota zbyt mała, aby dokonać wymiany przy tym poślizgu. Zwiększ kwotę lub zmniejsz poślizg."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
