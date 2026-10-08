@@ -105,7 +105,7 @@
     "lottie-react": "^3.1.2",
     "lru-cache": "^10.0.1",
     "mobx": "^6.3.10",
-    "mobx-react-lite": "^4.1.1",
+    "mobx-react-lite": "^3.2.2",
     "mobx-utils": "^6.0.4",
     "next": "15.5.25",
     "next-seo": "^6.6.0",
