@@ -1,7 +1,9 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import {
+  formatWarnPct,
   InsufficientBalanceForFeeError,
   ObservableSlippageConfig,
+  TxFeMemoFlags,
 } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
@@ -20,6 +22,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AutosizeInput } from "~/components/input/autosize-input";
+import {
+  hasActiveWarning,
+  needsAcknowledgement,
+} from "~/components/loss-acknowledgement";
+import { LossAcknowledgementCheckbox } from "~/components/loss-acknowledgement/checkbox";
+import {
+  deriveTradeMemoFlags,
+  getTradeWarnings,
+  hasQuoteDriftedBeyondSlippage,
+} from "~/components/loss-acknowledgement/trade-gate";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
@@ -30,6 +43,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -52,7 +66,12 @@ import {
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  confirmAction: () => void;
+  /**
+   * `warnFlags` are the figures the user acknowledged, frozen at tick time, for
+   * stamping into the tx auth memo (MTN-137). The modal owns the
+   * acknowledgement, so it is the only place that can derive them honestly.
+   */
+  confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
   amountWithSlippage?: IntPretty;
@@ -75,6 +94,11 @@ interface ReviewOrderProps {
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
+  /**
+   * Price impact for the quote being reviewed, as the router reports it (sign
+   * included). Optional because this modal is shared by all three tabs.
+   */
+  priceImpactTokenOut?: RatePretty;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
@@ -105,6 +129,7 @@ export function ReviewOrder({
   toAsset,
   fromAsset,
   isBeyondOppositePrice = false,
+  priceImpactTokenOut,
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
@@ -156,46 +181,142 @@ export function ReviewOrder({
   const orderType = orderTypeProp ?? queryOrderType;
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
+  /**
+   * This warning and the acknowledgement checkbox must read the same number.
+   * While they did not, any tolerance between the two thresholds showed a loss
+   * warning with nothing to acknowledge and no gate behind it.
+   *
+   * Note the unit difference that made them easy to diverge: `manualSlippage`
+   * is a percentage string ("5"), while the config's value is already a
+   * fraction (0.05). The previous comparison also ran the typed value through
+   * `parseInt`, so 1.9% truncated to 1 and warned nowhere.
+   */
+  const manualSlippagePercent = Number(manualSlippage);
+  const effectiveSlippage = manualSlippage
+    ? new Dec(
+        Number.isFinite(manualSlippagePercent)
+          ? manualSlippagePercent.toString()
+          : "0"
+      ).quo(new Dec(100))
+    : slippageConfig?.slippage.toDec();
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
-    (!manualSlippage &&
-      !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
+    effectiveSlippage?.gte(HighSlippageToleranceGate) ?? false;
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
+  /**
+   * The quote the user is reviewing, which later quotes are compared against.
+   *
+   * Held in state rather than as a local inside a memo, so that accepting an
+   * updated quote actually re-renders — its predecessor reassigned a memo-local
+   * variable, which changed nothing on screen and was reset to the original
+   * value on the next quote tick, leaving the "Accept" button inert.
+   *
+   * Keyed on `isOpen`, not on mount: this component renders unconditionally and
+   * passes `isOpen` down to `ModalBase`, so its body stays mounted between opens
+   * and a mount-keyed baseline would be the first quote the page ever saw.
+   */
+  const [reviewedOutput, setReviewedOutput] = useState(amountWithSlippage);
+
+  useEffect(() => {
+    if (isOpen) setReviewedOutput(amountWithSlippage);
+    // Deliberately keyed on `isOpen` alone — re-baselining on every quote tick
+    // would mean nothing ever counts as drift.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  }, [isOpen]);
+
+  const diffGteSlippage = hasQuoteDriftedBeyondSlippage({
+    initial: reviewedOutput?.toDec(),
+    current: amountWithSlippage?.toDec(),
+    slippageTolerance: slippageConfig?.slippage.toDec(),
+    quoteType,
+  });
+
+  /**
+   * Live loss figures for the trade being reviewed (MTN-150).
+   *
+   * The identity is what makes this a different trade rather than a re-quote of
+   * the same one, so slippage and price impact are deliberately excluded — they
+   * drift on every 5s requote and belong to the tolerance-governed figures
+   * instead. The limit price is safe to include because opening this modal locks
+   * it (see the `limitSetPriceLock` effect above).
+   *
+   * The amount is the side the user fixed. On an exact-out market trade that is
+   * the output: the input is the quoted figure, rewritten on every requote, so
+   * keying on it would re-arm the checkbox whenever it moved by one base unit.
+   */
+  const fixedAmount =
+    orderType !== "limit" && quoteType === "in-given-out"
+      ? expectedOutput
+      : inAmountToken;
+  const currentLossFigures = useMemo(
+    () => ({
+      identityKey: [
+        fromAsset?.coinMinimalDenom,
+        toAsset?.coinMinimalDenom,
+        fixedAmount?.toCoin().amount,
+        orderType,
+        quoteType,
+        orderType === "limit" ? limitPriceFiat?.toDec().toString() : "",
+      ].join("|"),
+      ...getTradeWarnings({
+        priceImpactTokenOut,
+        slippage: slippageConfig?.slippage.toDec(),
+        isBeyondOppositePrice,
+        percentAdjusted,
+        orderType: orderType === "limit" ? "limit" : "market",
+      }),
+    }),
+    [
+      fromAsset?.coinMinimalDenom,
+      toAsset?.coinMinimalDenom,
+      fixedAmount,
+      orderType,
+      quoteType,
+      limitPriceFiat,
+      priceImpactTokenOut,
+      slippageConfig?.slippage,
+      isBeyondOppositePrice,
+      percentAdjusted,
+    ]
   );
 
-  const [originalValue, setOriginalValue] = useState(initialOutput);
+  const {
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
+  } = useLossAcknowledgement(currentLossFigures);
 
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      return {
-        diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          setOriginalValue(amountWithSlippage ?? new IntPretty(0));
-        },
-      };
-    },
+  // Re-arm on every open. The hook only clears the basis when the figures go
+  // stale, and this component's body stays mounted between opens, so without
+  // this a user who ticked the box, closed the modal and reopened it would find
+  // the trade already acknowledged.
+  //
+  // Rising edge only: `isOpen` going false fires this effect too, and clearing
+  // the tick on the way out is visible for the whole of the modal's exit
+  // transition — so a cancelled signature looks like it silently un-ticked the
+  // box the user had just ticked.
+  useEffect(() => {
+    if (isOpen) setLossAcknowledged(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
-    [amountWithSlippage, originalValue, slippageConfig]
-  );
+  /**
+   * Accepting a drifted quote re-baselines the comparison *and* re-arms the loss
+   * acknowledgement, so the user has to tick again.
+   *
+   * The two guards cover independent risks — the banner is the market moving
+   * against you, the checkbox is this trade's own price impact, and impact can be
+   * unchanged while the output drops. Re-asking is nonetheless the right default
+   * on a signing surface: the user is being shown materially worse terms than the
+   * ones they consented to, and one extra click in a rare case is cheaper than a
+   * consent that silently carries over to a different set of numbers. Declared
+   * after `useLossAcknowledgement` because it needs `setLossAcknowledged`.
+   */
+  const acceptUpdatedQuote = useCallback(() => {
+    setReviewedOutput(amountWithSlippage);
+    setLossAcknowledged(false);
+  }, [amountWithSlippage, setLossAcknowledged]);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
@@ -775,6 +896,28 @@ export function ReviewOrder({
                   </div>
                 </div>
               )}
+              {currentLossFigures.warnPriceImpact && (
+                <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
+                  <Icon
+                    id="alert-triangle"
+                    width={24}
+                    height={24}
+                    className="text-rust-400"
+                  />
+                  <div className="body2 sm:caption flex flex-col gap-1">
+                    <span>{t("limitOrders.highPriceImpact.title")}</span>
+                    <span className="text-osmoverse-300">
+                      {t("limitOrders.highPriceImpact.description", {
+                        // Same rounding as the memo's `pi=`, so the figure the
+                        // user is shown is the figure the tx records.
+                        impact: `${formatWarnPct(
+                          currentLossFigures.priceImpact
+                        )}%`,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              )}
               {show1CT && !is1CTEnabled && (
                 <OneClickTradingPanel
                   t={t}
@@ -794,23 +937,58 @@ export function ReviewOrder({
                   onParamsChange={() => setShowOneClickTradingSettings(true)}
                 />
               )}
+              {/*
+                The acknowledgement lives inside this block so that at most one
+                of {drift banner} / {checkbox + confirm} is ever interactable:
+                when the quote has drifted the confirm row is replaced by the
+                banner, and the checkbox goes with it rather than floating above
+                a button that is no longer there.
+              */}
               {!diffGteSlippage && (
-                <div className="flex w-full justify-between gap-3 pt-3">
-                  <Button
-                    mode="primary"
-                    onClick={() => {
-                      confirmAction();
-                    }}
-                    disabled={
-                      isConfirmationDisabled ||
-                      wouldExceedSpendLimit ||
-                      hasInsufficientFeeTokens
-                    }
-                    className="body2 sm:caption !rounded-2xl"
-                  >
-                    <h6>{t("limitOrders.confirm")}</h6>
-                  </Button>
-                </div>
+                <>
+                  {hasActiveWarning(currentLossFigures) && (
+                    <LossAcknowledgementCheckbox
+                      label={t("limitOrders.lossAcknowledgement")}
+                      checked={hasAcknowledgedLoss}
+                      onCheckedChange={setLossAcknowledged}
+                    />
+                  )}
+                  <div className="flex w-full justify-between gap-3 pt-3">
+                    <Button
+                      mode={
+                        warningNeedsAcknowledgement || hasAcknowledgedLoss
+                          ? "primary-warning"
+                          : "primary"
+                      }
+                      onClick={() => {
+                        // Defence in depth only: this reads the same render as
+                        // `disabled`, so it cannot catch a quote that has not
+                        // rendered yet. It guards the sign path against a
+                        // future change that enables the button some other way.
+                        if (
+                          needsAcknowledgement(
+                            acknowledgedBasis,
+                            currentLossFigures
+                          )
+                        ) {
+                          return;
+                        }
+                        confirmAction({
+                          warnFlags: deriveTradeMemoFlags(acknowledgedBasis),
+                        });
+                      }}
+                      disabled={
+                        isConfirmationDisabled ||
+                        wouldExceedSpendLimit ||
+                        hasInsufficientFeeTokens ||
+                        warningNeedsAcknowledgement
+                      }
+                      className="body2 sm:caption !rounded-2xl"
+                    >
+                      <h6>{t("limitOrders.confirm")}</h6>
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -830,7 +1008,7 @@ export function ReviewOrder({
                 </span>
                 <Button
                   mode="primary"
-                  onClick={restart}
+                  onClick={acceptUpdatedQuote}
                   className="body2 w-fit !rounded-2xl"
                 >
                   <h6>{t("limitOrders.accept")}</h6>

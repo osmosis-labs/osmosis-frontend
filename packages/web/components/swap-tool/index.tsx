@@ -1,6 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
+import {
+  InsufficientBalanceForFeeError,
+  TxFeMemoFlags,
+} from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -29,6 +32,7 @@ import {
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
+import { priceImpactLoss } from "~/components/loss-acknowledgement";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import {
   AmountPresetFraction,
@@ -40,6 +44,7 @@ import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   useFeatureFlags,
@@ -166,8 +171,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .abs()
       .gt(new Dec(0.05));
 
-    const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.05)) ?? false;
+    const quotedPriceImpact = swapState.quote?.priceImpactTokenOut;
+
+    // Same constant and same comparison as the acknowledgement gate in the
+    // review modal, so this button label and that checkbox can never disagree
+    // about what counts as high impact — including at the boundary, which the
+    // previous `lt(new Dec(-0.05))` form got wrong by one tick.
+    const showPriceImpactWarning = quotedPriceImpact
+      ? priceImpactLoss(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
+      : false;
 
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
@@ -224,31 +236,34 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
-    const sendSwapTx = useCallback(() => {
-      if (!swapState.inAmountInput.amount) return;
+    const sendSwapTx = useCallback(
+      (opts?: { warnFlags?: TxFeMemoFlags }) => {
+        if (!swapState.inAmountInput.amount) return;
 
-      setIsSendingTx(true);
-      swapState
-        .sendTradeTokenInTx()
-        .then(() => {
-          if (swapState.toAsset && swapState.fromAsset) {
-            onSwapSuccess?.({
-              outTokenDenom: swapState.toAsset.coinMinimalDenom,
-              sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
-            });
-          }
+        setIsSendingTx(true);
+        swapState
+          .sendTradeTokenInTx(opts?.warnFlags)
+          .then(() => {
+            if (swapState.toAsset && swapState.fromAsset) {
+              onSwapSuccess?.({
+                outTokenDenom: swapState.toAsset.coinMinimalDenom,
+                sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
+              });
+            }
 
-          resetSlippage();
-        })
-        .catch((error) => {
-          console.error("swap failed", error);
-        })
-        .finally(() => {
-          setIsSendingTx(false);
-          onRequestModalClose?.();
-          setShowSwapReviewModal(false);
-        });
-    }, [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]);
+            resetSlippage();
+          })
+          .catch((error) => {
+            console.error("swap failed", error);
+          })
+          .finally(() => {
+            setIsSendingTx(false);
+            onRequestModalClose?.();
+            setShowSwapReviewModal(false);
+          });
+      },
+      [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]
+    );
 
     const isSwapToolLoading =
       isWalletLoading ||
@@ -825,6 +840,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           gasError={swapState.networkFeeError}
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
+          priceImpactTokenOut={swapState.quote?.priceImpactTokenOut}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
