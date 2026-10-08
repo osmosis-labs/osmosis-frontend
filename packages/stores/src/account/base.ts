@@ -28,7 +28,6 @@ import {
   KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
@@ -955,28 +954,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    /**
-     * If the message is an authenticator message, force the direct signing.
-     * This is because the authenticator message should be signed with proto for now.
-     */
-
-    type TypeUrl = keyof typeof osmosisAminoConverters;
-    const getTypeUrl = (typeUrl: TypeUrl) => {
-      return typeUrl;
-    };
-
-    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-    // TODO: Copy what's been done there for this message below
-    const doesTxNeedDirectSigning = messages.some(
-      (message) =>
-        message.typeUrl ===
-        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
-    );
-
-    const forceSignDirect = doesTxNeedDirectSigning;
-
-    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      !forceSignDirect
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
       ? this.signAmino({
           wallet,
           signerAddress: wallet.address ?? "",
