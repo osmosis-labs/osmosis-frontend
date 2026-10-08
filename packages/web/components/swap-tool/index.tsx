@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
-import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -39,21 +39,19 @@ import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
-  useSlippageConfig,
   useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useAmountWithSlippage, useSwap } from "~/hooks/use-swap";
 import {
-  useAmountWithSlippage,
-  useDynamicSlippageConfig,
-  useSwap,
-} from "~/hooks/use-swap";
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
@@ -117,11 +115,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [featureFlags.inGivenOut, quoteType]);
 
     const account = accountStore.getWallet(chainId);
-    const slippageConfig = useSlippageConfig({
-      defaultSlippage:
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
-      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
-    });
+    const slippageConfig = useSwapSlippageConfig();
 
     const swapState = useSwap({
       initialFromDenom: initialSendTokenDenom,
@@ -133,11 +127,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
-    useDynamicSlippageConfig({
+    // review swap modal
+    const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
+
+    const swapSlippage = useSwapSlippage({
       slippageConfig,
-      feeError: swapState.networkFeeError,
+      quote: swapState.quote,
       quoteType,
+      feeError: swapState.networkFeeError,
+      isReviewOpen: showSwapReviewModal,
     });
+    const { resetForReview } = swapSlippage;
+    const closeReview = useCallback(() => {
+      setShowSwapReviewModal(false);
+      resetForReview();
+    }, [resetForReview]);
 
     if (
       swapState.fromAsset?.coinMinimalDenom ===
@@ -200,18 +204,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       setBuyOpen(false);
     }, [setBuyOpen, setSellOpen]);
 
-    const resetSlippage = useCallback(() => {
-      const defaultSlippage =
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
-      if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
-      ) {
-        return;
-      }
-      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
-      slippageConfig.setDefaultSlippage(defaultSlippage);
-    }, [quoteType, slippageConfig]);
+    const resetSlippage = swapSlippage.reset;
 
     const { amountWithSlippage, fiatAmountWithSlippage } =
       useAmountWithSlippage({
@@ -219,9 +212,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         slippageConfig,
         quoteType,
       });
-
-    // reivew swap modal
-    const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
     const sendSwapTx = useCallback(() => {
@@ -246,9 +236,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         .finally(() => {
           setIsSendingTx(false);
           onRequestModalClose?.();
-          setShowSwapReviewModal(false);
+          closeReview();
         });
-    }, [swapState, resetSlippage, onSwapSuccess, onRequestModalClose]);
+    }, [
+      swapState,
+      resetSlippage,
+      onSwapSuccess,
+      onRequestModalClose,
+      closeReview,
+    ]);
 
     const isSwapToolLoading =
       isWalletLoading ||
@@ -806,7 +802,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
-          onClose={() => setShowSwapReviewModal(false)}
+          onClose={closeReview}
+          orderType="market"
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
           slippageConfig={slippageConfig}
@@ -825,6 +822,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           gasError={swapState.networkFeeError}
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
+          slippageSource={swapSlippage.source}
+          slippageLiquidityUnknown={swapSlippage.liquidityUnknown}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

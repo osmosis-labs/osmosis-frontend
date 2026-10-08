@@ -31,6 +31,9 @@ export class ObservableSlippageConfig {
   @observable
   protected _manualSlippage: string = "0.5";
 
+  @observable
+  protected _userOverrodeSlippage: boolean = false;
+
   constructor() {
     makeObservable(this);
   }
@@ -81,6 +84,23 @@ export class ObservableSlippageConfig {
 
     this._isManualSlippage = true;
     this._manualSlippage = str;
+  }
+
+  /** True while the slippage is a value the user typed, as opposed to one
+   *  the app chose. Set with markUserOverride() alongside setManualSlippage()
+   *  on user input; cleared when control returns to the app. */
+  get userOverrodeSlippage(): boolean {
+    return this._userOverrodeSlippage;
+  }
+
+  @action
+  markUserOverride() {
+    this._userOverrodeSlippage = true;
+  }
+
+  @action
+  clearUserOverride() {
+    this._userOverrodeSlippage = false;
   }
 
   @computed

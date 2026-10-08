@@ -786,7 +786,10 @@
     "routes": "rutas",
     "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento",
     "extremeDisparityAcknowledgement": "Entiendo que estoy recibiendo un valor significativamente menor del que envío.",
-    "amountTooSmallForSlippage": "Cantidad demasiado pequeña para intercambiar con este deslizamiento. Aumente la cantidad o reduzca el deslizamiento."
+    "amountTooSmallForSlippage": "Cantidad demasiado pequeña para intercambiar con este deslizamiento. Aumente la cantidad o reduzca el deslizamiento.",
+    "slippageAutoAdjustedTitle": "Deslizamiento ajustado automáticamente",
+    "slippageAutoAdjustedBody": "El deslizamiento predeterminado de esta operación se ha aumentado debido al alto impacto en el precio o la baja liquidez.",
+    "routeLiquidityUnknown": "No se pudo verificar la liquidez de esta ruta, así que el deslizamiento se basa solo en el impacto en el precio. Revisa el mínimo a recibir antes de confirmar."
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

@@ -63,6 +63,7 @@ import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
+import { extractSwapRequiredErrorAmounts } from "~/utils/slippage";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -1732,27 +1733,4 @@ export function useDynamicSlippageConfig({
       }
     }
   }, [feeError, slippageConfig, quoteType]);
-}
-
-/** Extracts the numerical values from the swap required error
- *
- * e.g. Error: Fetch error. failed to execute message; message index: 0:
- * Swap requires 498419192699272362737ibc/E47F4E97C534C95B942729E1B25DBDE111EA791411CFF100515050BEA0AC0C6B,
- * which is greater than the amount 497246119581463551214: calculated amount is larger than max amount
- *
- * returns ["498419192699272362737", "497246119581463551214"]
- */
-function extractSwapRequiredErrorAmounts(str: string) {
-  const regex = /^\d+/;
-  const split = str
-    .split(" ")
-    .map((s) => {
-      const stripped = s.replace("(", "").replace(")", "");
-      if (regex.test(stripped)) {
-        return stripped.match(regex)?.[0] ?? undefined;
-      }
-    })
-    .filter(Boolean);
-
-  return [split[1], split[2]];
 }

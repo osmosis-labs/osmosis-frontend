@@ -48,6 +48,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { SlippageSource } from "~/utils/slippage";
 import {
   formatSlippagePercent,
   hasQuoteDriftedBeyondSlippage,
@@ -87,6 +88,12 @@ interface ReviewOrderProps {
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
+  /** Where the submitted slippage came from, when the caller chooses it
+   *  automatically. */
+  slippageSource?: SlippageSource;
+  /** True when an automatic slippage was chosen without knowing the route's
+   *  liquidity. */
+  slippageLiquidityUnknown?: boolean;
 }
 
 export function ReviewOrder({
@@ -117,6 +124,8 @@ export function ReviewOrder({
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
+  slippageSource,
+  slippageLiquidityUnknown = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const [manualSlippage, setManualSlippage] = useState("");
@@ -176,6 +185,11 @@ export function ReviewOrder({
     manualSlippage !== "" && Number(manualSlippage) < LowSlippageWarningPercent;
 
   const isMarketOrder = orderType === "market";
+  const showAutoAdjusted = manualSlippage === "" && slippageSource === "auto";
+  const showLiquidityUnknown =
+    manualSlippage === "" &&
+    slippageLiquidityUnknown &&
+    (slippageSource === "auto" || slippageSource === "default");
   const resolvedQuoteType = quoteType ?? "out-given-in";
 
   // High-loss acknowledgement. Market orders only: a resting limit order is
@@ -248,6 +262,9 @@ export function ReviewOrder({
   const onAfterClose = useCallback(() => {
     setQuoteBaseline(undefined);
     setHasAcknowledgedDisparity(false);
+    // The placeholder shows the submitted slippage, so clearing the typed
+    // text never misrepresents it, whether or not the caller resets.
+    setManualSlippage("");
   }, []);
 
   const handleManualSlippageChange = useCallback(
@@ -257,14 +274,20 @@ export function ReviewOrder({
 
       setManualSlippage(parsed.display);
       if (parsed.display === "") {
-        // Clearing hands control back to the tool's own slippage (its preset,
-        // or one the fee-error path selected), shown as the placeholder.
-        slippageConfig?.setIsManualSlippage(false);
+        // Clearing hands control back to the tool's own slippage, shown as
+        // the placeholder. A caller that sets slippage automatically picks it
+        // up from the cleared override; otherwise fall back to the preset
+        // (or one the fee-error path selected).
+        slippageConfig?.clearUserOverride();
+        if (slippageSource === undefined) {
+          slippageConfig?.setIsManualSlippage(false);
+        }
       } else if (parsed.commit !== undefined) {
+        slippageConfig?.markUserOverride();
         slippageConfig?.setManualSlippage(parsed.commit);
       }
     },
-    [slippageConfig]
+    [slippageConfig, slippageSource]
   );
 
   // Leaving the field with an incomplete value ("1.", "0", "0.") must not
@@ -278,12 +301,16 @@ export function ReviewOrder({
     const value = Number(manualSlippage);
     if (value > 0) {
       setManualSlippage(String(value));
+      slippageConfig?.markUserOverride();
       slippageConfig?.setManualSlippage(String(value));
     } else {
       setManualSlippage("");
-      slippageConfig?.setIsManualSlippage(false);
+      slippageConfig?.clearUserOverride();
+      if (slippageSource === undefined) {
+        slippageConfig?.setIsManualSlippage(false);
+      }
     }
-  }, [manualSlippage, slippageConfig]);
+  }, [manualSlippage, slippageConfig, slippageSource]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -655,7 +682,21 @@ export function ReviewOrder({
                     <RecapRow
                       left={t("swap.settings.slippage")}
                       right={
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          {showAutoAdjusted && (
+                            <GenericDisclaimer
+                              title={t("swap.slippageAutoAdjustedTitle")}
+                              body={t("swap.slippageAutoAdjustedBody")}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                label={t("swap.slippageAutoAdjustedTitle")}
+                                width={16}
+                                height={16}
+                                className="text-ammelia-400"
+                              />
+                            </GenericDisclaimer>
+                          )}
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
@@ -703,6 +744,11 @@ export function ReviewOrder({
                         </div>
                       }
                     />
+                    {showLiquidityUnknown && (
+                      <p className="caption text-ammelia-400">
+                        {t("swap.routeLiquidityUnknown")}
+                      </p>
+                    )}
                     {isManualSlippageTooHigh && (
                       <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                         <Icon
