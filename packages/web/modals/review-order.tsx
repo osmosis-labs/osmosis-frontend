@@ -12,7 +12,6 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -26,6 +25,7 @@ import { oneClickTradingTimeMappings } from "~/components/one-click-trading/scre
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { Button as UIButton } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -48,6 +48,15 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import {
+  formatSlippagePercent,
+  hasQuoteDriftedBeyondSlippage,
+  HighSlippageWarningPercent,
+  LowSlippageWarningPercent,
+  parseSlippageInput,
+  requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
+} from "~/utils/swap-review";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -157,67 +166,124 @@ export function ReviewOrder({
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
+    (!!manualSlippage && Number(manualSlippage) > HighSlippageWarningPercent) ||
     (!manualSlippage &&
       !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
-  const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+      slippageConfig.slippage
+        .toDec()
+        .gt(new Dec(HighSlippageWarningPercent).quo(new Dec(100))));
+  const isManualSlippageTooLow =
+    manualSlippage !== "" && Number(manualSlippage) < LowSlippageWarningPercent;
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  const isMarketOrder = orderType === "market";
+  const resolvedQuoteType = quoteType ?? "out-given-in";
 
-  const [originalValue, setOriginalValue] = useState(initialOutput);
+  // High-loss acknowledgement. Market orders only: a resting limit order is
+  // not filled at the market route's price, so its impact does not apply.
+  const usdNum = (value?: PricePretty) =>
+    value === undefined ? undefined : Number(value.toDec().toString());
+  const isExtremeValueDisparity =
+    isMarketOrder &&
+    requiresValueDisparityAcknowledgement({
+      quoteType: resolvedQuoteType,
+      inputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(fiatAmountWithSlippage)
+          : usdNum(inAmountFiat),
+      minimumOutputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(expectedOutputFiat)
+          : usdNum(fiatAmountWithSlippage),
+      minimumOutputTokenIsZero:
+        resolvedQuoteType === "out-given-in" &&
+        amountWithSlippage !== undefined &&
+        amountWithSlippage.toDec().isZero(),
+    });
+  const [hasAcknowledgedDisparity, setHasAcknowledgedDisparity] =
+    useState(false);
+  // An acknowledgement only covers the disparity it was given for.
+  if (!isExtremeValueDisparity && hasAcknowledgedDisparity) {
+    setHasAcknowledgedDisparity(false);
+  }
 
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      return {
-        diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          setOriginalValue(amountWithSlippage ?? new IntPretty(0));
-        },
-      };
-    },
+  // The transaction scales the slippage bound (exact-in's minimum output,
+  // exact-out's maximum input) to chain units and truncates, so a display
+  // amount that looks nonzero can still serialize to zero, which the chain
+  // rejects. Acknowledging cannot make that transaction valid, so
+  // confirmation is disabled outright. Market orders only: limit orders
+  // serialize differently.
+  const slippageBoundAsset =
+    resolvedQuoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    isMarketOrder &&
+    amountWithSlippage !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero(
+      amountWithSlippage.toDec(),
+      slippageBoundAsset.coinDecimals
+    );
 
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
-    [amountWithSlippage, originalValue, slippageConfig]
-  );
+  // Quote drift is measured from the quote the user last accepted, captured
+  // when the review opens and cleared when it closes (the modal stays mounted
+  // between trades).
+  const [quoteBaseline, setQuoteBaseline] = useState<IntPretty>();
+  if (isOpen && quoteBaseline === undefined && amountWithSlippage) {
+    setQuoteBaseline(amountWithSlippage);
+  }
+  const diffGteSlippage =
+    isMarketOrder &&
+    !!slippageConfig &&
+    quoteBaseline !== undefined &&
+    amountWithSlippage !== undefined &&
+    hasQuoteDriftedBeyondSlippage({
+      baseline: quoteBaseline.toDec(),
+      current: amountWithSlippage.toDec(),
+      slippage: slippageConfig.slippage.toDec(),
+      quoteType: resolvedQuoteType,
+    });
+  const restart = useCallback(() => {
+    setQuoteBaseline(amountWithSlippage);
+  }, [amountWithSlippage]);
+
+  const onAfterClose = useCallback(() => {
+    setQuoteBaseline(undefined);
+    setHasAcknowledgedDisparity(false);
+  }, []);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
-      if (value.length > 3) return;
+      const parsed = parseSlippageInput(value);
+      if (!parsed) return;
 
-      if (value === "") {
-        setManualSlippage("");
-        slippageConfig?.setManualSlippage(
-          slippageConfig?.defaultManualSlippage
-        );
-        return;
+      setManualSlippage(parsed.display);
+      if (parsed.display === "") {
+        // Clearing hands control back to the tool's own slippage (its preset,
+        // or one the fee-error path selected), shown as the placeholder.
+        slippageConfig?.setIsManualSlippage(false);
+      } else if (parsed.commit !== undefined) {
+        slippageConfig?.setManualSlippage(parsed.commit);
       }
-
-      if (!isValidNumericalRawInput(value)) {
-        return;
-      }
-
-      setManualSlippage(value);
-      slippageConfig?.setManualSlippage(new Dec(+value).toString());
     },
     [slippageConfig]
   );
+
+  // Leaving the field with an incomplete value ("1.", "0", "0.") must not
+  // leave the display out of step with the submitted tolerance: complete a
+  // positive value, otherwise clear it.
+  const handleManualSlippageBlur = useCallback(() => {
+    setIsEditingSlippage(false);
+    if (manualSlippage === "") return;
+    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
+
+    const value = Number(manualSlippage);
+    if (value > 0) {
+      setManualSlippage(String(value));
+      slippageConfig?.setManualSlippage(String(value));
+    } else {
+      setManualSlippage("");
+      slippageConfig?.setIsManualSlippage(false);
+    }
+  }, [manualSlippage, slippageConfig]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -288,6 +354,7 @@ export function ReviewOrder({
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
+      onAfterClose={onAfterClose}
       hideCloseButton
       className={
         show1CT && showOneClickTradingSettings
@@ -602,7 +669,11 @@ export function ReviewOrder({
                               inputMode="decimal"
                               minWidth={30}
                               placeholder={
-                                slippageConfig?.defaultManualSlippage + "%"
+                                // The tolerance that will be submitted, not a
+                                // nominal default.
+                                formatSlippagePercent(
+                                  slippageConfig.slippage.toDec()
+                                ) + "%"
                               }
                               className="sm:caption w-fit bg-transparent px-0"
                               inputClassName={classNames(
@@ -613,21 +684,8 @@ export function ReviewOrder({
                                 }
                               )}
                               value={manualSlippage}
-                              onFocus={() => {
-                                slippageConfig?.setIsManualSlippage(true);
-                                setIsEditingSlippage(true);
-                              }}
-                              onBlur={() => {
-                                if (
-                                  isManualSlippageTooHigh &&
-                                  +manualSlippage > 50
-                                ) {
-                                  handleManualSlippageChange(
-                                    (+manualSlippage).toString().split("")[0]
-                                  );
-                                }
-                                setIsEditingSlippage(false);
-                              }}
+                              onFocus={() => setIsEditingSlippage(true)}
+                              onBlur={handleManualSlippageBlur}
                               onChange={(e) => {
                                 handleManualSlippageChange(e.target.value);
                               }}
@@ -794,6 +852,29 @@ export function ReviewOrder({
                   onParamsChange={() => setShowOneClickTradingSettings(true)}
                 />
               )}
+              {isExtremeValueDisparity && (
+                <label
+                  htmlFor="extreme-disparity-ack"
+                  className="mt-3 flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-solid border-rust-500 p-4"
+                >
+                  <Checkbox
+                    id="extreme-disparity-ack"
+                    className="mt-0.5"
+                    checked={hasAcknowledgedDisparity}
+                    onCheckedChange={(checked) =>
+                      setHasAcknowledgedDisparity(checked === true)
+                    }
+                  />
+                  <span className="body2 sm:caption text-rust-400">
+                    {t("swap.extremeDisparityAcknowledgement")}
+                  </span>
+                </label>
+              )}
+              {isSlippageBoundZeroOnChain && (
+                <p className="body2 sm:caption mt-3 text-rust-400">
+                  {t("swap.amountTooSmallForSlippage")}
+                </p>
+              )}
               {!diffGteSlippage && (
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
@@ -804,7 +885,9 @@ export function ReviewOrder({
                     disabled={
                       isConfirmationDisabled ||
                       wouldExceedSpendLimit ||
-                      hasInsufficientFeeTokens
+                      hasInsufficientFeeTokens ||
+                      isSlippageBoundZeroOnChain ||
+                      (isExtremeValueDisparity && !hasAcknowledgedDisparity)
                     }
                     className="body2 sm:caption !rounded-2xl"
                   >
