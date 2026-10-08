@@ -735,7 +735,7 @@
       "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
       "searchPlaceholder": "Doğrulayıcı arayın",
       "button": "Kadroyu Ayarla",
-      "button2": "Kadroyu ve Hisseyi Ayarla",
+      "button2": "Kadroyu ve Hisseyi Ayarla {amount}",
       "noResults": "Sonuç bulunamadı",
       "column": {
         "validator": "Doğrulayıcı",

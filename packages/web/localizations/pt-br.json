@@ -735,7 +735,7 @@
       "description": "Selecione os validadores aos quais você gostaria de delegar. Depois de concluído, continue apostando. Você pode editar seu conjunto de validadores a qualquer momento.",
       "searchPlaceholder": "Procure um validador",
       "button": "Definir Esquadrão",
-      "button2": "Definir esquadrão e aposta",
+      "button2": "Definir esquadrão e aposta {amount}",
       "noResults": "Nenhum resultado encontrado",
       "column": {
         "validator": "Validador",

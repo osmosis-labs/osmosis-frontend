@@ -890,7 +890,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               {isRedelegating
                 ? t("stake.inactiveValidators.redelegate")
                 : action === "stake"
-                  ? t("stake.validatorSquad.button2")
+                  ? t("stake.validatorSquad.button2", {
+                      amount: new CoinPretty(coin.currency, coin.amount)
+                        .trim(true)
+                        .toString(),
+                    })
                   : t("stake.validatorSquad.button")}
             </Button>
           </div>

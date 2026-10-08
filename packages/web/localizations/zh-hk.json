@@ -735,7 +735,7 @@
       "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
       "searchPlaceholder": "搜索驗證器",
       "button": "設置小隊",
-      "button2": "設定小隊和賭注",
+      "button2": "設定小隊和賭注 {amount}",
       "noResults": "未找到結果",
       "column": {
         "validator": "驗證器",

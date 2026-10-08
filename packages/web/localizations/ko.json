@@ -735,7 +735,7 @@
       "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 밸리데이터 세트를 편집할 수 있습니다.",
       "searchPlaceholder": "밸리데이터 검색",
       "button": "스쿼드 설정",
-      "button2": "스쿼드 및 스테이킹 설정",
+      "button2": "스쿼드 및 스테이킹 설정 {amount}",
       "noResults": "검색 결과가 없습니다",
       "column": {
         "validator": "밸리데이터",

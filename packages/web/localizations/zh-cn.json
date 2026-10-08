@@ -735,7 +735,7 @@
       "description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
       "searchPlaceholder": "搜索验证器",
       "button": "设置小队",
-      "button2": "设置小队和赌注",
+      "button2": "设置小队和赌注 {amount}",
       "noResults": "未找到结果",
       "column": {
         "validator": "验证器",

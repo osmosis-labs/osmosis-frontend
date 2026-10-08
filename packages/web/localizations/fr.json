@@ -735,7 +735,7 @@
       "description": "Sélectionnez les validateurs auxquels vous souhaitez déléguer. Une fois terminé, continuez à jalonner. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
       "searchPlaceholder": "Rechercher un validateur",
       "button": "Définir l'équipe",
-      "button2": "Définir l'équipe et l'enjeu",
+      "button2": "Définir l'équipe et l'enjeu {amount}",
       "noResults": "Aucun résultat trouvé",
       "column": {
         "validator": "Validateur",

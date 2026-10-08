@@ -735,7 +735,7 @@
       "description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
       "searchPlaceholder": "Szukaj walidatora",
       "button": "Ustaw skład",
-      "button2": "Ustaw skład i stawkę",
+      "button2": "Ustaw skład i stawkę {amount}",
       "noResults": "Nie znaleziono wyników",
       "column": {
         "validator": "Walidator",

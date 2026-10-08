@@ -735,7 +735,7 @@
       "description": "Selectați validatorii cărora doriți să le delegați. Odată terminat, continuați să mizați. Puteți edita oricând setul de validator.",
       "searchPlaceholder": "Căutați un validator",
       "button": "Set Squad",
-      "button2": "Setați echipa și miza",
+      "button2": "Setați echipa și miza {amount}",
       "noResults": "Nici un rezultat gasit",
       "column": {
         "validator": "Validator",

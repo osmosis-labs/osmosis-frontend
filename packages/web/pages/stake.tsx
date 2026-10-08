@@ -35,6 +35,9 @@ const NO_VALIDATOR_PREFERENCES: { val_oper_address: string; weight: string }[] =
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  // only the stake flow also delegates the entered amount; every other entry
+  // point just edits the squad
+  const [squadModalOpener, setSquadModalOpener] = useState<StakeOrEdit>("edit");
   const [isRedelegating, setIsRedelegating] = useState(false);
   const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
@@ -157,11 +160,20 @@ export const Staking: React.FC = observer(() => {
     return validatorSetPreferenceMap;
   }, [userValidatorPreferences]);
 
-  const validatorSquadModalAction: StakeOrEdit = Boolean(
-    Number(stakeTabAmountConfig.amount)
-  )
-    ? "stake"
-    : "edit";
+  const validatorSquadModalAction: StakeOrEdit =
+    squadModalOpener === "stake" && Boolean(Number(stakeTabAmountConfig.amount))
+      ? "stake"
+      : "edit";
+
+  const openSquadModalToStake = useCallback(() => {
+    setSquadModalOpener("stake");
+    setShowValidatorModal(true);
+  }, []);
+
+  const openSquadModalToEdit = useCallback(() => {
+    setSquadModalOpener("edit");
+    setShowValidatorModal(true);
+  }, []);
 
   const stakeCall = useCallback(() => {
     if (account?.address && account?.osmosis && coin?.amount) {
@@ -201,7 +213,7 @@ export const Staking: React.FC = observer(() => {
         //user has not saved keepValidators in local storage
         setShowValidatorNextStepModal(true);
       } else {
-        setShowValidatorModal(true);
+        openSquadModalToStake();
       }
     } else {
       unstakeCall();
@@ -214,6 +226,7 @@ export const Staking: React.FC = observer(() => {
     isNewUser,
     stakeCall,
     unstakeCall,
+    openSquadModalToStake,
   ]);
 
   const { stakingAPR, isLoadingApr } = useGetApr();
@@ -227,8 +240,8 @@ export const Staking: React.FC = observer(() => {
 
   const openRedelegate = useCallback(() => {
     setIsRedelegating(true);
-    setShowValidatorModal(true);
-  }, []);
+    openSquadModalToEdit();
+  }, [openSquadModalToEdit]);
 
   // New stake follows the stored preference, or the existing delegations when
   // there is none, so either can send fresh OSMO to a validator earning nothing.
@@ -361,7 +374,7 @@ export const Staking: React.FC = observer(() => {
                   onRedelegate={
                     inactiveDelegations.length
                       ? openRedelegate
-                      : () => setShowValidatorModal(true)
+                      : openSquadModalToEdit
                   }
                 />
               )
@@ -375,13 +388,13 @@ export const Staking: React.FC = observer(() => {
             </div>
           ) : showStakeLearnMore ? (
             <StakeLearnMore
-              setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowValidatorModal={openSquadModalToEdit}
               isWalletConnected={isWalletConnected}
             />
           ) : (
             <StakeDashboard
               hasInsufficientBalance={hasInsufficientBalance}
-              setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowValidatorModal={openSquadModalToEdit}
               setShowStakeLearnMoreModal={() =>
                 setShowStakeLearnMoreModal(true)
               }
@@ -418,14 +431,14 @@ export const Staking: React.FC = observer(() => {
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
-        setShowValidatorModal={() => setShowValidatorModal(true)}
+        setShowValidatorModal={openSquadModalToStake}
         stakeCall={stakeCall}
       />
       <StakeLearnMoreModal
         isOpen={showStakeLearnMoreModal}
         onRequestClose={() => setShowStakeLearnMoreModal(false)}
         isWalletConnected={Boolean(isWalletConnected)}
-        setShowValidatorModal={() => setShowValidatorModal(true)}
+        setShowValidatorModal={openSquadModalToEdit}
       />
     </main>
   );

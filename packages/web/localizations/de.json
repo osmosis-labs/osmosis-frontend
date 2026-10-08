@@ -735,7 +735,7 @@
       "description": "Wählen Sie die Validatoren aus, an die Sie delegieren möchten. Wenn Sie fertig sind, setzen Sie den Einsatz fort. Sie können Ihren Validatorsatz jederzeit bearbeiten.",
       "searchPlaceholder": "Suchen Sie nach einem Validator",
       "button": "Trupp festlegen",
-      "button2": "Legen Sie Kader und Einsatz fest",
+      "button2": "Legen Sie Kader und Einsatz fest {amount}",
       "noResults": "keine Ergebnisse gefunden",
       "column": {
         "validator": "Validator",
