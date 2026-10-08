@@ -19,7 +19,7 @@ import {
   useRole,
 } from "@floating-ui/react";
 import classNames from "classnames";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useCallback, useState } from "react";
 
 import { TooltipProps } from "~/components/tooltip/types";
 import { CustomClasses } from "~/components/types";
@@ -57,6 +57,7 @@ export const Tooltip = ({
   const [isOpen, setIsOpen] = useState(false);
   const [arrowElement, setArrowElement] = useState<SVGSVGElement | null>(null);
   const [pointerType, setPointerType] = useState<string>();
+  const [nested, setNested] = useState(false);
   const open = !disabled && (visible ?? isOpen);
   const enabled = !disabled && !skipTrigger && visible === undefined;
   const triggers = trigger.split(/\s+/);
@@ -106,15 +107,27 @@ export const Tooltip = ({
     useRole(context, { role: interactive ? "dialog" : "tooltip" }),
   ]);
 
+  // Inside a button or link, the outer control already owns focus and the button role.
+  const setReferenceElement = useCallback(
+    (element: HTMLDivElement | null) => {
+      setReference(element);
+      if (element) {
+        setNested(!!element.parentElement?.closest("button, a, [role=button]"));
+      }
+    },
+    [setReference]
+  );
+  const ownsFocus = enabled && clicks && !nested;
+
   return (
     <>
       <div
-        ref={setReference}
+        ref={setReferenceElement}
         className={classNames("flex cursor-pointer align-middle", className)}
         {...getReferenceProps({
           // Focus on focusable children bubbles here; only click triggers need their own tab stop.
-          tabIndex: enabled && clicks ? 0 : undefined,
-          role: clicks ? "button" : undefined,
+          tabIndex: ownsFocus ? 0 : undefined,
+          role: ownsFocus ? "button" : undefined,
           onPointerDown: (e) => setPointerType(e.pointerType),
           onClick: enablePropagation ? undefined : (e) => e.stopPropagation(),
         })}
