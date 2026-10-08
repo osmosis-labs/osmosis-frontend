@@ -211,6 +211,26 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.fiatValue,
   ]);
 
+  /**
+   * Display-only fiat value of the payment at the current spot price, so the
+   * review shows what an ask gives up when its limit is below market.
+   * Fees, the minimum order check and the expected output still use `paymentFiatValue`.
+   */
+  const paymentFiatValueAtMarket = useMemo(() => {
+    if (isMarket || orderDirection !== "ask") return paymentFiatValue;
+    return mulPrice(
+      paymentTokenValue,
+      new PricePretty(DEFAULT_VS_CURRENCY, priceState.spotPrice),
+      DEFAULT_VS_CURRENCY
+    );
+  }, [
+    isMarket,
+    orderDirection,
+    paymentFiatValue,
+    paymentTokenValue,
+    priceState.spotPrice,
+  ]);
+
   const feeUsdValue = useMemo(() => {
     return (
       paymentFiatValue?.mul(makerFee) ??
@@ -536,6 +556,8 @@ export const usePlaceLimit = ({
     if (isMarket) {
       return marketState.tokenOutFiatValue;
     }
+    // A bid's received base asset is valued at spot rather than the limit
+    // price, so the review shows the loss on a bid above market.
     return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
@@ -544,12 +566,12 @@ export const usePlaceLimit = ({
         )
       : new PricePretty(
           DEFAULT_VS_CURRENCY,
-          priceState.price?.mul(
+          priceState.spotPrice?.mul(
             expectedTokenAmountOut?.toDec() ?? new Dec(0)
           ) ?? new Dec(0)
         );
   }, [
-    priceState.price,
+    priceState.spotPrice,
     expectedTokenAmountOut,
     orderDirection,
     quoteAssetPrice,
@@ -676,6 +698,7 @@ export const usePlaceLimit = ({
     isBalancesFetched,
     insufficientFunds,
     paymentFiatValue,
+    paymentFiatValueAtMarket,
     paymentTokenValue,
     makerFee,
     isMakerFeeLoading,
