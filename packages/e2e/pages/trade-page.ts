@@ -274,6 +274,36 @@ export class TradePage extends BasePage {
   }
 
   /**
+   * If the review-trade dialog gates Confirm behind the high-loss checkbox
+   * (slippage tolerance >= 2%, price impact >= 5%, or a limit priced past
+   * market), tick it. Ungated trades render no checkbox and pass straight
+   * through. Must run after disable1CTIfNeeded and setSlippageTolerance: the
+   * former clicks any checked button in the dialog, and raising slippage
+   * re-arms (unticks) the box.
+   */
+  async acknowledgeLossIfNeeded() {
+    // Located via its sibling label: in the CI browser the checkbox exposes no
+    // accessible name, so getByRole's name filter never matches it.
+    const lossCheckbox = this.page.locator(
+      '//div[@role="dialog"]//label[contains(., "I understand this trade may lose")]/../button[@role="checkbox"]'
+    );
+    // Wait for the dialog to settle into one of its two states rather than
+    // probing for the checkbox on a fixed timer: a slow render would otherwise
+    // read as "not gated" and leave Confirm disabled.
+    const enabledConfirm = this.page.locator(
+      '//div[@class]/button[.="Confirm" and not(@disabled)]'
+    );
+    await lossCheckbox
+      .or(enabledConfirm)
+      .first()
+      .waitFor({ state: "visible", timeout: 15000 });
+    if (await lossCheckbox.isVisible()) {
+      await lossCheckbox.check({ timeout: 3000 });
+      console.log("Ticked the high-loss acknowledgement checkbox.");
+    }
+  }
+
+  /**
    * Lightweight Keplr approval helper used by the *AndApprove methods.
    * Delegates to the shared helper which handles both headed and headless modes.
    */
@@ -294,6 +324,7 @@ export class TradePage extends BasePage {
     await this.swapBtn.click({ timeout: 4000 });
     await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
 
     const msgContentAmount = await this.approveInKeplrAndGetMsg(context);
@@ -472,7 +503,7 @@ export class TradePage extends BasePage {
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]'
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400" or @class="text-osmoverse-100" or @class="text-rust-400"]'
     );
     return await priceInpactSpan.textContent();
   }
@@ -564,6 +595,7 @@ export class TradePage extends BasePage {
         // sequence mismatch) instead of timing out on it.
         const confirmation = this.startTxConfirmation(40_000);
         confirmation.catch(() => {});
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -715,6 +747,7 @@ export class TradePage extends BasePage {
         // sequence mismatch) instead of timing out on it.
         const confirmation = this.startTxConfirmation(40_000);
         confirmation.catch(() => {});
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -1005,6 +1038,7 @@ export class TradePage extends BasePage {
     }
 
     const confirmation = this.startTxConfirmation();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
@@ -1044,6 +1078,7 @@ export class TradePage extends BasePage {
     }
 
     const confirmation = this.startTxConfirmation();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
@@ -1123,6 +1158,7 @@ export class TradePage extends BasePage {
         }
 
         const confirmation = this.startTxConfirmation();
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
 

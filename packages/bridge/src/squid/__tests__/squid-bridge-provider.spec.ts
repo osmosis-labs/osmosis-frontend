@@ -104,6 +104,47 @@ describe("SquidBridgeProvider", () => {
     );
   });
 
+  // Squid reports a loss as a positive percentage (a live 50k USDC → ARB quote
+  // returned "0.8" with the USD output ~0.5% below the input); the interface
+  // wants a fraction, negative for a loss.
+  it("reports Squid's positive-loss percentage as a negative fraction", async () => {
+    server.use(
+      httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
+        HttpResponse.json({
+          ...ETHtoAVAX_EthereumToAvalanche_Route,
+          route: {
+            ...ETHtoAVAX_EthereumToAvalanche_Route.route,
+            estimate: {
+              ...ETHtoAVAX_EthereumToAvalanche_Route.route.estimate,
+              aggregatePriceImpact: "0.8",
+            },
+          },
+        })
+      )
+    );
+
+    const quote = await provider.getQuote({
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        decimals: 18,
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        decimals: 18,
+      },
+      fromAmount: "1000000000000000",
+      fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      toAddress: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      slippage: 1,
+    });
+
+    expect(quote.expectedOutput.priceImpact).toBe("-0.008000000000000000");
+  });
+
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
       httpMock.post("https://v2.api.squidrouter.com/v2/route", () =>
