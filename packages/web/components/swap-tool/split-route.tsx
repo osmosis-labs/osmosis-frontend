@@ -1,5 +1,5 @@
+import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
-import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -90,16 +90,10 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const router = useRouter();
 
   const { t } = useTranslation();
-  /** Share same tippy instance to handle animation */
-  const [source, target] = useSingleton();
 
   return (
-    <>
-      <Tooltip
-        singleton={source}
-        moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
-        content=""
-      />
+    // Only one pool tooltip is open at a time while hovering across the route.
+    <FloatingDelayGroup delay={0}>
       <div className="absolute flex w-full justify-evenly">
         {pools.map(
           (
@@ -115,7 +109,6 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           ) => (
             <Tooltip
               key={`${id}${index}`}
-              singleton={target}
               content={
                 <div className="space-y-3">
                   {inCurrency && outCurrency && (
@@ -226,7 +219,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           )
         )}
       </div>
-    </>
+    </FloatingDelayGroup>
   );
 });
 

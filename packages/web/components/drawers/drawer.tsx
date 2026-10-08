@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import FocusTrap from "focus-trap-react";
+import { FocusTrap } from "focus-trap-react";
 import {
   Fragment,
   FunctionComponent,
