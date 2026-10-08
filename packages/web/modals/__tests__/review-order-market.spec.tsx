@@ -402,4 +402,56 @@ describe("ReviewOrder market safety rails", () => {
       expect(props.slippageConfig!.manualSlippageStr).toBe("99.9");
     });
   });
+
+  describe("automatic slippage indicators", () => {
+    it("flags an auto-adjusted slippage", () => {
+      renderReview(makeProps({ slippageSource: "auto" }));
+      expect(screen.getByText("Slippage auto-adjusted")).toBeInTheDocument();
+    });
+
+    it("does not flag a typed, fee-error or default slippage", () => {
+      for (const slippageSource of ["user", "fee-error", "default"] as const) {
+        const { unmount } = renderReview(makeProps({ slippageSource }));
+        expect(
+          screen.queryByText("Slippage auto-adjusted")
+        ).not.toBeInTheDocument();
+        unmount();
+      }
+    });
+
+    it("hides the auto-adjusted flag while the user has typed a value", () => {
+      renderReview(makeProps({ slippageSource: "auto" }));
+      fireEvent.change(screen.getByPlaceholderText(/%$/), {
+        target: { value: "2" },
+      });
+      expect(
+        screen.queryByText("Slippage auto-adjusted")
+      ).not.toBeInTheDocument();
+    });
+
+    it("warns when route liquidity could not be verified, without blocking", () => {
+      renderReview(
+        makeProps({ slippageSource: "default", slippageLiquidityUnknown: true })
+      );
+      expect(
+        screen.getByText(/couldn't verify this route's liquidity/i)
+      ).toBeInTheDocument();
+      expect(confirmButton()).toBeEnabled();
+    });
+
+    it("marks a typed value as the user's, and clearing hands it back", () => {
+      const props = makeProps({ slippageSource: "auto" });
+      renderReview(props);
+      const input = screen.getByPlaceholderText(/%$/);
+
+      fireEvent.change(input, { target: { value: "2" } });
+      expect(props.slippageConfig!.userOverrodeSlippage).toBe(true);
+
+      fireEvent.change(input, { target: { value: "" } });
+      expect(props.slippageConfig!.userOverrodeSlippage).toBe(false);
+      // An automatic caller re-applies its own value; dropping to the preset
+      // here would briefly submit 0.5%.
+      expect(props.slippageConfig!.isManualSlippage).toBe(true);
+    });
+  });
 });

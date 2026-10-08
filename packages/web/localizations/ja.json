@@ -786,7 +786,10 @@
     "routes": "ルート",
     "slippageOverBalance": "スリッページをカバーするための資金が不足している",
     "extremeDisparityAcknowledgement": "送信する価値より大幅に少ない価値を受け取ることを理解しています。",
-    "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。"
+    "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。",
+    "slippageAutoAdjustedTitle": "スリッページが自動調整されました",
+    "slippageAutoAdjustedBody": "価格への影響が大きい、または流動性が低いため、この取引のデフォルトのスリッページが引き上げられました。",
+    "routeLiquidityUnknown": "このルートの流動性を確認できませんでした。確定する前に最低受取額をご確認ください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
