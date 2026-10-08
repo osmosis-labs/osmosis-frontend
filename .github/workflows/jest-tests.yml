@@ -45,3 +45,7 @@ jobs:
 
       - name: Run ${{ matrix.package }} tests
         run: corepack yarn test --filter=@osmosis-labs/${{ matrix.package }}
+        # web's test script runs generate, which queries the GitHub API for the
+        # latest assetlists commit; the token avoids the shared unauthenticated rate limit.
+        env:
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
