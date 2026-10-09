@@ -1,4 +1,3 @@
-import { BondStatus } from "@osmosis-labs/types";
 import { Int } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
@@ -60,26 +59,22 @@ export function useInactiveDelegations({
 export function useStakeToEnterActiveSet(): (
   validatorTokens: Int
 ) => Int | undefined {
-  const { chainStore, queriesStore } = useStore();
-  const cosmosQueries = queriesStore.get(chainStore.osmosis.chainId).cosmos;
-  const bondedQuery = cosmosQueries.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
-  const { maxValidators } = cosmosQueries.queryStakingParams;
+  const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({
+    status: "Bonded",
+  });
+  const { data: stakingParams } = api.edge.staking.getStakingParams.useQuery();
 
-  const isLoaded =
-    Boolean(bondedQuery.response) &&
-    Boolean(cosmosQueries.queryStakingParams.response);
-  const { validators } = bondedQuery;
+  const maxValidators = stakingParams?.maxValidators;
+  const isLoaded = Boolean(bondedValidators) && maxValidators !== undefined;
 
   const bondedTokens = useMemo(
-    () => validators.map(({ tokens }) => new Int(tokens)),
-    [validators]
+    () => (bondedValidators ?? []).map(({ tokens }) => new Int(tokens)),
+    [bondedValidators]
   );
 
   return useCallback(
     (validatorTokens: Int) =>
-      isLoaded
+      isLoaded && maxValidators !== undefined
         ? getStakeToEnterActiveSet(validatorTokens, bondedTokens, maxValidators)
         : undefined,
     [isLoaded, bondedTokens, maxValidators]
