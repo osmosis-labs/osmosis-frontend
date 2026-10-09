@@ -125,8 +125,12 @@ const AddConcLiqView: FunctionComponent<
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
+  // APR and unstaking duration still come from the MobX detail store; only
+  // the superfluid membership check has a tRPC route.
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
+  const { data: superfluidPoolIds } =
+    api.edge.pools.getSuperfluidPoolIds.useQuery();
 
   const { yRange, xRange, depthChartData } = chartConfig;
 
@@ -295,7 +299,7 @@ const AddConcLiqView: FunctionComponent<
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
-          {superfluidPoolDetail.isSuperfluid && (
+          {superfluidPoolIds?.includes(poolId) && (
             <div className="flex gap-3">
               <Checkbox
                 id="superfluid-stake"
