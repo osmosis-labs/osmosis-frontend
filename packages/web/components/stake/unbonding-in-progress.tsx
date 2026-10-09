@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import React from "react";
 
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 
 export const UnbondingInProgress: React.FC<{
   unbondings: {
@@ -12,11 +12,10 @@ export const UnbondingInProgress: React.FC<{
   }[];
 }> = ({ unbondings }) => {
   const { t } = useTranslation();
-  const { priceStore } = useStore();
 
   function formatUnbondings(
     unbondings: { completionTime: string; balance: CoinPretty }[]
-  ): { amountOsmo: string; amountUSD: string; remainingTime: string }[] {
+  ): { amountOsmo: string; balance: CoinPretty; remainingTime: string }[] {
     const currentDate = new Date();
 
     return (
@@ -36,8 +35,7 @@ export const UnbondingInProgress: React.FC<{
           const prettifiedAmount = unbonding.balance;
           return {
             amountOsmo: prettifiedAmount.trim(true).toString(),
-            amountUSD:
-              priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
+            balance: prettifiedAmount,
             remainingTime: timeDiff.humanize(),
           };
         })
@@ -61,10 +59,12 @@ export const UnbondingInProgress: React.FC<{
 
 const UnbondRow: React.FC<{
   amountOsmo: string;
-  amountUSD: string;
+  balance: CoinPretty;
   remainingTime: string;
-}> = ({ amountOsmo, amountUSD, remainingTime }) => {
+}> = ({ amountOsmo, balance, remainingTime }) => {
   const { t } = useTranslation();
+  const { fiatValue } = useCoinFiatValue(balance);
+  const amountUSD = fiatValue?.toString() || "";
   return (
     <div className="flex justify-between rounded-3xl bg-osmoverse-850 px-10 py-8">
       <div className="flex flex-col gap-3">
