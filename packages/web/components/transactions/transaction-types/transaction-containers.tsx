@@ -15,8 +15,8 @@ export const SmallTransactionContainer = ({
 }: {
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
-  leftComponent: JSX.Element | null;
-  rightComponent: JSX.Element | null;
+  leftComponent: React.JSX.Element | null;
+  rightComponent: React.JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
 }) => (
@@ -62,7 +62,7 @@ export const LargeTransactionContainer = ({
   iconId: SpriteIconId;
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
-  rightComponent: JSX.Element | null;
+  rightComponent: React.JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
   hash?: string;
