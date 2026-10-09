@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
+    "inactiveValidators": {
+      "title": "Validatori inactivi detectați",
+      "squadDescription": "Acești validatori au ieșit din setul activ și nu mai câștigă recompense. Redelegă către validatori activi pentru a câștiga din nou. Redelegarea este instantanee, fără perioadă de deblocare.",
+      "statusInactive": "În afara setului activ",
+      "statusInactiveShortfall": "Inactiv: lipsesc ~{amount} pentru setul activ",
+      "statusJailed": "Încarcerat: fără recompense",
+      "redelegate": "Redelegă",
+      "stakeWarning": "Echipa ta de staking include validatori inactivi. O parte din orice stake nou ar ajunge la ei și nu ar câștiga nimic.",
+      "editSquad": "Editează echipa de staking",
+      "redelegateDescription": "Selectează validatorii către care să redelegi {amount}. Suma se împarte în mod egal; restul stake-ului tău rămâne neschimbat.",
+      "topThirdHidden": "Cei mai mari validatori, care împreună dețin o treime din tot stake-ul, sunt ascunși implicit pentru a ajuta la menținerea descentralizării Osmosis.",
+      "topThirdShown": "Aceștia sunt cei mai mari validatori, care împreună dețin o treime din tot stake-ul. Alegerea unor validatori mai mici ajută la menținerea descentralizării Osmosis.",
+      "alertDescription": "Unii dintre validatorii tăi au ieșit din setul activ, așa că OSMO delegat la ei nu câștigă recompense. Redelegă din pagina Stake pentru a câștiga din nou.",
+      "dismiss": "Închide",
+      "goToStake": "Mergi la Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Ce este miza?",
@@ -720,7 +735,7 @@
       "description": "Selectați validatorii cărora doriți să le delegați. Odată terminat, continuați să mizați. Puteți edita oricând setul de validator.",
       "searchPlaceholder": "Căutați un validator",
       "button": "Set Squad",
-      "button2": "Setați echipa și miza",
+      "button2": "Setați echipa și miza {amount}",
       "noResults": "Nici un rezultat gasit",
       "column": {
         "validator": "Validator",

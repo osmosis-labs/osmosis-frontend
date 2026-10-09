@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
     "estimatedEarningsTooltip": "这些收益是根据当前质押年利率计算的，可能会发生变化。",
     "collectRewardsTooltipDisabled": "您的奖励太少，无法领取，请在您的无人认领余额达到{collectRewardsMinimumOsmo} OSMO 的最低阈值后重试。",
-    "isVotingPowerTooHighTooltip": "这是具有高投票权的前 10 名验证者。考虑选择不同的验证器来帮助促进去中心化。",
+    "inactiveValidators": {
+      "title": "检测到非活跃验证者",
+      "squadDescription": "这些验证者已离开活跃集，不再获得奖励。重新委托给活跃验证者即可重新获得奖励。重新委托即时生效，无需解绑期。",
+      "statusInactive": "不在活跃集中",
+      "statusInactiveShortfall": "非活跃：距活跃集还差约 {amount}",
+      "statusJailed": "已监禁：无奖励",
+      "redelegate": "重新委托",
+      "stakeWarning": "您的质押小队包含非活跃验证者。任何新质押的一部分将流向他们，没有任何收益。",
+      "editSquad": "编辑质押小队",
+      "redelegateDescription": "选择要将 {amount} 重新委托到的验证者。金额将在他们之间平均分配；您的其余质押保持不变。",
+      "topThirdHidden": "合计持有全部质押三分之一的最大验证者默认隐藏，以帮助保持 Osmosis 的去中心化。",
+      "topThirdShown": "这些是合计持有全部质押三分之一的最大验证者。选择规模较小的验证者有助于保持 Osmosis 的去中心化。",
+      "alertDescription": "您的部分验证者已离开活跃集，因此质押在他们那里的 OSMO 没有获得奖励。请在质押页面重新委托，以重新获得奖励。",
+      "dismiss": "关闭",
+      "goToStake": "前往质押"
+    },
     "learnMore": {
       "step1": {
         "title": "什么是质押？",
@@ -720,7 +735,7 @@
       "description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
       "searchPlaceholder": "搜索验证器",
       "button": "设置小队",
-      "button2": "设置小队和赌注",
+      "button2": "设置小队和赌注 {amount}",
       "noResults": "未找到结果",
       "column": {
         "validator": "验证器",

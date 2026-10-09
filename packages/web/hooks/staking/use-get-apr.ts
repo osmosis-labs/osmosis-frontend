@@ -2,18 +2,18 @@ import { Dec } from "@osmosis-labs/unit";
 
 import { api } from "~/utils/trpc";
 
-const getWeekDateRange = () => {
-  // Numia APY rate calculated on a 7 day rolling average
-  // end date is current day, start date is 7 days beforehand
+const getAprDateRange = () => {
+  // average Numia's daily APR over the last 30 days
+  // end date is current day, start date is 30 days beforehand
   const currentDate = new Date();
   const endDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
-  currentDate.setDate(currentDate.getDate() - 7); // Set to 7 days before
+  currentDate.setDate(currentDate.getDate() - 30); // Set to 30 days before
   const startDate = currentDate.toISOString().split("T")[0]; // Format as 'YYYY-MM-DD'
   return { startDate, endDate };
 };
 
 export function useGetApr() {
-  const { startDate, endDate } = getWeekDateRange();
+  const { startDate, endDate } = getAprDateRange();
 
   const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
     startDate,

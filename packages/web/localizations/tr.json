@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
     "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
-    "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
+    "inactiveValidators": {
+      "title": "Pasif doğrulayıcılar tespit edildi",
+      "squadDescription": "Bu doğrulayıcılar aktif setten çıktı ve artık ödül kazanmıyor. Yeniden kazanmaya başlamak için aktif doğrulayıcılara yeniden delege edin. Yeniden delegasyon anında gerçekleşir, kilit açma süresi yoktur.",
+      "statusInactive": "Aktif setin dışında",
+      "statusInactiveShortfall": "Pasif: aktif sete ~{amount} eksik",
+      "statusJailed": "Hapiste: ödül kazanmıyor",
+      "redelegate": "Yeniden delege et",
+      "stakeWarning": "Stake ekibiniz pasif doğrulayıcılar içeriyor. Yeni stake'in bir kısmı onlara gider ve hiçbir şey kazanmaz.",
+      "editSquad": "Stake ekibini düzenle",
+      "redelegateDescription": "{amount} miktarını yeniden delege edeceğiniz doğrulayıcıları seçin. Miktar aralarında eşit bölünür; stake'inizin geri kalanı değişmez.",
+      "topThirdHidden": "Tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılar, Osmosis'in merkeziyetsiz kalmasına yardımcı olmak için varsayılan olarak gizlenir.",
+      "topThirdShown": "Bunlar, tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılardır. Daha küçük doğrulayıcıları seçmek Osmosis'in merkeziyetsiz kalmasına yardımcı olur.",
+      "alertDescription": "Bazı doğrulayıcılarınız aktif setten çıktı, bu yüzden onlara stake edilen OSMO ödül kazanmıyor. Yeniden kazanmaya başlamak için Stake sayfasından yeniden delege edin.",
+      "dismiss": "Kapat",
+      "goToStake": "Stake'e git"
+    },
     "learnMore": {
       "step1": {
         "title": "Staking nedir?",
@@ -720,7 +735,7 @@
       "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
       "searchPlaceholder": "Doğrulayıcı arayın",
       "button": "Kadroyu Ayarla",
-      "button2": "Kadroyu ve Hisseyi Ayarla",
+      "button2": "Kadroyu ve Hisseyi Ayarla {amount}",
       "noResults": "Sonuç bulunamadı",
       "column": {
         "validator": "Doğrulayıcı",

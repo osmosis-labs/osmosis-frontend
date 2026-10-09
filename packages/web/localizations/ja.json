@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "ロックされたトークンにより、ブロックチェーンの安定性が向上します。トークンのステークを解除すると、指定された解除期間後にトークンが利用可能になります。",
     "estimatedEarningsTooltip": "これらの収益は現在のステーキング APR に基づいて計算されますが、変更される可能性があります。",
     "collectRewardsTooltipDisabled": "報酬が少なすぎるため収集できません。未請求の残高{collectRewardsMinimumOsmo} OSMO の最小しきい値に達してからもう一度お試しください。",
-    "isVotingPowerTooHighTooltip": "これは、高い投票力を持つトップ 10 のバリデーターです。分散化を促進するために、別のバリデータを選択することを検討してください。",
+    "inactiveValidators": {
+      "title": "非アクティブなバリデーターを検出",
+      "squadDescription": "これらのバリデーターはアクティブセットから外れ、報酬を得られなくなりました。アクティブなバリデーターに再委任すると再び報酬を得られます。再委任は即時で、アンボンディング期間はありません。",
+      "statusInactive": "アクティブセット外",
+      "statusInactiveShortfall": "非アクティブ：アクティブセットまで約{amount}不足",
+      "statusJailed": "ジェイル：報酬なし",
+      "redelegate": "再委任",
+      "stakeWarning": "ステークスクワッドに非アクティブなバリデーターが含まれています。新しいステークの一部がそちらに送られ、報酬を得られません。",
+      "editSquad": "ステークスクワッドを編集",
+      "redelegateDescription": "{amount}の再委任先のバリデーターを選択してください。均等に分配され、残りのステークは変わりません。",
+      "topThirdHidden": "Osmosisの分散化を保つため、全ステークの3分の1を合わせて占める最大級のバリデーターはデフォルトで非表示になっています。",
+      "topThirdShown": "これらは全ステークの3分の1を合わせて占める最大級のバリデーターです。小規模なバリデーターを選ぶことでOsmosisの分散化に貢献できます。",
+      "alertDescription": "一部のバリデーターがアクティブセットから外れたため、委任中のOSMOは報酬を得ていません。ステークページから再委任すると、再び報酬を得られます。",
+      "dismiss": "閉じる",
+      "goToStake": "ステークへ"
+    },
     "learnMore": {
       "step1": {
         "title": "ステーキングとは何ですか?",
@@ -720,7 +735,7 @@
       "description": "委任するバリデーターを選択します。完了したら、杭打ちを続けます。バリデータ セットはいつでも編集できます。",
       "searchPlaceholder": "バリデーターを検索する",
       "button": "分隊を設定する",
-      "button2": "分隊とステークを設定する",
+      "button2": "分隊とステークを設定する {amount}",
       "noResults": "結果が見つかりません",
       "column": {
         "validator": "バリデーター",

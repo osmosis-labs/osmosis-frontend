@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "락업된 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
-    "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
+    "inactiveValidators": {
+      "title": "비활성 검증인 감지됨",
+      "squadDescription": "이 검증인들은 활성 세트에서 빠져 더 이상 보상을 받지 못합니다. 활성 검증인에게 재위임하면 다시 보상을 받을 수 있습니다. 재위임은 즉시 적용되며 언본딩 기간이 없습니다.",
+      "statusInactive": "활성 세트 밖",
+      "statusInactiveShortfall": "비활성: 활성 세트까지 약 {amount} 부족",
+      "statusJailed": "감옥: 보상 없음",
+      "redelegate": "재위임",
+      "stakeWarning": "스테이킹 스쿼드에 비활성 검증인이 포함되어 있습니다. 새로 스테이킹하는 금액의 일부가 이들에게 가서 보상을 받지 못합니다.",
+      "editSquad": "스테이킹 스쿼드 편집",
+      "redelegateDescription": "{amount}을(를) 재위임할 검증인을 선택하세요. 균등하게 나뉘며, 나머지 스테이킹은 그대로 유지됩니다.",
+      "topThirdHidden": "Osmosis의 탈중앙화를 돕기 위해, 합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들은 기본적으로 숨겨져 있습니다.",
+      "topThirdShown": "합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들입니다. 더 작은 검증인을 선택하면 Osmosis의 탈중앙화에 도움이 됩니다.",
+      "alertDescription": "일부 검증인이 활성 세트에서 빠져서, 이들에게 스테이킹된 OSMO는 보상을 받지 못하고 있습니다. 스테이킹 페이지에서 재위임하면 다시 보상을 받을 수 있습니다.",
+      "dismiss": "닫기",
+      "goToStake": "스테이킹으로 이동"
+    },
     "learnMore": {
       "step1": {
         "title": "스테이킹이란 무엇인가요?",
@@ -720,7 +735,7 @@
       "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 밸리데이터 세트를 편집할 수 있습니다.",
       "searchPlaceholder": "밸리데이터 검색",
       "button": "스쿼드 설정",
-      "button2": "스쿼드 및 스테이킹 설정",
+      "button2": "스쿼드 및 스테이킹 설정 {amount}",
       "noResults": "검색 결과가 없습니다",
       "column": {
         "validator": "밸리데이터",

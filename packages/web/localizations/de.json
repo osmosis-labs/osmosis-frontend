@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Gesperrte Token erhöhen die Stabilität der Blockchain. Wenn Sie den Einsatz Ihrer Token aufheben, stehen diese nach dem angegebenen Entbindungszeitraum zur Verfügung.",
     "estimatedEarningsTooltip": "Diese Einnahmen werden auf der Grundlage des aktuellen effektiven Jahreszinses berechnet, der sich ändern kann.",
     "collectRewardsTooltipDisabled": "Ihre Prämien sind zu niedrig zum Sammeln. Bitte versuchen Sie es erneut, sobald Ihr nicht beanspruchtes Guthaben den Mindestschwellenwert von {collectRewardsMinimumOsmo} OSMO erreicht hat.",
-    "isVotingPowerTooHighTooltip": "Dies ist ein Top-10-Validator mit hoher Stimmkraft. Erwägen Sie die Auswahl eines anderen Validators, um die Dezentralisierung zu fördern.",
+    "inactiveValidators": {
+      "title": "Inaktive Validatoren erkannt",
+      "squadDescription": "Diese Validatoren haben das aktive Set verlassen und erhalten keine Belohnungen mehr. Delegiere an aktive Validatoren um, um wieder Belohnungen zu erhalten. Die Umdelegierung erfolgt sofort, ohne Unbonding-Zeitraum.",
+      "statusInactive": "Außerhalb des aktiven Sets",
+      "statusInactiveShortfall": "Inaktiv: ~{amount} fehlen zum aktiven Set",
+      "statusJailed": "Gesperrt: keine Belohnungen",
+      "redelegate": "Umdelegieren",
+      "stakeWarning": "Dein Stake-Squad enthält inaktive Validatoren. Ein Teil jedes neuen Stakes würde an sie gehen und nichts einbringen.",
+      "editSquad": "Stake-Squad bearbeiten",
+      "redelegateDescription": "Wähle Validatoren, an die {amount} umdelegiert werden soll. Der Betrag wird gleichmäßig aufgeteilt; der Rest deines Stakes bleibt unverändert.",
+      "topThirdHidden": "Die größten Validatoren, die zusammen ein Drittel des gesamten Stakes halten, sind standardmäßig ausgeblendet, damit Osmosis dezentral bleibt.",
+      "topThirdShown": "Das sind die größten Validatoren, die zusammen ein Drittel des gesamten Stakes halten. Kleinere Validatoren zu wählen hilft, Osmosis dezentral zu halten.",
+      "alertDescription": "Einige deiner Validatoren haben das aktive Set verlassen, daher erhält das bei ihnen gestakte OSMO keine Belohnungen. Delegiere auf der Staking-Seite um, um wieder Belohnungen zu erhalten.",
+      "dismiss": "Schließen",
+      "goToStake": "Zum Staking"
+    },
     "learnMore": {
       "step1": {
         "title": "Was ist Abstecken?",
@@ -720,7 +735,7 @@
       "description": "Wählen Sie die Validatoren aus, an die Sie delegieren möchten. Wenn Sie fertig sind, setzen Sie den Einsatz fort. Sie können Ihren Validatorsatz jederzeit bearbeiten.",
       "searchPlaceholder": "Suchen Sie nach einem Validator",
       "button": "Trupp festlegen",
-      "button2": "Legen Sie Kader und Einsatz fest",
+      "button2": "Legen Sie Kader und Einsatz fest {amount}",
       "noResults": "keine Ergebnisse gefunden",
       "column": {
         "validator": "Validator",

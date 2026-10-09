@@ -1,8 +1,12 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import cases from "jest-in-case";
 
-import { compressZeros, formatFiatPrice } from "../formatter";
+import {
+  compressZeros,
+  formatCoinBalance,
+  formatFiatPrice,
+} from "../formatter";
 
 describe("compressZeros function", () => {
   it("should not compress zeros with and handle the absence of currency symbol", () => {
@@ -132,3 +136,32 @@ cases(
     },
   ]
 );
+
+describe("formatCoinBalance", () => {
+  const osmo = {
+    coinDenom: "OSMO",
+    coinMinimalDenom: "uosmo",
+    coinDecimals: 6,
+  };
+  const coin = (uosmo: string) => new CoinPretty(osmo, new Dec(uosmo));
+
+  it("shows 4 significant figures below 1,000", () => {
+    expect(formatCoinBalance(coin("15127845"))).toBe("15.13 OSMO");
+    expect(formatCoinBalance(coin("210000"))).toBe("0.21 OSMO");
+    expect(formatCoinBalance(coin("342000000"))).toBe("342 OSMO");
+    expect(formatCoinBalance(coin("999940000"))).toBe("999.9 OSMO");
+  });
+
+  it("keeps tiny balances instead of rounding them to zero", () => {
+    expect(formatCoinBalance(coin("2345"))).toBe("0.002345 OSMO");
+  });
+
+  it("shows whole numbers from 1,000 up", () => {
+    expect(formatCoinBalance(coin("1087900000"))).toBe("1,088 OSMO");
+    expect(formatCoinBalance(coin("4293777120000"))).toBe("4,293,777 OSMO");
+  });
+
+  it("shows zero", () => {
+    expect(formatCoinBalance(coin("0"))).toBe("0 OSMO");
+  });
+});

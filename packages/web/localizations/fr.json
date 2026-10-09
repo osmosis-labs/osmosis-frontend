@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
     "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
-    "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
+    "inactiveValidators": {
+      "title": "Validateurs inactifs détectés",
+      "squadDescription": "Ces validateurs ont quitté l'ensemble actif et ne génèrent plus de récompenses. Redéléguez à des validateurs actifs pour recommencer à gagner. La redélégation est immédiate, sans période de déblocage.",
+      "statusInactive": "Hors de l'ensemble actif",
+      "statusInactiveShortfall": "Inactif : il manque ~{amount} pour l'ensemble actif",
+      "statusJailed": "Emprisonné : aucune récompense",
+      "redelegate": "Redéléguer",
+      "stakeWarning": "Votre escouade de staking inclut des validateurs inactifs. Une partie de tout nouveau stake leur irait et ne rapporterait rien.",
+      "editSquad": "Modifier l'escouade de staking",
+      "redelegateDescription": "Sélectionnez les validateurs vers lesquels redéléguer {amount}. Le montant est réparti à parts égales ; le reste de votre stake ne change pas.",
+      "topThirdHidden": "Les plus grands validateurs, qui détiennent ensemble un tiers de tout le stake, sont masqués par défaut pour aider à garder Osmosis décentralisé.",
+      "topThirdShown": "Voici les plus grands validateurs, qui détiennent ensemble un tiers de tout le stake. Choisir des validateurs plus petits aide à garder Osmosis décentralisé.",
+      "alertDescription": "Certains de vos validateurs ont quitté l'ensemble actif, donc l'OSMO qui leur est délégué ne génère pas de récompenses. Redéléguez depuis la page Stake pour recommencer à gagner.",
+      "dismiss": "Ignorer",
+      "goToStake": "Aller au staking"
+    },
     "learnMore": {
       "step1": {
         "title": "Qu’est-ce que le jalonnement ?",
@@ -720,7 +735,7 @@
       "description": "Sélectionnez les validateurs auxquels vous souhaitez déléguer. Une fois terminé, continuez à jalonner. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
       "searchPlaceholder": "Rechercher un validateur",
       "button": "Définir l'équipe",
-      "button2": "Définir l'équipe et l'enjeu",
+      "button2": "Définir l'équipe et l'enjeu {amount}",
       "noResults": "Aucun résultat trouvé",
       "column": {
         "validator": "Validateur",

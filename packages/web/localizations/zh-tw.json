@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
+    "inactiveValidators": {
+      "title": "偵測到非活躍驗證者",
+      "squadDescription": "這些驗證者已離開活躍集，不再獲得獎勵。重新委託給活躍驗證者即可重新獲得獎勵。重新委託立即生效，無需解綁期。",
+      "statusInactive": "不在活躍集中",
+      "statusInactiveShortfall": "非活躍：距活躍集還差約 {amount}",
+      "statusJailed": "已監禁：無獎勵",
+      "redelegate": "重新委託",
+      "stakeWarning": "您的質押小隊包含非活躍驗證者。任何新質押的一部分將流向他們，沒有任何收益。",
+      "editSquad": "編輯質押小隊",
+      "redelegateDescription": "選擇要將 {amount} 重新委託到的驗證者。金額將在他們之間平均分配；您的其餘質押保持不變。",
+      "topThirdHidden": "合計持有全部質押三分之一的最大驗證者預設隱藏，以協助保持 Osmosis 的去中心化。",
+      "topThirdShown": "這些是合計持有全部質押三分之一的最大驗證者。選擇規模較小的驗證者有助於保持 Osmosis 的去中心化。",
+      "alertDescription": "您的部分驗證者已離開活躍集，因此質押在他們那裡的 OSMO 沒有獲得獎勵。請在質押頁面重新委託，以重新獲得獎勵。",
+      "dismiss": "關閉",
+      "goToStake": "前往質押"
+    },
     "learnMore": {
       "step1": {
         "title": "什麼是質押？",
@@ -720,7 +735,7 @@
       "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
       "searchPlaceholder": "搜索驗證器",
       "button": "設置小隊",
-      "button2": "設定小隊和賭注",
+      "button2": "設定小隊和賭注 {amount}",
       "noResults": "未找到結果",
       "column": {
         "validator": "驗證器",

@@ -12,6 +12,7 @@ import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
   makeAddToPositionMsg,
+  makeBeginRedelegateMsg,
   makeBeginUnlockingMsg,
   makeCollectIncentivesMsg,
   makeCollectSpreadRewardsMsg,
@@ -2662,6 +2663,104 @@ export class OsmosisAccountImpl {
           queries.cosmos.queryRewards
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to move stake between specific validators, optionally replacing the
+   * validator set preference in the same tx. Used to move stake off validators
+   * that have left the active set without rebalancing the rest of the stake
+   * (which MsgRedelegateValidatorSet would do).
+   * @param redelegations Source validator, destination validator and amount (in the staking denom's minimal units) for each redelegation.
+   * @param validatorSetPreference Validator addresses to set as an equally weighted preference, or undefined to leave the preference unchanged.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendRedelegateMsgs(
+    redelegations: {
+      validatorSrcAddress: string;
+      validatorDstAddress: string;
+      amount: string;
+    }[],
+    validatorSetPreference?: string[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    if (!redelegations.length)
+      throw new Error("Please provide 1 or more redelegations");
+
+    if (validatorSetPreference && !validatorSetPreference.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
+
+    const stakeDenom = this.chainGetter.getChain(this.chainId).stakeCurrency
+      .coinMinimalDenom;
+
+    const msgs: EncodeObject[] = await Promise.all(
+      redelegations.map(
+        ({ validatorSrcAddress, validatorDstAddress, amount }) =>
+          makeBeginRedelegateMsg({
+            delegatorAddress: this.address,
+            validatorSrcAddress,
+            validatorDstAddress,
+            amount: { denom: stakeDenom, amount },
+          })
+      )
+    );
+
+    if (validatorSetPreference) {
+      const weight = new Dec(1)
+        .quo(new Dec(validatorSetPreference.length))
+        .toString();
+
+      msgs.push(
+        await makeSetValidatorSetPreferenceMsg({
+          delegator: this.address,
+          preferences: validatorSetPreference.map((validator) => ({
+            weight,
+            valOperAddress: validator,
+          })),
+        })
+      );
+    }
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "redelegate",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+
+          // redelegating withdraws pending rewards from the source validators
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryDelegatorValidators
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          if (validatorSetPreference) {
+            this.queries.queryUsersValidatorPreferences
+              .get(this.address)
+              .waitFreshResponse();
+          }
         }
         onFulfill?.(tx);
       }
