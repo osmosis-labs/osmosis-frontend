@@ -1,7 +1,4 @@
-import {
-  ObservableQueryValidatorsInner,
-  Staking,
-} from "@osmosis-labs/keplr-stores";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import {
   CoinPretty,
@@ -53,6 +50,7 @@ import {
   InactiveDelegation,
   splitRedelegations,
 } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 const CONSTANTS = {
   HIGH_APR: "0.2",
@@ -114,7 +112,6 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     amount: string;
     denom: Currency;
   };
-  queryValidators: ObservableQueryValidatorsInner;
   /** Move the stake on inactive validators to the selected ones, instead of
    *  setting the squad. */
   isRedelegating?: boolean;
@@ -127,7 +124,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       isOpen,
       action,
       coin,
-      queryValidators,
       usersValidatorsMap,
       validators,
       usersValidatorSetPreferenceMap,
@@ -154,7 +150,28 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const [globalFilter, setGlobalFilter] = useState("");
       const [showTopThird, setShowTopThird] = useState(false);
 
-      const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+      const { data: stakingPool } = api.edge.staking.getStakingPool.useQuery();
+      const totalStakePool = useMemo(
+        () =>
+          new CoinPretty(
+            chainStore.osmosis.stakeCurrency,
+            stakingPool?.bondedTokens ?? 0
+          ),
+        [chainStore.osmosis.stakeCurrency, stakingPool?.bondedTokens]
+      );
+
+      const { data: bondedValidators } =
+        api.edge.staking.getValidators.useQuery({ status: "Bonded" });
+      const thumbnailByOperator = useMemo(
+        () =>
+          new Map(
+            bondedValidators?.map((validator) => [
+              validator.operator_address,
+              validator.validatorImgSrc,
+            ])
+          ),
+        [bondedValidators]
+      );
 
       // table
       const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -392,7 +409,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   // thumbnails come from, so they get a placeholder
                   const imageUrl = props.row.original.inactiveStatus
                     ? "/icons/question-mark.svg"
-                    : queryValidators.getValidatorThumbnail(operatorAddress);
+                    : thumbnailByOperator.get(operatorAddress);
 
                   return (
                     <div className="flex max-w-[28rem] items-center gap-3 md:max-w-none md:gap-2">
