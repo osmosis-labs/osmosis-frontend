@@ -120,8 +120,8 @@ export function AutosizeInput({
     measure();
   }, [measure]);
 
-  // Re-copy styles only when they can have changed: the input class changed,
-  // or the placeholder sizer just mounted (placeholder is a `measure` dep).
+  // Re-copies styles and remeasures on every change to a `measure` dep
+  // (including `value`, so once per keystroke) and when the input class changes.
   // Viewport and font changes are handled by the listeners below.
   useIsomorphicLayoutEffect(syncAndMeasure, [syncAndMeasure, inputClassName]);
 
