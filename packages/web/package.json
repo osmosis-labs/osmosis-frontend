@@ -35,6 +35,7 @@
     "@cosmos-kit/okxwallet": "^2.14.1",
     "@cosmos-kit/station": "^2.15.1",
     "@cosmos-kit/trust": "^2.16.1",
+    "@cosmos-kit/vultisig": "^2.16.1",
     "@cosmos-kit/xdefi": "^2.12.0",
     "@floating-ui/react": "^0.26.16",
     "@headlessui/react": "^2.2.10",
