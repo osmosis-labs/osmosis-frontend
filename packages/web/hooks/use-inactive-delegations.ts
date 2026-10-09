@@ -8,6 +8,7 @@ import {
   getStakeToEnterActiveSet,
   InactiveDelegation,
 } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 /**
  * The connected wallet's delegations to validators outside the active set,
@@ -21,28 +22,30 @@ export function useInactiveDelegations({
   inactiveDelegations: InactiveDelegation[];
   isLoaded: boolean;
 } {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const walletAddress = accountStore.getWallet(chainId)?.address ?? "";
   // an empty address never fetches, so nothing loads while disabled
   const address = enabled ? walletAddress : "";
-  const cosmosQueries = queriesStore.get(chainId).cosmos;
 
-  const delegationsQuery =
-    cosmosQueries.queryDelegations.getQueryBech32Address(address);
-  const delegatorValidatorsQuery =
-    cosmosQueries.queryDelegatorValidators.getQueryBech32Address(address);
+  const { data: delegations } = api.edge.staking.getUserDelegations.useQuery(
+    { userOsmoAddress: address },
+    { enabled: Boolean(address) }
+  );
+  const { data: validators } =
+    api.edge.staking.getUserDelegatorValidators.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
+    );
 
   const isLoaded =
-    address.length > 0 &&
-    Boolean(delegationsQuery.response) &&
-    Boolean(delegatorValidatorsQuery.response);
-
-  const { delegations } = delegationsQuery;
-  const { validators } = delegatorValidatorsQuery;
+    address.length > 0 && Boolean(delegations) && Boolean(validators);
 
   const inactiveDelegations = useMemo(
-    () => (isLoaded ? getInactiveDelegations(delegations, validators) : []),
+    () =>
+      isLoaded && delegations && validators
+        ? getInactiveDelegations(delegations, validators)
+        : [],
     [isLoaded, delegations, validators]
   );
 
