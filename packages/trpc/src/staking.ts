@@ -5,6 +5,7 @@ import {
   queryDelegations,
   queryDelegatorRewards,
   queryDelegatorValidators,
+  queryStakingParams,
   queryStakingPool,
   queryUndelegations,
   queryUserValidatorPreferences,
@@ -65,6 +66,11 @@ export const stakingRouter = createTRPCRouter({
         bech32Address: input.userOsmoAddress,
       }).then(({ validators }) => validators)
     ),
+  getStakingParams: publicProcedure.query(({ ctx }) =>
+    queryStakingParams({ chainList: ctx.chainList }).then(({ params }) => ({
+      maxValidators: Number(params.max_validators),
+    }))
+  ),
   getStakingPool: publicProcedure.query(({ ctx }) =>
     queryStakingPool({ chainList: ctx.chainList }).then(({ pool }) => ({
       bondedTokens: pool.bonded_tokens,
