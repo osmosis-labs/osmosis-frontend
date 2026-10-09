@@ -34,7 +34,16 @@
     "low": "낮은",
     "buttonCreateAndStake": "직위 및 지분 생성",
     "estimated": "추정된",
-    "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다."
+    "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다.",
+    "singleAsset": {
+      "splitBreakdown": "당신의 {inputAmount} {inputDenom} 중 {swapAmount} {inputDenom}({swapPercent})이 포지션 비율을 맞추기 위해 {outDenom}으로 스왑됩니다.",
+      "noSwapNeeded": "선택한 범위는 {inputDenom}만 필요하므로 스왑이 필요하지 않습니다.",
+      "valueIn": "입금액",
+      "valueOut": "출금액",
+      "totalCost": "총 비용",
+      "totalCostWarning": "이 예치의 총 비용은 {totalCost}이며, 가격 영향과 스왑 수수료가 포함되어 포지션에 도달하는 가치가 줄어듭니다.",
+      "quoteLoading": "최적 스왑을 찾는 중…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "과급 유동성이란 무엇입니까?",

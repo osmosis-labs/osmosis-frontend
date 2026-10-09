@@ -34,7 +34,16 @@
     "low": "niedrig",
     "buttonCreateAndStake": "Erstellen Sie Position und Einsatz",
     "estimated": "Geschätzt",
-    "estimatedInfo": "Hierbei handelt es sich um eine Schätzung basierend auf den aktuell ausgewählten Preisen. Der tatsächliche effektive Jahreszins kann variieren. Wenn die Position außerhalb des Bereichs liegt, beträgt der effektive Jahreszins 0 %."
+    "estimatedInfo": "Hierbei handelt es sich um eine Schätzung basierend auf den aktuell ausgewählten Preisen. Der tatsächliche effektive Jahreszins kann variieren. Wenn die Position außerhalb des Bereichs liegt, beträgt der effektive Jahreszins 0 %.",
+    "singleAsset": {
+      "splitBreakdown": "Von deinen {inputAmount} {inputDenom} werden {swapAmount} {inputDenom} ({swapPercent}) in {outDenom} getauscht, um das Positions-Verhältnis zu erreichen.",
+      "noSwapNeeded": "Dein gewählter Bereich benötigt nur {inputDenom}, daher ist kein Tausch erforderlich.",
+      "valueIn": "Eingabewert",
+      "valueOut": "Ausgabewert",
+      "totalCost": "Gesamtkosten",
+      "totalCostWarning": "Die Gesamtkosten dieser Einzahlung betragen {totalCost}, einschließlich Preisauswirkung und Tauschgebühren, wodurch sich der Wert verringert, der deine Position erreicht.",
+      "quoteLoading": "Besten Tausch wird gesucht…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Was ist aufgeladene Liquidität?",
