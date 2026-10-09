@@ -1,5 +1,4 @@
 import { Staking } from "@osmosis-labs/keplr-stores";
-import { BondStatus } from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -18,6 +17,7 @@ import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 export const ValidatorSquadCard: React.FC<{
   hasInsufficientBalance: boolean;
@@ -45,8 +45,18 @@ export const ValidatorSquadCard: React.FC<{
 
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
-    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Bonded
+    const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({
+      status: "Bonded",
+    });
+    const thumbnailByOperator = useMemo(
+      () =>
+        new Map(
+          bondedValidators?.map((validator) => [
+            validator.operator_address,
+            validator.validatorImgSrc,
+          ])
+        ),
+      [bondedValidators]
     );
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
@@ -147,7 +157,7 @@ export const ValidatorSquadCard: React.FC<{
               Math.max(0, maxVisibleValidators - inactiveDelegations.length)
             )
             .map((validator) => {
-              const imageUrl = queryValidators.getValidatorThumbnail(
+              const imageUrl = thumbnailByOperator.get(
                 validator.operator_address
               );
               const myStake = getFormattedMyStake(validator);
