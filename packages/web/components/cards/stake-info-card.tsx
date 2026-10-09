@@ -8,6 +8,7 @@ import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { StakeOrUnstake } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -36,21 +37,20 @@ export const StakeInfoCard: FunctionComponent<{
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
-    const { chainStore, priceStore } = useStore();
+    const { chainStore } = useStore();
     const osmo = chainStore.osmosis.stakeCurrency;
 
     // amount fiat value
-    const outAmountValue =
+    const { fiatValue: outAmountValue } = useCoinFiatValue(
       inputAmount && new Dec(inputAmount).gt(new Dec(0))
-        ? priceStore.calculatePrice(
-            new CoinPretty(
-              osmo,
-              new Dec(inputAmount).mul(
-                DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
-              )
+        ? new CoinPretty(
+            osmo,
+            new Dec(inputAmount).mul(
+              DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
             )
           )
-        : undefined;
+        : undefined
+    );
 
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
