@@ -15,7 +15,7 @@ export function usePrice(
         Boolean(currency) && !currency?.coinMinimalDenom.startsWith("gamm"),
       // Keep the last price after unmount so remounts render it right away
       // and refresh in the background once it is stale.
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60, // 1 minute
       staleTime: 1000 * 3, // 3 second
       ...options,
     }
