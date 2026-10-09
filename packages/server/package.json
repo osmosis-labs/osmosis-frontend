@@ -39,7 +39,7 @@
     "fuse.js": "^6.5.3",
     "lru-cache": "^10.0.1",
     "superjson": "^2.2.1",
-    "viem": "^2.23.5",
+    "viem": "~2.41.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
