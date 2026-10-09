@@ -8461,7 +8461,6 @@ __metadata:
     "@types/qrcode": "npm:^1.5.0"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
-    "@types/react-input-autosize": "npm:^2.2.1"
     "@types/react-modal": "npm:^3.13.1"
     "@vercel/speed-insights": "npm:^1.0.12"
     "@visx/curve": "npm:^4.0.0"
@@ -8523,7 +8522,6 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
-    react-input-autosize: "npm:^3.0.0"
     react-markdown: "npm:8.0.7"
     react-modal: "npm:^3.16.3"
     react-toastify: "npm:^10.0.5"
@@ -11467,15 +11465,6 @@ __metadata:
   peerDependencies:
     "@types/react": ^18.0.0
   checksum: 10c0/8bd309e2c3d1604a28a736a24f96cbadf6c05d5288cfef8883b74f4054c961b6b3a5e997fd5686e492be903c8f3380dba5ec017eff3906b1256529cd2d39603e
-  languageName: node
-  linkType: hard
-
-"@types/react-input-autosize@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@types/react-input-autosize@npm:2.2.1"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/6b21b9b73c8383988503f924f6d93559c16a1468f9289f5e21123b76b31ccd1dbc17dcbae79401c9120b0674392493303f5d0df2498fc1da1e3f9a8351a07e6f
   languageName: node
   linkType: hard
 
@@ -26812,7 +26801,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.5.8, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.0.0, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -27086,17 +27075,6 @@ __metadata:
   peerDependencies:
     react: ">=16.13.1"
   checksum: 10c0/6f3e0e4d7669f680ccf49c08c9571519c6e31f04dcfc30a765a7136c7e6fbbbe93423dd5a9fce12107f8166e54133e9dd5c2079a00c7a38201ac811f7a28b8e7
-  languageName: node
-  linkType: hard
-
-"react-input-autosize@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "react-input-autosize@npm:3.0.0"
-  dependencies:
-    prop-types: "npm:^15.5.8"
-  peerDependencies:
-    react: ^16.3.0 || ^17.0.0
-  checksum: 10c0/5a9aeb3052145746bef4d94299595cbcc2236ac8e1b158a900a49107b06230a071bdc49f27e74223f735d1cf5b7c6add69f3a2fdb9c9c48ce33ad4492301b83e
   languageName: node
   linkType: hard
 

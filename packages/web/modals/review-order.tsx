@@ -19,9 +19,9 @@ import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
+import { AutosizeInput } from "~/components/input/autosize-input";
 import {
   hasActiveWarning,
   needsAcknowledgement,
