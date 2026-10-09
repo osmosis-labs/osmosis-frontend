@@ -19,6 +19,7 @@ import {
   MIN_DISTR_VALUE_OSMO,
 } from "~/config/incentives";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -41,7 +42,7 @@ export const IncentivizePoolModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
@@ -54,17 +55,22 @@ export const IncentivizePoolModal: FunctionComponent<
     useIncentivizePoolConfig();
 
   // Reward token choices: only assets the connected wallet actually holds —
-  // you can't fund a gauge with what you don't have. `.balances` is every
-  // registered currency (zero-balance included), so use `.positiveBalances`.
+  // you can't fund a gauge with what you don't have. Registered assets and LP
+  // shares with a positive balance qualify (`coin` is undefined for unknown
+  // denoms).
   // Selection is keyed by coinMinimalDenom (via TokenSelect's
   // keyByMinimalDenom), so same-symbol assets (bridged variants) stay distinct
   // and resolve unambiguously in this irreversible flow.
-  const positiveBalances = queriesStore
-    .get(chainId)
-    .queryBalances.getQueryBech32Address(address).positiveBalances;
+  const { data: userBalances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: address },
+    { enabled: Boolean(address) }
+  );
   const selectableTokens = useMemo(
-    () => positiveBalances.map((balance) => balance.balance),
-    [positiveBalances]
+    () =>
+      (userBalances ?? []).flatMap(({ coin }) =>
+        coin?.toDec().isPositive() ? [coin] : []
+      ),
+    [userBalances]
   );
   // Default the reward token to OSMO when available.
   useEffect(() => {
@@ -101,9 +107,17 @@ export const IncentivizePoolModal: FunctionComponent<
   // param; 1 hour is the promoted default, 24 hours suits stable pairs. When
   // the param can't be fetched, fall back to the mainnet-standard set so all
   // options still render rather than collapsing to a single button.
-  const authorizedUptimes =
-    queriesStore.get(chainId).osmosis?.queryConcentratedLiquidityParams
-      .authorizedUptimes;
+  const { data: authorizedUptimes } =
+    api.local.concentratedLiquidity.getClParams.useQuery(undefined, {
+      select: ({ authorizedUptimes }) => {
+        // Duration strings like "0.000000001s", "60s", "3600s", "86400s".
+        const parsed = (authorizedUptimes ?? [])
+          .map((uptime) => Number(uptime.replace(/s$/, "")))
+          .filter((seconds) => Number.isFinite(seconds));
+        // undefined (not an empty array) so the `?? fallback` below fires.
+        return parsed.length > 0 ? parsed : undefined;
+      },
+    });
   const uptimeOptions = authorizedUptimes ?? FALLBACK_UPTIMES_SECONDS;
   const [uptimeSeconds, setUptimeSeconds] = useState(3600);
   useEffect(() => {
@@ -171,23 +185,24 @@ export const IncentivizePoolModal: FunctionComponent<
   // Fiat stats for the configured emission: total value, value per day
   // (one epoch per day), and an annualized APR against the pool's current
   // liquidity. All best-effort — undefined when the asset can't be priced.
-  const totalValue = config.amount
-    ? priceStore.calculatePrice(config.amount)
-    : undefined;
+  const { fiatValue: totalValue } = useCoinFiatValue(config.amount);
   const perDayValue =
     totalValue && epochsValid ? totalValue.quo(new Dec(numEpochs)) : undefined;
   // Fiat value of the chain's 0.01 OSMO per-recipient dust floor, tracking
   // the live OSMO price rather than a fixed dollar figure. Undefined while
   // the OSMO price hasn't loaded, in which case the dust warning is skipped.
   const osmoCurrency = chainStore.osmosis.stakeCurrency;
-  const minDistrFiat = priceStore.calculatePrice(
-    new CoinPretty(
-      osmoCurrency,
-      DecUtils.getTenExponentN(osmoCurrency.coinDecimals).mul(
-        new Dec(MIN_DISTR_VALUE_OSMO)
-      )
-    )
+  const minDistrCoin = useMemo(
+    () =>
+      new CoinPretty(
+        osmoCurrency,
+        DecUtils.getTenExponentN(osmoCurrency.coinDecimals).mul(
+          new Dec(MIN_DISTR_VALUE_OSMO)
+        )
+      ),
+    [osmoCurrency]
   );
+  const { fiatValue: minDistrFiat } = useCoinFiatValue(minDistrCoin);
   const poolTvl = pool?.totalFiatValueLocked;
   const estApr = useMemo(() => {
     if (!perDayValue || !poolTvl || !poolTvl.toDec().isPositive())
@@ -206,10 +221,12 @@ export const IncentivizePoolModal: FunctionComponent<
   // button; otherwise a user with just enough OSMO for the reward signs a tx
   // that fails on the fee.
   const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
-  const osmoBalance = queriesStore
-    .get(chainId)
-    .queryBalances.getQueryBech32Address(address)
-    .getBalanceFromCurrency(osmoCurrencyForFee);
+  const osmoBalance = new CoinPretty(
+    osmoCurrencyForFee,
+    userBalances?.find(
+      ({ denom }) => denom === osmoCurrencyForFee.coinMinimalDenom
+    )?.amount ?? 0
+  );
   const feeCoin = new CoinPretty(
     osmoCurrencyForFee,
     DecUtils.getTenExponentN(osmoCurrencyForFee.coinDecimals).mul(

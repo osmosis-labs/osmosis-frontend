@@ -1,5 +1,8 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import { Dec } from "@osmosis-labs/unit";
+import {
+  type ConcentratedPoolRawResponse,
+  DEFAULT_VS_CURRENCY,
+} from "@osmosis-labs/server";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -519,14 +522,52 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
 }> = observer(({ poolId, onIncentivize }) => {
-  const { derivedDataStore } = useStore();
+  const { derivedDataStore, chainStore, accountStore } = useStore();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
+  const { isLoading: isWalletLoading } = useWalletSelect();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  // Daily gauge emissions are derived from the internal gauge ids and epoch
+  // provisions; no tRPC route exposes them yet, so they stay on MobX.
   const concentratedPoolDetail =
     derivedDataStore.concentratedPoolDetails.get(poolId);
 
   const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+
+  const { data: userPositions } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+        forPoolId: poolId,
+      },
+      {
+        enabled: !isWalletLoading && Boolean(account?.address),
+      }
+    );
+
+  const userPoolAssets = useMemo(() => {
+    const coinSums = new Map<string, CoinPretty>();
+    userPositions?.forEach(({ currentCoins }) => {
+      currentCoins.forEach((asset) => {
+        const existing = coinSums.get(asset.currency.coinMinimalDenom);
+        coinSums.set(
+          asset.currency.coinMinimalDenom,
+          existing ? existing.add(asset) : asset
+        );
+      });
+    });
+    return Array.from(coinSums.values());
+  }, [userPositions]);
+  const userPoolValue = useMemo(
+    () =>
+      (userPositions ?? []).reduce(
+        (sum, { currentValue }) => sum.add(currentValue),
+        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      ),
+    [userPositions]
+  );
+  const numUserPositions = userPositions?.length ?? 0;
 
   const { data: incentives, isLoading: isLoadingIncentives } =
     api.edge.pools.getPoolIncentives.useQuery(
@@ -546,21 +587,18 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             {t("clPositions.totalBalance")}
           </span>
           <div>
-            <h4 className="text-osmoverse-100">
-              {concentratedPoolDetail.userPoolValue.toString()}
-            </h4>
+            <h4 className="text-osmoverse-100">{userPoolValue.toString()}</h4>
             <span className="subtitle1 text-osmoverse-300">
-              {concentratedPoolDetail.userPositions.length === 1
+              {numUserPositions === 1
                 ? t("clPositions.onePosition")
                 : t("clPositions.numPositions", {
-                    numPositions:
-                      concentratedPoolDetail.userPositions.length.toString(),
+                    numPositions: numUserPositions.toString(),
                   })}
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-5">
-          {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+          {userPoolAssets.map((asset) => (
             <div
               className="subtitle1 flex gap-2"
               key={asset.currency.coinMinimalDenom}
