@@ -1,23 +1,21 @@
 import { Staking } from "@osmosis-labs/keplr-stores";
-import {
-  CoinPretty,
-  Currency,
-  Dec,
-  DecUtils,
-  PricePretty,
-} from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, Currency, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
 import { formatCoinBalance } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
 
@@ -47,31 +45,32 @@ export const StakeDashboard: React.FC<{
     onRedelegate,
   }) => {
     const { t } = useTranslation();
-    const { priceStore, chainStore, queriesStore, accountStore } = useStore();
+    const { chainStore, accountStore } = useStore();
 
     const osmosisChainId = chainStore.osmosis.chainId;
-    const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
     const account = accountStore.getWallet(osmosisChainId);
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
-    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
-    const { rewards } =
-      cosmosQueries.queryRewards.getQueryBech32Address(address);
+    const { data: delegationRewards } =
+      api.edge.staking.getUserDelegationRewards.useQuery(
+        { userOsmoAddress: address },
+        { enabled: Boolean(address) }
+      );
 
-    const summedStakeRewards = rewards?.reduce(
-      (acc, reward) => {
-        return reward.add(acc);
-      },
-      new CoinPretty(osmo, 0)
-    );
+    const summedStakeRewards = useMemo(() => {
+      const amount = delegationRewards?.total.find(
+        ({ denom }) => denom === osmo.coinMinimalDenom
+      )?.amount;
+      return new CoinPretty(osmo, new Dec(amount ?? 0));
+    }, [delegationRewards, osmo]);
 
+    const { fiatValue: rewardsFiatValue } =
+      useCoinFiatValue(summedStakeRewards);
     const fiatRewards =
-      priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);
+      rewardsFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
 
-    const fiatBalance = balance
-      ? priceStore.calculatePrice(balance)
-      : undefined;
+    const { fiatValue: fiatBalance } = useCoinFiatValue(balance);
 
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
@@ -97,20 +96,12 @@ export const StakeDashboard: React.FC<{
       }
     }, [account]);
 
-    const osmoPrice = priceStore
-      .calculatePrice(
-        new CoinPretty(
-          osmo,
-          DecUtils.getTenExponentNInPrecisionRange(
-            chainStore.osmosis.stakeCurrency.coinDecimals
-          )
-        )
-      )
-      ?.toDec();
+    const { price: osmoPrice } = usePrice(osmo);
 
-    const collectRewardsMinimumOsmo = osmoPrice?.isZero()
-      ? new Dec(0)
-      : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice as Dec);
+    const collectRewardsMinimumOsmo =
+      !osmoPrice || osmoPrice.toDec().isZero()
+        ? new Dec(0)
+        : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice.toDec());
 
     const rewardsCardDisabled = summedStakeRewards
       .toDec()
