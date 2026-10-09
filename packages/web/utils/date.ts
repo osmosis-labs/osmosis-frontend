@@ -2,14 +2,15 @@ import dayjs from "dayjs";
 
 export function humanizeTime(
   date: dayjs.Dayjs,
-  useShortTimeUnits = false
+  useShortTimeUnits = false,
+  now: dayjs.Dayjs = dayjs()
 ): {
   value: number | string;
   unitTranslationKey: string;
 }[] {
   // Use absolute diffs so both future ("in 2 hours") and past ("2 hours ago")
   // produce the same unit/value breakdown. Direction is the caller's concern.
-  const secondsDiff = Math.abs(date.diff(dayjs(), "seconds"));
+  const secondsDiff = Math.abs(date.diff(now, "seconds"));
   if (secondsDiff < 60) {
     return [
       {
@@ -26,7 +27,7 @@ export function humanizeTime(
     ];
   }
 
-  const minutesDiff = Math.abs(date.diff(dayjs(), "minutes"));
+  const minutesDiff = Math.abs(date.diff(now, "minutes"));
   if (minutesDiff < 60) {
     return [
       {
@@ -43,9 +44,9 @@ export function humanizeTime(
     ];
   }
 
-  const hoursDiff = Math.abs(date.diff(dayjs(), "hours"));
+  const hoursDiff = Math.abs(date.diff(now, "hours"));
   if (hoursDiff < 24) {
-    const minutes = Math.abs(date.diff(dayjs(), "minutes")) % 60;
+    const minutes = Math.abs(date.diff(now, "minutes")) % 60;
     return [
       {
         value: hoursDiff,
@@ -72,9 +73,9 @@ export function humanizeTime(
     ];
   }
 
-  const daysDiff = Math.abs(date.diff(dayjs(), "days"));
+  const daysDiff = Math.abs(date.diff(now, "days"));
   if (daysDiff < 30) {
-    const hours = Math.abs(date.diff(dayjs(), "hours")) % 24;
+    const hours = Math.abs(date.diff(now, "hours")) % 24;
     return [
       {
         value: daysDiff,

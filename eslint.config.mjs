@@ -41,7 +41,7 @@ const webRules = {
   plugins: ["unicorn", "simple-import-sort", "unused-imports"],
   rules: {
     ...Object.fromEntries(
-      reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "warn"])
+      reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "error"])
     ),
     "unicorn/filename-case": ["error", { case: "kebabCase" }],
     "import/no-extraneous-dependencies": [

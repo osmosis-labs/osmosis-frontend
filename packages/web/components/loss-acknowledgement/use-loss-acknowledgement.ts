@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   hasActiveWarning,
@@ -19,16 +19,16 @@ export function useLossAcknowledgement(current: LossFigures | undefined) {
   const [acknowledgedBasis, setAcknowledgedBasis] =
     useState<LossFigures | null>(null);
 
-  useEffect(() => {
-    if (!acknowledgedBasis) return;
-    if (
-      !current ||
+  // Re-arm during render so the stale basis is never observed, even for one
+  // render; React re-renders immediately with the cleared state.
+  if (
+    acknowledgedBasis &&
+    (!current ||
       !hasActiveWarning(current) ||
-      shouldResetAcknowledgement(acknowledgedBasis, current)
-    ) {
-      setAcknowledgedBasis(null);
-    }
-  }, [current, acknowledgedBasis]);
+      shouldResetAcknowledgement(acknowledgedBasis, current))
+  ) {
+    setAcknowledgedBasis(null);
+  }
 
   const setLossAcknowledged = useCallback(
     (acknowledged: boolean) => {
@@ -46,7 +46,7 @@ export function useLossAcknowledgement(current: LossFigures | undefined) {
      * True when an active warning has not been (validly) acknowledged — gates
      * confirm buttons. Evaluates staleness synchronously via the same
      * predicate as the sign-time guard, so a drifted quote disables the
-     * button in the same render (the effect above clears the basis after).
+     * button in the same render (the reset above clears the basis too).
      */
     warningNeedsAcknowledgement: needsAcknowledgement(
       acknowledgedBasis,

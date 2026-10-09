@@ -1,7 +1,7 @@
 import { Asset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /**
  * Component to display an image for an entity, either a chain or a token, and a fallback for it.
@@ -23,11 +23,19 @@ export function EntityImage({
   );
   const [err, setErr] = useState(false);
 
-  // Update imgSrc when logoURIs prop changes
-  useEffect(() => {
+  // Reset imgSrc when logoURIs prop changes
+  const [prevLogoURIs, setPrevLogoURIs] = useState({
+    svg: logoURIs?.svg,
+    png: logoURIs?.png,
+  });
+  if (
+    prevLogoURIs.svg !== logoURIs?.svg ||
+    prevLogoURIs.png !== logoURIs?.png
+  ) {
+    setPrevLogoURIs({ svg: logoURIs?.svg, png: logoURIs?.png });
     setImgSrc(logoURIs?.svg || logoURIs?.png);
     setErr(false);
-  }, [logoURIs?.png, logoURIs?.svg]);
+  }
 
   const handleError = () => {
     // Try PNG fallback if we were showing SVG
