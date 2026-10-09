@@ -1,7 +1,8 @@
 import { Registry } from "@cosmjs/proto-signing";
 import { AminoTypes } from "@cosmjs/stargate";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import { Decimal, ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { MsgTransfer as LocalMsgTransfer } from "@osmosis-labs/proto-codecs/build/codegen/ibc/applications/transfer/v1/tx";
+import { MsgSetValidatorSetPreference } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/valsetpref/v1beta1/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 
 import { getAminoConverters } from "../amino-converters";
@@ -91,4 +92,43 @@ describe("IBC transfer Amino conversion", () => {
       });
     }
   );
+});
+
+describe("MsgSetValidatorSetPreference Amino conversion", () => {
+  const typeUrl = "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference";
+
+  it.each([
+    [["0.500000000000000000", "0.500000000000000000"]],
+    [["0.333333333333333333", "0.333333333333333333", "0.333333333333333333"]],
+    [["1.000000000000000000"]],
+  ])("signs weights %j in the chain's atomics form", async (weights) => {
+    const converter = (await getAminoConverters())[typeUrl];
+    const message = MsgSetValidatorSetPreference.fromPartial({
+      delegator: "osmo1delegator",
+      preferences: weights.map((weight, i) => ({
+        valOperAddress: `osmovaloper1validator${i}`,
+        weight,
+      })),
+    });
+
+    // signAmino proto-encodes and decodes each message before converting it,
+    // which turns every LegacyDec into its 18-decimal atomics
+    const normalized = MsgSetValidatorSetPreference.decode(
+      MsgSetValidatorSetPreference.encode(message).finish()
+    );
+    const amino = converter.toAmino(normalized);
+
+    // The chain renders this LegacyDec (no cosmos.Dec scalar) as the raw proto
+    // string, so the signed JSON must carry exactly what the proto writer emits.
+    amino.preferences.forEach((preference: { weight: string }, i: number) => {
+      expect(preference.weight).toBe(
+        Decimal.fromUserInput(weights[i], 18).atomics
+      );
+    });
+  });
+
+  it("keeps the registered amino type name", async () => {
+    const converter = (await getAminoConverters())[typeUrl];
+    expect(converter.aminoType).toBe("osmosis/MsgSetValidatorSetPreference");
+  });
 });

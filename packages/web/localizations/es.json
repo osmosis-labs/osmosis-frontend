@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
+    "inactiveValidators": {
+      "title": "Validadores inactivos detectados",
+      "squadDescription": "Estos validadores han salido del conjunto activo y ya no generan recompensas. Redelega a validadores activos para volver a ganar. La redelegación es inmediata, sin periodo de desvinculación.",
+      "statusInactive": "Fuera del conjunto activo",
+      "statusInactiveShortfall": "Inactivo: faltan ~{amount} para el conjunto activo",
+      "statusJailed": "Encarcelado: sin recompensas",
+      "redelegate": "Redelegar",
+      "stakeWarning": "Tu escuadrón de stake incluye validadores inactivos. Parte de cualquier nuevo stake iría a ellos y no ganaría nada.",
+      "editSquad": "Editar escuadrón de stake",
+      "redelegateDescription": "Selecciona los validadores a los que redelegar {amount}. Se reparte a partes iguales entre ellos; el resto de tu stake no cambia.",
+      "topThirdHidden": "Los validadores más grandes, que juntos tienen un tercio de todo el stake, están ocultos por defecto para ayudar a mantener Osmosis descentralizado.",
+      "topThirdShown": "Estos son los validadores más grandes, que juntos tienen un tercio de todo el stake. Elegir validadores más pequeños ayuda a mantener Osmosis descentralizado.",
+      "alertDescription": "Algunos de tus validadores han salido del conjunto activo, así que el OSMO delegado en ellos no genera recompensas. Redelega desde la página de Stake para volver a ganar.",
+      "dismiss": "Descartar",
+      "goToStake": "Ir a Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "¿Qué es apostar?",
@@ -720,7 +735,7 @@
       "description": "Seleccione los validadores a los que le gustaría delegar. Una vez completado, continúe apostando. Puede editar su conjunto de validadores en cualquier momento.",
       "searchPlaceholder": "Buscar un validador",
       "button": "Establecer escuadrón",
-      "button2": "Establecer equipo y apuesta",
+      "button2": "Establecer equipo y apuesta {amount}",
       "noResults": "No se han encontrado resultados",
       "column": {
         "validator": "Validador",

@@ -3,7 +3,14 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Currency, Dec, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Currency,
+  Dec,
+  DecUtils,
+  Int,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
@@ -11,16 +18,14 @@ import {
   FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
-  Row,
   RowSelectionState,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
+  Fragment,
   FunctionComponent,
   useCallback,
   useEffect,
@@ -32,18 +37,35 @@ import {
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
-import { Tooltip } from "~/components/tooltip";
+import { inactiveStatusTextClass } from "~/components/stake/inactive-delegations-warning";
 import { StakeOrEdit } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
+import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
+import {
+  getRedelegationDefaultSelection,
+  getRedelegationPreferenceUpdate,
+  getTopThirdValidators,
+  InactiveDelegation,
+  splitRedelegations,
+} from "~/utils/inactive-delegations";
 
 const CONSTANTS = {
   HIGH_APR: "0.2",
-  HIGH_VOTING_POWER: "0.015",
+  /** Longer validator names are cut so one long name can't widen the column. */
+  MAX_NAME_LENGTH: 29,
+};
+
+/** Cuts by code point so an emoji in a long name is never split. */
+const truncateName = (name: string) => {
+  const chars = Array.from(name);
+  return chars.length > CONSTANTS.MAX_NAME_LENGTH
+    ? chars.slice(0, CONSTANTS.MAX_NAME_LENGTH).join("").trimEnd() + "..."
+    : name;
 };
 
 declare module "@tanstack/table-core" {
@@ -71,11 +93,15 @@ type FormattedValidator = {
   formattedMyStake: string;
   votingPower: Dec;
   formattedVotingPower: string;
+  commissions: Dec;
   formattedCommissions: string;
   formattedWebsite: string;
   website: string;
-  isVotingPowerTooHigh: boolean;
   operatorAddress: string;
+  /** Set for a validator outside the active set; such rows can't be selected. */
+  inactiveStatus?: InactiveDelegation["status"];
+  /** Among the largest validators holding the first third of bonded stake. */
+  isTopThird: boolean;
 };
 
 interface ValidatorSquadModalProps extends ModalBaseProps {
@@ -89,6 +115,9 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     denom: Currency;
   };
   queryValidators: ObservableQueryValidatorsInner;
+  /** Move the stake on inactive validators to the selected ones, instead of
+   *  setting the squad. */
+  isRedelegating?: boolean;
 }
 
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
@@ -102,6 +131,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       usersValidatorsMap,
       validators,
       usersValidatorSetPreferenceMap,
+      isRedelegating = false,
     }) => {
       // chain
       const { chainStore, accountStore, queriesStore } = useStore();
@@ -113,16 +143,20 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const account = accountStore.getWallet(chainId);
 
       // i18n
-      const { t } = useTranslation();
+      const { t, language } = useTranslation();
+
+      const { inactiveDelegations } = useInactiveDelegations();
+      const delegatorValidators =
+        queries.cosmos.queryDelegatorValidators.getQueryBech32Address(
+          account?.address ?? ""
+        ).validators;
 
       const [globalFilter, setGlobalFilter] = useState("");
+      const [showTopThird, setShowTopThird] = useState(false);
 
       const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
       // table
-      const [sorting, setSorting] = useState<SortingState>([
-        { id: "myStake", desc: true },
-      ]);
       const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
       const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -180,73 +214,145 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         []
       );
 
-      const getIsVotingPowerTooHigh = useCallback(
-        (votingPower: Dec) =>
-          new RatePretty(votingPower)
-            .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-            .toDec()
-            .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
-        [totalStakePool.currency.coinDecimals]
-      );
-
       const getFormattedWebsite = useCallback((website: string) => {
         const displayUrl = normalizeUrl(website);
-        const truncatedDisplayUrl = truncate(displayUrl, 30);
+        const truncatedDisplayUrl = truncate(displayUrl, 40);
         return truncatedDisplayUrl;
       }, []);
 
-      const data = useMemo(() => {
-        return validators
-          .filter(({ description }) => Boolean(description.moniker))
-          .filter((validator) => {
-            const commissions = getCommissions(validator);
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
-            return !isAPRTooHigh; // don't include validators where commissions >20%
-          })
-          .map((validator) => {
-            const votingPower = getVotingPower(validator);
-            const myStake = getMyStake(validator);
+      // the bonded validators the picker lists (and so can be selected)
+      const eligibleValidators = useMemo(
+        () =>
+          validators
+            .filter(({ description }) => Boolean(description.moniker))
+            .filter(
+              (validator) => !getIsAPRTooHigh(getCommissions(validator)) // don't include validators where commissions >20%
+            ),
+        [validators, getCommissions, getIsAPRTooHigh]
+      );
+      const eligibleAddresses = useMemo(
+        () =>
+          new Set(
+            eligibleValidators.map(({ operator_address }) => operator_address)
+          ),
+        [eligibleValidators]
+      );
 
-            const formattedVotingPower = getFormattedVotingPower(votingPower);
-            const formattedMyStake = getFormattedMyStake(myStake);
+      const topThird = useMemo(
+        () => getTopThirdValidators(validators),
+        [validators]
+      );
 
-            const commissions = getCommissions(validator);
-            const formattedCommissions = getFormattedCommissions(commissions);
+      const { data, stakedCount, topThirdCount } = useMemo(() => {
+        const toRow = (
+          validator: StakingType.Validator,
+          inactiveStatus?: InactiveDelegation["status"]
+        ): FormattedValidator => {
+          // an inactive validator has no share of the bonded stake
+          const votingPower = inactiveStatus
+            ? new Dec(0)
+            : getVotingPower(validator);
+          const myStake = getMyStake(validator);
 
-            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
+          const formattedVotingPower = inactiveStatus
+            ? "-"
+            : getFormattedVotingPower(votingPower);
+          const formattedMyStake = getFormattedMyStake(myStake);
 
-            const website = validator?.description?.website || "";
-            const formattedWebsite = getFormattedWebsite(website || "");
+          const commissions = getCommissions(validator);
+          const formattedCommissions = getFormattedCommissions(commissions);
 
-            const validatorName = validator?.description?.moniker || "";
+          const website = validator?.description?.website || "";
+          const formattedWebsite = getFormattedWebsite(website || "");
 
-            const operatorAddress = validator?.operator_address;
+          const validatorName = validator?.description?.moniker || "";
 
-            return {
-              validatorName,
-              myStake,
-              formattedMyStake,
-              votingPower,
-              formattedVotingPower,
-              commissions,
-              formattedCommissions,
-              formattedWebsite,
-              website,
-              isVotingPowerTooHigh,
-              operatorAddress,
-            };
-          });
+          const operatorAddress = validator?.operator_address;
+
+          return {
+            validatorName,
+            myStake,
+            formattedMyStake,
+            votingPower,
+            formattedVotingPower,
+            commissions,
+            formattedCommissions,
+            formattedWebsite,
+            website,
+            operatorAddress,
+            inactiveStatus,
+            isTopThird: topThird.has(operatorAddress),
+          };
+        };
+
+        const bondedRows = eligibleValidators.map((validator) =>
+          toRow(validator)
+        );
+
+        // the user's own inactive validators are listed (unselectable) whatever
+        // their commission, so they can see the stake that needs moving
+        const bondedAddresses = new Set(
+          validators.map(({ operator_address }) => operator_address)
+        );
+        const inactiveRows = inactiveDelegations.flatMap(
+          ({ operatorAddress, status }) => {
+            if (bondedAddresses.has(operatorAddress)) return [];
+            const validator = delegatorValidators.find(
+              ({ operator_address }) => operator_address === operatorAddress
+            );
+            return validator ? [toRow(validator, status)] : [];
+          }
+        );
+
+        // Fixed order: staked validators first by My Stake,
+        // then the rest by voting power. The top third would lead that rest,
+        // so it is folded away behind a bar until asked for (search shows it,
+        // and any the user already prefers stay visible).
+        const byDesc =
+          (key: "myStake" | "votingPower") =>
+          (a: FormattedValidator, b: FormattedValidator) =>
+            a[key].gt(b[key]) ? -1 : a[key].lt(b[key]) ? 1 : 0;
+
+        const staked = [
+          ...inactiveRows,
+          ...bondedRows.filter(({ myStake }) => myStake.isPositive()),
+        ].sort(byDesc("myStake"));
+        const unstaked = bondedRows
+          .filter(({ myStake }) => !myStake.isPositive())
+          .sort(byDesc("votingPower"));
+        const topThirdRows = unstaked.filter(({ isTopThird }) => isTopThird);
+        const visibleTopThird =
+          showTopThird || globalFilter
+            ? topThirdRows
+            : topThirdRows.filter(({ operatorAddress }) =>
+                usersValidatorSetPreferenceMap.has(operatorAddress)
+              );
+
+        return {
+          data: [
+            ...staked,
+            ...visibleTopThird,
+            ...unstaked.filter(({ isTopThird }) => !isTopThird),
+          ],
+          stakedCount: staked.length,
+          topThirdCount: topThirdRows.length,
+        };
       }, [
         validators,
+        eligibleValidators,
         getVotingPower,
         getMyStake,
         getFormattedVotingPower,
         getFormattedMyStake,
         getCommissions,
         getFormattedCommissions,
-        getIsAPRTooHigh,
-        getIsVotingPowerTooHigh,
         getFormattedWebsite,
+        inactiveDelegations,
+        delegatorValidators,
+        topThird,
+        usersValidatorSetPreferenceMap,
+        showTopThird,
+        globalFilter,
       ]);
 
       const columns = [
@@ -262,6 +368,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   <div className="flex h-full items-center justify-center">
                     <Checkbox
                       checked={props.row.getIsSelected()}
+                      disabled={!props.row.getCanSelect()}
                       onClick={props.row.getToggleSelectedHandler()}
                     />
                   </div>
@@ -281,24 +388,45 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
                   const operatorAddress = props.row.original.operatorAddress;
 
-                  const imageUrl =
-                    queryValidators.getValidatorThumbnail(operatorAddress);
+                  // inactive validators aren't in the bonded list the
+                  // thumbnails come from, so they get a placeholder
+                  const imageUrl = props.row.original.inactiveStatus
+                    ? "/icons/question-mark.svg"
+                    : queryValidators.getValidatorThumbnail(operatorAddress);
 
                   return (
-                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[18.75rem]">
-                      <div className="h-10 w-10 overflow-hidden rounded-full">
+                    <div className="flex max-w-[28rem] items-center gap-3 md:max-w-none md:gap-2">
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
                         <FallbackImg
                           alt={props.row.original.validatorName}
-                          src={imageUrl}
+                          // an empty src never fires onError, so it would show
+                          // a broken image instead of the fallback
+                          src={imageUrl || "/icons/superfluid-osmo.svg"}
                           fallbacksrc="/icons/superfluid-osmo.svg"
                           height={40}
                           width={40}
                         />
                       </div>
-                      <div className="flex flex-col">
-                        <div className="subtitle1 md:subtitle2 text-left">
-                          {props.row.original.validatorName}
+                      <div className="flex min-w-0 flex-col">
+                        <div className="subtitle1 md:subtitle2 truncate text-left">
+                          {truncateName(props.row.original.validatorName)}
                         </div>
+                        {props.row.original.inactiveStatus && (
+                          <span
+                            className={classNames(
+                              "caption text-left",
+                              inactiveStatusTextClass(
+                                props.row.original.inactiveStatus
+                              )
+                            )}
+                          >
+                            {t(
+                              props.row.original.inactiveStatus === "jailed"
+                                ? "stake.inactiveValidators.statusJailed"
+                                : "stake.inactiveValidators.statusInactive"
+                            )}
+                          </span>
+                        )}
                         {Boolean(website) && (
                           <span className="text-left text-xs text-wosmongton-100">
                             <a
@@ -307,7 +435,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                               rel="noopener noreferrer"
                               className="flex items-center gap-2"
                             >
-                              {formattedWebsite}
+                              <span className="truncate">
+                                {formattedWebsite}
+                              </span>
                               <ExternalLinkIcon
                                 isAnimated
                                 classes={{ container: "w-3 h-3" }}
@@ -324,14 +454,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             {
               id: "myStake",
               accessorKey: "myStake",
-              sortingFn: (
-                rowA: Row<FormattedValidator>,
-                rowB: Row<FormattedValidator>
-              ) => {
-                const a = rowA.original.myStake;
-                const b = rowB.original.myStake;
-                return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
-              },
               header: () => t("stake.validatorSquad.column.myStake"),
               cell: observer(
                 (
@@ -340,7 +462,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const formattedMyStake = props.row.original.formattedMyStake;
 
                   return (
-                    <div className="w-full text-right">{formattedMyStake}</div>
+                    <div className="w-full text-right">
+                      {props.row.original.myStake.isPositive()
+                        ? formattedMyStake
+                        : ""}
+                    </div>
                   );
                 }
               ),
@@ -348,14 +474,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             {
               id: "votingPower",
               accessorKey: "votingPower",
-              sortingFn: (
-                rowA: Row<FormattedValidator>,
-                rowB: Row<FormattedValidator>
-              ) => {
-                const a = rowA.original.votingPower;
-                const b = rowB.original.votingPower;
-                return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
-              },
               header: () => t("stake.validatorSquad.column.votingPower"),
               cell: observer(
                 (
@@ -365,7 +483,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     props.row.original.formattedVotingPower;
 
                   return (
-                    <div className="w-full text-right">
+                    <div className="w-full whitespace-nowrap text-right">
                       {formattedVotingPower}
                     </div>
                   );
@@ -391,33 +509,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 }
               ),
             },
-            {
-              id: "warning",
-              cell: observer(
-                (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const isVotingPowerTooHigh =
-                    props.row.original.isVotingPowerTooHigh;
-
-                  return (
-                    <div className="flex w-8">
-                      {isVotingPowerTooHigh && (
-                        <Tooltip
-                          content={t("stake.isVotingPowerTooHighTooltip")}
-                        >
-                          <Icon
-                            id="pie-chart"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
-                  );
-                }
-              ),
-            },
           ],
         },
       ];
@@ -426,22 +517,25 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         data,
         columns,
         state: {
-          sorting,
           rowSelection,
           globalFilter,
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
-        enableRowSelection: true,
+        // key selection by validator so it survives rows being shown or hidden
+        getRowId: (row) => row.operatorAddress,
+        enableRowSelection: (row) => !row.original.inactiveStatus,
+        // the order is fixed and built into data
+        enableSorting: false,
         onRowSelectionChange: setRowSelection,
-        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
       useEffect(() => {
+        if (!isOpen || isRedelegating) return;
+
         const defaultusersValidatorSetPreferenceMap = new Set(
           usersValidatorSetPreferenceMap.keys()
         );
@@ -451,6 +545,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
           table.getRowModel().flatRows.forEach((row) => {
             if (
+              row.getCanSelect() &&
               defaultusersValidatorSetPreferenceMap.has(
                 row.original.operatorAddress
               )
@@ -465,19 +560,100 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             ? defaultRowSelection
             : currentRowSelection;
         });
-      }, [table, usersValidatorSetPreferenceMap]);
+      }, [table, usersValidatorSetPreferenceMap, isRedelegating, isOpen]);
 
-      const setSquadButtonDisabled = Object.keys(rowSelection).length === 0;
+      // when redelegating, start from the squad minus its inactive validators:
+      // the stored preference if there is one, else the active validators the
+      // user already delegates to
+      const inactiveAddresses = useMemo(
+        () =>
+          new Set(
+            inactiveDelegations.map(({ operatorAddress }) => operatorAddress)
+          ),
+        [inactiveDelegations]
+      );
+      // dust (under 1 OSMO, the popup's threshold) isn't preselected
+      const minPreselectDelegation = useMemo(
+        () =>
+          new Int(1).mul(
+            DecUtils.getTenExponentN(
+              totalStakePool.currency.coinDecimals
+            ).truncate()
+          ),
+        [totalStakePool.currency.coinDecimals]
+      );
+      useEffect(() => {
+        if (!isOpen) {
+          // the modal stays mounted, so don't carry one opening's selection
+          // into the next
+          setRowSelection({});
+          return;
+        }
+        if (!isRedelegating) return;
+
+        setRowSelection(
+          Object.fromEntries(
+            getRedelegationDefaultSelection({
+              preference: [...usersValidatorSetPreferenceMap.keys()],
+              delegatedValidators: [...usersValidatorsMap.entries()].map(
+                ([operatorAddress, { balance }]) => ({
+                  operatorAddress,
+                  amount: new Int(balance.amount),
+                })
+              ),
+              minDelegation: minPreselectDelegation,
+              selectableValidators: eligibleAddresses,
+            }).map((address) => [address, true])
+          )
+        );
+      }, [
+        isOpen,
+        isRedelegating,
+        usersValidatorSetPreferenceMap,
+        usersValidatorsMap,
+        eligibleAddresses,
+        minPreselectDelegation,
+      ]);
+
+      const selectedOperatorAddresses = useMemo(
+        () =>
+          Object.keys(rowSelection).filter(
+            (address) =>
+              rowSelection[address] &&
+              !inactiveAddresses.has(address) &&
+              eligibleAddresses.has(address)
+          ),
+        [rowSelection, inactiveAddresses, eligibleAddresses]
+      );
+
+      const setSquadButtonDisabled = selectedOperatorAddresses.length === 0;
 
       const handleSetSquadClick = useCallback(async () => {
         // TODO disable cases for button, disable if none selected, if weights and list is same
 
-        const operatorAddresses = Object.keys(rowSelection).map(
-          (rowId) => table.getRow(rowId).original.operatorAddress
-        );
+        const operatorAddresses = selectedOperatorAddresses;
 
         // throw or return
         if (!account) return;
+
+        if (isRedelegating) {
+          const redelegations = splitRedelegations(
+            inactiveDelegations,
+            operatorAddresses
+          );
+          if (!redelegations.length) return;
+
+          await account.osmosis.sendRedelegateMsgs(
+            redelegations,
+            getRedelegationPreferenceUpdate(
+              [...usersValidatorSetPreferenceMap.keys()],
+              operatorAddresses
+            ),
+            "",
+            onRequestClose
+          );
+          return;
+        }
 
         // stake button
         if (action === "stake") {
@@ -495,9 +671,80 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             onRequestClose
           );
         }
-      }, [rowSelection, table, account, onRequestClose, coin, action]);
+      }, [
+        selectedOperatorAddresses,
+        account,
+        isRedelegating,
+        inactiveDelegations,
+        usersValidatorSetPreferenceMap,
+        onRequestClose,
+        coin,
+        action,
+      ]);
+
+      const totalInactiveStake = useMemo(
+        () =>
+          new CoinPretty(
+            totalStakePool.currency,
+            inactiveDelegations.reduce(
+              (acc, { amount }) => acc.add(amount),
+              new Int(0)
+            )
+          )
+            .maxDecimals(2)
+            .toString(),
+        [inactiveDelegations, totalStakePool.currency]
+      );
 
       const { rows } = table.getRowModel();
+
+      const showTopThirdBar = topThirdCount > 0 && !globalFilter;
+      // the bar and the top-third rows under it read as one box
+      const isInTopThirdBox = (index: number) =>
+        showTopThirdBar &&
+        Boolean(rows[index]) &&
+        index >= stakedCount &&
+        rows[index].original.isTopThird;
+      const topThirdBoxIsOpen = isInTopThirdBox(stakedCount);
+      // the whole bar toggles the top-third rows
+      const topThirdBar = (
+        <tr
+          key="top-third-bar"
+          className="bg-osmoverse-800 transition-colors hover:cursor-pointer hover:bg-osmoverse-700"
+          onClick={() => setShowTopThird(!showTopThird)}
+        >
+          <td
+            colSpan={table.getAllColumns()[0].columns.length}
+            className={classNames(
+              "!p-0",
+              topThirdBoxIsOpen && "!rounded-b-none"
+            )}
+          >
+            <button
+              type="button"
+              aria-expanded={showTopThird}
+              className="flex w-full items-center justify-between gap-4 px-4 py-3"
+            >
+              <div className="flex items-center gap-3">
+                <Icon
+                  id="pie-chart"
+                  color={theme.colors.rust["200"]}
+                  className="w-6 shrink-0"
+                />
+                <span className="body2 text-left text-osmoverse-200">
+                  {showTopThird
+                    ? t("stake.inactiveValidators.topThirdShown")
+                    : t("stake.inactiveValidators.topThirdHidden")}
+                </span>
+              </div>
+              <Icon
+                id={showTopThird ? "chevron-up" : "chevron-down"}
+                className="h-4 w-4 shrink-0 text-wosmongton-300"
+              />
+            </button>
+          </td>
+        </tr>
+      );
 
       return (
         <ModalBase
@@ -506,9 +753,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           onRequestClose={onRequestClose}
           className="flex !max-w-[1168px] flex-col"
         >
-          <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
+          <div className="mx-auto mb-[1.125rem] flex max-w-[1040px] flex-col items-center justify-center text-center md:max-w-[500px]">
             <div className="mb-3 mt-7 font-medium">
-              {t("stake.validatorSquad.description")}
+              {isRedelegating
+                ? t("stake.inactiveValidators.redelegateDescription", {
+                    amount: totalInactiveStake,
+                  })
+                : t("stake.validatorSquad.description")}
             </div>
             <SearchBox
               placeholder={t("stake.validatorSquad.searchPlaceholder")}
@@ -531,36 +782,31 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     <tr className="top-0 bg-osmoverse-850" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
-                          <th key={header.id} colSpan={header.colSpan}>
+                          <th
+                            key={header.id}
+                            colSpan={header.colSpan}
+                            // hyphenation needs a language, and <html> has none
+                            lang={language}
+                            className={classNames(
+                              // smaller headers so every column fits on mobile;
+                              // long ones wrap, hyphenating single words
+                              "md:!px-1 md:text-xs md:[hyphens:auto]"
+                            )}
+                          >
                             {header.isPlaceholder ? null : (
                               <div
-                                {...{
-                                  className: header.column.getCanSort()
-                                    ? "cursor-pointer select-none flex items-center gap-2"
-                                    : "",
-                                  onClick:
-                                    header.column.getToggleSortingHandler(),
-                                }}
+                                className={classNames(
+                                  "flex items-center gap-2",
+                                  // text alignment too, for headers that wrap
+                                  header.column.id === "validatorName"
+                                    ? "justify-start text-left"
+                                    : "justify-end text-right"
+                                )}
                               >
                                 {flexRender(
                                   header.column.columnDef.header,
                                   header.getContext()
                                 )}
-                                {{
-                                  asc: (
-                                    <Icon
-                                      id="sort-up"
-                                      className="h-[16px] w-[7px] text-osmoverse-300"
-                                    />
-                                  ),
-                                  desc: (
-                                    <Icon
-                                      id="sort-down"
-                                      className="h-[16px] w-[7px] text-osmoverse-300"
-                                    />
-                                  ),
-                                }[header.column.getIsSorted() as string] ??
-                                  null}
                               </div>
                             )}
                           </th>
@@ -580,20 +826,40 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     </td>
                   </tr>
                 ) : (
-                  rows.map((row) => {
+                  rows.map((row, index) => {
                     const cells = row?.getVisibleCells();
-                    return (
+                    const rowElement = (
                       <tr
                         key={row?.id}
                         className={classNames(
-                          `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-700`,
-                          row.getIsSelected() ? "bg-osmoverse-700" : ""
+                          row.getCanSelect()
+                            ? `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-700`
+                            : row.original.inactiveStatus === "jailed"
+                              ? "bg-rust-800/20"
+                              : "bg-rust-400/10",
+                          row.getIsSelected()
+                            ? "bg-osmoverse-700"
+                            : row.original.isTopThird && "bg-osmoverse-800",
+                          // square inside the top-third box, rounded at its foot
+                          isInTopThirdBox(index) &&
+                            (isInTopThirdBox(index + 1)
+                              ? "[&>td]:!rounded-none"
+                              : "[&>td]:!rounded-t-none")
                         )}
                         onClick={row.getToggleSelectedHandler()}
                       >
                         {cells?.map((cell) => {
                           return (
-                            <td key={cell.id} className="text-left">
+                            <td
+                              key={cell.id}
+                              className={classNames(
+                                "text-left",
+                                // on mobile the name takes whatever width the
+                                // other columns leave, truncating at its edge
+                                cell.column.id === "validatorName" &&
+                                  "md:w-full md:max-w-0"
+                              )}
+                            >
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -603,21 +869,39 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                         })}
                       </tr>
                     );
+
+                    // the top-third bar sits between the staked validators and
+                    // the rest
+                    return index === stakedCount && showTopThirdBar ? (
+                      <Fragment key={row.id}>
+                        {topThirdBar}
+                        {rowElement}
+                      </Fragment>
+                    ) : (
+                      rowElement
+                    );
                   })
                 )}
+                {showTopThirdBar && stakedCount >= rows.length && topThirdBar}
               </tbody>
             </table>
           </div>
-          <div className="mb-6 flex justify-center justify-self-end">
+          <div className="mb-6 mt-4 flex justify-center justify-self-end">
             <Button
               className="w-80"
               disabled={setSquadButtonDisabled}
               variant="success"
               onClick={handleSetSquadClick}
             >
-              {action === "stake"
-                ? t("stake.validatorSquad.button2")
-                : t("stake.validatorSquad.button")}
+              {isRedelegating
+                ? t("stake.inactiveValidators.redelegate")
+                : action === "stake"
+                  ? t("stake.validatorSquad.button2", {
+                      amount: new CoinPretty(coin.currency, coin.amount)
+                        .trim(true)
+                        .toString(),
+                    })
+                  : t("stake.validatorSquad.button")}
             </Button>
           </div>
         </ModalBase>

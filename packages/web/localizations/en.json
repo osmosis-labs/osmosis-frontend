@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "This is a validator with high voting power, consider selecting a different validator to help promote decentralization.",
+    "inactiveValidators": {
+      "title": "Inactive Validators Detected",
+      "squadDescription": "These validators have left the active set and no longer earn rewards. Redelegate to active validators to start earning again. Redelegation is instant, with no unbonding period.",
+      "statusInactive": "Outside the active set",
+      "statusInactiveShortfall": "Inactive: ~{amount} short of the active set",
+      "statusJailed": "Jailed: not earning rewards",
+      "redelegate": "Redelegate",
+      "stakeWarning": "Your stake squad includes inactive validators. Part of any new stake would go to them and earn nothing.",
+      "editSquad": "Edit stake squad",
+      "redelegateDescription": "Select validators to redelegate {amount} to. It's split evenly between them; the rest of your stake is unchanged.",
+      "topThirdHidden": "The largest validators, together holding a third of all stake, are hidden by default to help keep Osmosis decentralized.",
+      "topThirdShown": "These are the largest validators, together holding a third of all stake. Choosing smaller validators helps keep Osmosis decentralized.",
+      "alertDescription": "Some of your validators have left the active set, so the OSMO staked with them isn't earning rewards. Redelegate from the Stake page to start earning again.",
+      "dismiss": "Dismiss",
+      "goToStake": "Go to Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "What is staking?",
@@ -720,7 +735,7 @@
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
-      "button2": "Set Squad and Stake",
+      "button2": "Set Squad and Stake {amount}",
       "noResults": "No results found",
       "column": {
         "validator": "Validator",
