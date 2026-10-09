@@ -12,7 +12,13 @@ import type {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { createPublicClient, keccak256, parseAbi } from "viem";
 import { mainnet } from "viem/chains";
 
@@ -252,6 +258,18 @@ interface MaxAvailableResponse {
 }
 
 const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
+
+/** Re-checks for the injected provider once the page loads and once after a second. */
+const subscribeToPhantomInjection = (onChange: () => void) => {
+  window.addEventListener("load", onChange);
+  const timer = setTimeout(onChange, 1000);
+  return () => {
+    window.removeEventListener("load", onChange);
+    clearTimeout(timer);
+  };
+};
+const getPhantomSnapshot = () => getPhantomProvider() ?? null;
+const getPhantomServerSnapshot = () => null;
 
 type RedeemError =
   | { type: "phantom_not_installed" }
@@ -1130,7 +1148,11 @@ export const WormholeRedeem: FunctionComponent = () => {
   // render branch.
   const [, setCountdownTick] = useState(0);
 
-  const [phantom, setPhantom] = useState<any>(null);
+  const phantom = useSyncExternalStore(
+    subscribeToPhantomInjection,
+    getPhantomSnapshot,
+    getPhantomServerSnapshot
+  );
   const [suiConnection, setSuiConnection] =
     useState<SuiWalletConnection | null>(null);
   const [availableSuiWallets, setAvailableSuiWallets] = useState<
@@ -1139,24 +1161,6 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [suiRedeemTxDigest, setSuiRedeemTxDigest] = useState<string | null>(
     null
   );
-
-  useEffect(() => {
-    const detect = () => getPhantomProvider() ?? null;
-
-    const provider = detect();
-    if (provider) {
-      setPhantom(provider);
-      return;
-    }
-
-    const onProviderReady = () => setPhantom(detect());
-    window.addEventListener("load", onProviderReady);
-    const timer = setTimeout(() => setPhantom(detect()), 1000);
-    return () => {
-      window.removeEventListener("load", onProviderReady);
-      clearTimeout(timer);
-    };
-  }, []);
 
   // Wallet Standard registers asynchronously; subscribe so wallets that
   // load after this component mounts are picked up without a refresh.
@@ -1280,8 +1284,15 @@ export const WormholeRedeem: FunctionComponent = () => {
       return;
     }
     try {
-      const resp = await phantom.connect();
-      setSolanaWallet(resp.publicKey.toString());
+      const { publicKey } = await phantom.connect();
+      if (!publicKey) {
+        setError({
+          type: "generic",
+          message: t("transfer.wormholeRedeem.failedToConnectWallet"),
+        });
+        return;
+      }
+      setSolanaWallet(publicKey.toString());
     } catch (err: unknown) {
       setError({
         type: "generic",
@@ -1295,8 +1306,9 @@ export const WormholeRedeem: FunctionComponent = () => {
 
   useEffect(() => {
     if (!phantom) return;
-    const onAccountChanged = (publicKey: { toString(): string } | null) => {
-      setSolanaWallet(publicKey ? publicKey.toString() : null);
+    // Phantom passes the new PublicKey, or null when the account is disconnected.
+    const onAccountChanged = (publicKey: unknown) => {
+      setSolanaWallet(publicKey ? String(publicKey) : null);
     };
     phantom.on?.("accountChanged", onAccountChanged);
     return () => phantom.off?.("accountChanged", onAccountChanged);
@@ -1441,6 +1453,9 @@ export const WormholeRedeem: FunctionComponent = () => {
         }
 
         setStatus("signing");
+        if (!phantom.signTransaction) {
+          throw new Error("Phantom provider does not support signTransaction");
+        }
         const signed = await phantom.signTransaction(innerTx);
 
         setStatus("submitting");

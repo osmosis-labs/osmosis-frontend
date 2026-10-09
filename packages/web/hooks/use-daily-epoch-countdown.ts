@@ -1,9 +1,18 @@
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
+import { useNow } from "~/hooks/use-now";
 import { api } from "~/utils/trpc";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
+
+/**
+ * The cached epoch.endTime describes the epoch we're tracking; once it lapses
+ * we need to refetch to get the next boundary. The chain may not have ticked
+ * the next epoch yet, so refetch immediately on expiry and then poll at this
+ * interval until fresh data arrives.
+ */
+const RETRY_REFETCH_EVERY_MS = 30_000;
 
 /**
  * Returns the time remaining until the next daily-epoch reward distribution,
@@ -13,47 +22,26 @@ const REWARD_EPOCH_IDENTIFIER = "day";
  */
 export function useDailyEpochCountdown(): string | null {
   const { data: epochs, refetch } = api.local.params.getEpochs.useQuery();
+  const now = useNow();
 
-  const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
+  const endTime = epochs?.find(
+    (e) => e.identifier === REWARD_EPOCH_IDENTIFIER
+  )?.endTime;
+  const remainingSeconds =
+    endTime !== undefined && now !== null
+      ? dayjs(endTime).diff(dayjs(now), "second")
+      : null;
+  const isExpired = remainingSeconds !== null && remainingSeconds <= 0;
 
   useEffect(() => {
-    if (!epochs) {
-      setTimeRemaining(null);
-      return;
-    }
-    const epoch = epochs.find((e) => e.identifier === REWARD_EPOCH_IDENTIFIER);
-    if (!epoch) {
-      setTimeRemaining(null);
-      return;
-    }
-
-    // The cached epoch.endTime describes the epoch we're tracking; once it
-    // lapses, we need to refetch to get the next boundary. The chain may not
-    // have ticked the next epoch yet, so refetch immediately on first expiry
-    // and then poll every 30s until fresh data arrives.
-    const RETRY_REFETCH_EVERY_SECONDS = 30;
-    let secondsSinceLastRefetch = RETRY_REFETCH_EVERY_SECONDS;
-    const update = () => {
-      const remainingSeconds = dayjs(epoch.endTime).diff(dayjs(), "second");
-      setTimeRemaining(
-        dayjs
-          .duration(Math.max(0, remainingSeconds), "second")
-          .format("HH:mm:ss")
-      );
-
-      if (remainingSeconds <= 0) {
-        secondsSinceLastRefetch += 1;
-        if (secondsSinceLastRefetch >= RETRY_REFETCH_EVERY_SECONDS) {
-          secondsSinceLastRefetch = 0;
-          void refetch();
-        }
-      }
-    };
-
-    update();
-    const id = setInterval(update, 1000);
+    if (!isExpired) return;
+    void refetch();
+    const id = setInterval(() => void refetch(), RETRY_REFETCH_EVERY_MS);
     return () => clearInterval(id);
-  }, [epochs, refetch]);
+  }, [isExpired, refetch]);
 
-  return timeRemaining;
+  if (remainingSeconds === null) return null;
+  return dayjs
+    .duration(Math.max(0, remainingSeconds), "second")
+    .format("HH:mm:ss");
 }

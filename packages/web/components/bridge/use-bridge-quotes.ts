@@ -583,65 +583,62 @@ export const useBridgeQuotes = ({
     [isOneSuccessful, isOneErrored, quoteResults]
   );
 
-  useEffect(() => {
-    const quoteResults_ = [...quoteResults];
+  const bestQuote = useMemo(
+    () =>
+      [...quoteResults]
+        // only those that have fetched
+        .filter(
+          (quoteResult) =>
+            Boolean(quoteResult.isFetched) && !quoteResult.isError
+        )
+        // Sort by response time. The fastest and highest quality quote will be first.
+        .sort((a, b) => {
+          // This means the quote is for a basic IBC transfer:
+          // Prefer IBC provider over others since its status source provider
+          // offers a more real time UX compared to other bridge route provider's
+          // status endpoints, which rely on indexing chains and come with a delay.
+          if (a.data?.provider.id === "IBC") return -1;
 
-    const bestQuote = quoteResults_
-      // only those that have fetched
-      .filter(
-        (quoteResult) => Boolean(quoteResult.isFetched) && !quoteResult.isError
-      )
-      // Sort by response time. The fastest and highest quality quote will be first.
-      .sort((a, b) => {
-        // This means the quote is for a basic IBC transfer:
-        // Prefer IBC provider over others since its status source provider
-        // offers a more real time UX compared to other bridge route provider's
-        // status endpoints, which rely on indexing chains and come with a delay.
-        if (a.data?.provider.id === "IBC") return -1;
+          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+            return 1;
+          }
+          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+            return -1;
+          }
+          return 0;
+        })
+        // only those that have returned a result without error
+        .map(({ data }) => data)
+        // only the best quote data
+        .reduce((bestAcc, cur) => {
+          if (!bestAcc) return cur;
+          if (
+            !!cur &&
+            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+          ) {
+            return cur;
+          }
+          return bestAcc;
+        }, undefined),
+    [quoteResults]
+  );
 
-        if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
-          return 1;
-        }
-        if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
-          return -1;
-        }
-        return 0;
-      })
-      // only those that have returned a result without error
-      .map(({ data }) => data)
-      // only the best quote data
-      .reduce((bestAcc, cur) => {
-        if (!bestAcc) return cur;
-        if (
-          !!cur &&
-          bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
-        ) {
-          return cur;
-        }
-        return bestAcc;
-      }, undefined);
+  // If the selected bridge provider is not found in the results, select the best quote provider
+  const isBridgeProviderNotFound = !quoteResults.some(
+    ({ data }) => data?.provider.id === selectedBridgeProvider
+  );
 
-    // If the selected bridge provider is not found in the results, select the best quote provider
-    const isBridgeProviderNotFound = !quoteResults_.some(
-      ({ data }) => data?.provider.id === selectedBridgeProvider
-    );
-
-    if (
-      !!bestQuote &&
-      !isTxPending &&
-      ((bestQuote?.provider.id !== selectedBridgeProvider &&
-        !isBridgeProviderControlledMode) ||
-        isBridgeProviderNotFound)
-    ) {
-      setSelectedBridgeProvider(bestQuote.provider.id);
-    }
-  }, [
-    selectedQuote,
-    quoteResults,
-    selectedBridgeProvider,
-    isBridgeProviderControlledMode,
-    isTxPending,
-  ]);
+  // Selected during render; converges because the next render sees the
+  // selection equal to the best quote's provider, which is in the results.
+  if (
+    !!bestQuote &&
+    !isTxPending &&
+    ((bestQuote.provider.id !== selectedBridgeProvider &&
+      !isBridgeProviderControlledMode) ||
+      isBridgeProviderNotFound)
+  ) {
+    setSelectedBridgeProvider(bestQuote.provider.id);
+  }
 
   // Check if value loss during transfer is too high (Skip bridge specific)
   // Skip returns InsufficientAmountError when USD value difference is too large

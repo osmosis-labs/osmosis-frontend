@@ -109,6 +109,12 @@ export const OrderTypeSelector = ({
   const resolvedBase = baseMinimalDenom ?? "";
   const resolvedQuote = quoteMinimalDenom ?? "";
 
+  // Prevents the !hasOrderbook reset effect from firing immediately after
+  // creation while the getPools cache is still catching up. Holds the pair
+  // it was created for — a plain boolean would leak the suppression onto
+  // other bases if the user switches tokens before the cache refreshes.
+  const justCreatedPairRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (
       hasOrderbook &&
@@ -254,12 +260,6 @@ export const OrderTypeSelector = ({
     // verification data is still catching up, or the UI would invite a
     // duplicate pool-creation tx.
     !wasOrderbookJustCreated(resolvedBase, resolvedQuote);
-
-  // Prevents the !hasOrderbook reset effect from firing immediately after
-  // creation while the getPools cache is still catching up. Holds the pair
-  // it was created for — a plain boolean would leak the suppression onto
-  // other bases if the user switches tokens before the cache refreshes.
-  const justCreatedPairRef = useRef<string | null>(null);
 
   const creationFlow = useOrderbookCreationFlow({
     baseDenom: resolvedBase,

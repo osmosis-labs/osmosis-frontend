@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 import { useFeatureFlags } from "~/hooks";
 import type {
   ChartingLibraryWidgetOptions,
-  IChartingLibraryWidget,
   ResolutionString,
 } from "~/public/tradingview";
 import { theme } from "~/tailwind.config";
@@ -17,7 +16,6 @@ type AdvancedChartProps = Omit<
 
 export const AdvancedChart = (props: AdvancedChartProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const chart = useRef<IChartingLibraryWidget | undefined>(undefined);
 
   const featureFlags = useFeatureFlags();
   const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
@@ -56,7 +54,8 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     },
   };
 
-  if (container && chart.current === undefined && featureFlags._isInitialized) {
+  // Reads the latest props without re-creating the widget when they change.
+  const createWidget = useEffectEvent((container: HTMLDivElement) => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: props.coinDenom,
       datafeed: props.datafeed!,
@@ -90,15 +89,15 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       ...props,
     };
 
-    chart.current = new TradingView.widget(widgetOptions);
-  }
+    return new TradingView.widget(widgetOptions);
+  });
 
+  const isFeatureFlagsInitialized = featureFlags._isInitialized;
   useEffect(() => {
-    return () => {
-      chart.current?.remove();
-      chart.current = undefined;
-    };
-  }, []);
+    if (!container || !isFeatureFlagsInitialized) return;
+    const widget = createWidget(container);
+    return () => widget.remove();
+  }, [container, isFeatureFlagsInitialized]);
 
   return <div className="relative h-full" ref={setContainer} />;
 };

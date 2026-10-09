@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
 
+import { useNow } from "~/hooks/use-now";
 import { humanizeTime } from "~/utils/date";
 
 /**
@@ -11,30 +11,16 @@ export const useHumanizedRemainingTime = ({
 }: {
   unix: number | undefined;
 }) => {
-  const [humanizedRemainingTime, setHumanizedRemainingTime] =
-    useState<ReturnType<typeof humanizeTime>>();
+  const now = useNow();
 
-  useEffect(() => {
-    if (!unix) return setHumanizedRemainingTime(undefined);
+  if (!unix || now === null) return { humanizedRemainingTime: undefined };
 
-    const updateTime = () => {
-      // humanizeTime is now direction-agnostic (uses absolute diffs), so an
-      // expired target would render as a positive future-looking duration.
-      // Callers of this hook expect a countdown, so clear once the target
-      // has passed.
-      if (dayjs.unix(unix).isBefore(dayjs())) {
-        setHumanizedRemainingTime(undefined);
-        return;
-      }
-      setHumanizedRemainingTime(humanizeTime(dayjs.unix(unix)));
-    };
+  const target = dayjs.unix(unix);
+  const current = dayjs(now);
+  // humanizeTime is direction-agnostic (uses absolute diffs), so an expired
+  // target would render as a positive future-looking duration. Callers of
+  // this hook expect a countdown, so clear once the target has passed.
+  if (target.isBefore(current)) return { humanizedRemainingTime: undefined };
 
-    updateTime();
-
-    const intervalId = setInterval(updateTime, 1_000);
-
-    return () => clearInterval(intervalId);
-  }, [unix]);
-
-  return { humanizedRemainingTime };
+  return { humanizedRemainingTime: humanizeTime(target, false, current) };
 };

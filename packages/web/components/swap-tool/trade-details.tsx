@@ -18,7 +18,7 @@ import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   UseDisclosureReturn,
-  usePreviousWhen,
+  useLatestWhen,
   useSlippageConfig,
   useTranslation,
 } from "~/hooks";
@@ -510,7 +510,7 @@ function RoutesTaken({
   }) {
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
-  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
+  const latestSplitRef = useLatestWhen(split, (s) => s.length > 0);
 
   const displayedSplit = isLoading ? (latestSplitRef ?? split) : split;
 

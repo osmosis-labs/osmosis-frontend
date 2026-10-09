@@ -7,7 +7,7 @@ import {
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
@@ -771,7 +771,7 @@ const useLimitPrice = ({
     { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
   );
 
-  const [orderPrice, setOrderPrice] = useState("0");
+  const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
 
   const minPrice = useMemo(() => {
@@ -970,9 +970,17 @@ const useLimitPrice = ({
     setPriceLock(false);
   }, []);
 
-  useEffect(() => {
+  const [prevResetKey, setPrevResetKey] = useState({
+    orderDirection,
+    baseDenom,
+  });
+  if (
+    prevResetKey.orderDirection !== orderDirection ||
+    prevResetKey.baseDenom !== baseDenom
+  ) {
+    setPrevResetKey({ orderDirection, baseDenom });
     reset();
-  }, [orderDirection, reset, baseDenom]);
+  }
 
   const isValidPrice =
     isValidInputPrice ||
