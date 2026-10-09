@@ -522,18 +522,16 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
 }> = observer(({ poolId, onIncentivize }) => {
-  const { derivedDataStore, chainStore, accountStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
-  // Daily gauge emissions are derived from the internal gauge ids and epoch
-  // provisions; no tRPC route exposes them yet, so they stay on MobX.
-  const concentratedPoolDetail =
-    derivedDataStore.concentratedPoolDetails.get(poolId);
+  const { data: poolGaugeIncentives } =
+    api.edge.pools.getPoolGaugeIncentives.useQuery({ poolId });
 
-  const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+  const hasIncentives = Boolean(poolGaugeIncentives);
 
   const { data: userPositions } =
     api.local.concentratedLiquidity.getUserPositions.useQuery(
@@ -661,24 +659,17 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             {t("pool.incentives")}
           </span>
           <div className="flex w-full items-center">
-            {concentratedPoolDetail.incentiveGauges.map((incentive) => (
-              <div
-                className="flex items-center gap-3"
-                key={incentive.coinPerDay.denom}
-              >
+            {poolGaugeIncentives && (
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  {incentive.apr && (
-                    <span className="subtitle1 text-osmoverse-100">
-                      +{incentive.apr.maxDecimals(0).toString()}
-                    </span>
-                  )}
                   <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                     <EntityImage
                       logoURIs={{
-                        png: incentive.coinPerDay.currency.coinImageUrl,
+                        png: poolGaugeIncentives.coinPerDay.currency
+                          .coinImageUrl,
                       }}
-                      name={incentive.coinPerDay.currency.coinDenom}
-                      symbol={incentive.coinPerDay.currency.coinDenom}
+                      name={poolGaugeIncentives.coinPerDay.currency.coinDenom}
+                      symbol={poolGaugeIncentives.coinPerDay.currency.coinDenom}
                       width={20}
                       height={20}
                     />
@@ -687,14 +678,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
                 <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
                   <span>
                     {t("pool.dailyEarnAmount", {
-                      amount: formatPretty(incentive.coinPerDay, {
+                      amount: formatPretty(poolGaugeIncentives.coinPerDay, {
                         maxDecimals: 2,
                       }),
                     })}
                   </span>
                 </div>
               </div>
-            ))}
+            )}
           </div>
           <span className="caption mr-auto text-osmoverse-500">
             *{t("pool.onlyInRangePositions")}

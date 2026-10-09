@@ -1,5 +1,5 @@
-import type { Chain } from "@osmosis-labs/types";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import type { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
 import cachified, { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -14,8 +14,14 @@ import {
   type PoolDataRange,
   queryPoolAprsRange,
 } from "../../data-services/pool-aprs";
-import { type Gauge, queryGauges } from "../../osmosis";
+import {
+  type Gauge,
+  queryEpochProvisions,
+  queryGauges,
+  queryPoolGaugeIds,
+} from "../../osmosis";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
+import { getAsset } from "../assets";
 import { getEpochs } from "../osmosis";
 import type { Epoch } from "../osmosis/epochs";
 
@@ -211,6 +217,60 @@ export function getLockableDurations() {
     .sort((v1, v2) => {
       return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
     });
+}
+
+/** Share of each epoch's provisions that is routed to pool incentives (20%). */
+const POOL_INCENTIVES_PROVISIONS_SHARE = new Dec(0.2);
+
+/**
+ * Gets the daily OSMO emission of a pool's internal incentive gauge: epoch
+ * provisions × pool incentives share × the gauge's incentive percentage.
+ * Returns `null` when the pool receives no internal incentives.
+ */
+export function getPoolGaugeIncentives({
+  poolId,
+  chainList,
+  assetLists,
+}: {
+  poolId: string;
+  chainList: Chain[];
+  assetLists: AssetList[];
+}): Promise<{ coinPerDay: CoinPretty } | null> {
+  return cachified({
+    cache: incentivesCache,
+    key: `pool-gauge-incentives-${poolId}`,
+    ttl: 1000 * 60 * 10, // 10 mins
+    getFreshValue: async () => {
+      const [{ epoch_provisions }, { gauge_ids_with_duration }] =
+        await Promise.all([
+          queryEpochProvisions({ chainList }),
+          queryPoolGaugeIds({ chainList, poolId }),
+        ]);
+
+      // all gauges emit the same denom, so the last one with a share wins
+      const gauge = gauge_ids_with_duration
+        .filter(
+          ({ gauge_incentive_percentage }) =>
+            !new Dec(gauge_incentive_percentage).isZero()
+        )
+        .pop();
+      if (!gauge) return null;
+
+      const asset = getAsset({
+        assetLists,
+        anyDenom: chainList[0].stakeCurrency!.coinMinimalDenom,
+      });
+
+      return {
+        coinPerDay: new CoinPretty(
+          asset,
+          new Dec(epoch_provisions)
+            .mul(POOL_INCENTIVES_PROVISIONS_SHARE)
+            .mul(new Dec(gauge.gauge_incentive_percentage).quo(new Dec(100)))
+        ),
+      };
+    },
+  });
 }
 
 /** Gets internally incentivized pools with gauges that distribute minted staking tokens. */
