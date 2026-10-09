@@ -55,8 +55,9 @@ export const IncentivizePoolModal: FunctionComponent<
     useIncentivizePoolConfig();
 
   // Reward token choices: only assets the connected wallet actually holds —
-  // you can't fund a gauge with what you don't have. Only registered assets
-  // with a positive balance qualify (LP share tokens are not offered).
+  // you can't fund a gauge with what you don't have. Registered assets and LP
+  // shares with a positive balance qualify (`coin` is undefined for unknown
+  // denoms).
   // Selection is keyed by coinMinimalDenom (via TokenSelect's
   // keyByMinimalDenom), so same-symbol assets (bridged variants) stay distinct
   // and resolve unambiguously in this irreversible flow.
@@ -66,8 +67,8 @@ export const IncentivizePoolModal: FunctionComponent<
   );
   const selectableTokens = useMemo(
     () =>
-      (userBalances ?? []).flatMap(({ denom, coin }) =>
-        !denom.startsWith("gamm") && coin?.toDec().isPositive() ? [coin] : []
+      (userBalances ?? []).flatMap(({ coin }) =>
+        coin?.toDec().isPositive() ? [coin] : []
       ),
     [userBalances]
   );
