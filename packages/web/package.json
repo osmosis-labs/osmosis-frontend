@@ -13,7 +13,7 @@
     "test": "yarn generate && dotenv -c -- jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
-    "cf:build": "opennextjs-cloudflare build",
+    "cf:build": "CF_BUILD=true opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "cf:deploy": "yarn cf:build && opennextjs-cloudflare deploy -- --keep-vars",

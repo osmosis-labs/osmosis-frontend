@@ -17,6 +17,12 @@ const config = {
   // isows resolves to a different entry under the Cloudflare `workerd` export condition than under
   // Node, so Next's file tracing misses it. Keeping it external lets OpenNext copy the whole package.
   serverExternalPackages: ["isows"],
+  experimental: {
+    // Keep function names in the Worker so Cloudflare CPU/heap profiles are readable. Wrangler's
+    // source map stops at OpenNext's handler.mjs, so this is what makes Next's chunks legible.
+    // Costs ~210KB gzip against the 10MB Worker cap; Vercel builds stay minified.
+    serverMinification: process.env.CF_BUILD !== "true",
+  },
   images: {
     remotePatterns: [
       {
