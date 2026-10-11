@@ -105,14 +105,24 @@ export function getPoolsFromSidecar({
         .map((sidecarPool, index) => {
           let coins = reserveCoins[index] ?? null;
           // For orderbook pools, sort so the stablecoin is always second (quote)
-          if (coins && getPoolTypeFromChainPool(sidecarPool.chain_model) === "cosmwasm-orderbook") {
+          if (
+            coins &&
+            getPoolTypeFromChainPool(sidecarPool.chain_model) ===
+              "cosmwasm-orderbook"
+          ) {
             const firstIsStable = Boolean(
-              getAssetFromAssetList({ coinMinimalDenom: coins[0].currency.coinMinimalDenom, assetLists })
-                ?.rawAsset.pegMechanism
+              getAssetFromAssetList({
+                coinMinimalDenom: coins[0].currency.coinMinimalDenom,
+                assetLists,
+              })?.rawAsset.pegMechanism
             );
             if (firstIsStable) coins = [coins[1], coins[0]];
           }
-          return makePoolFromSidecarPool({ assetLists, sidecarPool, reserveCoins: coins });
+          return makePoolFromSidecarPool({
+            assetLists,
+            sidecarPool,
+            reserveCoins: coins,
+          });
         })
         .filter(Boolean) as Pool[];
 

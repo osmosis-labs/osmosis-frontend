@@ -6,10 +6,9 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import Tippy from "@tippyjs/react";
+import { keepPreviousData } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { parseAsStringEnum, parseAsStringLiteral, useQueryState } from "nuqs";
@@ -33,19 +32,15 @@ import {
   TRADE_TYPES,
 } from "~/components/swap-tool/order-type-selector";
 import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
+import { Tooltip } from "~/components/tooltip/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import {
-  useAmplitudeAnalytics,
-  useFeatureFlags,
-  useTranslation,
-  useWalletSelect,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import {
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   formatFiatPrice,
   formatPretty,
@@ -73,402 +68,403 @@ const OrderbookDepthPanel = dynamic(
   { ssr: false }
 );
 
-export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
-  ({ poolId }) => {
-    const { chainStore, accountStore } = useStore();
-    const { t } = useTranslation();
-    useAmplitudeAnalytics();
-    const { isLoading: isWalletLoading } = useWalletSelect();
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
-    const featureFlags = useFeatureFlags();
+export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
+  poolId,
+}) => {
+  const { address: userAddress, isWalletConnected } = useWallet();
+  const { t } = useTranslation();
+  const { isLoading: isWalletLoading } = useWalletSelect();
+  const featureFlags = useFeatureFlags();
 
-    // Buy / Sell tab — write to URL on mount so PlaceLimitTool picks up the default
-    const [tradeTab, setTradeTab] = useQueryState(
-      "tab",
-      parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
-        SwapToolTab.BUY
-      )
+  // Buy / Sell tab — write to URL on mount so PlaceLimitTool picks up the default
+  const [tradeTab, setTradeTab] = useQueryState(
+    "tab",
+    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
+      SwapToolTab.BUY
+    )
+  );
+
+  // Default to limit order type on this page
+  const [, setTradeType] = useQueryState(
+    "type",
+    parseAsStringLiteral(TRADE_TYPES).withDefault("limit")
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("tab")) setTradeTab(SwapToolTab.BUY);
+    if (!params.has("type")) setTradeType("limit");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Pool base data
+  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+
+  // Orderbook metadata
+  const { data: allOrderbooks } = api.edge.orderbooks.getPools.useQuery();
+  const orderbook = useMemo(
+    () => allOrderbooks?.find((ob) => ob.poolId === poolId),
+    [allOrderbooks, poolId]
+  );
+  const contractAddress = orderbook?.contractAddress ?? "";
+  const baseDenom =
+    orderbook?.baseDenom ??
+    pool?.reserveCoins[0]?.currency.coinMinimalDenom ??
+    "";
+  const quoteDenom =
+    orderbook?.quoteDenom ??
+    pool?.reserveCoins[1]?.currency.coinMinimalDenom ??
+    "";
+
+  // reserveCoins sorted to match normalized base/quote orientation
+  const poolReserveCoins = pool?.reserveCoins;
+  const sortedReserveCoins = useMemo(() => {
+    if (!poolReserveCoins || !baseDenom) return poolReserveCoins ?? [];
+    const base = poolReserveCoins.find(
+      (c) => c.currency.coinMinimalDenom === baseDenom
+    );
+    const quote = poolReserveCoins.find(
+      (c) => c.currency.coinMinimalDenom === quoteDenom
+    );
+    if (base && quote) return [base, quote];
+    return poolReserveCoins;
+  }, [poolReserveCoins, baseDenom, quoteDenom]);
+
+  // Maker fee
+  const { data: makerFeeData } = api.edge.orderbooks.getMakerFee.useQuery(
+    { osmoAddress: contractAddress },
+    { enabled: Boolean(contractAddress) }
+  );
+
+  // Bucket size for depth aggregation — undefined = raw ticks
+  const [bucketSize, setBucketSize] = useState<number | undefined>(undefined);
+
+  // Aggregated depth chart data
+  const {
+    data: depthData,
+    isLoading: isDepthLoading,
+    isError: isDepthError,
+    isRefetching: isDepthRefetching,
+  } = api.edge.pools.getPairDepth.useQuery(
+    { poolId, bucketSize },
+    {
+      enabled: Boolean(contractAddress),
+      refetchInterval: 30000,
+      placeholderData: keepPreviousData,
+      staleTime: 0,
+    }
+  );
+
+  // Price selected by clicking a depth table row — forwarded to PlaceLimitTool
+  const [selectedPrice, setSelectedPrice] = useState<string>("");
+
+  // TradingView datafeed — uses the same historical price API as the assets page
+  const apiUtils = api.useUtils();
+  const tvDatafeed = useMemo(
+    () => historicalDatafeed({ apiUtils }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // Display denom for TradingView — use the normalized baseDenom from orderbook metadata
+  const baseCoinDenom =
+    baseDenom || (pool?.reserveCoins[0]?.currency.coinMinimalDenom ?? "");
+
+  // Incentives / APR
+  const { data: incentives, isLoading: isLoadingIncentives } =
+    api.edge.pools.getPoolIncentives.useQuery(
+      { poolId },
+      { enabled: featureFlags.aprBreakdown }
     );
 
-    // Default to limit order type on this page
-    const [, setTradeType] = useQueryState(
-      "type",
-      parseAsStringLiteral(TRADE_TYPES).withDefault("limit")
-    );
+  // User orders — fetch all, then filter to this contract
+  const {
+    orders: allOrders,
+    isLoading: isOrdersLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
+  } = useOrderbookOrders({
+    userAddress: userAddress ?? "",
+    pageSize: 100,
+    refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+  });
 
-    useEffect(() => {
-      const params = new URLSearchParams(window.location.search);
-      if (!params.has("tab")) setTradeTab(SwapToolTab.BUY);
-      if (!params.has("type")) setTradeType("limit");
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  const poolOrders = useMemo(
+    () => allOrders.filter((o) => o.orderbookAddress === contractAddress),
+    [allOrders, contractAddress]
+  );
 
-    // Pool base data
-    const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+  const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
+  const filteredOrders = useMemo(
+    () =>
+      dirFilter === "all"
+        ? poolOrders
+        : poolOrders.filter((o) => o.order_direction === dirFilter),
+    [poolOrders, dirFilter]
+  );
 
-    // Orderbook metadata
-    const { data: allOrderbooks } = api.edge.orderbooks.getPools.useQuery();
-    const orderbook = useMemo(
-      () => allOrderbooks?.find((ob) => ob.poolId === poolId),
-      [allOrderbooks, poolId]
-    );
-    const contractAddress = orderbook?.contractAddress ?? "";
-    const baseDenom =
-      orderbook?.baseDenom ??
-      pool?.reserveCoins[0]?.currency.coinMinimalDenom ??
-      "";
-    const quoteDenom =
-      orderbook?.quoteDenom ??
-      pool?.reserveCoins[1]?.currency.coinMinimalDenom ??
-      "";
+  // Claimable orders for this pool
+  const { claimAllOrders } = useOrderbookClaimableOrders({
+    userAddress: userAddress ?? "",
+    disabled: isOrdersLoading || isRefetching,
+    refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+  });
 
-    // reserveCoins sorted to match normalized base/quote orientation
-    const sortedReserveCoins = useMemo(() => {
-      if (!pool?.reserveCoins || !baseDenom) return pool?.reserveCoins ?? [];
-      const base = pool.reserveCoins.find(
-        (c) => c.currency.coinMinimalDenom === baseDenom
-      );
-      const quote = pool.reserveCoins.find(
-        (c) => c.currency.coinMinimalDenom === quoteDenom
-      );
-      if (base && quote) return [base, quote];
-      return pool.reserveCoins;
-    }, [pool?.reserveCoins, baseDenom, quoteDenom]);
+  const claimablePoolOrders = useMemo(
+    () =>
+      poolOrders.filter(
+        (o) => o.status === "filled" && o.orderbookAddress === contractAddress
+      ),
+    [poolOrders, contractAddress]
+  );
 
-    // Maker fee
-    const { data: makerFeeData } = api.edge.orderbooks.getMakerFee.useQuery(
-      { osmoAddress: contractAddress },
-      { enabled: Boolean(contractAddress) }
-    );
+  const claimOrders = useCallback(async () => {
+    await claimAllOrders();
+    await refetch();
+  }, [claimAllOrders, refetch]);
 
-    // Bucket size for depth aggregation — undefined = raw ticks
-    const [bucketSize, setBucketSize] = useState<number | undefined>(undefined);
+  const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
-    // Aggregated depth chart data
-    const {
-      data: depthData,
-      isLoading: isDepthLoading,
-      isError: isDepthError,
-      isRefetching: isDepthRefetching,
-    } = api.edge.pools.getPairDepth.useQuery(
-      { poolId, bucketSize },
-      {
-        enabled: Boolean(contractAddress),
-        refetchInterval: 30000,
-        keepPreviousData: true,
-        staleTime: 0,
-      }
-    );
-
-    // Price selected by clicking a depth table row — forwarded to PlaceLimitTool
-    const [selectedPrice, setSelectedPrice] = useState<string>("");
-
-    // TradingView datafeed — uses the same historical price API as the assets page
-    const apiUtils = api.useUtils();
-    const tvDatafeed = useMemo(
-      () => historicalDatafeed({ apiUtils }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      []
-    );
-
-    // Display denom for TradingView — use the normalized baseDenom from orderbook metadata
-    const baseCoinDenom =
-      baseDenom || (pool?.reserveCoins[0]?.currency.coinMinimalDenom ?? "");
-
-    // Incentives / APR
-    const { data: incentives, isLoading: isLoadingIncentives } =
-      api.edge.pools.getPoolIncentives.useQuery(
-        { poolId },
-        { enabled: featureFlags.aprBreakdown }
-      );
-
-    // User orders — fetch all, then filter to this contract
-    const {
-      orders: allOrders,
-      isLoading: isOrdersLoading,
-      fetchNextPage,
-      hasNextPage,
-      isFetchingNextPage,
-      refetch,
-      isRefetching,
-    } = useOrderbookOrders({
-      userAddress: account?.address ?? "",
-      pageSize: 100,
-      refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
-    });
-
-    const poolOrders = useMemo(
-      () => allOrders.filter((o) => o.orderbookAddress === contractAddress),
-      [allOrders, contractAddress]
-    );
-
-    const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
-    const filteredOrders = useMemo(
-      () =>
-        dirFilter === "all"
-          ? poolOrders
-          : poolOrders.filter((o) => o.order_direction === dirFilter),
-      [poolOrders, dirFilter]
-    );
-
-    // Claimable orders for this pool
-    const { claimAllOrders } = useOrderbookClaimableOrders({
-      userAddress: account?.address ?? "",
-      disabled: isOrdersLoading || isRefetching,
-      refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
-    });
-
-    const claimablePoolOrders = useMemo(
-      () =>
-        poolOrders.filter(
-          (o) => o.status === "filled" && o.orderbookAddress === contractAddress
-        ),
-      [poolOrders, contractAddress]
-    );
-
-    const claimOrders = useCallback(async () => {
-      await claimAllOrders();
-      await refetch();
-    }, [claimAllOrders, refetch]);
-
-    const showConnectWallet = !account?.isWalletConnected && !isWalletLoading;
-
-    return (
-      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
-        <section className="flex flex-col gap-4">
-          {/* ── Header row ── */}
-          <div className="flex flex-row items-start gap-4 px-2 lg:flex-col lg:gap-3">
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <PoolAssetsIcon
-                  className="!w-[78px]"
-                  assets={sortedReserveCoins.map((coin) => ({
-                    coinImageUrl: coin.currency.coinImageUrl,
-                    coinDenom: coin.currency.coinDenom,
-                    coinMinimalDenom: coin.currency.coinMinimalDenom,
-                  }))}
-                />
-                <PoolAssetsName
-                  size="md"
-                  className="text-h5 font-h5"
-                  assetDenoms={sortedReserveCoins.map(
-                    ({ denom, currency }) => ({
-                      minDenom: currency.coinMinimalDenom,
-                      symbol: denom,
-                    })
-                  )}
-                />
-              </div>
-              <div className="flex items-center gap-1.5 text-wosmongton-300">
-                <Icon id="coins" height={18} width={18} />
-                <span className="body2">{t("pool.orderbookPool.type")}</span>
-              </div>
+  return (
+    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
+      <section className="flex flex-col gap-4">
+        {/* ── Header row ── */}
+        <div className="flex flex-row items-start gap-4 px-2 lg:flex-col lg:gap-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <PoolAssetsIcon
+                className="!w-[78px]"
+                assets={sortedReserveCoins.map((coin) => ({
+                  coinImageUrl: coin.currency.coinImageUrl,
+                  coinDenom: coin.currency.coinDenom,
+                  coinMinimalDenom: coin.currency.coinMinimalDenom,
+                }))}
+              />
+              <PoolAssetsName
+                size="md"
+                className="text-h5 font-h5"
+                assetDenoms={sortedReserveCoins.map(({ denom, currency }) => ({
+                  minDenom: currency.coinMinimalDenom,
+                  symbol: denom,
+                }))}
+              />
             </div>
-            <div className="flex flex-grow justify-end lg:justify-start">
-              {makerFeeData && !makerFeeData.makerFee.isZero() && (
-                <PoolDataGroup
-                  label={t("pool.orderbookPool.makerFee")}
-                  value={new RatePretty(makerFeeData.makerFee)
-                    .maxDecimals(2)
-                    .toString()}
-                />
-              )}
+            <div className="flex items-center gap-1.5 text-wosmongton-300">
+              <Icon id="coins" height={18} width={18} />
+              <span className="body2">{t("pool.orderbookPool.type")}</span>
             </div>
           </div>
-
-          {/* ── TradingView chart ── */}
-          <div
-            className="h-[340px] overflow-hidden rounded-3xl border border-osmoverse-700"
-            style={{ marginBottom: "-60px" }}
-          >
-            {baseCoinDenom ? (
-              <AdvancedChart coinDenom={baseCoinDenom} datafeed={tvDatafeed} />
-            ) : (
-              <ChartUnavailable />
+          <div className="flex flex-grow justify-end lg:justify-start">
+            {makerFeeData && !makerFeeData.makerFee.isZero() && (
+              <PoolDataGroup
+                label={t("pool.orderbookPool.makerFee")}
+                value={new RatePretty(makerFeeData.makerFee)
+                  .maxDecimals(2)
+                  .toString()}
+              />
             )}
           </div>
+        </div>
 
-          {/* ── APR breakdown ── */}
-          {featureFlags.aprBreakdown && (
-            <SkeletonLoader isLoaded={!isLoadingIncentives}>
-              <AprBreakdown
-                className="shrink-0 rounded-3xl"
-                showDisclaimerTooltip
-                {...incentives?.aprBreakdown}
-              />
-            </SkeletonLoader>
+        {/* ── TradingView chart ── */}
+        <div
+          className="h-[340px] overflow-hidden rounded-3xl border border-osmoverse-700"
+          style={{ marginBottom: "-60px" }}
+        >
+          {baseCoinDenom ? (
+            // Keyed so the chart rebuilds once the orderbook's base denom
+            // replaces the reserve-coin fallback; the widget reads its
+            // symbol only at creation.
+            <AdvancedChart
+              key={baseCoinDenom}
+              coinDenom={baseCoinDenom}
+              datafeed={tvDatafeed}
+            />
+          ) : (
+            <ChartUnavailable />
           )}
+        </div>
 
-          {/* ── Trade widget + Depth table (side by side) ── */}
-          <div className="flex items-start gap-6 lg:flex-col">
-            {/* Trade widget — natural height, bordered */}
-            <div className="w-[512px] shrink-0 rounded-3xl border border-osmoverse-700 lg:w-full">
-              {/* Buy / Sell tabs — each takes 50% */}
-              <div className="flex overflow-hidden rounded-t-3xl">
-                {([SwapToolTab.BUY, SwapToolTab.SELL] as const).map(
-                  (tab, i) => {
-                    const isActive = tradeTab === tab;
-                    const isBuy = tab === SwapToolTab.BUY;
-                    return (
-                      <button
-                        key={tab}
-                        onClick={() => setTradeTab(tab)}
-                        className={classNames(
-                          "flex-1 py-3 font-semibold transition-colors",
-                          isActive
-                            ? isBuy
-                              ? "bg-bullish-400 text-osmoverse-1000"
-                              : "bg-rust-500 text-white"
-                            : i === 0
-                            ? "border-b border-r border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                            : "border-b border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                        )}
-                      >
-                        {isBuy ? t("portfolio.buy") : t("limitOrders.sell")}
-                      </button>
-                    );
-                  }
+        {/* ── APR breakdown ── */}
+        {featureFlags.aprBreakdown && (
+          <SkeletonLoader isLoaded={!isLoadingIncentives}>
+            <AprBreakdown
+              className="shrink-0 rounded-3xl"
+              showDisclaimerTooltip
+              {...incentives?.aprBreakdown}
+            />
+          </SkeletonLoader>
+        )}
+
+        {/* ── Trade widget + Depth table (side by side) ── */}
+        <div className="flex items-start gap-6 lg:flex-col">
+          {/* Trade widget — natural height, bordered */}
+          <div className="w-[512px] shrink-0 rounded-3xl border border-osmoverse-700 lg:w-full">
+            {/* Buy / Sell tabs — each takes 50% */}
+            <div className="flex overflow-hidden rounded-t-3xl">
+              {([SwapToolTab.BUY, SwapToolTab.SELL] as const).map((tab, i) => {
+                const isActive = tradeTab === tab;
+                const isBuy = tab === SwapToolTab.BUY;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setTradeTab(tab)}
+                    className={classNames(
+                      "flex-1 py-3 font-semibold transition-colors",
+                      isActive
+                        ? isBuy
+                          ? "bg-bullish-400 text-osmoverse-1000"
+                          : "bg-rust-500 text-white"
+                        : i === 0
+                          ? "border-b border-r border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
+                          : "border-b border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
+                    )}
+                  >
+                    {isBuy ? t("portfolio.buy") : t("limitOrders.sell")}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Limit / Market toggle */}
+            <div className="flex items-center px-5 pt-4">
+              <OrderTypeSelector
+                initialBaseDenom={baseDenom}
+                initialQuoteDenom={quoteDenom}
+              />
+            </div>
+            {/* PlaceLimitTool with matching padding */}
+            <div className="px-5 pb-4">
+              <PlaceLimitTool
+                key={tradeTab}
+                initialBaseDenom={baseDenom}
+                initialQuoteDenom={quoteDenom}
+                alwaysExpandedDetails
+                externalOrderPrice={selectedPrice}
+                onOrderSuccess={() => refetch()}
+              />
+            </div>
+          </div>
+
+          {/* Market depth panel — self-stretch to fill trade widget height */}
+          <div className="relative min-w-0 flex-1 self-stretch lg:min-h-[500px]">
+            <div className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-osmoverse-700 bg-osmoverse-1000">
+              <div className="min-h-0 flex-1">
+                {isDepthError && !depthData ? (
+                  <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                    <p className="body2 text-osmoverse-300">
+                      Order book unavailable
+                    </p>
+                    <p className="caption text-osmoverse-500">
+                      Could not load depth data
+                    </p>
+                  </div>
+                ) : (
+                  <OrderbookDepthPanel
+                    bids={depthData?.bids ?? []}
+                    asks={depthData?.asks ?? []}
+                    midPrice={depthData?.midPrice ?? 0}
+                    bidPrice={depthData?.bidPrice}
+                    askPrice={depthData?.askPrice}
+                    groupingOptions={depthData?.groupingOptions ?? []}
+                    baseSymbol={
+                      pool?.reserveCoins.find(
+                        (c) => c.currency.coinMinimalDenom === baseDenom
+                      )?.currency.coinDenom
+                    }
+                    quoteSymbol={
+                      pool?.reserveCoins.find(
+                        (c) => c.currency.coinMinimalDenom === quoteDenom
+                      )?.currency.coinDenom
+                    }
+                    onPriceSelect={(p) => setSelectedPrice(String(p))}
+                    isLive={!isDepthRefetching}
+                    isRefetching={isDepthRefetching}
+                    isLoading={isDepthLoading && !depthData}
+                    isError={isDepthError || depthData?.unavailable}
+                    bucketSize={bucketSize}
+                    onBucketSizeChange={setBucketSize}
+                  />
                 )}
               </div>
-              {/* Limit / Market toggle */}
-              <div className="flex items-center px-5 pt-4">
-                <OrderTypeSelector
-                  initialBaseDenom={baseDenom}
-                  initialQuoteDenom={quoteDenom}
-                />
-              </div>
-              {/* PlaceLimitTool with matching padding */}
-              <div className="px-5 pb-4">
-                <PlaceLimitTool
-                  key={tradeTab}
-                  page="Pool Details Page"
-                  initialBaseDenom={baseDenom}
-                  initialQuoteDenom={quoteDenom}
-                  alwaysExpandedDetails
-                  externalOrderPrice={selectedPrice}
-                  onOrderSuccess={() => refetch()}
-                />
-              </div>
-            </div>
-
-            {/* Market depth panel — self-stretch to fill trade widget height */}
-            <div className="relative min-w-0 flex-1 self-stretch lg:min-h-[500px]">
-              <div className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-osmoverse-700 bg-osmoverse-1000">
-                <div className="min-h-0 flex-1">
-                  {isDepthError && !depthData ? (
-                    <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                      <p className="body2 text-osmoverse-300">
-                        Order book unavailable
-                      </p>
-                      <p className="caption text-osmoverse-500">
-                        Could not load depth data
-                      </p>
-                    </div>
-                  ) : (
-                    <OrderbookDepthPanel
-                      bids={depthData?.bids ?? []}
-                      asks={depthData?.asks ?? []}
-                      midPrice={depthData?.midPrice ?? 0}
-                      bidPrice={depthData?.bidPrice}
-                      askPrice={depthData?.askPrice}
-                      groupingOptions={depthData?.groupingOptions ?? []}
-                      baseSymbol={
-                        pool?.reserveCoins.find(
-                          (c) => c.currency.coinMinimalDenom === baseDenom
-                        )?.currency.coinDenom
-                      }
-                      quoteSymbol={
-                        pool?.reserveCoins.find(
-                          (c) => c.currency.coinMinimalDenom === quoteDenom
-                        )?.currency.coinDenom
-                      }
-                      onPriceSelect={(p) => setSelectedPrice(String(p))}
-                      isLive={!isDepthRefetching}
-                      isRefetching={isDepthRefetching}
-                      isLoading={isDepthLoading && !depthData}
-                      isError={isDepthError || depthData?.unavailable}
-                      bucketSize={bucketSize}
-                      onBucketSizeChange={setBucketSize}
-                    />
-                  )}
-                </div>
-              </div>
             </div>
           </div>
+        </div>
 
-          {/* ── Your Orders (full width) ── */}
-          <div className="rounded-3xl border border-osmoverse-700 p-6">
-            <div className="mb-4 flex items-center gap-3">
-              <h4>{t("pool.orderbookPool.yourOrders")}</h4>
-              <div className="ml-auto flex gap-1 rounded-lg bg-osmoverse-800 p-0.5">
-                {(["all", "bid", "ask"] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setDirFilter(f)}
-                    className={`rounded-md px-3 py-1 text-xs transition-colors ${
-                      dirFilter === f
-                        ? "bg-osmoverse-700 text-white-full"
-                        : "text-osmoverse-400 hover:text-osmoverse-200"
-                    }`}
-                  >
-                    {f === "all"
-                      ? t("pool.orderbookPool.filterAll")
-                      : f === "bid"
+        {/* ── Your Orders (full width) ── */}
+        <div className="rounded-3xl border border-osmoverse-700 p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <h4>{t("pool.orderbookPool.yourOrders")}</h4>
+            <div className="ml-auto flex gap-1 rounded-lg bg-osmoverse-800 p-0.5">
+              {(["all", "bid", "ask"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setDirFilter(f)}
+                  className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                    dirFilter === f
+                      ? "bg-osmoverse-700 text-white-full"
+                      : "text-osmoverse-400 hover:text-osmoverse-200"
+                  }`}
+                >
+                  {f === "all"
+                    ? t("pool.orderbookPool.filterAll")
+                    : f === "bid"
                       ? t("pool.orderbookPool.filterBuy")
                       : t("pool.orderbookPool.filterSell")}
-                  </button>
-                ))}
-              </div>
+                </button>
+              ))}
             </div>
-
-            {showConnectWallet ? (
-              <div className="flex flex-col items-center gap-4 py-10 text-center">
-                <Image
-                  src="/images/place-limit-order.svg"
-                  alt="place a limit order"
-                  width={120}
-                  height={80}
-                />
-                <p className="body2 text-osmoverse-300">
-                  {t("limitOrders.historyTable.emptyState.connectSubtitle")}
-                </p>
-              </div>
-            ) : isOrdersLoading ? (
-              <div className="flex justify-center py-10">
-                <Spinner className="!h-10 !w-10" />
-              </div>
-            ) : filteredOrders.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-10 text-center">
-                <Image
-                  src="/images/place-limit-order.svg"
-                  alt="no orders"
-                  width={120}
-                  height={80}
-                />
-                <p className="body2 text-osmoverse-300">
-                  {t("pool.orderbookPool.noOrders")}
-                </p>
-                <p className="caption text-osmoverse-500">
-                  {t("pool.orderbookPool.noOrdersDesc")}
-                </p>
-              </div>
-            ) : (
-              <OrdersTable
-                orders={filteredOrders}
-                refetch={refetch}
-                claimableCount={claimablePoolOrders.length}
-                onClaimAll={claimOrders}
-                hasNextPage={hasNextPage}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-              />
-            )}
           </div>
-        </section>
-      </main>
-    );
-  }
-);
+
+          {showConnectWallet ? (
+            <div className="flex flex-col items-center gap-4 py-10 text-center">
+              <Image
+                src="/images/place-limit-order.svg"
+                alt="place a limit order"
+                width={120}
+                height={80}
+              />
+              <p className="body2 text-osmoverse-300">
+                {t("limitOrders.historyTable.emptyState.connectSubtitle")}
+              </p>
+            </div>
+          ) : isOrdersLoading ? (
+            <div className="flex justify-center py-10">
+              <Spinner className="!h-10 !w-10" />
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-10 text-center">
+              <Image
+                src="/images/place-limit-order.svg"
+                alt="no orders"
+                width={120}
+                height={80}
+              />
+              <p className="body2 text-osmoverse-300">
+                {t("pool.orderbookPool.noOrders")}
+              </p>
+              <p className="caption text-osmoverse-500">
+                {t("pool.orderbookPool.noOrdersDesc")}
+              </p>
+            </div>
+          ) : (
+            <OrdersTable
+              orders={filteredOrders}
+              refetch={refetch}
+              claimableCount={claimablePoolOrders.length}
+              onClaimAll={claimOrders}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              fetchNextPage={fetchNextPage}
+            />
+          )}
+        </div>
+      </section>
+    </main>
+  );
+};
 
 // ── Shared sub-components ──────────────────────────────────────────────────
 
@@ -611,9 +607,9 @@ const PoolOrderGroupHeader: FunctionComponent<{
               </span>
             </div>
           )}
-          <Tippy
+          <Tooltip
             content={
-              <div className="body2 flex flex-col gap-1 rounded-xl border border-osmoverse-100 bg-osmoverse-1000 px-3 py-2.5">
+              <div className="flex flex-col gap-1">
                 <span className="caption">
                   {t("limitOrders.whatIsOrderClaim.title")}
                 </span>
@@ -623,7 +619,6 @@ const PoolOrderGroupHeader: FunctionComponent<{
               </div>
             }
             trigger="mouseenter focus"
-            arrow={false}
           >
             <span className="inline-flex cursor-pointer items-center">
               <Icon
@@ -633,7 +628,7 @@ const PoolOrderGroupHeader: FunctionComponent<{
                 height={24}
               />
             </span>
-          </Tippy>
+          </Tooltip>
         </td>
         <td className="shrink-0 !px-0">
           {claimableCount > 0 && (
@@ -701,8 +696,8 @@ const OrderRow = memo(
               {dayDiff > 0
                 ? t("limitOrders.daysAgo", { days: dayDiff.toString() })
                 : hourDiff > 0
-                ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
-                : "<1 hour ago"}
+                  ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
+                  : "<1 hour ago"}
             </span>
           );
         }
@@ -793,11 +788,11 @@ const OrderRow = memo(
                     DEFAULT_VS_CURRENCY,
                     order_direction === "bid"
                       ? placed_quantity /
-                        Number(
-                          new Dec(10)
-                            .pow(new Int(quoteAsset?.decimals ?? 0))
-                            .toString()
-                        )
+                          Number(
+                            new Dec(10)
+                              .pow(new Int(quoteAsset?.decimals ?? 0))
+                              .toString()
+                          )
                       : output.quo(
                           new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
                         )

@@ -23,6 +23,15 @@ function formatPrice(price: number): string {
   return price.toPrecision(4);
 }
 
+/** Running total of price x quantity per level, in quote units. */
+function cumulativeQuoteValue(levels: OrderbookLevel[]): number[] {
+  const totals: number[] = [];
+  for (const l of levels) {
+    totals.push((totals.at(-1) ?? 0) + l.price * l.quantity);
+  }
+  return totals;
+}
+
 function formatQuantity(qty: number): string {
   return new Intl.NumberFormat("en-US", {
     maximumSignificantDigits: 4,
@@ -136,16 +145,8 @@ export const OrderbookDepthPanel: FunctionComponent<{
 
   // Compute cumulative quote value (price × quantity) for fill bars so both
   // sides are denominated in the same currency and large base-unit orders don't skew.
-  let cumBidQuote = 0;
-  const bidQuoteCumulatives = visibleBids.map((l) => {
-    cumBidQuote += l.price * l.quantity;
-    return cumBidQuote;
-  });
-  let cumAskQuote = 0;
-  const askQuoteCumulatives = visibleAsks.map((l) => {
-    cumAskQuote += l.price * l.quantity;
-    return cumAskQuote;
-  });
+  const bidQuoteCumulatives = cumulativeQuoteValue(visibleBids);
+  const askQuoteCumulatives = cumulativeQuoteValue(visibleAsks);
   const maxQuoteValue = Math.max(
     bidQuoteCumulatives.at(-1) ?? 0,
     askQuoteCumulatives.at(-1) ?? 0
@@ -168,8 +169,8 @@ export const OrderbookDepthPanel: FunctionComponent<{
     sweepSide === "ask"
       ? visibleAsks.slice(0, (sweepIndex ?? 0) + 1)
       : sweepSide === "bid"
-      ? visibleBids.slice(0, (sweepIndex ?? 0) + 1)
-      : [];
+        ? visibleBids.slice(0, (sweepIndex ?? 0) + 1)
+        : [];
   const sweepVolume = sweepLevels.reduce((s, l) => s + l.quantity, 0);
   const sweepWorstPrice =
     sweepSide === "ask"

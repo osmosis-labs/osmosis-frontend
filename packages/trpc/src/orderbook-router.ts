@@ -229,9 +229,7 @@ export const orderbookRouter = createTRPCRouter({
           })
         : undefined;
       const normalizationFactor = new Dec(10).pow(
-        new Int(
-          (quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0)
-        )
+        new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
       );
 
       const rawAsk = tickToPrice(new Int(orderbookState.next_ask_tick));
@@ -313,7 +311,11 @@ export const orderbookRouter = createTRPCRouter({
       const baseIsStable = Boolean(baseAsset?.rawAsset.pegMechanism);
       const quoteIsStable = Boolean(quoteAsset?.rawAsset.pegMechanism);
       if (baseIsStable && !quoteIsStable) {
-        return { ...pool, baseDenom: pool.quoteDenom, quoteDenom: pool.baseDenom };
+        return {
+          ...pool,
+          baseDenom: pool.quoteDenom,
+          quoteDenom: pool.baseDenom,
+        };
       }
       return pool;
     });

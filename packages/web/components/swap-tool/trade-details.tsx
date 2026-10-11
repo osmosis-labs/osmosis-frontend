@@ -52,6 +52,9 @@ export const TradeDetails = memo(
     const routesVisDisclosure = useDisclosure();
 
     const [outAsBase, setOutAsBase] = useState(tab === "buy");
+    // The pool page's limit-only widget has no quotes, and its limit price
+    // input already shows the rate.
+    const hideRate = alwaysExpanded && type === "limit";
 
     const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
@@ -117,52 +120,57 @@ export const TradeDetails = memo(
                     close={close}
                   />
                 )}
-                <div className={classNames("flex w-full items-start justify-between", { "min-h-[2rem] sm:min-h-[1.5rem]": type !== "limit" })}>
-                  {type !== "limit" && (
-                  <SkeletonLoader
-                    isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
-                  >
-                    <GenericDisclaimer
-                      title={t("tradeDetails.expectedRate.header")}
-                      body={t("tradeDetails.expectedRate.content")}
+                <div
+                  className={classNames(
+                    "flex w-full items-start justify-between",
+                    { "min-h-[2rem] sm:min-h-[1.5rem]": !hideRate }
+                  )}
+                >
+                  {!hideRate && (
+                    <SkeletonLoader
+                      isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                     >
-                      <div className="flex items-center gap-2">
-                        {isLoading && (
-                          <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                        )}
-                        <span
-                          onClick={() => setOutAsBase(!outAsBase)}
-                          className={classNames(
-                            "body2 sm:caption py-1 text-osmoverse-300",
-                            {
-                              "animate-pulse":
-                                inPriceFetching ||
-                                isLoading ||
-                                swapState?.inAmountInput.isTyping ||
-                                swapState?.outAmountInput.isTyping,
-                            }
+                      <GenericDisclaimer
+                        title={t("tradeDetails.expectedRate.header")}
+                        body={t("tradeDetails.expectedRate.content")}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isLoading && (
+                            <Spinner className="!h-6 !w-6 text-wosmongton-500" />
                           )}
-                        >
-                          {swapState?.inBaseOutQuoteSpotPrice && (
-                            <SkeletonLoader
-                              isLoaded={
-                                type !== "market" ||
-                                !swapState.inAmountInput.isTyping ||
-                                !swapState.outAmountInput.isTyping
+                          <span
+                            onClick={() => setOutAsBase(!outAsBase)}
+                            className={classNames(
+                              "body2 sm:caption py-1 text-osmoverse-300",
+                              {
+                                "animate-pulse":
+                                  inPriceFetching ||
+                                  isLoading ||
+                                  swapState?.inAmountInput.isTyping ||
+                                  swapState?.outAmountInput.isTyping,
                               }
-                            >
-                              {ExpectedRate(
-                                swapState,
-                                outAsBase,
-                                treatAsStable,
-                                priceOverride
-                              )}
-                            </SkeletonLoader>
-                          )}
-                        </span>
-                      </div>
-                    </GenericDisclaimer>
-                  </SkeletonLoader>
+                            )}
+                          >
+                            {swapState?.inBaseOutQuoteSpotPrice && (
+                              <SkeletonLoader
+                                isLoaded={
+                                  type !== "market" ||
+                                  !swapState.inAmountInput.isTyping ||
+                                  !swapState.outAmountInput.isTyping
+                                }
+                              >
+                                {ExpectedRate(
+                                  swapState,
+                                  outAsBase,
+                                  treatAsStable,
+                                  priceOverride
+                                )}
+                              </SkeletonLoader>
+                            )}
+                          </span>
+                        </div>
+                      </GenericDisclaimer>
+                    </SkeletonLoader>
                   )}
                   {!alwaysExpanded && (
                     <Disclosure.Button
@@ -192,14 +200,19 @@ export const TradeDetails = memo(
                             />
                           )}
                           <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
-                            {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                            {open
+                              ? t("swap.hideDetails")
+                              : t("swap.showDetails")}
                           </span>
                         </div>
                       </GenericDisclaimer>
                     </Disclosure.Button>
                   )}
                 </div>
-                <Disclosure.Panel static={alwaysExpanded} className="body2 sm:caption flex flex-col text-osmoverse-300">
+                <Disclosure.Panel
+                  static={alwaysExpanded}
+                  className="body2 sm:caption flex flex-col text-osmoverse-300"
+                >
                   {type === "market" ? (
                     <RecapRow
                       className={classNames({
