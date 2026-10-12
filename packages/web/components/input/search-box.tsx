@@ -100,7 +100,9 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     );
 
     const inputRef = useRef<HTMLInputElement>(null);
-    useImperativeHandle(ref, () => inputRef.current!);
+    // Empty deps: callers like useDimension pass a state-setter ref, which would
+    // re-render forever if the handle were reassigned on every render.
+    useImperativeHandle(ref, () => inputRef.current!, []);
 
     // A debounced input is uncontrolled, so `defaultValue` is only read on mount.
     // Sync later external changes (e.g. URL state that loads after hydration, or
