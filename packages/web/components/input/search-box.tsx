@@ -89,8 +89,15 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     },
     ref
   ) {
+    /** Last value the input and `currentValue` agreed on, used to tell our own
+     *  input echoing back from an external change. */
+    const syncedValueRef = useRef(currentValue ?? "");
+
     const _onInput = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => onInput(e.target.value),
+      (e: ChangeEvent<HTMLInputElement>) => {
+        syncedValueRef.current = e.target.value;
+        onInput(e.target.value);
+      },
       [onInput]
     );
 
@@ -106,11 +113,14 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
 
     // A debounced input is uncontrolled, so `defaultValue` is only read on mount.
     // Sync later external changes (e.g. URL state that loads after hydration, or
-    // back/forward navigation), but not while the user is typing.
+    // back/forward navigation). Skip our own debounced value coming back, which
+    // can lag behind what the user has typed since.
     useEffect(() => {
       const input = inputRef.current;
-      if (!_debounce || !input || document.activeElement === input) return;
-      input.value = currentValue ?? "";
+      const nextValue = currentValue ?? "";
+      if (!_debounce || !input || nextValue === syncedValueRef.current) return;
+      syncedValueRef.current = nextValue;
+      input.value = nextValue;
     }, [_debounce, currentValue]);
 
     const [canAutoFocus, setCanAutoFocus] = useState(false);
