@@ -7,7 +7,10 @@ import {
   forwardRef,
   FunctionComponent,
   useCallback,
+  useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useMount } from "react-use";
@@ -96,6 +99,18 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       [_debounce, _onInput]
     );
 
+    const inputRef = useRef<HTMLInputElement>(null);
+    useImperativeHandle(ref, () => inputRef.current!);
+
+    // A debounced input is uncontrolled, so `defaultValue` is only read on mount.
+    // Sync later external changes (e.g. URL state that loads after hydration, or
+    // back/forward navigation), but not while the user is typing.
+    useEffect(() => {
+      const input = inputRef.current;
+      if (!_debounce || !input || document.activeElement === input) return;
+      input.value = currentValue ?? "";
+    }, [_debounce, currentValue]);
+
     const [canAutoFocus, setCanAutoFocus] = useState(false);
 
     // only autofucus on mount to ensure that window is defined and the element is in the DOM
@@ -119,7 +134,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
         <label htmlFor="search-input" className="shrink grow">
           <input
             id="search-input"
-            ref={ref}
+            ref={inputRef}
             className="h-full w-full appearance-none bg-transparent tracking-wider placeholder:font-medium placeholder:text-osmoverse-500 group-focus-within:placeholder:text-osmoverse-600"
             defaultValue={_debounce ? currentValue : undefined}
             value={_debounce ? undefined : currentValue}
