@@ -1,4 +1,4 @@
-import { AppCurrency, CoinPretty } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef } from "react";
@@ -93,23 +93,16 @@ export const TokenSelect: FunctionComponent<{
 
         const aPrice = prices?.[a.token.currency.coinMinimalDenom];
         const bPrice = prices?.[b.token.currency.coinMinimalDenom];
-        const aFiatValue = aPrice && a.token.toDec().mul(aPrice.toDec());
-        const bFiatValue = bPrice && b.token.toDec().mul(bPrice.toDec());
+        // unpriced tokens sort as zero value so the comparator stays consistent
+        const aFiatValue = aPrice
+          ? a.token.toDec().mul(aPrice.toDec())
+          : new Dec(0);
+        const bFiatValue = bPrice
+          ? b.token.toDec().mul(bPrice.toDec())
+          : new Dec(0);
 
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.gt(bFiatValue) &&
-          sortByBalances
-        )
-          return -1;
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.lt(bFiatValue) &&
-          sortByBalances
-        )
-          return 1;
+        if (aFiatValue.gt(bFiatValue) && sortByBalances) return -1;
+        if (aFiatValue.lt(bFiatValue) && sortByBalances) return 1;
         return 0;
       });
 
