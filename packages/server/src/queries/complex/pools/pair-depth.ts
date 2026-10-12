@@ -1,4 +1,4 @@
-import { tickToPrice } from "@osmosis-labs/math";
+import { maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -6,9 +6,15 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { queryOrderbookAllTicks } from "../../osmosis";
+import { queryLiquidityPerTickRange } from "../../osmosis";
+import {
+  queryOrderbookTicksSQS,
+  SQSOrderbookTick,
+} from "../../sidecar/orderbooks";
 import { getOrderbookState } from "../orderbooks/orderbook-state";
 import { getOrderbookPools } from "../orderbooks/pools";
+import { ClPoolDepthInput, clQuantitiesOnLevels } from "./cl-depth";
+import { getPoolsFromSidecar } from "./providers/sidecar";
 
 export type DepthDataPoint = {
   price: number;
@@ -20,6 +26,12 @@ export type OrderbookLevel = {
   price: number;
   quantity: number;
   cumulative: number;
+  /**
+   * Liquidity from concentrated-liquidity pools for the same pair between
+   * the previous level and this one, in human base amounts. Not part of
+   * `quantity` or `cumulative`, which are resting orders only.
+   */
+  clQuantity?: number;
 };
 
 export type GroupingOption = { label: string; value: number };
@@ -36,6 +48,10 @@ export type PairDepthResult = {
   groupingOptions: GroupingOption[];
   /** True when the result is a no-data sentinel (orderbook not found, mid-price unavailable, etc.) rather than a live empty book */
   unavailable?: boolean;
+  /** CL pools whose liquidity is included in the levels' `clQuantity`. */
+  clPoolIds?: string[];
+  /** True when CL liquidity could not be loaded; levels are orderbook only. */
+  clUnavailable?: boolean;
 };
 
 const pairDepthCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -86,34 +102,132 @@ function aggregateLevels(
   }
 }
 
+function tickToHumanPrice(
+  tickId: number,
+  normalizationFactor: Dec
+): number | undefined {
+  try {
+    const price = Number(
+      tickToPrice(new Int(tickId)).quo(normalizationFactor).toString()
+    );
+    return price > 0 && Number.isFinite(price) ? price : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Builds raw (unaggregated) depth levels from orderbook ticks.
+ *
+ * Bid liquidity is held in the quote denom and ask liquidity in the base denom,
+ * both as minimal-denom integer strings. Both sides are returned as human base
+ * amounts. Only bid ticks at or below `nextBidTick` and ask ticks at or above
+ * `nextAskTick` are used, so the levels stay consistent with the best bid/ask
+ * read from the contract even if the tick source lags it slightly.
+ *
+ * Bids are sorted best (highest) first with cumulative depth from the best bid
+ * outward. Asks are sorted best (lowest) first with `cumulative` left at 0 for
+ * the caller to fill.
+ */
+export function buildOrderbookLevels({
+  ticks,
+  nextBidTick,
+  nextAskTick,
+  baseDecimals,
+  quoteDecimals,
+}: {
+  ticks: SQSOrderbookTick[];
+  nextBidTick: number;
+  nextAskTick: number;
+  baseDecimals: number;
+  quoteDecimals: number;
+}): { bids: OrderbookLevel[]; asks: OrderbookLevel[] } {
+  const normalizationFactor = new Dec(10).pow(
+    new Int(quoteDecimals - baseDecimals)
+  );
+  const baseScale = Math.pow(10, baseDecimals);
+  const quoteScale = Math.pow(10, quoteDecimals);
+
+  const bidTicks = ticks
+    .filter((t) => t.tick_id <= nextBidTick)
+    .sort((a, b) => b.tick_id - a.tick_id);
+  const askTicks = ticks
+    .filter((t) => t.tick_id >= nextAskTick)
+    .sort((a, b) => a.tick_id - b.tick_id);
+
+  const bids: OrderbookLevel[] = [];
+  let cumBid = 0;
+  for (const tick of bidTicks) {
+    const liquidity = Number(
+      tick.tick_state.bid_values.total_amount_of_liquidity
+    );
+    if (!(liquidity > 0)) continue;
+    const humanPrice = tickToHumanPrice(tick.tick_id, normalizationFactor);
+    if (humanPrice === undefined) continue;
+    // bid liquidity is in quote minimal units → convert to base human amount
+    const baseAmount = liquidity / quoteScale / humanPrice;
+    cumBid += baseAmount;
+    bids.push({ price: humanPrice, quantity: baseAmount, cumulative: cumBid });
+  }
+
+  const asks: OrderbookLevel[] = [];
+  for (const tick of askTicks) {
+    const liquidity = Number(
+      tick.tick_state.ask_values.total_amount_of_liquidity
+    );
+    if (!(liquidity > 0)) continue;
+    const humanPrice = tickToHumanPrice(tick.tick_id, normalizationFactor);
+    if (humanPrice === undefined) continue;
+    // ask liquidity is in base minimal units → convert to base human amount
+    asks.push({
+      price: humanPrice,
+      quantity: liquidity / baseScale,
+      cumulative: 0,
+    });
+  }
+
+  return { bids, asks };
+}
+
 export function getPairDepth({
   poolId,
   bucketSize,
+  includeCl = false,
   assetLists,
   chainList,
 }: {
   poolId: string;
   bucketSize?: number;
+  /** Include concentrated-liquidity pool depth for the pair. */
+  includeCl?: boolean;
   assetLists: AssetList[];
   chainList: Chain[];
 }): Promise<PairDepthResult> {
   return cachified({
     cache: pairDepthCache,
-    key: `pairDepth-${poolId}-${bucketSize ?? 0}`,
+    key: `pairDepth-${poolId}-${bucketSize ?? 0}-${includeCl ? "cl" : "ob"}`,
     ttl: 1000 * 30,
     getFreshValue: () =>
-      computePairDepth({ poolId, bucketSize, assetLists, chainList }),
+      computePairDepth({
+        poolId,
+        bucketSize,
+        includeCl,
+        assetLists,
+        chainList,
+      }),
   });
 }
 
 async function computePairDepth({
   poolId,
   bucketSize,
+  includeCl,
   assetLists,
   chainList,
 }: {
   poolId: string;
   bucketSize?: number;
+  includeCl: boolean;
   assetLists: AssetList[];
   chainList: Chain[];
 }): Promise<PairDepthResult> {
@@ -134,30 +248,13 @@ async function computePairDepth({
   const orderbook = allOrderbooks.find((ob) => ob.poolId === poolId);
   if (!orderbook) return { ...empty, unavailable: true };
 
-  const { contractAddress } = orderbook;
+  const { contractAddress, baseDenom, quoteDenom } = orderbook;
 
-  // Normalize base/quote: if base is a stablecoin and quote is not, swap them
-  // so price is always expressed as quote-per-base (volatile/stable).
-  const rawBaseAsset = getAssetFromAssetList({
-    coinMinimalDenom: orderbook.baseDenom,
-    assetLists,
-  });
-  const rawQuoteAsset = getAssetFromAssetList({
-    coinMinimalDenom: orderbook.quoteDenom,
-    assetLists,
-  });
-  const shouldSwap =
-    Boolean(rawBaseAsset?.rawAsset.pegMechanism) &&
-    !rawQuoteAsset?.rawAsset.pegMechanism;
-  const baseDenom = shouldSwap ? orderbook.quoteDenom : orderbook.baseDenom;
-  const quoteDenom = shouldSwap ? orderbook.baseDenom : orderbook.quoteDenom;
-
-  // 2. Get current best bid/ask tick IDs
-  const orderbookState = await getOrderbookState({
-    orderbookAddress: contractAddress,
-    chainList,
-  });
-
+  // Tick prices are always quote-per-base in the contract's own orientation.
+  // The pool display flips stablecoin-base books to volatile/stable, but the
+  // depth math below does not invert prices or swap sides, so such a book
+  // would be shown with wrong prices and sides. Report it as unavailable
+  // until inversion is implemented rather than show wrong depth.
   const baseAsset = getAssetFromAssetList({
     coinMinimalDenom: baseDenom,
     assetLists,
@@ -166,8 +263,57 @@ async function computePairDepth({
     coinMinimalDenom: quoteDenom,
     assetLists,
   });
-  const baseDecimals = baseAsset?.decimals ?? 0;
-  const quoteDecimals = quoteAsset?.decimals ?? 0;
+  const isStableBaseBook =
+    Boolean(baseAsset?.rawAsset.pegMechanism) &&
+    !quoteAsset?.rawAsset.pegMechanism;
+  if (isStableBaseBook) return { ...empty, unavailable: true };
+
+  // Without both exponents every price and quantity would be off by a power
+  // of ten, so never guess them.
+  if (!baseAsset || !quoteAsset) {
+    console.error("[pair-depth] missing asset metadata", {
+      poolId,
+      baseDenom,
+      quoteDenom,
+    });
+    return { ...empty, unavailable: true };
+  }
+  const baseDecimals = baseAsset.decimals;
+  const quoteDecimals = quoteAsset.decimals;
+
+  // 2. Get current best bid/ask tick IDs from the contract, and every tick
+  // with liquidity from SQS, in parallel.
+  // CL liquidity for the same pair is optional: a failure leaves the book
+  // as orderbook depth only, flagged so the UI can say so.
+  // Skipped entirely when the caller asked for orders only.
+  const clPoolsPromise = includeCl
+    ? getClPoolsForPair({
+        baseDenom,
+        quoteDenom,
+        assetLists,
+        chainList,
+      }).catch((e) => {
+        console.error("[pair-depth] CL liquidity fetch failed", e);
+        return null;
+      })
+    : Promise.resolve([]);
+  const [orderbookState, ticksResult] = await Promise.all([
+    getOrderbookState({
+      orderbookAddress: contractAddress,
+      chainList,
+    }),
+    // Network and gateway failures throw so cachified does not cache them
+    // and React Query keeps the previous successful data (keepPreviousData).
+    queryOrderbookTicksSQS({ poolId }),
+  ]);
+
+  if (ticksResult.status === "unavailable") {
+    console.warn("[pair-depth] SQS orderbook ticks unavailable", {
+      poolId,
+      reason: ticksResult.reason,
+    });
+    return { ...empty, unavailable: true };
+  }
 
   // normalizationFactor converts raw tick price → human price:
   // human_price = raw_price / normalizationFactor
@@ -196,115 +342,13 @@ async function computePairDepth({
 
   if (midPrice <= 0) return { ...empty, unavailable: true };
 
-  const nextBidTick = orderbookState.next_bid_tick;
-  const nextAskTick = orderbookState.next_ask_tick;
-
-  // 3. Use AllTicks to fetch only ticks that actually have orders.
-  // Bids: all ticks up to and including nextBidTick.
-  // Asks: all ticks from nextAskTick upward.
-  console.debug("[pair-depth] fetching ticks", {
-    poolId,
-    contractAddress,
-    nextBidTick,
-    nextAskTick,
-    midPrice,
-    bidPrice,
-    askPrice,
+  const { bids: rawBids, asks: rawAsks } = buildOrderbookLevels({
+    ticks: ticksResult.ticks,
+    nextBidTick: orderbookState.next_bid_tick,
+    nextAskTick: orderbookState.next_ask_tick,
+    baseDecimals,
+    quoteDecimals,
   });
-
-  const [bidTicksResp, askTicksResp] = await Promise.all([
-    queryOrderbookAllTicks({
-      orderbookAddress: contractAddress,
-      chainList,
-      endAt: nextBidTick,
-    })
-      .then((r) => r.data.ticks)
-      .catch((e) => {
-        console.error("[pair-depth] bid ticks fetch failed", e);
-        return null;
-      }),
-    queryOrderbookAllTicks({
-      orderbookAddress: contractAddress,
-      chainList,
-      startFrom: nextAskTick,
-    })
-      .then((r) => r.data.ticks)
-      .catch((e) => {
-        console.error("[pair-depth] ask ticks fetch failed", e);
-        return null;
-      }),
-  ]);
-
-  // Throw on tick fetch failure so cachified propagates the error and the
-  // tRPC layer returns a 500. React Query then keeps the previous successful
-  // data (keepPreviousData) instead of overwriting it with empty arrays.
-  if (bidTicksResp === null || askTicksResp === null) {
-    throw new Error("orderbook tick fetch failed");
-  }
-
-  console.debug("[pair-depth] raw ticks", {
-    bidTickCount: bidTicksResp.length,
-    askTickCount: askTicksResp.length,
-    bidSample: bidTicksResp.slice(0, 3),
-    askSample: askTicksResp.slice(0, 3),
-  });
-
-  const baseScale = Math.pow(10, baseDecimals);
-  const quoteScale = Math.pow(10, quoteDecimals);
-
-  // 4. Build bid levels — sorted desc by tick_id (highest price first = best bid first)
-  const sortedBidTicks = [...bidTicksResp].sort(
-    (a, b) => b.tick_id - a.tick_id
-  );
-  const rawBids: OrderbookLevel[] = [];
-  let cumBid = 0;
-  for (const tick of sortedBidTicks) {
-    const liquidity = Number(
-      tick.tick_state.bid_values.total_amount_of_liquidity
-    );
-    if (liquidity <= 0) continue;
-    let humanPrice: number;
-    try {
-      humanPrice = Number(
-        tickToPrice(new Int(tick.tick_id)).quo(normalizationFactor).toString()
-      );
-    } catch {
-      continue;
-    }
-    if (humanPrice <= 0) continue;
-    // bid liquidity is in quote minimal units → convert to base human amount
-    const baseAmount = liquidity / quoteScale / humanPrice;
-    cumBid += baseAmount;
-    rawBids.push({
-      price: humanPrice,
-      quantity: baseAmount,
-      cumulative: cumBid,
-    });
-  }
-
-  // 5. Build ask levels — sorted asc by tick_id (lowest price first = best ask first)
-  const sortedAskTicks = [...askTicksResp].sort(
-    (a, b) => a.tick_id - b.tick_id
-  );
-  const rawAsks: OrderbookLevel[] = [];
-  for (const tick of sortedAskTicks) {
-    const liquidity = Number(
-      tick.tick_state.ask_values.total_amount_of_liquidity
-    );
-    if (liquidity <= 0) continue;
-    let humanPrice: number;
-    try {
-      humanPrice = Number(
-        tickToPrice(new Int(tick.tick_id)).quo(normalizationFactor).toString()
-      );
-    } catch {
-      continue;
-    }
-    if (humanPrice <= 0) continue;
-    // ask liquidity is in base minimal units → convert to base human amount
-    const baseAmount = liquidity / baseScale;
-    rawAsks.push({ price: humanPrice, quantity: baseAmount, cumulative: 0 });
-  }
 
   // Asks: cumulative builds from outermost inward so fill bar grows toward mid.
   // aggregateLevels handles this internally when bucketing; do it manually otherwise.
@@ -325,6 +369,24 @@ async function computePairDepth({
     ? aggregateLevels(rawBids, bucketSize, "bid")
     : rawBids;
 
+  const clPools = await clPoolsPromise;
+  if (clPools && clPools.length > 0) {
+    const cl = clQuantitiesOnLevels({
+      pools: clPools.map(({ depth }) => depth),
+      midPrice,
+      bidPrices: bids.map((l) => l.price),
+      askPrices: asks.map((l) => l.price),
+      baseDecimals,
+      quoteDecimals,
+    });
+    bids.forEach((l, i) => (l.clQuantity = cl.bids[i]));
+    asks.forEach((l, i) => (l.clQuantity = cl.asks[i]));
+  }
+  const clInfo = {
+    clPoolIds: clPools?.map(({ poolId }) => poolId) ?? [],
+    clUnavailable: clPools === null,
+  };
+
   console.debug("[pair-depth] levels built", {
     bidLevels: bids.length,
     askLevels: asks.length,
@@ -333,7 +395,7 @@ async function computePairDepth({
   });
 
   if (bids.length === 0 && asks.length === 0)
-    return { ...empty, midPrice, bidPrice, askPrice };
+    return { ...empty, midPrice, bidPrice, askPrice, ...clInfo };
 
   // 6. Build depthData for the chart
   const depthData: DepthDataPoint[] = [
@@ -375,5 +437,90 @@ async function computePairDepth({
     yRange: [minPrice, maxPrice],
     xRange: [0, maxDepth * 1.2],
     groupingOptions,
+    ...clInfo,
   };
+}
+
+/**
+ * Sqrt price of a CL tick, as a float for depth display. Ticks beyond the
+ * range tickToPrice supports (full-range positions on the extended range)
+ * are clamped; that only moves range ends at prices far outside any visible
+ * level.
+ */
+function tickToSqrtPriceClamped(tick: string): number {
+  let t = new Int(tick);
+  if (t.lt(minTick)) t = minTick;
+  if (t.gt(maxTick)) t = maxTick;
+  return Math.sqrt(Number(tickToPrice(t).toString()));
+}
+
+/** At most this many CL pools are read per pair, highest liquidity first. */
+const MAX_CL_POOLS = 3;
+
+/**
+ * CL pools trading exactly the book's base and quote (in either order), with
+ * their tick ranges converted for depth maths. Throws if any read fails, so
+ * partial CL depth is never shown as complete.
+ */
+async function getClPoolsForPair({
+  baseDenom,
+  quoteDenom,
+  assetLists,
+  chainList,
+}: {
+  baseDenom: string;
+  quoteDenom: string;
+  assetLists: AssetList[];
+  chainList: Chain[];
+}): Promise<{ poolId: string; depth: ClPoolDepthInput }[]> {
+  const { data: pools } = await getPoolsFromSidecar({
+    assetLists,
+    chainList,
+    denoms: [baseDenom, quoteDenom],
+    types: ["concentrated"],
+  });
+
+  const matching = pools
+    .filter((pool) => {
+      const raw = pool.raw as {
+        token0?: string;
+        token1?: string;
+        current_sqrt_price?: string;
+      };
+      return (
+        ((raw.token0 === baseDenom && raw.token1 === quoteDenom) ||
+          (raw.token0 === quoteDenom && raw.token1 === baseDenom)) &&
+        // A pool that has never had liquidity has no price and adds nothing.
+        Number(raw.current_sqrt_price) > 0
+      );
+    })
+    .sort((a, b) =>
+      b.totalFiatValueLocked.toDec().gt(a.totalFiatValueLocked.toDec()) ? 1 : -1
+    )
+    .slice(0, MAX_CL_POOLS);
+
+  return Promise.all(
+    matching.map(async (pool) => {
+      const raw = pool.raw as { token0: string; current_sqrt_price: string };
+      const currentSqrtPrice = Number(raw.current_sqrt_price);
+      const { liquidity } = await queryLiquidityPerTickRange({
+        poolId: pool.id,
+        chainList,
+      });
+      return {
+        poolId: pool.id,
+        depth: {
+          currentSqrtPrice,
+          token0IsBase: raw.token0 === baseDenom,
+          ranges: liquidity.map(
+            ({ lower_tick, upper_tick, liquidity_amount }) => ({
+              lowerSqrtPrice: tickToSqrtPriceClamped(lower_tick),
+              upperSqrtPrice: tickToSqrtPriceClamped(upper_tick),
+              liquidity: Number(liquidity_amount),
+            })
+          ),
+        },
+      };
+    })
+  );
 }
