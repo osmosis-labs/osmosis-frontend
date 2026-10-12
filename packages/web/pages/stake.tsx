@@ -1,7 +1,6 @@
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
-import { BondStatus } from "@osmosis-labs/types";
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -27,10 +26,13 @@ import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
-/** Stable fallback, so the preference map below keeps its identity. */
+/** Stable fallbacks, so the memos below keep their identity while loading. */
 const NO_VALIDATOR_PREFERENCES: { val_oper_address: string; weight: string }[] =
   [];
+const NO_DELEGATIONS: StakingType.Delegation[] = [];
+const NO_VALIDATORS: StakingType.Validator[] = [];
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
@@ -52,22 +54,15 @@ export const Staking: React.FC = observer(() => {
   const address = account?.address ?? "";
 
   const osmo = chainStore.osmosis.stakeCurrency;
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
 
-  const userHasValPrefs =
-    osmosisQueries?.queryUsersValidatorPreferences.get(
-      address
-    ).hasValidatorPreferences;
-
-  // read in render so the observer picks up the query once it resolves; a memo
-  // keyed on the address alone kept the empty list from before it loaded
+  const { data: validatorPreferences, isFetching: isFetchingValPrefs } =
+    api.edge.staking.getUserValidatorPreferences.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
+    );
   const userValidatorPreferences =
-    osmosisQueries?.queryUsersValidatorPreferences.get(address)
-      .validatorPreferences ?? NO_VALIDATOR_PREFERENCES;
-
-  const isFetchingValPrefs =
-    osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;
+    validatorPreferences ?? NO_VALIDATOR_PREFERENCES;
+  const userHasValPrefs = userValidatorPreferences.length > 0;
 
   const isWalletConnected = Boolean(account?.isWalletConnected);
 
@@ -121,16 +116,17 @@ export const Staking: React.FC = observer(() => {
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
   }, [osmo, primitiveAmount]);
 
-  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
-    account?.address ?? ""
+  const { data: delegations } = api.edge.staking.getUserDelegations.useQuery(
+    { userOsmoAddress: address },
+    { enabled: Boolean(address) }
   );
+  const userValidatorDelegations = delegations ?? NO_DELEGATIONS;
 
-  const unbondingDelegationsQuery =
-    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
-      account?.address ?? ""
+  const { data: unbondingDelegations } =
+    api.edge.staking.getUserUnbondingDelegations.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
     );
-
-  const userValidatorDelegations = delegationQuery.delegations;
 
   const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
@@ -231,10 +227,10 @@ export const Staking: React.FC = observer(() => {
 
   const { stakingAPR, isLoadingApr } = useGetApr();
 
-  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
-  const activeValidators = queryValidators.validators;
+  const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({
+    status: "Bonded",
+  });
+  const activeValidators = bondedValidators ?? NO_VALIDATORS;
 
   const { inactiveDelegations } = useInactiveDelegations();
 
@@ -248,7 +244,7 @@ export const Staking: React.FC = observer(() => {
   const stakeTargetsInactiveValidators = useMemo(() => {
     if (!isWalletConnected) return false;
     if (!userHasValPrefs) return inactiveDelegations.length > 0;
-    if (!queryValidators.response) return false;
+    if (!bondedValidators) return false;
 
     const bondedAddresses = new Set(
       activeValidators.map(({ operator_address }) => operator_address)
@@ -261,7 +257,7 @@ export const Staking: React.FC = observer(() => {
     isWalletConnected,
     userHasValPrefs,
     inactiveDelegations,
-    queryValidators.response,
+    bondedValidators,
     activeValidators,
     userValidatorPreferences,
   ]);
@@ -273,7 +269,17 @@ export const Staking: React.FC = observer(() => {
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
-  const { unbondingBalances } = unbondingDelegationsQuery;
+  const unbondingBalances = useMemo(
+    () =>
+      (unbondingDelegations ?? []).map((unbonding) => ({
+        validatorAddress: unbonding.validator_address,
+        entries: unbonding.entries.map((entry) => ({
+          completionTime: entry.completion_time,
+          balance: new CoinPretty(osmo, new Int(entry.balance)),
+        })),
+      })),
+    [unbondingDelegations, osmo]
+  );
   const unbondingInProcess = unbondingBalances.length > 0;
 
   function groupByCompletionTime(
@@ -423,7 +429,6 @@ export const Staking: React.FC = observer(() => {
         validators={activeValidators}
         action={validatorSquadModalAction}
         coin={coin}
-        queryValidators={queryValidators}
         isRedelegating={isRedelegating}
       />
       <ValidatorNextStepModal

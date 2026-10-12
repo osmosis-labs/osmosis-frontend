@@ -114,7 +114,7 @@ const AddConcLiqView: FunctionComponent<
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
   const hasInitializedInactivePool = useRef(false);
 
-  const { derivedDataStore, queriesExternalStore } = useStore();
+  const { derivedDataStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   // Default to passive strategy for inactive pools (only on mount)
@@ -125,8 +125,9 @@ const AddConcLiqView: FunctionComponent<
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
-  // APR and unstaking duration still come from the MobX detail store; only
-  // the superfluid membership check has a tRPC route.
+  // APR and unstaking duration still come from the MobX detail store (the
+  // APR derives from the chain's staking inflation, which has no server
+  // equivalent); only the superfluid membership check has a tRPC route.
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
   const { data: superfluidPoolIds } =
@@ -136,13 +137,13 @@ const AddConcLiqView: FunctionComponent<
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
-  const queryCurrentRangeApr = fullRange
-    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
-    : queriesExternalStore.queryPriceRangeAprs.get(
-        poolId,
-        tickRange[0],
-        tickRange[1]
-      );
+  // the full range tick range is already [minTick, maxTick]
+  const { data: currentRangeApr, isFetching: isRangeAprFetching } =
+    api.edge.pools.getPriceRangeApr.useQuery({
+      poolId,
+      lowerTickIndex: Number(tickRange[0].toString()),
+      upperTickIndex: Number(tickRange[1].toString()),
+    });
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
   // TODO: this is a code smell. the chart config should observe the add liq config
@@ -248,7 +249,7 @@ const AddConcLiqView: FunctionComponent<
                 horizontal
                 fullRange={fullRange}
               />
-              {queryCurrentRangeApr.apr && (
+              {currentRangeApr && (
                 <div className="absolute right-8 top-5 flex select-none flex-col text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span className="text-osmoverse-300">
@@ -264,11 +265,11 @@ const AddConcLiqView: FunctionComponent<
                       <Icon id="info" height={15} width={15} />
                     </Tooltip>
                   </div>
-                  {queryCurrentRangeApr.isFetching ? (
+                  {isRangeAprFetching ? (
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
                     <h5 className="text-osmoverse-100">
-                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
+                      {currentRangeApr.maxDecimals(1).toString() ?? ""}{" "}
                       {t("pool.APR")}
                     </h5>
                   )}

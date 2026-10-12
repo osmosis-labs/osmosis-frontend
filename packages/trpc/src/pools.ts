@@ -1,9 +1,13 @@
+import { maxTick, minTick } from "@osmosis-labs/math";
 import {
   createSortSchema,
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
   getCachedTransmuterTotalPoolLiquidity,
+  getConcentratedRangePoolApr,
+  getLockableDurations,
   getPool,
+  getPoolGaugeIncentives,
   getPools,
   getSharePool,
   getSharePoolBondDurations,
@@ -126,6 +130,31 @@ export const poolsRouter = createTRPCRouter({
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
       getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
+    ),
+  /** Extrapolated APR of a concentrated tick range; defaults to full range. */
+  getPriceRangeApr: publicProcedure
+    .input(
+      z.object({
+        poolId: z.string(),
+        lowerTickIndex: z.number().int().optional(),
+        upperTickIndex: z.number().int().optional(),
+      })
+    )
+    .query(
+      async ({
+        input: { poolId, lowerTickIndex = minTick, upperTickIndex = maxTick },
+      }) =>
+        (await getConcentratedRangePoolApr({
+          poolId,
+          lowerTick: lowerTickIndex.toString(),
+          upperTick: upperTickIndex.toString(),
+        })) ?? null
+    ),
+  getLockableDurations: publicProcedure.query(() => getLockableDurations()),
+  getPoolGaugeIncentives: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId }, ctx }) =>
+      getPoolGaugeIncentives({ ...ctx, poolId })
     ),
   getTransmuterTotalPoolLiquidity: publicProcedure
     .input(z.object({ contractAddress: z.string() }))

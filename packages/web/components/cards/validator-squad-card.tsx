@@ -37,9 +37,7 @@ export const ValidatorSquadCard: React.FC<{
   }) => {
     const { t } = useTranslation();
     const statusLabel = useInactiveStatusLabel();
-    const { chainStore, queriesStore } = useStore();
-    const { chainId } = chainStore.osmosis;
-    const queries = queriesStore.get(chainId);
+    const { chainStore } = useStore();
 
     const { width } = useWindowSize();
 
@@ -59,7 +57,15 @@ export const ValidatorSquadCard: React.FC<{
       [bondedValidators]
     );
 
-    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+    const { data: stakingPool } = api.edge.staking.getStakingPool.useQuery();
+    const totalStakePool = useMemo(
+      () =>
+        new CoinPretty(
+          chainStore.osmosis.stakeCurrency,
+          stakingPool?.bondedTokens ?? 0
+        ),
+      [chainStore.osmosis.stakeCurrency, stakingPool?.bondedTokens]
+    );
 
     let validatorBlock = (
       <div className="flex flex-row space-x-2">
