@@ -219,8 +219,8 @@ export function getLockableDurations() {
     });
 }
 
-/** Share of each epoch's provisions that is routed to pool incentives (20%). */
-const POOL_INCENTIVES_PROVISIONS_SHARE = new Dec(0.2);
+/** Share of each epoch's provisions that is routed to pool incentives (0% on mainnet). */
+const POOL_INCENTIVES_PROVISIONS_SHARE = new Dec(0);
 
 /**
  * Gets the daily OSMO emission of a pool's internal incentive gauge: epoch
