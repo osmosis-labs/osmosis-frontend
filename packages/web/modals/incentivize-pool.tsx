@@ -42,7 +42,7 @@ export const IncentivizePoolModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
@@ -89,8 +89,8 @@ export const IncentivizePoolModal: FunctionComponent<
 
   // Lock-duration choices for share pools; concentrated pools use the
   // chain's no-lock gauge instead.
-  const lockableDurationsRaw =
-    queriesStore.get(chainId).osmosis?.queryLockableDurations.lockableDurations;
+  const { data: lockableDurationsRaw } =
+    api.edge.pools.getLockableDurations.useQuery();
   // Only the longest lockup (14 days) is promoted for external incentives —
   // shorter gauges fragment rewards across durations for no benefit.
   const fixedDuration = useMemo(
