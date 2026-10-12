@@ -52,6 +52,9 @@ import {
 } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
 
+// stable reference so the memos below don't recompute while loading
+const NO_VALIDATORS: Staking.Validator[] = [];
+
 const CONSTANTS = {
   HIGH_APR: "0.2",
   /** Longer validator names are cut so one long name can't widen the column. */
@@ -130,10 +133,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       isRedelegating = false,
     }) => {
       // chain
-      const { chainStore, accountStore, queriesStore } = useStore();
-      const osmosisChainId = chainStore.osmosis.chainId;
-      const queries = queriesStore.get(osmosisChainId);
-
+      const { chainStore, accountStore } = useStore();
       const { chainId } = chainStore.osmosis;
 
       const account = accountStore.getWallet(chainId);
@@ -142,10 +142,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const { t, language } = useTranslation();
 
       const { inactiveDelegations } = useInactiveDelegations();
-      const delegatorValidators =
-        queries.cosmos.queryDelegatorValidators.getQueryBech32Address(
-          account?.address ?? ""
-        ).validators;
+      const { data: delegatorValidators = NO_VALIDATORS } =
+        api.edge.staking.getUserDelegatorValidators.useQuery(
+          { userOsmoAddress: account?.address ?? "" },
+          { enabled: Boolean(account?.address) }
+        );
 
       const [globalFilter, setGlobalFilter] = useState("");
       const [showTopThird, setShowTopThird] = useState(false);

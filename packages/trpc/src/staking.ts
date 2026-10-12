@@ -4,6 +4,7 @@ import {
   getValidatorsWithInfos,
   queryDelegations,
   queryDelegatorRewards,
+  queryDelegatorValidators,
   queryStakingPool,
   queryUndelegations,
   queryUserValidatorPreferences,
@@ -55,6 +56,14 @@ export const stakingRouter = createTRPCRouter({
         chainList: ctx.chainList,
         bech32Address: input.userOsmoAddress,
       }).then(({ rewards, total }) => ({ rewards: rewards ?? [], total }))
+    ),
+  getUserDelegatorValidators: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      queryDelegatorValidators({
+        chainList: ctx.chainList,
+        bech32Address: input.userOsmoAddress,
+      }).then(({ validators }) => validators)
     ),
   getStakingPool: publicProcedure.query(({ ctx }) =>
     queryStakingPool({ chainList: ctx.chainList }).then(({ pool }) => ({
