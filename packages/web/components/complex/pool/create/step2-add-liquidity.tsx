@@ -61,11 +61,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       className="caption cursor-pointer text-wosmongton-300"
                       onClick={() => amountConfig.setIsMax(true)}
                     >
-                      {config.queryBalances
-                        .getQueryBech32Address(config.sender)
-                        .getBalanceFromCurrency(amountConfig.sendCurrency)
-                        .maxDecimals(6)
-                        .toString()}
+                      {amountConfig.balance.maxDecimals(6).toString()}
                     </span>
                   </div>
                   <div className="flex place-content-end items-center gap-2.5">

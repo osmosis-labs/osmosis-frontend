@@ -41,7 +41,6 @@ import {
   makeWithdrawDelegationRewardsMsg,
   makeWithdrawPositionMsg,
 } from "@osmosis-labs/tx";
-import { BondStatus } from "@osmosis-labs/types";
 import {
   AppCurrency,
   Coin,
@@ -55,9 +54,7 @@ import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
-import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse, SignOptions } from "../types";
-import { findNewClPositionId } from "./tx-response";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
@@ -69,7 +66,6 @@ export interface OsmosisAccount {
 export const OsmosisAccount = {
   use(options: {
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-    queriesExternalStore?: QueriesExternalStore;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
@@ -81,8 +77,7 @@ export const OsmosisAccount = {
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          options.queriesExternalStore
+          options.queriesStore
         ),
       };
     };
@@ -98,8 +93,7 @@ export class OsmosisAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    protected readonly queriesExternalStore?: QueriesExternalStore
+    >
   ) {}
 
   private get address() {
@@ -786,16 +780,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             ?.waitFreshResponse();
 
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
-
           if (superfluidValidatorAddress) {
             this.queries?.queryAccountsSuperfluidDelegatedPositions
               .get(this.address)
@@ -1292,17 +1276,6 @@ export class OsmosisAccountImpl {
           if (isSuperfluidStaked) {
             queryDelegatedPositions.waitFreshResponse();
           }
-
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            // wait a long time for indexer to run
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
         }
         onFulfill?.(tx);
       }
@@ -1358,13 +1331,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
-
-          // refresh metrics of same position, since it's the same ID after withdrawing
-          setTimeout(() => {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(positionId)
-              ?.waitFreshResponse();
-          }, 30_000);
         }
         onFulfill?.(tx);
       }
@@ -1961,12 +1927,11 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (!tx.code) {
-          // Refresh the balances and the funded gauge.
+          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-          this.queries.queryGauge.get(gaugeId).waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2077,14 +2042,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountLocked
             .get(this.address)
             .waitFreshResponse();
-
-          queries.cosmos.queryValidators
-            .getQueryStatus(BondStatus.Bonded)
-            .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2141,10 +2098,6 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.address)
-            .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -2269,14 +2222,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             .waitFreshResponse();
 
-          // refresh superfluid pool share delegations
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-
           // refresh user CL positions
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
@@ -2284,9 +2229,6 @@ export class OsmosisAccountImpl {
 
           // refresh CL position delegations
           queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryAccountsSuperfluidUndelegatingPositions
             .get(this.address)
             .waitFreshResponse();
         }
@@ -2330,17 +2272,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryUnbondingDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2380,17 +2311,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryUnbondingDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2430,14 +2350,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2471,14 +2383,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2526,16 +2430,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // refresh the valsetpref
-          this.queries.queryUsersValidatorPreferences
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh query delegations
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2595,20 +2489,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // refresh query delegations
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          // refresh the valsetpref
-          this.queries.queryUsersValidatorPreferences
-            .get(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2655,14 +2535,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2743,24 +2615,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryDelegatorValidators
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          if (validatorSetPreference) {
-            this.queries.queryUsersValidatorPreferences
-              .get(this.address)
-              .waitFreshResponse();
-          }
         }
         onFulfill?.(tx);
       }
