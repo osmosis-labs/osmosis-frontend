@@ -6,8 +6,17 @@ import type { AddLiquidityPoolData } from "../../ui-config/manage-liquidity/add-
 /** Share pool state needed to build join msgs, as already held by the add liquidity config. */
 export type JoinPoolData = Pick<
   AddLiquidityPoolData,
-  "totalShare" | "assets" | "totalWeight" | "swapFee"
+  "id" | "totalShare" | "assets" | "totalWeight" | "swapFee"
 >;
+
+/** @throws If the given pool data is not for the pool being joined. */
+export function assertJoinPoolData(poolId: string, pool: JoinPoolData) {
+  if (pool.id !== poolId) {
+    throw new Error(
+      `Join pool data is for pool #${pool.id}, but joining pool #${poolId}`
+    );
+  }
+}
 
 function rawAmount(coin: CoinPretty): Int {
   return new Int(coin.toCoin().amount);

@@ -28,6 +28,7 @@ type PoolAssetCurrency = Currency & {
 
 /** Plain share pool data the config needs. Fed in by the view layer (e.g. from tRPC). */
 export type AddLiquidityPoolData = {
+  id: string;
   type: "weighted" | "stable";
   /** Total pool shares, as a coin of the 18 decimal share currency. */
   totalShare: CoinPretty;
@@ -36,6 +37,8 @@ export type AddLiquidityPoolData = {
   /** Only set for weighted pools. */
   totalWeight?: Int;
   swapFee: Dec;
+  /** True if an asset currency (and so its decimals) is a guess, e.g. an unlisted asset. */
+  hasGuessedCurrency?: boolean;
   /** Only set for stable pools. */
   stableSwapInfo?: {
     scalingFactorController: string;
@@ -224,6 +227,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   get supportsSingleAmountIn(): boolean {
     if (!this._pool) return false;
     if (this._pool.type === "stable") return false;
+    // Typed single asset amounts depend on the asset's decimals
+    if (this._pool.hasGuessedCurrency) return false;
 
     return true;
   }
@@ -260,6 +265,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       );
       return;
     }
+
+    if (!this.supportsSingleAmountIn) return;
 
     this._isSingleAmountIn = value;
 

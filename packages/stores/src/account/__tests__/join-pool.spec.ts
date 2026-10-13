@@ -2,6 +2,7 @@ import * as OsmosisMath from "@osmosis-labs/math";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
 import {
+  assertJoinPoolData,
   getJoinPoolTokenInMaxs,
   getJoinSwapShareOutMinAmount,
   JoinPoolData,
@@ -27,6 +28,7 @@ const rawTotalShare = "123456789012345678901";
 const swapFee = new Dec("0.003");
 
 const pool: JoinPoolData = {
+  id: "1",
   totalShare: new CoinPretty(shareCurrency, new Int(rawTotalShare)),
   swapFee,
   totalWeight: new Int(10),
@@ -172,5 +174,14 @@ describe("getJoinSwapShareOutMinAmount", () => {
         SHARE_DECIMALS
       )
     ).toThrow("Pool asset not weighted");
+  });
+});
+
+describe("assertJoinPoolData", () => {
+  it("rejects data for a different pool", () => {
+    expect(() => assertJoinPoolData("1", pool)).not.toThrow();
+    expect(() => assertJoinPoolData("2", pool)).toThrow(
+      "Join pool data is for pool #1, but joining pool #2"
+    );
   });
 });

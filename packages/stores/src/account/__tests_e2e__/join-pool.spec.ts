@@ -16,6 +16,7 @@ import { JoinPoolData } from "../osmosis/join-pool";
 function toJoinPoolData(pool: ObservableQueryPool): JoinPoolData {
   const weighted = pool.weightedPoolInfo;
   return {
+    id: pool.id,
     totalShare: pool.totalShare,
     swapFee: pool.sharePool!.swapFee,
     totalWeight: weighted

@@ -23,6 +23,7 @@ const shareCurrency = {
 /** 1000 OSMO / 100 ATOM, 100 shares, equal weights. */
 function makeWeightedPool(): AddLiquidityPoolData {
   return {
+    id: "1",
     type: "weighted",
     totalShare: new CoinPretty(shareCurrency, new Int("100000000000000000000")),
     assets: [
@@ -212,6 +213,21 @@ describe("ObservableAddLiquidityConfig", () => {
 
     expect(config.singleAmountInConfig?.amount).toBe("500");
     expect(config.singleAmountInConfig?.error).toBeUndefined();
+  });
+
+  it("does not support single asset mode when a currency is guessed", () => {
+    const config = makeConfig({
+      ...makeWeightedPool(),
+      hasGuessedCurrency: true,
+    });
+
+    expect(config.supportsSingleAmountIn).toBe(false);
+    config.setIsSingleAmountIn(true);
+    expect(config.isSingleAmountIn).toBe(false);
+
+    // balanced join is decimal independent
+    config.setAmountAt(0, "10");
+    expect(config.error).toBeUndefined();
   });
 
   it("handles assets with other than 6 decimals", () => {

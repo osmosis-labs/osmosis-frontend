@@ -1,7 +1,11 @@
 import { makePoolFromChainPool } from "@osmosis-labs/server";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
 
-import { makeAddLiquidityPoolData } from "~/hooks/ui-config/use-add-liquidity-config";
+import {
+  makeAddLiquidityPoolData,
+  sendAddLiquidity,
+} from "~/hooks/ui-config/use-add-liquidity-config";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };
@@ -20,6 +24,7 @@ describe("makeAddLiquidityPoolData", () => {
       reserveCoins,
       raw: {
         total_weight: "3",
+        pool_params: { swap_fee: "0.003" },
         total_shares: { denom: "gamm/pool/1", amount: "100000000000000000000" },
         pool_assets: [
           { weight: "2", token: { denom: "uosmo", amount: "1000000000" } },
@@ -29,6 +34,9 @@ describe("makeAddLiquidityPoolData", () => {
     } as any);
 
     expect(data?.type).toBe("weighted");
+    expect(data?.id).toBe("1");
+    expect(data?.hasGuessedCurrency).toBe(false);
+    expect(data?.swapFee.toString()).toBe("0.003000000000000000");
     expect(data?.assets.map((a) => a.amount.currency.coinDenom)).toEqual([
       "OSMO",
       "ATOM",
@@ -48,6 +56,7 @@ describe("makeAddLiquidityPoolData", () => {
       type: "stable",
       reserveCoins,
       raw: {
+        pool_params: { swap_fee: "0.0001" },
         total_shares: { denom: "gamm/pool/2", amount: "5000000000000000000" },
         pool_liquidity: [
           { denom: "uatom", amount: "100000000" },
@@ -89,6 +98,7 @@ describe("makeAddLiquidityPoolData", () => {
       ["uosmo", "ibc/ABC"]
     );
     expect(data?.assets[1].amount.currency.coinDecimals).toBe(6);
+    expect(data?.hasGuessedCurrency).toBe(true);
     expect(data?.swapFee.toString()).toBe("0.003000000000000000");
   });
 
@@ -124,6 +134,23 @@ describe("makeAddLiquidityPoolData", () => {
     expect(data?.swapFee.toString()).toBe("0.002000000000000000");
   });
 
+  it("returns undefined instead of assuming a zero fee when swap fee is missing", () => {
+    expect(
+      makeAddLiquidityPoolData({
+        id: "7",
+        type: "weighted",
+        reserveCoins,
+        raw: {
+          total_weight: "1",
+          total_shares: { denom: "gamm/pool/7", amount: "1" },
+          pool_assets: [
+            { weight: "1", token: { denom: "uosmo", amount: "1" } },
+          ],
+        },
+      } as any)
+    ).toBeUndefined();
+  });
+
   it("returns undefined for non share pools", () => {
     expect(
       makeAddLiquidityPoolData({
@@ -133,5 +160,111 @@ describe("makeAddLiquidityPoolData", () => {
         raw: {},
       } as any)
     ).toBeUndefined();
+  });
+});
+
+describe("sendAddLiquidity", () => {
+  const rawPool = (osmoAmount: string) =>
+    ({
+      id: "1",
+      type: "weighted",
+      reserveCoins,
+      raw: {
+        total_weight: "2",
+        pool_params: { swap_fee: "0.003" },
+        total_shares: { denom: "gamm/pool/1", amount: "100000000000000000000" },
+        pool_assets: [
+          { weight: "1", token: { denom: "uosmo", amount: osmoAmount } },
+          { weight: "1", token: { denom: "uatom", amount: "100000000" } },
+        ],
+      },
+    }) as any;
+
+  function makeConfig(isSingle: boolean) {
+    const seeded = makeAddLiquidityPoolData(rawPool("1000000000"))!;
+    const config = new ObservableAddLiquidityConfig("1", "osmo1sender");
+    config.setPool(seeded);
+    config.setBalances([
+      { denom: "uosmo", amount: "500000000" },
+      { denom: "uatom", amount: "50000000" },
+    ]);
+    if (isSingle) {
+      config.setIsSingleAmountIn(true);
+      config.singleAmountInConfig?.setAmount("10");
+    } else {
+      config.setAmountAt(0, "10");
+    }
+    return config;
+  }
+
+  it("builds a balanced join from freshly fetched pool data, not the seeded config", async () => {
+    const config = makeConfig(false);
+    const osmosis = {
+      sendJoinPoolMsg: jest.fn().mockResolvedValue(undefined),
+      sendJoinSwapExternAmountInMsg: jest.fn(),
+    };
+    const onFulfill = jest.fn();
+
+    await sendAddLiquidity({
+      config,
+      osmosis,
+      fetchPool: async () => rawPool("2000000000"),
+      onFulfill,
+    });
+
+    expect(osmosis.sendJoinPoolMsg).toHaveBeenCalledTimes(1);
+    const [poolId, pool, shareOut] = osmosis.sendJoinPoolMsg.mock.calls[0];
+    expect(poolId).toBe("1");
+    expect(pool.assets[0].amount.toCoin().amount).toBe("2000000000");
+    expect(config.pool?.assets[0].amount.toCoin().amount).toBe("1000000000");
+    // the user's estimate is kept
+    expect(shareOut).toBe("1.000000000000000000");
+  });
+
+  it("builds a single asset join from freshly fetched pool data", async () => {
+    const config = makeConfig(true);
+    const osmosis = {
+      sendJoinPoolMsg: jest.fn(),
+      sendJoinSwapExternAmountInMsg: jest.fn().mockResolvedValue(undefined),
+    };
+
+    await sendAddLiquidity({
+      config,
+      osmosis,
+      fetchPool: async () => rawPool("3000000000"),
+      onFulfill: jest.fn(),
+    });
+
+    const [, pool, tokenIn] =
+      osmosis.sendJoinSwapExternAmountInMsg.mock.calls[0];
+    expect(pool.assets[0].amount.toCoin().amount).toBe("3000000000");
+    expect(tokenIn.amount).toBe("10");
+  });
+
+  it("fails when the fetch fails or the pool is not joinable", async () => {
+    const osmosis = {
+      sendJoinPoolMsg: jest.fn(),
+      sendJoinSwapExternAmountInMsg: jest.fn(),
+    };
+
+    await expect(
+      sendAddLiquidity({
+        config: makeConfig(false),
+        osmosis,
+        fetchPool: async () => {
+          throw new Error("offline");
+        },
+        onFulfill: jest.fn(),
+      })
+    ).rejects.toThrow("offline");
+    await expect(
+      sendAddLiquidity({
+        config: makeConfig(false),
+        osmosis,
+        fetchPool: async () => ({ ...rawPool("1"), type: "concentrated" }),
+        onFulfill: jest.fn(),
+      })
+    ).rejects.toThrow("not a joinable share pool");
+    expect(osmosis.sendJoinPoolMsg).not.toHaveBeenCalled();
   });
 });

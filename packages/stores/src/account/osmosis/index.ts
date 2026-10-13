@@ -56,6 +56,7 @@ import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { DeliverTxResponse, SignOptions } from "../types";
 import {
+  assertJoinPoolData,
   getJoinPoolTokenInMaxs,
   getJoinSwapShareOutMinAmount,
   JoinPoolData,
@@ -383,6 +384,8 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    assertJoinPoolData(poolId, pool);
+
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
@@ -453,6 +456,8 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    assertJoinPoolData(poolId, pool);
+
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
