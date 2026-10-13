@@ -11,6 +11,7 @@ import {
   getPools,
   getSharePool,
   getSharePoolBondDurations,
+  getSuperfluidPoolApr,
   getSuperfluidPoolIds,
   getUserPools,
   getUserSharePools,
@@ -126,6 +127,12 @@ export const poolsRouter = createTRPCRouter({
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
     getSuperfluidPoolIds(ctx)
   ),
+  /** Superfluid staking APR of a pool; zero if the pool isn't superfluid. */
+  getSuperfluidPoolApr: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId }, ctx }) =>
+      getSuperfluidPoolApr({ ...ctx, poolId })
+    ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
