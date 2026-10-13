@@ -5,12 +5,15 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { CoinPretty } from "@osmosis-labs/unit";
+import { autorun } from "mobx";
 
 import {
   calcHighGasFee,
   ConcentratedDepositAmount,
 } from "../concentrated-deposit-amount";
+import { ObservableAddConcentratedLiquidityConfig } from "../use-add-concentrated-liquidity-config";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };
@@ -138,5 +141,52 @@ describe("ConcentratedDepositAmount", () => {
     input.setSendCurrency(atom);
     expect(input.sendCurrency).toBe(atom);
     expect(input.amount).toBe("3");
+  });
+});
+
+describe("ObservableAddConcentratedLiquidityConfig balances", () => {
+  const chainGetter = {
+    getChain: () => ({
+      currencies: [osmo],
+      feeCurrencies: [osmo],
+      stakeCurrency: osmo,
+    }),
+  } as unknown as ChainGetter;
+
+  it("updates observers when balances change and clears on undefined", () => {
+    const config = new ObservableAddConcentratedLiquidityConfig(
+      chainGetter,
+      "osmosis-1",
+      "1"
+    );
+    const seen: { amount: string; error: string | undefined }[] = [];
+    const dispose = autorun(() => {
+      seen.push({
+        amount: config.baseDepositAmountIn.amount,
+        error: config.baseDepositAmountIn.error?.constructor.name,
+      });
+    });
+    const last = () => seen[seen.length - 1];
+
+    // no pool yet, so no fee is applied to max
+    config.baseDepositAmountIn.setIsMax(true);
+    expect(last()).toEqual({ amount: "0", error: "ZeroAmountError" });
+
+    config.setBalances([{ denom: "uosmo", amount: "5000000" }]);
+    expect(last()).toEqual({ amount: "5", error: undefined });
+
+    config.setBalances([{ denom: "uosmo", amount: "7000000" }]);
+    expect(last().amount).toBe("7");
+
+    config.setBalances(undefined);
+    expect(last()).toEqual({ amount: "0", error: "ZeroAmountError" });
+
+    config.baseDepositAmountIn.setAmount("1");
+    expect(last().error).toBe("InsufficientAmountError");
+    config.setBalances([{ denom: "uosmo", amount: "1000000" }]);
+    expect(last().error).toBeUndefined();
+
+    dispose();
+    config.dispose();
   });
 });

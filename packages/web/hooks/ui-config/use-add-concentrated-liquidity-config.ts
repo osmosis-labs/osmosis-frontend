@@ -33,6 +33,13 @@ import {
   ConcentratedDepositAmount,
 } from "./concentrated-deposit-amount";
 
+/** Drops the non-serializable `coin` so React Query's structural sharing keeps
+ *  the array reference stable across refetches with unchanged balances. */
+const selectRawBalances = (
+  balances: { denom: string; amount: string }[]
+): { denom: string; amount: string }[] =>
+  balances.map(({ denom, amount }) => ({ denom, amount }));
+
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
  *
@@ -66,8 +73,7 @@ export function useAddConcentratedLiquidityConfig(
       new ObservableAddConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
-        poolId,
-        address
+        poolId
       )
   );
   // react dev tools will unmount the component so only dispose if
@@ -83,9 +89,11 @@ export function useAddConcentratedLiquidityConfig(
 
   const { data: balances } = api.local.balances.getUserBalances.useQuery(
     { bech32Address: address },
-    { enabled: Boolean(address) }
+    { enabled: Boolean(address), select: selectRawBalances }
   );
-  config.setBalances(balances);
+  useEffect(() => {
+    config.setBalances(balances);
+  }, [config, balances]);
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
 
@@ -252,9 +260,6 @@ const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
 export class ObservableAddConcentratedLiquidityConfig {
-  @observable
-  protected _sender: string;
-
   @observable.ref
   protected _pool: Pool | null = null;
 
@@ -285,9 +290,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Raw user balances (base units) by minimal denom, from tRPC. Empty while loading. */
   @observable.ref
   protected _rawBalances: ReadonlyMap<string, string> = new Map();
-
-  protected _balancesSource:
-    readonly { denom: string; amount: string }[] | undefined = undefined;
 
   /** Fee deducted from the max amount of the stake currency, for the create position tx. */
   protected readonly _createPositionFee: CoinPretty | undefined;
@@ -358,10 +360,6 @@ export class ObservableAddConcentratedLiquidityConfig {
       this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
 
     return isTickLiquidityZero && hasTVL;
-  }
-
-  get sender(): string {
-    return this._sender;
   }
 
   get modalView(): "add_manual" {
@@ -763,12 +761,9 @@ export class ObservableAddConcentratedLiquidityConfig {
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
-    readonly poolId: string,
-    sender: string
+    readonly poolId: string
   ) {
     this.chainId = initialChainId;
-
-    this._sender = sender;
 
     const chainInfo = chainGetter.getChain(this.chainId);
     if (chainInfo.currencies.length === 0) {
@@ -994,9 +989,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setBalances = (
     balances: readonly { denom: string; amount: string }[] | undefined
   ) => {
-    // called on render: skip unchanged query data to avoid needless invalidation
-    if (balances === this._balancesSource) return;
-    this._balancesSource = balances;
     this._rawBalances = new Map(
       (balances ?? []).map(({ denom, amount }) => [denom, amount])
     );
@@ -1006,11 +998,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setElectSuperfluidStaking = (elected: boolean) => {
     this._superfluidStakingElected = elected;
   };
-
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
 
   @action
   readonly setModalView = (viewType: "add_manual") => {
