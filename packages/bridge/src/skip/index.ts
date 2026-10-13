@@ -14,6 +14,7 @@ import {
   getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
+  redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
@@ -2155,7 +2156,14 @@ export class SkipBridgeProvider implements BridgeProvider {
         })
         .then((gas) => BigInt(gas));
     } catch (err) {
-      console.error("failed to estimate gas:", err);
+      // Log text, not the error object: viem errors carry the request URL
+      // (message and nested cause), which for a keyed provider holds the key.
+      console.error(
+        "failed to estimate gas:",
+        redactConfiguredEvmRpcUrls(
+          err instanceof Error ? (err.stack ?? err.message) : String(err)
+        )
+      );
       return BigInt(0);
     }
   }

@@ -10,10 +10,15 @@ export async function getEvmBalance({
   address,
   userAddress,
   chainId,
+  rpcUrls: rpcUrlsOverride,
 }: {
   address: string;
   userAddress: string;
   chainId: number;
+  /** RPC URLs to try in order. Defaults to the server list (configured keyed
+   *  providers, then public endpoints); callers running in the browser pass
+   *  the client list, since keyed env vars are server-only. */
+  rpcUrls?: string[];
 }) {
   const evmChain = EthereumChainInfo.find(
     (chain) => String(chain.id) === String(chainId)
@@ -23,8 +28,7 @@ export async function getEvmBalance({
     throw new Error(`Chain with id ${chainId} not found`);
   }
 
-  // Configured keyed providers first, then the chain's public endpoints
-  const rpcUrls = getServerEvmRpcUrls(evmChain);
+  const rpcUrls = rpcUrlsOverride ?? getServerEvmRpcUrls(evmChain);
 
   // Keep track of errors to report if all RPCs fail
   const errors: Error[] = [];
