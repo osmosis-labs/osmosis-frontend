@@ -72,9 +72,23 @@ export function useAmountInput({
 
   // clear fraction when user changes currency
   // and user has no balance
-  useEffect(() => {
+  const [prevBalanceInputs, setPrevBalanceInputs] = useState({
+    isBalancesFetched,
+    rawCurrencyBalance,
+    currencyDenom: currency?.coinMinimalDenom,
+  });
+  if (
+    prevBalanceInputs.isBalancesFetched !== isBalancesFetched ||
+    prevBalanceInputs.rawCurrencyBalance !== rawCurrencyBalance ||
+    prevBalanceInputs.currencyDenom !== currency?.coinMinimalDenom
+  ) {
+    setPrevBalanceInputs({
+      isBalancesFetched,
+      rawCurrencyBalance,
+      currencyDenom: currency?.coinMinimalDenom,
+    });
     if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
-  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+  }
 
   const balance = useMemo(
     () =>

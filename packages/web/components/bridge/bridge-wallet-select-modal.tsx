@@ -42,7 +42,7 @@ import {
   useSwitchEvmChain,
 } from "~/hooks/evm-wallet";
 import {
-  getPhantomProvider,
+  usePhantomDetected,
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals";
@@ -522,10 +522,7 @@ const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
   const { address, connect, disconnect } = usePhantomWallet({
     restoreSession: true,
   });
-  const [phantomDetected, setPhantomDetected] = useState(false);
-  useEffect(() => {
-    setPhantomDetected(Boolean(getPhantomProvider()));
-  }, []);
+  const phantomDetected = usePhantomDetected();
 
   return (
     <section className="flex flex-col gap-4 py-8">
@@ -604,11 +601,8 @@ const SendToAnotherAddressForm: FunctionComponent<
   // the address, the user still reviews and confirms it through the same
   // acknowledged-address flow as a pasted one.
   const { connect: connectPhantomWallet } = usePhantomWallet();
-  const [phantomDetected, setPhantomDetected] = useState(false);
-  useEffect(() => {
-    if (toChain.chainType !== "solana") return;
-    setPhantomDetected(Boolean(getPhantomProvider()));
-  }, [toChain.chainType]);
+  const isPhantomInjected = usePhantomDetected();
+  const phantomDetected = toChain.chainType === "solana" && isPhantomInjected;
 
   const connectPhantom = async () => {
     try {

@@ -7,7 +7,6 @@ import {
   PropsWithChildren,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -23,6 +22,7 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useIsClient } from "~/hooks/use-is-client";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -38,7 +38,7 @@ interface TradeToolProps {
  * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
  * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
  *
- * Readiness goes through state set in an effect rather than `isReady`
+ * Readiness also waits for `useIsClient` rather than using `isReady`
  * directly: a page without query params can be ready on the first browser
  * render but never during static rendering, and rendering the tool on that
  * first render would not match the server markup.
@@ -47,13 +47,9 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   props
 ) => {
   const { isReady } = useRouter();
-  const [canRender, setCanRender] = useState(false);
+  const isClient = useIsClient();
 
-  useEffect(() => {
-    if (isReady) setCanRender(true);
-  }, [isReady]);
-
-  if (!canRender) return null;
+  if (!isReady || !isClient) return null;
 
   return <TradeToolContent {...props} />;
 };

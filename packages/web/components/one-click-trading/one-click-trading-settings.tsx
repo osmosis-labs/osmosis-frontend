@@ -9,7 +9,6 @@ import React, {
   Dispatch,
   FunctionComponent,
   SetStateAction,
-  useEffect,
   useState,
 } from "react";
 import { useAsync } from "react-use";
@@ -193,12 +192,12 @@ export const OneClickTradingSettings = ({
   const hasInsufficientFeeTokensForRemove =
     estimateRemoveTxError instanceof InsufficientBalanceForFeeError;
 
-  useEffect(() => {
-    if (!transaction1CTParams || initialTransaction1CTParams) return;
+  // Snapshot the first params to arrive; runs once since the snapshot is then set.
+  if (transaction1CTParams && !initialTransaction1CTParams) {
     setInitialTransaction1CTParams(transaction1CTParams);
     setChanges(externalChanges);
     setInitialChanges(externalChanges);
-  }, [externalChanges, initialTransaction1CTParams, transaction1CTParams]);
+  }
 
   const {
     isOpen: isDiscardDialogOpen,

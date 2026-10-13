@@ -3,13 +3,7 @@ import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { OneClickTradingMaxGasLimit, runIfFn } from "@osmosis-labs/utils";
-import {
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { SetStateAction, useCallback, useMemo, useState } from "react";
 
 import { compare1CTTransactionParams } from "~/components/one-click-trading/one-click-trading-settings";
 import { api } from "~/utils/trpc";
@@ -108,32 +102,20 @@ export function useOneClickTradingParams({
     setChanges([]);
   }, [sessionOrDefaultWithEnabled]);
 
-  useEffect(() => {
-    if (!sessionOrDefaultWithEnabled) return;
-
-    if (!currentParams || !draftParams) {
-      reset();
-      return;
-    }
-
-    const hasChanges = changes.length > 0;
-    const wouldChange =
-      compare1CTTransactionParams({
-        prevParams: draftParams,
-        nextParams: sessionOrDefaultWithEnabled,
-      }).length > 0;
-
-    if (!hasChanges && wouldChange) {
-      reset();
-    }
-  }, [
-    sessionOrDefaultParams,
-    draftParams,
-    sessionOrDefaultWithEnabled,
-    changes.length,
-    reset,
-    currentParams,
-  ]);
+  // Sync to the session/default params during render while the user has no
+  // pending edits. Converges: after a reset the draft equals the source.
+  if (
+    sessionOrDefaultWithEnabled &&
+    (!currentParams ||
+      !draftParams ||
+      (changes.length === 0 &&
+        compare1CTTransactionParams({
+          prevParams: draftParams,
+          nextParams: sessionOrDefaultWithEnabled,
+        }).length > 0))
+  ) {
+    reset();
+  }
 
   const setTransaction1CTParamsWithChanges = useCallback(
     (
