@@ -55,8 +55,8 @@ import {
 } from "~/hooks";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { useStore } from "~/stores";
 import {
   formatFiatPrice,
   formatPretty,
@@ -143,9 +143,8 @@ export function ReviewOrder({
     useState(false);
 
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const { address } = useWallet();
+  const { isNewAccount } = useIsCosmosNewAccount({ address });
   const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const {
