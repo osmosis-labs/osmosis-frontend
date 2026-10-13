@@ -263,11 +263,7 @@ export class RootStore {
     ];
 
     this.transferHistoryStore = new TransferHistoryStore(
-      (accountAddress) => {
-        this.queriesStore
-          .get(this.chainStore.osmosis.chainId)
-          .queryBalances.getQueryBech32Address(accountAddress)
-          .fetch();
+      () => {
         // txEvents passed to root store is used to invalidate
         // tRPC queries, the params are not used
         txEvents?.onFulfill?.("", "");

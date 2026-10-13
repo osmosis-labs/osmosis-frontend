@@ -193,7 +193,7 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore, transferHistoryStore, queriesStore } = useStore();
+  const { accountStore, transferHistoryStore } = useStore();
   const {
     connector: evmConnector,
     address: evmAddress,
@@ -1523,30 +1523,6 @@ export const useBridgeQuotes = ({
 
         onFulfill: (tx: DeliverTxResponse) => {
           if (tx.code == null || tx.code === 0) {
-            const queries = queriesStore.get(fromChain.chainId);
-
-            // After succeeding to send token, refresh the balance. Best
-            // effort: `balances` throws on a currency no balance registry
-            // handles (e.g. an `erc20:` currency on Injective), and that must
-            // not stop the transfer from being tracked below.
-            try {
-              const queryBalance = queries.queryBalances
-                // If we get here destination address is defined
-                .getQueryBech32Address(toAddress!)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom ===
-                    availableBalance?.currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
-              }
-            } catch (e) {
-              console.warn("Failed to refresh balance after transfer:", e);
-            }
-
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
