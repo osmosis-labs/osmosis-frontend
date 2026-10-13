@@ -8,7 +8,7 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
-  getEvmRpcTransport,
+  getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
@@ -480,7 +480,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain, {
+        transport: getServerEvmRpcTransport(evmChain, {
           timeout: 3_000,
           retryCount: 0,
         }),

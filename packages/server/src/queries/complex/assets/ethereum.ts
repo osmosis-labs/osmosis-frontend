@@ -1,6 +1,8 @@
 import {
   EthereumChainInfo,
+  getServerEvmRpcUrls,
   NativeEVMTokenConstantAddress,
+  redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
 import { Address, createPublicClient, erc20Abi, http } from "viem";
 
@@ -21,14 +23,14 @@ export async function getEvmBalance({
     throw new Error(`Chain with id ${chainId} not found`);
   }
 
-  // Get all available RPC URLs
-  const rpcUrls = evmChain.rpcUrls.default.http;
+  // Configured keyed providers first, then the chain's public endpoints
+  const rpcUrls = getServerEvmRpcUrls(evmChain);
 
   // Keep track of errors to report if all RPCs fail
   const errors: Error[] = [];
 
   // Try each RPC URL until one succeeds
-  for (const rpcUrl of rpcUrls) {
+  for (const [index, rpcUrl] of rpcUrls.entries()) {
     try {
       const publicClient = createPublicClient({
         chain: evmChain,
@@ -47,9 +49,16 @@ export async function getEvmBalance({
 
       return balance;
     } catch (error) {
-      // Store the error and try the next RPC URL
+      // Store the error and try the next RPC URL. viem error messages
+      // include the request URL, which for a keyed provider carries the key.
       errors.push(error as Error);
-      console.warn(`RPC URL ${rpcUrl} failed: ${(error as Error).message}`);
+      console.warn(
+        redactConfiguredEvmRpcUrls(
+          `RPC URL #${index + 1} for chain ${chainId} failed: ${
+            (error as Error).message
+          }`
+        )
+      );
     }
   }
 
@@ -57,5 +66,5 @@ export async function getEvmBalance({
   const errorMessage = `All RPC URLs failed for chain ${chainId}. Errors: ${errors
     .map((e) => e.message)
     .join("; ")}`;
-  throw new Error(errorMessage);
+  throw new Error(redactConfiguredEvmRpcUrls(errorMessage));
 }

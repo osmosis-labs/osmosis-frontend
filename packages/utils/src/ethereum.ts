@@ -240,12 +240,107 @@ export function getEvmRpcTransport(
   chain: {
     rpcUrls: { default: { http: readonly string[] } };
   },
-  opts?: { timeout?: number; retryCount?: number }
+  opts?: EvmRpcTransportOptions
+) {
+  return getEvmRpcTransportFromUrls(chain.rpcUrls.default.http, opts);
+}
+
+export type EvmRpcTransportOptions = { timeout?: number; retryCount?: number };
+
+/** `getEvmRpcTransport` over an explicit URL list, in preference order. */
+export function getEvmRpcTransportFromUrls(
+  urls: readonly string[],
+  opts?: EvmRpcTransportOptions
 ) {
   return fallback(
-    chain.rpcUrls.default.http.map((url) => http(url, opts)),
+    urls.map((url) => http(url, opts)),
     { retryCount: opts?.retryCount }
   );
+}
+
+/**
+ * Keyed provider RPC URLs configured for a chain as `EVM_RPC_URL_<chainId>`
+ * (comma-separated, in preference order). They carry API keys, so they are
+ * server-only: never return them to the browser, and redact them from error
+ * text that leaves the server (`redactConfiguredEvmRpcUrls`).
+ *
+ * Each variable is named literally because Edge and browser bundles only see
+ * env vars referenced by name in source. In the browser all are undefined.
+ */
+export function getConfiguredEvmRpcUrls(chainId: number): string[] {
+  const configured: Record<number, string | undefined> = {
+    1: process.env.EVM_RPC_URL_1,
+    10: process.env.EVM_RPC_URL_10,
+    56: process.env.EVM_RPC_URL_56,
+    137: process.env.EVM_RPC_URL_137,
+    250: process.env.EVM_RPC_URL_250,
+    314: process.env.EVM_RPC_URL_314,
+    1284: process.env.EVM_RPC_URL_1284,
+    8453: process.env.EVM_RPC_URL_8453,
+    42161: process.env.EVM_RPC_URL_42161,
+    43114: process.env.EVM_RPC_URL_43114,
+    81457: process.env.EVM_RPC_URL_81457,
+  };
+  return (configured[chainId] ?? "")
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Server-side RPC URLs for a chain: configured keyed providers first, then
+ * the chain's public endpoints as fallbacks, so an exhausted free-tier quota
+ * or a provider outage degrades to the public endpoints instead of failing.
+ */
+export function getServerEvmRpcUrls(chain: {
+  id: number;
+  rpcUrls: { default: { http: readonly string[] } };
+}): string[] {
+  return Array.from(
+    new Set([
+      ...getConfiguredEvmRpcUrls(chain.id),
+      ...chain.rpcUrls.default.http,
+    ])
+  );
+}
+
+/** `getEvmRpcTransport` with configured keyed providers first. Server-only. */
+export function getServerEvmRpcTransport(
+  chain: {
+    id: number;
+    rpcUrls: { default: { http: readonly string[] } };
+  },
+  opts?: EvmRpcTransportOptions
+) {
+  return getEvmRpcTransportFromUrls(getServerEvmRpcUrls(chain), opts);
+}
+
+/**
+ * Replaces any configured keyed RPC URL in `text` with its origin and a
+ * placeholder. viem puts the request URL in its error messages, so error
+ * text from a keyed transport would otherwise carry the API key. Matches by
+ * origin so a key in the path or query is removed whatever follows it.
+ */
+export function redactConfiguredEvmRpcUrls(text: string): string {
+  let redacted = text;
+  for (const chainInfo of EthereumChainInfo) {
+    for (const url of getConfiguredEvmRpcUrls(chainInfo.id)) {
+      let origin: string;
+      try {
+        origin = new URL(url).origin;
+      } catch {
+        // An unparsable value is still a secret: remove it verbatim.
+        redacted = redacted.split(url).join("<redacted RPC URL>");
+        continue;
+      }
+      const escaped = origin.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      redacted = redacted.replace(
+        new RegExp(`${escaped}[^\\s"'<>]*`, "g"),
+        `${origin}/<redacted>`
+      );
+    }
+  }
+  return redacted;
 }
 
 export function getEvmExplorerUrl({

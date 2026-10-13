@@ -11,7 +11,7 @@ import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   EthereumChainInfo,
-  getEvmRpcTransport,
+  getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
@@ -1641,7 +1641,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const provider = createPublicClient({
       chain: evmChain,
-      transport: getEvmRpcTransport(evmChain, {
+      transport: getServerEvmRpcTransport(evmChain, {
         timeout: 3_000,
         retryCount: 0,
       }),
@@ -1987,7 +1987,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       const provider = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain, {
+        transport: getServerEvmRpcTransport(evmChain, {
           timeout: 3_000,
           retryCount: 0,
         }),

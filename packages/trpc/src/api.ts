@@ -1,6 +1,6 @@
 import { superjson } from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { timeout } from "@osmosis-labs/utils";
+import { redactConfiguredEvmRpcUrls, timeout } from "@osmosis-labs/utils";
 import {
   httpBatchLink,
   httpLink,
@@ -47,10 +47,18 @@ const t = initTRPC.context<typeof createInnerTRPCContext>().create({
   transformer: superjson,
   allowOutsideOfServer: true,
   errorFormatter({ shape, error }) {
+    // Error text can carry a keyed EVM RPC URL (viem includes the request
+    // URL in its messages); this is the last point before it reaches a
+    // client.
     return {
       ...shape,
+      message: redactConfiguredEvmRpcUrls(shape.message),
       data: {
         ...shape.data,
+        stack:
+          shape.data.stack === undefined
+            ? undefined
+            : redactConfiguredEvmRpcUrls(shape.data.stack),
         zodError:
           error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
