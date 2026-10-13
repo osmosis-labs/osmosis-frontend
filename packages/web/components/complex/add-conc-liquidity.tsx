@@ -34,7 +34,6 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -114,7 +113,6 @@ const AddConcLiqView: FunctionComponent<
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
   const hasInitializedInactivePool = useRef(false);
 
-  const { derivedDataStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   // Default to passive strategy for inactive pools (only on mount)
@@ -125,13 +123,17 @@ const AddConcLiqView: FunctionComponent<
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
-  // APR and unstaking duration still come from the MobX detail store (the
-  // APR derives from the chain's staking inflation, which has no server
-  // equivalent); only the superfluid membership check has a tRPC route.
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
   const { data: superfluidPoolIds } =
     api.edge.pools.getSuperfluidPoolIds.useQuery();
+  const isSuperfluidPool = Boolean(superfluidPoolIds?.includes(poolId));
+  const { data: superfluidApr } = api.edge.pools.getSuperfluidPoolApr.useQuery(
+    { poolId },
+    { enabled: isSuperfluidPool }
+  );
+  const { data: stakingParams } = api.edge.staking.getStakingParams.useQuery(
+    undefined,
+    { enabled: isSuperfluidPool }
+  );
 
   const { yRange, xRange, depthChartData } = chartConfig;
 
@@ -300,7 +302,7 @@ const AddConcLiqView: FunctionComponent<
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
-          {superfluidPoolIds?.includes(poolId) && (
+          {isSuperfluidPool && (
             <div className="flex gap-3">
               <Checkbox
                 id="superfluid-stake"
@@ -319,19 +321,20 @@ const AddConcLiqView: FunctionComponent<
               >
                 <h6 className="md:text-subtitle1 md:font-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
-                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
-                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
-                        0
-                      )} APR)`
+                  {superfluidApr?.toDec().isPositive()
+                    ? `(+${superfluidApr.maxDecimals(0)} APR)`
                     : undefined}
                 </h6>
-                <span className="caption text-osmoverse-300">
-                  {t("lockToken.bondingRequirement", {
-                    numDays: superfluidPoolDetail.unstakingDuration
-                      .asDays()
-                      .toString(),
-                  })}
-                </span>
+                {stakingParams && (
+                  <span className="caption text-osmoverse-300">
+                    {t("lockToken.bondingRequirement", {
+                      numDays: (
+                        stakingParams.unbondingTimeSeconds /
+                        (24 * 60 * 60)
+                      ).toString(),
+                    })}
+                  </span>
+                )}
               </label>
             </div>
           )}
