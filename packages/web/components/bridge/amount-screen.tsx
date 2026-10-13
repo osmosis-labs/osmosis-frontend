@@ -1053,7 +1053,10 @@ export const AmountScreen = observer(
      * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
      */
     if (
-      !isLoading &&
+      // A failed balance lookup must end the loading state: on deposits
+      // `isLoading` waits for the destination asset, which is derived from a
+      // source asset that only a successful balance lookup sets.
+      (!isLoading || hasBalanceError) &&
       (!hasSupportedChains ||
         areAssetTransfersDisabled ||
         haltState.halted ||
