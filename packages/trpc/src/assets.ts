@@ -177,6 +177,32 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
+  getAssetPrices: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenoms: z.array(z.string()).max(100),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenoms }, ctx }) => {
+      const uniqueDenoms = Array.from(new Set(coinMinimalDenoms));
+      // A single asset without a price must not fail the whole batch.
+      const results = await Promise.allSettled(
+        uniqueDenoms.map((coinMinimalDenom) =>
+          getAssetPrice({ ...ctx, asset: { coinMinimalDenom } })
+        )
+      );
+
+      const prices: Record<string, PricePretty> = {};
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          prices[uniqueDenoms[index]] = new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            result.value
+          );
+        }
+      });
+      return prices;
+    }),
   getAssetWithPrice: publicProcedure
     .input(
       z.object({
