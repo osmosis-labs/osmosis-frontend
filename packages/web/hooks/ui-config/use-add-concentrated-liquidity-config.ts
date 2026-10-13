@@ -1,9 +1,4 @@
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
-import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import {
   BigDec,
   calcAmount0,
@@ -17,12 +12,7 @@ import {
   roundToNearestDivisible,
 } from "@osmosis-labs/math";
 import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
-import {
-  FakeFeeConfig,
-  IPriceStore,
-  OsmosisQueries,
-  PriceConfig,
-} from "@osmosis-labs/stores";
+import { PriceConfig } from "@osmosis-labs/stores";
 import {
   CoinPretty,
   Dec,
@@ -36,6 +26,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+import {
+  calcHighGasFee,
+  CL_CREATE_POSITION_GAS,
+  ConcentratedDepositAmount,
+} from "./concentrated-deposit-amount";
 
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
@@ -51,7 +47,7 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore } = useStore();
+  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -71,10 +67,7 @@ export function useAddConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
         poolId,
-        address,
-        queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        priceStore
+        address
       )
   );
   // react dev tools will unmount the component so only dispose if
@@ -87,6 +80,12 @@ export function useAddConcentratedLiquidityConfig(
     },
     [config]
   );
+
+  const { data: balances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: address },
+    { enabled: Boolean(address) }
+  );
+  config.setBalances(balances);
 
   if (pool && pool.type === "concentrated") config.setPool(pool);
 
@@ -278,10 +277,20 @@ export class ObservableAddConcentratedLiquidityConfig {
    Used to get base and quote asset deposit for adding concentrated liquidity
    */
   @observable
-  protected _baseDepositAmountIn: AmountConfig;
+  protected _baseDepositAmountIn: ConcentratedDepositAmount;
 
   @observable
-  protected _quoteDepositAmountIn: AmountConfig;
+  protected _quoteDepositAmountIn: ConcentratedDepositAmount;
+
+  /** Raw user balances (base units) by minimal denom, from tRPC. Empty while loading. */
+  @observable.ref
+  protected _rawBalances: ReadonlyMap<string, string> = new Map();
+
+  protected _balancesSource:
+    readonly { denom: string; amount: string }[] | undefined = undefined;
+
+  /** Fee deducted from the max amount of the stake currency, for the create position tx. */
+  protected readonly _createPositionFee: CoinPretty | undefined;
 
   @observable
   protected _baseDepositPrice: PricePretty | null = null;
@@ -583,11 +592,11 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._fullRange;
   }
 
-  get baseDepositAmountIn(): AmountConfig {
+  get baseDepositAmountIn(): ConcentratedDepositAmount {
     return this._baseDepositAmountIn;
   }
 
-  get quoteDepositAmountIn(): AmountConfig {
+  get quoteDepositAmountIn(): ConcentratedDepositAmount {
     return this._quoteDepositAmountIn;
   }
 
@@ -755,33 +764,33 @@ export class ObservableAddConcentratedLiquidityConfig {
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
     readonly poolId: string,
-    sender: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly priceStore: IPriceStore
+    sender: string
   ) {
     this.chainId = initialChainId;
 
     this._sender = sender;
 
-    this._baseDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
+    const chainInfo = chainGetter.getChain(this.chainId);
+    if (chainInfo.currencies.length === 0) {
+      throw new Error("Chain doesn't have the sendable currency informations");
+    }
+    const getRawBalance = (coinMinimalDenom: string) =>
+      this._rawBalances.get(coinMinimalDenom);
+
+    // placeholder currencies until the pool is set
+    this._baseDepositAmountIn = new ConcentratedDepositAmount(
+      chainInfo.currencies[0],
+      getRawBalance
+    );
+    this._quoteDepositAmountIn = new ConcentratedDepositAmount(
+      chainInfo.currencies[0],
+      getRawBalance
     );
 
-    this._quoteDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
+    this._createPositionFee = calcHighGasFee(
+      chainInfo.feeCurrencies[0],
+      CL_CREATE_POSITION_GAS
     );
-
-    this._baseDepositAmountIn.setAmount("0");
-    this._quoteDepositAmountIn.setAmount("0");
 
     this._priceRangeInput = [
       new PriceConfig(
@@ -793,9 +802,6 @@ export class ObservableAddConcentratedLiquidityConfig {
         this._quoteDepositAmountIn.sendCurrency
       ),
     ];
-
-    const queryAccountBalances =
-      this.queryBalances.getQueryBech32Address(sender);
 
     let initialized = false;
 
@@ -876,9 +882,7 @@ export class ObservableAddConcentratedLiquidityConfig {
           amount1
         );
 
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
+        const quoteBalance = this._quoteDepositAmountIn.balance;
 
         // set max: if quote coin higher than quote balance, set to quote balance
         if (
@@ -934,9 +938,7 @@ export class ObservableAddConcentratedLiquidityConfig {
           amount0
         );
 
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
+        const baseBalance = this._baseDepositAmountIn.balance;
 
         // set max: if base coin higher than base balance, set to base balance
         if (
@@ -978,19 +980,27 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     // subtract CL create pos tx gas when setting max amount of stake currency
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-    const createPosGasConfig = new FakeFeeConfig(
-      this.chainGetter,
-      this.chainId,
-      3_000_000 //osmosisMsgOpts.clCreatePosition.gas
-    );
     if (stakeCurrency.coinMinimalDenom === baseCurrency.coinMinimalDenom) {
-      this._baseDepositAmountIn.setFeeConfig(createPosGasConfig);
+      this._baseDepositAmountIn.setFee(this._createPositionFee);
     } else if (
       stakeCurrency.coinMinimalDenom === quoteCurrency.coinMinimalDenom
     ) {
-      this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
+      this._quoteDepositAmountIn.setFee(this._createPositionFee);
     }
   }
+
+  /** Sets the user's balances from the balances query. `undefined` (loading or no account) reads as zero balances. */
+  @action
+  readonly setBalances = (
+    balances: readonly { denom: string; amount: string }[] | undefined
+  ) => {
+    // called on render: skip unchanged query data to avoid needless invalidation
+    if (balances === this._balancesSource) return;
+    this._balancesSource = balances;
+    this._rawBalances = new Map(
+      (balances ?? []).map(({ denom, amount }) => [denom, amount])
+    );
+  };
 
   @action
   readonly setElectSuperfluidStaking = (elected: boolean) => {
@@ -1047,10 +1057,6 @@ export class ObservableAddConcentratedLiquidityConfig {
       return;
     }
 
-    const queryAccountBalances = this.queryBalances.getQueryBech32Address(
-      this.sender
-    );
-
     if (anchorAsset === "base") {
       // Base is max — calculate the quote amount that matches its dollar value.
       const baseAmountRaw =
@@ -1076,9 +1082,7 @@ export class ObservableAddConcentratedLiquidityConfig {
           .truncate()
       );
 
-      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._quoteDepositAmountIn.sendCurrency
-      );
+      const quoteBalance = this._quoteDepositAmountIn.balance;
 
       if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
         // Quote overflows. Pre-check whether flipping to quote-as-anchor would also overflow
@@ -1086,9 +1090,7 @@ export class ObservableAddConcentratedLiquidityConfig {
         // simple boolean flag reset in `finally` cannot guard against the re-entrant call —
         // the flag is always false by the time the deferred reaction fires. Instead, resolve
         // the both-overflow case entirely within this action without flipping the anchor.
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
+        const baseBalance = this._baseDepositAmountIn.balance;
         const baseValueFromQuoteMax = this._quoteDepositPrice.mul(quoteBalance);
         const baseCoinFromQuoteMax = new CoinPretty(
           this._baseDepositAmountIn.sendCurrency,
@@ -1144,15 +1146,11 @@ export class ObservableAddConcentratedLiquidityConfig {
           .truncate()
       );
 
-      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._baseDepositAmountIn.sendCurrency
-      );
+      const baseBalance = this._baseDepositAmountIn.balance;
 
       if (baseCoin.toDec().gt(baseBalance.toDec())) {
         // Base overflows. Same pre-check as above for the symmetric case.
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
+        const quoteBalance = this._quoteDepositAmountIn.balance;
         const quoteValueFromBaseMax = this._baseDepositPrice.mul(baseBalance);
         const quoteCoinFromBaseMax = new CoinPretty(
           this._quoteDepositAmountIn.sendCurrency,
