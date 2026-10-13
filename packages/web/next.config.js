@@ -14,9 +14,10 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // isows resolves to a different entry under the Cloudflare `workerd` export condition than under
-  // Node, so Next's file tracing misses it. Keeping it external lets OpenNext copy the whole package.
-  serverExternalPackages: ["isows"],
+  // isows and uncrypto resolve to a different entry under the Cloudflare `workerd` export condition
+  // than under Node, so Next's file tracing only copies their Node entrypoints. Keeping them external
+  // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
+  serverExternalPackages: ["isows", "uncrypto"],
   experimental: {
     // Keep function names in the Worker so Cloudflare CPU/heap profiles are readable. Wrangler's
     // source map stops at OpenNext's handler.mjs, so this is what makes Next's chunks legible.

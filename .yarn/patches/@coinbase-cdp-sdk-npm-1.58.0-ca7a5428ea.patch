@@ -1,0 +1,59 @@
+diff --git a/_esm/actions/x402/signX402Payment.js b/_esm/actions/x402/signX402Payment.js
+index 6b425b99c00f1d678941beeebf24f5efbcd75174..d1e6d85e03c465ac77188f39dab5c6996c93a0c2 100644
+--- a/_esm/actions/x402/signX402Payment.js
++++ b/_esm/actions/x402/signX402Payment.js
+@@ -199,9 +199,9 @@ export async function signEvmX402Payment(account, options) {
+     const [selected] = selectedPaymentRequired.accepts;
+     assertEvmRpcConfigured(selected.network, rpcUrlsByChainId);
+     const [{ x402Client }, { registerExactEvmScheme }, { UptoEvmScheme }] = await Promise.all([
+-        importX402Dependency("@x402/core/client", () => import("@x402/core/client")),
+-        importX402Dependency("@x402/evm/exact/client", () => import("@x402/evm/exact/client")),
+-        importX402Dependency("@x402/evm/upto/client", () => import("@x402/evm/upto/client")),
++        importX402Dependency("@x402/core/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
++        importX402Dependency("@x402/evm/exact/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
++        importX402Dependency("@x402/evm/upto/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
+     ]);
+     const client = new x402Client();
+     registerExactEvmScheme(client, { signer: account, schemeOptions: rpcUrlsByChainId });
+@@ -234,8 +234,8 @@ export async function signEvmSmartAccountX402Payment(account, options) {
+             `(transferWithAuthorization).`);
+     }
+     const [{ x402Client }, { registerExactEvmScheme }, { fromCdpSmartWallet }] = await Promise.all([
+-        importX402Dependency("@x402/core/client", () => import("@x402/core/client")),
+-        importX402Dependency("@x402/evm/exact/client", () => import("@x402/evm/exact/client")),
++        importX402Dependency("@x402/core/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
++        importX402Dependency("@x402/evm/exact/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
+         importX402Dependency("../../x402/account-signers.js", () => import("../../x402/account-signers.js")),
+     ]);
+     const signer = fromCdpSmartWallet(account);
+@@ -254,8 +254,8 @@ export async function signSolanaX402Payment(account, options) {
+     const selectedPaymentRequired = selectAcceptedPaymentRequired(options.paymentRequired, options.acceptedIndex, SVM_SIGNING_CAPABILITY);
+     const [selected] = selectedPaymentRequired.accepts;
+     const [{ x402Client }, { ExactSvmScheme, registerExactSvmScheme }, { cdpSolanaAccountToSvmSigner },] = await Promise.all([
+-        importX402Dependency("@x402/core/client", () => import("@x402/core/client")),
+-        importX402Dependency("@x402/svm/exact/client", () => import("@x402/svm/exact/client")),
++        importX402Dependency("@x402/core/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
++        importX402Dependency("@x402/svm/exact/client", () => Promise.reject(new Error("x402 is not bundled in this build"))),
+         importX402Dependency("../../x402/account-signers.js", () => import("../../x402/account-signers.js")),
+     ]);
+     const signer = cdpSolanaAccountToSvmSigner(account);
+diff --git a/_esm/x402/account-signers.js b/_esm/x402/account-signers.js
+index 63feefb3bca9dd2be1c06dceeec5218ee0268bb7..726f869b2de826aabb1952ae69f1b69b79ded780 100644
+--- a/_esm/x402/account-signers.js
++++ b/_esm/x402/account-signers.js
+@@ -2,8 +2,14 @@
+  * Pure CDP-account-to-x402-signer adapters.
+  */
+ import { address as toSolanaAddress, getTransactionEncoder } from "@solana/kit";
+-import { toClientEvmSigner } from "@x402/evm";
+ import { CHAIN_ID_TO_CDP_NETWORK } from "./constants.js";
++/*
++ * The real adapter comes from the optional `@x402/evm` peer dependency, which is not bundled
++ * in this build. Keep the export shape and throw only if an x402 signer is actually requested.
++ */
++function toClientEvmSigner() {
++    throw new Error("x402 is not bundled in this build");
++}
+ /**
+  * Converts a CDP EVM server account (EOA) into an x402-compatible signer.
+  *
