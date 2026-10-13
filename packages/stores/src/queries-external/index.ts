@@ -1,9 +1,5 @@
-export * from "./active-gauges";
 export * from "./base";
-export * from "./concentrated-liquidity";
-export * from "./numia";
 export * from "./pools";
-export * from "./store";
 
 export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
   "https://api-osmosis.imperator.co";
