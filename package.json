@@ -98,10 +98,10 @@
     "engine.io-client/ws": "^8.21.0",
     "viem/ws": "^8.21.0",
     "es5-ext": "npm:@unes/es5-ext@0.10.64-1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "use-sync-external-store": "^1.7.0"
   }
 }
