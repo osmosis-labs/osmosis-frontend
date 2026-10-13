@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useReducer } from "react";
 
 import { useFeatureFlags, useWalletSelect } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   AssetAlertsResponse,
   getActiveAssetAlerts,
@@ -28,8 +28,7 @@ const isAlertDismissed = (localStorageKey: string) =>
  * or no wallet is connected.
  */
 export const useAssetAlerts = () => {
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected: isOsmosisWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { assetAlerts } = useFeatureFlags();
 
@@ -38,9 +37,7 @@ export const useAssetAlerts = () => {
   const [, forceVisibilityUpdate] = useReducer((count: number) => count + 1, 0);
 
   const isWalletConnected =
-    !isWalletLoading &&
-    Boolean(wallet?.isWalletConnected) &&
-    Boolean(wallet?.address);
+    !isWalletLoading && isOsmosisWalletConnected && Boolean(address);
 
   const { data: alertsData } = useQuery({
     queryKey: ["osmosis-asset-alerts"],
@@ -56,7 +53,7 @@ export const useAssetAlerts = () => {
   const { data: portfolioAssets } =
     api.local.portfolio.getPortfolioAssets.useQuery(
       {
-        address: wallet?.address ?? "",
+        address: address ?? "",
       },
       {
         enabled:

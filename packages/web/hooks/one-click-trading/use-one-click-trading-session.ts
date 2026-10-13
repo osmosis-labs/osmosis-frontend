@@ -6,6 +6,7 @@ import { useAsync } from "react-use";
 
 import { useTranslation } from "~/hooks/language";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 
 /**
@@ -21,10 +22,10 @@ export const useOneClickTradingSession = ({
   // Optional callback function that gets called when the trading session expires.
   onExpire?: (params: { oneClickTradingInfo: OneClickTradingInfo }) => void;
 } = {}) => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const [isExpired, setIsExpired] = useState(false);
   const { t } = useTranslation();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
   const featureFlags = useFeatureFlags();
 
   const { value, loading } = useAsync(async () => {
@@ -34,7 +35,7 @@ export const useOneClickTradingSession = ({
       isExpired: false,
     };
 
-    if (!account?.address) {
+    if (!address) {
       return defaultReturn;
     }
 
@@ -42,7 +43,7 @@ export const useOneClickTradingSession = ({
     const isEnabled = await accountStore.isOneClickTradingEnabled();
     setIsExpired(await accountStore.isOneClickTradingExpired());
 
-    if (info?.userOsmoAddress !== account?.address) {
+    if (info?.userOsmoAddress !== address) {
       setIsExpired(false);
       return defaultReturn;
     }
@@ -54,12 +55,7 @@ export const useOneClickTradingSession = ({
      * when the oneClickTradingInfo changes
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    accountStore,
-    isExpired,
-    accountStore.oneClickTradingInfo,
-    account?.address,
-  ]);
+  }, [accountStore, isExpired, accountStore.oneClickTradingInfo, address]);
 
   // Set a timeout to update the isExpired state
   useEffect(() => {

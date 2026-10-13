@@ -37,6 +37,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "../use-wallet";
+
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
  *
@@ -51,11 +53,11 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore } = useStore();
+  const { queriesStore, priceStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
 
   const { data: pool, isFetched: isPoolFetched } =
     api.local.pools.getPool.useQuery(

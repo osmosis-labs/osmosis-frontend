@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /** Manages user input for a currency, with helpers for selecting
@@ -34,14 +34,13 @@ export function useAmountInput({
   gasAmount?: CoinPretty;
 }) {
   // query user balance for currency
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
   const { data: balances, isFetched: isBalancesFetched } =
     api.local.balances.getUserBalances.useQuery(
       {
-        bech32Address: account?.address ?? "",
+        bech32Address: address ?? "",
       },
-      { enabled: Boolean(account?.address) }
+      { enabled: Boolean(address) }
     );
   const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
