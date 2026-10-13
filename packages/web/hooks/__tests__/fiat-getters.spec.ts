@@ -1,4 +1,5 @@
-import { Asset, DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
 import { Dec, Int, PricePretty } from "@osmosis-labs/unit";
 
 import {
@@ -7,6 +8,12 @@ import {
 } from "../fiat-getters";
 
 const testDenom = "USDC";
+
+type Asset = Currency & {
+  coinName: string;
+  isVerified: boolean;
+  isUnstable: boolean;
+};
 
 describe("getTokenInFeeAmountFiatValue", () => {
   const defaultZeroDecimalAsset: Asset = {

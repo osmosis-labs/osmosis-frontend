@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
     "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
-    "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
+    "inactiveValidators": {
+      "title": "Pasif doğrulayıcılar tespit edildi",
+      "squadDescription": "Bu doğrulayıcılar aktif setten çıktı ve artık ödül kazanmıyor. Yeniden kazanmaya başlamak için aktif doğrulayıcılara yeniden delege edin. Yeniden delegasyon anında gerçekleşir, kilit açma süresi yoktur.",
+      "statusInactive": "Aktif setin dışında",
+      "statusInactiveShortfall": "Pasif: aktif sete ~{amount} eksik",
+      "statusJailed": "Hapiste: ödül kazanmıyor",
+      "redelegate": "Yeniden delege et",
+      "stakeWarning": "Stake ekibiniz pasif doğrulayıcılar içeriyor. Yeni stake'in bir kısmı onlara gider ve hiçbir şey kazanmaz.",
+      "editSquad": "Stake ekibini düzenle",
+      "redelegateDescription": "{amount} miktarını yeniden delege edeceğiniz doğrulayıcıları seçin. Miktar aralarında eşit bölünür; stake'inizin geri kalanı değişmez.",
+      "topThirdHidden": "Tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılar, Osmosis'in merkeziyetsiz kalmasına yardımcı olmak için varsayılan olarak gizlenir.",
+      "topThirdShown": "Bunlar, tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılardır. Daha küçük doğrulayıcıları seçmek Osmosis'in merkeziyetsiz kalmasına yardımcı olur.",
+      "alertDescription": "Bazı doğrulayıcılarınız aktif setten çıktı, bu yüzden onlara stake edilen OSMO ödül kazanmıyor. Yeniden kazanmaya başlamak için Stake sayfasından yeniden delege edin.",
+      "dismiss": "Kapat",
+      "goToStake": "Stake'e git"
+    },
     "learnMore": {
       "step1": {
         "title": "Staking nedir?",
@@ -720,7 +735,7 @@
       "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
       "searchPlaceholder": "Doğrulayıcı arayın",
       "button": "Kadroyu Ayarla",
-      "button2": "Kadroyu ve Hisseyi Ayarla",
+      "button2": "Kadroyu ve Hisseyi Ayarla {amount}",
       "noResults": "Sonuç bulunamadı",
       "column": {
         "validator": "Doğrulayıcı",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "İncelemeyi geri çek",
     "moreDepositOptions": "Daha fazla para yatırma seçeneği",
     "moreWithdrawOptions": "Daha fazla para çekme seçeneği",
-    "convertTo": "E dönüşmek",
     "depositAs": "Şu şekilde yatırın:",
     "withdrawAs": "Olarak geri çekil",
     "withdrawViaRoute": "{route} ile",
@@ -1351,6 +1365,11 @@
     "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
     "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
     "reviewTrade": "Ticareti inceleyin",
+    "highPriceImpact": {
+      "title": "Fiyat etkisi yüksek",
+      "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
+    },
+    "lossAcknowledgement": "Evet, bu işlemin önemli değer kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "errors": {
       "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
       "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",
@@ -1397,7 +1416,14 @@
       "filled": "Talep edilecek siparişler tamamlandı"
     },
     "priceReaches": "{denom} fiyatı {price} ulaşırsa",
-    "belowMinimumAmount": "{amount} minimum"
+    "belowMinimumAmount": "{amount} minimum",
+    "noOrderbookForPair": "{base}/{quote} için herhangi bir orderbook mevcut değil. Bu çift için limit orders'ı etkinleştirmek üzere bir tane oluşturun.",
+    "createOrderbook": "Orderbook Oluştur",
+    "noOrderbookExists": "{denom} için orderbook yok",
+    "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
+    "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
+    "creationAwaitingConfirmation": "Bu parite için önceki emir defteri oluşturma işlemi hâlâ zincir üstü onay bekliyor. Birkaç dakika sonra tekrar deneyin.",
+    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
   },
   "tradeDetails": {
     "priceImpact": {

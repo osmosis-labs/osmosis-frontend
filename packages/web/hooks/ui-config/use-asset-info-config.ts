@@ -6,10 +6,10 @@ import { PricePretty } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Time } from "lightweight-charts";
 import { action, computed, makeObservable, observable } from "mobx";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { timepointToString } from "~/components/chart/light-weight-charts/utils";
-import { api } from "~/utils/trpc";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
   denom: string,
@@ -94,16 +94,21 @@ export const useAssetInfoConfig = (
     }
   );
 
-  if (historicalPriceData) config.setHistoricalData(historicalPriceData);
-  config.setIsHistoricalDataLoading(isLoading);
-  config.setHistoricalDataError(isError);
-
   const enableCoinGecko =
     Boolean(coingeckoId) &&
     coingeckoId !== undefined &&
     historicalPriceData !== undefined &&
     historicalPriceData.length === 0 &&
     !isLoading;
+
+  // Stable so React Query keeps the selected array between renders; a new
+  // array each render would rewrite the config in the effect below.
+  const historicalRange = config.historicalRange;
+  const selectCoingeckoData = useCallback(
+    (data: CoingeckoHistoricalPrices) =>
+      toCoingeckoHistoricalData(data, historicalRange),
+    [historicalRange]
+  );
 
   const {
     data: coingeckoHistoricalPriceData,
@@ -120,48 +125,7 @@ export const useAssetInfoConfig = (
       timeFrame: config.historicalRange,
     },
     {
-      select(data) {
-        const historicalData = data?.prices.map(([timestamp, price]) => ({
-          time: timestamp / 1000,
-          close: price,
-          high: price,
-          low: price,
-          open: price,
-          volume: 0,
-        }));
-
-        if (config.historicalRange === "all") {
-          return historicalData;
-        }
-
-        let min = dayjs(new Date());
-        const max = dayjs(Date.now());
-        const maxTime = max.unix();
-
-        switch (config.historicalRange) {
-          case "1h":
-            min = min.subtract(1, "hour");
-            break;
-          case "1d":
-            min = min.subtract(1, "day");
-            break;
-          case "7d":
-            min = min.subtract(1, "week");
-            break;
-          case "1mo":
-            min = min.subtract(1, "month");
-            break;
-          case "1y":
-            min = min.subtract(1, "year");
-            break;
-        }
-
-        const minTime = min.unix();
-
-        return historicalData?.filter(
-          (price) => price.time <= maxTime && price.time >= minTime
-        );
-      },
+      select: selectCoingeckoData,
       enabled: enableCoinGecko,
       staleTime: 1000 * 60 * 3, // 3 minutes
       gcTime: 1000 * 60 * 6, // 6 minutes
@@ -173,14 +137,32 @@ export const useAssetInfoConfig = (
     }
   );
 
-  if (enableCoinGecko) {
-    if (coingeckoHistoricalPriceData)
-      config.setHistoricalData(coingeckoHistoricalPriceData);
-    config.setIsHistoricalDataLoading(isLoadingCoingecko);
-    config.setHistoricalDataError(isErrorCoingecko);
-  }
-
-  config.setUsingCoingeckoFallback(enableCoinGecko);
+  // Sync query results into the config after commit. Writing observables
+  // during render invalidates observers that read them, which makes
+  // mobx-react-lite 4 schedule another render and loop.
+  useEffect(() => {
+    if (enableCoinGecko) {
+      config.setHistoricalData(
+        coingeckoHistoricalPriceData ?? historicalPriceData ?? []
+      );
+      config.setIsHistoricalDataLoading(isLoadingCoingecko);
+      config.setHistoricalDataError(isErrorCoingecko);
+    } else {
+      if (historicalPriceData) config.setHistoricalData(historicalPriceData);
+      config.setIsHistoricalDataLoading(isLoading);
+      config.setHistoricalDataError(isError);
+    }
+    config.setUsingCoingeckoFallback(enableCoinGecko);
+  }, [
+    config,
+    enableCoinGecko,
+    historicalPriceData,
+    isLoading,
+    isError,
+    coingeckoHistoricalPriceData,
+    isLoadingCoingecko,
+    isErrorCoingecko,
+  ]);
 
   // Independent query for the single most recent price point at the finest
   // available bucket. Used so the stale-data pill shows a consistent
@@ -217,12 +199,64 @@ export const useAssetInfoConfig = (
   // before any cache is populated, `data` is `undefined` and we leave the
   // freshly-constructed observable empty rather than write `undefined`
   // through (which would also clear a cached value during a remount).
-  if (latestPricePoint !== undefined) {
-    config.setLatestPricePointTimeSec(latestPricePoint?.time);
-  }
+  useEffect(() => {
+    if (latestPricePoint !== undefined) {
+      config.setLatestPricePointTimeSec(latestPricePoint?.time);
+    }
+  }, [config, latestPricePoint]);
 
   return config;
 };
+
+type CoingeckoHistoricalPrices =
+  RouterOutputs["edge"]["assets"]["getCoingeckoAssetHistoricalPrice"];
+
+/** Converts CoinGecko prices to chart points within the selected range. */
+function toCoingeckoHistoricalData(
+  data: CoingeckoHistoricalPrices,
+  historicalRange: PriceRange
+): TokenHistoricalPrice[] | undefined {
+  const historicalData = data?.prices.map(([timestamp, price]) => ({
+    time: timestamp / 1000,
+    close: price,
+    high: price,
+    low: price,
+    open: price,
+    volume: 0,
+  }));
+
+  if (historicalRange === "all") {
+    return historicalData;
+  }
+
+  let min = dayjs(new Date());
+  const max = dayjs(Date.now());
+  const maxTime = max.unix();
+
+  switch (historicalRange) {
+    case "1h":
+      min = min.subtract(1, "hour");
+      break;
+    case "1d":
+      min = min.subtract(1, "day");
+      break;
+    case "7d":
+      min = min.subtract(1, "week");
+      break;
+    case "1mo":
+      min = min.subtract(1, "month");
+      break;
+    case "1y":
+      min = min.subtract(1, "year");
+      break;
+  }
+
+  const minTime = min.unix();
+
+  return historicalData?.filter(
+    (price) => price.time <= maxTime && price.time >= minTime
+  );
+}
 
 export const AvailablePriceRanges = {
   "1h": "1h",
@@ -279,14 +313,16 @@ export class ObservableAssetInfoConfig {
   @observable
   protected _hoverDate?: Time = undefined;
 
-  @observable
+  // Query results are immutable; a deep observable would copy every point.
+  @observable.ref
   protected _historicalData: TokenHistoricalPrice[] = [];
 
   @observable
   protected _historicalDataError: boolean = false;
 
+  // Nothing has loaded until the hook's effect syncs the first query state.
   @observable
-  protected _isHistoricalDataLoading: boolean = false;
+  protected _isHistoricalDataLoading: boolean = true;
 
   @observable
   protected _latestPricePointTimeSec?: number = undefined;

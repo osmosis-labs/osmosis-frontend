@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { FallbackProps } from "react-error-boundary";
@@ -5,6 +6,32 @@ import { FallbackProps } from "react-error-boundary";
 import { Icon } from "~/components/assets";
 import { Button, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+
+/** The "something went wrong" illustration, copy and one action button. */
+export const ErrorScreenBody: FunctionComponent<{
+  actionLabel: string;
+  onAction: () => void;
+  className?: string;
+}> = ({ actionLabel, onAction, className }) => {
+  const { t } = useTranslation();
+  return (
+    <div className={classNames("flex flex-col items-center gap-6", className)}>
+      <Image
+        src="/images/leaking-beaker.svg"
+        alt="Leaking beaker"
+        width={224}
+        height={168}
+      />
+      <h1 className="text-2xl font-bold leading-9">
+        {t("errors.uhOhSomethingWentWrong")}
+      </h1>
+      <p className="text-center">{t("errors.sorryForTheInconvenience")}</p>
+      <Button variant="secondary" onClick={onAction}>
+        {actionLabel}
+      </Button>
+    </div>
+  );
+};
 
 export const GeneralErrorScreen: FunctionComponent<
   FallbackProps & { onClose: () => void }
@@ -19,21 +46,10 @@ export const GeneralErrorScreen: FunctionComponent<
         icon={<Icon id="close" className="md:h-4 md:w-4" />}
         onClick={onClose}
       />
-      <div className="flex flex-col items-center gap-6">
-        <Image
-          src="/images/leaking-beaker.svg"
-          alt="Leaking beaker"
-          width={224}
-          height={168}
-        />
-        <h1 className="text-2xl font-bold leading-9">
-          {t("errors.uhOhSomethingWentWrong")}
-        </h1>
-        <p className="text-center">{t("errors.sorryForTheInconvenience")}</p>
-        <Button variant="secondary" onClick={resetErrorBoundary}>
-          {t("errors.startAgain")}
-        </Button>
-      </div>
+      <ErrorScreenBody
+        actionLabel={t("errors.startAgain")}
+        onAction={resetErrorBoundary}
+      />
     </div>
   );
 };

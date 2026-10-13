@@ -300,6 +300,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
           : undefined,
         isAdditive: quote.transferFee.isAdditive === true,
+        isUnknown: quote.transferFee.isUnknown === true,
       };
 
       const estimatedGasFee = quote.estimatedGasFee
@@ -360,6 +361,9 @@ export const bridgeTransferRouter = createTRPCRouter({
             intermediateFee.fiatValue;
         }
       }
+      // A total missing the provider fee would understate the cost and could
+      // rank this quote as the cheapest.
+      if (transferFee.isUnknown) totalFeeFiatValue = undefined;
 
       return {
         quote: {

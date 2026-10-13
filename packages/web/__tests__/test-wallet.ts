@@ -186,13 +186,21 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
-  ): ReturnType<MockKeplrWithFee["signDirect"]> {
-    return await this.client.signDirect(
+  ): ReturnType<NonNullable<WalletClient["signDirect"]>> {
+    const response = await this.client.signDirect(
       chainId,
       signer,
       signDoc as any,
       signOptions
     );
+    // Keplr's mock returns a Long account number; cosmos-kit expects bigint.
+    return {
+      ...response,
+      signed: {
+        ...response.signed,
+        accountNumber: BigInt(response.signed.accountNumber.toString()),
+      },
+    };
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {

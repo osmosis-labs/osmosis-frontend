@@ -518,7 +518,10 @@ const PhantomConnectSection: FunctionComponent<{ onDone: () => void }> = ({
   onDone,
 }) => {
   const { t } = useTranslation();
-  const { address, connect, disconnect } = usePhantomWallet();
+  // Only rendered for a Solana deposit source, which the flag already gates.
+  const { address, connect, disconnect } = usePhantomWallet({
+    restoreSession: true,
+  });
   const [phantomDetected, setPhantomDetected] = useState(false);
   useEffect(() => {
     setPhantomDetected(Boolean(getPhantomProvider()));

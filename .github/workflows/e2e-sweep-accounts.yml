@@ -11,7 +11,7 @@ name: "E2E: Sweep Account Surplus"
 # swapped back to USDC manually (hot wallet). Sweeping never goes below the
 # topup target, so it cannot trigger an auto-topup (no ping-pong).
 #
-# Manual dispatches default to dry run. Scheduled (weekly) runs are live.
+# Manual dispatches default to dry run. Scheduled (daily) runs are live.
 
 run-name: "${{ github.event_name == 'schedule' && 'Sweep' || (inputs.dry_run == true || inputs.dry_run == 'true') && 'Dry run' || 'Sweep' }} — account surplus (x${{ github.event_name == 'schedule' && '4' || inputs.sweep_multiplier }})"
 
@@ -27,7 +27,7 @@ on:
         type: string
         default: "4"
   schedule:
-    - cron: "0 8 * * 1" # weekly, Monday 08:00 UTC — live run
+    - cron: "0 8 * * *" # daily, 08:00 UTC — live run
 
 concurrency:
   group: e2e-sweep

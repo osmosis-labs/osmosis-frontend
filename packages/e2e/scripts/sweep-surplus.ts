@@ -381,7 +381,7 @@ async function main(): Promise<void> {
   }
 
   // Slack: dry runs always post (they're manual — someone wants the plan);
-  // live runs post only when something was swept or failed, so the weekly
+  // live runs post only when something was swept or failed, so the daily
   // cron stays silent when there is no surplus.
   if (isDryRun || results.length > 0 || hasFailures) {
     let topupBalances: TokenBalance[] = [];

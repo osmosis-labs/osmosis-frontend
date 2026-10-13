@@ -1,12 +1,10 @@
 import classNames from "classnames";
-import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip/tooltip";
 import { TooltipProps } from "~/components/tooltip/types";
 import { CustomClasses } from "~/components/types";
-
-const Tippy = dynamic(() => import("@tippyjs/react"), { ssr: false });
 
 export const InfoTooltip: FunctionComponent<
   TooltipProps &
@@ -14,19 +12,12 @@ export const InfoTooltip: FunctionComponent<
       size?: { height: number; width: number };
     }
 > = ({ content, trigger, size, className }) => (
-  <Tippy
-    className="body2 rounded-xl bg-osmoverse-800 p-2 drop-shadow-md md:p-1"
+  <Tooltip
+    rootClassNames="!border-0 !bg-osmoverse-800 !p-2 drop-shadow-md md:!p-1"
+    className={classNames("text-wosmongton-300", className)}
     content={content}
     trigger={trigger ?? "click"}
   >
-    <div
-      className={classNames(
-        "flex cursor-pointer align-middle text-wosmongton-300",
-        className
-      )}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <Icon id="info" height={16} width={16} {...size} />
-    </div>
-  </Tippy>
+    <Icon id="info" height={16} width={16} {...size} />
+  </Tooltip>
 );

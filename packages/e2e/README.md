@@ -349,11 +349,11 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 | ------------------------------ | ------------------------------ | ------------------------------------------------------------------------------- |
 | **E2E: Migrate Funds**         | `e2e-migrate-funds.yml`        | One-time extract/distribute for wallet rotation                                 |
 | **E2E: Topup Test Accounts**   | `e2e-topup-accounts.yml`       | Ongoing topup when accounts run low                                             |
-| **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml`       | Weekly (+ manual) sweep of surplus tokens back to the topup account             |
+| **E2E: Sweep Account Surplus** | `e2e-sweep-accounts.yml`       | Daily (+ manual) sweep of surplus tokens back to the topup account              |
 | **E2E: Fleet Balance Report**  | `e2e-fleet-balance-report.yml` | Weekly compact + monthly full Slack report of total assets across both accounts |
 
 All fund-moving workflows default to **dry run** on manual dispatch (the
-sweep's weekly cron runs live; the balance report is read-only). The
+sweep's daily cron runs live; the balance report is read-only). The
 `RESERVE_OSMO` / `RESERVE_USDC` inputs control how much to keep in the
 **topup account** during distribute and topup phases.
 
@@ -367,7 +367,7 @@ manually — it's a hot wallet.
 
 The sweep posts to the same Slack channel as the topup script
 (`E2E_SLACK_WEBHOOK_BALANCE_ALERTS`): dry runs always post the sweep plan;
-live runs post only when something was swept or failed (the weekly cron stays
+live runs post only when something was swept or failed (the daily cron stays
 silent when there's no surplus). The summary lists per-account swept coins
 with Mintscan links plus the topup account's resulting balances, so the
 manual swap-back can be planned straight from the message.

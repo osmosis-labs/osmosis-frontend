@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "락업된 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
-    "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
+    "inactiveValidators": {
+      "title": "비활성 검증인 감지됨",
+      "squadDescription": "이 검증인들은 활성 세트에서 빠져 더 이상 보상을 받지 못합니다. 활성 검증인에게 재위임하면 다시 보상을 받을 수 있습니다. 재위임은 즉시 적용되며 언본딩 기간이 없습니다.",
+      "statusInactive": "활성 세트 밖",
+      "statusInactiveShortfall": "비활성: 활성 세트까지 약 {amount} 부족",
+      "statusJailed": "감옥: 보상 없음",
+      "redelegate": "재위임",
+      "stakeWarning": "스테이킹 스쿼드에 비활성 검증인이 포함되어 있습니다. 새로 스테이킹하는 금액의 일부가 이들에게 가서 보상을 받지 못합니다.",
+      "editSquad": "스테이킹 스쿼드 편집",
+      "redelegateDescription": "{amount}을(를) 재위임할 검증인을 선택하세요. 균등하게 나뉘며, 나머지 스테이킹은 그대로 유지됩니다.",
+      "topThirdHidden": "Osmosis의 탈중앙화를 돕기 위해, 합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들은 기본적으로 숨겨져 있습니다.",
+      "topThirdShown": "합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들입니다. 더 작은 검증인을 선택하면 Osmosis의 탈중앙화에 도움이 됩니다.",
+      "alertDescription": "일부 검증인이 활성 세트에서 빠져서, 이들에게 스테이킹된 OSMO는 보상을 받지 못하고 있습니다. 스테이킹 페이지에서 재위임하면 다시 보상을 받을 수 있습니다.",
+      "dismiss": "닫기",
+      "goToStake": "스테이킹으로 이동"
+    },
     "learnMore": {
       "step1": {
         "title": "스테이킹이란 무엇인가요?",
@@ -720,7 +735,7 @@
       "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 밸리데이터 세트를 편집할 수 있습니다.",
       "searchPlaceholder": "밸리데이터 검색",
       "button": "스쿼드 설정",
-      "button2": "스쿼드 및 스테이킹 설정",
+      "button2": "스쿼드 및 스테이킹 설정 {amount}",
       "noResults": "검색 결과가 없습니다",
       "column": {
         "validator": "밸리데이터",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "철회 검토",
     "moreDepositOptions": "더 많은 입금 옵션",
     "moreWithdrawOptions": "더 많은 인출 옵션",
-    "convertTo": "로 변환하다",
     "depositAs": "다음으로 입금",
     "withdrawAs": "다음으로 인출",
     "withdrawViaRoute": "{route} 경유",
@@ -1351,6 +1365,11 @@
     "lowerSlippageToleranceRecommended": "낮은 미끄러짐 허용 오차를 권장합니다.",
     "tryHigherSlippage": "최대 미끄러짐 허용 오차를 더 높이십시오.",
     "reviewTrade": "거래 검토",
+    "highPriceImpact": {
+      "title": "가격 영향이 큽니다",
+      "description": "이 거래는 시장 가격을 {impact} 변동시키므로 표시된 금액보다 훨씬 적게 받을 수 있습니다."
+    },
+    "lossAcknowledgement": "네, 이 거래로 인해 상당한 가치 손실이 발생할 수 있음을 이해하며 계속 진행하겠습니다.",
     "errors": {
       "noAssetAvailable": "Osmosis에 거래할 수 {coinName} 자금이 없습니다. 계속하려면 옵션을 선택하세요.",
       "tradeMayResultInLossOfValue": "귀하의 거래로 인해 상당한 가치 손실이 발생할 수 있습니다",
@@ -1397,7 +1416,14 @@
       "filled": "주문이 채워져서 청구됩니다"
     },
     "priceReaches": "{denom} 가격 {price} 도달하면",
-    "belowMinimumAmount": "{amount} 최소"
+    "belowMinimumAmount": "{amount} 최소",
+    "noOrderbookForPair": "{base}/{quote}에 대한 orderbook이 없습니다. 이 쌍의 limit orders를 활성화하려면 하나를 만드세요.",
+    "createOrderbook": "Orderbook 만들기",
+    "noOrderbookExists": "{denom}에 대한 orderbook 없음",
+    "clickToCreateOrderbook": "클릭하여 이 쌍의 orderbook을 만드세요.",
+    "creationInProgress": "이 페어의 오더북 생성이 다른 탭에서 이미 진행 중입니다",
+    "creationAwaitingConfirmation": "이 페어에 대한 이전 오더북 생성이 아직 온체인 확인을 기다리고 있습니다. 몇 분 후에 다시 시도하세요.",
+    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다."
   },
   "tradeDetails": {
     "priceImpact": {

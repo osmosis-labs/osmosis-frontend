@@ -15,7 +15,9 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+// The CommonJS barrel also loads mnemonic/BIP32 code and browser crypto polyfills.
+import { Hash } from "@keplr-wallet/crypto/build/hash";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import {
   BaseAccount,
   ChainedFunctionifyTuple,
@@ -26,7 +28,6 @@ import {
   KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
@@ -84,6 +85,7 @@ import {
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
+  runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -186,7 +188,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * and not values derived from the IBC connection with Osmosis
    */
   private get walletManagerAssets() {
-    return this.assets.map((assetList) => ({
+    const assetLists = this.assets.map((assetList) => ({
       ...assetList,
       assets: assetList.assets.map((asset) => ({
         ...asset,
@@ -204,6 +206,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         display: asset.symbol,
       })),
     })) as unknown as CosmologyAssetList[];
+
+    // Cosmos Kit fetches the asset list from GitHub's chain registry for any
+    // chain it is not given one for. Supply an empty list instead so no
+    // registry request is made for chains we ship without assets.
+    const chainNamesWithAssets = new Set(
+      assetLists.map(({ chain_name }) => chain_name)
+    );
+    for (const { chain_name } of this.chains) {
+      if (!chainNamesWithAssets.has(chain_name)) {
+        assetLists.push({ chain_name, assets: [] });
+      }
+    }
+    return assetLists;
   }
 
   constructor(
@@ -278,7 +293,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         endpoints: getWalletEndpoints(chains),
       },
       {
-        duration: 31556926000, // 1 year
+        // setTimeout fires immediately for delays above 2^31 - 1 ms, which
+        // would expire the session right after connecting. ~24.8 days.
+        duration: 2 ** 31 - 1,
         callback: () => {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
           this.setOneClickTradingInfo(undefined);
@@ -555,7 +572,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
-          onSign?: () => Promise<void> | void;
+          /** Runs immediately before the broadcast POST with the hash of the
+           *  signed tx, which is known before broadcast (sha256 of the tx
+           *  bytes). A throw aborts the broadcast and discards the signed tx. */
+          onSign?: (txHash: Uint8Array) => Promise<void> | void;
         },
     memoFlags?: TxFeMemoFlags,
     /** Expiry-bind a direct-signed transaction; see {@link sign}. */
@@ -586,7 +606,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
-      let onSign: (() => Promise<void> | void) | undefined;
+      let onSign: ((txHash: Uint8Array) => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -678,7 +698,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onSign) {
-        await onSign();
+        // Callers persisting in-flight state (duplicate-creation guards) need
+        // the hash before the POST: if the POST fails ambiguously (timeout,
+        // 5xx after the node accepted), it is the only handle to reconcile.
+        await onSign(Hash.sha256(encodedTx));
       }
 
       const res = await axios.post<{
@@ -705,6 +728,26 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const broadcasted = res.data.tx_response;
 
+      if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
+      }
+
+      // The POST returning code 0 IS acceptance: record it via onBroadcasted
+      // before any tracer setup, whose endpoint resolution can itself fail —
+      // callers persisting acceptance state (e.g. duplicate-creation guards)
+      // must learn the tx hash even when everything after this point throws.
+      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
+
+      // The per-call callback records acceptance and must not be skipped
+      // because the store-wide one (toasts, analytics) threw.
+      runBroadcastedCallbacks({
+        chainId: chainNameOrId,
+        txHash: txHashBuffer,
+        preTxEvent: this.options.preTxEvents?.onBroadcasted,
+        perCall: onBroadcasted,
+      });
+
       // Pass all RPC endpoints to TxTracer for WebSocket failover.
       const rpcUrls = this.getChainRpcUrls(wallet);
       let sortedRpcUrls: string[] =
@@ -729,21 +772,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
-
-      if (broadcasted.code) {
-        const { BroadcastTxError } = await import("@cosmjs/stargate");
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
-      }
-
-      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
-
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
 
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
@@ -941,28 +969,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    /**
-     * If the message is an authenticator message, force the direct signing.
-     * This is because the authenticator message should be signed with proto for now.
-     */
-
-    type TypeUrl = keyof typeof osmosisAminoConverters;
-    const getTypeUrl = (typeUrl: TypeUrl) => {
-      return typeUrl;
-    };
-
-    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-    // TODO: Copy what's been done there for this message below
-    const doesTxNeedDirectSigning = messages.some(
-      (message) =>
-        message.typeUrl ===
-        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
-    );
-
-    const forceSignDirect = doesTxNeedDirectSigning;
-
-    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      !forceSignDirect
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
       ? this.signAmino({
           wallet,
           signerAddress: wallet.address ?? "",
@@ -1047,7 +1054,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1171,7 +1178,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1202,14 +1209,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       } satisfies EncodeObject;
     });
 
-    const msgs = normalizedMessages.map((msg) => {
-      const res = aminoTypes.toAmino(msg);
-      // Include the 'memo' field again because the 'registry' omits it
-      if (msg.value.memo) {
-        res.value.memo = msg.value.memo;
-      }
-      return res;
-    });
+    const msgs = normalizedMessages.map((msg) => aminoTypes.toAmino(msg));
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
@@ -1339,7 +1339,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: wallet.chain.chain_id,
       coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 0,
+          ?.slip44 ?? 118,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;

@@ -7,6 +7,7 @@ import {
   checkSolanaRecipient,
   checkSolanaSignatureOutcome,
   classifySolanaSimulation,
+  getClientSolanaRpcUrls,
   SolanaSignatureStatus,
   waitForSolanaSignature,
 } from "../solana";
@@ -215,13 +216,10 @@ describe("checkSolanaRecipient", () => {
     await expect(checkSolanaRecipient(WALLET)).resolves.toBe("ok");
   });
 
-  it("throws when no endpoint answers, rather than passing the address", async () => {
+  it("throws when the route does not answer, rather than passing the address", async () => {
     server.use(
       http.post("*/api/solana-rpc", () =>
         HttpResponse.json({}, { status: 502 })
-      ),
-      http.post("https://api.mainnet-beta.solana.com", () =>
-        HttpResponse.json({}, { status: 503 })
       )
     );
     await expect(checkSolanaRecipient(WALLET)).rejects.toBeDefined();
@@ -347,15 +345,20 @@ describe("checkSolanaSignatureOutcome", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("proves nothing when no endpoint answers", async () => {
+  it("proves nothing when the route does not answer", async () => {
     server.use(
       http.post("*/api/solana-rpc", () =>
         HttpResponse.json({}, { status: 502 })
-      ),
-      http.post("https://api.mainnet-beta.solana.com", () =>
-        HttpResponse.json({}, { status: 503 })
       )
     );
     await expect(check()).resolves.toBeUndefined();
+  });
+});
+
+describe("getClientSolanaRpcUrls", () => {
+  it("uses only the app's RPC route, with no public fallback", () => {
+    const urls = getClientSolanaRpcUrls();
+    expect(urls).toHaveLength(1);
+    expect(urls[0]).toMatch(/\/api\/solana-rpc$/);
   });
 });

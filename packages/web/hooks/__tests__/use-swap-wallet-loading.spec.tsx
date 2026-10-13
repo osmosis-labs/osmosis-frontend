@@ -164,7 +164,7 @@ jest.mock("nuqs", () => {
     parseAsString: { withDefault: parser },
     parseAsBoolean: { withDefault: parser },
     useQueryState: (
-      key: string,
+      _key: string,
       { defaultValue }: { defaultValue: unknown }
     ) => [defaultValue, jest.fn()],
   };

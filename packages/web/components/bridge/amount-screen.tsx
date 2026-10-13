@@ -208,7 +208,9 @@ export const AmountScreen = observer(
       isConnecting,
     } = useEvmWalletAccount();
     const { switchChain: switchEvmChain } = useSwitchEvmChain();
-    const { address: phantomAddress } = usePhantomWallet();
+    const { address: phantomAddress } = usePhantomWallet({
+      restoreSession: featureFlags.solanaSkipRoutes === true,
+    });
 
     const fromCosmosCounterpartyAccount =
       !isNil(fromChain) && fromChain.chainType === "cosmos"

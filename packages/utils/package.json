@@ -25,7 +25,7 @@
     "ecashaddrjs": "^2.0.0",
     "ripple-address-codec": "^5.0.0",
     "sha.js": "^2.4.11",
-    "viem": "^2.23.5"
+    "viem": "~2.41.2"
   },
   "devDependencies": {
     "@types/bs58check": "^2.1.2",

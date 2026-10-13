@@ -1,5 +1,6 @@
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type { TxFeMemoFlags } from "@osmosis-labs/stores";
 import {
   makeExecuteCosmwasmContractMsg,
   QuoteDirection,
@@ -211,6 +212,26 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.fiatValue,
   ]);
 
+  /**
+   * Display-only fiat value of the payment at the current spot price, so the
+   * review shows what an ask gives up when its limit is below market.
+   * Fees, the minimum order check and the expected output still use `paymentFiatValue`.
+   */
+  const paymentFiatValueAtMarket = useMemo(() => {
+    if (isMarket || orderDirection !== "ask") return paymentFiatValue;
+    return mulPrice(
+      paymentTokenValue,
+      new PricePretty(DEFAULT_VS_CURRENCY, priceState.spotPrice),
+      DEFAULT_VS_CURRENCY
+    );
+  }, [
+    isMarket,
+    orderDirection,
+    paymentFiatValue,
+    paymentTokenValue,
+    priceState.spotPrice,
+  ]);
+
   const feeUsdValue = useMemo(() => {
     return (
       paymentFiatValue?.mul(makerFee) ??
@@ -304,147 +325,165 @@ export const usePlaceLimit = ({
       : [];
   }, [encodedMsg, isLedger, isMarket, oneClickMessages?.msgs]);
 
-  const placeLimit = useCallback(async () => {
-    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
-    if (quantity === "0") {
-      return;
-    }
-
-    if (isMarket) {
-      try {
-        await marketState.sendTradeTokenInTx();
-      } catch (error) {
-        console.error("swap failed", error);
-      } finally {
+  /**
+   * `memoFlags` carries the figures the user acknowledged in the review-order
+   * modal (MTN-137 / MTN-150) into the tx auth memo. Absent for an unwarned
+   * order.
+   */
+  const placeLimit = useCallback(
+    async (memoFlags?: TxFeMemoFlags) => {
+      const quantity = paymentTokenValue?.toCoin().amount ?? "0";
+      if (quantity === "0") {
         return;
       }
-    }
 
-    if (!limitMessages || limitMessages.length === 0) return;
-
-    try {
-      /**
-       * If it's ledger and we have one-click messages, we need to add a 1CT session
-       * before broadcasting the transaction as there is a payload limit on ledger
-       */
-      if (
-        isLedger &&
-        oneClickMessages &&
-        oneClickMessages.msgs &&
-        shouldSend1CTTx
-      ) {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "Add 1CT session",
-          oneClickMessages.msgs,
-          undefined,
-          undefined,
-          undefined,
-          async (tx) => {
-            const { code } = tx;
-            if (code) {
-              throw new Error("Failed to send swap exact amount in message");
-            } else {
-              if (
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                await onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                await onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                });
-              }
-            }
-          }
-        );
-
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages
-        );
-      } else {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages,
-          "",
-          undefined,
-          undefined,
-          (tx) => {
-            if (!tx.code) {
-              if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                });
-              }
-            }
-          }
-        );
+      if (isMarket) {
+        try {
+          // A market-type "limit" order is a swap, so the swap hook's own
+          // stamping covers it.
+          await marketState.sendTradeTokenInTx(memoFlags);
+        } catch (error) {
+          console.error("swap failed", error);
+        } finally {
+          return;
+        }
       }
-    } catch (error) {
-      console.error("Error attempting to broadcast place limit tx", error);
-    }
-  }, [
-    paymentTokenValue,
-    isMarket,
-    limitMessages,
-    marketState,
-    isLedger,
-    oneClickMessages,
-    shouldSend1CTTx,
-    accountStore,
-    account?.address,
-    apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-    t,
-  ]);
+
+      if (!limitMessages || limitMessages.length === 0) return;
+
+      try {
+        /**
+         * If it's ledger and we have one-click messages, we need to add a 1CT session
+         * before broadcasting the transaction as there is a payload limit on ledger
+         */
+        if (
+          isLedger &&
+          oneClickMessages &&
+          oneClickMessages.msgs &&
+          shouldSend1CTTx
+        ) {
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "Add 1CT session",
+            oneClickMessages.msgs,
+            undefined,
+            undefined,
+            undefined,
+            async (tx) => {
+              const { code } = tx;
+              if (code) {
+                throw new Error("Failed to send swap exact amount in message");
+              } else {
+                if (
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  await onAdd1CTSession({
+                    privateKey: oneClickMessages.key,
+                    tx,
+                    userOsmoAddress: account?.address ?? "",
+                    fallbackGetAuthenticatorId:
+                      apiUtils.local.oneClickTrading.getSessionAuthenticator
+                        .fetch,
+                    accountStore,
+                    allowedMessages: oneClickMessages.allowedMessages,
+                    sessionPeriod: oneClickMessages.sessionPeriod,
+                    spendLimitTokenDecimals:
+                      oneClickMessages.spendLimitTokenDecimals,
+                    transaction1CTParams: oneClickMessages.transaction1CTParams,
+                    allowedAmount: oneClickMessages.allowedAmount,
+                    t,
+                  });
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  await onEnd1CTSession({
+                    accountStore,
+                    authenticatorId: oneClickMessages.authenticatorId,
+                  });
+                }
+              }
+            }
+          );
+
+          // Widened from three arguments so the ledger path can carry the memo
+          // at all — before this it had no way to record an acknowledgement.
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "executeWasm",
+            limitMessages,
+            undefined,
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            undefined,
+            memoFlags
+          );
+        } else {
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "executeWasm",
+            limitMessages,
+            "",
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            (tx) => {
+              if (!tx.code) {
+                if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  onAdd1CTSession({
+                    privateKey: oneClickMessages.key,
+                    tx,
+                    userOsmoAddress: account?.address ?? "",
+                    fallbackGetAuthenticatorId:
+                      apiUtils.local.oneClickTrading.getSessionAuthenticator
+                        .fetch,
+                    accountStore,
+                    allowedMessages: oneClickMessages.allowedMessages,
+                    sessionPeriod: oneClickMessages.sessionPeriod,
+                    spendLimitTokenDecimals:
+                      oneClickMessages.spendLimitTokenDecimals,
+                    transaction1CTParams: oneClickMessages.transaction1CTParams,
+                    allowedAmount: oneClickMessages.allowedAmount,
+                    t,
+                  });
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  onEnd1CTSession({
+                    accountStore,
+                    authenticatorId: oneClickMessages.authenticatorId,
+                  });
+                }
+              }
+            },
+            memoFlags
+          );
+        }
+      } catch (error) {
+        console.error("Error attempting to broadcast place limit tx", error);
+      }
+    },
+    [
+      paymentTokenValue,
+      isMarket,
+      limitMessages,
+      marketState,
+      isLedger,
+      oneClickMessages,
+      shouldSend1CTTx,
+      accountStore,
+      account?.address,
+      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      t,
+    ]
+  );
 
   const { data, isFetched: isBalancesFetched } =
     api.edge.assets.getUserAssets.useQuery(
@@ -536,6 +575,8 @@ export const usePlaceLimit = ({
     if (isMarket) {
       return marketState.tokenOutFiatValue;
     }
+    // A bid's received base asset is valued at spot rather than the limit
+    // price, so the review shows the loss on a bid above market.
     return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
@@ -544,12 +585,12 @@ export const usePlaceLimit = ({
         )
       : new PricePretty(
           DEFAULT_VS_CURRENCY,
-          priceState.price?.mul(
+          priceState.spotPrice?.mul(
             expectedTokenAmountOut?.toDec() ?? new Dec(0)
           ) ?? new Dec(0)
         );
   }, [
-    priceState.price,
+    priceState.spotPrice,
     expectedTokenAmountOut,
     orderDirection,
     quoteAssetPrice,
@@ -676,6 +717,7 @@ export const usePlaceLimit = ({
     isBalancesFetched,
     insufficientFunds,
     paymentFiatValue,
+    paymentFiatValueAtMarket,
     paymentTokenValue,
     makerFee,
     isMakerFeeLoading,

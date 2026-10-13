@@ -28,9 +28,12 @@ export const wagmiConfig = createConfig({
     walletConnect({
       projectId: WALLETCONNECT_PROJECT_KEY ?? "",
       qrModalOptions: {
+        // The provider renders Reown AppKit and maps these legacy `--wcm-*`
+        // variables onto it. The background colour is not mapped, so use
+        // AppKit's dark theme instead.
+        themeMode: "dark",
         themeVariables: {
           "--wcm-accent-color": theme.colors.wosmongton[300],
-          "--wcm-background-color": theme.colors.osmoverse[700],
           "--wcm-font-family": "Inter, ui-sans-serif, system-ui",
           "--wcm-z-index": "9999",
         },

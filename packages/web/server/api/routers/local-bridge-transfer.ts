@@ -4,6 +4,7 @@ import {
   BridgeSupportedAsset,
   bridgeSupportedAssetSchema,
 } from "@osmosis-labs/bridge/build/interface";
+import { SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID } from "@osmosis-labs/bridge/build/utils/solana";
 import {
   calcAssetValue,
   captureErrorAndReturn,
@@ -234,11 +235,24 @@ export const localBridgeTransferRouter = createTRPCRouter({
               });
 
               const decAmount = new Dec(balance.toString());
-              // Price via the Osmosis-side variant, mirroring the EVM branch
-              const usdValue = await calcAssetValue({
+              // Price via the Osmosis-side variant. The SPL amount is in the
+              // SPL mint's decimals, so scale it to the variant's before
+              // pricing (equal for USDC, but never assume it).
+              const representativeAsset = getAsset({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
-                amount: decAmount,
+              });
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: representativeAsset.coinMinimalDenom,
+                amount:
+                  asset.decimals === representativeAsset.coinDecimals
+                    ? decAmount
+                    : normalizeDecimals({
+                        amount: balance.toString(),
+                        fromDecimals: asset.decimals,
+                        toDecimals: representativeAsset.coinDecimals,
+                      }),
               }).catch((e) => captureErrorAndReturn(e, undefined));
 
               return {
@@ -393,9 +407,6 @@ export const localBridgeTransferRouter = createTRPCRouter({
     }),
 });
 
-/** The associated token account program. */
-const SOLANA_ATA_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
-
 /**
  * SPL token balance (minimal units) of `mint` in `owner`'s associated token
  * account. Only that account counts: Skip's burn spends from it, so a Max
@@ -429,7 +440,7 @@ async function getSolanaTokenBalance({
   const { PublicKey } = await import("@solana/web3.js");
   const ownerKey = new PublicKey(owner);
   const mintKey = new PublicKey(mint);
-  const ataProgram = new PublicKey(SOLANA_ATA_PROGRAM_ID);
+  const ataProgram = new PublicKey(SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID);
   const associatedAddress = (tokenProgram: string) =>
     PublicKey.findProgramAddressSync(
       [

@@ -55,9 +55,16 @@ export const createNodeQuery =
       ...((params as [PathParameters & { chainId?: string }]) ?? [])
     );
 
+    // The URL is built per attempt (and inside an async function), so one
+    // malformed registry address fails only its own attempt instead of the
+    // whole query.
     const { data } = await hedgedRequest<Result>(
-      restEndpoints.map(({ address }) => new URL(pathStr, address).toString()),
-      (url, signal) => apiClient<Result>(url, { ...opts, signal }),
+      restEndpoints.map(({ address }) => address),
+      async (address, signal) =>
+        apiClient<Result>(new URL(pathStr, address).toString(), {
+          ...opts,
+          signal,
+        }),
       { ...hedgeOptions, name: "REST endpoints", target: `chain ${chainId}` }
     );
     return data;

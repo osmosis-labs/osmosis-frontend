@@ -8,12 +8,12 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { SquidBridgeProvider } from ".";
+import { SquidProviderId } from "./constants";
 import type { SquidStatusResponse } from "./types";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly providerId = SquidBridgeProvider.ID;
+  readonly providerId = SquidProviderId;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 

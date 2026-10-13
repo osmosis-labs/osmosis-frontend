@@ -572,11 +572,12 @@ export interface BridgeQuote {
   expectedOutput: BridgeCoin & {
     /**
      * Price impact of any swap bundled into the quote, as a stringified
-     * fraction (e.g. "0.1" = 10%), NOT a percentage. Sign convention varies
-     * by provider: Nomic bundles an Osmosis swap and reports negative
-     * fractions, Squid reports positive (its API's percentage is divided by
-     * 100 at the provider) — consumers must compare magnitudes, not raw
-     * values. "0" when the quote involves no swap — except Skip, which
+     * fraction (e.g. "-0.1" = a 10% loss), NOT a percentage. Negative is a
+     * loss and positive is in the user's favour, matching the Osmosis swap
+     * router; a provider whose API uses another convention converts at its
+     * boundary (Squid reports a loss as a positive percentage, so its
+     * provider divides by 100 and negates). "0" when the quote involves no
+     * swap — except Skip, which
      * reports "0" even when its route swaps internally (known gap; the
      * fiat-loss check is its only defense).
      */
@@ -600,6 +601,12 @@ export interface BridgeQuote {
      *  transaction requires `amount + fee` from the user's balance — rather
      *  than being deducted from the transferred amount in transit. */
     isAdditive?: boolean;
+    /** When true, `amount` is not the whole provider fee: either a placeholder
+     *  zero for a fee that could not be quantified, or only the part charged
+     *  in the source asset while other parts are charged in assets this coin
+     *  can't carry. It must not be shown as the fee or summed into a total
+     *  used to rank quotes; `amount` is still what a Max input must reserve. */
+    isUnknown?: boolean;
   };
   /**
    * The estimated time to execute the transfer, represented in seconds.
@@ -753,6 +760,8 @@ const txSnapshotSchema = z.object({
     .extend({
       amount: z.string(),
       imageUrl: z.string().optional(),
+      /** The amount is not the whole fee (see `BridgeQuote.transferFee.isUnknown`). */
+      isUnknown: z.boolean().optional(),
     })
     .optional(),
   fromAsset: bridgeAssetSchema.extend({

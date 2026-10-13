@@ -12,6 +12,7 @@ import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
   makeAddToPositionMsg,
+  makeBeginRedelegateMsg,
   makeBeginUnlockingMsg,
   makeCollectIncentivesMsg,
   makeCollectSpreadRewardsMsg,
@@ -54,9 +55,7 @@ import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
-import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse, SignOptions } from "../types";
-import { findNewClPositionId } from "./tx-response";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
@@ -68,7 +67,6 @@ export interface OsmosisAccount {
 export const OsmosisAccount = {
   use(options: {
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-    queriesExternalStore?: QueriesExternalStore;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
@@ -80,8 +78,7 @@ export const OsmosisAccount = {
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          options.queriesExternalStore
+          options.queriesStore
         ),
       };
     };
@@ -97,8 +94,7 @@ export class OsmosisAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    protected readonly queriesExternalStore?: QueriesExternalStore
+    >
   ) {}
 
   private get address() {
@@ -785,16 +781,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             ?.waitFreshResponse();
 
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
-
           if (superfluidValidatorAddress) {
             this.queries?.queryAccountsSuperfluidDelegatedPositions
               .get(this.address)
@@ -1291,17 +1277,6 @@ export class OsmosisAccountImpl {
           if (isSuperfluidStaked) {
             queryDelegatedPositions.waitFreshResponse();
           }
-
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            // wait a long time for indexer to run
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
         }
         onFulfill?.(tx);
       }
@@ -1357,13 +1332,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
-
-          // refresh metrics of same position, since it's the same ID after withdrawing
-          setTimeout(() => {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(positionId)
-              ?.waitFreshResponse();
-          }, 30_000);
         }
         onFulfill?.(tx);
       }
@@ -2662,6 +2630,104 @@ export class OsmosisAccountImpl {
           queries.cosmos.queryRewards
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to move stake between specific validators, optionally replacing the
+   * validator set preference in the same tx. Used to move stake off validators
+   * that have left the active set without rebalancing the rest of the stake
+   * (which MsgRedelegateValidatorSet would do).
+   * @param redelegations Source validator, destination validator and amount (in the staking denom's minimal units) for each redelegation.
+   * @param validatorSetPreference Validator addresses to set as an equally weighted preference, or undefined to leave the preference unchanged.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendRedelegateMsgs(
+    redelegations: {
+      validatorSrcAddress: string;
+      validatorDstAddress: string;
+      amount: string;
+    }[],
+    validatorSetPreference?: string[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    if (!redelegations.length)
+      throw new Error("Please provide 1 or more redelegations");
+
+    if (validatorSetPreference && !validatorSetPreference.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
+
+    const stakeDenom = this.chainGetter.getChain(this.chainId).stakeCurrency
+      .coinMinimalDenom;
+
+    const msgs: EncodeObject[] = await Promise.all(
+      redelegations.map(
+        ({ validatorSrcAddress, validatorDstAddress, amount }) =>
+          makeBeginRedelegateMsg({
+            delegatorAddress: this.address,
+            validatorSrcAddress,
+            validatorDstAddress,
+            amount: { denom: stakeDenom, amount },
+          })
+      )
+    );
+
+    if (validatorSetPreference) {
+      const weight = new Dec(1)
+        .quo(new Dec(validatorSetPreference.length))
+        .toString();
+
+      msgs.push(
+        await makeSetValidatorSetPreferenceMsg({
+          delegator: this.address,
+          preferences: validatorSetPreference.map((validator) => ({
+            weight,
+            valOperAddress: validator,
+          })),
+        })
+      );
+    }
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "redelegate",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+
+          // redelegating withdraws pending rewards from the source validators
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryDelegatorValidators
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          if (validatorSetPreference) {
+            this.queries.queryUsersValidatorPreferences
+              .get(this.address)
+              .waitFreshResponse();
+          }
         }
         onFulfill?.(tx);
       }

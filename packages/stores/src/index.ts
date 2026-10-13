@@ -1,7 +1,6 @@
 export * from "./account";
 export * from "./chain";
 export * from "./currency-registrar";
-export * from "./derived-data";
 export * from "./kv-store";
 export * from "./price";
 export * from "./queries";

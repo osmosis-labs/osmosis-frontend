@@ -6,7 +6,6 @@ import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcQuery } from "~/__tests__/msw";
 import {
-  cleanupTestWallets,
   connectTestWallet,
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
@@ -22,7 +21,6 @@ describe("useAmountInput", () => {
   };
 
   beforeEach(() => {
-    cleanupTestWallets();
     server.use(
       trpcQuery(
         "edge.assets.getAssetPrice",
