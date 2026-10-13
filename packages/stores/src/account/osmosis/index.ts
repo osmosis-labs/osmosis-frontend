@@ -1927,12 +1927,11 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (!tx.code) {
-          // Refresh the balances and the funded gauge.
+          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-          this.queries.queryGauge.get(gaugeId).waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2043,10 +2042,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountLocked
             .get(this.address)
             .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2103,10 +2098,6 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.address)
-            .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -2231,14 +2222,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             .waitFreshResponse();
 
-          // refresh superfluid pool share delegations
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-
           // refresh user CL positions
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
@@ -2246,9 +2229,6 @@ export class OsmosisAccountImpl {
 
           // refresh CL position delegations
           queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryAccountsSuperfluidUndelegatingPositions
             .get(this.address)
             .waitFreshResponse();
         }
