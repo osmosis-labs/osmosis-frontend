@@ -69,6 +69,8 @@ export const stakingRouter = createTRPCRouter({
   getStakingParams: publicProcedure.query(({ ctx }) =>
     queryStakingParams({ chainList: ctx.chainList }).then(({ params }) => ({
       maxValidators: Number(params.max_validators),
+      // e.g. "1209600s"
+      unbondingTimeSeconds: Number.parseInt(params.unbonding_time, 10),
     }))
   ),
   getStakingPool: publicProcedure.query(({ ctx }) =>

@@ -55,9 +55,7 @@ import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
-import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse, SignOptions } from "../types";
-import { findNewClPositionId } from "./tx-response";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
@@ -69,7 +67,6 @@ export interface OsmosisAccount {
 export const OsmosisAccount = {
   use(options: {
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-    queriesExternalStore?: QueriesExternalStore;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
@@ -81,8 +78,7 @@ export const OsmosisAccount = {
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          options.queriesExternalStore
+          options.queriesStore
         ),
       };
     };
@@ -98,8 +94,7 @@ export class OsmosisAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    protected readonly queriesExternalStore?: QueriesExternalStore
+    >
   ) {}
 
   private get address() {
@@ -786,16 +781,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             ?.waitFreshResponse();
 
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
-
           if (superfluidValidatorAddress) {
             this.queries?.queryAccountsSuperfluidDelegatedPositions
               .get(this.address)
@@ -1292,17 +1277,6 @@ export class OsmosisAccountImpl {
           if (isSuperfluidStaked) {
             queryDelegatedPositions.waitFreshResponse();
           }
-
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            // wait a long time for indexer to run
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
         }
         onFulfill?.(tx);
       }
@@ -1358,13 +1332,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
-
-          // refresh metrics of same position, since it's the same ID after withdrawing
-          setTimeout(() => {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(positionId)
-              ?.waitFreshResponse();
-          }, 30_000);
         }
         onFulfill?.(tx);
       }
