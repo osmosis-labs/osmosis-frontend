@@ -1,4 +1,4 @@
-import { AppCurrency, CoinPretty } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef } from "react";
@@ -10,6 +10,7 @@ import {
   useFilteredData,
   useWindowSize,
 } from "~/hooks";
+import { useBatchedPrices } from "~/hooks/queries/assets/use-prices";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
@@ -36,7 +37,7 @@ export const TokenSelect: FunctionComponent<{
     dropdownOpen,
     setDropdownState,
   }) => {
-    const { chainStore, priceStore } = useStore();
+    const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
 
     // The unique key a token is matched/selected by. Display denom by default;
@@ -57,6 +58,16 @@ export const TokenSelect: FunctionComponent<{
       dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
     const setIsSelectOpen =
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
+
+    // Prices for the whole list are needed at once to sort by fiat value.
+    const { prices } = useBatchedPrices(
+      tokens.map((token) =>
+        token instanceof CoinPretty
+          ? token.currency.coinMinimalDenom
+          : token.coinMinimalDenom
+      ),
+      { enabled: sortByBalances }
+    );
 
     const inputRef = useRef<HTMLInputElement | null>(null);
     const selectedToken = tokens.find(
@@ -80,23 +91,18 @@ export const TokenSelect: FunctionComponent<{
         )
           return 0;
 
-        const aFiatValue = priceStore.calculatePrice(a.token);
-        const bFiatValue = priceStore.calculatePrice(b.token);
+        const aPrice = prices?.[a.token.currency.coinMinimalDenom];
+        const bPrice = prices?.[b.token.currency.coinMinimalDenom];
+        // unpriced tokens sort as zero value so the comparator stays consistent
+        const aFiatValue = aPrice
+          ? a.token.toDec().mul(aPrice.toDec())
+          : new Dec(0);
+        const bFiatValue = bPrice
+          ? b.token.toDec().mul(bPrice.toDec())
+          : new Dec(0);
 
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.toDec().gt(bFiatValue.toDec()) &&
-          sortByBalances
-        )
-          return -1;
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.toDec().lt(bFiatValue.toDec()) &&
-          sortByBalances
-        )
-          return 1;
+        if (aFiatValue.gt(bFiatValue) && sortByBalances) return -1;
+        if (aFiatValue.lt(bFiatValue) && sortByBalances) return 1;
         return 0;
       });
 

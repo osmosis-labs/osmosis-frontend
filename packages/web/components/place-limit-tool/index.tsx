@@ -1045,9 +1045,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           orderType={type}
-          confirmAction={async () => {
+          confirmAction={async (opts) => {
             setIsSendingTx(true);
-            await swapState.placeLimit();
+            await swapState.placeLimit(opts?.warnFlags);
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);
@@ -1078,11 +1078,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           gasError={swapState.gas.error}
           limitSetPriceLock={swapState.priceState.setPriceLock}
           inAmountToken={swapState.paymentTokenValue}
-          inAmountFiat={swapState.paymentFiatValue}
+          inAmountFiat={swapState.paymentFiatValueAtMarket}
           fromAsset={swapState.marketState.fromAsset}
           toAsset={swapState.marketState.toAsset}
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
           quoteType={swapState.marketState.quoteType}
+          priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

@@ -25,20 +25,20 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import {
-  deriveMemoFlags,
-  LossFigures,
-  needsAcknowledgement,
-  normalizePriceImpact,
-} from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
-import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import {
   getChainBalance,
   getMultiTxErrorToastContent,
   useMultiTxFinalStep,
   waitForSkipStepArrival,
 } from "~/components/bridge/use-multi-tx-step";
+import {
+  deriveBridgeMemoFlags,
+  LossFigures,
+  needsAcknowledgement,
+  priceImpactLoss,
+} from "~/components/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
@@ -411,12 +411,11 @@ export const useBridgeQuotes = ({
               (fee) => fee.amount.maxDecimals(8)
             );
 
-            // Nomic reports price impact as a negative fraction, Squid as
-            // positive. The high-impact gate and the acknowledgement re-arm
-            // check assume larger = worse, so compare magnitudes; a negative
-            // figure would silently never trip the gate.
+            // Providers report a loss as a negative fraction. The high-impact
+            // gate and the acknowledgement re-arm check assume larger = worse,
+            // so read it as a loss; a favourable impact counts as none.
             const priceImpact = new RatePretty(
-              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
+              priceImpactLoss(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
@@ -529,17 +528,23 @@ export const useBridgeQuotes = ({
 
   /**
    * Live loss figures for the selected quote — the input to the frozen-basis
-   * acknowledgement model. See `loss-acknowledgement.ts`.
+   * acknowledgement model. See `~/components/loss-acknowledgement`.
+   *
+   * The identity key is every field that makes this a different transfer rather
+   * than a re-quote of the same one: change the provider, either chain, either
+   * asset or the amount and the acknowledgement re-arms with no tolerance.
    */
   const currentLossFigures: LossFigures | undefined = useMemo(() => {
     if (!selectedQuote) return undefined;
     return {
-      providerId: selectedQuote.provider.id,
-      fromChainId: fromChain?.chainId,
-      toChainId: toChain?.chainId,
-      fromAssetAddress: fromAsset?.address,
-      toAssetAddress: toAsset?.address,
-      inputAmount: inputAmount.toString(),
+      identityKey: [
+        selectedQuote.provider.id,
+        fromChain?.chainId,
+        toChain?.chainId,
+        fromAsset?.address,
+        toAsset?.address,
+        inputAmount.toString(),
+      ].join("|"),
       slippage: selectedQuote.transferSlippage,
       priceImpact: selectedQuote.priceImpact.toDec(),
       warnSlippage: selectedQuote.isSlippageTooHigh,
@@ -1469,7 +1474,7 @@ export const useBridgeQuotes = ({
     // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
     // frozen acknowledged basis — the sign-time guard in `onTransfer` has
     // already ensured the basis is fresh for the quote being signed.
-    const memoFlags = deriveMemoFlags(acknowledgedBasis);
+    const memoFlags = deriveBridgeMemoFlags(acknowledgedBasis);
 
     return accountStore.signAndBroadcast(
       fromChain.chainId,

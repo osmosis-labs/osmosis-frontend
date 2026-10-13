@@ -73,7 +73,7 @@ import {
  * equals this number. 0.5% clears the 0.02%-0.14% quote-time margins measured
  * on Osmosis to EVM stable routes. The app's loss gates do not bound it:
  * `HighSlippageGate` (6%) compares the quote's input-to-output fiat loss and
- * `HighPriceImpactGate` (10%) the quote's price impact, neither of which is the
+ * `HighPriceImpactGate` (5%) the quote's price impact, neither of which is the
  * tolerance we sign, so they catch a bad route rather than a generous
  * tolerance. Tighter than Squid's 1%: Skip has no recommended value to defer
  * to, and its tolerance reaches a swap on Osmosis rather than only the vendor's

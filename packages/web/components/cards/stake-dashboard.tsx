@@ -1,23 +1,28 @@
 import { Staking } from "@osmosis-labs/keplr-stores";
-import {
-  CoinPretty,
-  Currency,
-  Dec,
-  DecUtils,
-  PricePretty,
-} from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, Currency, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
+import { formatCoinBalance } from "~/utils/formatter";
+import { InactiveDelegation } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
+
+/** Above these USD values the headline numbers no longer fit side by side, so
+ *  all three step down a size together. */
+const COMPACT_STAKED_BALANCE_USD = 100_000;
+const COMPACT_REWARDS_USD = 10_000;
 
 export const StakeDashboard: React.FC<{
   hasInsufficientBalance: boolean;
@@ -26,6 +31,8 @@ export const StakeDashboard: React.FC<{
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
+  inactiveDelegations?: InactiveDelegation[];
+  onRedelegate?: () => void;
 }> = observer(
   ({
     hasInsufficientBalance,
@@ -34,33 +41,36 @@ export const StakeDashboard: React.FC<{
     usersValidatorsMap,
     balance,
     setShowStakeLearnMoreModal,
+    inactiveDelegations,
+    onRedelegate,
   }) => {
     const { t } = useTranslation();
-    const { priceStore, chainStore, queriesStore, accountStore } = useStore();
+    const { chainStore, accountStore } = useStore();
 
     const osmosisChainId = chainStore.osmosis.chainId;
-    const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
     const account = accountStore.getWallet(osmosisChainId);
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
-    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
-    const { rewards } =
-      cosmosQueries.queryRewards.getQueryBech32Address(address);
+    const { data: delegationRewards } =
+      api.edge.staking.getUserDelegationRewards.useQuery(
+        { userOsmoAddress: address },
+        { enabled: Boolean(address) }
+      );
 
-    const summedStakeRewards = rewards?.reduce(
-      (acc, reward) => {
-        return reward.add(acc);
-      },
-      new CoinPretty(osmo, 0)
-    );
+    const summedStakeRewards = useMemo(() => {
+      const amount = delegationRewards?.total.find(
+        ({ denom }) => denom === osmo.coinMinimalDenom
+      )?.amount;
+      return new CoinPretty(osmo, new Dec(amount ?? 0));
+    }, [delegationRewards, osmo]);
 
+    const { fiatValue: rewardsFiatValue } =
+      useCoinFiatValue(summedStakeRewards);
     const fiatRewards =
-      priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);
+      rewardsFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
 
-    const fiatBalance = balance
-      ? priceStore.calculatePrice(balance)
-      : undefined;
+    const { fiatValue: fiatBalance } = useCoinFiatValue(balance);
 
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
@@ -86,20 +96,12 @@ export const StakeDashboard: React.FC<{
       }
     }, [account]);
 
-    const osmoPrice = priceStore
-      .calculatePrice(
-        new CoinPretty(
-          osmo,
-          DecUtils.getTenExponentNInPrecisionRange(
-            chainStore.osmosis.stakeCurrency.coinDecimals
-          )
-        )
-      )
-      ?.toDec();
+    const { price: osmoPrice } = usePrice(osmo);
 
-    const collectRewardsMinimumOsmo = osmoPrice?.isZero()
-      ? new Dec(0)
-      : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice as Dec);
+    const collectRewardsMinimumOsmo =
+      !osmoPrice || osmoPrice.toDec().isZero()
+        ? new Dec(0)
+        : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice.toDec());
 
     const rewardsCardDisabled = summedStakeRewards
       .toDec()
@@ -121,6 +123,10 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, osmo, osmoRewardsAmount]);
 
+    const isCompact =
+      Boolean(fiatBalance?.toDec().gte(new Dec(COMPACT_STAKED_BALANCE_USD))) ||
+      fiatRewards.toDec().gte(new Dec(COMPACT_REWARDS_USD));
+
     return (
       <GenericMainCard
         title={t("stake.dashboard")}
@@ -129,22 +135,28 @@ export const StakeDashboard: React.FC<{
       >
         <div className="flex w-full flex-row gap-2 py-10 xl:flex-col xl:gap-6 xl:py-4">
           <StakeBalances
+            compact={isCompact}
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
             osmoAmount={balance}
           />
           <StakeBalances
+            compact={isCompact}
             title={t("stake.rewardsTitle")}
             dollarAmount={fiatRewards}
             osmoAmount={summedStakeRewards}
           />
-          {balance.toDec().isPositive() && <NextRewardCountdown />}
+          {balance.toDec().isPositive() && (
+            <NextRewardCountdown compact={isCompact} />
+          )}
         </div>
         <ValidatorSquadCard
           hasInsufficientBalance={hasInsufficientBalance}
           setShowValidatorModal={setShowValidatorModal}
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
+          inactiveDelegations={inactiveDelegations}
+          onRedelegate={onRedelegate}
         />
         <div className="flex flex-row items-center gap-2 xl:flex-col">
           <RewardsCard
@@ -177,7 +189,7 @@ export const StakeDashboard: React.FC<{
   }
 );
 
-const NextRewardCountdown: React.FC = () => {
+const NextRewardCountdown: React.FC<{ compact: boolean }> = ({ compact }) => {
   const { t } = useTranslation();
   const timeRemaining = useDailyEpochCountdown();
 
@@ -188,7 +200,14 @@ const NextRewardCountdown: React.FC = () => {
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {t("pool.nextRewardIn")}
       </span>
-      <h3 className="whitespace-nowrap bg-superfluid bg-clip-text text-h3 tabular-nums text-transparent xl:text-h4 lg:text-h5">
+      <h3
+        className={classNames(
+          "whitespace-nowrap bg-superfluid bg-clip-text tabular-nums text-transparent",
+          compact
+            ? "text-h4 xl:text-h5 lg:text-h6"
+            : "text-h3 xl:text-h4 lg:text-h5"
+        )}
+      >
         {timeRemaining}
       </h3>
     </div>
@@ -199,7 +218,8 @@ const StakeBalances: React.FC<{
   title: string;
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
-}> = observer(({ title, dollarAmount, osmoAmount }) => {
+  compact: boolean;
+}> = observer(({ title, dollarAmount, osmoAmount, compact }) => {
   const [flashDollar, setFlashDollar] = useState(false);
   const [flashOsmo, setFlashOsmo] = useState(false);
 
@@ -224,7 +244,10 @@ const StakeBalances: React.FC<{
       </span>
       <h3
         className={classNames(
-          "whitespace-nowrap text-h3 xl:text-h4 lg:text-h5",
+          "whitespace-nowrap",
+          compact
+            ? "text-h4 xl:text-h5 lg:text-h6"
+            : "text-h3 xl:text-h4 lg:text-h5",
           flashDollar ? "animate-flash" : ""
         )}
       >
@@ -236,7 +259,7 @@ const StakeBalances: React.FC<{
           flashOsmo ? "animate-flash" : ""
         )}
       >
-        {osmoAmount?.trim(true)?.toString() ?? ""}
+        {osmoAmount ? formatCoinBalance(osmoAmount) : ""}
       </span>
     </div>
   );

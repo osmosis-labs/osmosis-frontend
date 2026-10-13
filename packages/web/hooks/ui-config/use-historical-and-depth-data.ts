@@ -45,7 +45,6 @@ export function useHistoricalAndLiquidityData(
       },
     }
   );
-  if (pool) config.setPool(pool);
 
   // Check if pool is empty (has no initial liquidity)
   // Only applies to concentrated liquidity pools
@@ -74,7 +73,6 @@ export function useHistoricalAndLiquidityData(
         enabled: !isEmptyPool, // Don't fetch liquidity data for empty pools
       }
     );
-  if (activeLiquidity) config.setActiveLiquidity(activeLiquidity);
 
   const {
     data: historicalPriceData,
@@ -98,9 +96,21 @@ export function useHistoricalAndLiquidityData(
       },
     }
   );
-  if (historicalPriceData) config.setHistoricalData(historicalPriceData.prices);
-  config.setIsHistoricalDataLoading(isLoading);
-  config.setHistoricalDataError(isError);
+
+  // Sync query results into the config after commit. Writing observables
+  // during render notifies observers that are rendering at the same time.
+  useEffect(() => {
+    if (pool) config.setPool(pool);
+  }, [config, pool]);
+  useEffect(() => {
+    if (activeLiquidity) config.setActiveLiquidity(activeLiquidity);
+  }, [config, activeLiquidity]);
+  useEffect(() => {
+    if (historicalPriceData)
+      config.setHistoricalData(historicalPriceData.prices);
+    config.setIsHistoricalDataLoading(isLoading);
+    config.setHistoricalDataError(isError);
+  }, [config, historicalPriceData, isLoading, isError]);
 
   return config;
 }
@@ -121,8 +131,9 @@ export class ObservableHistoricalAndLiquidityData {
   @observable
   protected _historicalDataError: boolean = false;
 
+  // Nothing has loaded until the hook's effect syncs the first query state.
   @observable
-  protected _isHistoricalDataLoading: boolean = false;
+  protected _isHistoricalDataLoading: boolean = true;
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;

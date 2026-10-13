@@ -44,10 +44,10 @@ describe("appendFeMemoTag", () => {
   });
 
   describe("with warn-accept flags", () => {
-    it("stamps an acknowledged total-loss as slip=", () => {
+    it("stamps an acknowledged bridge total-loss as loss=", () => {
       expect(
-        appendFeMemoTag("", FeMemoTag, { slippage: new Dec("0.9989") })
-      ).toBe("OsmosisFE/warn:slip=99.89");
+        appendFeMemoTag("", FeMemoTag, { totalLoss: new Dec("0.9989") })
+      ).toBe("OsmosisFE/warn:loss=99.89");
     });
 
     it("stamps an acknowledged price impact as pi=", () => {
@@ -56,13 +56,49 @@ describe("appendFeMemoTag", () => {
       ).toBe("OsmosisFE/warn:pi=12.40");
     });
 
-    it("stamps both flags in fixed order: slip before pi", () => {
+    it("stamps an accepted trade slippage tolerance as slip=", () => {
+      expect(
+        appendFeMemoTag("", FeMemoTag, { slippageTolerance: new Dec("0.06") })
+      ).toBe("OsmosisFE/warn:slip=6.00");
+    });
+
+    it("stamps an accepted distance past market as mktfill=", () => {
       expect(
         appendFeMemoTag("", FeMemoTag, {
-          slippage: new Dec("0.9989"),
-          priceImpact: new Dec("0.124"),
+          marketFillDistance: new Dec("0.0325"),
         })
-      ).toBe("OsmosisFE/warn:slip=99.89,pi=12.40");
+      ).toBe("OsmosisFE/warn:mktfill=3.25");
+    });
+
+    it("keeps loss and slip distinct so the two cannot be conflated", () => {
+      // Same acknowledged figure, different meanings: a realized bridge loss
+      // versus a tolerance a trade most likely never reaches.
+      expect(
+        appendFeMemoTag("", FeMemoTag, { totalLoss: new Dec("0.06") })
+      ).toBe("OsmosisFE/warn:loss=6.00");
+      expect(
+        appendFeMemoTag("", FeMemoTag, { slippageTolerance: new Dec("0.06") })
+      ).toBe("OsmosisFE/warn:slip=6.00");
+    });
+
+    it("stamps every flag in fixed order: loss, pi, slip, mktfill", () => {
+      expect(
+        appendFeMemoTag("", FeMemoTag, {
+          marketFillDistance: new Dec("0.0325"),
+          slippageTolerance: new Dec("0.06"),
+          priceImpact: new Dec("0.124"),
+          totalLoss: new Dec("0.9989"),
+        })
+      ).toBe("OsmosisFE/warn:loss=99.89,pi=12.40,slip=6.00,mktfill=3.25");
+    });
+
+    it("stamps the trade pair a high-impact swap produces", () => {
+      expect(
+        appendFeMemoTag("", FeMemoTag, {
+          priceImpact: new Dec("0.124"),
+          slippageTolerance: new Dec("0.06"),
+        })
+      ).toBe("OsmosisFE/warn:pi=12.40,slip=6.00");
     });
 
     it("stamps the 1CT variant for one-click sessions", () => {
@@ -74,23 +110,28 @@ describe("appendFeMemoTag", () => {
     });
 
     it("stamps a zero acknowledged figure (presence, not truthiness)", () => {
-      expect(appendFeMemoTag("", FeMemoTag, { slippage: new Dec(0) })).toBe(
-        "OsmosisFE/warn:slip=0.00"
+      expect(appendFeMemoTag("", FeMemoTag, { totalLoss: new Dec(0) })).toBe(
+        "OsmosisFE/warn:loss=0.00"
       );
+      expect(
+        appendFeMemoTag("", FeMemoTag, { marketFillDistance: new Dec(0) })
+      ).toBe("OsmosisFE/warn:mktfill=0.00");
     });
 
     it("appends the flagged tag after a non-empty memo", () => {
       expect(
         appendFeMemoTag("user memo", FeMemoTag, {
-          slippage: new Dec("0.9989"),
+          totalLoss: new Dec("0.9989"),
         })
-      ).toBe("user memo \nOsmosisFE/warn:slip=99.89");
+      ).toBe("user memo \nOsmosisFE/warn:loss=99.89");
     });
 
-    it("stays well under the 100-byte memo budget", () => {
+    it("stays well under the 100-byte memo budget with every flag set", () => {
       const worstCase = appendFeMemoTag("", FeMemoTag, {
-        slippage: new Dec("9.99895"),
+        totalLoss: new Dec("9.99895"),
         priceImpact: new Dec("9.99895"),
+        slippageTolerance: new Dec("9.99895"),
+        marketFillDistance: new Dec("9.99895"),
       });
       expect(new TextEncoder().encode(worstCase).length).toBeLessThan(100);
     });

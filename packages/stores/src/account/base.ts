@@ -28,7 +28,6 @@ import {
   KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
@@ -189,7 +188,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * and not values derived from the IBC connection with Osmosis
    */
   private get walletManagerAssets() {
-    return this.assets.map((assetList) => ({
+    const assetLists = this.assets.map((assetList) => ({
       ...assetList,
       assets: assetList.assets.map((asset) => ({
         ...asset,
@@ -207,6 +206,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         display: asset.symbol,
       })),
     })) as unknown as CosmologyAssetList[];
+
+    // Cosmos Kit fetches the asset list from GitHub's chain registry for any
+    // chain it is not given one for. Supply an empty list instead so no
+    // registry request is made for chains we ship without assets.
+    const chainNamesWithAssets = new Set(
+      assetLists.map(({ chain_name }) => chain_name)
+    );
+    for (const { chain_name } of this.chains) {
+      if (!chainNamesWithAssets.has(chain_name)) {
+        assetLists.push({ chain_name, assets: [] });
+      }
+    }
+    return assetLists;
   }
 
   constructor(
@@ -281,7 +293,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         endpoints: getWalletEndpoints(chains),
       },
       {
-        duration: 31556926000, // 1 year
+        // setTimeout fires immediately for delays above 2^31 - 1 ms, which
+        // would expire the session right after connecting. ~24.8 days.
+        duration: 2 ** 31 - 1,
         callback: () => {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
           this.setOneClickTradingInfo(undefined);
@@ -955,28 +969,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    /**
-     * If the message is an authenticator message, force the direct signing.
-     * This is because the authenticator message should be signed with proto for now.
-     */
-
-    type TypeUrl = keyof typeof osmosisAminoConverters;
-    const getTypeUrl = (typeUrl: TypeUrl) => {
-      return typeUrl;
-    };
-
-    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-    // TODO: Copy what's been done there for this message below
-    const doesTxNeedDirectSigning = messages.some(
-      (message) =>
-        message.typeUrl ===
-        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
-    );
-
-    const forceSignDirect = doesTxNeedDirectSigning;
-
-    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      !forceSignDirect
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
       ? this.signAmino({
           wallet,
           signerAddress: wallet.address ?? "",

@@ -9,6 +9,7 @@ import {
 } from "./supply";
 import {
   ObservableQueryDelegations,
+  ObservableQueryDelegatorValidators,
   ObservableQueryRewards,
   ObservableQueryStakingParams,
   ObservableQueryStakingPool,
@@ -75,6 +76,7 @@ export class CosmosQueriesImpl {
   public readonly queryInflation: DeepReadonly<ObservableQueryInflation>;
   public readonly queryRewards: DeepReadonly<ObservableQueryRewards>;
   public readonly queryDelegations: DeepReadonly<ObservableQueryDelegations>;
+  public readonly queryDelegatorValidators: DeepReadonly<ObservableQueryDelegatorValidators>;
   public readonly queryUnbondingDelegations: DeepReadonly<ObservableQueryUnbondingDelegations>;
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
@@ -162,6 +164,11 @@ export class CosmosQueriesImpl {
       chainGetter
     );
     this.queryDelegations = new ObservableQueryDelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.queryDelegatorValidators = new ObservableQueryDelegatorValidators(
       kvStore,
       chainId,
       chainGetter
