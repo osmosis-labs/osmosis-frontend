@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { api } from "~/utils/trpc";
 
 /** Maintains a single instance of `ObservableCreatePoolConfig` for React view lifecycle.
- *  Updates `chainId` and `bech32Address` on render, and feeds the user's
+ *  Syncs `chainId` and `bech32Address` from effects, and feeds the user's
  *  balances (from tRPC) into the config.
  */
 export function useCreatePoolConfig(
@@ -21,8 +21,11 @@ export function useCreatePoolConfig(
     () =>
       new ObservableCreatePoolConfig(chainGetter, chainId, bech32Address, opts)
   );
-  config.setChain(chainId);
-  config.setSender(bech32Address);
+  // the constructor takes the initial values, so these only sync later changes
+  useEffect(() => {
+    config.setChain(chainId);
+    config.setSender(bech32Address);
+  }, [config, chainId, bech32Address]);
 
   const { data: balances } = api.local.balances.getUserBalances.useQuery(
     { bech32Address },
