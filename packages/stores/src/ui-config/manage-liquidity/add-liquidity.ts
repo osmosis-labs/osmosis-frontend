@@ -35,6 +35,7 @@ export type AddLiquidityPoolData = {
   assets: { amount: CoinPretty; weight?: Int }[];
   /** Only set for weighted pools. */
   totalWeight?: Int;
+  swapFee: Dec;
   /** Only set for stable pools. */
   stableSwapInfo?: {
     scalingFactorController: string;
@@ -164,6 +165,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     super(poolId, sender);
 
     makeObservable(this);
+  }
+
+  /** The pool data the config was last given, e.g. to build join msgs. */
+  get pool(): AddLiquidityPoolData | undefined {
+    return this._pool;
   }
 
   @action

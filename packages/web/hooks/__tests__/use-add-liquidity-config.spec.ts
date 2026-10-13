@@ -1,3 +1,4 @@
+import { makePoolFromChainPool } from "@osmosis-labs/server";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
 
 import { makeAddLiquidityPoolData } from "~/hooks/ui-config/use-add-liquidity-config";
@@ -68,6 +69,61 @@ describe("makeAddLiquidityPoolData", () => {
     });
   });
 
+  it("falls back to minimal currencies when reserve coins are empty (testnet)", () => {
+    const data = makeAddLiquidityPoolData({
+      id: "5",
+      type: "weighted",
+      reserveCoins: [],
+      raw: {
+        total_weight: "2",
+        pool_params: { swap_fee: "0.003" },
+        total_shares: { denom: "gamm/pool/5", amount: "100" },
+        pool_assets: [
+          { weight: "1", token: { denom: "uosmo", amount: "1000" } },
+          { weight: "1", token: { denom: "ibc/ABC", amount: "2000" } },
+        ],
+      },
+    } as any);
+
+    expect(data?.assets.map((a) => a.amount.currency.coinMinimalDenom)).toEqual(
+      ["uosmo", "ibc/ABC"]
+    );
+    expect(data?.assets[1].amount.currency.coinDecimals).toBe(6);
+    expect(data?.swapFee.toString()).toBe("0.003000000000000000");
+  });
+
+  it("works on pools built by the real chain pool mapping", () => {
+    const chainPool = {
+      "@type": "/osmosis.gamm.v1beta1.Pool",
+      id: "6",
+      pool_params: {
+        swap_fee: "0.002",
+        exit_fee: "0",
+        smooth_weight_change_params: null,
+      },
+      total_weight: "2",
+      total_shares: { denom: "gamm/pool/6", amount: "100000000000000000000" },
+      pool_assets: [
+        { weight: "1", token: { denom: "uosmo", amount: "1000000000" } },
+        { weight: "1", token: { denom: "ibc/XYZ", amount: "2000000000" } },
+      ],
+    };
+    const pool = makePoolFromChainPool({
+      chainPool: chainPool as any,
+      assetLists: [],
+    });
+
+    const data = pool && makeAddLiquidityPoolData(pool);
+
+    expect(data?.type).toBe("weighted");
+    expect(data?.assets.map((a) => a.amount.toCoin().amount)).toEqual([
+      "1000000000",
+      "2000000000",
+    ]);
+    expect(data?.totalWeight?.toString()).toBe("2");
+    expect(data?.swapFee.toString()).toBe("0.002000000000000000");
+  });
+
   it("returns undefined for non share pools", () => {
     expect(
       makeAddLiquidityPoolData({
@@ -75,22 +131,6 @@ describe("makeAddLiquidityPoolData", () => {
         type: "concentrated",
         reserveCoins,
         raw: {},
-      } as any)
-    ).toBeUndefined();
-  });
-
-  it("returns undefined when a pool asset has no known currency", () => {
-    expect(
-      makeAddLiquidityPoolData({
-        id: "4",
-        type: "stable",
-        reserveCoins,
-        raw: {
-          total_shares: { denom: "gamm/pool/4", amount: "1" },
-          pool_liquidity: [{ denom: "uunknown", amount: "1" }],
-          scaling_factors: ["1"],
-          scaling_factor_controller: "",
-        },
       } as any)
     ).toBeUndefined();
   });

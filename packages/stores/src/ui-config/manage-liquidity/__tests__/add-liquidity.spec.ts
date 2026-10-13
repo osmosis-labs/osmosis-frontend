@@ -2,7 +2,7 @@ import {
   EmptyAmountError,
   InsufficientAmountError,
 } from "@osmosis-labs/keplr-hooks";
-import { CoinPretty, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 import {
   AddLiquidityPoolData,
@@ -12,6 +12,7 @@ import { CalculatingShareOutAmountError, NotInitializedError } from "../errors";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };
+const wbtc = { coinDenom: "WBTC", coinMinimalDenom: "wbtc", coinDecimals: 8 };
 const usdc = { coinDenom: "USDC", coinMinimalDenom: "uusdc", coinDecimals: 6 };
 const shareCurrency = {
   coinDenom: "GAMM/1",
@@ -35,6 +36,7 @@ function makeWeightedPool(): AddLiquidityPoolData {
       },
     ],
     totalWeight: new Int(2),
+    swapFee: new Dec("0.002"),
   };
 }
 
@@ -210,6 +212,34 @@ describe("ObservableAddLiquidityConfig", () => {
 
     expect(config.singleAmountInConfig?.amount).toBe("500");
     expect(config.singleAmountInConfig?.error).toBeUndefined();
+  });
+
+  it("handles assets with other than 6 decimals", () => {
+    const pool = makeWeightedPool();
+    // 10 WBTC (8 decimals) in place of ATOM
+    pool.assets[1] = {
+      amount: new CoinPretty(wbtc, new Int("1000000000")),
+      weight: new Int(1),
+    };
+    const config = makeConfig(pool, [
+      { denom: "uosmo", amount: "500000000" },
+      { denom: "wbtc", amount: "500000000" },
+    ]);
+
+    config.setAmountAt(0, "10");
+    // 10 / 1000 of the pool = 0.1 of 10 WBTC
+    expect(config.shareOutAmount?.toDec().toString()).toBe(
+      "1.000000000000000000"
+    );
+    expect(config.getAmountAt(1)).toBe("0.1");
+    expect(config.error).toBeUndefined();
+
+    config.setAmountAt(1, "6");
+    // 5 WBTC balance
+    expect(config.error).toBeInstanceOf(InsufficientAmountError);
+    expect(config.getBalance(wbtc).toDec().toString()).toBe(
+      "5.000000000000000000"
+    );
   });
 
   it("keeps entered amounts when pool data refreshes", () => {

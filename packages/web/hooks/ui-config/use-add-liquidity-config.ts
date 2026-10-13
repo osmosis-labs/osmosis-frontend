@@ -1,17 +1,22 @@
-import { makeGammShareCurrency, type Pool } from "@osmosis-labs/server";
+import {
+  makeGammShareCurrency,
+  makeUnlistedAssetCurrency,
+  type Pool,
+} from "@osmosis-labs/server";
 import {
   type AddLiquidityPoolData,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
-import { CoinPretty, Int } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /** Converts a tRPC share pool (weighted or stable) into the plain data the add liquidity config consumes.
- *  Pool assets and amounts come from the raw chain pool, in chain order; currencies come from the pool's reserve coins.
- *  Returns undefined for other pool types, or if an asset currency is unavailable. */
+ *  Pool assets and amounts come from the raw chain pool, in chain order; currencies come from the pool's reserve coins,
+ *  falling back to a minimal currency for denoms missing there (e.g. unlisted assets, or empty reserves on testnet).
+ *  Returns undefined for other pool types. */
 export function makeAddLiquidityPoolData(
   pool: Pick<Pool, "id" | "type" | "raw" | "reserveCoins">
 ): AddLiquidityPoolData | undefined {
@@ -20,6 +25,7 @@ export function makeAddLiquidityPoolData(
   const raw = pool.raw as {
     total_shares?: { amount: string };
     total_weight?: string;
+    pool_params?: { swap_fee: string };
     pool_assets?: {
       weight: string;
       token: { denom: string; amount: string };
@@ -45,10 +51,9 @@ export function makeAddLiquidityPoolData(
     amount: string;
     weight?: Int;
   }[]) {
-    const currency = pool.reserveCoins.find(
-      (coin) => coin.currency.coinMinimalDenom === denom
-    )?.currency;
-    if (!currency) return;
+    const currency =
+      pool.reserveCoins.find((coin) => coin.currency.coinMinimalDenom === denom)
+        ?.currency ?? makeUnlistedAssetCurrency(denom);
 
     assets.push({ amount: new CoinPretty(currency, new Int(amount)), weight });
   }
@@ -61,6 +66,7 @@ export function makeAddLiquidityPoolData(
     ),
     assets,
     totalWeight: raw.total_weight ? new Int(raw.total_weight) : undefined,
+    swapFee: new Dec(raw.pool_params?.swap_fee ?? 0),
     stableSwapInfo:
       pool.type === "stable" && raw.scaling_factors
         ? {
@@ -87,12 +93,6 @@ export function useAddLiquidityConfig(
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
-  const [config] = useState(
-    () => new ObservableAddLiquidityConfig(poolId, address)
-  );
-  config.setSender(address);
-  config.setPoolId(poolId);
-
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
   const { data: balances } = api.local.balances.getUserBalances.useQuery(
     { bech32Address: address },
@@ -104,6 +104,18 @@ export function useAddLiquidityConfig(
       pool && pool.id === poolId ? makeAddLiquidityPoolData(pool) : undefined,
     [pool, poolId]
   );
+
+  // Seed with already available (e.g. cached) data so the first paint is initialized.
+  // Later updates are pushed from effects below.
+  const [config] = useState(() => {
+    const config = new ObservableAddLiquidityConfig(poolId, address);
+    config.setPool(poolData);
+    config.setBalances(address ? balances : undefined);
+    return config;
+  });
+  config.setSender(address);
+  config.setPoolId(poolId);
+
   useEffect(() => {
     config.setPool(poolData);
   }, [config, poolData]);
@@ -114,9 +126,15 @@ export function useAddLiquidityConfig(
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
       try {
+        const pool = config.pool;
+        if (!pool) {
+          throw new Error(`Pool #${config.poolId} is not loaded`);
+        }
+
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
           await account?.osmosis.sendJoinSwapExternAmountInMsg(
             config.poolId,
+            pool,
             {
               currency: config.singleAmountInConfig.sendCurrency,
               amount: config.singleAmountInConfig.amount,
@@ -128,6 +146,7 @@ export function useAddLiquidityConfig(
         } else if (config.shareOutAmount) {
           await account?.osmosis.sendJoinPoolMsg(
             config.poolId,
+            pool,
             config.shareOutAmount.toDec().toString(),
             undefined,
             undefined,
