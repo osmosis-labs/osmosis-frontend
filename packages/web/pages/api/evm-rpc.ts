@@ -52,6 +52,8 @@ const UPSTREAM_TIMEOUT_MS = 5_000;
  *  client timeout, so the browser's own direct fallback to the public
  *  endpoints starts instead of waiting on every upstream in turn. */
 const TOTAL_TIMEOUT_MS = 8_000;
+/** JSON-RPC "internal error" (EIP-1474). */
+const INTERNAL_ERROR_CODE = -32603;
 
 /**
  * Whether a JSON-RPC error is the provider refusing service rather than an
@@ -155,6 +157,7 @@ export default async function evmRpcHandler(req: Request) {
   // Keyed providers first, then public endpoints, so an exhausted free-tier
   // quota or a provider outage degrades instead of failing.
   const deadline = Date.now() + TOTAL_TIMEOUT_MS;
+  let internalErrorAnswer: unknown;
   for (const upstream of getServerEvmRpcUrls(chain)) {
     const remaining = deadline - Date.now();
     if (remaining <= 0) break;
@@ -173,12 +176,20 @@ export default async function evmRpcHandler(req: Request) {
         error?: { code?: unknown; message?: unknown };
       };
       if (isProviderRefusal(result.error)) continue;
+      // -32603 is either a passing node failure ("header not found", a
+      // backend timeout) or, on some nodes, a real revert. Ask the next
+      // upstream, and return this answer only if none answers better.
+      if (result.error?.code === INTERNAL_ERROR_CODE) {
+        internalErrorAnswer = result;
+        continue;
+      }
       return json(result, 200);
     } catch {
       // Never echo the upstream URL: a keyed one carries the provider key.
     }
   }
 
+  if (internalErrorAnswer) return json(internalErrorAnswer, 200);
   return json({ error: "EVM RPC unreachable" }, 502);
 }
 

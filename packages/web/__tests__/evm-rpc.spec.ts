@@ -135,6 +135,41 @@ it("falls back when an exhausted quota is reported inside a 200", async () => {
   expect(publicCalls).toHaveLength(1);
 });
 
+it("falls back on a -32603 internal error", async () => {
+  upstreamAnswers(KEYED_RPC, () =>
+    HttpResponse.json({
+      jsonrpc: "2.0",
+      id: 3,
+      error: { code: -32603, message: "header not found" },
+    })
+  );
+  const publicCalls = upstreamAnswers(PUBLIC_RPC);
+
+  const result = await evmRpcHandler(post(balanceOf));
+
+  expect((await result.json()).result).toBeDefined();
+  expect(publicCalls).toHaveLength(1);
+});
+
+it("returns the -32603 answer when no upstream answers better", async () => {
+  const internalError = () =>
+    HttpResponse.json({
+      jsonrpc: "2.0",
+      id: 3,
+      error: { code: -32603, message: "execution reverted" },
+    });
+  server.use(
+    http.post(KEYED_RPC, internalError),
+    http.post(PUBLIC_RPC, internalError),
+    http.post("https://polygon.drpc.org", internalError)
+  );
+
+  const result = await evmRpcHandler(post(balanceOf));
+
+  expect(result.status).toBe(200);
+  expect((await result.json()).error.code).toBe(-32603);
+});
+
 it("passes a chain answer such as a revert through without falling back", async () => {
   upstreamAnswers(KEYED_RPC, () =>
     HttpResponse.json({

@@ -7,7 +7,6 @@ import {
 import {
   Address,
   BaseError,
-  ContractFunctionRevertedError,
   ContractFunctionZeroDataError,
   createPublicClient,
   erc20Abi,
@@ -61,17 +60,15 @@ export async function getEvmBalance({
 
       return balance;
     } catch (error) {
-      // The chain itself answered: the token address has no contract code,
-      // or its balanceOf reverted. Another RPC would answer the same, and
-      // the account holds none of that token, so this is a real zero rather
-      // than an unknown balance.
+      // The chain itself answered that the token address has no contract
+      // code. Another RPC would answer the same, and the account holds none
+      // of that token, so this is a real zero rather than an unknown
+      // balance. A revert is not treated as zero: viem also builds
+      // ContractFunctionRevertedError for -32603 internal errors, which
+      // providers send for passing failures such as "header not found".
       if (
         error instanceof BaseError &&
-        error.walk(
-          (e) =>
-            e instanceof ContractFunctionZeroDataError ||
-            e instanceof ContractFunctionRevertedError
-        )
+        error.walk((e) => e instanceof ContractFunctionZeroDataError)
       ) {
         return BigInt(0);
       }
