@@ -49,6 +49,7 @@ import {
   getPhantomProvider,
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -246,6 +247,16 @@ export const useBridgeQuotes = ({
    * intermediate chain at signing time.
    */
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
+  // falls back to Osmosis when the chain isn't cosmos; ignored in that case
+  const { isWalletConnected: isCosmosSideWalletConnected } = useWallet(
+    cosmosSideChain?.chainType === "cosmos"
+      ? cosmosSideChain.chainId
+      : undefined
+  );
+  const { isWalletConnected: isFromCosmosWalletConnected, txTypeInProgress } =
+    useWallet(
+      fromChain?.chainType === "cosmos" ? fromChain.chainId : undefined
+    );
   const allowMultiTx =
     featureFlags.multiTxBridgeRoutes === true &&
     // deposits only: the executor supports exactly an EVM or Solana first tx
@@ -253,7 +264,7 @@ export const useBridgeQuotes = ({
     // render its steps badge) only to be refused at Confirm
     !isWithdraw &&
     cosmosSideChain?.chainType === "cosmos" &&
-    Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
+    isCosmosSideWalletConnected;
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
@@ -340,9 +351,7 @@ export const useBridgeQuotes = ({
   const isTxPending = (() => {
     if (!fromChain) return false;
     if (fromChain.chainType === "cosmos") {
-      return Boolean(
-        accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
-      );
+      return Boolean(txTypeInProgress);
     } else if (fromChain.chainType === "evm") {
       return isEthTxPending || isBroadcastingTx;
     } else if (fromChain.chainType === "solana") {
@@ -1800,10 +1809,7 @@ export const useBridgeQuotes = ({
     chainType: fromChain?.chainType,
     isEvmWalletConnected,
     isCosmosWalletConnected:
-      fromChain?.chainType === "cosmos"
-        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
-          false)
-        : false,
+      fromChain?.chainType === "cosmos" ? isFromCosmosWalletConnected : false,
     phantomAddress,
   });
   const isDepositReady = isDeposit && isFromWalletConnected;

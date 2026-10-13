@@ -45,6 +45,7 @@ import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import {
@@ -199,7 +200,7 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
+    const { wallet: osmosisAccount } = useWallet();
     const {
       address: evmAddress,
       connector: evmConnector,
@@ -212,10 +213,19 @@ export const AmountScreen = observer(
       restoreSession: featureFlags.solanaSkipRoutes === true,
     });
 
-    const fromCosmosCounterpartyAccount =
+    const fromCosmosChainId =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)
+        ? fromChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: fromCosmosWallet, address: fromCosmosWalletAddress } =
+      useWallet(fromCosmosChainId);
+    const fromCosmosCounterpartyAccount = fromCosmosChainId
+      ? fromCosmosWallet
+      : undefined;
+    const fromCosmosCounterpartyAddress = fromCosmosChainId
+      ? fromCosmosWalletAddress
+      : undefined;
 
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
@@ -227,11 +237,18 @@ export const AmountScreen = observer(
       );
     }, [chainThatNeedsWalletConnection]);
 
-    const cosmosAccountRequiringConnection =
+    const cosmosChainIdRequiringConnection =
       !isNil(chainThatNeedsWalletConnection) &&
       chainThatNeedsWalletConnection.chainType === "cosmos"
-        ? accountStore.getWallet(chainThatNeedsWalletConnection.chainId)
+        ? chainThatNeedsWalletConnection.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { address: cosmosWalletAddressRequiringConnection } = useWallet(
+      cosmosChainIdRequiringConnection
+    );
+    const cosmosAddressRequiringConnection = cosmosChainIdRequiringConnection
+      ? cosmosWalletAddressRequiringConnection
+      : undefined;
     const isWalletNeededConnected = useMemo(() => {
       if (isNil(chainThatNeedsWalletConnection)) return false;
 
@@ -255,9 +272,9 @@ export const AmountScreen = observer(
         return !isNil(manualToAddress);
       }
 
-      return !!cosmosAccountRequiringConnection?.address;
+      return !!cosmosAddressRequiringConnection;
     }, [
-      cosmosAccountRequiringConnection?.address,
+      cosmosAddressRequiringConnection,
       chainThatNeedsWalletConnection,
       direction,
       isEvmWalletConnected,
@@ -473,7 +490,7 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "cosmos" }
             >[],
-            userCosmosAddress: fromCosmosCounterpartyAccount?.address,
+            userCosmosAddress: fromCosmosCounterpartyAddress,
           };
         case "bitcoin":
           return {
