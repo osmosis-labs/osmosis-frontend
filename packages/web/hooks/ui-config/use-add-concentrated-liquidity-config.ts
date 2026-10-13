@@ -19,7 +19,6 @@ import {
 import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import {
   FakeFeeConfig,
-  IPriceStore,
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
@@ -51,7 +50,7 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore } = useStore();
+  const { accountStore, queriesStore } = useStore();
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -73,8 +72,7 @@ export function useAddConcentratedLiquidityConfig(
         poolId,
         address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        priceStore
+        queriesStore.get(osmosisChainId).queryBalances
       )
   );
   // react dev tools will unmount the component so only dispose if
@@ -757,8 +755,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     readonly poolId: string,
     sender: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly priceStore: IPriceStore
+    protected readonly queryBalances: ObservableQueryBalances
   ) {
     this.chainId = initialChainId;
 

@@ -23,26 +23,46 @@ import { api } from "~/utils/trpc";
  *  the user’s currency balance as input. Includes support for debounce on input.
  *  If provided a gas amount and it is the same as the input currency,
  *  the gas fee will be subtracted if the user is inputting the max amount.
+ *  `balanceOverride` replaces the wallet balance (e.g. a staked amount).
  */
 export function useAmountInput({
   currency,
   inputDebounceMs = 200,
   gasAmount,
+  balanceOverride,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
+  balanceOverride?: {
+    /** Base units; undefined while loading. */
+    amount: string | undefined;
+    isFetched: boolean;
+  };
 }) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances, isFetched: isBalancesFetched } =
+  const { data: walletBalances, isFetched: isWalletBalancesFetched } =
     api.local.balances.getUserBalances.useQuery(
       {
         bech32Address: account?.address ?? "",
       },
-      { enabled: Boolean(account?.address) }
+      { enabled: Boolean(account?.address) && !balanceOverride }
     );
+  const isBalancesFetched = balanceOverride
+    ? balanceOverride.isFetched
+    : isWalletBalancesFetched;
+  const overrideAmount = balanceOverride?.amount;
+  const overrideBalances = useMemo(
+    () => [{ denom: currency?.coinMinimalDenom, amount: overrideAmount }],
+    [currency?.coinMinimalDenom, overrideAmount]
+  );
+  const balances = balanceOverride
+    ? balanceOverride.isFetched
+      ? overrideBalances
+      : undefined
+    : walletBalances;
   const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
