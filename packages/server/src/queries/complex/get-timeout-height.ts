@@ -158,6 +158,7 @@ export async function getTimeoutHeight({
   const heightOffset = await getHeightOffset({
     chainId: destinationCosmosChain.chain_id,
     rpcUrls,
+    restUrls: destinationCosmosChain.apis.rest.map((rest) => rest.address),
     latestBlockHeight,
     latestBlockTime: destinationNodeStatus.result.sync_info.latest_block_time,
   });
@@ -186,11 +187,13 @@ export async function getTimeoutHeight({
 async function getHeightOffset({
   chainId,
   rpcUrls,
+  restUrls,
   latestBlockHeight,
   latestBlockTime,
 }: {
   chainId: string;
   rpcUrls: string[];
+  restUrls: string[];
   latestBlockHeight: string;
   latestBlockTime?: string;
 }): Promise<number> {
@@ -212,6 +215,7 @@ async function getHeightOffset({
     getFreshValue: async ({ metadata }) => {
       const measured = await queryBlockTimeSeconds({
         rpcUrls,
+        restUrls,
         latestBlockHeight,
         latestBlockTime,
       });
@@ -248,14 +252,24 @@ async function getHeightOffset({
  * same chain and averages over historical periods whose pace may differ from
  * today's.
  *
+ * Each sampled block is read from the chain's RPC endpoints, then from its REST
+ * endpoints if every RPC endpoint refuses. Deployed builds replace Osmosis's
+ * endpoint lists with the app proxies (`NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE` and
+ * `NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE`), and the RPC proxy answers `/status` but
+ * rejects every lookup by height, while the REST proxy serves blocks by height.
+ * Without the REST read, every transfer to Osmosis (so every deposit) would take
+ * the fallback offset.
+ *
  * @returns Average seconds per block, or undefined if it can't be measured.
  */
 async function queryBlockTimeSeconds({
   rpcUrls,
+  restUrls,
   latestBlockHeight,
   latestBlockTime,
 }: {
   rpcUrls: string[];
+  restUrls: string[];
   latestBlockHeight: string;
   latestBlockTime?: string;
 }): Promise<number | undefined> {
@@ -271,15 +285,27 @@ async function queryBlockTimeSeconds({
 
   // Constructed outside the try so a client misconfiguration surfaces rather
   // than being mistaken for an unreachable node.
-  const client = new MultiEndpointClient(
+  const rpcClient = new MultiEndpointClient(
     rpcUrls.map((url) => ({ address: url }))
   );
+  const restClient =
+    restUrls.length > 0
+      ? new MultiEndpointClient(restUrls.map((url) => ({ address: url })))
+      : undefined;
 
   const fetchBlockTime = async (height: number) => {
-    const response = await client.fetch<{
-      result?: { block?: { header?: { time?: string } } };
-    }>(`/block?height=${height}`);
-    return response?.result?.block?.header?.time;
+    try {
+      const response = await rpcClient.fetch<{
+        result?: { block?: { header?: { time?: string } } };
+      }>(`/block?height=${height}`);
+      return response?.result?.block?.header?.time;
+    } catch (error) {
+      if (!restClient) throw error;
+      const response = await restClient.fetch<{
+        block?: { header?: { time?: string } };
+      }>(`/cosmos/base/tendermint/v1beta1/blocks/${height}`);
+      return response?.block?.header?.time;
+    }
   };
 
   let priorBlockTime: string | undefined;
@@ -290,7 +316,8 @@ async function queryBlockTimeSeconds({
       fetchBlockTime(midHeight),
     ]);
   } catch {
-    // Every endpoint has pruned this height or is unreachable; fall back below.
+    // Every RPC and REST endpoint has pruned this height, refused it or is
+    // unreachable; fall back below.
     return undefined;
   }
 

@@ -50,8 +50,10 @@ function mockStatus({
 /** Heights the module samples: the start of the window and its midpoint. */
 const PRIOR_HEIGHT = LATEST_HEIGHT - SAMPLE_SIZE;
 const MID_HEIGHT = LATEST_HEIGHT - SAMPLE_SIZE / 2;
-/** `/block` fetches made per measurement (prior and midpoint blocks). */
+/** Block fetches made per measurement (prior and midpoint blocks). */
 const FETCHES_PER_MEASUREMENT = 2;
+/** REST path the module reads a block from when RPC refuses the height. */
+const REST_BLOCK_PATH = "/cosmos/base/tendermint/v1beta1/blocks/";
 
 /**
  * A chain halt: no blocks for `seconds` after block `afterHeight`, so every
@@ -59,22 +61,25 @@ const FETCHES_PER_MEASUREMENT = 2;
  */
 type Halt = { afterHeight: number; seconds: number };
 
-/** A `/block` response for `path` on a chain producing a block every `blockTimeSeconds`. */
+/**
+ * A block response for `path` (RPC `/block?height=` or the REST equivalent, in
+ * that endpoint's shape) on a chain producing a block every `blockTimeSeconds`.
+ */
 function blockResponse(path: string, blockTimeSeconds: number, halt?: Halt) {
-  const height = Number(new URLSearchParams(path.split("?")[1]).get("height"));
+  const isRest = path.startsWith(REST_BLOCK_PATH);
+  const height = isRest
+    ? Number(path.slice(REST_BLOCK_PATH.length))
+    : Number(new URLSearchParams(path.split("?")[1]).get("height"));
   const haltMs = halt && height <= halt.afterHeight ? halt.seconds * 1_000 : 0;
   const elapsedMs = (LATEST_HEIGHT - height) * blockTimeSeconds * 1_000;
-  return {
-    result: {
-      block: {
-        header: {
-          time: new Date(
-            new Date(LATEST_TIME).getTime() - elapsedMs - haltMs
-          ).toISOString(),
-        },
-      },
+  const block = {
+    header: {
+      time: new Date(
+        new Date(LATEST_TIME).getTime() - elapsedMs - haltMs
+      ).toISOString(),
     },
   };
+  return isRest ? { block } : { result: { block } };
 }
 
 /** Mocks the block fetches so that block time resolves to `blockTimeSeconds`. */
@@ -195,9 +200,36 @@ describe("getTimeoutHeight", () => {
 
     expect(fetch).toHaveBeenCalledWith(`/block?height=${PRIOR_HEIGHT}`);
     expect(fetch).toHaveBeenCalledWith(`/block?height=${MID_HEIGHT}`);
+    // REST is only a fallback, so it isn't read while RPC answers.
+    expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT);
     const osmosis = MockChains.find((c) => c.chain_id === "osmosis-1")!;
     expect(MultiEndpointClient).toHaveBeenCalledWith(
       osmosis.apis.rpc.map(({ address }) => ({ address }))
+    );
+  });
+
+  it("reads the sampled blocks from REST when RPC refuses lookups by height", async () => {
+    // Deployed builds point Osmosis at the app RPC proxy, which answers
+    // `/status` but rejects `/block?height=`, so every deposit took the fallback.
+    const fetch = jest.fn().mockImplementation(async (path: string) => {
+      if (!path.startsWith(REST_BLOCK_PATH)) {
+        throw new Error("400 Access Denied");
+      }
+      return blockResponse(path, 1.26);
+    });
+    (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
+
+    const result = await getTimeoutHeight({
+      chainList: MockChains,
+      chainId: "osmosis-1",
+    });
+
+    expect(result.revisionHeight).toBe(expectedHeight(1.26));
+    expect(fetch).toHaveBeenCalledWith(`${REST_BLOCK_PATH}${PRIOR_HEIGHT}`);
+    expect(fetch).toHaveBeenCalledWith(`${REST_BLOCK_PATH}${MID_HEIGHT}`);
+    const osmosis = MockChains.find((c) => c.chain_id === "osmosis-1")!;
+    expect(MultiEndpointClient).toHaveBeenCalledWith(
+      osmosis.apis.rest.map(({ address }) => ({ address }))
     );
   });
 
@@ -406,7 +438,8 @@ describe("getTimeoutHeight", () => {
       expect(second.revisionHeight).toBe(
         String(LATEST_HEIGHT + FALLBACK_OFFSET)
       );
-      expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT);
+      // One failed measurement tries RPC, then REST, for each sampled block.
+      expect(fetch).toHaveBeenCalledTimes(FETCHES_PER_MEASUREMENT * 2);
     });
 
     it("re-measures a failure after a minute, not an hour", async () => {
@@ -414,12 +447,12 @@ describe("getTimeoutHeight", () => {
       // success TTL, so it is cached under a much shorter one.
       jest.useFakeTimers({ doNotFake: ["nextTick"] });
       try {
-        const fetch = jest
-          .fn()
-          .mockRejectedValueOnce(new Error("transient RPC failure"))
-          .mockImplementation(async (path: string) =>
-            blockResponse(path, 1.79)
-          );
+        // Fail every RPC and REST read in the first measurement only.
+        let failing = true;
+        const fetch = jest.fn().mockImplementation(async (path: string) => {
+          if (failing) throw new Error("transient RPC failure");
+          return blockResponse(path, 1.79);
+        });
         (MultiEndpointClient as jest.Mock).mockReturnValue({ fetch });
 
         const failed = await getTimeoutHeight({
@@ -430,6 +463,7 @@ describe("getTimeoutHeight", () => {
           String(LATEST_HEIGHT + FALLBACK_OFFSET)
         );
 
+        failing = false;
         jest.advanceTimersByTime(1000 * 61);
 
         const recovered = await getTimeoutHeight({
