@@ -25,6 +25,8 @@ import { useMemo } from "react";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "./use-wallet";
+
 interface QueryResult {
   gasUsdValueToPay: PricePretty;
   gasAmount: CoinPretty;
@@ -238,7 +240,7 @@ export function useEstimateTxFees({
   const { accountStore, chainStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const wallet = accountStore.getWallet(chainId);
+  const { wallet, address } = useWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: [
@@ -266,8 +268,8 @@ export function useEstimateTxFees({
       !isNil(messages) &&
       Array.isArray(messages) &&
       messages.length > 0 &&
-      wallet?.address !== undefined &&
-      typeof wallet?.address === "string",
+      address !== undefined &&
+      typeof address === "string",
   });
 
   const specificError = useMemo(() => {

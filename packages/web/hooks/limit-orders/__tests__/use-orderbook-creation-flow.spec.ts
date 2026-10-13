@@ -26,6 +26,14 @@ jest.mock("~/stores", () => ({
   }),
 }));
 
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({
+    wallet: mockWallet,
+    address: mockWallet?.address,
+    isWalletConnected: Boolean(mockWallet?.isWalletConnected),
+  }),
+}));
+
 jest.mock("~/hooks", () => ({
   useWalletSelect: () => ({ onOpenWalletSelect: mockOpenWalletSelect }),
 }));

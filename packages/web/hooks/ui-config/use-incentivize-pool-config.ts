@@ -1,9 +1,8 @@
 import { AppCurrency } from "@osmosis-labs/unit";
 import { useCallback, useState } from "react";
 
-import { useStore } from "~/stores";
-
 import { useAmountInput } from "../input/use-amount-input";
+import { useWallet } from "../use-wallet";
 
 /** UI config for funding a new external incentive gauge on a pool: a reward
  *  amount for a selectable currency, plus a create sender that resolves when
@@ -21,9 +20,7 @@ export function useIncentivizePoolConfig(): {
     isPerpetual?: boolean;
   }) => Promise<void>;
 } {
-  const { chainStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const { wallet: account } = useWallet();
 
   const [selectedCurrency, setSelectedCurrency] = useState<AppCurrency>();
   const config = useAmountInput({ currency: selectedCurrency });

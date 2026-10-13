@@ -1,7 +1,6 @@
 import { Int } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
-import { useStore } from "~/stores";
 import {
   getInactiveDelegations,
   getStakeToEnterActiveSet,
@@ -9,11 +8,13 @@ import {
 } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "./use-wallet";
+
 /**
  * The connected wallet's delegations to validators outside the active set,
  * which have stopped earning rewards. Empty while disabled, no wallet is
  * connected, or either query hasn't loaded, so callers never act on partial
- * data. Call from an observer component.
+ * data.
  */
 export function useInactiveDelegations({
   enabled = true,
@@ -21,11 +22,9 @@ export function useInactiveDelegations({
   inactiveDelegations: InactiveDelegation[];
   isLoaded: boolean;
 } {
-  const { chainStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const walletAddress = accountStore.getWallet(chainId)?.address ?? "";
+  const { address: walletAddress } = useWallet();
   // an empty address never fetches, so nothing loads while disabled
-  const address = enabled ? walletAddress : "";
+  const address = enabled ? (walletAddress ?? "") : "";
 
   const { data: delegations } = api.edge.staking.getUserDelegations.useQuery(
     { userOsmoAddress: address },
