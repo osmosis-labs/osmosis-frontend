@@ -1,9 +1,10 @@
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@osmosis-labs/keplr-stores";
+  EmptyAmountError,
+  InsufficientAmountError,
+  InvalidNumberAmountError,
+  NegativeAmountError,
+  ZeroAmountError,
+} from "@osmosis-labs/keplr-hooks";
 import type { Currency } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -15,21 +16,131 @@ import {
 } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { ObservableQueryPoolShare } from "../../queries";
-import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
 
+type PoolAssetCurrency = Currency & {
+  originCurrency?: Currency & {
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+  };
+};
+
+/** Plain share pool data the config needs. Fed in by the view layer (e.g. from tRPC). */
+export type AddLiquidityPoolData = {
+  type: "weighted" | "stable";
+  /** Total pool shares, as a coin of the 18 decimal share currency. */
+  totalShare: CoinPretty;
+  /** Pool assets in chain order. `weight` is only set for weighted pools. */
+  assets: { amount: CoinPretty; weight?: Int }[];
+  /** Only set for weighted pools. */
+  totalWeight?: Int;
+  /** Only set for stable pools. */
+  stableSwapInfo?: {
+    scalingFactorController: string;
+    scalingFactor: string[];
+  };
+};
+
+/** Raw user balance in base units. */
+export type AddLiquidityBalance = { denom: string; amount: string };
+
+/** Amount input of a single pool asset. Validates against the sender's balance
+ *  supplied by the parent config, so it needs no query store. */
+export class PoolAssetAmountConfig {
+  @observable
+  protected _amount: string = "";
+
+  @observable
+  protected _fraction: number | undefined = undefined;
+
+  constructor(
+    readonly sendCurrency: PoolAssetCurrency,
+    protected readonly getBalance: (currency: Currency) => CoinPretty
+  ) {
+    makeObservable(this);
+  }
+
+  @action
+  setAmount(amount: string) {
+    if (amount.startsWith(".")) {
+      amount = "0" + amount;
+    }
+
+    if (this._fraction != null) {
+      this._fraction = undefined;
+    }
+    this._amount = amount;
+  }
+
+  @action
+  setIsMax(isMax: boolean) {
+    this._fraction = isMax ? 1 : undefined;
+  }
+
+  @computed
+  get balance(): CoinPretty {
+    return this.getBalance(this.sendCurrency);
+  }
+
+  @computed
+  get amount(): string {
+    if (this._fraction != null) {
+      const result = this.balance;
+      if (result.toDec().lte(new Dec(0))) {
+        return "0";
+      }
+
+      return result
+        .mul(new Dec(this._fraction))
+        .trim(true)
+        .locale(false)
+        .hideDenom(true)
+        .toString();
+    }
+
+    return this._amount;
+  }
+
+  @computed
+  get error(): Error | undefined {
+    if (this.amount === "") {
+      return new EmptyAmountError("Amount is empty");
+    }
+    if (Number.isNaN(parseFloat(this.amount))) {
+      return new InvalidNumberAmountError("Invalid form of number");
+    }
+    let dec;
+    try {
+      dec = new Dec(this.amount);
+      if (dec.equals(new Dec(0))) {
+        return new ZeroAmountError("Amount is zero");
+      }
+    } catch {
+      return new InvalidNumberAmountError("Invalid form of number");
+    }
+    if (dec.lt(new Dec(0))) {
+      return new NegativeAmountError("Amount is negative");
+    }
+
+    if (dec.gt(this.balance.toDec())) {
+      return new InsufficientAmountError("Insufficient amount");
+    }
+
+    return;
+  }
+}
+
 /** Use to config user input UI for eventually sending a valid add liquidity msg.
  *  Supports specifying a single asset LP amount, or evenly adding liquidity from an arbitrary number of pool assets.
+ *  Holds no query stores: pool data and balances are pushed in with `setPool` and `setBalances`.
  */
 export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @observable.ref
-  protected _queryBalances: ObservableQueryBalances;
+  protected _pool: AddLiquidityPoolData | undefined = undefined;
 
   @observable.ref
-  protected _queryPools: ObservableQueryPoolGetter;
+  protected _balances: Map<string, string> = new Map();
 
   @observable.ref
   protected _shareOutAmount: IntPretty | undefined = undefined;
@@ -46,38 +157,37 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   protected _cacheAmountConfigs?: {
     poolId: string;
     sender: string;
-    configs: AmountConfig[];
+    configs: PoolAssetAmountConfig[];
   };
 
-  constructor(
-    chainGetter: ChainGetter,
-    initialChainId: string,
-    poolId: string,
-    sender: string,
-    queriesStore: IQueriesStore,
-    queryPoolShare: ObservableQueryPoolShare,
-    queryPools: ObservableQueryPoolGetter,
-    queryBalances: ObservableQueryBalances
-  ) {
-    super(
-      chainGetter,
-      initialChainId,
-      poolId,
-      sender,
-      queriesStore,
-      queryPoolShare
-    );
-
-    this._queriesStore = queriesStore;
-    this._queryPools = queryPools;
-    this._queryBalances = queryBalances;
-    this._sender = sender;
+  constructor(poolId: string, sender: string) {
+    super(poolId, sender);
 
     makeObservable(this);
   }
 
+  @action
+  setPool(pool: AddLiquidityPoolData | undefined) {
+    this._pool = pool;
+  }
+
+  @action
+  setBalances(balances: AddLiquidityBalance[] | undefined) {
+    this._balances = new Map(
+      (balances ?? []).map(({ denom, amount }) => [denom, amount])
+    );
+  }
+
+  /** Sender's balance of the given currency, zero if none. */
+  getBalance(currency: Currency): CoinPretty {
+    return new CoinPretty(
+      currency,
+      new Int(this._balances.get(currency.coinMinimalDenom) ?? "0")
+    );
+  }
+
   get stableSwapInfo() {
-    return this._queryPools.getPool(this._poolId)?.stableSwapInfo;
+    return this._pool?.stableSwapInfo;
   }
 
   get isSingleAmountIn(): boolean {
@@ -106,21 +216,19 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   @computed
   get supportsSingleAmountIn(): boolean {
-    const queryPool = this._queryPools.getPool(this._poolId);
-
-    if (!queryPool) return false;
-    if (queryPool.type === "stable") return false;
+    if (!this._pool) return false;
+    if (this._pool.type === "stable") return false;
 
     return true;
   }
 
   /*
-	 Return the `AmountConfig` of selected single amount in.
+	 Return the `PoolAssetAmountConfig` of selected single amount in.
 	 Return undefined if the mode is no single amount in
 	 or `this._singleAmountInConfigIndex` is out of range in poolAssetConfigs.
 	 */
   @computed
-  get singleAmountInConfig(): AmountConfig | undefined {
+  get singleAmountInConfig(): PoolAssetAmountConfig | undefined {
     if (!this.isSingleAmountIn) {
       return;
     }
@@ -138,11 +246,9 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   @action
   setIsSingleAmountIn(value: boolean) {
-    const queryPool = this._queryPools.getPool(this._poolId);
+    if (!this._pool) return;
 
-    if (!queryPool) return;
-
-    if (queryPool.type === "stable") {
+    if (this._pool.type === "stable") {
       console.warn(
         "Single asset join pool currently not supported for stable pools"
       );
@@ -240,38 +346,31 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   get singleAmountInBalance(): CoinPretty | undefined {
     if (!this.singleAmountInAsset) return;
 
-    return this._queryBalances
-      .getQueryBech32Address(this._sender)
-      .getBalanceFromCurrency(this.singleAmountInAsset.currency);
+    return this.getBalance(this.singleAmountInAsset.currency);
   }
 
   @computed
-  get poolAssetConfigs(): AmountConfig[] {
-    const pool = this._queryPools.getPool(this._poolId);
+  get poolAssetConfigs(): PoolAssetAmountConfig[] {
+    const pool = this._pool;
     if (!pool) {
       return [];
     }
 
     if (
       !this._cacheAmountConfigs ||
-      this._cacheAmountConfigs.poolId !== pool.id ||
+      this._cacheAmountConfigs.poolId !== this.poolId ||
       this._cacheAmountConfigs.sender !== this.sender ||
       this._cacheAmountConfigs.configs.length === 0
     ) {
       this._cacheAmountConfigs = {
-        poolId: pool.id,
+        poolId: this.poolId,
         sender: this.sender,
-        configs: pool.poolAssets.map((asset) => {
-          const config = new AmountConfig(
-            this.chainGetter,
-            this._queriesStore,
-            this.chainId,
-            this.sender,
-            undefined
-          );
-          config.setSendCurrency(asset.amount.currency);
-          return config;
-        }),
+        configs: pool.assets.map(
+          (asset) =>
+            new PoolAssetAmountConfig(asset.amount.currency, (currency) =>
+              this.getBalance(currency)
+            )
+        ),
       };
     }
 
@@ -283,38 +382,36 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     weight: IntPretty;
     weightFraction: RatePretty;
     amount: CoinPretty;
-    currency: Currency & {
-      originCurrency?: Currency & {
-        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-      };
-    };
+    currency: PoolAssetCurrency;
   }[] {
-    const pool = this._queryPools.getPool(this._poolId);
+    const pool = this._pool;
     if (!pool) {
       return [];
     }
 
-    return pool.poolAssets.map(({ amount }) => {
+    return pool.assets.map(({ amount, weight }) => {
       const weights: {
         weight: IntPretty;
         weightFraction: RatePretty;
-      } = pool.weightedPoolInfo?.assets.find(
-        (asset) => asset.denom === amount.currency.coinMinimalDenom
-      ) ?? {
-        weight: new IntPretty(1), // Assume stable pools have even weight
-        weightFraction: new RatePretty(
-          new Dec(1).quo(new Dec(pool.poolAssets.length))
-        ),
-      }; // TODO: test with stable pool
+      } =
+        weight && pool.totalWeight
+          ? {
+              weight: new IntPretty(weight),
+              weightFraction: new RatePretty(
+                weight.toDec().quoTruncate(pool.totalWeight.toDec())
+              ),
+            }
+          : {
+              weight: new IntPretty(1), // Assume stable pools have even weight
+              weightFraction: new RatePretty(
+                new Dec(1).quo(new Dec(pool.assets.length))
+              ),
+            };
 
       return {
         ...weights,
         amount,
-        currency: amount.currency as Currency & {
-          originCurrency: Currency & {
-            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-          };
-        },
+        currency: amount.currency as PoolAssetCurrency,
       };
     });
   }
@@ -330,12 +427,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   @computed
   get totalShare(): IntPretty {
-    const pool = this._queryPools.getPool(this._poolId);
-    if (!pool) {
+    if (!this._pool) {
       return new IntPretty(new Int(0));
     }
 
-    return new IntPretty(pool.totalShare);
+    return new IntPretty(this._pool.totalShare);
   }
 
   get shareOutAmount(): IntPretty | undefined {
@@ -422,9 +518,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   }
 
   getSenderBalanceAt(index: number): CoinPretty {
-    return this._queryBalances
-      .getQueryBech32Address(this._sender)
-      .getBalanceFromCurrency(this.poolAssetConfigs[index].sendCurrency);
+    return this.getBalance(this.poolAssetConfigs[index].sendCurrency);
   }
 
   @action
@@ -438,9 +532,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     }
 
     const balancePrettyList = this.poolAssetConfigs.map((poolAssetConfig) =>
-      this._queryBalances
-        .getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(poolAssetConfig.sendCurrency)
+      this.getBalance(poolAssetConfig.sendCurrency)
     );
     if (
       balancePrettyList.some((balancePretty) =>

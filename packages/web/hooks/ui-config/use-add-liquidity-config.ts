@@ -1,25 +1,83 @@
+import { makeGammShareCurrency, type Pool } from "@osmosis-labs/server";
 import {
-  ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
-import {
+  type AddLiquidityPoolData,
   ObservableAddLiquidityConfig,
-  OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { useCallback, useState } from "react";
+import { CoinPretty, Int } from "@osmosis-labs/unit";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+/** Converts a tRPC share pool (weighted or stable) into the plain data the add liquidity config consumes.
+ *  Pool assets and amounts come from the raw chain pool, in chain order; currencies come from the pool's reserve coins.
+ *  Returns undefined for other pool types, or if an asset currency is unavailable. */
+export function makeAddLiquidityPoolData(
+  pool: Pick<Pool, "id" | "type" | "raw" | "reserveCoins">
+): AddLiquidityPoolData | undefined {
+  if (pool.type !== "weighted" && pool.type !== "stable") return;
+
+  const raw = pool.raw as {
+    total_shares?: { amount: string };
+    total_weight?: string;
+    pool_assets?: {
+      weight: string;
+      token: { denom: string; amount: string };
+    }[];
+    pool_liquidity?: { denom: string; amount: string }[];
+    scaling_factors?: string[];
+    scaling_factor_controller?: string;
+  };
+  if (!raw.total_shares) return;
+
+  const rawAssets =
+    pool.type === "weighted"
+      ? raw.pool_assets?.map(({ token, weight }) => ({
+          ...token,
+          weight: new Int(weight),
+        }))
+      : raw.pool_liquidity;
+  if (!rawAssets) return;
+
+  const assets: AddLiquidityPoolData["assets"] = [];
+  for (const { denom, amount, weight } of rawAssets as {
+    denom: string;
+    amount: string;
+    weight?: Int;
+  }[]) {
+    const currency = pool.reserveCoins.find(
+      (coin) => coin.currency.coinMinimalDenom === denom
+    )?.currency;
+    if (!currency) return;
+
+    assets.push({ amount: new CoinPretty(currency, new Int(amount)), weight });
+  }
+
+  return {
+    type: pool.type,
+    totalShare: new CoinPretty(
+      makeGammShareCurrency(pool.id),
+      new Int(raw.total_shares.amount)
+    ),
+    assets,
+    totalWeight: raw.total_weight ? new Int(raw.total_weight) : undefined,
+    stableSwapInfo:
+      pool.type === "stable" && raw.scaling_factors
+        ? {
+            scalingFactorController: raw.scaling_factor_controller ?? "",
+            scalingFactor: raw.scaling_factors,
+          }
+        : undefined,
+  };
+}
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
- *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
+ *  Updates `poolId` and `bech32Address` on render, and feeds the pool and the user's balances
+ *  from tRPC into the config.
  */
 export function useAddLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
-  poolId: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>
+  poolId: string
 ): {
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;
@@ -29,24 +87,29 @@ export function useAddLiquidityConfig(
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
-  const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
-    () =>
-      new ObservableAddLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        address,
-        queriesStore,
-        queryOsmosis.queryGammPoolShare,
-        queryOsmosis.queryPools,
-        queriesStore.get(osmosisChainId).queryBalances
-      )
+    () => new ObservableAddLiquidityConfig(poolId, address)
   );
-  config.setChain(osmosisChainId);
   config.setSender(address);
   config.setPoolId(poolId);
-  config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
+
+  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+  const { data: balances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: address },
+    { enabled: Boolean(address) }
+  );
+
+  const poolData = useMemo(
+    () =>
+      pool && pool.id === poolId ? makeAddLiquidityPoolData(pool) : undefined,
+    [pool, poolId]
+  );
+  useEffect(() => {
+    config.setPool(poolData);
+  }, [config, poolData]);
+  useEffect(() => {
+    config.setBalances(address ? balances : undefined);
+  }, [config, address, balances]);
 
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
