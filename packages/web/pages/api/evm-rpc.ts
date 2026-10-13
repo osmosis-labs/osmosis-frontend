@@ -48,6 +48,10 @@ const MAX_BODY_BYTES = 64 * 1024;
 /** Each upstream gets this long before the next one is tried, so one hung
  *  provider can't hold the request. */
 const UPSTREAM_TIMEOUT_MS = 5_000;
+/** The whole fallback chain stops after this, below viem's 10s default
+ *  client timeout, so the browser's own direct fallback to the public
+ *  endpoints starts instead of waiting on every upstream in turn. */
+const TOTAL_TIMEOUT_MS = 8_000;
 
 /**
  * Whether a JSON-RPC error is the provider refusing service rather than an
@@ -150,13 +154,16 @@ export default async function evmRpcHandler(req: Request) {
 
   // Keyed providers first, then public endpoints, so an exhausted free-tier
   // quota or a provider outage degrades instead of failing.
+  const deadline = Date.now() + TOTAL_TIMEOUT_MS;
   for (const upstream of getServerEvmRpcUrls(chain)) {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) break;
     try {
       const response = await fetch(upstream, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body,
-        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+        signal: AbortSignal.timeout(Math.min(UPSTREAM_TIMEOUT_MS, remaining)),
       });
       // JSON-RPC reports method errors (e.g. a revert) inside a 200 body;
       // pass those through as-is, since another upstream would answer the

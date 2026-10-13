@@ -140,10 +140,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       if (input.source.type === "evm") {
         const evmAddress = input.source.userEvmAddress;
-        let attemptedLookups = 0;
-        let lastLookupError: unknown;
-        let failedLookups = 0;
-        const balances = await Promise.all(
+        return Promise.all(
           input.source.assets
             .filter(
               (asset): asset is Extract<typeof asset, { chainType: "evm" }> =>
@@ -165,22 +162,21 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               if (!evmAddress) return emptyBalance;
 
-              attemptedLookups++;
               const evmChain = EthereumChainInfo.find(
                 (chain) => chain.id === asset.chainId
               );
               // This router runs in the browser (localLink), where keyed
               // RPC env vars don't exist: go through the app's RPC route
               // for chains with a keyed provider, then public endpoints.
+              // No catch: an unknown balance must fail the query, so React
+              // Query retries and the UI shows a balance error rather than a
+              // false zero that can hide a funded asset. A token with no
+              // contract on this chain already comes back as a real 0.
               const balance = await getEvmBalance({
                 address: getAddress(asset.address),
                 userAddress: evmAddress,
                 chainId: asset.chainId,
                 rpcUrls: evmChain ? getClientEvmRpcUrls(evmChain) : undefined,
-              }).catch((e) => {
-                lastLookupError = e;
-                failedLookups++;
-                return undefined;
               });
 
               if (!balance) return emptyBalance;
@@ -216,17 +212,6 @@ export const localBridgeTransferRouter = createTRPCRouter({
               };
             })
         );
-
-        // A single failed lookup (e.g. a provider-listed token that isn't a
-        // contract on this chain) stays an empty balance. When every lookup
-        // fails, the chain's RPCs are unreachable: fail the query so React
-        // Query retries and the UI shows a balance error, instead of a
-        // successful false zero that hides funded balances.
-        if (attemptedLookups > 0 && failedLookups === attemptedLookups) {
-          throw lastLookupError;
-        }
-
-        return balances;
       } else if (input.source.type === "solana") {
         const solanaAddress = input.source.userSolanaAddress;
         return Promise.all(

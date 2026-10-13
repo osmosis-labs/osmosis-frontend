@@ -1,5 +1,9 @@
 import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
-import { createPublicClient } from "viem";
+import {
+  BaseError,
+  ContractFunctionZeroDataError,
+  createPublicClient,
+} from "viem";
 
 import { getEvmBalance } from "../ethereum";
 
@@ -103,6 +107,27 @@ describe("getEvmBalance", () => {
     expect(createPublicClient).toHaveBeenCalledTimes(2);
     expect(mockClientFail.readContract).toHaveBeenCalledTimes(1);
     expect(mockClientSuccess.readContract).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns zero without trying other RPCs when the token has no contract", async () => {
+    // viem's readContract wraps the zero-data answer in an execution error
+    const noContract = new BaseError("balanceOf failed", {
+      cause: new ContractFunctionZeroDataError({ functionName: "balanceOf" }),
+    });
+    const mockClient = {
+      getBalance: jest.fn(),
+      readContract: jest.fn().mockRejectedValue(noContract),
+    };
+    (createPublicClient as jest.Mock).mockReturnValue(mockClient);
+
+    const balance = await getEvmBalance({
+      address: "0xTokenAddress",
+      userAddress: "0x123",
+      chainId: 1,
+    });
+
+    expect(balance).toEqual(BigInt(0));
+    expect(mockClient.readContract).toHaveBeenCalledTimes(1);
   });
 
   it("should throw an error if all RPC URLs fail", async () => {

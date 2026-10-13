@@ -4,7 +4,15 @@ import {
   NativeEVMTokenConstantAddress,
   redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
-import { Address, createPublicClient, erc20Abi, http } from "viem";
+import {
+  Address,
+  BaseError,
+  ContractFunctionRevertedError,
+  ContractFunctionZeroDataError,
+  createPublicClient,
+  erc20Abi,
+  http,
+} from "viem";
 
 export async function getEvmBalance({
   address,
@@ -53,6 +61,21 @@ export async function getEvmBalance({
 
       return balance;
     } catch (error) {
+      // The chain itself answered: the token address has no contract code,
+      // or its balanceOf reverted. Another RPC would answer the same, and
+      // the account holds none of that token, so this is a real zero rather
+      // than an unknown balance.
+      if (
+        error instanceof BaseError &&
+        error.walk(
+          (e) =>
+            e instanceof ContractFunctionZeroDataError ||
+            e instanceof ContractFunctionRevertedError
+        )
+      ) {
+        return BigInt(0);
+      }
+
       // Store the error and try the next RPC URL. viem error messages
       // include the request URL, which for a keyed provider carries the key.
       errors.push(error as Error);
