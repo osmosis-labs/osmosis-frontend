@@ -1,7 +1,6 @@
 import { WeightedPoolRawResponse } from "@osmosis-labs/server";
 import { NoAvailableSharesError } from "@osmosis-labs/stores";
 import { Dec, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import {
@@ -11,8 +10,8 @@ import {
 import { tError } from "~/components/localization";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const RemoveLiquidityModal: FunctionComponent<
@@ -21,13 +20,12 @@ export const RemoveLiquidityModal: FunctionComponent<
     onRemoveLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps &
     RemovableShareLiquidity
-> = observer((props) => {
+> = (props) => {
   const { poolId } = props;
-  const { accountStore } = useStore();
   const { t } = useTranslation();
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { wallet: account, txTypeInProgress } = useWallet();
+  const isSendingMsg = !account || txTypeInProgress !== "";
 
   const [percentage, setPercentage] = useState("50");
 
@@ -100,4 +98,4 @@ export const RemoveLiquidityModal: FunctionComponent<
       />
     </ModalBase>
   );
-});
+};

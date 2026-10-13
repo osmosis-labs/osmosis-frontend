@@ -33,11 +33,11 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { usePositionMigrationForPosition } from "~/hooks/use-position-migration-for-position";
+import { useWallet } from "~/hooks/use-wallet";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import { useStore } from "~/stores";
 import {
   formatPretty,
   formatPriceWithUserPrecision,
@@ -80,14 +80,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     isLoadingPositionDetails,
     hasPositionDetailsError,
   }) => {
-    const {
-      chainStore: {
-        osmosis: { chainId },
-      },
-      accountStore,
-    } = useStore();
-
-    const account = accountStore.getWallet(chainId);
+    const { wallet: account, txTypeInProgress } = useWallet();
 
     const {
       position: rawPosition,
@@ -383,7 +376,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           <PositionButton
             disabled={
               claimableRewardCoins?.length === 0 ||
-              Boolean(account?.txTypeInProgress) ||
+              Boolean(txTypeInProgress) ||
               !Boolean(account)
             }
             onClick={sendCollectAllRewardsMsg}
@@ -398,7 +391,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               disabled={
                 !status ||
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 Boolean(superfluidData?.undelegationEndTime) ||
                 status === "unbonding" ||
                 !Boolean(account)
@@ -432,7 +425,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               disabled={
                 !status ||
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 Boolean(superfluidData?.undelegationEndTime) ||
                 status === "unbonding"
               }
@@ -450,7 +443,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               // action cannot be taken on an eligibility that is about to
               // change.
               disabled={
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 !Boolean(account) ||
                 isPoolDataRefetching
               }
@@ -529,7 +522,7 @@ export const AssetsInfo: FunctionComponent<
     totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(({ className, title, assets = [], totalValue, emptyText }) => {
+> = ({ className, title, assets = [], totalValue, emptyText }) => {
   const { t } = useTranslation();
 
   return (
@@ -573,7 +566,7 @@ export const AssetsInfo: FunctionComponent<
       ) : null}
     </div>
   );
-});
+};
 
 const PriceBox: FunctionComponent<{
   label: string;

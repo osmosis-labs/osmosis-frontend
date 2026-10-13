@@ -1,6 +1,5 @@
 import type { UserPosition } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
@@ -13,6 +12,7 @@ import {
   USDC_TRANSMUTER_POOL_ID,
 } from "~/config/position-migration";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import {
@@ -60,7 +60,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
      */
     revalidate: () => Promise<MigrationRevalidation | undefined>;
   } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const {
     position,
     toPoolId,
@@ -163,9 +163,13 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const {
+    wallet: account,
+    address: accountAddress,
+    txTypeInProgress,
+  } = useWallet(chainId);
   const apiUtils = api.useUtils();
 
   /* For a full-range or ultra-wide position the range-edge maxima are
@@ -178,9 +182,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const needsBalanceBound =
     maxWalletDraw !== undefined && !maxWalletDraw.isInformative;
   const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
-    { bech32Address: account?.address ?? "" },
+    { bech32Address: accountAddress ?? "" },
     {
-      enabled: Boolean(account?.address) && needsBalanceBound,
+      enabled: Boolean(accountAddress) && needsBalanceBound,
       refetchInterval: 15_000,
     }
   );
@@ -229,7 +233,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
      navigation is a convenience and must never read as a migration error. */
   const routeAwayIfPoolEmptied = useCallback(async () => {
     if (router.pathname !== "/pool/[id]" || router.query.id !== poolId) return;
-    const address = account?.address;
+    const address = accountAddress;
     if (!address) return;
     try {
       const positions =
@@ -244,7 +248,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     } catch {
       // Stay put.
     }
-  }, [router, poolId, account?.address, apiUtils]);
+  }, [router, poolId, accountAddress, apiUtils]);
 
   const migrate = useCallback(async () => {
     if (!account) return;
@@ -319,7 +323,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     {
       disabled:
         isMigrating ||
-        Boolean(account?.txTypeInProgress) ||
+        Boolean(txTypeInProgress) ||
         // Held while the divergence sits outside the allowance, the polled
         // pool data is mid-refetch, or the balances backing the disclosed
         // draw cap have not loaded; all three resolve on their own and the
@@ -472,4 +476,4 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};

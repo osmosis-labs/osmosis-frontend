@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -22,6 +21,7 @@ import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -39,13 +39,13 @@ const DEFAULT_NUM_EPOCHS = "30";
  *  would compose the wrong Msg for a CL pool while its data loads. */
 export const IncentivizePoolModal: FunctionComponent<
   { poolId: string; isConcentrated: boolean } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const address = account?.address ?? "";
+  const { address: walletAddress, txTypeInProgress } = useWallet(chainId);
+  const address = walletAddress ?? "";
 
   // Only used for the (non-critical) APR-against-TVL stat, which falls back to
   // a dash when absent. The message-shaping `isConcentrated` is a prop above.
@@ -262,7 +262,7 @@ export const IncentivizePoolModal: FunctionComponent<
         insufficientOsmoForFee ||
         !acknowledgeNoRecovery ||
         !acknowledgeFee ||
-        Boolean(account?.txTypeInProgress),
+        Boolean(txTypeInProgress),
       onClick: () => {
         createGauge({
           distributeTo: isConcentrated
@@ -533,4 +533,4 @@ export const IncentivizePoolModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};
