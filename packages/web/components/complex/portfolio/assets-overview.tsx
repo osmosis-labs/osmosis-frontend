@@ -9,7 +9,6 @@ import { Dec, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 import { useMemo } from "react";
 import { useLocalStorage } from "react-use";
@@ -34,7 +33,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 const CHART_CONTAINER_HEIGHT = 468;
@@ -150,9 +149,7 @@ export const AssetsOverview: FunctionComponent<
     totalValue?: PricePretty;
     isTotalValueFetched?: boolean;
   } & CustomClasses
-> = observer(({ totalValue, isTotalValueFetched }) => {
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+> = ({ totalValue, isTotalValueFetched }) => {
   const { t } = useTranslation();
   const { startBridge, fiatRampSelection } = useBridgeStore(
     useShallow((state) => ({
@@ -163,7 +160,8 @@ export const AssetsOverview: FunctionComponent<
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile, width } = useWindowSize();
 
-  const address = wallet?.address ?? "";
+  const { address: walletAddress, isWalletConnected } = useWallet();
+  const address = walletAddress ?? "";
 
   const [showDate, setShowDate] = useState(false);
 
@@ -190,7 +188,7 @@ export const AssetsOverview: FunctionComponent<
       range,
     },
     {
-      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      enabled: Boolean(isWalletConnected && walletAddress),
       select: (data) => {
         if (totalValue) {
           data[data.length - 1].value = +totalValue.toDec().toString();
@@ -439,4 +437,4 @@ export const AssetsOverview: FunctionComponent<
       </Transition>
     </div>
   );
-});
+};
