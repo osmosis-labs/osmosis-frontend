@@ -552,6 +552,7 @@ export function useAddConcentratedLiquidityConfig(
     baseDepositOnly,
     quoteDepositOnly,
     tickRange,
+    pool: clPoolParams,
   } = config;
 
   const addLiquidity = useCallback(
@@ -577,8 +578,12 @@ export function useAddConcentratedLiquidityConfig(
             baseDepositValue = baseCoin;
           }
 
+          const clPool = clPoolParams;
+          if (!clPool) throw new Error(`Pool #${poolId} not found`);
+
           await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
             poolId,
+            clPool,
             tickRange[0],
             tickRange[1],
             superfluidValidatorAddress,
@@ -617,6 +622,7 @@ export function useAddConcentratedLiquidityConfig(
       baseDepositOnly,
       quoteDepositOnly,
       tickRange,
+      clPoolParams,
     ]
   );
 
