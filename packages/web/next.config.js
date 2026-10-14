@@ -84,6 +84,8 @@ const config = {
       ...config.resolve,
       alias: {
         ...config.resolve.alias,
+        // Keplr's Starknet key methods are unused by this app.
+        starknet$: path.resolve(__dirname, "etc", "noop", "index.js"),
         libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
         "libsodium-wrappers": path.resolve(
           __dirname,
