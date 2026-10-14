@@ -25,6 +25,7 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   OneClickTradingParamsChanges,
   useDisclosure,
@@ -34,7 +35,6 @@ import {
 import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -149,8 +149,6 @@ export const OneClickTradingSettings = ({
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
-  const { chainStore } = useStore();
-
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
   const { data: amountSpentData } =
@@ -178,7 +176,7 @@ export const OneClickTradingSettings = ({
     error: estimateRemoveTxError,
   } = useEstimateTxFees({
     messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
-    chainId: chainStore.osmosis.chainId,
+    chainId: OsmosisChainInfo.chainId,
     enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
   });
 

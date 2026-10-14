@@ -31,6 +31,7 @@ import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
+import { OsmosisChainInfo } from "~/config/chain";
 import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
@@ -102,8 +103,8 @@ const MainLayoutWrapper: FunctionComponent<{
   const { t } = useTranslation();
   const flags = useFeatureFlags();
 
-  const { accountStore, chainStore } = useStore();
-  const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { accountStore } = useStore();
+  const osmosisWallet = accountStore.getWallet(OsmosisChainInfo.chainId);
 
   const menus = useMemo(() => {
     if (!flags._isInitialized) {

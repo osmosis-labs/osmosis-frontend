@@ -8,6 +8,7 @@ import { Sparkline } from "~/components/chart/sparkline";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
@@ -16,11 +17,11 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export const NavbarOsmoPrice = observer(() => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
   const wallet = accountStore.getWallet(chainId);
 
   const { data: osmo } = api.edge.assets.getMarketAsset.useQuery({

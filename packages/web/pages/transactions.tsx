@@ -9,6 +9,7 @@ import { TransactionContent } from "~/components/transactions/transaction-conten
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   useFeatureFlags,
   useNavBar,
@@ -40,8 +41,8 @@ const Transactions: React.FC = observer(() => {
     ? addressFromQuery[0]
     : addressFromQuery;
 
-  const { accountStore, chainStore } = useStore();
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const { accountStore } = useStore();
+  const osmosisChainId = OsmosisChainInfo.chainId;
   const wallet = accountStore.getWallet(osmosisChainId);
   // for easy testing, pass in an optional address query string to override connected address
   // /transactions?page=0&address=osmoADDRESS

@@ -31,6 +31,7 @@ import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
@@ -72,12 +73,7 @@ export const NavBar: FunctionComponent<
     menus,
     secondaryMenuItems,
   }) => {
-    const {
-      chainStore: {
-        osmosis: { chainId },
-      },
-      accountStore,
-    } = useStore();
+    const { accountStore } = useStore();
     const {
       title: navBarTitle,
       callToActionButtons,
@@ -136,7 +132,7 @@ export const NavBar: FunctionComponent<
       }
     }, [router.query]);
 
-    const wallet = accountStore.getWallet(chainId);
+    const wallet = accountStore.getWallet(OsmosisChainInfo.chainId);
 
     const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
       address: wallet?.address ?? "",

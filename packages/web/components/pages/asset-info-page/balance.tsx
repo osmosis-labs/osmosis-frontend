@@ -10,6 +10,7 @@ import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
@@ -23,7 +24,7 @@ import {
 import { api } from "~/utils/trpc";
 
 export const AssetBalance = observer(({ className }: CustomClasses) => {
-  const { chainStore, accountStore } = useStore();
+  const { accountStore } = useStore();
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { isMobile } = useWindowSize();
   const hideBalances = useUserSettingsStore((state) => state.hideBalances);
 
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const osmosisChainId = OsmosisChainInfo.chainId;
   const account = accountStore.getWallet(osmosisChainId);
 
   const { data, isLoading } = api.edge.assets.getUserBridgeAsset.useQuery(

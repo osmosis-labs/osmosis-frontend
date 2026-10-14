@@ -24,6 +24,7 @@ import {
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
+import { StaticChainGetter } from "~/config/chain";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
@@ -46,7 +47,6 @@ const selectRawBalances = (
  *  Provides memoized callbacks for sending common messages associated with adding concentrated liquidity.
  */
 export function useAddConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string
 ): {
@@ -70,7 +70,7 @@ export function useAddConcentratedLiquidityConfig(
   const [config] = useState(
     () =>
       new ObservableAddConcentratedLiquidityConfig(
-        chainGetter,
+        StaticChainGetter,
         osmosisChainId,
         poolId
       )

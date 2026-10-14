@@ -1,6 +1,7 @@
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
@@ -14,10 +15,10 @@ export const ProfileOneClickTradingSettings = ({
   onGoBack: () => void;
   onClose: () => void;
 }) => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
 
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;

@@ -2,6 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -10,9 +11,9 @@ import { api } from "~/utils/trpc";
 export const Swapped: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = observer(() => {
-  const { chainStore, accountStore } = useStore();
+  const { accountStore } = useStore();
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
 
   if (!(account?.walletStatus === WalletStatus.Connected) || !account.address)
     return null;

@@ -13,6 +13,7 @@ import {
   ScreenGoBackButton,
   ScreenManager,
 } from "~/components/screen-manager";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStore } from "~/stores";
@@ -53,7 +54,7 @@ export const SpendLimitScreen = ({
   subtitle,
 }: SpendLimitScreenProps) => {
   const { t } = useTranslation();
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const [selectedView, setSelectedView] =
     useState<SpendLimitViews>("fixed-amount");
 
@@ -74,7 +75,7 @@ export const SpendLimitScreen = ({
 
   const isManualShareOfBalance = shareOfBalance.id === "manual";
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
   const { data: userAssetsTotal, isLoading: isLoadingUserAssetsTotal } =
     api.edge.assets.getUserAssetsTotal.useQuery(
       {
