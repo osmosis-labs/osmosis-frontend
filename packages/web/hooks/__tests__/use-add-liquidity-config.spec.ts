@@ -8,7 +8,13 @@ import {
 } from "~/hooks/ui-config/use-add-liquidity-config";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
-const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };
+const atomDenom =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+const atom = {
+  coinDenom: "ATOM",
+  coinMinimalDenom: atomDenom,
+  coinDecimals: 6,
+};
 
 // reserve coins from the sidecar can be in a different order than the chain pool assets
 const reserveCoins = [
@@ -28,7 +34,7 @@ describe("makeAddLiquidityPoolData", () => {
         total_shares: { denom: "gamm/pool/1", amount: "100000000000000000000" },
         pool_assets: [
           { weight: "2", token: { denom: "uosmo", amount: "1000000000" } },
-          { weight: "1", token: { denom: "uatom", amount: "100000000" } },
+          { weight: "1", token: { denom: atomDenom, amount: "100000000" } },
         ],
       },
     } as any);
@@ -59,7 +65,7 @@ describe("makeAddLiquidityPoolData", () => {
         pool_params: { swap_fee: "0.0001" },
         total_shares: { denom: "gamm/pool/2", amount: "5000000000000000000" },
         pool_liquidity: [
-          { denom: "uatom", amount: "100000000" },
+          { denom: atomDenom, amount: "100000000" },
           { denom: "uosmo", amount: "200000000" },
         ],
         scaling_factors: ["100", "1000"],
@@ -100,6 +106,37 @@ describe("makeAddLiquidityPoolData", () => {
     expect(data?.assets[1].amount.currency.coinDecimals).toBe(6);
     expect(data?.hasGuessedCurrency).toBe(true);
     expect(data?.swapFee.toString()).toBe("0.003000000000000000");
+  });
+
+  it("flags unlisted assets as guessed even when reserve coins carry them", () => {
+    // The server's chain fallback puts guessed currencies into reserve coins
+    const unlisted = {
+      coinDenom: "factory/osmo1x/unlisted",
+      coinMinimalDenom: "factory/osmo1x/unlisted",
+      coinDecimals: 6,
+    };
+    const data = makeAddLiquidityPoolData({
+      id: "8",
+      type: "weighted",
+      reserveCoins: [
+        new CoinPretty(osmo, new Int("1000")),
+        new CoinPretty(unlisted, new Int("2000")),
+      ],
+      raw: {
+        total_weight: "2",
+        pool_params: { swap_fee: "0.003" },
+        total_shares: { denom: "gamm/pool/8", amount: "100" },
+        pool_assets: [
+          { weight: "1", token: { denom: "uosmo", amount: "1000" } },
+          {
+            weight: "1",
+            token: { denom: "factory/osmo1x/unlisted", amount: "2000" },
+          },
+        ],
+      },
+    } as any);
+
+    expect(data?.hasGuessedCurrency).toBe(true);
   });
 
   it("works on pools built by the real chain pool mapping", () => {
@@ -175,7 +212,7 @@ describe("sendAddLiquidity", () => {
         total_shares: { denom: "gamm/pool/1", amount: "100000000000000000000" },
         pool_assets: [
           { weight: "1", token: { denom: "uosmo", amount: osmoAmount } },
-          { weight: "1", token: { denom: "uatom", amount: "100000000" } },
+          { weight: "1", token: { denom: atomDenom, amount: "100000000" } },
         ],
       },
     }) as any;
@@ -186,7 +223,7 @@ describe("sendAddLiquidity", () => {
     config.setPool(seeded);
     config.setBalances([
       { denom: "uosmo", amount: "500000000" },
-      { denom: "uatom", amount: "50000000" },
+      { denom: atomDenom, amount: "50000000" },
     ]);
     if (isSingle) {
       config.setIsSingleAmountIn(true);

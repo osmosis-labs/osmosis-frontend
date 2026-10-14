@@ -267,6 +267,30 @@ describe("ObservableAddLiquidityConfig", () => {
     expect(config.getAmountAt(1)).toBe("1");
   });
 
+  it("rebuilds amount configs when a refresh changes an asset's decimals", () => {
+    // Seeded with a guessed 6 decimal currency, then refreshed with the real 8
+    const pool = makeWeightedPool();
+    pool.assets[1] = {
+      amount: new CoinPretty(
+        { ...wbtc, coinDecimals: 6 },
+        new Int("1000000000")
+      ),
+      weight: new Int(1),
+    };
+    const config = makeConfig(pool);
+    config.setAmountAt(1, "1");
+
+    const refreshed = makeWeightedPool();
+    refreshed.assets[1] = {
+      amount: new CoinPretty(wbtc, new Int("1000000000")),
+      weight: new Int(1),
+    };
+    config.setPool(refreshed);
+
+    expect(config.poolAssetConfigs[1].sendCurrency.coinDecimals).toBe(8);
+    expect(config.getAmountAt(1)).toBe("1");
+  });
+
   it("reports share out calculation pending when amounts are set directly", () => {
     const config = makeConfig();
     config.poolAssetConfigs[0].setAmount("10");

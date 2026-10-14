@@ -2,6 +2,8 @@ import {
   makeGammShareCurrency,
   makeUnlistedAssetCurrency,
   type Pool,
+  type StablePoolRawResponse,
+  type WeightedPoolRawResponse,
 } from "@osmosis-labs/server";
 import {
   type AddLiquidityPoolData,
@@ -9,8 +11,10 @@ import {
   type OsmosisAccountImpl,
 } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -23,18 +27,9 @@ export function makeAddLiquidityPoolData(
 ): AddLiquidityPoolData | undefined {
   if (pool.type !== "weighted" && pool.type !== "stable") return;
 
-  const raw = pool.raw as {
-    total_shares?: { amount: string };
-    total_weight?: string;
-    pool_params?: { swap_fee: string };
-    pool_assets?: {
-      weight: string;
-      token: { denom: string; amount: string };
-    }[];
-    pool_liquidity?: { denom: string; amount: string }[];
-    scaling_factors?: string[];
-    scaling_factor_controller?: string;
-  };
+  // Partial: sidecar and chain raw pools don't always carry every field
+  const raw = pool.raw as Partial<WeightedPoolRawResponse> &
+    Partial<StablePoolRawResponse>;
   // A missing fee must not silently become a zero fee in join estimates
   if (!raw.total_shares || !raw.pool_params?.swap_fee) return;
 
@@ -57,10 +52,18 @@ export function makeAddLiquidityPoolData(
     let currency = pool.reserveCoins.find(
       (coin) => coin.currency.coinMinimalDenom === denom
     )?.currency;
-    if (!currency) {
-      currency = makeUnlistedAssetCurrency(denom);
+    // The server's chain fallback also puts guessed currencies in the
+    // reserve coins, so only an asset list entry proves the decimals.
+    if (
+      !currency ||
+      !getAssetFromAssetList({
+        coinMinimalDenom: denom,
+        assetLists: AssetLists,
+      })
+    ) {
       hasGuessedCurrency = true;
     }
+    if (!currency) currency = makeUnlistedAssetCurrency(denom);
 
     assets.push({ amount: new CoinPretty(currency, new Int(amount)), weight });
   }

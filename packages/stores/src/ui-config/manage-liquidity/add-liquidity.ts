@@ -82,6 +82,14 @@ export class PoolAssetAmountConfig {
     this._fraction = isMax ? 1 : undefined;
   }
 
+  /** Takes over another config's typed amount and max state, e.g. when the
+   *  config is rebuilt for a changed currency. */
+  @action
+  copyInputFrom(other: PoolAssetAmountConfig) {
+    this._amount = other._amount;
+    this._fraction = other._fraction;
+  }
+
   @computed
   get balance(): CoinPretty {
     return this.getBalance(this.sendCurrency);
@@ -139,6 +147,24 @@ export class PoolAssetAmountConfig {
  *  Supports specifying a single asset LP amount, or evenly adding liquidity from an arbitrary number of pool assets.
  *  Holds no query stores: pool data and balances are pushed in with `setPool` and `setBalances`.
  */
+type AmountConfigsCache = {
+  poolId: string;
+  sender: string;
+  /** Asset denoms and decimals the configs were built for. */
+  assetsKey: string;
+  configs: PoolAssetAmountConfig[];
+};
+
+/** Identifies the pool's asset currencies by denom and decimals, in order. */
+function getAssetsKey(pool: AddLiquidityPoolData): string {
+  return pool.assets
+    .map(
+      ({ amount: { currency } }) =>
+        `${currency.coinMinimalDenom}:${currency.coinDecimals}`
+    )
+    .join(",");
+}
+
 export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @observable.ref
   protected _pool: AddLiquidityPoolData | undefined = undefined;
@@ -158,11 +184,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @observable
   protected _singleAmountInConfigIndex: number = 0;
 
-  protected _cacheAmountConfigs?: {
-    poolId: string;
-    sender: string;
-    configs: PoolAssetAmountConfig[];
-  };
+  protected _cacheAmountConfigs?: AmountConfigsCache;
 
   constructor(poolId: string, sender: string) {
     super(poolId, sender);
@@ -178,6 +200,36 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @action
   setPool(pool: AddLiquidityPoolData | undefined) {
     this._pool = pool;
+
+    // A refreshed pool can resolve an asset's currency differently (e.g. a
+    // guessed currency from a persisted cache). Rebuild the amount configs so
+    // typed amounts use the new decimals, keeping what the user entered.
+    const cache = this._cacheAmountConfigs;
+    if (pool && cache && cache.assetsKey !== getAssetsKey(pool)) {
+      this._cacheAmountConfigs = this.makeAmountConfigs(pool, cache.configs);
+    }
+  }
+
+  protected makeAmountConfigs(
+    pool: AddLiquidityPoolData,
+    previous: PoolAssetAmountConfig[] = []
+  ): AmountConfigsCache {
+    return {
+      poolId: this.poolId,
+      sender: this.sender,
+      assetsKey: getAssetsKey(pool),
+      configs: pool.assets.map(({ amount: { currency } }) => {
+        const config = new PoolAssetAmountConfig(currency, (currency) =>
+          this.getBalance(currency)
+        );
+        const old = previous.find(
+          ({ sendCurrency }) =>
+            sendCurrency.coinMinimalDenom === currency.coinMinimalDenom
+        );
+        if (old) config.copyInputFrom(old);
+        return config;
+      }),
+    };
   }
 
   @action
@@ -373,18 +425,10 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       !this._cacheAmountConfigs ||
       this._cacheAmountConfigs.poolId !== this.poolId ||
       this._cacheAmountConfigs.sender !== this.sender ||
+      this._cacheAmountConfigs.assetsKey !== getAssetsKey(pool) ||
       this._cacheAmountConfigs.configs.length === 0
     ) {
-      this._cacheAmountConfigs = {
-        poolId: this.poolId,
-        sender: this.sender,
-        configs: pool.assets.map(
-          (asset) =>
-            new PoolAssetAmountConfig(asset.amount.currency, (currency) =>
-              this.getBalance(currency)
-            )
-        ),
-      };
+      this._cacheAmountConfigs = this.makeAmountConfigs(pool);
     }
 
     return this._cacheAmountConfigs.configs;
