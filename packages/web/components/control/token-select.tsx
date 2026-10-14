@@ -5,6 +5,7 @@ import { FunctionComponent, useEffect, useRef } from "react";
 
 import { Icon } from "~/components/assets";
 import { EntityImage } from "~/components/ui/entity-image";
+import { getChainInfoFromCurrency } from "~/config/chain";
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
@@ -12,7 +13,6 @@ import {
 } from "~/hooks";
 import { useBatchedPrices } from "~/hooks/queries/assets/use-prices";
 import { TokenSelectModal } from "~/modals";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are
@@ -37,7 +37,6 @@ export const TokenSelect: FunctionComponent<{
     dropdownOpen,
     setDropdownState,
   }) => {
-    const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
 
     // The unique key a token is matched/selected by. Display denom by default;
@@ -80,7 +79,7 @@ export const TokenSelect: FunctionComponent<{
         token,
         // filter by chain name
         chainName:
-          chainStore.getChainFromCurrency(
+          getChainInfoFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
           )?.prettyChainName ?? "",
       }))
@@ -189,7 +188,7 @@ export const TokenSelect: FunctionComponent<{
                 )}
               </div>
               <div className="subtitle2 md:caption w-24 text-osmoverse-400">
-                {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
+                {getChainInfoFromCurrency(selectedCurrency.coinDenom)
                   ?.prettyChainName ?? ""}
               </div>
             </div>

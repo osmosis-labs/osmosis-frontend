@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { SearchBox } from "~/components/input";
@@ -11,7 +10,7 @@ export const SimpleWalletList: FunctionComponent<{
   onConnect: OnConnectWallet;
   isMobile: boolean;
   walletOptions: WalletSelectOption[];
-}> = observer(({ onConnect, isMobile, walletOptions }) => {
+}> = ({ onConnect, isMobile, walletOptions }) => {
   const [search, setSearch] = useState("");
 
   const { t } = useTranslation();
@@ -94,4 +93,4 @@ export const SimpleWalletList: FunctionComponent<{
       </div>
     </section>
   );
-});
+};

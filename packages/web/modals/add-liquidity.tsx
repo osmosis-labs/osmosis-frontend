@@ -11,6 +11,7 @@ import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import type { PoolType } from "~/components/complex/pools-table";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
@@ -19,7 +20,6 @@ import {
 } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
@@ -38,10 +38,9 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
   const { wallet, txTypeInProgress } = useWallet(chainId);
   const isSendingMsg = !wallet || txTypeInProgress !== "";
 
@@ -54,7 +53,7 @@ export const AddLiquidityModal: FunctionComponent<
     useState(false);
 
   const { config: addConliqConfig, addLiquidity: addConLiquidity } =
-    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+    useAddConcentratedLiquidityConfig(chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =

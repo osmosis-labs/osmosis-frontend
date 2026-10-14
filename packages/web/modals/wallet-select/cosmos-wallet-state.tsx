@@ -13,6 +13,7 @@ import { Button } from "~/components/ui/button";
 import { ConnectingWalletState } from "~/components/wallet-states";
 import { ErrorWalletState } from "~/components/wallet-states";
 import { CosmosWalletRegistry } from "~/config";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
@@ -67,7 +68,7 @@ export const CosmosWalletState: FunctionComponent<
     setShow1CTEditParams,
   }) => {
     const { t } = useTranslation();
-    const { accountStore, chainStore } = useStore();
+    const { accountStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
     const { previousConnectedCosmosAccount, hasFunds } =
@@ -76,8 +77,7 @@ export const CosmosWalletState: FunctionComponent<
     const show1CT =
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
-      walletRepo?.chainRecord?.chain?.chain_name ===
-        chainStore.osmosis.chainName;
+      walletRepo?.chainRecord?.chain?.chain_name === OsmosisChainInfo.chainName;
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;

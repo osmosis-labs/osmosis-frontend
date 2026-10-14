@@ -8,6 +8,7 @@ import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolType } from "~/components/complex/pools-table";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   useCreatePoolConfig,
   useDimension,
@@ -16,13 +17,11 @@ import {
 } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
-import { useStore } from "~/stores";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
   const { wallet: account, address, txTypeInProgress } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
