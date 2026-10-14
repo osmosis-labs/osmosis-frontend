@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useStore } from "~/stores";
+import { useTransferHistoriesByAccount } from "~/stores/transfer-history-instance";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "./use-wallet";
@@ -25,12 +25,8 @@ export const useTransactionHistory = ({
   pageNumber?: string;
   pageSize?: string;
 } = {}) => {
-  const { transferHistoryStore } = useStore();
-
   const { address, isWalletConnected } = useWallet();
-  const recentTransfers = transferHistoryStore.getHistoriesByAccount(
-    address || ""
-  );
+  const recentTransfers = useTransferHistoriesByAccount(address || "");
 
   const { data: transactionsData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(

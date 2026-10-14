@@ -47,6 +47,7 @@ import {
 } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
+import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
@@ -191,7 +192,8 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore, transferHistoryStore } = useStore();
+  const { accountStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const {
     connector: evmConnector,
     address: evmAddress,
