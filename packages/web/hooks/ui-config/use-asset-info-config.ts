@@ -138,6 +138,9 @@ export const useAssetInfoConfig = (
     () => (storedUi.key === key ? storedUi : initialUiState(key)),
     [storedUi, key]
   );
+  // Store the reset too (adjusting state during render), so returning to an
+  // asset doesn't bring back the settings it had before switching away.
+  if (storedUi.key !== key) setStoredUi(initialUiState(key));
   const updateUi = useCallback(
     (patch: (current: ChartUiState) => Partial<ChartUiState>) =>
       setStoredUi((prev) => {

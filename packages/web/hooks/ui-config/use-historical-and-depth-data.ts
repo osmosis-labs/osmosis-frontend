@@ -187,10 +187,10 @@ export function useHistoricalAndLiquidityData(
   }, [currentPriceNumber]);
 
   // Init hover price to the pool's current price once loaded, and reset it
-  // whenever that price changes.
+  // whenever that price or the pool changes (two pools can share a price).
   useEffect(() => {
     if (lastChartData) hoverStore.set(lastChartData.close);
-  }, [hoverStore, lastChartData]);
+  }, [hoverStore, lastChartData, poolId]);
 
   const priceDecimal = getPriceDecimal(lastChartData?.close);
 
