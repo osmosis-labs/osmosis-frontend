@@ -35,13 +35,8 @@ jest.mock("~/modals", () => ({
   }) => (isOpen ? <div>{children}</div> : null),
 }));
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: {
-      osmosisChainId: "osmosis-1",
-      getWallet: () => ({ address: "osmo1abc" }),
-    },
-  }),
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({ address: "osmo1abc" }),
 }));
 
 jest.mock("~/hooks/use-is-cosmos-new-account", () => ({

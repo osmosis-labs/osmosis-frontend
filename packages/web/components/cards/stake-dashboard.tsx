@@ -8,11 +8,11 @@ import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { formatCoinBalance } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
@@ -44,10 +44,9 @@ export const StakeDashboard: React.FC<{
   onRedelegate,
 }) => {
   const { t } = useTranslation();
-  const { chainStore } = useStore();
   const { wallet: account, address: walletAddress } = useWallet();
   const address = walletAddress ?? "";
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
   const { data: delegationRewards } =
     api.edge.staking.getUserDelegationRewards.useQuery(

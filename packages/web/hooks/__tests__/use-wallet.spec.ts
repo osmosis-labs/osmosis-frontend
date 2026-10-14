@@ -7,6 +7,7 @@ import {
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
 import { testWalletInfo } from "~/__tests__/test-wallet";
+import { OsmosisChainInfo } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { storeContext } from "~/stores";
 
@@ -79,7 +80,7 @@ describe("useWallet", () => {
     await act(() =>
       connectTestWallet({
         accountStore: rootStore.accountStore,
-        chainId: rootStore.chainStore.osmosis.chainId,
+        chainId: OsmosisChainInfo.chainId,
       })
     );
     const wallet = result.current.wallet!;
@@ -88,7 +89,7 @@ describe("useWallet", () => {
     act(() =>
       wallet.setData({
         namespace: "cosmos",
-        chainId: rootStore.chainStore.osmosis.chainId,
+        chainId: OsmosisChainInfo.chainId,
         address: nextAddress,
       })
     );

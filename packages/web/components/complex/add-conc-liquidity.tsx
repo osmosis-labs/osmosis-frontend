@@ -26,10 +26,7 @@ import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  useTranslation,
-} from "~/hooks";
+import { AddConcentratedLiquidityConfig, useTranslation } from "~/hooks";
 import {
   type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -58,7 +55,7 @@ const HistoricalPriceChart = dynamic(
 
 export const AddConcLiquidity: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
@@ -83,7 +80,7 @@ export const AddConcLiquidity: FunctionComponent<
 const AddConcLiqView: FunctionComponent<
   {
     pool?: Pool;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
@@ -386,7 +383,7 @@ const AddConcLiqView: FunctionComponent<
 const ChartHeader: FunctionComponent<{
   chartConfig: HistoricalAndLiquidityData;
 
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, priceDecimal } = chartConfig;
@@ -415,7 +412,7 @@ const ChartHeader: FunctionComponent<{
  */
 const Chart: FunctionComponent<{
   chartConfig: HistoricalAndLiquidityData;
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
@@ -440,7 +437,7 @@ const Chart: FunctionComponent<{
 
 const StrategySelectorGroup: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
     isInactivePool?: boolean;
   } & CustomClasses
@@ -519,7 +516,7 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
@@ -650,7 +647,7 @@ const PresetStrategyCard: FunctionComponent<
 const PriceInputBox: FunctionComponent<{
   label: string;
   forPriceIndex: 0 | 1;
-  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addConcLiquidityConfig: AddConcentratedLiquidityConfig;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
 }> = observer(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
   const [isFocused, setIsFocused] = useState(false);

@@ -33,10 +33,11 @@ jest.mock("~/stores", () => ({
       getWallet: mockGetWallet,
       estimateFee: mockEstimateFee,
     },
-    chainStore: {
-      getChain: mockGetChain,
-    },
   }),
+}));
+
+jest.mock("~/config/chain", () => ({
+  getChainInfo: (chainId: string) => mockGetChain(chainId),
 }));
 
 jest.mock("~/hooks/use-wallet", () => ({

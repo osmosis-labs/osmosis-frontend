@@ -14,6 +14,7 @@ import { Spinner } from "~/components/loaders/spinner";
 import { StakeToInactiveValidatorsWarning } from "~/components/stake/inactive-delegations-warning";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useGetApr, useTranslation } from "~/hooks";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
@@ -22,7 +23,6 @@ import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /** Stable fallbacks, so the memos below keep their identity while loading. */
@@ -44,9 +44,8 @@ export const Staking: React.FC = observer(() => {
 
   const { t } = useTranslation();
 
-  const { chainStore } = useStore();
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const osmosisChainId = OsmosisChainInfo.chainId;
   const {
     wallet: account,
     address: walletAddress,
@@ -54,7 +53,7 @@ export const Staking: React.FC = observer(() => {
   } = useWallet();
   const address = walletAddress ?? "";
 
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
   const { data: validatorPreferences, isFetching: isFetchingValPrefs } =
     api.edge.staking.getUserValidatorPreferences.useQuery(
@@ -82,7 +81,7 @@ export const Staking: React.FC = observer(() => {
 
   // Max stake leaves the fee at the high gas price; delegateToValidatorSet
   // costs the same gas as undelegating.
-  const feeCurrency = chainStore.osmosis.feeCurrencies[0];
+  const feeCurrency = OsmosisChainInfo.feeCurrencies[0];
   const stakeFee = useMemo(
     () =>
       new CoinPretty(

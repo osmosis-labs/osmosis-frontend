@@ -1,10 +1,11 @@
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { RootStore } from "~/stores/root";
+import { getTransferHistoryStore } from "~/stores/transfer-history-instance";
 import { api } from "~/utils/trpc";
 
 export const storeContext = React.createContext<RootStore | null>(null);
@@ -90,6 +91,14 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
         },
       })
   );
+
+  // Transfer history lives outside the root store; it invalidates the same
+  // tRPC queries when a bridge transfer completes.
+  useEffect(() => {
+    getTransferHistoryStore().setOnAccountTransferSuccess(() =>
+      refetchUserQueries(apiUtils)
+    );
+  }, [apiUtils]);
 
   return (
     <storeContext.Provider value={rootStore}>{children}</storeContext.Provider>

@@ -18,7 +18,6 @@ import {
 } from "@visx/xychart";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
@@ -318,165 +317,162 @@ export const PriceChartHeader: FunctionComponent<{
     pricesHeaderRootContainer?: string;
   };
   compactZeros?: boolean;
-}> = observer(
-  ({
-    historicalRange,
-    setHistoricalRange,
-    baseDenom,
-    quoteDenom,
-    hoverDate,
-    hoverPrice,
-    formatOpts,
-    decimal,
-    hideButtons,
-    classes,
-    fiatSymbol,
-    showAllRange = false,
-    isLoading = false,
-    compactZeros = false,
-  }) => {
-    const { t } = useTranslation();
+}> = ({
+  historicalRange,
+  setHistoricalRange,
+  baseDenom,
+  quoteDenom,
+  hoverDate,
+  hoverPrice,
+  formatOpts,
+  decimal,
+  hideButtons,
+  classes,
+  fiatSymbol,
+  showAllRange = false,
+  isLoading = false,
+  compactZeros = false,
+}) => {
+  const { t } = useTranslation();
 
-    const getFormattedPrice = useCallback(
-      (
-        additionalFormatOpts?: Partial<
-          Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
-        >
-      ) =>
-        formatPretty(new Dec(hoverPrice), {
-          maxDecimals: decimal,
-          notation: "compact",
-          ...formatOpts,
-          ...additionalFormatOpts,
-        }) || "",
-      [decimal, formatOpts, hoverPrice]
-    );
+  const getFormattedPrice = useCallback(
+    (
+      additionalFormatOpts?: Partial<
+        Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+      >
+    ) =>
+      formatPretty(new Dec(hoverPrice), {
+        maxDecimals: decimal,
+        notation: "compact",
+        ...formatOpts,
+        ...additionalFormatOpts,
+      }) || "",
+    [decimal, formatOpts, hoverPrice]
+  );
 
-    const { decimalDigits, significantDigits, zeros } = useMemo(
-      () =>
-        compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
-      [getFormattedPrice]
-    );
+  const { decimalDigits, significantDigits, zeros } = useMemo(
+    () => compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+    [getFormattedPrice]
+  );
 
-    return (
+  return (
+    <div
+      className={classNames(
+        "flex flex-row lg:flex-col-reverse sm:items-start sm:gap-y-4",
+        classes?.pricesHeaderRootContainer
+      )}
+    >
       <div
         className={classNames(
-          "flex flex-row lg:flex-col-reverse sm:items-start sm:gap-y-4",
-          classes?.pricesHeaderRootContainer
+          "flex flex-1 flex-row",
+          classes?.pricesHeaderContainerClass
         )}
       >
-        <div
-          className={classNames(
-            "flex flex-1 flex-row",
-            classes?.pricesHeaderContainerClass
-          )}
-        >
-          <div>
-            <SkeletonLoader isLoaded={!isLoading}>
-              <h4
-                className={classNames(
-                  "row-span-2 pr-1 font-caption sm:text-h5",
-                  classes?.priceHeaderClass
-                )}
-              >
-                {fiatSymbol}
-                {compactZeros ? (
-                  <>
-                    {significantDigits}
-                    {(decimalDigits || Boolean(zeros)) && "."}
-                    {Boolean(zeros) && (
-                      <>
-                        0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
-                      </>
-                    )}
-                    {decimalDigits}
-                  </>
-                ) : (
-                  getFormattedPrice()
-                )}
-              </h4>
-            </SkeletonLoader>
-            {hoverDate !== undefined ? (
-              <p
-                className={classNames(
-                  "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
-                  {
-                    "invisible h-6": hoverDate === null,
-                  }
-                )}
-              >
-                {hoverDate}
-              </p>
-            ) : (
-              false
-            )}
-          </div>
-          {baseDenom && quoteDenom ? (
-            <div
+        <div>
+          <SkeletonLoader isLoaded={!isLoading}>
+            <h4
               className={classNames(
-                "flex flex-col justify-center font-caption",
-                classes?.priceSubheaderClass
+                "row-span-2 pr-1 font-caption sm:text-h5",
+                classes?.priceHeaderClass
               )}
             >
-              <div className="text-caption text-osmoverse-300">
-                {t("addConcentratedLiquidity.currentPrice")}
-              </div>
-              <div className="whitespace-nowrap text-caption text-osmoverse-300">
-                {t("addConcentratedLiquidity.basePerQuote", {
-                  base: baseDenom,
-                  quote: quoteDenom,
-                })}
-              </div>
-            </div>
-          ) : undefined}
+              {fiatSymbol}
+              {compactZeros ? (
+                <>
+                  {significantDigits}
+                  {(decimalDigits || Boolean(zeros)) && "."}
+                  {Boolean(zeros) && (
+                    <>
+                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                    </>
+                  )}
+                  {decimalDigits}
+                </>
+              ) : (
+                getFormattedPrice()
+              )}
+            </h4>
+          </SkeletonLoader>
+          {hoverDate !== undefined ? (
+            <p
+              className={classNames(
+                "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
+                {
+                  "invisible h-6": hoverDate === null,
+                }
+              )}
+            >
+              {hoverDate}
+            </p>
+          ) : (
+            false
+          )}
         </div>
-        {!hideButtons && (
+        {baseDenom && quoteDenom ? (
           <div
             className={classNames(
-              "flex flex-1 justify-end gap-1 pr-2",
-              classes?.buttons
+              "flex flex-col justify-center font-caption",
+              classes?.priceSubheaderClass
             )}
           >
-            <ChartButton
-              label={t("tokenInfos.chart.xHour", { h: "1" })}
-              onClick={() => setHistoricalRange("1h")}
-              selected={historicalRange === "1h"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "1" })}
-              onClick={() => setHistoricalRange("1d")}
-              selected={historicalRange === "1d"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "7" })}
-              onClick={() => setHistoricalRange("7d")}
-              selected={historicalRange === "7d"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "30" })}
-              onClick={() => setHistoricalRange("1mo")}
-              selected={historicalRange === "1mo"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xYear", { y: "1" })}
-              onClick={() => setHistoricalRange("1y")}
-              selected={historicalRange === "1y"}
-            />
-            {showAllRange ? (
-              <ChartButton
-                label={t("tokenInfos.chart.all", { y: "1" })}
-                onClick={() => setHistoricalRange("all")}
-                selected={historicalRange === "all"}
-              />
-            ) : (
-              false
-            )}
+            <div className="text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.currentPrice")}
+            </div>
+            <div className="whitespace-nowrap text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.basePerQuote", {
+                base: baseDenom,
+                quote: quoteDenom,
+              })}
+            </div>
           </div>
-        )}
+        ) : undefined}
       </div>
-    );
-  }
-);
+      {!hideButtons && (
+        <div
+          className={classNames(
+            "flex flex-1 justify-end gap-1 pr-2",
+            classes?.buttons
+          )}
+        >
+          <ChartButton
+            label={t("tokenInfos.chart.xHour", { h: "1" })}
+            onClick={() => setHistoricalRange("1h")}
+            selected={historicalRange === "1h"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "1" })}
+            onClick={() => setHistoricalRange("1d")}
+            selected={historicalRange === "1d"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "7" })}
+            onClick={() => setHistoricalRange("7d")}
+            selected={historicalRange === "7d"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "30" })}
+            onClick={() => setHistoricalRange("1mo")}
+            selected={historicalRange === "1mo"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xYear", { y: "1" })}
+            onClick={() => setHistoricalRange("1y")}
+            selected={historicalRange === "1y"}
+          />
+          {showAllRange ? (
+            <ChartButton
+              label={t("tokenInfos.chart.all", { y: "1" })}
+              onClick={() => setHistoricalRange("all")}
+              selected={historicalRange === "all"}
+            />
+          ) : (
+            false
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();

@@ -2,6 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { comparer, reaction } from "mobx";
 import { useCallback, useSyncExternalStore } from "react";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { useStore } from "~/stores";
 import type { RootStore } from "~/stores/root";
 
@@ -106,10 +107,10 @@ function getSnapshotStore(accountStore: AccountStore, chainId: string) {
 /** The wallet for a chain (Osmosis by default) as plain React state, so the
  *  component doesn't need `observer()` to re-render on wallet changes. */
 export function useWallet(chainId?: string): WalletSnapshot {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const store = getSnapshotStore(
     accountStore,
-    chainId ?? chainStore.osmosis.chainId
+    chainId ?? OsmosisChainInfo.chainId
   );
   const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
   return useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
