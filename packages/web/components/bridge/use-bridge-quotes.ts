@@ -10,11 +10,7 @@ import {
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import {
-  getEvmRpcTransport,
-  getNomicRelayerUrl,
-  isNil,
-} from "@osmosis-labs/utils";
+import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -54,6 +50,7 @@ import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
+import { getClientEvmRpcTransport } from "~/utils/evm-rpc";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import {
   classifySolanaSimulation,
@@ -194,7 +191,7 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore, transferHistoryStore, queriesStore } = useStore();
+  const { accountStore, transferHistoryStore } = useStore();
   const {
     connector: evmConnector,
     address: evmAddress,
@@ -913,7 +910,7 @@ export const useBridgeQuotes = ({
       throw new Error("No EVM chain selected or chain is unsupported");
 
     const publicClient = createPublicClient({
-      transport: getEvmRpcTransport(currentEvmChain),
+      transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
 
@@ -1532,30 +1529,6 @@ export const useBridgeQuotes = ({
 
         onFulfill: (tx: DeliverTxResponse) => {
           if (tx.code == null || tx.code === 0) {
-            const queries = queriesStore.get(fromChain.chainId);
-
-            // After succeeding to send token, refresh the balance. Best
-            // effort: `balances` throws on a currency no balance registry
-            // handles (e.g. an `erc20:` currency on Injective), and that must
-            // not stop the transfer from being tracked below.
-            try {
-              const queryBalance = queries.queryBalances
-                // If we get here destination address is defined
-                .getQueryBech32Address(toAddress!)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom ===
-                    availableBalance?.currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
-              }
-            } catch (e) {
-              console.warn("Failed to refresh balance after transfer:", e);
-            }
-
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,

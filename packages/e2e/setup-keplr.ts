@@ -1,9 +1,10 @@
-import { UnzipExtension } from "./unzip-extension";
-import { TestConfig } from "./test-config";
-import { type BrowserContext, chromium } from "playwright";
+import { type BrowserContext, chromium } from "@playwright/test";
 import { fail } from "assert";
-import { WalletPage } from "./pages/keplr-page";
+
 import { getKeplrExtensionId } from "./pages/keplr-helper";
+import { WalletPage } from "./pages/keplr-page";
+import { TestConfig } from "./test-config";
+import { UnzipExtension } from "./unzip-extension";
 
 export class SetupKeplr {
   /**
@@ -67,9 +68,10 @@ export class SetupKeplr {
   /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
   async setupWalletKeplr(
     secret: string,
-    headless = process.env.HEADLESS === "true",
+    headless = process.env.HEADLESS === "true"
   ) {
-    const pathToKeplrExtension = await new UnzipExtension().getPathToExtension();
+    const pathToKeplrExtension =
+      await new UnzipExtension().getPathToExtension();
     const testConfig = new TestConfig().getBrowserExtensionConfig(
       headless,
       pathToKeplrExtension
@@ -96,7 +98,7 @@ export class SetupKeplr {
   /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
   async setupWallet(
     secret: string,
-    headless = process.env.HEADLESS === "true",
+    headless = process.env.HEADLESS === "true"
   ) {
     try {
       return await this.setupWalletKeplr(secret, headless);

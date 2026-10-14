@@ -35,9 +35,10 @@ export const EstimatedEarningCard: FunctionComponent<{
 
   const osmo = chainStore.osmosis.stakeCurrency;
 
+  // stakeAmount is already a CoinPretty in OSMO. Shifting by coinDecimals
+  // here treated that amount as uosmo and scaled earnings by 10^6.
   const calculatedInflationAmountPerYear = stakeAmount
-    ?.moveDecimalPointRight(osmo.coinDecimals)
-    .toDec()
+    ?.toDec()
     .mul(stakingAPR.quo(new Dec(100)));
 
   const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));

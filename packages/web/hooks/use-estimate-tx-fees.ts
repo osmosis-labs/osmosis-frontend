@@ -245,6 +245,8 @@ export function useEstimateTxFees({
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: [
       "estimate-tx-fees",
+      chainId,
+      address ?? "",
       superjson.stringify(messages),
       superjson.stringify(signOptions),
     ],
