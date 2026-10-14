@@ -12,9 +12,9 @@ import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { getChainInfoFromCurrency } from "~/config/chain";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useStore } from "~/stores";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -134,7 +134,6 @@ const AmountInput: FunctionComponent<{
   weightFraction: RatePretty;
   index: number;
 }> = observer(({ addLiquidityConfig, weightFraction, currency, index }) => {
-  const { chainStore } = useStore();
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
@@ -176,7 +175,7 @@ const AmountInput: FunctionComponent<{
           <PoolTokenSelect
             tokens={addLiquidityConfig.poolAssets.map((poolAsset) => ({
               coinDenom: poolAsset.currency.coinDenom,
-              networkName: chainStore.getChainFromCurrency(
+              networkName: getChainInfoFromCurrency(
                 poolAsset.currency.coinDenom
               )?.prettyChainName,
               poolShare: poolAsset.weightFraction,

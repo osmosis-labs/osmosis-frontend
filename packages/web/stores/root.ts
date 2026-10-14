@@ -32,12 +32,10 @@ import {
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
+import { ChainInfos, OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import {
-  getKeplrCompatibleChain,
-  withCosmosKitFields,
-} from "~/config/keplr-chain";
+import { withCosmosKitFields } from "~/config/keplr-chain";
 
 const assets = AssetLists.flatMap((list) => list.assets);
 
@@ -60,13 +58,7 @@ export class RootStore {
   }: {
     txEvents?: TxEvents;
   } = {}) {
-    this.chainStore = new ChainStore(
-      ChainList.map((chain) =>
-        getKeplrCompatibleChain({ chain, assetLists: AssetLists })
-      ),
-      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
-        (IS_TESTNET ? "osmo-test-5" : "osmosis")
-    );
+    this.chainStore = new ChainStore(ChainInfos, OsmosisChainInfo.chainId);
 
     const webApiBaseUrl =
       typeof window !== "undefined"

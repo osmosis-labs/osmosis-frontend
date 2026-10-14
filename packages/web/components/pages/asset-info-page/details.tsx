@@ -2,7 +2,6 @@ import { fromBech32 } from "@cosmjs/encoding";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React, { FunctionComponent, ReactNode, useMemo, useState } from "react";
 
@@ -51,7 +50,7 @@ function classifyAdmin(
 
 const TEXT_CHAR_LIMIT = 450;
 
-export const AssetDetails = observer(({ className }: CustomClasses) => {
+export const AssetDetails = ({ className }: CustomClasses) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
 
@@ -266,7 +265,7 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
       )}
     </section>
   );
-});
+};
 
 const AdminBadge: FunctionComponent<{
   state: AdminState;
@@ -379,7 +378,7 @@ const formatCompact = (value: PricePretty | Dec | number) => {
   });
 };
 
-export const AssetStats = observer((props: CustomClasses) => {
+export const AssetStats = (props: CustomClasses) => {
   const { className } = props;
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -510,7 +509,7 @@ export const AssetStats = observer((props: CustomClasses) => {
       </ul>
     </section>
   );
-});
+};
 
 type Stat = {
   title: string;

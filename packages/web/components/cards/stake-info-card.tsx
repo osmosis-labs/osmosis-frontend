@@ -7,9 +7,9 @@ import React, { FunctionComponent, useCallback } from "react";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { StakeOrUnstake } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const OSMO_IMG_URL = "/tokens/osmo.svg";
@@ -37,8 +37,7 @@ export const StakeInfoCard: FunctionComponent<{
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
-    const { chainStore } = useStore();
-    const osmo = chainStore.osmosis.stakeCurrency;
+    const osmo = OsmosisChainInfo.stakeCurrency;
 
     // amount fiat value
     const { fiatValue: outAmountValue } = useCoinFiatValue(
