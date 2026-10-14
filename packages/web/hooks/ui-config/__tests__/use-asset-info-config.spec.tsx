@@ -94,6 +94,24 @@ describe("useAssetInfoConfig", () => {
     expect(result.current.hover.hoverData).toBeUndefined();
   });
 
+  it("drops hover from the previous asset when the asset changes", () => {
+    const { result, rerender } = renderHookWithProviders(
+      ({ denom }: { denom: string }) => useConfigWithHover(denom),
+      { initialProps: { denom: "a" } }
+    );
+
+    act(() => result.current.config.setHoverData(12.5, 1700000000 as never));
+    expect(result.current.hover.hoverData).toBeDefined();
+
+    rerender({ denom: "b" });
+    expect(result.current.hover.hoverData).toBeUndefined();
+    expect(result.current.hover.hoverDate).toBeNull();
+
+    // and it does not come back when returning to the first asset
+    rerender({ denom: "a" });
+    expect(result.current.hover.hoverData).toBeUndefined();
+  });
+
   it("resets chart state when the asset changes", () => {
     const { result, rerender } = renderHookWithProviders(
       ({ denom }: { denom: string }) => useAssetInfoConfig(denom),

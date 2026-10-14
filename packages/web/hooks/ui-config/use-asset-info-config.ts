@@ -4,7 +4,7 @@ import {
 } from "@osmosis-labs/server";
 import { PricePretty } from "@osmosis-labs/unit";
 import { Time } from "lightweight-charts";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { timepointToString } from "~/components/chart/light-weight-charts/utils";
 import { api } from "~/utils/trpc";
@@ -36,13 +36,17 @@ export {
   toCoingeckoHistoricalData,
 } from "./asset-info-utils";
 
+/** Tagged with the asset key so a hover from another asset is ignored. */
 interface HoverState {
+  key: string;
   price?: number;
   time?: Time;
 }
 
+const EMPTY_HOVER: Pick<HoverState, "price" | "time"> = {};
+
 const isHoverEqual = (a: HoverState, b: HoverState) =>
-  a.price === b.price && a.time === b.time;
+  a.key === b.key && a.price === b.price && a.time === b.time;
 
 /** Chart state that resets whenever the asset changes. */
 interface ChartUiState {
@@ -79,6 +83,7 @@ export interface AssetInfoConfig {
    * `useAssetInfoHover`.
    */
   hoverStore: ValueStore<HoverState>;
+  hoverKey: string;
   setHoverData: (data?: number, time?: Time) => void;
   setZoom: (zoom: number) => void;
   resetZoom: () => void;
@@ -90,8 +95,11 @@ export interface AssetInfoConfig {
 }
 
 /** Hovered price and formatted date; subscribes to hover changes only. */
-export function useAssetInfoHover(config: Pick<AssetInfoConfig, "hoverStore">) {
-  const { price, time } = useValueStore(config.hoverStore);
+export function useAssetInfoHover(
+  config: Pick<AssetInfoConfig, "hoverStore" | "hoverKey">
+) {
+  const hover = useValueStore(config.hoverStore);
+  const { price, time } = hover.key === config.hoverKey ? hover : EMPTY_HOVER;
 
   const hoverData = useMemo(() => {
     const fiat = DEFAULT_VS_CURRENCY;
@@ -140,11 +148,16 @@ export const useAssetInfoConfig = (
   );
 
   const [hoverStore] = useState(() =>
-    createValueStore<HoverState>({}, isHoverEqual)
+    createValueStore<HoverState>({ key }, isHoverEqual)
   );
+  // Readers already ignore hover tagged with another key (no stale frame);
+  // this also clears it so it cannot resurface when returning to that asset.
+  useEffect(() => {
+    hoverStore.set({ key });
+  }, [hoverStore, key]);
   const setHoverData = useCallback(
-    (price?: number, time?: Time) => hoverStore.set({ price, time }),
-    [hoverStore]
+    (price?: number, time?: Time) => hoverStore.set({ key, price, time }),
+    [hoverStore, key]
   );
 
   const { historicalRange, dataType } = ui;
@@ -343,6 +356,7 @@ export const useAssetInfoConfig = (
       lastChartData,
       lastChartTimestampMs,
       hoverStore,
+      hoverKey: key,
       setHoverData,
       setZoom,
       resetZoom,
@@ -365,6 +379,7 @@ export const useAssetInfoConfig = (
       lastChartData,
       lastChartTimestampMs,
       hoverStore,
+      key,
       setHoverData,
       setZoom,
       resetZoom,
