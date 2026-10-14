@@ -15,6 +15,7 @@ import { useWindowSize } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { CosmosWalletState } from "~/modals/wallet-select/cosmos-wallet-state";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
@@ -22,7 +23,6 @@ import { FullWalletList } from "~/modals/wallet-select/full-wallet-list";
 import { SimpleWalletList } from "~/modals/wallet-select/simple-wallet-list";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { getModalView, ModalView } from "~/modals/wallet-select/utils";
-import { useStore } from "~/stores";
 
 export interface WalletSelectModalProps extends ModalBaseProps {
   /**
@@ -42,7 +42,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       onConnect: onConnectProp,
       layout = "full",
     } = props;
-    const { accountStore } = useStore();
+    const { hasUsedOneClickTrading } = useWallet();
     const { isMobile } = useWindowSize();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
@@ -79,13 +79,18 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       spendLimitTokenDecimals,
       reset: reset1CTParams,
     } = useOneClickTradingParams({
-      defaultIsOneClickEnabled: accountStore.hasUsedOneClickTrading,
+      defaultIsOneClickEnabled: hasUsedOneClickTrading,
     });
 
     const {
       onConnect: onConnectWallet,
       wagmi: { variables, status, error, reset },
-      cosmos: { walletRepo: rootWalletRepo, lazyWalletInfo },
+      cosmos: {
+        walletRepo: rootWalletRepo,
+        lazyWalletInfo,
+        wallet: currentCosmosWallet,
+        walletStatus: cosmosWalletStatus,
+      },
     } = useConnectWallet({
       onConnecting: () => setModalView("connecting"),
       onRequestClose: onRequestClose,
@@ -95,9 +100,6 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       isOneClickEnabled: transaction1CTParams?.isOneClickEnabled,
       onCreate1CTSession: () => onCreate1CTSession({ transaction1CTParams }),
     });
-
-    const currentCosmosWallet = rootWalletRepo?.current;
-    const cosmosWalletStatus = currentCosmosWallet?.walletStatus;
 
     useEffect(() => {
       if (isOpen) {

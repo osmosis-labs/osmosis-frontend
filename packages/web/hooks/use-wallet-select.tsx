@@ -93,7 +93,7 @@ export interface WalletSelectParams {
 export const WalletSelectProvider: FunctionComponent<{
   children: ReactNode;
 }> = ({ children }) => {
-  const { accountStore } = useStore();
+  const { walletRuntime } = useStore();
 
   const [walletSelectParams, setWalletSelectParams] =
     useState<WalletSelectParams | null>(null);
@@ -101,26 +101,28 @@ export const WalletSelectProvider: FunctionComponent<{
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const init = async () => {
       try {
         await installPrevSessionWallet({
           walletRegistry: CosmosWalletRegistry,
-          mainWallets: accountStore.walletManager.mainWallets,
-          addWallet: (w) => accountStore.addWallet(w),
+          mainWallets: walletRuntime.mainWallets,
+          addWallet: (w) => walletRuntime.installWallet(w),
         });
         // On mounted handles wallet connection if a session exists
-        await accountStore.walletManager.onMounted();
+        if (!cancelled) await walletRuntime.mount();
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     init();
 
     return () => {
-      accountStore.walletManager.onUnmounted();
+      cancelled = true;
+      walletRuntime.unmount();
     };
-  }, [accountStore]);
+  }, [walletRuntime]);
 
   const onOpenWalletSelect = useCallback((params: WalletSelectParams) => {
     setIsWalletSelectOpen(true);

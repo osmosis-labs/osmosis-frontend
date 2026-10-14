@@ -17,7 +17,10 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
 
+import { WalletRuntime } from "~/stores/wallet-runtime";
+
 export class RootStore {
+  public readonly walletRuntime: WalletRuntime;
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
@@ -74,5 +77,6 @@ export class RootStore {
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use()
     );
+    this.walletRuntime = new WalletRuntime(this.accountStore);
   }
 }

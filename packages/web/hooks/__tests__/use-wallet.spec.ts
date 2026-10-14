@@ -1,3 +1,9 @@
+import {
+  HasUsedOneClickTradingLocalStorageKey,
+  OneClickTradingLocalStorageKey,
+  UseOneClickTradingLocalStorageKey,
+} from "@osmosis-labs/tx";
+import { makeLocalStorageKVStore } from "@osmosis-labs/utils";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { runInAction } from "mobx";
 import { createElement, PropsWithChildren } from "react";
@@ -6,7 +12,7 @@ import {
   connectTestWallet,
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
-import { testWalletInfo } from "~/__tests__/test-wallet";
+import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { OsmosisChainInfo } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { storeContext } from "~/stores";
@@ -42,6 +48,7 @@ describe("useWallet", () => {
     const { result, rerender } = renderHookWithProviders(() =>
       useWallet(chainId)
     );
+    await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
     const first = result.current;
 
     await act(async () => {
@@ -186,5 +193,112 @@ describe("useWallet", () => {
       );
     });
     expect(result.current.txTypeInProgress).toBe("");
+  });
+  it("clears transaction progress when no wallet exists", async () => {
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useWallet(chainId)
+    );
+    await act(async () => {
+      await expect(
+        rootStore.accountStore.signAndBroadcast(chainId, "swap", [])
+      ).rejects.toThrow("is not provided");
+    });
+    expect(result.current.txTypeInProgress).toBe("");
+    expect(rootStore.accountStore.txTypeInProgressByChain.get(chainId)).toBe(
+      ""
+    );
+  });
+
+  it("follows a replacement manager and disconnects through the hook", async () => {
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useWallet(chainId)
+    );
+    await act(() =>
+      connectTestWallet({ accountStore: rootStore.accountStore, chainId })
+    );
+    const previous = result.current.wallet;
+    const manager = rootStore.accountStore.walletManager;
+    const unmount = jest.spyOn(manager, "onUnmounted");
+    const timer = manager.session.timeoutId;
+    const clearTimer = jest.spyOn(globalThis, "clearTimeout");
+    await act(async () => {
+      await rootStore.walletRuntime.installWallet(
+        new TestWallet(testWalletInfo)
+      );
+      await rootStore.walletRuntime.mount();
+      await result.current.connect(testWalletInfo.name, true);
+    });
+    expect(unmount).toHaveBeenCalledTimes(1);
+    if (timer !== undefined) expect(clearTimer).toHaveBeenCalledWith(timer);
+    clearTimer.mockRestore();
+    expect(result.current.wallet).not.toBe(previous);
+    expect(result.current.isWalletConnected).toBe(true);
+    await act(() => result.current.disconnect());
+    expect(result.current.isWalletConnected).toBe(false);
+    expect(result.current.address).toBeUndefined();
+  });
+
+  it("hydrates one-click state from the existing persistence keys", async () => {
+    const storage = makeLocalStorageKVStore("account_store");
+    await storage.set(HasUsedOneClickTradingLocalStorageKey, true);
+    await storage.set(UseOneClickTradingLocalStorageKey, true);
+    await storage.set(OneClickTradingLocalStorageKey, null);
+    const { result, rootStore } = renderHookWithProviders(() => useWallet());
+    await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
+    expect(result.current.hasUsedOneClickTrading).toBe(true);
+    // A preference alone cannot enable trading without a session.
+    expect(result.current.useOneClickTrading).toBe(false);
+    expect(result.current.oneClickTradingInfo).toBeNull();
+    await act(() =>
+      rootStore.accountStore.setShouldUseOneClickTrading({ nextValue: true })
+    );
+    expect(result.current.useOneClickTrading).toBe(true);
+    expect(await storage.get(UseOneClickTradingLocalStorageKey)).toBe(true);
+  });
+
+  it("releases the compatibility subscription after the final subscriber", async () => {
+    const first = renderHookWithProviders(() => useWallet(chainId));
+    const { rootStore } = first;
+    const wrapper = ({ children }: PropsWithChildren) =>
+      createElement(storeContext.Provider, { value: rootStore }, children);
+    const subscribe = jest.spyOn(rootStore.accountStore, "subscribeState");
+    const second = renderHook(() => useWallet(chainId), { wrapper });
+    expect(subscribe).not.toHaveBeenCalled();
+    first.unmount();
+    second.unmount();
+    const remounted = renderHook(() => useWallet(chainId), { wrapper });
+    expect(subscribe).toHaveBeenCalledTimes(1);
+    remounted.unmount();
+  });
+  it("cleans up a manager whose pending mount finishes after unmount", async () => {
+    const { rootStore, result } = renderHookWithProviders(() =>
+      useWallet(chainId)
+    );
+    await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
+    const manager = rootStore.accountStore.walletManager;
+    let finish!: () => void;
+    jest.spyOn(manager, "onMounted").mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+    const unmount = jest.spyOn(manager, "onUnmounted");
+    const pending = rootStore.walletRuntime.mount();
+    await waitFor(() => expect(finish).toBeDefined());
+    await rootStore.walletRuntime.unmount();
+    expect(unmount).toHaveBeenCalledTimes(1);
+    const timer = setTimeout(() => {
+      throw new Error("stale session timer");
+    }, 60_000);
+    manager.session.timeoutId = timer;
+    const clearTimer = jest.spyOn(globalThis, "clearTimeout");
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(unmount).toHaveBeenCalledTimes(2);
+    expect(clearTimer).toHaveBeenCalledWith(timer);
+    clearTimer.mockRestore();
   });
 });
