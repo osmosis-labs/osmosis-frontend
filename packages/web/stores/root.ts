@@ -52,8 +52,6 @@ export class RootStore {
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
 
-  public readonly priceStore: PoolFallbackPriceStore;
-  public readonly transferHistoryStore: TransferHistoryStore;
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
 
