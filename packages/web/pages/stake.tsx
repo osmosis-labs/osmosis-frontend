@@ -17,6 +17,7 @@ import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
 import { useGetApr, useTranslation } from "~/hooks";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
+import { useWallet } from "~/hooks/use-wallet";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
@@ -43,11 +44,15 @@ export const Staking: React.FC = observer(() => {
 
   const { t } = useTranslation();
 
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const {
+    wallet: account,
+    address: walletAddress,
+    isWalletConnected,
+  } = useWallet();
+  const address = walletAddress ?? "";
 
   const osmo = chainStore.osmosis.stakeCurrency;
 
@@ -59,8 +64,6 @@ export const Staking: React.FC = observer(() => {
   const userValidatorPreferences =
     validatorPreferences ?? NO_VALIDATOR_PREFERENCES;
   const userHasValPrefs = userValidatorPreferences.length > 0;
-
-  const isWalletConnected = Boolean(account?.isWalletConnected);
 
   useEffect(() => {
     // reset states if wallet is disconnected

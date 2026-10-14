@@ -1,5 +1,4 @@
 import { DecUtils, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 
@@ -7,6 +6,7 @@ import { InactiveDelegationsList } from "~/components/stake/inactive-delegations
 import { Button } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals/base";
 import { useStore } from "~/stores";
 import {
@@ -40,12 +40,13 @@ function readDismissedIds(): string[] {
  * Tells a connected wallet, once per validator, that some of its stake sits
  * with validators outside the active set and earns nothing.
  */
-export const InactiveValidatorsAlertModal = observer(() => {
+export const InactiveValidatorsAlertModal = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { chainId, stakeCurrency } = chainStore.osmosis;
-  const address = accountStore.getWallet(chainId)?.address ?? "";
+  const { address: walletAddress } = useWallet(chainId);
+  const address = walletAddress ?? "";
 
   // the flag gates only this app-wide alert; the stake page always shows its
   // inactive-validator warnings
@@ -130,4 +131,4 @@ export const InactiveValidatorsAlertModal = observer(() => {
       </div>
     </ModalBase>
   );
-});
+};

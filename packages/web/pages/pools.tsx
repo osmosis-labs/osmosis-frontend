@@ -14,15 +14,16 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account, address, txTypeInProgress } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
@@ -34,7 +35,7 @@ const Pools: NextPage = observer(function () {
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
   const openCreatePool = useCallback(() => {
-    if (!account?.address) {
+    if (!address) {
       onOpenWalletSelect({
         walletOptions: [{ walletType: "cosmos", chainId }],
         // Auto-open the create-pool modal once the wallet connects, so a
@@ -44,13 +45,13 @@ const Pools: NextPage = observer(function () {
       return;
     }
     setIsCreatingPool(true);
-  }, [account?.address, chainId, onOpenWalletSelect]);
+  }, [address, chainId, onOpenWalletSelect]);
   const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
-    account?.address ?? ""
+    address ?? ""
   );
 
   // pool quick action modals
@@ -140,7 +141,7 @@ const Pools: NextPage = observer(function () {
         onRequestClose={closeCreatePool}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
-        isSendingMsg={account?.txTypeInProgress !== ""}
+        isSendingMsg={!account || txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
         onUseExistingPool={useCallback((poolId: string) => {
           setIsCreatingPool(false);
@@ -158,7 +159,7 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPool(null)}
         />
       )}
-      {account?.address && (
+      {address && (
         <>
           <section className="pb-[3.75rem]" ref={myPositionsRef}>
             <h5>{t("clPositions.yourPositions")}</h5>
@@ -172,7 +173,7 @@ const Pools: NextPage = observer(function () {
       )}
       <section>
         <AllPoolsTable
-          topOffset={account?.address ? myPositionsHeight + myPoolsHeight : 0}
+          topOffset={address ? myPositionsHeight + myPoolsHeight : 0}
           onCreatePool={openCreatePool}
           {...quickActionProps}
         />

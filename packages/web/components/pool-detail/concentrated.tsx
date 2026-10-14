@@ -25,9 +25,9 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -54,11 +54,10 @@ const OpenCreatePositionSearchParam = "open_create_position";
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
+    const { wallet: account, address } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -75,11 +74,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { data: userPositions, isFetched: isUserPositionsFetched } =
       api.local.concentratedLiquidity.getUserPositions.useQuery(
         {
-          userOsmoAddress: account?.address ?? "",
+          userOsmoAddress: address ?? "",
           forPoolId: poolId,
         },
         {
-          enabled: !isWalletLoading && Boolean(account?.address),
+          enabled: !isWalletLoading && Boolean(address),
         }
       );
 
@@ -521,12 +520,11 @@ const Chart: FunctionComponent<{
 const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
-}> = observer(({ poolId, onIncentivize }) => {
-  const { chainStore, accountStore } = useStore();
+}> = ({ poolId, onIncentivize }) => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
 
   const { data: poolGaugeIncentives } =
     api.edge.pools.getPoolGaugeIncentives.useQuery({ poolId });
@@ -536,11 +534,11 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
   const { data: userPositions } =
     api.local.concentratedLiquidity.getUserPositions.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress: address ?? "",
         forPoolId: poolId,
       },
       {
-        enabled: !isWalletLoading && Boolean(account?.address),
+        enabled: !isWalletLoading && Boolean(address),
       }
     );
 
@@ -694,4 +692,4 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
       )}
     </div>
   );
-});
+};

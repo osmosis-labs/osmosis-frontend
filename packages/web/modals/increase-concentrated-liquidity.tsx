@@ -26,6 +26,7 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import {
@@ -58,12 +59,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, position, status } = props;
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = Boolean(account?.txTypeInProgress);
+  const { txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = Boolean(txTypeInProgress);
 
   const chartConfig = useHistoricalAndLiquidityData(poolId);
   const {
