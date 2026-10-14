@@ -1,14 +1,13 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@osmosis-labs/keplr-stores";
+import type { AccountDelegatedClPositionsResponse } from "@osmosis-labs/types";
 import { CoinPretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { AccountDelegatedClPositionsResponse } from "./types";
 
 export type DelegatedPositionInfo = {
   validatorAddress: string;

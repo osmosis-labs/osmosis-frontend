@@ -5,7 +5,11 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
-import type { Currency } from "@osmosis-labs/types";
+import type {
+  AddLiquidityBalance,
+  AddLiquidityPoolData,
+  Currency,
+} from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
@@ -14,11 +18,14 @@ import {
   IntPretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import {
+  CalculatingShareOutAmountError,
+  NotInitializedError,
+} from "@osmosis-labs/utils";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
-import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
 
 type PoolAssetCurrency = Currency & {
   originCurrency?: Currency & {
@@ -26,28 +33,10 @@ type PoolAssetCurrency = Currency & {
   };
 };
 
-/** Plain share pool data the config needs. Fed in by the view layer (e.g. from tRPC). */
-export type AddLiquidityPoolData = {
-  id: string;
-  type: "weighted" | "stable";
-  /** Total pool shares, as a coin of the 18 decimal share currency. */
-  totalShare: CoinPretty;
-  /** Pool assets in chain order. `weight` is only set for weighted pools. */
-  assets: { amount: CoinPretty; weight?: Int }[];
-  /** Only set for weighted pools. */
-  totalWeight?: Int;
-  swapFee: Dec;
-  /** True if an asset currency (and so its decimals) is a guess, e.g. an unlisted asset. */
-  hasGuessedCurrency?: boolean;
-  /** Only set for stable pools. */
-  stableSwapInfo?: {
-    scalingFactorController: string;
-    scalingFactor: string[];
-  };
-};
-
-/** Raw user balance in base units. */
-export type AddLiquidityBalance = { denom: string; amount: string };
+export type {
+  AddLiquidityBalance,
+  AddLiquidityPoolData,
+} from "@osmosis-labs/types";
 
 /** Amount input of a single pool asset. Validates against the sender's balance
  *  supplied by the parent config, so it needs no query store. */

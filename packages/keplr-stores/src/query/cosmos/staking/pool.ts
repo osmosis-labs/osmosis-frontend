@@ -1,9 +1,10 @@
+import { CoinPretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import { ObservableChainQuery } from "../../chain-query";
 import { StakingPool } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable } from "mobx";
-import { CoinPretty } from "@osmosis-labs/unit";
 
 export class ObservableQueryStakingPool extends ObservableChainQuery<StakingPool> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

@@ -7,16 +7,11 @@ import {
   ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import type {
+  CreatePoolBalance,
+  CreatePoolConfigOpts,
+} from "@osmosis-labs/types";
 import { AppCurrency, CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
-
-import type { ObservableQueryPool } from "../queries-external/pools";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,
@@ -28,19 +23,21 @@ import {
   NegativeSwapFeeError,
   PercentageSumError,
   ScalingFactorTooLowError,
-} from "./errors";
+} from "@osmosis-labs/utils";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
 
-export interface CreatePoolConfigOpts {
-  minAssetsCount: number;
-  maxAssetsCount: number;
-}
+import type { ObservableQueryPool } from "../queries-external/pools";
 
-/** A raw (base unit) balance of a currency, as provided to the config by the UI. */
-export interface CreatePoolBalance {
-  currency: AppCurrency;
-  /** Amount in base units. */
-  amount: string;
-}
+export type {
+  CreatePoolBalance,
+  CreatePoolConfigOpts,
+} from "@osmosis-labs/types";
 
 /** Amount input state for one asset in a new pool. Balances are looked up
  *  through `getBalance` so the owner can feed them from any source. */

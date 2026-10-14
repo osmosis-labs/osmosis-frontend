@@ -3,10 +3,11 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-  MemoryKVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { Coin, Int } from "@osmosis-labs/unit";
+import { MemoryKVStore } from "@osmosis-labs/utils";
 import { when } from "mobx";
 import WebSocket from "ws";
 
@@ -18,7 +19,6 @@ import {
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
-import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
 import { MockAssetList, MockChainList, TestOsmosisChainId } from "./mock-data";
 import { TestWallet, testWalletInfo } from "./test-wallet";

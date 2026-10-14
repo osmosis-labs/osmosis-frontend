@@ -1,15 +1,13 @@
-import {
-  ChainGetter,
-  KVStore,
-  QueryResponse,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, QueryResponse } from "@osmosis-labs/keplr-stores";
+import type { Pools } from "@osmosis-labs/types";
+import type { KVStore } from "@osmosis-labs/utils";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryNumPools } from "../../queries/pools";
 import { ObservableQueryExternalBase } from "../base";
 import { isSupportedPool, ObservableQueryPool } from "./pool";
-import { ObservableQueryPoolGetter, Pools } from "./types";
+import { ObservableQueryPoolGetter } from "./types";
 
 /** Fetches all pools directly from edge function. */
 export class ObservableQueryPools

@@ -1,12 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
-import {
-  InsufficientBalanceForFeeError,
-  TxFeMemoFlags,
-} from "@osmosis-labs/stores";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import { InsufficientBalanceForFeeError, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsBoolean, useQueryState } from "nuqs";

@@ -1,4 +1,5 @@
-import { getPool, PoolRawResponse } from "@osmosis-labs/server";
+import { getPool } from "@osmosis-labs/server";
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";

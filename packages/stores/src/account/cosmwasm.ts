@@ -1,14 +1,10 @@
 import type { StdFee } from "@cosmjs/amino";
 import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { Optional } from "utility-types";
 
-import {
-  AccountStore,
-  CosmosAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
+import { AccountStore, CosmosAccount, OsmosisAccount } from "../account";
 
 export interface CosmwasmAccount {
   cosmwasm: CosmwasmAccountImpl;

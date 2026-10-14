@@ -5,8 +5,8 @@ import {
   TransferStatusReceiver,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import { KVStore } from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { FunctionComponent, useEffect, useRef } from "react";
 import { toast } from "react-toastify";

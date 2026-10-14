@@ -7,7 +7,15 @@ import {
   queryAccountDelegatedPositions,
   queryPositionById,
 } from "@osmosis-labs/server";
+import type {
+  DeliverTxResponse,
+  JoinPoolData,
+  SignOptions,
+} from "@osmosis-labs/tx";
 import {
+  assertJoinPoolData,
+  getJoinPoolTokenInMaxs,
+  getJoinSwapShareOutMinAmount,
   getLastPositionEventAmounts,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
@@ -53,13 +61,6 @@ import {
 import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { DeliverTxResponse, SignOptions } from "../types";
-import {
-  assertJoinPoolData,
-  getJoinPoolTokenInMaxs,
-  getJoinSwapShareOutMinAmount,
-  JoinPoolData,
-} from "./join-pool";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";

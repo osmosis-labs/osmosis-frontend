@@ -3,8 +3,8 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
-  type TxEvents,
 } from "@osmosis-labs/stores";
+import type { TxEvents } from "@osmosis-labs/tx";
 
 import {
   toastOnBroadcast,

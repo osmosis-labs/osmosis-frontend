@@ -3,7 +3,7 @@ import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3f
 import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
-import { makeIndexedKVStore } from "@osmosis-labs/stores";
+import { makeIndexedKVStore } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 import { useStore } from "zustand";
 

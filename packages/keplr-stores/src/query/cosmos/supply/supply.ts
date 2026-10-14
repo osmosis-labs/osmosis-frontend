@@ -1,10 +1,11 @@
-import { SupplyTotal } from "./types";
-import { KVStore } from "../../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
+import { SupplyTotal } from "./types";
 
 export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<SupplyTotal> {
   constructor(

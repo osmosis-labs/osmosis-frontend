@@ -1,4 +1,3 @@
-import { trimZerosFromEnd } from "@osmosis-labs/stores";
 import {
   CoinPretty,
   Dec,
@@ -7,6 +6,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import { trimZerosFromEnd } from "@osmosis-labs/utils";
 
 import {
   getDecimalCount,
