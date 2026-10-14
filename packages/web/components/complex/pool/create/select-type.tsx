@@ -8,7 +8,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 
 type PoolType = ObservableQueryPool["type"];
 
@@ -22,10 +22,9 @@ export const SelectType: FunctionComponent<{
   types: PoolType[];
   selectType: (type: PoolType) => void;
 }> = ({ types, selectType }) => {
-  const { chainStore, accountStore } = useStore();
   const { t } = useTranslation();
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { wallet, walletStatus } = useWallet();
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
@@ -56,8 +55,7 @@ export const SelectType: FunctionComponent<{
     [t]
   );
 
-  const disableNext =
-    account?.walletStatus !== WalletStatus.Connected || !selectedType;
+  const disableNext = walletStatus !== WalletStatus.Connected || !selectedType;
 
   // Supercharged is the recommended path: render it on its own row above
   // the others, larger and with a highlighted border + "Recommended" badge.
@@ -160,7 +158,7 @@ export const SelectType: FunctionComponent<{
         <div>
           <Button
             onClick={() => {
-              account?.osmosis.sendCreateConcentratedPoolMsg(
+              wallet?.osmosis.sendCreateConcentratedPoolMsg(
                 "uion",
                 "uosmo",
                 100,

@@ -377,7 +377,7 @@ function makePoolRawResponseFromChainPool(
  *  Note: Defaults to 6 decimals (standard for most Cosmos tokens). This may cause
  *  display precision issues for tokens with different decimal places, but functionality
  *  remains intact as the chain handles actual token amounts correctly. */
-function makeUnlistedAssetCurrency(denom: string) {
+export function makeUnlistedAssetCurrency(denom: string) {
   return {
     coinDenom: denom,
     coinMinimalDenom: denom,
