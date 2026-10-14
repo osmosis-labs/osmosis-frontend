@@ -41,7 +41,7 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -49,10 +49,8 @@ export const AddLiquidityModal: FunctionComponent<
   const isSendingMsg = !wallet || txTypeInProgress !== "";
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
-    chainStore,
     chainId,
-    poolId,
-    queriesStore
+    poolId
   );
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
