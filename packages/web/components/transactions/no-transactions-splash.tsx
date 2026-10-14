@@ -3,15 +3,14 @@ import React from "react";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import { useStore } from "~/stores";
 
 export const NoTransactionsSplash: FunctionComponent<{
   variant: "transfers" | "transactions" | "connect";
 }> = ({ variant }) => {
-  const { chainStore } = useStore();
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const osmosisChainId = OsmosisChainInfo.chainId;
   const { onOpenWalletSelect } = useWalletSelect();
 
   const { t } = useTranslation();

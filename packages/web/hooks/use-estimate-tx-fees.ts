@@ -23,6 +23,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { useMemo } from "react";
 
+import { getChainInfo } from "~/config/chain";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -44,7 +45,6 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   accountStore,
-  chainStore,
   chainId,
   signOptions,
 }: {
@@ -52,7 +52,6 @@ async function estimateTxFeesQueryFn({
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
-  chainStore: ReturnType<typeof useStore>["chainStore"];
   chainId: string;
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
@@ -99,7 +98,6 @@ async function estimateTxFeesQueryFn({
 
     return getFallbackFeeEstimate({
       wallet,
-      chainStore,
       chainId,
       apiUtils,
     });
@@ -129,12 +127,10 @@ function isInsufficientFeeError(error: unknown) {
 
 async function getFallbackFeeEstimate({
   wallet,
-  chainStore,
   chainId,
   apiUtils,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
-  chainStore: ReturnType<typeof useStore>["chainStore"];
   chainId: string;
   apiUtils: ReturnType<typeof api.useUtils>;
 }): Promise<QueryResult> {
@@ -142,7 +138,7 @@ async function getFallbackFeeEstimate({
     throw new Error("No wallet address available.");
   }
 
-  const chain = chainStore.getChain(chainId);
+  const chain = getChainInfo(chainId);
   const feeDenoms =
     chain?.feeCurrencies
       ?.map((currency) => currency.coinMinimalDenom)
@@ -238,7 +234,7 @@ export function useEstimateTxFees({
   enabled?: boolean;
   signOptions?: SignOptions;
 }) {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
   const { wallet, address } = useWallet(chainId);
@@ -258,7 +254,6 @@ export function useEstimateTxFees({
         accountStore,
         messages: messages!,
         apiUtils,
-        chainStore,
         chainId,
         signOptions,
       });

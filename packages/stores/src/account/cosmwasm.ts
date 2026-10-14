@@ -1,37 +1,24 @@
 import type { StdFee } from "@cosmjs/amino";
-import {
-  ChainGetter,
-  CoinPrimitive,
-  CosmosQueries,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { Optional } from "utility-types";
 
 import { AccountStore, CosmosAccount, OsmosisAccount } from "../account";
-import { OsmosisQueries } from "../queries";
 
 export interface CosmwasmAccount {
   cosmwasm: CosmwasmAccountImpl;
 }
 
 export const CosmwasmAccount = {
-  use(options: {
-    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-  }): (
+  use(): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
     chainId: string
   ) => CosmwasmAccount {
     return (base, chainGetter, chainId) => {
       return {
-        cosmwasm: new CosmwasmAccountImpl(
-          base,
-          chainGetter,
-          chainId,
-          options.queriesStore
-        ),
+        cosmwasm: new CosmwasmAccountImpl(base, chainGetter, chainId),
       };
     };
   },
@@ -43,10 +30,7 @@ export class CosmwasmAccountImpl {
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<
-      CosmosQueries & OsmosisQueries
-    >
+    protected readonly chainId: string
   ) {}
 
   private get address() {

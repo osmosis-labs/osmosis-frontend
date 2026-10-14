@@ -8,6 +8,7 @@ import { noop } from "@osmosis-labs/utils";
 import { useState } from "react";
 import { Connector } from "wagmi";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { EthereumChainIds } from "~/config/wagmi";
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
@@ -45,7 +46,7 @@ export const useConnectWallet = ({
   isOneClickEnabled?: boolean;
   onCreate1CTSession?: () => Promise<void>;
 }) => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
 
   const { connectAsync: connectEvmWallet, ...connectEvmWalletUtils } =
     useConnectEvmWallet();
@@ -120,10 +121,9 @@ export const useConnectWallet = ({
       walletRepo = walletRepoParam;
     }
 
-    const isOsmosisConnection =
-      chainStore.osmosis.chainName === cosmosChainName!;
+    const isOsmosisConnection = OsmosisChainInfo.chainName === cosmosChainName!;
     const osmosisWalletRepo = accountStore.getWalletRepo(
-      chainStore.osmosis.chainName
+      OsmosisChainInfo.chainName
     );
 
     if (

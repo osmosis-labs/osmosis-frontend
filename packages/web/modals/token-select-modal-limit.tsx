@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   useCallback,
@@ -26,6 +25,7 @@ import {
 import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
@@ -47,234 +47,299 @@ interface TokenSelectModalLimitProps {
   setAssetQueryInput?: (input: string) => void;
 }
 
-export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps> =
-  observer(
-    ({
-      isOpen,
-      onClose: onCloseProp,
-      onSelect: onSelectProp,
-      showSearchBox = true,
-      showRecommendedTokens,
-      selectableAssets,
-      isLoadingSelectAssets = false,
-      isFetchingNextPageAssets = false,
-      hasNextPageAssets = false,
-      fetchNextPageAssets,
-      headerTitle,
-      setAssetQueryInput,
-      assetQueryInput,
-    }) => {
-      const { t } = useTranslation();
-      const { isMobile } = useWindowSize(Breakpoint.sm);
-      const { accountStore } = useStore();
-      const { onOpenWalletSelect } = useWalletSelect();
-      const recommendedAssets = useRecommendedAssets();
-      const shouldShowUnverifiedAssets = useUserSettingsStore(
-        (state) => state.showUnverifiedAssets
-      );
+export const TokenSelectModalLimit: FunctionComponent<
+  TokenSelectModalLimitProps
+> = ({
+  isOpen,
+  onClose: onCloseProp,
+  onSelect: onSelectProp,
+  showSearchBox = true,
+  showRecommendedTokens,
+  selectableAssets,
+  isLoadingSelectAssets = false,
+  isFetchingNextPageAssets = false,
+  hasNextPageAssets = false,
+  fetchNextPageAssets,
+  headerTitle,
+  setAssetQueryInput,
+  assetQueryInput,
+}) => {
+  const { t } = useTranslation();
+  const { isMobile } = useWindowSize(Breakpoint.sm);
+  const { accountStore } = useStore();
+  const { onOpenWalletSelect } = useWalletSelect();
+  const recommendedAssets = useRecommendedAssets();
+  const shouldShowUnverifiedAssets = useUserSettingsStore(
+    (state) => state.showUnverifiedAssets
+  );
 
-      const isWalletConnected = accountStore.getWallet(
-        accountStore.osmosisChainId
-      )?.isWalletConnected;
+  const { isWalletConnected } = useWallet();
 
-      const [_isRequestingClose, setIsRequestingClose] = useState(false);
-      const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
-        useState<string | null>(null);
+  const [_isRequestingClose, setIsRequestingClose] = useState(false);
+  const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
+    useState<string | null>(null);
 
-      const searchBoxRef = useRef<HTMLInputElement>(null);
-      const quickSelectRef = useRef<HTMLDivElement>(null);
+  const searchBoxRef = useRef<HTMLInputElement>(null);
+  const quickSelectRef = useRef<HTMLDivElement>(null);
 
-      const { onMouseDown: onMouseDownQuickSelect } =
-        useDraggableScroll(quickSelectRef);
+  const { onMouseDown: onMouseDownQuickSelect } =
+    useDraggableScroll(quickSelectRef);
 
-      const onSelect = (coinDenom: string) => {
-        onSelectProp?.(coinDenom);
-        onClose();
-      };
+  const onSelect = (coinDenom: string) => {
+    onSelectProp?.(coinDenom);
+    onClose();
+  };
 
-      const onClickAsset = (coinMinimalDenom: string) => {
-        let isRecommended = false;
-        const selectedAsset =
-          selectableAssets.find(
-            (asset) => asset?.coinMinimalDenom === coinMinimalDenom
-          ) ??
-          recommendedAssets.find((asset) => {
-            if (asset.coinMinimalDenom === coinMinimalDenom) {
-              isRecommended = true;
-              return true;
-            }
-            return false;
-          });
-
-        // shouldn't happen, but doing nothing is better
-        if (!selectedAsset) return;
-
-        if (
-          !isRecommended &&
-          !shouldShowUnverifiedAssets &&
-          !selectedAsset.isVerified
-        ) {
-          return setConfirmUnverifiedAssetDenom(coinMinimalDenom);
+  const onClickAsset = (coinMinimalDenom: string) => {
+    let isRecommended = false;
+    const selectedAsset =
+      selectableAssets.find(
+        (asset) => asset?.coinMinimalDenom === coinMinimalDenom
+      ) ??
+      recommendedAssets.find((asset) => {
+        if (asset.coinMinimalDenom === coinMinimalDenom) {
+          isRecommended = true;
+          return true;
         }
-
-        onSelect(coinMinimalDenom);
-      };
-
-      const [filterValue, setQuery, results] = useFilteredData(
-        selectableAssets,
-        ["coinDenom", "coinName"]
-      );
-
-      const {
-        selectedIndex: keyboardSelectedIndex,
-        setSelectedIndex: setKeyboardSelectedIndex,
-        itemContainerKeyDown,
-        searchBarKeyDown,
-        setItemAttribute,
-      } = useKeyboardNavigation({
-        items: results,
-        onSelectItem: (item) => {
-          if (item) {
-            onSelect(item.coinMinimalDenom);
-          }
-        },
-        searchBoxRef,
+        return false;
       });
 
-      const onClose = () => {
-        setIsRequestingClose(true);
-        setKeyboardSelectedIndex(0);
-        onCloseProp?.();
-        setQuery("");
-        if (setAssetQueryInput) setAssetQueryInput("");
-      };
+    // shouldn't happen, but doing nothing is better
+    if (!selectedAsset) return;
 
-      useWindowKeyActions({
-        Escape: onClose,
-      });
+    if (
+      !isRecommended &&
+      !shouldShowUnverifiedAssets &&
+      !selectedAsset.isVerified
+    ) {
+      return setConfirmUnverifiedAssetDenom(coinMinimalDenom);
+    }
 
-      const searchValue = useMemo(
-        () => (!!assetQueryInput ? assetQueryInput : filterValue),
-        [assetQueryInput, filterValue]
-      );
+    onSelect(coinMinimalDenom);
+  };
 
-      const onSearch = useCallback(
-        (nextValue: string) => {
-          setKeyboardSelectedIndex(0);
-          if (setAssetQueryInput) {
-            setAssetQueryInput(nextValue);
-          } else {
-            setQuery(nextValue);
-          }
-        },
-        [setAssetQueryInput, setKeyboardSelectedIndex, setQuery]
-      );
+  const [filterValue, setQuery, results] = useFilteredData(selectableAssets, [
+    "coinDenom",
+    "coinName",
+  ]);
 
-      const assetToActivate = useMemo(
-        () =>
-          selectableAssets.find(
-            (asset) =>
-              asset && asset.coinMinimalDenom === confirmUnverifiedAssetDenom
-          ),
-        [confirmUnverifiedAssetDenom, selectableAssets]
-      );
+  const {
+    selectedIndex: keyboardSelectedIndex,
+    setSelectedIndex: setKeyboardSelectedIndex,
+    itemContainerKeyDown,
+    searchBarKeyDown,
+    setItemAttribute,
+  } = useKeyboardNavigation({
+    items: results,
+    onSelectItem: (item) => {
+      if (item) {
+        onSelect(item.coinMinimalDenom);
+      }
+    },
+    searchBoxRef,
+  });
 
-      if (!isOpen) return;
+  const onClose = () => {
+    setIsRequestingClose(true);
+    setKeyboardSelectedIndex(0);
+    onCloseProp?.();
+    setQuery("");
+    if (setAssetQueryInput) setAssetQueryInput("");
+  };
 
-      return (
-        <div className="absolute" onKeyDown={itemContainerKeyDown}>
-          <ActivateUnverifiedTokenConfirmation
-            coinDenom={assetToActivate?.coinDenom}
-            coinImageUrl={assetToActivate?.coinImageUrl}
-            isOpen={Boolean(confirmUnverifiedAssetDenom)}
-            onConfirm={() => {
-              if (!confirmUnverifiedAssetDenom) return;
-              useUserSettingsStore.setState({
-                showUnverifiedAssets: true,
-              });
-              onSelect(confirmUnverifiedAssetDenom);
-            }}
-            onRequestClose={() => {
-              setConfirmUnverifiedAssetDenom(null);
-            }}
-          />
-          <ModalBase
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            hideCloseButton
-            className="!max-h-[90vh] w-[512px] self-start rounded-5xl !p-0 sm:!m-0 sm:h-full sm:!max-h-[100vh] sm:!rounded-none"
-          >
-            <div className="flex h-full w-full flex-col overflow-hidden bg-osmoverse-850">
-              <div className="relative flex min-h-[80px] items-center justify-center p-4">
-                <h6>{headerTitle}</h6>
-                <button
-                  onClick={onClose}
-                  className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
-                >
-                  <Icon id="thin-x" className="text-wosmongton-200" />
-                </button>
-              </div>
-              {!isWalletConnected && (
-                <div className="flex w-full items-center justify-center gap-1 pb-4">
-                  <button
-                    onClick={() =>
-                      onOpenWalletSelect({
-                        walletOptions: [
-                          {
-                            walletType: "cosmos",
-                            chainId: accountStore.osmosisChainId,
-                          },
-                        ],
-                      })
-                    }
-                    className="body1 font-semibold text-wosmongton-300"
-                  >
-                    {t("limitOrders.connectYourWallet")}
-                  </button>
-                  <p className="font-semibold text-osmoverse-300">
-                    {t("limitOrders.toSeeYourBalances")}
-                  </p>
-                </div>
-              )}
-              <div className="flex flex-col">
-                {showSearchBox && (
-                  <div className="px-8" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-3 rounded-5xl bg-osmoverse-800 py-4 px-5">
-                      <div className="flex h-6 w-6 items-center justify-center">
-                        <Icon
-                          id="search"
-                          className="h-5 w-5 text-wosmongton-200"
-                        />
-                      </div>
-                      <input
-                        ref={searchBoxRef}
-                        autoFocus={!isMobile}
-                        value={searchValue}
-                        onKeyDown={searchBarKeyDown}
-                        onChange={(e) => onSearch(e.target.value)}
-                        placeholder={t("limitOrders.searchAssets")}
-                        className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
-                      />
-                    </div>
+  useWindowKeyActions({
+    Escape: onClose,
+  });
+
+  const searchValue = useMemo(
+    () => (!!assetQueryInput ? assetQueryInput : filterValue),
+    [assetQueryInput, filterValue]
+  );
+
+  const onSearch = useCallback(
+    (nextValue: string) => {
+      setKeyboardSelectedIndex(0);
+      if (setAssetQueryInput) {
+        setAssetQueryInput(nextValue);
+      } else {
+        setQuery(nextValue);
+      }
+    },
+    [setAssetQueryInput, setKeyboardSelectedIndex, setQuery]
+  );
+
+  const assetToActivate = useMemo(
+    () =>
+      selectableAssets.find(
+        (asset) =>
+          asset && asset.coinMinimalDenom === confirmUnverifiedAssetDenom
+      ),
+    [confirmUnverifiedAssetDenom, selectableAssets]
+  );
+
+  if (!isOpen) return;
+
+  return (
+    <div className="absolute" onKeyDown={itemContainerKeyDown}>
+      <ActivateUnverifiedTokenConfirmation
+        coinDenom={assetToActivate?.coinDenom}
+        coinImageUrl={assetToActivate?.coinImageUrl}
+        isOpen={Boolean(confirmUnverifiedAssetDenom)}
+        onConfirm={() => {
+          if (!confirmUnverifiedAssetDenom) return;
+          useUserSettingsStore.setState({
+            showUnverifiedAssets: true,
+          });
+          onSelect(confirmUnverifiedAssetDenom);
+        }}
+        onRequestClose={() => {
+          setConfirmUnverifiedAssetDenom(null);
+        }}
+      />
+      <ModalBase
+        isOpen={isOpen}
+        onRequestClose={onClose}
+        hideCloseButton
+        className="!max-h-[90vh] w-[512px] self-start rounded-5xl !p-0 sm:!m-0 sm:h-full sm:!max-h-[100vh] sm:!rounded-none"
+      >
+        <div className="flex h-full w-full flex-col overflow-hidden bg-osmoverse-850">
+          <div className="relative flex min-h-[80px] items-center justify-center p-4">
+            <h6>{headerTitle}</h6>
+            <button
+              onClick={onClose}
+              className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
+            >
+              <Icon id="thin-x" className="text-wosmongton-200" />
+            </button>
+          </div>
+          {!isWalletConnected && (
+            <div className="flex w-full items-center justify-center gap-1 pb-4">
+              <button
+                onClick={() =>
+                  onOpenWalletSelect({
+                    walletOptions: [
+                      {
+                        walletType: "cosmos",
+                        chainId: accountStore.osmosisChainId,
+                      },
+                    ],
+                  })
+                }
+                className="body1 font-semibold text-wosmongton-300"
+              >
+                {t("limitOrders.connectYourWallet")}
+              </button>
+              <p className="font-semibold text-osmoverse-300">
+                {t("limitOrders.toSeeYourBalances")}
+              </p>
+            </div>
+          )}
+          <div className="flex flex-col">
+            {showSearchBox && (
+              <div className="px-8" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-3 rounded-5xl bg-osmoverse-800 py-4 px-5">
+                  <div className="flex h-6 w-6 items-center justify-center">
+                    <Icon id="search" className="h-5 w-5 text-wosmongton-200" />
                   </div>
-                )}
-                {showRecommendedTokens && (
-                  <div
-                    ref={quickSelectRef}
-                    onMouseDown={onMouseDownQuickSelect}
-                    className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
-                  >
-                    {recommendedAssets.map(
-                      ({ coinDenom, coinMinimalDenom, coinImageUrl }) => {
-                        return (
-                          <button
-                            key={coinDenom}
-                            className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
-                            onClick={() => {
-                              onClickAsset(coinMinimalDenom);
+                  <input
+                    ref={searchBoxRef}
+                    autoFocus={!isMobile}
+                    value={searchValue}
+                    onKeyDown={searchBarKeyDown}
+                    onChange={(e) => onSearch(e.target.value)}
+                    placeholder={t("limitOrders.searchAssets")}
+                    className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
+                  />
+                </div>
+              </div>
+            )}
+            {showRecommendedTokens && (
+              <div
+                ref={quickSelectRef}
+                onMouseDown={onMouseDownQuickSelect}
+                className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
+              >
+                {recommendedAssets.map(
+                  ({ coinDenom, coinMinimalDenom, coinImageUrl }) => {
+                    return (
+                      <button
+                        key={coinDenom}
+                        className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
+                        onClick={() => {
+                          onClickAsset(coinMinimalDenom);
+                        }}
+                      >
+                        <div className="h-6 w-6 overflow-hidden rounded-full">
+                          <EntityImage
+                            symbol={coinDenom}
+                            name={coinDenom}
+                            logoURIs={{
+                              png: coinImageUrl,
+                              svg: coinImageUrl,
                             }}
-                          >
-                            <div className="h-6 w-6 overflow-hidden rounded-full">
+                            width={24}
+                            height={24}
+                          />
+                        </div>
+                        <p className="font-semibold">{coinDenom}</p>
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+            )}
+          </div>
+
+          {isLoadingSelectAssets ? (
+            <div className="flex items-center justify-center py-8">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="no-scrollbar flex flex-col overflow-auto py-3 px-4">
+              {/* TODO: fix typing */}
+              {results.length > 0 ? (
+                (results as any[]).map(
+                  (
+                    {
+                      coinDenom,
+                      coinMinimalDenom,
+                      coinImageUrl,
+                      coinName,
+                      amount,
+                      usdValue,
+                      isVerified,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <button
+                        key={coinMinimalDenom}
+                        className={classNames(
+                          "flex cursor-pointer items-center justify-between rounded-2xl p-4 transition-colors duration-150 ease-out",
+                          {
+                            "bg-osmoverse-900": keyboardSelectedIndex === index,
+                          }
+                        )}
+                        data-testid="token-select-asset"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onClickAsset?.(coinMinimalDenom);
+                        }}
+                        onMouseOver={() => setKeyboardSelectedIndex(index)}
+                        onFocus={() => setKeyboardSelectedIndex(index)}
+                        {...setItemAttribute(index)}
+                      >
+                        <div
+                          className={classNames(
+                            "flex w-full min-w-0 items-center justify-between text-left",
+                            {
+                              "opacity-40":
+                                !shouldShowUnverifiedAssets && !isVerified,
+                            }
+                          )}
+                        >
+                          <div className="flex min-w-0 items-center gap-4">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
                               <EntityImage
                                 symbol={coinDenom}
                                 name={coinDenom}
@@ -282,161 +347,83 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                   png: coinImageUrl,
                                   svg: coinImageUrl,
                                 }}
-                                width={24}
-                                height={24}
+                                width={48}
+                                height={48}
+                                className="rounded-full"
                               />
                             </div>
-                            <p className="font-semibold">{coinDenom}</p>
-                          </button>
-                        );
-                      }
-                    )}
-                  </div>
-                )}
-              </div>
+                            <div className="flex flex-col gap-1 overflow-hidden">
+                              <span className="subtitle1 truncate">
+                                {coinName}
+                              </span>
+                              <span className="body2 text-osmoverse-400">
+                                {coinDenom}
+                              </span>
+                            </div>
+                          </div>
 
-              {isLoadingSelectAssets ? (
-                <div className="flex items-center justify-center py-8">
-                  <Spinner />
-                </div>
-              ) : (
-                <div className="no-scrollbar flex flex-col overflow-auto py-3 px-4">
-                  {/* TODO: fix typing */}
-                  {results.length > 0 ? (
-                    (results as any[]).map(
-                      (
-                        {
-                          coinDenom,
-                          coinMinimalDenom,
-                          coinImageUrl,
-                          coinName,
-                          amount,
-                          usdValue,
-                          isVerified,
-                        },
-                        index
-                      ) => {
-                        return (
-                          <button
-                            key={coinMinimalDenom}
-                            className={classNames(
-                              "flex cursor-pointer items-center justify-between rounded-2xl p-4 transition-colors duration-150 ease-out",
-                              {
-                                "bg-osmoverse-900":
-                                  keyboardSelectedIndex === index,
-                              }
-                            )}
-                            data-testid="token-select-asset"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onClickAsset?.(coinMinimalDenom);
-                            }}
-                            onMouseOver={() => setKeyboardSelectedIndex(index)}
-                            onFocus={() => setKeyboardSelectedIndex(index)}
-                            {...setItemAttribute(index)}
-                          >
-                            <div
-                              className={classNames(
-                                "flex w-full min-w-0 items-center justify-between text-left",
-                                {
-                                  "opacity-40":
-                                    !shouldShowUnverifiedAssets && !isVerified,
-                                }
-                              )}
-                            >
-                              <div className="flex min-w-0 items-center gap-4">
-                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
-                                  <EntityImage
-                                    symbol={coinDenom}
-                                    name={coinDenom}
-                                    logoURIs={{
-                                      png: coinImageUrl,
-                                      svg: coinImageUrl,
-                                    }}
-                                    width={48}
-                                    height={48}
-                                    className="rounded-full"
+                          {isWalletConnected && (
+                            <div className="flex shrink-0 flex-col items-end gap-1">
+                              {usdValue && (
+                                <p
+                                  className={classNames("text-osmoverse-400", {
+                                    "text-white-full": usdValue,
+                                  })}
+                                >
+                                  <PrivateText
+                                    text={formatFiatPrice(
+                                      usdValue ??
+                                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                                    )}
                                   />
-                                </div>
-                                <div className="flex flex-col gap-1 overflow-hidden">
-                                  <span className="subtitle1 truncate">
-                                    {coinName}
-                                  </span>
-                                  <span className="body2 text-osmoverse-400">
-                                    {coinDenom}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {isWalletConnected && (
-                                <div className="flex shrink-0 flex-col items-end gap-1">
-                                  {usdValue && (
-                                    <p
-                                      className={classNames(
-                                        "text-osmoverse-400",
-                                        {
-                                          "text-white-full": usdValue,
-                                        }
-                                      )}
-                                    >
-                                      <PrivateText
-                                        text={formatFiatPrice(
-                                          usdValue ??
-                                            new PricePretty(
-                                              DEFAULT_VS_CURRENCY,
-                                              0
-                                            )
-                                        )}
-                                      />
-                                    </p>
-                                  )}
-                                  {amount && (
-                                    <span className="body2 text-osmoverse-300">
-                                      <PrivateText
-                                        text={
-                                          amount
-                                            ? formatPretty(amount).split(" ")[0]
-                                            : "0"
-                                        }
-                                      />
-                                    </span>
-                                  )}
-                                </div>
+                                </p>
+                              )}
+                              {amount && (
+                                <span className="body2 text-osmoverse-300">
+                                  <PrivateText
+                                    text={
+                                      amount
+                                        ? formatPretty(amount).split(" ")[0]
+                                        : "0"
+                                    }
+                                  />
+                                </span>
                               )}
                             </div>
-                          </button>
-                        );
-                      }
-                    )
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-8 text-center text-osmoverse-300">
-                      <Icon
-                        id="search"
-                        width={32}
-                        height={32}
-                        className="text-osmoverse-700"
-                      />
-                      <span className="mt-6 text-h6 font-h6 text-white-high">
-                        No results for "{searchValue}"
-                      </span>
-                      <span className="body1 pt-1">
-                        Try adjusting your search query
-                      </span>
-                    </div>
-                  )}
-                  <Intersection
-                    onVisible={() => {
-                      // If this element becomes visible at bottom of list, fetch next page
-                      if (!isFetchingNextPageAssets && hasNextPageAssets) {
-                        fetchNextPageAssets?.();
-                      }
-                    }}
+                          )}
+                        </div>
+                      </button>
+                    );
+                  }
+                )
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center text-osmoverse-300">
+                  <Icon
+                    id="search"
+                    width={32}
+                    height={32}
+                    className="text-osmoverse-700"
                   />
+                  <span className="mt-6 text-h6 font-h6 text-white-high">
+                    No results for "{searchValue}"
+                  </span>
+                  <span className="body1 pt-1">
+                    Try adjusting your search query
+                  </span>
                 </div>
               )}
+              <Intersection
+                onVisible={() => {
+                  // If this element becomes visible at bottom of list, fetch next page
+                  if (!isFetchingNextPageAssets && hasNextPageAssets) {
+                    fetchNextPageAssets?.();
+                  }
+                }}
+              />
             </div>
-          </ModalBase>
+          )}
         </div>
-      );
-    }
+      </ModalBase>
+    </div>
   );
+};

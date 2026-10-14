@@ -22,10 +22,7 @@ import {
   BaseAccount,
   ChainedFunctionifyTuple,
   ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
   Functionify,
-  QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import type {
@@ -84,8 +81,6 @@ import dayjs from "dayjs";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
-
-import { OsmosisQueries } from "../queries";
 
 export { GasMultiplier } from "@osmosis-labs/tx";
 
@@ -223,9 +218,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     readonly osmosisChainId: string,
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
-    protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, OsmosisQueries]
-    >,
     protected readonly chainGetter: ChainGetter,
     protected readonly options: {
       walletConnectOptions?: WalletConnectOptions;
@@ -807,34 +799,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
-
-      /**
-       * Refetch balances.
-       * After sending tx, the balances have probably changed due to the fee.
-       *
-       * Best effort: the tx has already been included. `balances` builds a
-       * query for every currency on the chain and throws on one no balance
-       * registry handles (e.g. an `erc20:` currency on Injective), which must
-       * not turn a fulfilled tx into a broadcast failure.
-       */
-      try {
-        for (const feeAmount of fee.amount) {
-          if (!wallet.address) continue;
-
-          const queries = this.queriesStore.get(chainNameOrId);
-          const bal = queries.queryBalances
-            .getQueryBech32Address(wallet.address)
-            .balances.find(
-              (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-            );
-
-          if (bal) {
-            bal.waitFreshResponse();
-          }
-        }
-      } catch (e) {
-        console.warn("Failed to refresh fee balances after tx:", e);
-      }
 
       if (this.options.preTxEvents?.onFulfill) {
         this.options.preTxEvents.onFulfill(chainNameOrId, tx);

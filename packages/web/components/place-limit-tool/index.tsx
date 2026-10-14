@@ -59,6 +59,7 @@ import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
@@ -273,7 +274,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [swapState.priceState, type]);
 
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { isWalletConnected } = useWallet();
 
     // const isSwapToolLoading = false;
     const hasFunds = useMemo(
@@ -632,7 +633,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const errorDisplay = useMemo(() => {
       if (
         swapState.error === "limitOrders.insufficientFunds" &&
-        !account?.isWalletConnected
+        !isWalletConnected
       ) {
         return;
       }
@@ -667,7 +668,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.isMarket,
       swapState.marketState.networkFeeError,
       swapState.marketState.isSlippageOverBalance,
-      account?.isWalletConnected,
+      isWalletConnected,
       t,
     ]);
 
@@ -1001,7 +1002,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           )}
           <div className="flex w-full flex-col py-3">
-            {!account?.isWalletConnected ? (
+            {!isWalletConnected ? (
               <Button
                 onClick={() =>
                   onOpenWalletSelect({

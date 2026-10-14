@@ -14,8 +14,8 @@ import {
 } from "~/components/stake/inactive-delegations-warning";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
 
@@ -37,7 +37,6 @@ export const ValidatorSquadCard: React.FC<{
   }) => {
     const { t } = useTranslation();
     const statusLabel = useInactiveStatusLabel();
-    const { chainStore } = useStore();
 
     const { width } = useWindowSize();
 
@@ -61,10 +60,10 @@ export const ValidatorSquadCard: React.FC<{
     const totalStakePool = useMemo(
       () =>
         new CoinPretty(
-          chainStore.osmosis.stakeCurrency,
+          OsmosisChainInfo.stakeCurrency,
           stakingPool?.bondedTokens ?? 0
         ),
-      [chainStore.osmosis.stakeCurrency, stakingPool?.bondedTokens]
+      [stakingPool?.bondedTokens]
     );
 
     let validatorBlock = (

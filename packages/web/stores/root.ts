@@ -4,23 +4,12 @@ import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/tr
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import {
-  CosmosQueries,
-  CosmwasmQueries,
-  QueriesStore,
-} from "@osmosis-labs/keplr-stores";
-import {
-  AlloyedPoolCodeIds,
-  TransmuterPoolCodeIds,
-} from "@osmosis-labs/server";
-import {
   AccountStore,
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
   LPCurrencyRegistrar,
   OsmosisAccount,
-  OsmosisQueries,
-  PoolFallbackPriceStore,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
 import type { TxEvents } from "@osmosis-labs/tx";
@@ -33,17 +22,14 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
-  BlacklistedPoolIds,
   IS_TESTNET,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
+import { ChainInfos, OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import {
-  getKeplrCompatibleChain,
-  withCosmosKitFields,
-} from "~/config/keplr-chain";
+import { withCosmosKitFields } from "~/config/keplr-chain";
 import { checkSolanaSignatureOutcome } from "~/utils/solana";
 
 import {
@@ -56,15 +42,9 @@ const assets = AssetLists.flatMap((list) => list.assets);
 export class RootStore {
   public readonly chainStore: ChainStore;
 
-  public readonly queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, OsmosisQueries]
-  >;
-
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
-
-  public readonly priceStore: PoolFallbackPriceStore;
 
   public readonly transferHistoryStore: TransferHistoryStore;
 
@@ -76,55 +56,7 @@ export class RootStore {
   }: {
     txEvents?: TxEvents;
   } = {}) {
-    this.chainStore = new ChainStore(
-      ChainList.map((chain) =>
-        getKeplrCompatibleChain({ chain, assetLists: AssetLists })
-      ),
-      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
-        (IS_TESTNET ? "osmo-test-5" : "osmosis")
-    );
-
-    const webApiBaseUrl =
-      typeof window !== "undefined"
-        ? window.origin
-        : "https://app.osmosis.zone";
-
-    this.queriesStore = new QueriesStore(
-      makeIndexedKVStore("store_web_queries_v12"),
-      this.chainStore,
-      // These are Keplr store factories, not React Hooks.
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmosQueries.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmwasmQueries.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisQueries.use(
-        this.chainStore.osmosis.chainId,
-        webApiBaseUrl,
-        BlacklistedPoolIds,
-        TransmuterPoolCodeIds,
-        AlloyedPoolCodeIds,
-        IS_TESTNET
-      )
-    );
-
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
-        .queryPools,
-      assets
-    );
+    this.chainStore = new ChainStore(ChainInfos, OsmosisChainInfo.chainId);
 
     this.accountStore = new AccountStore(
       // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
@@ -137,7 +69,6 @@ export class RootStore {
        * @see wallet-registry.ts
        */
       [],
-      this.queriesStore,
       this.chainStore,
       {
         walletConnectOptions: {
@@ -168,13 +99,11 @@ export class RootStore {
       },
       // These are Keplr store factories, not React Hooks.
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use(),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-      }),
+      CosmosAccount.use(),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
+      CosmwasmAccount.use()
     );
 
     const transferStatusProviders = [

@@ -4,11 +4,11 @@ import { useCallback, useMemo, useState } from "react";
 
 import { InactiveDelegationsList } from "~/components/stake/inactive-delegations-warning";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals/base";
-import { useStore } from "~/stores";
 import {
   getInactiveDelegationsToAlert,
   getInactiveValidatorAlertDismissalId,
@@ -43,8 +43,7 @@ function readDismissedIds(): string[] {
 export const InactiveValidatorsAlertModal = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { chainStore } = useStore();
-  const { chainId, stakeCurrency } = chainStore.osmosis;
+  const { chainId, stakeCurrency } = OsmosisChainInfo;
   const { address: walletAddress } = useWallet(chainId);
   const address = walletAddress ?? "";
 

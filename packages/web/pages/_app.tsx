@@ -11,7 +11,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
-import { enableStaticRendering, observer } from "mobx-react-lite";
+import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
@@ -40,6 +40,7 @@ import {
 import { ImmersiveBridge } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
+import { useWallet } from "~/hooks/use-wallet";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
@@ -48,7 +49,7 @@ import { api } from "~/utils/trpc";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
-import { StoreProvider, useStore } from "../stores";
+import { StoreProvider } from "../stores";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
@@ -98,12 +99,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
-}> = observer(({ children }) => {
+}> = ({ children }) => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
 
-  const { accountStore, chainStore } = useStore();
-  const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { wallet: osmosisWallet } = useWallet();
 
   const menus = useMemo(() => {
     if (!flags._isInitialized) {
@@ -205,49 +205,50 @@ const MainLayoutWrapper: FunctionComponent<{
       {children}
     </MainLayout>
   );
-});
+};
 
-export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
-  ({ appsLink }) => {
-    const { newApps, allApps } = useNewApps();
-    const router = useRouter();
-    const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<
-      string[]
-    >("viewed-apps", []);
+export const AppsBadge: FunctionComponent<{ appsLink: string }> = ({
+  appsLink,
+}) => {
+  const { newApps, allApps } = useNewApps();
+  const router = useRouter();
+  const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<string[]>(
+    "viewed-apps",
+    []
+  );
 
-    /**
-     * Update the viewed app titles when the user navigates to the apps page.
-     *
-     * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
-     *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
-     *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
-     *   2. It simplifies the code by avoiding state management in two files.
-     *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
-     *      the viewed app titles change.
-     */
-    useEffect(() => {
-      if (router.pathname === appsLink && allApps.length > 0) {
-        setViewedAppTitles(allApps.map((app) => app.title));
-      }
-    }, [router.pathname, newApps, setViewedAppTitles, allApps, appsLink]);
-
-    if (
-      newApps.length === 0 ||
-      newApps.filter(
-        ({ title }) =>
-          !viewedAppTitles.some((viewedAppTitle) => viewedAppTitle === title)
-      ).length === 0
-    ) {
-      return null;
+  /**
+   * Update the viewed app titles when the user navigates to the apps page.
+   *
+   * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
+   *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
+   *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
+   *   2. It simplifies the code by avoiding state management in two files.
+   *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
+   *      the viewed app titles change.
+   */
+  useEffect(() => {
+    if (router.pathname === appsLink && allApps.length > 0) {
+      setViewedAppTitles(allApps.map((app) => app.title));
     }
+  }, [router.pathname, newApps, setViewedAppTitles, allApps, appsLink]);
 
-    return (
-      <Pill className="!w-auto !px-0" animate>
-        <span className="button px-3 py-[2px]">{newApps.length}</span>
-      </Pill>
-    );
+  if (
+    newApps.length === 0 ||
+    newApps.filter(
+      ({ title }) =>
+        !viewedAppTitles.some((viewedAppTitle) => viewedAppTitle === title)
+    ).length === 0
+  ) {
+    return null;
   }
-);
+
+  return (
+    <Pill className="!w-auto !px-0" animate>
+      <span className="button px-3 py-[2px]">{newApps.length}</span>
+    </Pill>
+  );
+};
 
 const ldAnonymousContext = {
   key: "SHARED-CONTEXT-KEY",

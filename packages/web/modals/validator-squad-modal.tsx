@@ -37,11 +37,11 @@ import { inactiveStatusTextClass } from "~/components/stake/inactive-delegations
 import { StakeOrEdit } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import {
   getRedelegationDefaultSelection,
@@ -133,8 +133,7 @@ export const ValidatorSquadModal: FunctionComponent<
   isRedelegating = false,
 }) => {
   // chain
-  const { chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
 
   const { wallet: account, address: walletAddress } = useWallet(chainId);
 
@@ -155,10 +154,10 @@ export const ValidatorSquadModal: FunctionComponent<
   const totalStakePool = useMemo(
     () =>
       new CoinPretty(
-        chainStore.osmosis.stakeCurrency,
+        OsmosisChainInfo.stakeCurrency,
         stakingPool?.bondedTokens ?? 0
       ),
-    [chainStore.osmosis.stakeCurrency, stakingPool?.bondedTokens]
+    [stakingPool?.bondedTokens]
   );
 
   const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({

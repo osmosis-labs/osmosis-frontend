@@ -1,11 +1,17 @@
+import { queryPositionById } from "@osmosis-labs/server";
 import {
   makeCreatePositionMsg,
   makeSwapExactAmountInMsg,
   makeWithdrawPositionMsg,
 } from "@osmosis-labs/tx";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { OsmosisAccountImpl } from "../osmosis";
+
+jest.mock("@osmosis-labs/server", () => ({
+  ...jest.requireActual("@osmosis-labs/server"),
+  queryPositionById: jest.fn(),
+}));
 
 jest.mock("@osmosis-labs/tx", () => ({
   ...jest.requireActual("@osmosis-labs/tx"),
@@ -20,17 +26,6 @@ const ASSET_DENOM = "uatom";
 const NOBLE_USDC_DENOM = "ibc/NOBLE_USDC";
 const ALLOYED_USDC_DENOM = "factory/osmo1/alloyed/allUSDC";
 const TRANSMUTER_POOL_ID = "1234";
-
-const assetCurrency = {
-  coinDenom: "ATOM",
-  coinMinimalDenom: ASSET_DENOM,
-  coinDecimals: 6,
-};
-const nobleUsdcCurrency = {
-  coinDenom: "USDC.noble",
-  coinMinimalDenom: NOBLE_USDC_DENOM,
-  coinDecimals: 6,
-};
 
 /* Sentinel messages: the mocked makers return them and the test only
    asserts they flow through to signAndBroadcast in order, so the proto value
@@ -65,32 +60,30 @@ const positionEvent = (
 });
 
 describe("sendMigrateConcentratedLiquidityPositionMsg", () => {
-  const queryPosition = {
-    waitFreshResponse: jest.fn(),
-    liquidity: new Dec("123456"),
-    baseAsset: new CoinPretty(assetCurrency, new Int("1000")),
-    quoteAsset: new CoinPretty(nobleUsdcCurrency, new Int("2000")),
+  const positionResponse = {
+    position: {
+      position: {
+        position_id: "42",
+        address: ADDRESS,
+        join_time: "",
+        liquidity: new Dec("123456").toString(),
+        lower_tick: "-100",
+        pool_id: "3500",
+        upper_tick: "200",
+      },
+      asset0: { denom: ASSET_DENOM, amount: "1000" },
+      asset1: { denom: NOBLE_USDC_DENOM, amount: "2000" },
+      claimable_spread_rewards: [],
+      claimable_incentives: [],
+      forfeited_incentives: [],
+    },
   };
-  const queryAccountsPositions = { waitFreshResponse: jest.fn() };
+  const chains = [{ chain_id: CHAIN_ID }];
   const base = {
     getWallet: jest.fn(() => ({ address: ADDRESS })),
     simulatePositionMigration: jest.fn(),
     signAndBroadcast: jest.fn(),
-  };
-  const queriesStore = {
-    get: jest.fn(() => ({
-      osmosis: {
-        queryLiquidityPositionsById: {
-          getForPositionId: jest.fn(() => queryPosition),
-        },
-        queryAccountsPositions: {
-          get: jest.fn(() => queryAccountsPositions),
-        },
-      },
-      queryBalances: {
-        getQueryBech32Address: jest.fn(() => ({ balances: [] })),
-      },
-    })),
+    chains,
   };
 
   const makeAccount = () => {
@@ -98,14 +91,13 @@ describe("sendMigrateConcentratedLiquidityPositionMsg", () => {
     return new OsmosisAccountImpl(
       base as unknown as ConstructorArgs[0],
       {} as ConstructorArgs[1],
-      CHAIN_ID,
-      queriesStore as unknown as ConstructorArgs[3]
+      CHAIN_ID
     );
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    queryPosition.waitFreshResponse.mockResolvedValue(undefined);
+    jest.mocked(queryPositionById).mockResolvedValue(positionResponse);
     base.simulatePositionMigration
       .mockResolvedValueOnce({
         gasUsed: 1,

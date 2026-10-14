@@ -2,7 +2,6 @@ import type { Pool } from "@osmosis-labs/server";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { Fragment, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
@@ -15,7 +14,7 @@ import { IncentivizePoolModal } from "~/modals";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
-}> = observer(({ pool }) => {
+}> = ({ pool }) => {
   const { t } = useTranslation();
   const { incentivizePool } = useFeatureFlags();
 
@@ -173,4 +172,4 @@ export const BasePoolDetails: FunctionComponent<{
       )}
     </main>
   );
-});
+};

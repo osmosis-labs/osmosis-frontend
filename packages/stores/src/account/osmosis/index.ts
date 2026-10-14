@@ -1,12 +1,12 @@
 import type { StdFee } from "@cosmjs/amino";
 import type { EncodeObject } from "@cosmjs/proto-signing";
-import {
-  ChainGetter,
-  CosmosQueries,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import * as OsmosisMath from "@osmosis-labs/math";
-import { maxTick, minTick } from "@osmosis-labs/math";
+import { BigDec, maxTick, minTick } from "@osmosis-labs/math";
+import {
+  queryAccountDelegatedPositions,
+  queryPositionById,
+} from "@osmosis-labs/server";
 import type {
   DeliverTxResponse,
   JoinPoolData,
@@ -61,31 +61,29 @@ import {
 import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { OsmosisQueries } from "../../queries";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
+
+/** The slice of a concentrated pool's state needed to build a create-position tx. */
+export interface ConcentratedPoolInfo {
+  tickSpacing: number;
+  currentSqrtPrice: BigDec;
+}
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
 
 export const OsmosisAccount = {
-  use(options: {
-    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-  }): (
+  use(): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
     chainId: string
   ) => OsmosisAccount {
     return (base, chainGetter, chainId) => {
       return {
-        osmosis: new OsmosisAccountImpl(
-          base,
-          chainGetter,
-          chainId,
-          options.queriesStore
-        ),
+        osmosis: new OsmosisAccountImpl(base, chainGetter, chainId),
       };
     };
   },
@@ -97,11 +95,34 @@ export class OsmosisAccountImpl {
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<
-      CosmosQueries & OsmosisQueries
-    >
+    protected readonly chainId: string
   ) {}
+
+  /**
+   * Reads a CL position fresh from chain REST (hedged across the registry's
+   * REST endpoints), replacing the MobX `queryLiquidityPositionsById` +
+   * `waitFreshResponse()` this used to do. Throws if the request fails, so a
+   * tx is never built from missing data.
+   */
+  protected async fetchPosition(positionId: string) {
+    const { position } = await queryPositionById({
+      chainList: this.base.chains,
+      chainId: this.chainId,
+      id: positionId,
+    });
+    const asset = (a: { denom: string; amount: string }) =>
+      a.denom && a.amount ? { denom: a.denom, amount: a.amount } : undefined;
+    return {
+      liquidity: position.position.liquidity
+        ? new Dec(position.position.liquidity)
+        : undefined,
+      poolId: position.position.pool_id,
+      /** `asset0` */
+      baseAsset: asset(position.asset0),
+      /** `asset1` */
+      quoteAsset: asset(position.asset1),
+    };
+  }
 
   private get address() {
     return this.base.getWallet(this.chainId)?.address ?? "";
@@ -172,28 +193,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryPools.waitFreshResponse();
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                assets.find(
-                  (asset) =>
-                    asset.token.currency.coinMinimalDenom ===
-                    bal.currency.coinMinimalDenom
-                )
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -230,24 +230,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryPools.waitFreshResponse();
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom === denom0 ||
-                bal.currency.coinMinimalDenom === denom1
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -341,28 +324,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryPools.waitFreshResponse();
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                assets.find(
-                  (asset) =>
-                    asset.token.currency.coinMinimalDenom ===
-                    bal.currency.coinMinimalDenom
-                )
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -417,24 +379,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
-              bal.waitFreshResponse();
-            });
-
-          this.queries.queryGammPoolShare.fetch(this.address);
-
-          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -494,21 +439,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              bal.waitFreshResponse();
-            });
-          this.queries.queryGammPoolShare.fetch(this.address);
-
-          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -516,6 +447,9 @@ export class OsmosisAccountImpl {
    * Create a concentrated liquidity position in a pool.
    *
    * @param poolId ID of pool to create position in.
+   * @param pool Current concentrated pool state, read by the caller from the tRPC pool
+   * it already holds. Supplies `tickSpacing` (zero-tick correction) and
+   * `currentSqrtPrice` (slippage minimums).
    * @param lowerTick Lower tick index.
    * @param upperTick Upper tick index.
    * @param superfluidValidatorAddress Optional superfluid validator address if superfluid staking this position.
@@ -526,6 +460,7 @@ export class OsmosisAccountImpl {
    */
   async sendCreateConcentratedLiquidityPositionMsg(
     poolId: string,
+    pool: ConcentratedPoolInfo,
     lowerTick: Int,
     upperTick: Int,
     superfluidValidatorAddress?: string,
@@ -535,35 +470,9 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
-
-    // First try to get the pool from cache
-    let queryPool = queries.queryPools.getPool(poolId);
-
-    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    // Wait for it to be fetched with minLiquidity: 0
-    if (!queryPool) {
-      try {
-        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
-      } catch (e) {
-        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
-      }
-      queryPool = queries.queryPools.getPool(poolId);
-    }
-
-    if (!queryPool) {
-      throw new Error(`Pool #${poolId} not found`);
-    }
-
-    const type = queryPool.type;
-    const clInfo = queryPool.concentratedLiquidityPoolInfo;
-    if (type !== "concentrated" || !clInfo) {
-      throw new Error("Must be concentrated pool");
-    }
-
     // avoid serializing 0 ticks issue
-    if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
-    if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
+    if (lowerTick.isZero()) lowerTick = new Int(-pool.tickSpacing);
+    if (upperTick.isZero()) upperTick = new Int(pool.tickSpacing);
 
     let baseCoin: Coin | undefined;
     let quoteCoin: Coin | undefined;
@@ -610,9 +519,8 @@ export class OsmosisAccountImpl {
       // - If position is active, consists of both tokens
       // - If position is under current tick, consists only of token 1.
       // - If position is above current tick, consists only of token 0.
-      if (!queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()) {
-        const currentSqrtPrice =
-          queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
+      if (!pool.currentSqrtPrice.isZero()) {
+        const currentSqrtPrice = pool.currentSqrtPrice;
 
         const currentTick = OsmosisMath.priceToTick(
           currentSqrtPrice.mul(currentSqrtPrice).toDec()
@@ -676,27 +584,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              bal.waitFreshResponse();
-            });
-          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
-          this.queries.queryAccountsPositions
-            .get(this.address)
-            ?.waitFreshResponse();
-
-          if (superfluidValidatorAddress) {
-            this.queries?.queryAccountsSuperfluidDelegatedPositions
-              .get(this.address)
-              .waitFreshResponse();
-          }
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -772,14 +660,12 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queryPosition =
-      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
-    await queryPosition.waitFreshResponse();
-
-    const fullLiquidityAmount = queryPosition.liquidity;
-    const baseAsset = queryPosition.baseAsset;
-    const quoteAsset = queryPosition.quoteAsset;
-    const poolId = queryPosition.poolId;
+    const {
+      liquidity: fullLiquidityAmount,
+      baseAsset,
+      quoteAsset,
+      poolId,
+    } = await this.fetchPosition(positionId);
 
     if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
     if (!poolId) throw new Error("No pool ID found");
@@ -797,8 +683,8 @@ export class OsmosisAccountImpl {
       await makeCreateFullRangePositionAndSuperfluidDelegateMsg({
         poolId: BigInt(poolId),
         coins: [
-          queryPosition.baseAsset.toCoin(),
-          queryPosition.quoteAsset.toCoin(),
+          { denom: baseAsset.denom, amount: baseAsset.amount },
+          { denom: quoteAsset.denom, amount: quoteAsset.amount },
         ].sort((a, b) => a?.denom.localeCompare(b?.denom)),
         sender: this.address,
         valAddr: validatorAddress,
@@ -811,18 +697,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          queryPosition.waitFreshResponse();
-          this.queries?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-          this.queries?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -883,13 +758,11 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queryPosition =
-      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
-    await queryPosition.waitFreshResponse();
-
-    const fullLiquidityAmount = queryPosition.liquidity;
-    const baseAsset = queryPosition.baseAsset;
-    const quoteAsset = queryPosition.quoteAsset;
+    const {
+      liquidity: fullLiquidityAmount,
+      baseAsset,
+      quoteAsset,
+    } = await this.fetchPosition(positionId);
 
     if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
     if (!baseAsset || !quoteAsset)
@@ -920,15 +793,14 @@ export class OsmosisAccountImpl {
     // withdraw_position amount0/amount1 are indexed by the SOURCE pool's
     // token0/token1; the position query's base/quote follow the same order.
     const withdrawn = new Map<string, Int>([
-      [baseAsset.currency.coinMinimalDenom, withdrawAmounts.amount0],
-      [quoteAsset.currency.coinMinimalDenom, withdrawAmounts.amount1],
+      [baseAsset.denom, withdrawAmounts.amount0],
+      [quoteAsset.denom, withdrawAmounts.amount1],
     ]);
 
     const bridgedUsdcOut = withdrawn.get(usdcConversion.fromDenom);
-    const assetDenom = [
-      baseAsset.currency.coinMinimalDenom,
-      quoteAsset.currency.coinMinimalDenom,
-    ].find((d) => d !== usdcConversion.fromDenom);
+    const assetDenom = [baseAsset.denom, quoteAsset.denom].find(
+      (d) => d !== usdcConversion.fromDenom
+    );
     const assetOut = assetDenom ? withdrawn.get(assetDenom) : undefined;
     if (!bridgedUsdcOut || !assetDenom || !assetOut)
       throw new Error(
@@ -1064,31 +936,7 @@ export class OsmosisAccountImpl {
            plus inclusion, seconds rather than however long the prompt sat
            open. */
         onSign: preBroadcastCheck,
-        onFulfill: (tx) => {
-          if (!tx.code) {
-            queryPosition.waitFreshResponse();
-            this.queries?.queryAccountsPositions
-              .get(this.address)
-              .waitFreshResponse();
-            // The migration moves wallet funds too - buffered leftovers and
-            // dust return to it, and a drift shortfall draws from it - so
-            // refresh the involved denoms rather than leaving stale balances
-            // until something else refetches.
-            this.queriesStore
-              .get(this.chainId)
-              .queryBalances.getQueryBech32Address(this.address)
-              .balances.forEach((bal) => {
-                const denom = bal.currency.coinMinimalDenom;
-                if (
-                  denom === usdcConversion.fromDenom ||
-                  denom === usdcConversion.toDenom ||
-                  denom === assetDenom
-                )
-                  bal.waitFreshResponse();
-              });
-          }
-          onFulfill?.(tx);
-        },
+        onFulfill,
       },
       undefined,
       /* useTimeoutHeight: this flow's safety model needs the signed
@@ -1132,11 +980,16 @@ export class OsmosisAccountImpl {
       .truncate()
       .toString();
 
-    const queryDelegatedPositions =
-      this.queries.queryAccountsSuperfluidDelegatedPositions.get(this.address);
-    await queryDelegatedPositions.waitResponse();
-    const isSuperfluidStaked =
-      queryDelegatedPositions.delegatedPositionIds.includes(positionId);
+    // Fresh read from chain REST; a failed request throws before anything is
+    // signed rather than being treated as "not staked".
+    const delegated = await queryAccountDelegatedPositions({
+      chainList: this.base.chains,
+      chainId: this.chainId,
+      bech32Address: this.address,
+    });
+    const isSuperfluidStaked = delegated.cl_pool_user_position_records.some(
+      ({ position_id }) => position_id === positionId
+    );
 
     const msg = isSuperfluidStaked
       ? await makeAddToConcentratedLiquiditySuperfluidPositionMsg({
@@ -1167,27 +1020,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // refresh relevant balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              bal.waitFreshResponse();
-            });
-          // refresh all user positions since IDs shift after adding to a position
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-
-          // if it's staked, fetch new delegation amount and new ID
-          if (isSuperfluidStaked) {
-            queryDelegatedPositions.waitFreshResponse();
-          }
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1219,30 +1052,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-          const queryPosition =
-            this.queries.queryLiquidityPositionsById.getForPositionId(
-              positionId
-            );
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                queryPosition.baseAsset?.currency.coinMinimalDenom ===
-                  bal.currency.coinMinimalDenom ||
-                queryPosition.quoteAsset?.currency.coinMinimalDenom ===
-                  bal.currency.coinMinimalDenom
-              )
-                bal.waitFreshResponse();
-            });
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1301,24 +1111,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              bal.waitFreshResponse();
-            });
-          positionIdsWithSpreadRewards
-            .concat(positionIdsWithIncentiveRewards)
-            .forEach((id) => {
-              this.queries.queryLiquidityPositionsById
-                .getForPositionId(id)
-                ?.waitFreshResponse();
-            });
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1361,36 +1154,7 @@ export class OsmosisAccountImpl {
       memo,
       signOptions?.fee,
       signOptions,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom === tokenIn.coinMinimalDenom ||
-                routes
-                  .flatMap(({ pools }) => pools)
-                  .find(
-                    (pool) =>
-                      pool.tokenOutDenom === bal.currency.coinMinimalDenom
-                  )
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-          routes
-            .flatMap(({ pools }) => pools)
-            .forEach(({ id: poolId }) => {
-              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
-            });
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1433,36 +1197,7 @@ export class OsmosisAccountImpl {
       memo,
       signOptions?.fee,
       signOptions,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom === tokenOut.coinMinimalDenom ||
-                routes
-                  .flatMap(({ pools }) => pools)
-                  .find(
-                    (pool) =>
-                      pool.tokenInDenom === bal.currency.coinMinimalDenom
-                  )
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-          routes
-            .flatMap(({ pools }) => pools)
-            .forEach(({ id: poolId }) => {
-              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
-            });
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1504,31 +1239,7 @@ export class OsmosisAccountImpl {
       memo,
       signOptions?.fee,
       signOptions,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom === tokenIn.coinMinimalDenom ||
-                pools.find(
-                  (pool) => pool.tokenOutDenom === bal.currency.coinMinimalDenom
-                )
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-          pools.forEach(({ id: poolId }) => {
-            queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
-          });
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1569,32 +1280,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       signOptions,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                pools.some(
-                  ({ tokenInDenom }) =>
-                    tokenInDenom === bal.currency.coinMinimalDenom
-                ) ||
-                bal.currency.coinMinimalDenom === tokenOut.coinMinimalDenom
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-          pools.forEach(({ id }) =>
-            this.queries.queryPools.getPool(id)?.waitFreshResponse()
-          );
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1681,19 +1367,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-          this.queries.queryGammPoolShare.fetch(this.address);
-
-          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1788,17 +1462,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances (gauge funding left the wallet).
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1834,17 +1498,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1891,21 +1545,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // Refresh the locked coins
-          this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
-          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1940,21 +1580,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.osmosis?.queryAccountLocked
-            .get(this.address)
-            .waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -1993,25 +1619,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // Refresh the locked coins
-          queries.osmosis?.queryLockedCoins
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryAccountLocked
-            .get(this.address)
-            .waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2043,24 +1651,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // Refresh the locked coins
-          this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
-          this.queries.queryUnlockingCoins
-            .get(this.address)
-            .waitFreshResponse();
-          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2116,34 +1707,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-
-          // Refresh the locked coins
-          queries.osmosis?.queryLockedCoins
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryUnlockingCoins
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryAccountLocked
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh user CL positions
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh CL position delegations
-          queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2174,16 +1738,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2213,16 +1768,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2252,16 +1798,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2285,16 +1822,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2331,17 +1859,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2390,17 +1908,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2436,17 +1944,7 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
   }
 
@@ -2516,22 +2014,8 @@ export class OsmosisAccountImpl {
       memo,
       undefined,
       undefined,
-      (tx) => {
-        if (!tx.code) {
-          const queries = this.queriesStore.get(this.chainId);
-
-          // redelegating withdraws pending rewards from the source validators
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-        }
-        onFulfill?.(tx);
-      }
+      onFulfill
     );
-  }
-
-  protected get queries() {
-    return this.queriesStore.get(this.chainId).osmosis!;
   }
 
   protected makeCoinPretty = (coin: Coin): CoinPretty => {

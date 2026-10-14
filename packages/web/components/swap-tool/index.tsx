@@ -39,6 +39,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import { HighPriceImpactGate } from "~/config/trade-warnings";
@@ -56,10 +57,10 @@ import {
   useDynamicSlippageConfig,
   useSwap,
 } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
@@ -91,9 +92,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     forceSwapInPoolId,
     onSwapSuccess,
   }) => {
-    const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
-    const { chainId } = chainStore.osmosis;
+    const { chainId } = OsmosisChainInfo;
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
@@ -118,7 +118,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       }
     }, [featureFlags.inGivenOut, quoteType]);
 
-    const account = accountStore.getWallet(chainId);
+    const { address, walletStatus, isWalletConnected } = useWallet(chainId);
     const slippageConfig = useSlippageConfig({
       defaultSlippage:
         quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
@@ -293,7 +293,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const isLoadingMaxButton =
       featureFlags.swapToolSimulateFee &&
-      !isNil(account?.address) &&
+      !isNil(address) &&
       !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
       !swapState.inAmountInput?.balance?.toDec().isZero() &&
       swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
@@ -312,7 +312,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isConfirmationDisabled =
       isSendingTx ||
       isWalletLoading ||
-      (account?.walletStatus === WalletStatus.Connected &&
+      (walletStatus === WalletStatus.Connected &&
         ((quoteType === "out-given-in" && swapState.inAmountInput.isEmpty) ||
           (quoteType === "in-given-out" && swapState.outAmountInput.isEmpty) ||
           !Boolean(swapState.quote) ||
@@ -406,14 +406,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )
                     }
                     showAddFundsButton={
-                      !account?.isWalletConnected ||
+                      !isWalletConnected ||
                       (swapState.inAmountInput.balance &&
                         swapState.inAmountInput.balance.toDec().isZero())
                     }
                     openAddFundsModal={openAddFundsModal}
                   />
                 </AssetFieldsetHeader>
-                {account?.isWalletConnected &&
+                {isWalletConnected &&
                   swapState.inAmountInput.balance &&
                   !swapState.inAmountInput.balance.toDec().isZero() && (
                     <div className="flex justify-end">
@@ -705,7 +705,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 disabled={
                   isSendingTx ||
                   isWalletLoading ||
-                  (account?.walletStatus === WalletStatus.Connected &&
+                  (walletStatus === WalletStatus.Connected &&
                     (swapState.inAmountInput.isEmpty ||
                       !Boolean(swapState.quote) ||
                       isSwapToolLoading ||
@@ -735,7 +735,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 }
                 loadingText={buttonText}
                 onClick={() => {
-                  if (account?.walletStatus !== WalletStatus.Connected) {
+                  if (walletStatus !== WalletStatus.Connected) {
                     return onOpenWalletSelect({
                       walletOptions: [
                         { walletType: "cosmos", chainId: chainId },
@@ -749,7 +749,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 data-testid="trade-button-swap"
               >
                 <h6>
-                  {account?.walletStatus === WalletStatus.Connected
+                  {walletStatus === WalletStatus.Connected
                     ? buttonText
                     : t("connectWallet")}
                 </h6>

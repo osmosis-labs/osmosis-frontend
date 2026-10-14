@@ -111,6 +111,7 @@ describe("Collect Cl Fees Txs", () => {
       account.osmosis
         .sendCreateConcentratedLiquidityPositionMsg(
           poolId,
+          queryPool!.concentratedLiquidityPoolInfo!,
           minTick,
           maxTick,
           undefined,
