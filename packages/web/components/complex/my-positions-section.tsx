@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 
 import { MyPositionCard } from "~/components/cards";
@@ -6,7 +5,7 @@ import { SectionPlaceholderCard } from "~/components/complex/section-placeholder
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 const INITIAL_POSITION_CNT = 3;
@@ -15,11 +14,9 @@ const INITIAL_POSITION_CNT = 3;
 export const MyPositionsSection: FunctionComponent<{
   forPoolId?: string;
   showSelectedRange?: boolean;
-}> = observer(({ forPoolId, showSelectedRange = true }) => {
-  const { accountStore, chainStore } = useStore();
+}> = ({ forPoolId, showSelectedRange = true }) => {
   const { t } = useTranslation();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const { address } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const [viewMore, setViewMore] = useState(false);
 
@@ -29,11 +26,11 @@ export const MyPositionsSection: FunctionComponent<{
     isError,
   } = api.local.concentratedLiquidity.getUserPositions.useQuery(
     {
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
       forPoolId,
     },
     {
-      enabled: Boolean(account?.address) && !isWalletLoading,
+      enabled: Boolean(address) && !isWalletLoading,
 
       // expensive query
       trpc: {
@@ -49,7 +46,7 @@ export const MyPositionsSection: FunctionComponent<{
     viewMore ? undefined : INITIAL_POSITION_CNT
   );
 
-  if (!account?.address) return null;
+  if (!address) return null;
 
   // Per-pool callers (pool detail page) render their own surrounding context;
   // showing a global empty/error card there would imply the user has no
@@ -115,4 +112,4 @@ export const MyPositionsSection: FunctionComponent<{
       )}
     </div>
   );
-});
+};

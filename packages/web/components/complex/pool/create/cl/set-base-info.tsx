@@ -26,8 +26,8 @@ import {
   useDuplicatePoolCheck,
 } from "~/hooks/use-duplicate-pool-check";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import { TokenSelectModal } from "~/modals";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
@@ -57,12 +57,11 @@ export const SetBaseInfos = observer(
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
-    const { accountStore } = useStore();
     const showUnverifiedAssets = useUserSettingsStore(
       (state) => state.showUnverifiedAssets
     );
 
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { wallet } = useWallet();
     const { showPreviewAssets } = useShowPreviewAssets();
 
     const { data: tokens, isLoading: isLoadingTokens } =
@@ -261,7 +260,7 @@ export const SetBaseInfos = observer(
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
               setIsTxLoading(true);
-              account?.osmosis
+              wallet?.osmosis
                 .sendCreateConcentratedPoolMsg(
                   selectedBase?.token.coinMinimalDenom!,
                   selectedQuote?.token.coinMinimalDenom!,
@@ -305,72 +304,74 @@ export interface TokenSelectorProps {
   selectedAsset?: SelectionToken;
 }
 
-const TokenSelector = observer(
-  ({ selectedAsset, assets, setSelectedAsset }: TokenSelectorProps) => {
-    const { t } = useTranslation();
-    const { isOpen, onClose, onOpen } = useDisclosure();
+const TokenSelector = ({
+  selectedAsset,
+  assets,
+  setSelectedAsset,
+}: TokenSelectorProps) => {
+  const { t } = useTranslation();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
-    const [query, setQuery, results] = useFilteredData(assets, [
-      "token.coinDenom",
-    ]);
+  const [query, setQuery, results] = useFilteredData(assets, [
+    "token.coinDenom",
+  ]);
 
-    return (
-      <>
-        <button
-          onClick={onOpen}
-          className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
-        >
-          <div className="flex items-center gap-3">
-            {selectedAsset ? (
-              <>
-                <EntityImage
-                  logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
-                  name={selectedAsset.token.coinDenom}
-                  symbol={selectedAsset.token.coinDenom}
-                  width={52}
-                  height={52}
-                  className="overflow-hidden rounded-full"
-                />
-                <h5 className="max-w-[130px] truncate">
-                  {selectedAsset.token.coinDenom}
-                </h5>
-              </>
-            ) : (
-              <>
-                <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
-                  <Icon id="close-button-icon" className="rotate-45" />
-                </div>
-                <h6>{t("pools.createSupercharged.buttonAddToken")}</h6>
-              </>
-            )}
-          </div>
-          {selectedAsset && (
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-left"
-                width={12}
-                height={24}
-                className="-rotate-90 text-osmoverse-400"
+  return (
+    <>
+      <button
+        onClick={onOpen}
+        className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
+      >
+        <div className="flex items-center gap-3">
+          {selectedAsset ? (
+            <>
+              <EntityImage
+                logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
+                name={selectedAsset.token.coinDenom}
+                symbol={selectedAsset.token.coinDenom}
+                width={52}
+                height={52}
+                className="overflow-hidden rounded-full"
               />
-            </div>
+              <h5 className="max-w-[130px] truncate">
+                {selectedAsset.token.coinDenom}
+              </h5>
+            </>
+          ) : (
+            <>
+              <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
+                <Icon id="close-button-icon" className="rotate-45" />
+              </div>
+              <h6>{t("pools.createSupercharged.buttonAddToken")}</h6>
+            </>
           )}
-        </button>
-        <TokenSelectModal
-          isOpen={isOpen}
-          tokens={results}
-          currentValue={query}
-          onInput={setQuery}
-          onRequestClose={onClose}
-          onSelect={(selectedDenom) =>
-            setSelectedAsset(
-              assets.find((value) => value.token.coinDenom === selectedDenom)!
-            )
-          }
-        />
-      </>
-    );
-  }
-);
+        </div>
+        {selectedAsset && (
+          <div className="flex h-6 w-6 items-center justify-center">
+            <Icon
+              id="chevron-left"
+              width={12}
+              height={24}
+              className="-rotate-90 text-osmoverse-400"
+            />
+          </div>
+        )}
+      </button>
+      <TokenSelectModal
+        isOpen={isOpen}
+        tokens={results}
+        currentValue={query}
+        onInput={setQuery}
+        onRequestClose={onClose}
+        onSelect={(selectedDenom) =>
+          setSelectedAsset(
+            assets.find((value) => value.token.coinDenom === selectedDenom)!
+          )
+        }
+      />
+    </>
+  );
+};
 
 interface SpreadSelectorProps {
   options: string[];

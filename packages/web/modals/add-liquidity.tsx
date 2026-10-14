@@ -20,6 +20,7 @@ import {
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
 } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -40,12 +41,12 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { wallet, txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = !wallet || txTypeInProgress !== "";
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
