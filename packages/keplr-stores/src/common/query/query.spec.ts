@@ -1,13 +1,15 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import { MemoryKVStore } from "@osmosis-labs/utils";
+import Axios from "axios";
+import Http from "http";
+import { autorun } from "mobx";
+
 import {
   DeferInitialQueryController,
   ObservableQuery,
   ObservableQueryBase,
   QueryOptions,
 } from "./query";
-import { KVStore, MemoryKVStore } from "../kv-store";
-import Axios from "axios";
-import Http from "http";
-import { autorun } from "mobx";
 
 export class MockObservableQuery extends ObservableQuery<number> {
   constructor(

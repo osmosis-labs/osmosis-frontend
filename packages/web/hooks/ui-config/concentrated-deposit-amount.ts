@@ -6,7 +6,7 @@ import {
   ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { DefaultGasPriceStep } from "@osmosis-labs/stores";
+import { DefaultGasPriceStep } from "@osmosis-labs/tx";
 import {
   AppCurrency,
   CoinPretty,

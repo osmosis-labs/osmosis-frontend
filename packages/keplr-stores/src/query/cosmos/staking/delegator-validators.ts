@@ -1,11 +1,12 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { Validator, Validators } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable } from "mobx";
 
 /**
  * Every validator a delegator has a delegation with, whatever its bond status.

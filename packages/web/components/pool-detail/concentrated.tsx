@@ -1,7 +1,5 @@
-import {
-  type ConcentratedPoolRawResponse,
-  DEFAULT_VS_CURRENCY,
-} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

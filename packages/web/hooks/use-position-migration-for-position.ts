@@ -1,4 +1,4 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { MultiEndpointClient } from "@osmosis-labs/utils";
 import { useCallback } from "react";

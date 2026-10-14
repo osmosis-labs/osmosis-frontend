@@ -1,5 +1,5 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { OneClickTradingInfo } from "@osmosis-labs/stores";
+import type { OneClickTradingInfo } from "@osmosis-labs/tx";
 import {
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTransactionParams,

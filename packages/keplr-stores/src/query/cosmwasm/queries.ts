@@ -1,9 +1,10 @@
-import { QueriesSetBase } from "../queries";
-import { ChainGetter } from "../../common";
-import { KVStore } from "../../common/kv-store";
-import { ObservableQueryCw20ContractInfo } from "./cw20-contract-info";
+import type { KVStore } from "@osmosis-labs/utils";
 import { DeepReadonly } from "utility-types";
+
+import { ChainGetter } from "../../common";
+import { QueriesSetBase } from "../queries";
 import { ObservableQueryCw20BalanceRegistry } from "./cw20-balance";
+import { ObservableQueryCw20ContractInfo } from "./cw20-contract-info";
 
 export interface CosmwasmQueries {
   cosmwasm: CosmwasmQueriesImpl;

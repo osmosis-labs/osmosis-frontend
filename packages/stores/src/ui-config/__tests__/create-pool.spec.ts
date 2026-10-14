@@ -7,9 +7,9 @@ import {
 } from "@osmosis-labs/keplr-hooks";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { AppCurrency } from "@osmosis-labs/unit";
+import { DepositNoBalanceError } from "@osmosis-labs/utils";
 
 import { ObservableCreatePoolConfig } from "../create-pool";
-import { DepositNoBalanceError } from "../errors";
 
 const osmo: AppCurrency = {
   coinDenom: "OSMO",

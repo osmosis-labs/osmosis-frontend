@@ -1,7 +1,7 @@
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 
 import { installPrevSessionWallet } from "~/hooks/use-wallet-select";
 

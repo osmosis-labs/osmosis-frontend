@@ -5,9 +5,9 @@ import {
   CosmwasmAccount,
   LPCurrencyRegistrar,
   OsmosisAccount,
-  type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
+import type { TxEvents } from "@osmosis-labs/tx";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {

@@ -1,3 +1,7 @@
+import type {
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
@@ -12,10 +16,6 @@ import {
   PoolIncentives,
 } from "../../../queries/complex/pools/incentives";
 import { queryBalances } from "../../../queries/cosmos";
-import {
-  StablePoolRawResponse,
-  WeightedPoolRawResponse,
-} from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,

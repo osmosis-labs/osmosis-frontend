@@ -1,3 +1,6 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import Axios, { AxiosInstance } from "axios";
+import EventEmitter from "eventemitter3";
 import {
   action,
   autorun,
@@ -9,12 +12,10 @@ import {
   onBecomeUnobserved,
   reaction,
 } from "mobx";
-import Axios, { AxiosInstance } from "axios";
-import { KVStore } from "../kv-store";
-import { toGenerator } from "../mobx";
 import { DeepReadonly } from "utility-types";
+
 import { HasMapStore } from "../map";
-import EventEmitter from "eventemitter3";
+import { toGenerator } from "../mobx";
 
 export type QueryOptions = {
   // millisec

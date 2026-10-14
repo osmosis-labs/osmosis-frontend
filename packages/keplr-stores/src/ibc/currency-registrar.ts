@@ -1,16 +1,17 @@
-import { flow, makeObservable, observable, runInAction } from "mobx";
+import type { ChainInfo } from "@osmosis-labs/types";
 import { AppCurrency } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { flow, makeObservable, observable, runInAction } from "mobx";
+
 import { ChainInfoInner, ChainStore } from "../chain";
+import { DenomHelper } from "../common/denom";
+import { toGenerator } from "../common/mobx";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
   QueriesSetBase,
 } from "../query";
-import { DenomHelper } from "../common/denom";
-import { KVStore } from "../common/kv-store";
-import { toGenerator } from "../common/mobx";
-import type { ChainInfo } from "@osmosis-labs/types";
 
 type CacheIBCDenomData = {
   denomTrace: {
@@ -424,7 +425,6 @@ export class IBCCurrencyRegsitrar<C extends ChainInfo = ChainInfo> {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.map.get(chainInfoInner.chainId)!;
   }
 }

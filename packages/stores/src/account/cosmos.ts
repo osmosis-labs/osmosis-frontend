@@ -1,14 +1,10 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { getTimeoutHeight } from "@osmosis-labs/server";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { AppCurrency, Dec, DecUtils } from "@osmosis-labs/unit";
 
-import {
-  AccountStore,
-  CosmwasmAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
+import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;

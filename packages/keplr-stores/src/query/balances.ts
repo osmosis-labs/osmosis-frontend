@@ -1,11 +1,11 @@
-import { ObservableChainQuery } from "./chain-query";
-import { DenomHelper } from "../common/denom";
-import { KVStore } from "../common/kv-store";
-import { ChainGetter } from "../common";
+import { AppCurrency, CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed, makeObservable, observable, runInAction } from "mobx";
-import { CoinPretty, Dec, Int, AppCurrency } from "@osmosis-labs/unit";
-import { HasMapStore } from "../common";
 import { computedFn } from "mobx-utils";
+
+import { ChainGetter, HasMapStore } from "../common";
+import { DenomHelper } from "../common/denom";
+import { ObservableChainQuery } from "./chain-query";
 
 export abstract class ObservableQueryBalanceInner<
   T = unknown,
@@ -104,7 +104,6 @@ export class ObservableQueryBalancesInner {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.balanceMap.get(key)!;
   }
 

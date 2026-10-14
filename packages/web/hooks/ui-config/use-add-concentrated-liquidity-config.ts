@@ -1,5 +1,6 @@
 import { BigDec } from "@osmosis-labs/math";
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
   AppCurrency,
   CoinPretty,

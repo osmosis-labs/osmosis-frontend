@@ -1,6 +1,6 @@
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import type { TxFeMemoFlags } from "@osmosis-labs/stores";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   makeExecuteCosmwasmContractMsg,
   QuoteDirection,

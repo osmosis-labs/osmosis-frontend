@@ -1,9 +1,10 @@
-import { Cw20ContractTokenInfo } from "./types";
-import { KVStore } from "../../common/kv-store";
-import { ObservableChainQueryMap } from "../chain-query";
-import { ChainGetter } from "../../common";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed } from "mobx";
+
+import { ChainGetter } from "../../common";
+import { ObservableChainQueryMap } from "../chain-query";
 import { ObservableCosmwasmContractChainQuery } from "./contract-query";
+import { Cw20ContractTokenInfo } from "./types";
 
 export class ObservableQueryCw20ContactInfoInner extends ObservableCosmwasmContractChainQuery<Cw20ContractTokenInfo> {
   constructor(
