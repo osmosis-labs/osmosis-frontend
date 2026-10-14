@@ -3,6 +3,7 @@ import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
 
 import {
+  AddLiquidityPreflightError,
   makeAddLiquidityPoolData,
   sendAddLiquidity,
 } from "~/hooks/ui-config/use-add-liquidity-config";
@@ -293,7 +294,7 @@ describe("sendAddLiquidity", () => {
         },
         onFulfill: jest.fn(),
       })
-    ).rejects.toThrow("offline");
+    ).rejects.toThrow(AddLiquidityPreflightError);
     await expect(
       sendAddLiquidity({
         config: makeConfig(false),
@@ -303,5 +304,31 @@ describe("sendAddLiquidity", () => {
       })
     ).rejects.toThrow("not a joinable share pool");
     expect(osmosis.sendJoinPoolMsg).not.toHaveBeenCalled();
+  });
+
+  it("does not send when the fresh pool has other decimals for an asset", async () => {
+    const config = makeConfig(true);
+    const osmosis = {
+      sendJoinPoolMsg: jest.fn(),
+      sendJoinSwapExternAmountInMsg: jest.fn(),
+    };
+    const fresh = rawPool("1000000000");
+    fresh.reserveCoins = [
+      new CoinPretty({ ...atom, coinDecimals: 8 }, new Int("99000000")),
+      new CoinPretty(osmo, new Int("990000000")),
+    ];
+
+    await expect(
+      sendAddLiquidity({
+        config,
+        osmosis,
+        fetchPool: async () => fresh,
+        onFulfill: jest.fn(),
+      })
+    ).rejects.toThrow(AddLiquidityPreflightError);
+    expect(osmosis.sendJoinSwapExternAmountInMsg).not.toHaveBeenCalled();
+    // the config now has the fresh currency and no stale input
+    expect(config.poolAssetConfigs[1].sendCurrency.coinDecimals).toBe(8);
+    expect(config.singleAmountInConfig?.amount ?? "").toBe("");
   });
 });

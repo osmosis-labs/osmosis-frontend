@@ -12,8 +12,9 @@ import {
 } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -53,14 +54,13 @@ export function makeAddLiquidityPoolData(
       (coin) => coin.currency.coinMinimalDenom === denom
     )?.currency;
     // The server's chain fallback also puts guessed currencies in the
-    // reserve coins, so only an asset list entry proves the decimals.
-    if (
-      !currency ||
-      !getAssetFromAssetList({
-        coinMinimalDenom: denom,
-        assetLists: AssetLists,
-      })
-    ) {
+    // reserve coins (and a persisted pool can hold one from an older build),
+    // so only a matching asset list entry proves the decimals.
+    const listed = getAssetFromAssetList({
+      coinMinimalDenom: denom,
+      assetLists: AssetLists,
+    });
+    if (!currency || !listed || listed.decimals !== currency.coinDecimals) {
       hasGuessedCurrency = true;
     }
     if (!currency) currency = makeUnlistedAssetCurrency(denom);
@@ -117,9 +117,38 @@ export async function sendAddLiquidity({
   const shareOutAmount = config.shareOutAmount?.toDec().toString();
   if (!singleAmountIn && !shareOutAmount) return;
 
-  const freshPool = makeAddLiquidityPoolData(await fetchPool());
+  let freshPool: AddLiquidityPoolData | undefined;
+  try {
+    freshPool = makeAddLiquidityPoolData(await fetchPool());
+  } catch (e) {
+    throw new AddLiquidityPreflightError(`Failed to fetch pool #${poolId}`, {
+      cause: e,
+    });
+  }
   if (!freshPool) {
-    throw new Error(`Pool #${poolId} is not a joinable share pool`);
+    throw new AddLiquidityPreflightError(
+      `Pool #${poolId} is not a joinable share pool`
+    );
+  }
+  // Typed amounts are in the config's currencies; if the fresh pool resolves
+  // any asset with other decimals, the amounts would not mean what the user
+  // saw. Refresh the config (which clears the inputs) instead of sending.
+  const decimalsByDenom = new Map(
+    freshPool.assets.map(({ amount: { currency } }) => [
+      currency.coinMinimalDenom,
+      currency.coinDecimals,
+    ])
+  );
+  const currencyChanged = config.poolAssetConfigs.some(
+    ({ sendCurrency }) =>
+      decimalsByDenom.get(sendCurrency.coinMinimalDenom) !==
+      sendCurrency.coinDecimals
+  );
+  if (currencyChanged) {
+    config.setPool(freshPool);
+    throw new AddLiquidityPreflightError(
+      `Pool #${poolId} asset details changed; amounts need re-entering`
+    );
   }
 
   if (singleAmountIn) {
@@ -142,6 +171,9 @@ export async function sendAddLiquidity({
     );
   }
 }
+
+/** A join that stopped before anything was signed, e.g. the fresh pool fetch failed. */
+export class AddLiquidityPreflightError extends Error {}
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
  *  Updates `poolId` and `bech32Address` in effects, and feeds the pool and the user's balances
@@ -192,8 +224,13 @@ export function useAddLiquidityConfig(
   }, [config, address, balances]);
 
   const apiUtils = api.useUtils();
+  // The button only disables once the tx is signing, which is after the fresh
+  // pool fetch, so ignore clicks while a submit is already in flight.
+  const isSubmittingRef = useRef(false);
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
+      if (isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
       try {
         if (!account) return;
 
@@ -206,7 +243,16 @@ export function useAddLiquidityConfig(
         });
       } catch (e: any) {
         console.error(e);
+        // Failures before signing skip the account store's failed tx toast
+        if (e instanceof AddLiquidityPreflightError) {
+          displayToast(
+            { titleTranslationKey: "errors.uhOhSomethingWentWrong" },
+            ToastType.ERROR
+          );
+        }
         reject(e.message);
+      } finally {
+        isSubmittingRef.current = false;
       }
     });
   }, [account, apiUtils, config, poolId]);

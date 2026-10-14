@@ -267,7 +267,7 @@ describe("ObservableAddLiquidityConfig", () => {
     expect(config.getAmountAt(1)).toBe("1");
   });
 
-  it("rebuilds amount configs when a refresh changes an asset's decimals", () => {
+  it("starts over when a refresh changes an asset's decimals", () => {
     // Seeded with a guessed 6 decimal currency, then refreshed with the real 8
     const pool = makeWeightedPool();
     pool.assets[1] = {
@@ -288,7 +288,10 @@ describe("ObservableAddLiquidityConfig", () => {
     config.setPool(refreshed);
 
     expect(config.poolAssetConfigs[1].sendCurrency.coinDecimals).toBe(8);
-    expect(config.getAmountAt(1)).toBe("1");
+    // Amounts and the share out estimate used the old decimals
+    expect(config.getAmountAt(1)).toBe("");
+    expect(config.shareOutAmount).toBeUndefined();
+    expect(config.error).toBeInstanceOf(EmptyAmountError);
   });
 
   it("reports share out calculation pending when amounts are set directly", () => {

@@ -82,14 +82,6 @@ export class PoolAssetAmountConfig {
     this._fraction = isMax ? 1 : undefined;
   }
 
-  /** Takes over another config's typed amount and max state, e.g. when the
-   *  config is rebuilt for a changed currency. */
-  @action
-  copyInputFrom(other: PoolAssetAmountConfig) {
-    this._amount = other._amount;
-    this._fraction = other._fraction;
-  }
-
   @computed
   get balance(): CoinPretty {
     return this.getBalance(this.sendCurrency);
@@ -202,33 +194,27 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     this._pool = pool;
 
     // A refreshed pool can resolve an asset's currency differently (e.g. a
-    // guessed currency from a persisted cache). Rebuild the amount configs so
-    // typed amounts use the new decimals, keeping what the user entered.
+    // guessed currency from a persisted cache). Typed amounts and the share
+    // out estimate were computed with the old decimals, so start over rather
+    // than show amounts that no longer match what would be sent.
     const cache = this._cacheAmountConfigs;
     if (pool && cache && cache.assetsKey !== getAssetsKey(pool)) {
-      this._cacheAmountConfigs = this.makeAmountConfigs(pool, cache.configs);
+      this._cacheAmountConfigs = this.makeAmountConfigs(pool);
+      this._shareOutAmount = undefined;
     }
   }
 
-  protected makeAmountConfigs(
-    pool: AddLiquidityPoolData,
-    previous: PoolAssetAmountConfig[] = []
-  ): AmountConfigsCache {
+  protected makeAmountConfigs(pool: AddLiquidityPoolData): AmountConfigsCache {
     return {
       poolId: this.poolId,
       sender: this.sender,
       assetsKey: getAssetsKey(pool),
-      configs: pool.assets.map(({ amount: { currency } }) => {
-        const config = new PoolAssetAmountConfig(currency, (currency) =>
-          this.getBalance(currency)
-        );
-        const old = previous.find(
-          ({ sendCurrency }) =>
-            sendCurrency.coinMinimalDenom === currency.coinMinimalDenom
-        );
-        if (old) config.copyInputFrom(old);
-        return config;
-      }),
+      configs: pool.assets.map(
+        ({ amount: { currency } }) =>
+          new PoolAssetAmountConfig(currency, (currency) =>
+            this.getBalance(currency)
+          )
+      ),
     };
   }
 
