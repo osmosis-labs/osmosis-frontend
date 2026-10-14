@@ -100,12 +100,26 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
-  const { setMinRange, setMaxRange, setAnchorAsset } = config;
+  const { setMinRange, setMaxRange, setFullRange, setAnchorAsset } = config;
   useEffect(() => {
     setPriceRange([lowerPrice, upperPrice]);
-    setMinRange(lowerPrice.toString());
-    setMaxRange(upperPrice.toString());
-  }, [setMinRange, setMaxRange, setPriceRange, lowerPrice, upperPrice]);
+    // A full range position's prices are the extreme ticks, which the price
+    // inputs clamp; model it as full range so the deposit ratio matches.
+    if (isFullRange) {
+      setFullRange(true);
+    } else {
+      setMinRange(lowerPrice.toString());
+      setMaxRange(upperPrice.toString());
+    }
+  }, [
+    setMinRange,
+    setMaxRange,
+    setFullRange,
+    setPriceRange,
+    lowerPrice,
+    upperPrice,
+    isFullRange,
+  ]);
 
   return (
     <ModalBase
