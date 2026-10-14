@@ -10,11 +10,7 @@ import {
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import {
-  getEvmRpcTransport,
-  getNomicRelayerUrl,
-  isNil,
-} from "@osmosis-labs/utils";
+import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -53,6 +49,7 @@ import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
+import { getClientEvmRpcTransport } from "~/utils/evm-rpc";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import {
   classifySolanaSimulation,
@@ -904,7 +901,7 @@ export const useBridgeQuotes = ({
       throw new Error("No EVM chain selected or chain is unsupported");
 
     const publicClient = createPublicClient({
-      transport: getEvmRpcTransport(currentEvmChain),
+      transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
 
