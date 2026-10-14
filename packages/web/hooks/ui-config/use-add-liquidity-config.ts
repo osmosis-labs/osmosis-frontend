@@ -16,8 +16,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+import { useWallet } from "../use-wallet";
 
 /** Converts a tRPC share pool (weighted or stable) into the plain data the add liquidity config consumes.
  *  Pool assets and amounts come from the raw chain pool, in chain order; currencies come from the pool's reserve coins,
@@ -186,10 +187,8 @@ export function useAddLiquidityConfig(
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
-
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
 
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
   const { data: balances } = api.local.balances.getUserBalances.useQuery(

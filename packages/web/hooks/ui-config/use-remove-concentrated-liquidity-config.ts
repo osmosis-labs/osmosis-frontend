@@ -4,8 +4,9 @@ import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/store
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+import { useWallet } from "../use-wallet";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
@@ -16,10 +17,9 @@ export function useRemoveConcentratedLiquidityConfig(
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
+  const { wallet: account } = useWallet(osmosisChainId);
 
   const [config] = useState(
     () =>

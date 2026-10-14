@@ -8,7 +8,7 @@ import { useCallback, useMemo } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useSwapAsset } from "~/hooks/use-swap";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /**
@@ -137,13 +137,12 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { accountStore } = useStore();
+  const { address } = useWallet();
   const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
   const { data: selectableAssetPages } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
       {
-        userOsmoAddress: accountStore.getWallet(accountStore.osmosisChainId)
-          ?.address,
+        userOsmoAddress: address,
         includePreview: false,
         limit: 50, // items per page
       },
@@ -481,8 +480,7 @@ export const useOrderbookClaimableOrders = ({
   refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account } = useWallet();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const { data: orders, isLoading } = useClaimableOrdersQuery({
     userAddress,

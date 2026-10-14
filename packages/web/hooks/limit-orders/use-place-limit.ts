@@ -21,6 +21,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -109,7 +110,7 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const account = accountStore.getWallet(osmosisChainId);
+  const { wallet: account, address } = useWallet(osmosisChainId);
 
   // TODO: Readd this once orderbooks support non-stablecoin pairs
   // const { price: quoteAssetPrice } = usePrice({
@@ -283,7 +284,7 @@ export const usePlaceLimit = ({
 
     return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
-      sender: account?.address ?? "",
+      sender: address ?? "",
       msg: placeLimitMsg,
       funds: [
         {
@@ -292,12 +293,7 @@ export const usePlaceLimit = ({
         },
       ],
     });
-  }, [
-    account?.address,
-    orderbookContractAddress,
-    paymentTokenValue,
-    placeLimitMsg,
-  ]);
+  }, [address, orderbookContractAddress, paymentTokenValue, placeLimitMsg]);
 
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
@@ -313,7 +309,7 @@ export const usePlaceLimit = ({
     return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, account?.address, accountStore.osmosisChainId]);
+  }, [account, address, accountStore.osmosisChainId]);
 
   const limitMessages = useMemo(() => {
     if (isLedger) {
@@ -488,10 +484,10 @@ export const usePlaceLimit = ({
   const { data, isFetched: isBalancesFetched } =
     api.edge.assets.getUserAssets.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress: address ?? "",
       },
       {
-        enabled: !!account?.address,
+        enabled: !!address,
         select: ({ items }) =>
           items.filter(
             ({ coinMinimalDenom }) =>
@@ -652,7 +648,7 @@ export const usePlaceLimit = ({
     return (
       !isMarket &&
       !!encodedMsg &&
-      !!account?.address &&
+      !!address &&
       !insufficientFunds &&
       !inAmountInput.isTyping &&
       !marketState.inAmountInput.isTyping
@@ -660,7 +656,7 @@ export const usePlaceLimit = ({
   }, [
     isMarket,
     encodedMsg,
-    account?.address,
+    address,
     insufficientFunds,
     inAmountInput.isTyping,
     marketState.inAmountInput.isTyping,

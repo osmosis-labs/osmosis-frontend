@@ -1,10 +1,10 @@
 import type { BondDuration } from "@osmosis-labs/server";
 import { useCallback } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { useAmountInput } from "../input/use-amount-input";
+import { useWallet } from "../use-wallet";
 
 /** Superfluid pool actions. */
 export function useSuperfluidPool(bondDurations?: BondDuration[]): {
@@ -14,8 +14,7 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
     lockLPTokensConfig?: ReturnType<typeof useAmountInput>
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account } = useWallet();
   const apiUtils = api.useUtils();
 
   const delegateSharesToValidator = useCallback(

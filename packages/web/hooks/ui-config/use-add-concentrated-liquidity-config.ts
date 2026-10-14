@@ -24,9 +24,9 @@ import {
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "../use-wallet";
 import {
   calcHighGasFee,
   CL_CREATE_POSITION_GAS,
@@ -54,11 +54,10 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
 
   const { data: pool, isFetched: isPoolFetched } =
     api.local.pools.getPool.useQuery(

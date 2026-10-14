@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "./use-wallet";
+
 export type HistoryTransaction = ReturnType<
   typeof useTransactionHistory
 >["transactions"][number];
@@ -23,22 +25,22 @@ export const useTransactionHistory = ({
   pageNumber?: string;
   pageSize?: string;
 } = {}) => {
-  const { accountStore, transferHistoryStore } = useStore();
+  const { transferHistoryStore } = useStore();
 
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
   const recentTransfers = transferHistoryStore.getHistoriesByAccount(
-    wallet?.address || ""
+    address || ""
   );
 
   const { data: transactionsData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        address: wallet?.address || "",
+        address: address || "",
         page: pageNumber,
         pageSize,
       },
       {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+        enabled: Boolean(isWalletConnected && address),
       }
     );
 

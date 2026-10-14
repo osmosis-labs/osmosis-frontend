@@ -8,6 +8,7 @@ import { useWalletSelect } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
 import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -35,7 +36,7 @@ export function useOrderbookCreationFlow({
 }) {
   const { t } = useTranslation();
   const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -78,8 +79,8 @@ export function useOrderbookCreationFlow({
 
   const { data: balances, isFetching: isFetchingBalances } =
     api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
-      { enabled: isOpen && !!account?.address }
+      { bech32Address: address ?? "" },
+      { enabled: isOpen && !!address }
     );
   const hasInsufficientFeeBalance = useMemo(() => {
     if (!balances) return false;
@@ -98,7 +99,6 @@ export function useOrderbookCreationFlow({
     resetError();
   };
 
-  const isWalletConnected = !!account?.isWalletConnected;
   // Anything still loading keeps the confirm disabled (fail closed); settled
   // blocks get a reason the modal shows instead of closing silently.
   const isConfirmPending =
