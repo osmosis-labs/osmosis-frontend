@@ -1,11 +1,10 @@
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
-import { OsmosisChainInfo } from "~/config/chain";
 import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 export const ProfileOneClickTradingSettings = ({
@@ -15,19 +14,17 @@ export const ProfileOneClickTradingSettings = ({
   onGoBack: () => void;
   onClose: () => void;
 }) => {
-  const { accountStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
-  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
+  const { address } = useWallet();
 
-  const shouldFetchSessionAuthenticator =
-    !!account?.address && !!oneClickTradingInfo;
+  const shouldFetchSessionAuthenticator = !!address && !!oneClickTradingInfo;
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
       publicKey: oneClickTradingInfo?.publicKey ?? "",
     },
     {

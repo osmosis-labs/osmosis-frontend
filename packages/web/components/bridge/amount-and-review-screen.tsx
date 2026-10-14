@@ -10,6 +10,7 @@ import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -60,15 +61,31 @@ export const AmountAndReviewScreen = observer(
     const { address: evmAddress, connector: evmConnector } =
       useEvmWalletAccount();
 
-    const fromChainCosmosAccount =
+    const fromCosmosChainId =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)
+        ? fromChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: fromCosmosWallet, address: fromCosmosWalletAddress } =
+      useWallet(fromCosmosChainId);
+    const fromChainCosmosAccount = fromCosmosChainId
+      ? fromCosmosWallet
+      : undefined;
+    const fromChainCosmosAddress = fromCosmosChainId
+      ? fromCosmosWalletAddress
+      : undefined;
 
-    const toChainCosmosAccount =
+    const toCosmosChainId =
       !isNil(toChain) && toChain.chainType === "cosmos"
-        ? accountStore.getWallet(toChain.chainId)
+        ? toChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: toCosmosWallet, address: toCosmosWalletAddress } =
+      useWallet(toCosmosChainId);
+    const toChainCosmosAccount = toCosmosChainId ? toCosmosWallet : undefined;
+    const toChainCosmosAddress = toCosmosChainId
+      ? toCosmosWalletAddress
+      : undefined;
 
     const featureFlags = useFeatureFlags();
     const { address: phantomAddress } = usePhantomWallet({
@@ -80,12 +97,12 @@ export const AmountAndReviewScreen = observer(
         ? evmAddress
         : fromChain?.chainType === "solana"
           ? phantomAddress
-          : fromChainCosmosAccount?.address;
+          : fromChainCosmosAddress;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
         ? evmAddress
-        : toChainCosmosAccount?.address;
+        : toChainCosmosAddress;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"

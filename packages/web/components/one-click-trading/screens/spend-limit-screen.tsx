@@ -13,10 +13,9 @@ import {
   ScreenGoBackButton,
   ScreenManager,
 } from "~/components/screen-manager";
-import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   addCommasToNumber,
   removeCommasFromNumber,
@@ -54,7 +53,6 @@ export const SpendLimitScreen = ({
   subtitle,
 }: SpendLimitScreenProps) => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const [selectedView, setSelectedView] =
     useState<SpendLimitViews>("fixed-amount");
 
@@ -75,14 +73,14 @@ export const SpendLimitScreen = ({
 
   const isManualShareOfBalance = shareOfBalance.id === "manual";
 
-  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
+  const { address } = useWallet();
   const { data: userAssetsTotal, isLoading: isLoadingUserAssetsTotal } =
     api.edge.assets.getUserAssetsTotal.useQuery(
       {
-        userOsmoAddress: account?.address as string,
+        userOsmoAddress: address as string,
       },
       {
-        enabled: Boolean(account) && Boolean(account?.address),
+        enabled: Boolean(address),
         trpc: {
           context: {
             skipBatch: true,
@@ -156,7 +154,7 @@ export const SpendLimitScreen = ({
             "oneClickTrading.settings.spendLimitScreen.spendLimitSubDescription"
           )}
         </p>
-        {!!account?.address && (
+        {!!address && (
           <MenuToggle
             options={
               [

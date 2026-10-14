@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
@@ -8,21 +7,18 @@ import { Sparkline } from "~/components/chart/sparkline";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-export const NavbarOsmoPrice = observer(() => {
-  const { accountStore } = useStore();
+export const NavbarOsmoPrice = () => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
-  const { chainId } = OsmosisChainInfo;
-  const wallet = accountStore.getWallet(chainId);
+  const { isWalletConnected } = useWallet();
 
   const { data: osmo } = api.edge.assets.getMarketAsset.useQuery({
     findMinDenomOrSymbol: "OSMO",
@@ -62,7 +58,7 @@ export const NavbarOsmoPrice = observer(() => {
         {flags.sidebarOsmoChangeAndChart && <OsmoPriceAndChart />}
       </div>
 
-      {wallet?.isWalletConnected && (
+      {isWalletConnected && (
         <SkeletonLoader isLoaded={osmo.currentPrice.isReady}>
           <Button
             variant="outline"
@@ -89,7 +85,7 @@ export const NavbarOsmoPrice = observer(() => {
       )}
     </div>
   );
-});
+};
 
 const OsmoPriceAndChart: FunctionComponent = () => {
   const { data: assetMarketInfo, isLoading: isLoadingAssetInfo } =
