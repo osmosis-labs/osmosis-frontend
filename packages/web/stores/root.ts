@@ -1,54 +1,36 @@
 import {
   AccountStore,
-  ChainStore,
   CosmosAccount,
   CosmwasmAccount,
-  LPCurrencyRegistrar,
-  makeIndexedKVStore,
   OsmosisAccount,
   type TxEvents,
-  UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
-import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
-import {
-  IS_TESTNET,
-  WALLETCONNECT_PROJECT_KEY,
-  WALLETCONNECT_RELAY_URL,
-} from "~/config";
-import { ChainInfos, OsmosisChainInfo } from "~/config/chain";
-import { withCosmosKitFields } from "~/config/keplr-chain";
+import { WALLETCONNECT_PROJECT_KEY, WALLETCONNECT_RELAY_URL } from "~/config";
+import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-
-const assets = AssetLists.flatMap((list) => list.assets);
+import { withCosmosKitFields } from "~/config/keplr-chain";
 
 export class RootStore {
-  public readonly chainStore: ChainStore;
-
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
-
-  protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
-  protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
 
   constructor({
     txEvents,
   }: {
     txEvents?: TxEvents;
   } = {}) {
-    this.chainStore = new ChainStore(ChainInfos, OsmosisChainInfo.chainId);
-
     this.accountStore = new AccountStore(
       // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
       ChainList.map(withCosmosKitFields),
-      this.chainStore.osmosis.chainId,
+      OsmosisChainInfo.chainId,
       AssetLists,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
@@ -56,7 +38,7 @@ export class RootStore {
        * @see wallet-registry.ts
        */
       [],
-      this.chainStore,
+      StaticChainGetter,
       {
         walletConnectOptions: {
           signClient: {
@@ -69,7 +51,7 @@ export class RootStore {
           onBroadcastFailed: (string, e) => {
             txEvents?.onBroadcastFailed?.(string, e);
             return toastOnBroadcastFailed((chainId) =>
-              this.chainStore.getChain(chainId)
+              StaticChainGetter.getChain(chainId)
             )(string, e);
           },
           onBroadcasted: (string, txHash) => {
@@ -79,7 +61,7 @@ export class RootStore {
           onFulfill: (chainId, tx) => {
             txEvents?.onFulfill?.(chainId, tx);
             return toastOnFulfill((chainId) =>
-              this.chainStore.getChain(chainId)
+              StaticChainGetter.getChain(chainId)
             )(chainId, tx);
           },
         },
@@ -91,12 +73,6 @@ export class RootStore {
       CosmosAccount.use(),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use()
-    );
-
-    this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
-    this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
-      this.chainStore,
-      assets
     );
   }
 }
