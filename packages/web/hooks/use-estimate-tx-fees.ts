@@ -2,21 +2,22 @@ import { EncodeObject } from "@cosmjs/proto-signing";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
-  AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
-  InsufficientBalanceForFeeError,
   OsmosisAccount,
-  SignOptions,
-  SwapRequiresError,
 } from "@osmosis-labs/stores";
+import type { AccountStoreWallet, SignOptions } from "@osmosis-labs/tx";
 import {
   getFallbackFeeAmountFromBalances,
   InsufficientFeeError,
   type QuoteStdFee,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isNil,
+  SwapRequiresError,
+} from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";

@@ -4,13 +4,14 @@ import {
   NegativeAmountError,
 } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import {
   InsufficientBalanceError,
   InsufficientBalanceForFeeError,
-} from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
-import { isNil, isValidNumericalRawInput } from "@osmosis-labs/utils";
+  isNil,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";

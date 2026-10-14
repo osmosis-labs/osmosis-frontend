@@ -36,6 +36,7 @@
   "dependencies": {
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/utils": "^1.0.0",
     "axios": "^0.34.0",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",

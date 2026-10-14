@@ -1,17 +1,16 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
+import type { AccountLockedLongerDuration } from "@osmosis-labs/types";
 import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { AccountLockedLongerDuration } from "./types";
 
 export class ObservableQueryAccountLockedInner extends ObservableChainQuery<AccountLockedLongerDuration> {
   constructor(

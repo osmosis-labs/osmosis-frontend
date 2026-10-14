@@ -1,15 +1,13 @@
-import {
-  ChainGetter,
-  KVStore,
-  QueryResponse,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, QueryResponse } from "@osmosis-labs/keplr-stores";
 import { BigDec, StableSwapMath, WeightedPoolMath } from "@osmosis-labs/math";
+import type { IPriceStore, PoolRaw, PoolType } from "@osmosis-labs/types";
 import {
+  ALLOYED_POOL_CODE_IDS_MAINNET,
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
   STABLE_POOL_TYPE,
   WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/types";
 import {
   AppCurrency,
   CoinPretty,
@@ -21,14 +19,13 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { IPriceStore } from "../../price";
 import { ObservableQueryExternalBase } from "../base";
-import { ALLOYED_POOL_CODE_IDS_MAINNET, PoolRaw, PoolType } from "./types";
 
 /** Query store that can refresh an individual pool's data from the node.
  *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.

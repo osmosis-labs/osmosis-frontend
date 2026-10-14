@@ -1,15 +1,15 @@
+import type { Pool } from "@osmosis-labs/server";
 import {
   makeGammShareCurrency,
   makeUnlistedAssetCurrency,
-  type Pool,
-  type StablePoolRawResponse,
-  type WeightedPoolRawResponse,
 } from "@osmosis-labs/server";
-import {
-  type AddLiquidityPoolData,
-  type OsmosisAccountImpl,
-} from "@osmosis-labs/stores";
-import type { Currency } from "@osmosis-labs/types";
+import type { OsmosisAccountImpl } from "@osmosis-labs/stores";
+import type {
+  AddLiquidityPoolData,
+  Currency,
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,

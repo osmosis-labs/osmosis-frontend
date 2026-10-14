@@ -1,3 +1,9 @@
+import type {
+  ConcentratedPoolRawResponse,
+  CosmwasmPoolRawResponse,
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { IS_TESTNET, SIDECAR_BASE_URL } from "../../env";
@@ -6,12 +12,6 @@ import {
   SearchType,
   SortType,
 } from "../../queries/complex/pools";
-import {
-  ConcentratedPoolRawResponse,
-  CosmwasmPoolRawResponse,
-  StablePoolRawResponse,
-  WeightedPoolRawResponse,
-} from "../osmosis";
 
 // overwrite types from node pool type
 

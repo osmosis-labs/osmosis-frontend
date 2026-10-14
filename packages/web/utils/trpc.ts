@@ -1,10 +1,10 @@
 import { superjson } from "@osmosis-labs/server";
-import { makeIndexedKVStore } from "@osmosis-labs/stores";
 import {
   createTRPCRouter,
   localLink,
   makeSkipBatchLink,
 } from "@osmosis-labs/trpc";
+import { makeIndexedKVStore } from "@osmosis-labs/utils";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";

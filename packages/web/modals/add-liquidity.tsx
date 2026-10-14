@@ -1,8 +1,7 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import { NotInitializedError } from "@osmosis-labs/stores";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
+import { NotInitializedError } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
@@ -12,11 +11,11 @@ import type { PoolType } from "~/components/complex/pools-table";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { OsmosisChainInfo } from "~/config/chain";
-import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
+  useTranslation,
 } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";

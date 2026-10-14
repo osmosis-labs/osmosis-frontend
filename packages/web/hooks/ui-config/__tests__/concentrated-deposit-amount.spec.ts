@@ -5,26 +5,48 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { CoinPretty } from "@osmosis-labs/unit";
-import { autorun } from "mobx";
 
 import {
   calcHighGasFee,
   ConcentratedDepositAmount,
+  createConcentratedDepositAmount,
+  DepositInputState,
+  INITIAL_DEPOSIT_INPUT,
+  setDepositFraction,
+  typeDepositAmount,
 } from "../concentrated-deposit-amount";
-import { ObservableAddConcentratedLiquidityConfig } from "../use-add-concentrated-liquidity-config";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };
 
-function setup(balances: Record<string, string> = {}, currency = osmo) {
-  const state = { balances };
-  const input = new ConcentratedDepositAmount(
+/** Test harness holding the input state, like the reducer does in the hook. */
+function setup(
+  balances: Record<string, string> = {},
+  currency = osmo,
+  fee?: CoinPretty
+) {
+  const harness = {
+    state: INITIAL_DEPOSIT_INPUT as DepositInputState,
+    balances,
     currency,
-    (denom) => state.balances[denom]
-  );
-  return { input, state };
+    fee,
+    get input(): ConcentratedDepositAmount {
+      return createConcentratedDepositAmount({
+        currency: harness.currency,
+        rawBalance: harness.balances[harness.currency.coinMinimalDenom],
+        state: harness.state,
+        fee: harness.fee,
+        setAmount: (amount) => {
+          harness.state = typeDepositAmount(harness.state, amount);
+        },
+        setFraction: (fraction) => {
+          harness.state = setDepositFraction(harness.state, fraction);
+        },
+      });
+    },
+  };
+  return harness;
 }
 
 describe("calcHighGasFee", () => {
@@ -58,135 +80,102 @@ describe("ConcentratedDepositAmount", () => {
   });
 
   it("reads a zero balance while balances are not loaded", () => {
-    const { input } = setup();
-    expect(input.balance.toDec().isZero()).toBe(true);
-    input.setAmount("1");
-    expect(input.error).toBeInstanceOf(InsufficientAmountError);
+    const h = setup();
+    expect(h.input.balance.toDec().isZero()).toBe(true);
+    h.input.setAmount("1");
+    expect(h.input.error).toBeInstanceOf(InsufficientAmountError);
   });
 
   it("prefixes a leading dot and converts to base units", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setAmount(".5");
-    expect(input.amount).toBe("0.5");
-    expect(input.getAmountPrimitive().amount).toBe("500000");
-    expect(input.error).toBeUndefined();
+    const h = setup({ uosmo: "5000000" });
+    h.input.setAmount(".5");
+    expect(h.input.amount).toBe("0.5");
+    expect(h.input.getAmountPrimitive().amount).toBe("500000");
+    expect(h.input.error).toBeUndefined();
   });
 
   it("validates input", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setAmount("");
-    expect(input.error).toBeInstanceOf(EmptyAmountError);
-    expect(input.getAmountPrimitive().amount).toBe("0");
-    input.setAmount("abc");
-    expect(input.error).toBeInstanceOf(InvalidNumberAmountError);
-    input.setAmount("-1");
-    expect(input.error).toBeInstanceOf(NegativeAmountError);
-    input.setAmount("5.000001");
-    expect(input.error).toBeInstanceOf(InsufficientAmountError);
-    input.setAmount("5");
-    expect(input.error).toBeUndefined();
+    const h = setup({ uosmo: "5000000" });
+    h.input.setAmount("");
+    expect(h.input.error).toBeInstanceOf(EmptyAmountError);
+    expect(h.input.getAmountPrimitive().amount).toBe("0");
+    h.input.setAmount("abc");
+    expect(h.input.error).toBeInstanceOf(InvalidNumberAmountError);
+    h.input.setAmount("-1");
+    expect(h.input.error).toBeInstanceOf(NegativeAmountError);
+    h.input.setAmount("5.000001");
+    expect(h.input.error).toBeInstanceOf(InsufficientAmountError);
+    h.input.setAmount("5");
+    expect(h.input.error).toBeUndefined();
   });
 
   it("max uses the full balance when no fee applies", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setIsMax(true);
-    expect(input.isMax).toBe(true);
-    expect(input.amount).toBe("5");
-    expect(input.getAmountPrimitive().amount).toBe("5000000");
+    const h = setup({ uosmo: "5000000" });
+    h.input.setIsMax(true);
+    expect(h.input.isMax).toBe(true);
+    expect(h.input.amount).toBe("5");
+    expect(h.input.getAmountPrimitive().amount).toBe("5000000");
   });
 
   it("max subtracts the fee when in the fee currency", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setFee(new CoinPretty(osmo, 120000));
-    input.setIsMax(true);
-    expect(input.amount).toBe("4.88");
+    const h = setup({ uosmo: "5000000" }, osmo, new CoinPretty(osmo, 120000));
+    h.input.setIsMax(true);
+    expect(h.input.amount).toBe("4.88");
   });
 
   it("max ignores a fee in a different currency", () => {
-    const { input } = setup({ uatom: "5000000" }, atom);
-    input.setFee(new CoinPretty(osmo, 120000));
-    input.setIsMax(true);
-    expect(input.amount).toBe("5");
+    const h = setup({ uatom: "5000000" }, atom, new CoinPretty(osmo, 120000));
+    h.input.setIsMax(true);
+    expect(h.input.amount).toBe("5");
   });
 
   it("max is zero when the balance does not cover the fee", () => {
-    const { input } = setup({ uosmo: "100000" });
-    input.setFee(new CoinPretty(osmo, 120000));
-    input.setIsMax(true);
-    expect(input.amount).toBe("0");
+    const h = setup({ uosmo: "100000" }, osmo, new CoinPretty(osmo, 120000));
+    h.input.setIsMax(true);
+    expect(h.input.amount).toBe("0");
   });
 
   it("applies fractions to the fee-adjusted balance", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setFee(new CoinPretty(osmo, 1000000));
-    input.setFraction(0.5);
-    expect(input.amount).toBe("2");
-    expect(input.isMax).toBe(false);
+    const h = setup({ uosmo: "5000000" }, osmo, new CoinPretty(osmo, 1000000));
+    h.input.setFraction(0.5);
+    expect(h.input.amount).toBe("2");
+    expect(h.input.isMax).toBe(false);
   });
 
   it("typing clears a fraction", () => {
-    const { input } = setup({ uosmo: "5000000" });
-    input.setIsMax(true);
-    input.setAmount("1");
-    expect(input.fraction).toBeUndefined();
-    expect(input.amount).toBe("1");
+    const h = setup({ uosmo: "5000000" });
+    h.input.setIsMax(true);
+    h.input.setAmount("1");
+    expect(h.input.fraction).toBeUndefined();
+    expect(h.input.amount).toBe("1");
   });
 
   it("follows the balance and send currency", () => {
-    const { input, state } = setup({ uosmo: "1000000" });
-    input.setIsMax(true);
-    expect(input.amount).toBe("1");
-    state.balances = { uosmo: "2000000", uatom: "3000000" };
-    // plain (non-observable) test balances: re-read after changing currency
-    input.setSendCurrency(atom);
-    expect(input.sendCurrency).toBe(atom);
-    expect(input.amount).toBe("3");
+    const h = setup({ uosmo: "1000000" });
+    h.input.setIsMax(true);
+    expect(h.input.amount).toBe("1");
+    h.balances = { uosmo: "2000000", uatom: "3000000" };
+    h.currency = atom;
+    expect(h.input.sendCurrency).toBe(atom);
+    expect(h.input.amount).toBe("3");
   });
-});
 
-describe("ObservableAddConcentratedLiquidityConfig balances", () => {
-  const chainGetter = {
-    getChain: () => ({
-      currencies: [osmo],
-      feeCurrencies: [osmo],
-      stakeCurrency: osmo,
-    }),
-  } as unknown as ChainGetter;
+  it("follows balance updates and clears on undefined (balances reset)", () => {
+    const h = setup({ uosmo: "5000000" });
+    h.input.setIsMax(true);
+    expect(h.input.amount).toBe("5");
+    expect(h.input.error).toBeUndefined();
 
-  it("updates observers when balances change and clears on undefined", () => {
-    const config = new ObservableAddConcentratedLiquidityConfig(
-      chainGetter,
-      "osmosis-1",
-      "1"
-    );
-    const seen: { amount: string; error: string | undefined }[] = [];
-    const dispose = autorun(() => {
-      seen.push({
-        amount: config.baseDepositAmountIn.amount,
-        error: config.baseDepositAmountIn.error?.constructor.name,
-      });
-    });
-    const last = () => seen[seen.length - 1];
+    h.balances = { uosmo: "7000000" };
+    expect(h.input.amount).toBe("7");
 
-    // no pool yet, so no fee is applied to max
-    config.baseDepositAmountIn.setIsMax(true);
-    expect(last()).toEqual({ amount: "0", error: "ZeroAmountError" });
+    h.balances = {};
+    expect(h.input.amount).toBe("0");
+    expect(h.input.error).toBeInstanceOf(ZeroAmountError);
 
-    config.setBalances([{ denom: "uosmo", amount: "5000000" }]);
-    expect(last()).toEqual({ amount: "5", error: undefined });
-
-    config.setBalances([{ denom: "uosmo", amount: "7000000" }]);
-    expect(last().amount).toBe("7");
-
-    config.setBalances(undefined);
-    expect(last()).toEqual({ amount: "0", error: "ZeroAmountError" });
-
-    config.baseDepositAmountIn.setAmount("1");
-    expect(last().error).toBe("InsufficientAmountError");
-    config.setBalances([{ denom: "uosmo", amount: "1000000" }]);
-    expect(last().error).toBeUndefined();
-
-    dispose();
-    config.dispose();
+    h.input.setAmount("1");
+    expect(h.input.error).toBeInstanceOf(InsufficientAmountError);
+    h.balances = { uosmo: "1000000" };
+    expect(h.input.error).toBeUndefined();
   });
 });

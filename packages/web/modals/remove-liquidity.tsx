@@ -1,6 +1,6 @@
-import { WeightedPoolRawResponse } from "@osmosis-labs/server";
-import { NoAvailableSharesError } from "@osmosis-labs/stores";
+import type { WeightedPoolRawResponse } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
+import { NoAvailableSharesError } from "@osmosis-labs/utils";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import {
@@ -8,8 +8,7 @@ import {
   RemoveLiquidity,
 } from "~/components/complex/remove-liquidity";
 import { tError } from "~/components/localization";
-import { useTranslation } from "~/hooks";
-import { useConnectWalletModalRedirect } from "~/hooks";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { api } from "~/utils/trpc";

@@ -11,7 +11,7 @@ import {
 import { estimateJoinSwap } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
 import { TestOsmosisChainId } from "../../tests/mock-data";
-import { JoinPoolData } from "../osmosis/join-pool";
+import type { JoinPoolData } from "@osmosis-labs/tx";
 
 function toJoinPoolData(pool: ObservableQueryPool): JoinPoolData {
   const weighted = pool.weightedPoolInfo;

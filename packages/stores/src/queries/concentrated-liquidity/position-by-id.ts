@@ -1,15 +1,14 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import type { LiquidityPosition } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { action, computed, makeObservable, observable } from "mobx";
-
-import { LiquidityPosition } from "./types";
 
 const URL_BASE = "/osmosis/concentratedliquidity/v1beta1";
 

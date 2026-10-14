@@ -1,7 +1,9 @@
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+import {
+  InvalidSlippageError,
+  NegativeSlippageError,
+} from "@osmosis-labs/utils";
 import { action, computed, makeObservable, observable } from "mobx";
-
-import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
   static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [

@@ -1,17 +1,17 @@
+import { BondStatus } from "@osmosis-labs/types";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import Axios from "axios";
+import { computed, makeObservable, observable, runInAction } from "mobx";
+import { computedFn } from "mobx-utils";
+import PQueue from "p-queue";
+
+import { ChainGetter, ObservableQuery, QueryResponse } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { Validators, Validator } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable, observable, runInAction } from "mobx";
-import { ObservableQuery, QueryResponse } from "../../../common";
-import Axios from "axios";
-import PQueue from "p-queue";
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import { computedFn } from "mobx-utils";
-import { BondStatus } from "@osmosis-labs/types";
+import { Validator, Validators } from "./types";
 
 interface KeybaseResult {
   status: {
@@ -169,7 +169,6 @@ export class ObservableQueryValidatorsInner extends ObservableChainQuery<Validat
         });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.thumbnailMap.get(identity)!.thumbnail;
     }
   );

@@ -1,11 +1,12 @@
-import { KVStore } from "../../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { autorun, computed } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
 import { ClientStateResponse } from "./types";
-import { autorun, computed } from "mobx";
 
 export class ObservableChainQueryClientState extends ObservableChainQuery<ClientStateResponse> {
   protected disposer?: () => void;

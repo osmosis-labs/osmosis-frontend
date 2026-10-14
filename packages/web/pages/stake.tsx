@@ -1,6 +1,8 @@
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { DefaultGasPriceStep } from "@osmosis-labs/stores";
-import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
+import {
+  DefaultGasPriceStep,
+  makeDelegateToValidatorSetMsg,
+} from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";

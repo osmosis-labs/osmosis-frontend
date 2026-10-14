@@ -1,5 +1,4 @@
-import type { TxFeMemoFlags } from "@osmosis-labs/stores";
-import type { QuoteDirection } from "@osmosis-labs/tx";
+import type { QuoteDirection, TxFeMemoFlags } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 
 import {

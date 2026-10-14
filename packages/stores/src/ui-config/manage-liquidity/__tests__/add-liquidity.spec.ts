@@ -2,13 +2,14 @@ import {
   EmptyAmountError,
   InsufficientAmountError,
 } from "@osmosis-labs/keplr-hooks";
+import type { AddLiquidityPoolData } from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-
 import {
-  AddLiquidityPoolData,
-  ObservableAddLiquidityConfig,
-} from "../add-liquidity";
-import { CalculatingShareOutAmountError, NotInitializedError } from "../errors";
+  CalculatingShareOutAmountError,
+  NotInitializedError,
+} from "@osmosis-labs/utils";
+
+import { ObservableAddLiquidityConfig } from "../add-liquidity";
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atom = { coinDenom: "ATOM", coinMinimalDenom: "uatom", coinDecimals: 6 };

@@ -1,4 +1,4 @@
-import type { OneClickTradingInfo } from "@osmosis-labs/stores";
+import type { OneClickTradingInfo } from "@osmosis-labs/tx";
 import { safeTimeout, unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";

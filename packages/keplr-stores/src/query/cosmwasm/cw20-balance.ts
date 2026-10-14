@@ -1,11 +1,12 @@
-import { computed, makeObservable, override } from "mobx";
-import { DenomHelper } from "../../common/denom";
-import { KVStore } from "../../common/kv-store";
-import { ChainGetter } from "../../common";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable, override } from "mobx";
+
+import { ChainGetter } from "../../common";
+import { DenomHelper } from "../../common/denom";
 import { BalanceRegistry, ObservableQueryBalanceInner } from "../balances";
-import { Cw20ContractBalance } from "./types";
 import { ObservableCosmwasmContractChainQuery } from "./contract-query";
+import { Cw20ContractBalance } from "./types";
 
 export class ObservableQueryCw20Balance extends ObservableCosmwasmContractChainQuery<Cw20ContractBalance> {
   constructor(

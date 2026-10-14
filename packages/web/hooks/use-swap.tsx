@@ -5,7 +5,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
-import { SignOptions, TxFeMemoFlags } from "@osmosis-labs/stores";
+import type { SignOptions, TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   getSwapMessages,
   getSwapTxParameters,
