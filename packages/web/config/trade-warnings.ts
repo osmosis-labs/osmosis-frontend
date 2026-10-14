@@ -9,19 +9,51 @@ import { Dec } from "@osmosis-labs/unit";
  */
 
 /**
- * Price impact (as a positive fraction, e.g. 0.10 = 10%) at or above which a
+ * Price impact (as a positive fraction, e.g. 0.05 = 5%) at or above which a
  * trade/transfer requires explicit user acknowledgement. Consumers must
  * normalize sign conventions (swap quotes report negative impact) before
  * comparing.
+ *
+ * Deliberately shared with the bridge, unlike the two slippage gates below.
+ * Those measure different quantities on either side — a realized loss on the
+ * bridge, a ceiling the user typed on a trade — but price impact means the
+ * same thing on both: the impact of an Osmosis swap. The bridge's is the
+ * impact of the swap its own quote bundles, so it should move with this value
+ * rather than diverge from it.
+ *
+ * Lowered from 10% to 5% (MTN-150) because 10% let a clearly bad trade through
+ * unacknowledged, and because the swap page already treats 5% impact as
+ * warning-worthy — the gate was the figure out of step, not the display.
  */
-export const HighPriceImpactGate = new Dec(0.1);
+export const HighPriceImpactGate = new Dec(0.05);
 
 /**
- * Value loss / slippage (as a positive fraction, e.g. 0.06 = 6%) above which
- * a trade/transfer requires explicit user acknowledgement. On the bridge this
- * is the total fiat loss between input and expected output.
+ * Realized value loss (as a positive fraction, e.g. 0.06 = 6%) above which a
+ * transfer requires explicit user acknowledgement. On the bridge this is the
+ * total fiat loss between input and expected output, bridge fees included.
+ *
+ * Deliberately separate from `HighSlippageToleranceGate`: this is a loss the
+ * user actually incurs, that one is a ceiling the user chooses. They are
+ * different quantities and must not be tuned as one — dropping this to the
+ * trade gate's value would re-gate a large share of ordinary bridge transfers,
+ * whose fees routinely exceed it.
  */
 export const HighSlippageGate = new Dec(0.06);
+
+/**
+ * Slippage *tolerance* (as a positive fraction, e.g. 0.02 = 2%) at or above
+ * which a trade requires explicit user acknowledgement. This is the ceiling the
+ * user set, not a loss they have taken, which is why it stamps `slip=` and
+ * never `loss=` (see `deriveTradeMemoFlags`).
+ *
+ * Set to match the threshold at which the review-order modal already warns that
+ * a trade "may result in significant loss of value". Before that alignment the
+ * warning appeared from 2% while the gate sat at 6%, so anyone choosing a
+ * tolerance in between read a loss warning with nothing to acknowledge and no
+ * gate behind it. Slippage is a single typed field — there is no preset picker
+ * wired up in the UI — so reaching this gate is always a deliberate act.
+ */
+export const HighSlippageToleranceGate = new Dec(0.02);
 
 /**
  * How much (in absolute fraction points, e.g. 0.01 = 1 percentage point) a

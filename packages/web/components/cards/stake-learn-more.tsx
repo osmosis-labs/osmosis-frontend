@@ -45,7 +45,8 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
   return (
     <Button
       variant="success"
-      className={"w-1/2 self-center lg:w-full"}
+      // at least half the card, but wide enough for its label in narrow cards
+      className="min-w-[50%] self-center px-6 lg:w-full"
       onClick={onStakeButtonClick}
     >
       {buttonText}

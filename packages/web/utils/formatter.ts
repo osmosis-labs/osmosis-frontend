@@ -239,6 +239,32 @@ function rateFormatter(
 }
 
 /** Copy opts and remove our custom format opts to reveal whether there are `Intl.NumberFormatOptions`. */
+/**
+ * A coin amount for a balance line: 4 significant figures below 1,000, whole
+ * numbers from 1,000 up (e.g. 15.13 OSMO, 342 OSMO, 1,088 OSMO).
+ */
+export function formatCoinBalance(coin: CoinPretty): string {
+  // maxDecimals keeps every decimal so Intl does the rounding (truncating
+  // first would round 1,087.9 down and tiny balances to 0)
+  return formatPretty(
+    coin,
+    coin.toDec().abs().gte(new Dec(1000))
+      ? {
+          notation: "standard",
+          // clear coinFormatter's default 3 significant digits, which would
+          // otherwise win over maximumFractionDigits
+          maximumSignificantDigits: undefined,
+          maximumFractionDigits: 0,
+          maxDecimals: coin.currency.coinDecimals,
+        }
+      : {
+          notation: "standard",
+          maximumSignificantDigits: 4,
+          maxDecimals: coin.currency.coinDecimals,
+        }
+  );
+}
+
 function hasIntlFormatOptions(opts: FormatOptions) {
   const copy = { ...opts };
   if ("maxDecimals" in copy) delete copy.maxDecimals;

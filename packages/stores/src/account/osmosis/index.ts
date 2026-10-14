@@ -12,6 +12,7 @@ import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
   makeAddToPositionMsg,
+  makeBeginRedelegateMsg,
   makeBeginUnlockingMsg,
   makeCollectIncentivesMsg,
   makeCollectSpreadRewardsMsg,
@@ -40,7 +41,6 @@ import {
   makeWithdrawDelegationRewardsMsg,
   makeWithdrawPositionMsg,
 } from "@osmosis-labs/tx";
-import { BondStatus } from "@osmosis-labs/types";
 import {
   AppCurrency,
   Coin,
@@ -54,9 +54,13 @@ import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
-import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse, SignOptions } from "../types";
-import { findNewClPositionId } from "./tx-response";
+import {
+  assertJoinPoolData,
+  getJoinPoolTokenInMaxs,
+  getJoinSwapShareOutMinAmount,
+  JoinPoolData,
+} from "./join-pool";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
@@ -68,7 +72,6 @@ export interface OsmosisAccount {
 export const OsmosisAccount = {
   use(options: {
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-    queriesExternalStore?: QueriesExternalStore;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
@@ -80,8 +83,7 @@ export const OsmosisAccount = {
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          options.queriesExternalStore
+          options.queriesStore
         ),
       };
     };
@@ -97,8 +99,7 @@ export class OsmosisAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    protected readonly queriesExternalStore?: QueriesExternalStore
+    >
   ) {}
 
   private get address() {
@@ -369,6 +370,7 @@ export class OsmosisAccountImpl {
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
    * @param poolId Id of pool.
+   * @param pool Current share pool state, used to estimate the max token amounts in.
    * @param shareOutAmount LP share amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
@@ -376,72 +378,24 @@ export class OsmosisAccountImpl {
    */
   async sendJoinPoolMsg(
     poolId: string,
+    pool: JoinPoolData,
     shareOutAmount: string,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
-    const mkp = this.makeCoinPretty;
-
-    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    const queryPoolForJoin = queries.queryPools.getPool(poolId);
-    if (!queryPoolForJoin) {
-      try {
-        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
-      } catch (e) {
-        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
-      }
-    }
+    assertJoinPoolData(poolId, pool);
 
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Not a share pool");
-        }
-
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-
-        const estimated = OsmosisMath.estimateJoinSwap(
+        const tokenInMaxs = getJoinPoolTokenInMaxs(
           pool,
-          pool.poolAssets,
-          mkp,
           shareOutAmount,
+          maxSlippage,
           makeJoinPoolMsg.shareCoinDecimals
         );
-
-        const tokenInMaxs = maxSlippageDec.equals(new Dec(0))
-          ? []
-          : estimated.tokenIns.map((tokenIn) => {
-              // TODO: Add the method like toPrimitiveCoin()?
-              const dec = tokenIn.toDec();
-              const amount = dec
-                .mul(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    tokenIn.currency.coinDecimals
-                  )
-                )
-                .mul(new Dec(1).add(maxSlippageDec))
-                .truncate();
-
-              return {
-                denom: tokenIn.currency.coinMinimalDenom,
-                amount: amount.toString(),
-              };
-            });
 
         const msg = await makeJoinPoolMsg({
           poolId: BigInt(poolId),
@@ -488,6 +442,7 @@ export class OsmosisAccountImpl {
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
+   * @param pool Current weighted pool state, used to estimate the min shares out.
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
@@ -495,71 +450,18 @@ export class OsmosisAccountImpl {
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
+    pool: JoinPoolData,
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
-
-    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    const queryPoolForJoinSwap = queries.queryPools.getPool(poolId);
-    if (!queryPoolForJoinSwap) {
-      try {
-        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
-      } catch (e) {
-        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
-      }
-    }
+    assertJoinPoolData(poolId, pool);
 
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        // TODO: fork on the pool type
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const totalWeight = queryPool.weightedPoolInfo?.totalWeight;
-        if (!totalWeight) {
-          throw new Error("Must be weighted pool");
-        }
-
-        const poolAsset = queryPool.getPoolAsset(
-          tokenIn.currency.coinMinimalDenom
-        );
-
-        const poolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          (asset) => asset.denom === poolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        if (!poolAssetWeight) {
-          throw new Error("Pool asset not weighted");
-        }
-
-        const estimated = OsmosisMath.estimateJoinSwapExternAmountIn(
-          {
-            amount: new Int(poolAsset.amount.toCoin().amount),
-            weight: new Int(poolAssetWeight.toDec().truncate().toString()),
-          },
-          {
-            totalShare: pool.totalShare,
-            totalWeight: new Int(totalWeight.toDec().truncate().toString()),
-            swapFee: pool.swapFee,
-          },
-          tokenIn,
-          makeJoinSwapExternAmountInMsg.shareCoinDecimals
-        );
-
         const amount = new Dec(tokenIn.amount)
           .mul(
             DecUtils.getTenExponentNInPrecisionRange(
@@ -569,11 +471,12 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
 
-        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))); // not outRatio
-        const shareOutMinAmount = estimated.shareOutAmountRaw
-          .toDec()
-          .mul(outRatio)
-          .truncate();
+        const shareOutMinAmount = getJoinSwapShareOutMinAmount(
+          pool,
+          tokenIn,
+          maxSlippage,
+          makeJoinSwapExternAmountInMsg.shareCoinDecimals
+        );
 
         const msg = await makeJoinSwapExternAmountInMsg({
           poolId: BigInt(poolId),
@@ -784,16 +687,6 @@ export class OsmosisAccountImpl {
           this.queries.queryAccountsPositions
             .get(this.address)
             ?.waitFreshResponse();
-
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
 
           if (superfluidValidatorAddress) {
             this.queries?.queryAccountsSuperfluidDelegatedPositions
@@ -1291,17 +1184,6 @@ export class OsmosisAccountImpl {
           if (isSuperfluidStaked) {
             queryDelegatedPositions.waitFreshResponse();
           }
-
-          // refresh metrics of new position
-          const newPositionID = findNewClPositionId(tx);
-          if (newPositionID) {
-            // wait a long time for indexer to run
-            setTimeout(() => {
-              this.queriesExternalStore?.queryPositionsPerformaceMetrics
-                .get(newPositionID)
-                ?.waitFreshResponse();
-            }, 30_000);
-          }
         }
         onFulfill?.(tx);
       }
@@ -1357,13 +1239,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
-
-          // refresh metrics of same position, since it's the same ID after withdrawing
-          setTimeout(() => {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(positionId)
-              ?.waitFreshResponse();
-          }, 30_000);
         }
         onFulfill?.(tx);
       }
@@ -1960,12 +1835,11 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (!tx.code) {
-          // Refresh the balances and the funded gauge.
+          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-          this.queries.queryGauge.get(gaugeId).waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2076,14 +1950,6 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountLocked
             .get(this.address)
             .waitFreshResponse();
-
-          queries.cosmos.queryValidators
-            .getQueryStatus(BondStatus.Bonded)
-            .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -2140,10 +2006,6 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
             .get(this.address)
-            .waitFreshResponse();
-
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -2268,14 +2130,6 @@ export class OsmosisAccountImpl {
             .get(this.address)
             .waitFreshResponse();
 
-          // refresh superfluid pool share delegations
-          queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(this.address)
-            .waitFreshResponse();
-
           // refresh user CL positions
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
@@ -2283,9 +2137,6 @@ export class OsmosisAccountImpl {
 
           // refresh CL position delegations
           queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-          queries.osmosis?.queryAccountsSuperfluidUndelegatingPositions
             .get(this.address)
             .waitFreshResponse();
         }
@@ -2329,17 +2180,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryUnbondingDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2379,17 +2219,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryUnbondingDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2429,14 +2258,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2470,14 +2291,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2525,16 +2338,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // refresh the valsetpref
-          this.queries.queryUsersValidatorPreferences
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh query delegations
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2594,20 +2397,6 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
-
-          // refresh query delegations
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          // refresh the valsetpref
-          this.queries.queryUsersValidatorPreferences
-            .get(this.address)
-            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2654,14 +2443,86 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
 
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
+  /**
+   * Method to move stake between specific validators, optionally replacing the
+   * validator set preference in the same tx. Used to move stake off validators
+   * that have left the active set without rebalancing the rest of the stake
+   * (which MsgRedelegateValidatorSet would do).
+   * @param redelegations Source validator, destination validator and amount (in the staking denom's minimal units) for each redelegation.
+   * @param validatorSetPreference Validator addresses to set as an equally weighted preference, or undefined to leave the preference unchanged.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendRedelegateMsgs(
+    redelegations: {
+      validatorSrcAddress: string;
+      validatorDstAddress: string;
+      amount: string;
+    }[],
+    validatorSetPreference?: string[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    if (!redelegations.length)
+      throw new Error("Please provide 1 or more redelegations");
 
-          queries.cosmos.queryRewards
+    if (validatorSetPreference && !validatorSetPreference.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
+
+    const stakeDenom = this.chainGetter.getChain(this.chainId).stakeCurrency
+      .coinMinimalDenom;
+
+    const msgs: EncodeObject[] = await Promise.all(
+      redelegations.map(
+        ({ validatorSrcAddress, validatorDstAddress, amount }) =>
+          makeBeginRedelegateMsg({
+            delegatorAddress: this.address,
+            validatorSrcAddress,
+            validatorDstAddress,
+            amount: { denom: stakeDenom, amount },
+          })
+      )
+    );
+
+    if (validatorSetPreference) {
+      const weight = new Dec(1)
+        .quo(new Dec(validatorSetPreference.length))
+        .toString();
+
+      msgs.push(
+        await makeSetValidatorSetPreferenceMsg({
+          delegator: this.address,
+          preferences: validatorSetPreference.map((validator) => ({
+            weight,
+            valOperAddress: validator,
+          })),
+        })
+      );
+    }
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "redelegate",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+
+          // redelegating withdraws pending rewards from the source validators
+          queries.queryBalances
             .getQueryBech32Address(this.address)
-            .waitFreshResponse();
+            .balances.forEach((balance) => balance.waitFreshResponse());
         }
         onFulfill?.(tx);
       }

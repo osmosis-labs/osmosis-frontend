@@ -8,9 +8,10 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
-  getEvmRpcTransport,
+  getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
+  redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
@@ -39,6 +40,7 @@ import {
   GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
+import { SquidProviderId } from "./constants";
 import { getSquidErrors } from "./error";
 import type {
   SquidChainsResponse,
@@ -51,7 +53,7 @@ import type {
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static readonly ID = "Squid";
+  static readonly ID = SquidProviderId;
   readonly providerName = SquidBridgeProvider.ID;
 
   protected readonly apiURL: string;
@@ -225,8 +227,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           expectedOutput: {
             ...toAsset,
             amount: toAmount,
+            // Squid reports a loss as a positive percentage; the interface
+            // wants a fraction, negative for a loss.
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
+              .neg()
               .toString(),
           },
           fromChain,
@@ -476,7 +481,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain, {
+        transport: getServerEvmRpcTransport(evmChain, {
           timeout: 3_000,
           retryCount: 0,
         }),
@@ -495,7 +500,9 @@ export class SquidBridgeProvider implements BridgeProvider {
       throw new BridgeQuoteError({
         bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
-        message: `Error creating approval Tx: ${e}`,
+        // viem error text includes the request URL, which for a keyed
+        // provider carries the API key.
+        message: redactConfiguredEvmRpcUrls(`Error creating approval Tx: ${e}`),
       });
     }
 

@@ -36,6 +36,7 @@ import {
   codegenDir,
   getChainList,
   getOsmosisChainId,
+  runWithFailureLimit,
   saveAssetImageToTokensDir,
   writeCurrentAssetListHash,
 } from "./utils";
@@ -48,6 +49,7 @@ interface ResponseAssetList {
 const repo = "osmosis-labs/assetlists";
 
 const IMAGE_DOWNLOAD_CONCURRENCY = 16;
+const IMAGE_DOWNLOAD_MAX_FAILURES = 10;
 
 function getFilePath({
   chainId,
@@ -395,19 +397,36 @@ async function generateAssetImages({
     downloads.set(filePath, candidates);
   }
 
-  const queue = Array.from(downloads.values());
-  const worker = async () => {
-    for (let group = queue.shift(); group; group = queue.shift()) {
-      for (const download of group) {
-        await saveAssetImageToTokensDir({
+  // A few dead logo URLs in the asset list shouldn't block a deploy, but a
+  // wave of failures (a rate limit that outlasted the retries, a host outage)
+  // would otherwise ship with missing logos and exit 0. Once the limit is
+  // passed the build is going to fail anyway, so the pool stops taking new
+  // groups rather than spending up to three capped waits on each remaining
+  // image.
+  const { failures, skipped } = await runWithFailureLimit(
+    Array.from(downloads.values()),
+    {
+      concurrency: IMAGE_DOWNLOAD_CONCURRENCY,
+      maxFailures: IMAGE_DOWNLOAD_MAX_FAILURES,
+      run: (download) =>
+        saveAssetImageToTokensDir({
           ...download,
           currentAssetListHash: commitHash,
-        });
-      }
+        }),
+      onError: (e) => console.error(e instanceof Error ? e.message : e),
     }
-  };
-  await Promise.all(Array.from({ length: IMAGE_DOWNLOAD_CONCURRENCY }, worker));
+  );
   console.timeEnd("Successfully downloaded images");
+
+  if (failures > IMAGE_DOWNLOAD_MAX_FAILURES) {
+    throw new Error(
+      `${failures} asset images failed to download (more than ${IMAGE_DOWNLOAD_MAX_FAILURES} allowed); ` +
+        `stopped with ${skipped} image groups not attempted.`
+    );
+  }
+  if (failures > 0) {
+    console.warn(`${failures} asset images failed to download.`);
+  }
 }
 
 async function getLatestCommitHash() {

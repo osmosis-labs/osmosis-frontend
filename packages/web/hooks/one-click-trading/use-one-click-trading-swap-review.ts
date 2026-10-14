@@ -13,7 +13,7 @@ import {
   useOneClickTradingParams,
 } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -125,8 +125,7 @@ export function useOneClickTradingSwapReview({
 export function use1CTSwapReviewMessages() {
   const apiUtils = api.useUtils();
 
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
   const { transaction1CTParams, spendLimitTokenDecimals, changes } =
     use1CTSwapReviewStore(
@@ -141,7 +140,7 @@ export function use1CTSwapReviewMessages() {
     useOneClickTradingSession();
 
   const shouldFetchExistingSessionAuthenticator =
-    !!account?.address && !!oneClickTradingInfo;
+    !!address && !!oneClickTradingInfo;
 
   const enabledFetchingSessionAuthenticator =
     isOneClickTradingEnabled && shouldFetchExistingSessionAuthenticator;
@@ -152,7 +151,7 @@ export function use1CTSwapReviewMessages() {
     error: sessionAuthenticatorError,
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
       publicKey: oneClickTradingInfo?.publicKey ?? "",
     },
     {
@@ -174,7 +173,7 @@ export function use1CTSwapReviewMessages() {
       if (
         !transaction1CTParams ||
         !spendLimitTokenDecimals ||
-        !account?.address ||
+        !address ||
         !shouldSend1CTTx
       )
         return undefined;
@@ -184,7 +183,7 @@ export function use1CTSwapReviewMessages() {
           apiUtils,
           transaction1CTParams,
           spendLimitTokenDecimals,
-          userOsmoAddress: account?.address ?? "",
+          userOsmoAddress: address,
           /**
            * If the user has an existing session, remove it and add the new one.
            */
@@ -201,12 +200,12 @@ export function use1CTSwapReviewMessages() {
         msgs: [
           await makeRemoveAuthenticatorMsg({
             id: BigInt(oneClickTradingInfo!.authenticatorId),
-            sender: account.address,
+            sender: address,
           }),
         ],
       };
     }, [
-      account?.address,
+      address,
       apiUtils,
       oneClickTradingInfo,
       sessionAuthenticator,

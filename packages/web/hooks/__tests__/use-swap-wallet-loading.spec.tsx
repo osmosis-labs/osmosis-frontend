@@ -79,6 +79,23 @@ jest.mock("~/stores", () => ({
   }),
 }));
 
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({
+    wallet: {
+      address: undefined,
+      txTypeInProgress: "",
+      isWalletConnected: false,
+      client: {
+        getAccount: jest.fn().mockResolvedValue({ isNanoLedger: true }),
+      },
+      walletInfo: { prettyName: "Keplr" },
+    },
+    address: undefined,
+    txTypeInProgress: "",
+    isWalletConnected: false,
+  }),
+}));
+
 jest.mock("~/hooks/use-wallet-select", () => ({
   useWalletSelect: () => ({
     isLoading: true,
@@ -164,7 +181,7 @@ jest.mock("nuqs", () => {
     parseAsString: { withDefault: parser },
     parseAsBoolean: { withDefault: parser },
     useQueryState: (
-      key: string,
+      _key: string,
       { defaultValue }: { defaultValue: unknown }
     ) => [defaultValue, jest.fn()],
   };

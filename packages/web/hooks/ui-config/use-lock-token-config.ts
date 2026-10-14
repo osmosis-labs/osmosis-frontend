@@ -2,9 +2,8 @@ import { AppCurrency } from "@osmosis-labs/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback } from "react";
 
-import { useStore } from "~/stores";
-
 import { useAmountInput } from "../input/use-amount-input";
+import { useWallet } from "../use-wallet";
 
 /** UI config for setting valid GAMM token amounts and un/locking them in a lock. */
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
@@ -14,11 +13,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     locks: { lockId: string; isSynthetic: boolean }[]
   ) => Promise<"synthetic" | "normal">;
 } {
-  const { chainStore, accountStore } = useStore();
-
-  const { chainId } = chainStore.osmosis;
-
-  const account = accountStore.getWallet(chainId);
+  const { wallet: account } = useWallet();
 
   const config = useAmountInput({
     currency: sendCurrency,

@@ -5,7 +5,11 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
-import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
+import {
+  ObservableSlippageConfig,
+  SignOptions,
+  TxFeMemoFlags,
+} from "@osmosis-labs/stores";
 import {
   getSwapMessages,
   getSwapTxParameters,
@@ -60,6 +64,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
@@ -119,7 +124,7 @@ export function useSwap(
 ) {
   const apiUtils = api.useUtils();
   const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { wallet: account, address, txTypeInProgress } = useWallet();
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
@@ -166,7 +171,7 @@ export function useSwap(
       swapAssets.fromAsset?.coinMinimalDenom &&
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    !account?.txTypeInProgress &&
+    !txTypeInProgress &&
     quoteType === "out-given-in";
 
   const inGivenOutQuoteEnabled =
@@ -176,7 +181,7 @@ export function useSwap(
       swapAssets.toAsset?.coinMinimalDenom &&
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
-    !account?.txTypeInProgress &&
+    !txTypeInProgress &&
     quoteType === "in-given-out";
 
   const {
@@ -318,7 +323,7 @@ export function useSwap(
     !isQuoteLoading &&
     (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
     Boolean(quote?.messages) &&
-    Boolean(account?.address) &&
+    Boolean(address) &&
     inAmountInput.debouncedInAmount !== null &&
     inAmountInput.balance &&
     inAmountInput.amount &&
@@ -343,7 +348,7 @@ export function useSwap(
     return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, account?.address, accountStore.osmosisChainId]);
+  }, [account, address, accountStore.osmosisChainId]);
 
   const messages = useMemo(() => {
     if (isLedger) {
@@ -407,9 +412,15 @@ export function useSwap(
     return balance.toDec().lt(amountWithSlippage);
   }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
 
-  /** Send trade token in transaction. */
+  /**
+   * Send trade token in transaction.
+   *
+   * `memoFlags` carries the figures the user acknowledged in the review-order
+   * modal (MTN-137 / MTN-150) into the tx auth memo, so a tx hash alone answers
+   * "was this user warned, and by how much?". Absent for an unwarned trade.
+   */
   const sendTradeTokenInTx = useCallback(
-    () =>
+    (memoFlags?: TxFeMemoFlags) =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
           if (!maxSlippage)
@@ -530,6 +541,11 @@ export function useSwap(
                   },
                 }
               : {}),
+            // On the amino path it is the wallet-returned memo that gets
+            // encoded, so without this a wallet could offer to edit the
+            // acknowledgement proof away. Set only when there is a proof to
+            // protect, to leave the unwarned path byte-identical.
+            ...(memoFlags ? { preferNoSetMemo: true } : {}),
           };
 
           const { routes } = txParams;
@@ -634,7 +650,8 @@ export function useSwap(
                         : "multiroute"
                     );
                   }
-                }
+                },
+                memoFlags
               )
               .catch(reject);
           } else {
@@ -700,7 +717,8 @@ export function useSwap(
                         : "multiroute"
                     );
                   }
-                }
+                },
+                memoFlags
               )
               .catch(reject);
           }
@@ -971,8 +989,7 @@ export function useSwapAssets({
   poolId?: string;
   reverse?: boolean;
 } = {}) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
 
   const {
     fromAssetDenom,
@@ -1015,7 +1032,7 @@ export function useSwapAssets({
     {
       poolId,
       search: queryInput,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
       includePreview: showPreviewAssets,
       limit: 50, // items per page
     },
@@ -1125,8 +1142,8 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { chainStore } = useStore();
+  const { txTypeInProgress } = useWallet();
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const featureFlags = useFeatureFlags();
@@ -1141,7 +1158,7 @@ function useSwapAmountInput({
   const balanceQuoteQueryEnabled =
     featureFlags.swapToolSimulateFee &&
     !isLoadingWallet &&
-    !account?.txTypeInProgress &&
+    !txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     // since the in amount is debounced, the asset could be wrong when switching assets
@@ -1394,8 +1411,7 @@ function useQueryRouterBestQuote(
   enabled: boolean,
   quoteType: QuoteDirection = "out-given-in"
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
   const trpcReact = createTRPCReact<AppRouter>();
 
   const queryOptions = {
@@ -1490,7 +1506,6 @@ function useQueryRouterBestQuote(
     const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
     const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
     const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
-    const address = account?.address;
     if (
       !quote ||
       typeof tokenOutCoinDecimals === "undefined" ||
@@ -1514,7 +1529,7 @@ function useQueryRouterBestQuote(
 
     return messages;
   }, [
-    account?.address,
+    address,
     quote,
     input.maxSlippage,
     input.tokenIn?.coinMinimalDenom,

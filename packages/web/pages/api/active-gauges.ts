@@ -1,5 +1,4 @@
-import { getActiveGauges } from "@osmosis-labs/server";
-import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
+import { type Gauge, getActiveGauges } from "@osmosis-labs/server";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainList } from "~/config/generated/chain-list";

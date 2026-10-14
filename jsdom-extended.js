@@ -18,7 +18,7 @@ class JSDOMEnvironmentExtended extends JSDOMEnvironment {
     this.global.TextDecoder = TextDecoder;
     this.global.TextEncoder = TextEncoder;
     // Node's Buffer and TextEncoder return Node-realm bytes. Keep byte checks in
-    // Noble and Keplr's Bitcoin ECC adapter consistent with those globals.
+    // crypto dependencies consistent with those globals.
     this.global.Uint8Array = Uint8Array;
 
     this.global.Blob = Blob;

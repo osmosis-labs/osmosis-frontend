@@ -66,7 +66,8 @@ jobs:
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Replaces the type check `next build` used to run on Vercel (see next.config.js).
+      # Replaces the type check `next build` used to run on Vercel (see next.config.js),
+      # and also covers test files, which `next build` skipped and Jest (swc) never checks.
       - name: Type check web
         run: corepack yarn workspace @osmosis-labs/web typecheck
 

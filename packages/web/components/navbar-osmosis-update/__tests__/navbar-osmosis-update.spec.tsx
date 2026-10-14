@@ -17,7 +17,6 @@ const osmosisUpdatesUrl =
 
 beforeEach(() => {
   resetLDMocks();
-  resetQueryClient();
   localStorage.removeItem("osmosis-updates-closed-url");
   server.use(
     http.get(osmosisUpdatesUrl, () =>

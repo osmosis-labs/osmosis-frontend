@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
@@ -15,23 +14,22 @@ import {
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useAssetInfo } from "~/hooks/use-asset-info";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   formatFiatPrice,
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
 
-export const AssetOrderHistory = observer(() => {
-  const { accountStore } = useStore();
+export const AssetOrderHistory = () => {
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
 
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
 
   const { orders, isLoading, refetch } = useOrderbookOrders({
-    userAddress: wallet?.address ?? "",
+    userAddress: address ?? "",
     pageSize: 100,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     filter: "active",
@@ -53,13 +51,13 @@ export const AssetOrderHistory = observer(() => {
   }, [orders, asset.coinMinimalDenom]);
 
   const { claimAllOrders } = useOrderbookClaimableOrders({
-    userAddress: wallet?.address ?? "",
+    userAddress: address ?? "",
     disabled: isLoading || filledOrders.length === 0,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
 
   if (
-    !wallet?.isWalletConnected ||
+    !isWalletConnected ||
     (!isLoading && activeOrders.length === 0 && filledOrders.length === 0)
   )
     return null;
@@ -109,7 +107,7 @@ export const AssetOrderHistory = observer(() => {
       )}
     </div>
   );
-});
+};
 
 function ClaimAllButton({
   claimAllOrders,
@@ -245,8 +243,7 @@ function CompactActionsCell({
   order: MappedLimitOrder;
   refetch: () => Promise<any>;
 }) {
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account } = useWallet();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 

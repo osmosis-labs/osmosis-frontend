@@ -53,8 +53,8 @@ export default async function handler(
     // them extra head-room. See FE-1170.
     const isSwapTransaction = decodedMessages.some(
       ({ typeUrl }) =>
-        typeUrl.includes("MsgSwapExactAmount") ||
-        typeUrl.includes("MsgSplitRouteSwapExactAmount")
+        typeUrl?.includes("MsgSwapExactAmount") ||
+        typeUrl?.includes("MsgSplitRouteSwapExactAmount")
     );
     const adjustedGasMultiplier = isSwapTransaction
       ? Math.max(gasMultiplier * 1.5, 2.0)

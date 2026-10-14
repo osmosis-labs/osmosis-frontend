@@ -34,7 +34,6 @@ import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -114,7 +113,6 @@ const AddConcLiqView: FunctionComponent<
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
   const hasInitializedInactivePool = useRef(false);
 
-  const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   // Default to passive strategy for inactive pools (only on mount)
@@ -125,20 +123,29 @@ const AddConcLiqView: FunctionComponent<
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
+  const { data: superfluidPoolIds } =
+    api.edge.pools.getSuperfluidPoolIds.useQuery();
+  const isSuperfluidPool = Boolean(superfluidPoolIds?.includes(poolId));
+  const { data: superfluidApr } = api.edge.pools.getSuperfluidPoolApr.useQuery(
+    { poolId },
+    { enabled: isSuperfluidPool }
+  );
+  const { data: stakingParams } = api.edge.staking.getStakingParams.useQuery(
+    undefined,
+    { enabled: isSuperfluidPool }
+  );
 
   const { yRange, xRange, depthChartData } = chartConfig;
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
-  const queryCurrentRangeApr = fullRange
-    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
-    : queriesExternalStore.queryPriceRangeAprs.get(
-        poolId,
-        tickRange[0],
-        tickRange[1]
-      );
+  // the full range tick range is already [minTick, maxTick]
+  const { data: currentRangeApr, isFetching: isRangeAprFetching } =
+    api.edge.pools.getPriceRangeApr.useQuery({
+      poolId,
+      lowerTickIndex: Number(tickRange[0].toString()),
+      upperTickIndex: Number(tickRange[1].toString()),
+    });
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
   // TODO: this is a code smell. the chart config should observe the add liq config
@@ -244,7 +251,7 @@ const AddConcLiqView: FunctionComponent<
                 horizontal
                 fullRange={fullRange}
               />
-              {queryCurrentRangeApr.apr && (
+              {currentRangeApr && (
                 <div className="absolute right-8 top-5 flex select-none flex-col text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span className="text-osmoverse-300">
@@ -260,11 +267,11 @@ const AddConcLiqView: FunctionComponent<
                       <Icon id="info" height={15} width={15} />
                     </Tooltip>
                   </div>
-                  {queryCurrentRangeApr.isFetching ? (
+                  {isRangeAprFetching ? (
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
                     <h5 className="text-osmoverse-100">
-                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
+                      {currentRangeApr.maxDecimals(1).toString() ?? ""}{" "}
                       {t("pool.APR")}
                     </h5>
                   )}
@@ -295,7 +302,7 @@ const AddConcLiqView: FunctionComponent<
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
-          {superfluidPoolDetail.isSuperfluid && (
+          {isSuperfluidPool && (
             <div className="flex gap-3">
               <Checkbox
                 id="superfluid-stake"
@@ -314,19 +321,20 @@ const AddConcLiqView: FunctionComponent<
               >
                 <h6 className="md:text-subtitle1 md:font-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
-                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
-                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
-                        0
-                      )} APR)`
+                  {superfluidApr?.toDec().isPositive()
+                    ? `(+${superfluidApr.maxDecimals(0)} APR)`
                     : undefined}
                 </h6>
-                <span className="caption text-osmoverse-300">
-                  {t("lockToken.bondingRequirement", {
-                    numDays: superfluidPoolDetail.unstakingDuration
-                      .asDays()
-                      .toString(),
-                  })}
-                </span>
+                {stakingParams && (
+                  <span className="caption text-osmoverse-300">
+                    {t("lockToken.bondingRequirement", {
+                      numDays: (
+                        stakingParams.unbondingTimeSeconds /
+                        (24 * 60 * 60)
+                      ).toString(),
+                    })}
+                  </span>
+                )}
               </label>
             </div>
           )}

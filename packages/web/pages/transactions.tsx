@@ -16,7 +16,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 
 // @ts-ignore
 const EXAMPLE = {
@@ -40,14 +40,10 @@ const Transactions: React.FC = observer(() => {
     ? addressFromQuery[0]
     : addressFromQuery;
 
-  const { accountStore, chainStore } = useStore();
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const wallet = accountStore.getWallet(osmosisChainId);
+  const { wallet, address: walletAddress, isWalletConnected } = useWallet();
   // for easy testing, pass in an optional address query string to override connected address
   // /transactions?page=0&address=osmoADDRESS
-  const address = addressFromQueryString || wallet?.address || "";
-
-  const isWalletConnected = Boolean(wallet?.isWalletConnected);
+  const address = addressFromQueryString || walletAddress || "";
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 

@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
     "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
+    "inactiveValidators": {
+      "title": "Wykryto nieaktywnych walidatorów",
+      "squadDescription": "Ci walidatorzy opuścili aktywny zestaw i nie zarabiają już nagród. Przedeleguj do aktywnych walidatorów, aby znów zarabiać. Redelegacja jest natychmiastowa, bez okresu odblokowania.",
+      "statusInactive": "Poza aktywnym zestawem",
+      "statusInactiveShortfall": "Nieaktywny: brakuje ~{amount} do aktywnego zestawu",
+      "statusJailed": "Uwięziony: brak nagród",
+      "redelegate": "Przedeleguj",
+      "stakeWarning": "Twój skład stakingowy zawiera nieaktywnych walidatorów. Część każdego nowego stake'u trafiłaby do nich i nic nie zarobiła.",
+      "editSquad": "Edytuj skład stakingowy",
+      "redelegateDescription": "Wybierz walidatorów, do których przedelegować {amount}. Kwota zostanie podzielona po równo; reszta Twojego stake'u się nie zmieni.",
+      "topThirdHidden": "Najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u, są domyślnie ukryci, aby pomóc utrzymać decentralizację Osmosis.",
+      "topThirdShown": "To najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u. Wybieranie mniejszych walidatorów pomaga utrzymać decentralizację Osmosis.",
+      "alertDescription": "Część Twoich walidatorów opuściła aktywny zestaw, więc OSMO u nich stakowane nie zarabia nagród. Przedeleguj je na stronie Stake, aby znów zarabiać.",
+      "dismiss": "Zamknij",
+      "goToStake": "Przejdź do Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Co to jest stawkowanie?",
@@ -720,7 +735,7 @@
       "description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
       "searchPlaceholder": "Szukaj walidatora",
       "button": "Ustaw skład",
-      "button2": "Ustaw skład i stawkę",
+      "button2": "Ustaw skład i stawkę {amount}",
       "noResults": "Nie znaleziono wyników",
       "column": {
         "validator": "Walidator",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "Recenzja wycofana",
     "moreDepositOptions": "Więcej opcji depozytu",
     "moreWithdrawOptions": "Więcej opcji wypłat",
-    "convertTo": "Konwertuj na",
     "depositAs": "Wpłać jako",
     "withdrawAs": "Wycofaj jako",
     "withdrawViaRoute": "przez {route}",
@@ -1006,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko.",
     "ibcConnectionDown": "Natywne połączenie IBC niedostępne",
     "ibcConnectionDownDescription": "Bezpośrednia trasa IBC dla {asset} jest obecnie niedostępna. Poniższe opcje mogą oferować alternatywną ścieżkę, ale mogą być również dotknięte problemem.",
+    "balanceUnavailable": "Nie udało się wczytać salda {chain}",
+    "balanceUnavailableDescription": "Nie udało się połączyć z {chain}, aby sprawdzić saldo, więc może być wyświetlane jako 0. Twoje środki nie są zagrożone. Spróbuj ponownie lub skorzystaj z opcji poniżej.",
+    "retryBalance": "Spróbuj ponownie",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Natywne przelewy niedostępne dla {asset}",
@@ -1351,6 +1368,11 @@
     "lowerSlippageToleranceRecommended": "Zalecana jest niższa tolerancja poślizgu.",
     "tryHigherSlippage": "Wypróbuj wyższą maksymalną tolerancję poślizgu.",
     "reviewTrade": "Przejrzyj handel",
+    "highPriceImpact": {
+      "title": "Wpływ na cenę jest wysoki",
+      "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
+    },
+    "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",
@@ -1397,7 +1419,14 @@
       "filled": "Wypełnione zamówienia do odbioru"
     },
     "priceReaches": "Jeśli cena {denom} osiągnie {price}",
-    "belowMinimumAmount": "{amount} minimalna"
+    "belowMinimumAmount": "{amount} minimalna",
+    "noOrderbookForPair": "Dla pary {base}/{quote} nie istnieje orderbook. Utwórz jeden, aby włączyć limit orders dla tej pary.",
+    "createOrderbook": "Utwórz Orderbook",
+    "noOrderbookExists": "Brak orderbook dla {denom}",
+    "clickToCreateOrderbook": "Kliknij, aby utworzyć orderbook dla tej pary.",
+    "creationInProgress": "Tworzenie orderbooka dla tej pary jest już w toku w innej karcie",
+    "creationAwaitingConfirmation": "Poprzednie tworzenie księgi zleceń dla tej pary nadal czeka na potwierdzenie onchain. Spróbuj ponownie za kilka minut.",
+    "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

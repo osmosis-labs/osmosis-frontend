@@ -17,13 +17,10 @@ import {
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
-  DerivedDataStore,
   LPCurrencyRegistrar,
   makeIndexedKVStore,
   OsmosisAccount,
   OsmosisQueries,
-  PoolFallbackPriceStore,
-  QueriesExternalStore,
   type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
@@ -36,7 +33,6 @@ import {
 } from "~/components/alert/tx-event-toast";
 import {
   BlacklistedPoolIds,
-  HISTORICAL_DATA_URL,
   IS_TESTNET,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -66,12 +62,6 @@ export class RootStore {
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
-
-  public readonly priceStore: PoolFallbackPriceStore;
-
-  public readonly queriesExternalStore: QueriesExternalStore;
-
-  public readonly derivedDataStore: DerivedDataStore;
 
   public readonly transferHistoryStore: TransferHistoryStore;
 
@@ -113,38 +103,6 @@ export class RootStore {
         AlloyedPoolCodeIds,
         IS_TESTNET
       )
-    );
-
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
-        .queryPools,
-      assets
-    );
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      this.priceStore,
-      this.chainStore,
-      this.chainStore.osmosis.chainId,
-      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
-        .queryGauge,
-      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
-        .queryIncentivizedPools,
-      webApiBaseUrl,
-      HISTORICAL_DATA_URL,
-      HISTORICAL_DATA_URL
     );
 
     this.accountStore = new AccountStore(
@@ -189,25 +147,13 @@ export class RootStore {
       },
       // These are Keplr store factories, not React Hooks.
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisAccount.use({
-        queriesStore: this.queriesStore,
-        queriesExternalStore: this.queriesExternalStore,
-      }),
+      OsmosisAccount.use({ queriesStore: this.queriesStore }),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmosAccount.use({
         queriesStore: this.queriesStore,
       }),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.derivedDataStore = new DerivedDataStore(
-      this.chainStore.osmosis.chainId,
-      this.queriesStore,
-      this.queriesExternalStore,
-      this.accountStore,
-      this.priceStore,
-      this.chainStore
     );
 
     const transferStatusProviders = [
@@ -263,11 +209,7 @@ export class RootStore {
     ];
 
     this.transferHistoryStore = new TransferHistoryStore(
-      (accountAddress) => {
-        this.queriesStore
-          .get(this.chainStore.osmosis.chainId)
-          .queryBalances.getQueryBech32Address(accountAddress)
-          .fetch();
+      () => {
         // txEvents passed to root store is used to invalidate
         // tRPC queries, the params are not used
         txEvents?.onFulfill?.("", "");

@@ -25,4 +25,5 @@ export type AvailableFlags =
   | "onrampmoney"
   | "multiTxBridgeRoutes"
   | "positionMigration"
-  | "solanaSkipRoutes";
+  | "solanaSkipRoutes"
+  | "inactiveValidatorAlerts";

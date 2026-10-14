@@ -120,6 +120,39 @@ describe("createNodeQuery", () => {
   });
 
   describe("hedged endpoint fallback", () => {
+    it("should skip a malformed endpoint address and use the next one", async () => {
+      const mockResult = { data: "success" };
+      const mockChains = [
+        {
+          ...MockChains[0],
+          apis: {
+            rest: [
+              { address: "not a url" },
+              { address: "https://endpoint2.com" },
+            ],
+            rpc: [],
+          },
+        },
+      ];
+      (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        hedgeDelay: 50,
+        timeout: 200,
+        maxTotalTime: 2000,
+      });
+
+      const result = await query({ chainList: mockChains });
+
+      expect(apiClient).toHaveBeenCalledTimes(1);
+      expect(apiClient).toHaveBeenCalledWith(
+        "https://endpoint2.com/test",
+        expect.any(Object)
+      );
+      expect(result).toEqual(mockResult);
+    });
+
     it("should fallback to second endpoint when first fails", async () => {
       const mockResult = { data: "success" };
       const mockChains = [
