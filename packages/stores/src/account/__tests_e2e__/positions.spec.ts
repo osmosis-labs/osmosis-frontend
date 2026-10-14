@@ -78,6 +78,7 @@ describe("Create CL Positions Txs", () => {
         account?.osmosis
           .sendCreateConcentratedLiquidityPositionMsg(
             queryPool!.id,
+            queryPool!.concentratedLiquidityPoolInfo!,
             minTick,
             currentTick,
             undefined,
@@ -122,6 +123,7 @@ describe("Create CL Positions Txs", () => {
         account?.osmosis
           .sendCreateConcentratedLiquidityPositionMsg(
             queryPool!.id,
+            queryPool!.concentratedLiquidityPoolInfo!,
             currentTick,
             maxTick,
             undefined,
@@ -311,6 +313,7 @@ describe("Create CL Positions Txs", () => {
       account?.osmosis
         .sendCreateConcentratedLiquidityPositionMsg(
           poolId,
+          queryPool!.concentratedLiquidityPoolInfo!,
           minTick,
           maxTick,
           undefined,
