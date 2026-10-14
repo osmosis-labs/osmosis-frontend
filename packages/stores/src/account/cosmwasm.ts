@@ -1,7 +1,11 @@
 import type { StdFee } from "@cosmjs/amino";
 import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import type { DeliverTxResponse } from "@osmosis-labs/tx";
-import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
+import {
+  prepareExecuteContractMsg,
+  prepareMultiExecuteContractMsg,
+  type TransactionPreparationContext,
+} from "@osmosis-labs/tx";
 import { Optional } from "utility-types";
 
 import { AccountStore, CosmosAccount, OsmosisAccount } from "../account";
@@ -33,6 +37,23 @@ export class CosmwasmAccountImpl {
     protected readonly chainId: string
   ) {}
 
+  private get preparationContext(): TransactionPreparationContext {
+    const getAddress = () => this.address;
+    return {
+      get address() {
+        return getAddress();
+      },
+      chainId: this.chainId,
+      chains: this.base.chains,
+      findCurrency: (denom) =>
+        this.chainGetter.getChain(this.chainId).findCurrency(denom),
+      stakeCurrency: () =>
+        this.chainGetter.getChain(this.chainId).stakeCurrency,
+      simulatePositionMigration: (input) =>
+        this.base.simulatePositionMigration(input),
+    };
+  }
+
   private get address() {
     return this.base.getWallet(this.chainId)?.address ?? "";
   }
@@ -59,26 +80,17 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const msg = await makeExecuteCosmwasmContractMsg({
-      sender: this.address,
-      contract: contractAddress,
-      msg: obj,
-      funds,
-    });
-
     await this.base.signAndBroadcast(
       this.chainId,
-      type,
-      [msg],
-      "",
-      backupFee
-        ? {
-            amount: backupFee?.amount ?? [],
-            gas: backupFee.gas,
-          }
-        : undefined,
-      undefined,
-      onTxEvents
+      ...(await prepareExecuteContractMsg(
+        this.preparationContext,
+        type,
+        contractAddress,
+        obj,
+        funds,
+        backupFee,
+        onTxEvents
+      ))
     );
   }
 
@@ -97,30 +109,15 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const mappedMsgs = await Promise.all(
-      msgs.map(async ({ msg, funds, contractAddress }) => {
-        return await makeExecuteCosmwasmContractMsg({
-          sender: this.address,
-          contract: contractAddress,
-          msg,
-          funds,
-        });
-      })
-    );
-
     await this.base.signAndBroadcast(
       this.chainId,
-      type,
-      mappedMsgs,
-      "",
-      backupFee
-        ? {
-            amount: backupFee?.amount ?? [],
-            gas: backupFee.gas,
-          }
-        : undefined,
-      undefined,
-      onTxEvents
+      ...(await prepareMultiExecuteContractMsg(
+        this.preparationContext,
+        type,
+        msgs,
+        backupFee,
+        onTxEvents
+      ))
     );
   }
 }

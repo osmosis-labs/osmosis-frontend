@@ -1,4 +1,5 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { prepareCreateConcentratedLiquidityInitialFullRangePositionMsg } from "@osmosis-labs/tx";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
@@ -50,7 +51,7 @@ export const AddInitialLiquidity = ({
   const [quoteAmount, setQuoteAmount] = useState<string>();
 
   const [isTxLoading, setIsTxLoading] = useState(false);
-  const { wallet, address } = useWallet();
+  const { address, signAndBroadcast, transactionContext } = useWallet();
 
   const { data: quoteUsdValue } = api.edge.assets.getAssetPrice.useQuery(
     {
@@ -157,22 +158,23 @@ export const AddInitialLiquidity = ({
               return;
 
             setIsTxLoading(true);
-            wallet?.osmosis
-              .sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
-                poolId,
-                undefined,
-                {
-                  amount: baseAmount,
-                  token: selectedBase.token,
-                },
-                {
-                  amount: quoteAmount,
-                  token: selectedQuote.token,
-                },
-                () => {
-                  onClose?.();
-                }
-              )
+            prepareCreateConcentratedLiquidityInitialFullRangePositionMsg(
+              transactionContext,
+              poolId,
+              undefined,
+              {
+                amount: baseAmount,
+                token: selectedBase.token,
+              },
+              {
+                amount: quoteAmount,
+                token: selectedQuote.token,
+              },
+              () => {
+                onClose?.();
+              }
+            )
+              .then((prepared) => signAndBroadcast(...prepared))
               .finally(() => setIsTxLoading(false));
           }}
           className={classNames(

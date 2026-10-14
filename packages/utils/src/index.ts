@@ -3,6 +3,7 @@ export * from "./api-client";
 export * from "./assertion";
 export * from "./asset-utils";
 export * from "./async";
+export * from "./auth-account";
 export * from "./authenticator";
 export * from "./bitcoin";
 export * from "./bitcoin-cash";

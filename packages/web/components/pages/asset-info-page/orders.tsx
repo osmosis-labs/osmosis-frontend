@@ -1,4 +1,5 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Link from "next/link";
@@ -243,7 +244,7 @@ function CompactActionsCell({
   order: MappedLimitOrder;
   refetch: () => Promise<any>;
 }) {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
@@ -252,18 +253,19 @@ function CompactActionsCell({
       if (!account) return;
       try {
         setLoading(true);
-        await account.cosmwasm.sendMultiExecuteContractMsg(
+        await prepareMultiExecuteContractMsg(
+          transactionContext,
           "executeWasm",
           msgs,
           undefined
-        );
+        ).then((prepared) => signAndBroadcast(...prepared));
         await refetch();
       } catch {
       } finally {
         setLoading(false);
       }
     },
-    [account, refetch]
+    [account, refetch, signAndBroadcast, transactionContext]
   );
 
   const {

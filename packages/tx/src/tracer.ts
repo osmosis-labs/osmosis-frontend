@@ -297,6 +297,13 @@ export class TxTracer {
           }
         }
 
+        if (obj?.id && obj.error && this.txSubscribes.has(obj.id)) {
+          this.txSubscribes
+            .get(obj.id)!
+            .rejector(new Error(obj.error.data || obj.error.message));
+          this.txSubscribes.delete(obj.id);
+        }
+
         if (obj?.result?.data?.type === "tendermint/event/NewBlock") {
           for (const handler of this.newBlockSubscribes) {
             handler.handler(obj.result.data.value);
@@ -311,9 +318,10 @@ export class TxTracer {
                   .get(obj.id)!
                   .rejector(new Error(obj.error.data || obj.error.message));
               } else {
-                this.txSubscribes
-                  .get(obj.id)!
-                  .resolver(obj.result.data.value.TxResult.result);
+                this.txSubscribes.get(obj.id)!.resolver({
+                  ...obj.result.data.value.TxResult.result,
+                  height: Number(obj.result.data.value.TxResult.height),
+                });
               }
 
               this.txSubscribes.delete(obj.id);
@@ -399,7 +407,7 @@ export class TxTracer {
   traceTx(
     query: Uint8Array | Record<string, string | number | boolean>
   ): Promise<any> {
-    return new Promise<any>((resolve) => {
+    return new Promise<any>((resolve, reject) => {
       // At first, try to query the tx at the same time of subscribing the tx.
       // But, the querying's error will be ignored.
       this.queryTx(query)
@@ -418,7 +426,7 @@ export class TxTracer {
           // noop
         });
 
-      this.subscribeTx(query).then(resolve);
+      this.subscribeTx(query).then(resolve, reject);
     });
   }
 

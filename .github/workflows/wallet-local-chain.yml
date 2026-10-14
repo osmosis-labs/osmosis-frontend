@@ -1,0 +1,57 @@
+name: Wallet local-chain transactions
+
+on:
+  pull_request:
+    paths:
+      - "packages/tx/**"
+      - "packages/stores/src/account/**"
+      - "packages/keplr-stores/src/common/cosmos.ts"
+      - "packages/utils/src/auth-account.ts"
+      - "packages/web/**"
+      - "scripts/run-wallet-local-chain.mjs"
+      - ".github/workflows/wallet-local-chain.yml"
+      - "yarn.lock"
+  workflow_dispatch:
+
+jobs:
+  wallet-local-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          package-manager-cache: false
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+      - name: Build packages and generate web configuration
+        run: |
+          corepack yarn turbo run build --filter=@osmosis-labs/web^... --concurrency=2
+          corepack yarn workspace @osmosis-labs/web generate
+        env:
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install pinned Osmosis node
+        shell: bash
+        run: |
+          release=https://github.com/osmosis-labs/osmosis/releases/download/v31.0.1
+          asset=osmosisd-31.0.1-linux-amd64
+          curl --fail --location --retry 3 --max-time 600 "$release/$asset" --output "$RUNNER_TEMP/$asset"
+          curl --fail --location --retry 3 --max-time 60 "$release/sha256sum.txt" --output "$RUNNER_TEMP/sha256sum.txt"
+          cd "$RUNNER_TEMP"
+          awk -v asset="$asset" '$2 == asset || $2 == "./" asset { print }' sha256sum.txt > wallet-node.sha256
+          test -s wallet-node.sha256
+          sha256sum --check wallet-node.sha256
+          chmod +x "$asset"
+          echo "OSMOSISD_BINARY=$RUNNER_TEMP/$asset" >> "$GITHUB_ENV"
+      - name: Exercise useWallet against the local chain
+        run: node scripts/run-wallet-local-chain.mjs
+        env:
+          TMPDIR: ${{ runner.temp }}
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-local-chain-logs
+          path: ${{ runner.temp }}/wallet-local-chain-*/node.log
+          if-no-files-found: ignore

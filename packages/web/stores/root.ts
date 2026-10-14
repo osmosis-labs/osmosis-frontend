@@ -29,6 +29,27 @@ export class RootStore {
   }: {
     txEvents?: TxEvents;
   } = {}) {
+    const preTxEvents: TxEvents = {
+      ...txEvents,
+      onBroadcastFailed: (string, e) => {
+        txEvents?.onBroadcastFailed?.(string, e);
+        return toastOnBroadcastFailed((chainId) =>
+          StaticChainGetter.getChain(chainId)
+        )(string, e);
+      },
+      onBroadcasted: (string, txHash) => {
+        txEvents?.onBroadcasted?.(string, txHash);
+        return toastOnBroadcast()();
+      },
+      onFulfill: (chainId, tx) => {
+        txEvents?.onFulfill?.(chainId, tx);
+        return toastOnFulfill((chainId) => StaticChainGetter.getChain(chainId))(
+          chainId,
+          tx
+        );
+      },
+    };
+
     this.accountStore = new AccountStore(
       // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
       ChainList.map(withCosmosKitFields),
@@ -48,25 +69,7 @@ export class RootStore {
             relayUrl: WALLETCONNECT_RELAY_URL,
           },
         },
-        preTxEvents: {
-          ...txEvents,
-          onBroadcastFailed: (string, e) => {
-            txEvents?.onBroadcastFailed?.(string, e);
-            return toastOnBroadcastFailed((chainId) =>
-              StaticChainGetter.getChain(chainId)
-            )(string, e);
-          },
-          onBroadcasted: (string, txHash) => {
-            txEvents?.onBroadcasted?.(string, txHash);
-            return toastOnBroadcast()();
-          },
-          onFulfill: (chainId, tx) => {
-            txEvents?.onFulfill?.(chainId, tx);
-            return toastOnFulfill((chainId) =>
-              StaticChainGetter.getChain(chainId)
-            )(chainId, tx);
-          },
-        },
+        preTxEvents,
       },
       // These are Keplr store factories, not React Hooks.
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
@@ -76,6 +79,6 @@ export class RootStore {
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use()
     );
-    this.walletRuntime = new WalletRuntime(this.accountStore);
+    this.walletRuntime = new WalletRuntime(this.accountStore, { preTxEvents });
   }
 }

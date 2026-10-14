@@ -1,3 +1,4 @@
+import { prepareExitPoolMsg } from "@osmosis-labs/tx";
 import type { WeightedPoolRawResponse } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { NoAvailableSharesError } from "@osmosis-labs/utils";
@@ -23,7 +24,12 @@ export const RemoveLiquidityModal: FunctionComponent<
   const { poolId } = props;
   const { t } = useTranslation();
 
-  const { wallet: account, txTypeInProgress } = useWallet();
+  const {
+    wallet: account,
+    txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
   const isSendingMsg = !account || txTypeInProgress !== "";
 
   const [percentage, setPercentage] = useState("50");
@@ -44,26 +50,35 @@ export const RemoveLiquidityModal: FunctionComponent<
             ? (pool.raw as WeightedPoolRawResponse).pool_params.exit_fee
             : "0";
 
-        account.osmosis
-          .sendExitPoolMsg(
-            poolId,
-            props.shares
-              .mul(new Dec(percentage).quo(new Dec(100)))
-              .toDec()
-              .toString(),
-            new Int(pool.raw.total_shares.amount),
-            pool.reserveCoins.map((coin) => coin.toCoin()),
-            new Dec(exitFee),
-            undefined,
-            undefined,
-            (tx) => {
-              if (Boolean(tx.code)) reject();
-              else resolve();
-            }
-          )
+        prepareExitPoolMsg(
+          transactionContext,
+          poolId,
+          props.shares
+            .mul(new Dec(percentage).quo(new Dec(100)))
+            .toDec()
+            .toString(),
+          new Int(pool.raw.total_shares.amount),
+          pool.reserveCoins.map((coin) => coin.toCoin()),
+          new Dec(exitFee),
+          undefined,
+          undefined,
+          (tx) => {
+            if (Boolean(tx.code)) reject();
+            else resolve();
+          }
+        )
+          .then((prepared) => signAndBroadcast(...prepared))
           .catch(reject);
       }),
-    [account, pool, poolId, percentage, props.shares]
+    [
+      account,
+      pool,
+      poolId,
+      transactionContext,
+      props.shares,
+      percentage,
+      signAndBroadcast,
+    ]
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(

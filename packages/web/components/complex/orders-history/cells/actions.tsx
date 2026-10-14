@@ -1,4 +1,5 @@
 import { MappedLimitOrder } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
@@ -39,7 +40,7 @@ const ClaimAndCloseButton = ({
   order: MappedLimitOrder;
   refetch: () => Promise<any>;
 }) => {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [claiming, setClaiming] = useState(false);
 
   /**
@@ -82,11 +83,12 @@ const ClaimAndCloseButton = ({
 
     try {
       setClaiming(true);
-      await account.cosmwasm.sendMultiExecuteContractMsg(
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
         "executeWasm",
         msgs,
         undefined
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
       await refetch();
     } catch (error) {
       console.error(error);
@@ -97,7 +99,7 @@ const ClaimAndCloseButton = ({
        */
       setClaiming(false);
     }
-  }, [account, order, refetch]);
+  }, [account, order, refetch, signAndBroadcast, transactionContext]);
 
   return (
     <button
@@ -122,7 +124,7 @@ const CancelButton = ({
   order: MappedLimitOrder;
   refetch: () => Promise<any>;
 }) => {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [cancelling, setCancelling] = useState(false);
 
   /**
@@ -152,11 +154,12 @@ const CancelButton = ({
 
     try {
       setCancelling(true);
-      await account.cosmwasm.sendMultiExecuteContractMsg(
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
         "executeWasm",
         [claimMsg],
         undefined
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
       await refetch();
     } catch (error) {
       console.error(error);
@@ -167,7 +170,7 @@ const CancelButton = ({
        */
       setCancelling(false);
     }
-  }, [account, order, refetch]);
+  }, [account, order, refetch, signAndBroadcast, transactionContext]);
 
   return (
     <button

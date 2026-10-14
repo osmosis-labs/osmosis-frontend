@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useState } from "react";
@@ -24,7 +25,7 @@ export const SelectType: FunctionComponent<{
 }> = ({ types, selectType }) => {
   const { t } = useTranslation();
 
-  const { wallet, walletStatus } = useWallet();
+  const { walletStatus, signAndBroadcast, transactionContext } = useWallet();
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
@@ -158,12 +159,13 @@ export const SelectType: FunctionComponent<{
         <div>
           <Button
             onClick={() => {
-              wallet?.osmosis.sendCreateConcentratedPoolMsg(
+              prepareCreateConcentratedPoolMsg(
+                transactionContext,
                 "uion",
                 "uosmo",
                 100,
                 0.0001
-              );
+              ).then((prepared) => signAndBroadcast(...prepared));
             }}
           >
             Create test 100 OSMO / 100 ION CL pool (0.01% spread)

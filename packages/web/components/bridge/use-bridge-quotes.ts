@@ -46,7 +46,6 @@ import {
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
@@ -192,7 +191,6 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore } = useStore();
   const transferHistoryStore = useTransferHistoryStore();
   const {
     connector: evmConnector,
@@ -247,11 +245,12 @@ export const useBridgeQuotes = ({
    */
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
   // falls back to Osmosis when the chain isn't cosmos; ignored in that case
-  const { isWalletConnected: isCosmosSideWalletConnected } = useWallet(
-    cosmosSideChain?.chainType === "cosmos"
-      ? cosmosSideChain.chainId
-      : undefined
-  );
+  const { isWalletConnected: isCosmosSideWalletConnected, getChainWallet } =
+    useWallet(
+      cosmosSideChain?.chainType === "cosmos"
+        ? cosmosSideChain.chainId
+        : undefined
+    );
   const { isWalletConnected: isFromCosmosWalletConnected, txTypeInProgress } =
     useWallet(
       fromChain?.chainType === "cosmos" ? fromChain.chainId : undefined
@@ -1484,8 +1483,7 @@ export const useBridgeQuotes = ({
     // already ensured the basis is fresh for the quote being signed.
     const memoFlags = deriveBridgeMemoFlags(acknowledgedBasis);
 
-    return accountStore.signAndBroadcast(
-      fromChain.chainId,
+    return getChainWallet(fromChain.chainId).signAndBroadcast(
       `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
       transactionRequest.msgs,
       "",

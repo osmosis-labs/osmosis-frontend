@@ -1,3 +1,4 @@
+import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import {
   Checkbox,
   Field,
@@ -61,7 +62,7 @@ export const SetBaseInfos = observer(
       (state) => state.showUnverifiedAssets
     );
 
-    const { wallet } = useWallet();
+    const { signAndBroadcast, transactionContext } = useWallet();
     const { showPreviewAssets } = useShowPreviewAssets();
 
     const { data: tokens, isLoading: isLoadingTokens } =
@@ -261,31 +262,30 @@ export const SetBaseInfos = observer(
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
               setIsTxLoading(true);
-              wallet?.osmosis
-                .sendCreateConcentratedPoolMsg(
-                  selectedBase?.token.coinMinimalDenom!,
-                  selectedQuote?.token.coinMinimalDenom!,
-                  CL_POOL_CREATION_TICK_SPACING,
-                  +selectedSpread,
-                  undefined,
-                  (res) => {
-                    if (res.code === 0) {
-                      setIsTxLoading(false);
-                      if (!res.events) return;
+              prepareCreateConcentratedPoolMsg(
+                transactionContext,
+                selectedBase?.token.coinMinimalDenom!,
+                selectedQuote?.token.coinMinimalDenom!,
+                CL_POOL_CREATION_TICK_SPACING,
+                +selectedSpread,
+                undefined,
+                (res) => {
+                  if (res.code === 0) {
+                    setIsTxLoading(false);
+                    if (!res.events) return;
 
-                      const poolId = res.events
-                        .find(({ type }) => type === "pool_created")
-                        ?.attributes.find(
-                          ({ key }) => key === "pool_id"
-                        )?.value;
+                    const poolId = res.events
+                      .find(({ type }) => type === "pool_created")
+                      ?.attributes.find(({ key }) => key === "pool_id")?.value;
 
-                      if (!poolId) return;
+                    if (!poolId) return;
 
-                      setPoolId(poolId);
-                      advanceStep?.();
-                    }
+                    setPoolId(poolId);
+                    advanceStep?.();
                   }
-                )
+                }
+              )
+                .then((prepared) => signAndBroadcast(...prepared))
                 .finally(() => setIsTxLoading(false));
             }}
           >

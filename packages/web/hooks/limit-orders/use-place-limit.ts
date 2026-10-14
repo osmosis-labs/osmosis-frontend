@@ -110,7 +110,11 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const { wallet: account, address } = useWallet(osmosisChainId);
+  const {
+    wallet: account,
+    address,
+    signAndBroadcast,
+  } = useWallet(osmosisChainId);
 
   // TODO: Readd this once orderbooks support non-stablecoin pairs
   // const { price: quoteAssetPrice } = usePrice({
@@ -358,8 +362,7 @@ export const usePlaceLimit = ({
           oneClickMessages.msgs &&
           shouldSend1CTTx
         ) {
-          await accountStore.signAndBroadcast(
-            accountStore.osmosisChainId,
+          await signAndBroadcast(
             "Add 1CT session",
             oneClickMessages.msgs,
             undefined,
@@ -406,8 +409,7 @@ export const usePlaceLimit = ({
 
           // Widened from three arguments so the ledger path can carry the memo
           // at all — before this it had no way to record an acknowledgement.
-          await accountStore.signAndBroadcast(
-            accountStore.osmosisChainId,
+          await signAndBroadcast(
             "executeWasm",
             limitMessages,
             undefined,
@@ -417,8 +419,7 @@ export const usePlaceLimit = ({
             memoFlags
           );
         } else {
-          await accountStore.signAndBroadcast(
-            accountStore.osmosisChainId,
+          await signAndBroadcast(
             "executeWasm",
             limitMessages,
             "",
@@ -474,9 +475,10 @@ export const usePlaceLimit = ({
       isLedger,
       oneClickMessages,
       shouldSend1CTTx,
-      accountStore,
+      signAndBroadcast,
       account?.address,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      accountStore,
       t,
     ]
   );

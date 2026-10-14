@@ -1,5 +1,6 @@
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -480,7 +481,7 @@ export const useOrderbookClaimableOrders = ({
   refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const { data: orders, isLoading } = useClaimableOrdersQuery({
     userAddress,
@@ -515,10 +516,14 @@ export const useOrderbookClaimableOrders = ({
     }[];
 
     if (msgs.length > 0) {
-      await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
+        "executeWasm",
+        msgs
+      ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
     }
-  }, [orders, account, addresses]);
+  }, [account, orders, addresses, transactionContext, signAndBroadcast]);
 
   return {
     orders: orders ?? [],

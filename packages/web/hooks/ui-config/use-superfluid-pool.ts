@@ -1,4 +1,8 @@
 import type { BondDuration } from "@osmosis-labs/server";
+import {
+  prepareLockAndSuperfluidDelegateMsg,
+  prepareSuperfluidDelegateMsg,
+} from "@osmosis-labs/tx";
 import { useCallback } from "react";
 
 import { api } from "~/utils/trpc";
@@ -14,7 +18,7 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
     lockLPTokensConfig?: ReturnType<typeof useAmountInput>
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const apiUtils = api.useUtils();
 
   const delegateSharesToValidator = useCallback(
@@ -47,12 +51,13 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
             if (delegateableLocks.length > 0) {
               // is delegating existing locked shares
               try {
-                await account?.osmosis.sendSuperfluidDelegateMsg(
+                await prepareSuperfluidDelegateMsg(
+                  transactionContext,
                   delegateableLocks.map((lock) => lock.lockId),
                   validatorAddress,
                   undefined,
                   () => resolve("delegated")
-                );
+                ).then((prepared) => signAndBroadcast(...prepared));
               } catch (e) {
                 console.error(e);
                 reject();
@@ -65,7 +70,8 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
                 if (!sendCurrency) return reject("No send currency to lock");
                 if (!amount) return reject("No amount to lock");
 
-                await account?.osmosis.sendLockAndSuperfluidDelegateMsg(
+                await prepareLockAndSuperfluidDelegateMsg(
+                  transactionContext,
                   [
                     {
                       currency: sendCurrency,
@@ -75,7 +81,7 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
                   validatorAddress,
                   undefined,
                   () => resolve("locked-and-delegated")
-                );
+                ).then((prepared) => signAndBroadcast(...prepared));
               } catch (e) {
                 console.error(e);
                 reject();
@@ -85,7 +91,13 @@ export function useSuperfluidPool(bondDurations?: BondDuration[]): {
         }
       );
     },
-    [account, bondDurations, apiUtils]
+    [
+      account?.address,
+      bondDurations,
+      apiUtils.edge.pools.getSharePoolBondDurations,
+      transactionContext,
+      signAndBroadcast,
+    ]
   );
 
   return { delegateSharesToValidator };

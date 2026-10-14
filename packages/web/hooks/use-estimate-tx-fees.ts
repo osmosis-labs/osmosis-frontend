@@ -1,12 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  OsmosisAccount,
-} from "@osmosis-labs/stores";
-import type { AccountStoreWallet, SignOptions } from "@osmosis-labs/tx";
+import type { SignOptions } from "@osmosis-labs/tx";
 import {
   getFallbackFeeAmountFromBalances,
   InsufficientFeeError,
@@ -24,10 +18,9 @@ import { LRUCache } from "lru-cache";
 import { useMemo } from "react";
 
 import { getChainInfo } from "~/config/chain";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-import { useWallet } from "./use-wallet";
+import { useWallet, type WalletSnapshot } from "./use-wallet";
 
 interface QueryResult {
   gasUsdValueToPay: PricePretty;
@@ -44,12 +37,12 @@ async function estimateTxFeesQueryFn({
   wallet,
   messages,
   apiUtils,
-  accountStore,
+  estimateFee,
   chainId,
   signOptions,
 }: {
-  wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
-  accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  wallet: NonNullable<WalletSnapshot["wallet"]>;
+  estimateFee: WalletSnapshot["estimateFee"];
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
   chainId: string;
@@ -58,8 +51,7 @@ async function estimateTxFeesQueryFn({
   if (!messages.length) throw new Error("No messages");
 
   try {
-    const { amount, gas } = await accountStore.estimateFee({
-      wallet,
+    const { amount, gas } = await estimateFee({
       messages,
       fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT,
       signOptions: {
@@ -130,7 +122,7 @@ async function getFallbackFeeEstimate({
   chainId,
   apiUtils,
 }: {
-  wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  wallet: NonNullable<WalletSnapshot["wallet"]>;
   chainId: string;
   apiUtils: ReturnType<typeof api.useUtils>;
 }): Promise<QueryResult> {
@@ -234,10 +226,9 @@ export function useEstimateTxFees({
   enabled?: boolean;
   signOptions?: SignOptions;
 }) {
-  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const { wallet, address } = useWallet(chainId);
+  const { wallet, address, estimateFee } = useWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: [
@@ -251,7 +242,7 @@ export function useEstimateTxFees({
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({
         wallet,
-        accountStore,
+        estimateFee,
         messages: messages!,
         apiUtils,
         chainId,

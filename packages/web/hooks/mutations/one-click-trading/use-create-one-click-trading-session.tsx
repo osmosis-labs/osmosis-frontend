@@ -26,6 +26,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -388,6 +389,7 @@ export const useCreateOneClickTradingSession = ({
   >;
 } = {}) => {
   const { accountStore } = useStore();
+  const { signAndBroadcast, getChainWallet } = useWallet();
 
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
@@ -403,9 +405,9 @@ export const useCreateOneClickTradingSession = ({
       spendLimitTokenDecimals: number | undefined;
       additionalAuthenticatorsToRemove?: bigint[];
     }) => {
-      const userOsmoAddress = accountStore.getWallet(
+      const userOsmoAddress = getChainWallet(
         accountStore.osmosisChainId
-      )?.address;
+      ).address;
 
       if (!userOsmoAddress) {
         throw new CreateOneClickSessionError("Osmosis account not found");
@@ -433,28 +435,25 @@ export const useCreateOneClickTradingSession = ({
         });
 
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            "addOrRemoveAuthenticators",
-            msgs,
-            "",
-            undefined,
-            undefined,
-            {
-              onBroadcasted,
-              onFulfill: (tx) => {
-                if (tx.code === 0) {
-                  resolve(tx);
-                } else {
-                  reject(new Error("Transaction failed"));
-                }
-              },
-            }
-          )
-          .catch((error) => {
-            reject(error);
-          });
+        signAndBroadcast(
+          "addOrRemoveAuthenticators",
+          msgs,
+          "",
+          undefined,
+          undefined,
+          {
+            onBroadcasted,
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          }
+        ).catch((error) => {
+          reject(error);
+        });
       });
 
       onAdd1CTSession({

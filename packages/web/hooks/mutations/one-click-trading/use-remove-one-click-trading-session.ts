@@ -3,6 +3,7 @@ import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 
 type UseRemoveOneClickTradingMutationOptions = Omit<
@@ -38,13 +39,14 @@ export const useRemoveOneClickTradingSession = ({
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
   const { accountStore } = useStore();
+  const { signAndBroadcast, getChainWallet } = useWallet();
 
   return useMutation({
     ...queryOptions,
     mutationFn: async ({ authenticatorId }: { authenticatorId: string }) => {
-      const userOsmoAddress = accountStore.getWallet(
+      const userOsmoAddress = getChainWallet(
         accountStore.osmosisChainId
-      )?.address;
+      ).address;
 
       if (!userOsmoAddress) {
         throw new Error("User Osmo address not found");
@@ -56,27 +58,24 @@ export const useRemoveOneClickTradingSession = ({
       });
 
       await new Promise<DeliverTxResponse>((resolve, reject) => {
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            "addOrRemoveAuthenticators",
-            [msg],
-            "",
-            undefined,
-            { preferNoSetFee: true },
-            {
-              onFulfill: (tx) => {
-                if (tx.code === 0) {
-                  resolve(tx);
-                } else {
-                  reject(new Error("Transaction failed"));
-                }
-              },
-            }
-          )
-          .catch((error) => {
-            reject(error);
-          });
+        signAndBroadcast(
+          "addOrRemoveAuthenticators",
+          [msg],
+          "",
+          undefined,
+          { preferNoSetFee: true },
+          {
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          }
+        ).catch((error) => {
+          reject(error);
+        });
       });
 
       onEnd1CTSession({ accountStore, authenticatorId });

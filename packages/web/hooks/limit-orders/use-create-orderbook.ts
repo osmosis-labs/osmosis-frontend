@@ -313,7 +313,7 @@ export function useCreateOrderbook({
    *  mounted, so callers need to drop a stale failure on close. */
   const resetError = useCallback(() => setError(undefined), []);
 
-  const { address } = useWallet();
+  const { address, signAndBroadcast } = useWallet();
 
   /** Keep checking, in the background, until the pair is discoverable, then
    *  refetch the client caches; see DISCOVERY_RECONCILE_MAX_MS. */
@@ -559,8 +559,7 @@ export function useCreateOrderbook({
           ),
         };
 
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
+        await signAndBroadcast(
           "createOrderbook",
           [msg],
           undefined,
@@ -807,12 +806,13 @@ export function useCreateOrderbook({
     address,
     baseDenom,
     quoteDenom,
+    t,
+    apiUtils.edge.orderbooks.verifyOrderbookCreation,
     accountStore,
-    apiUtils,
-    fetchBroadcastedTxOutcome,
+    signAndBroadcast,
     refreshOrderbookCaches,
     settleAsAlreadyCreated,
-    t,
+    fetchBroadcastedTxOutcome,
   ]);
 
   return {
