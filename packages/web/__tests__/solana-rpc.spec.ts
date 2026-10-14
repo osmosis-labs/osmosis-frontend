@@ -2,9 +2,8 @@
 import { delay, http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import solanaRpcHandler, {
-  resetSolanaRpcFlagCache,
-} from "~/pages/api/solana-rpc";
+import solanaRpcHandler from "~/pages/api/solana-rpc";
+import { resetServerFlagCache } from "~/utils/server-flags";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 const KEYED_RPC = "https://solana-provider.test/?api-key=secret";
@@ -63,7 +62,7 @@ function launchDarklyServes(flags: Record<string, unknown>) {
 }
 
 beforeEach(() => {
-  resetSolanaRpcFlagCache();
+  resetServerFlagCache();
   // The route fails closed without a client-side id outside development, so
   // every test runs as a deployed build with the flag on unless it says
   // otherwise.

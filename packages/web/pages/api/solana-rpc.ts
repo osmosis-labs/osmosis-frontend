@@ -19,6 +19,7 @@
 import { SOLANA_PUBLIC_RPC_URL } from "@osmosis-labs/bridge/build/utils/solana";
 
 import { isSameOrigin } from "~/utils/same-origin";
+import { isServerFlagEnabled } from "~/utils/server-flags";
 
 /** Methods the in-app Solana bridge flow calls from the browser. */
 export const ALLOWED_SOLANA_RPC_METHODS = new Set([
@@ -42,70 +43,6 @@ const MAX_BODY_BYTES = 16 * 1024;
 /** LaunchDarkly flag that offers Solana routes in the app (`solanaSkipRoutes`
  *  in code). The route is only reachable while it is on. */
 const SOLANA_ROUTES_FLAG = "solana-skip-routes";
-/** How long a flag read is reused before asking LaunchDarkly again. */
-const FLAG_CACHE_MS = 60_000;
-/** A LaunchDarkly read that takes longer than this is treated as failed, so
- *  a hung request falls through to the stale value (or fails closed) instead
- *  of holding every RPC call. Covers the response body as well. */
-const FLAG_FETCH_TIMEOUT_MS = 2_000;
-/** If LaunchDarkly cannot be reached, a value this old is still trusted
- *  rather than failing closed on a transient error. */
-const FLAG_STALE_MS = 10 * 60_000;
-
-let flagCache: { value: boolean; readAt: number } | undefined;
-
-/** Test-only: forget the cached flag read. */
-export function resetSolanaRpcFlagCache() {
-  flagCache = undefined;
-}
-
-const base64url = (s: string) =>
-  btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-
-/**
- * Reads `solana-skip-routes` for the server through LaunchDarkly's
- * client-side evaluation endpoint, which needs no SDK (the Node client SDK
- * does not run on the Edge runtime) and only the public client-side id the
- * browser already ships with. Without a client-side id nothing can be
- * evaluated: local development stays open, any deployed build fails closed
- * rather than exposing the proxy because an env var went missing.
- */
-async function isSolanaRouteEnabled(): Promise<boolean> {
-  const clientSideId = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
-  if (!clientSideId) return process.env.NODE_ENV === "development";
-
-  const now = Date.now();
-  if (flagCache && now - flagCache.readAt < FLAG_CACHE_MS) {
-    return flagCache.value;
-  }
-
-  try {
-    const context = base64url(
-      JSON.stringify({
-        kind: "user",
-        key: "osmosis-frontend-server",
-        anonymous: true,
-      })
-    );
-    const response = await fetch(
-      `https://clientsdk.launchdarkly.com/sdk/evalx/${clientSideId}/contexts/${context}`,
-      { signal: AbortSignal.timeout(FLAG_FETCH_TIMEOUT_MS) }
-    );
-    if (!response.ok) throw new Error(`LaunchDarkly ${response.status}`);
-    const flags = (await response.json()) as Record<
-      string,
-      { value?: unknown } | undefined
-    >;
-    const value = flags[SOLANA_ROUTES_FLAG]?.value === true;
-    flagCache = { value, readAt: now };
-    return value;
-  } catch {
-    if (flagCache && now - flagCache.readAt < FLAG_STALE_MS) {
-      return flagCache.value;
-    }
-    return false;
-  }
-}
 
 const json = (body: unknown, status: number) =>
   new Response(JSON.stringify(body), {
@@ -120,7 +57,7 @@ export default async function solanaRpcHandler(req: Request) {
 
   // Hidden, not forbidden: while Solana routes are off the route does not
   // exist, so a probe learns nothing about it.
-  if (!(await isSolanaRouteEnabled())) {
+  if (!(await isServerFlagEnabled(SOLANA_ROUTES_FLAG))) {
     return json({ error: "Not found" }, 404);
   }
 

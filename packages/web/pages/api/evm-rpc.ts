@@ -6,6 +6,10 @@
  * configured (see `getClientEvmRpcUrls`).
  *
  * What keeps the route from being a general proxy for our keys:
+ * - It answers 404 while the `evm-rpc-proxy` flag is off, read from
+ *   LaunchDarkly server-side, so the pathway does not exist until it is
+ *   switched on (and the flag is a kill switch for it afterwards). The
+ *   browser then uses the public endpoints directly.
  * - It only accepts same-origin browser requests.
  * - Only the read methods the bridge and wallet flows use are forwarded, one
  *   request at a time. Transactions are broadcast by the user's wallet, never
@@ -21,6 +25,7 @@ import {
 } from "@osmosis-labs/utils";
 
 import { isSameOrigin } from "~/utils/same-origin";
+import { isServerFlagEnabled } from "~/utils/server-flags";
 
 /** Read methods the browser calls through wagmi and viem public clients:
  *  balances and contract reads, fee and gas estimation, and receipt polling
@@ -48,6 +53,8 @@ const MAX_BODY_BYTES = 64 * 1024;
 /** Each upstream gets this long before the next one is tried, so one hung
  *  provider can't hold the request. */
 const UPSTREAM_TIMEOUT_MS = 5_000;
+/** LaunchDarkly flag that opens the route (`evmRpcProxy` in code). */
+const EVM_RPC_PROXY_FLAG = "evm-rpc-proxy";
 /** The whole fallback chain stops after this, below viem's 10s default
  *  client timeout, so the browser's own direct fallback to the public
  *  endpoints starts instead of waiting on every upstream in turn. */
@@ -99,6 +106,11 @@ export default async function evmRpcHandler(req: Request) {
   // Chains without a keyed provider are served by their public endpoints
   // directly from the browser; there is nothing to proxy.
   if (!chain || getConfiguredEvmRpcUrls(chain.id).length === 0) {
+    return json({ error: "Not found" }, 404);
+  }
+
+  // Hidden, not forbidden: while the flag is off the route does not exist.
+  if (!(await isServerFlagEnabled(EVM_RPC_PROXY_FLAG))) {
     return json({ error: "Not found" }, 404);
   }
 

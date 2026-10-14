@@ -3,7 +3,10 @@ import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
 import evmRpcHandler from "~/pages/api/evm-rpc";
+import { resetServerFlagCache } from "~/utils/server-flags";
 
+const LD_CLIENT_ID = "ld-client-id";
+const LD_EVALX = `https://clientsdk.launchdarkly.com/sdk/evalx/${LD_CLIENT_ID}/contexts/:context`;
 const KEYED_RPC = "https://polygon-provider.test/v2/secret-key";
 const PUBLIC_RPC = "https://polygon-bor-rpc.publicnode.com";
 const APP_HOST = "app.test";
@@ -44,12 +47,36 @@ function upstreamAnswers(
   return calls;
 }
 
+function launchDarklyServes(flagOn: boolean) {
+  server.use(
+    http.get(LD_EVALX, () =>
+      HttpResponse.json({ "evm-rpc-proxy": { value: flagOn } })
+    )
+  );
+}
+
 beforeEach(() => {
   process.env.EVM_RPC_URL_137 = KEYED_RPC;
+  // Every test runs as a deployed build with the flag on unless it says
+  // otherwise.
+  resetServerFlagCache();
+  process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID = LD_CLIENT_ID;
+  launchDarklyServes(true);
 });
 
 afterEach(() => {
   delete process.env.EVM_RPC_URL_137;
+  delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+});
+
+it("answers 404 and never contacts an upstream while the flag is off", async () => {
+  launchDarklyServes(false);
+  const keyed = upstreamAnswers(KEYED_RPC);
+
+  const result = await evmRpcHandler(post(balanceOf));
+
+  expect(result.status).toBe(404);
+  expect(keyed).toHaveLength(0);
 });
 
 it("forwards an allowed read to the keyed provider", async () => {
