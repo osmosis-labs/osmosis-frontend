@@ -42,6 +42,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import { HighPriceImpactGate } from "~/config/trade-warnings";
@@ -63,7 +64,6 @@ import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
@@ -95,9 +95,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     forceSwapInPoolId,
     onSwapSuccess,
   }) => {
-    const { chainStore } = useStore();
     const { t } = useTranslation();
-    const { chainId } = chainStore.osmosis;
+    const { chainId } = OsmosisChainInfo;
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();

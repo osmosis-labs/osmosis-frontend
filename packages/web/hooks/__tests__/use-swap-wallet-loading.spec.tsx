@@ -59,9 +59,6 @@ jest.mock("~/utils/trpc", () => {
 
 jest.mock("~/stores", () => ({
   useStore: () => ({
-    chainStore: {
-      osmosis: { chainId: "osmosis-1" },
-    },
     accountStore: {
       osmosisChainId: "osmosis-1",
       getWallet: () => ({

@@ -5,9 +5,9 @@ import React, { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const PriceCaption: FunctionComponent<{
@@ -31,9 +31,8 @@ export const EstimatedEarningCard: FunctionComponent<{
   stakingAPR: Dec;
 }> = observer(({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
-  const { chainStore } = useStore();
 
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
   // stakeAmount is already a CoinPretty in OSMO. Shifting by coinDecimals
   // here treated that amount as uosmo and scaled earnings by 10^6.

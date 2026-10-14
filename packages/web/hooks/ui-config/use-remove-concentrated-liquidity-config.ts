@@ -1,15 +1,14 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import type { UserPosition } from "@osmosis-labs/server";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useEffect } from "react";
 import { useCallback, useState } from "react";
 
+import { StaticChainGetter } from "~/config/chain";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
 
 export function useRemoveConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
   position: UserPosition
@@ -24,7 +23,7 @@ export function useRemoveConcentratedLiquidityConfig(
   const [config] = useState(
     () =>
       new ObservableRemoveConcentratedLiquidityConfig(
-        chainGetter,
+        StaticChainGetter,
         osmosisChainId,
         poolId,
         {

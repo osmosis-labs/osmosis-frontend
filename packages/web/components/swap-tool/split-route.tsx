@@ -10,8 +10,8 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
+import { findOsmosisCurrency } from "~/config/chain";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 import type { RouterOutputs } from "~/utils/trpc";
 
@@ -29,15 +29,12 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = observer(({ route }) => {
-  const { chainStore } = useStore();
-  const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
-
   const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
-    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
-    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
+    ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
+    : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
   const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
-    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
-    : osmosisChain.findCurrency(
+    ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
+    : findOsmosisCurrency(
         (route as RouteOutGivenIn).tokenOutDenoms[
           (route as RouteOutGivenIn).tokenOutDenoms.length - 1
         ]

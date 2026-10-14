@@ -8,6 +8,7 @@ import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Checkbox } from "~/components/ui/checkbox";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   CREATE_GAUGE_FEE_LABEL,
   CREATE_GAUGE_FEE_OSMO,
@@ -23,7 +24,6 @@ import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -42,8 +42,7 @@ export const IncentivizePoolModal: FunctionComponent<
 > = (props) => {
   const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
-  const { chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
   const { address: walletAddress, txTypeInProgress } = useWallet(chainId);
   const address = walletAddress ?? "";
 
@@ -191,7 +190,7 @@ export const IncentivizePoolModal: FunctionComponent<
   // Fiat value of the chain's 0.01 OSMO per-recipient dust floor, tracking
   // the live OSMO price rather than a fixed dollar figure. Undefined while
   // the OSMO price hasn't loaded, in which case the dust warning is skipped.
-  const osmoCurrency = chainStore.osmosis.stakeCurrency;
+  const osmoCurrency = OsmosisChainInfo.stakeCurrency;
   const minDistrCoin = useMemo(
     () =>
       new CoinPretty(
@@ -220,7 +219,7 @@ export const IncentivizePoolModal: FunctionComponent<
   // against its own balance, so validate the OSMO fee here and block the
   // button; otherwise a user with just enough OSMO for the reward signs a tx
   // that fails on the fee.
-  const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
+  const osmoCurrencyForFee = OsmosisChainInfo.stakeCurrency;
   const osmoBalance = new CoinPretty(
     osmoCurrencyForFee,
     userBalances?.find(
