@@ -4,6 +4,7 @@ import { getOsmosisCodec } from "@osmosis-labs/tx";
 import { useCallback, useState } from "react";
 
 import { useTranslation } from "~/hooks/language";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -312,7 +313,7 @@ export function useCreateOrderbook({
    *  mounted, so callers need to drop a stale failure on close. */
   const resetError = useCallback(() => setError(undefined), []);
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
   /** Keep checking, in the background, until the pair is discoverable, then
    *  refetch the client caches; see DISCOVERY_RECONCILE_MAX_MS. */
@@ -433,7 +434,7 @@ export function useCreateOrderbook({
     // the limit tab), which must never happen when nothing was broadcast.
     // They also surface the generic error so the modal never sits open with
     // a cleared spinner and no explanation.
-    if (!account?.address) {
+    if (!address) {
       setError(t("errors.uhOhSomethingWentWrong"));
       throw new Error("Cannot create an orderbook without a connected wallet");
     }
@@ -528,6 +529,18 @@ export function useCreateOrderbook({
 
         const osmosis = await getOsmosisCodec();
 
+        // Read the sender from the live wallet after the awaits above: the
+        // `address` snapshot is from the click, and an account switch since
+        // then would sign with the new key against the old sender.
+        const sender = accountStore.getWallet(
+          accountStore.osmosisChainId
+        )?.address;
+        if (!sender || sender !== address) {
+          throw new AccountStoreNoBroadcastErrorEvent(
+            t("errors.uhOhSomethingWentWrong")
+          );
+        }
+
         const instantiateMsgBytes = new TextEncoder().encode(
           JSON.stringify({
             base_denom: baseDenom,
@@ -541,7 +554,7 @@ export function useCreateOrderbook({
             {
               codeId: BigInt(OrderbookPoolCodeIds[0]),
               instantiateMsg: instantiateMsgBytes,
-              sender: account.address,
+              sender,
             }
           ),
         };
@@ -791,7 +804,7 @@ export function useCreateOrderbook({
       throw e;
     }
   }, [
-    account?.address,
+    address,
     baseDenom,
     quoteDenom,
     accountStore,
@@ -809,7 +822,7 @@ export function useCreateOrderbook({
     resetError,
     canCreate:
       IS_ORDERBOOK_CREATION_SUPPORTED &&
-      !!account?.address &&
+      !!address &&
       !!baseDenom &&
       !!quoteDenom,
   };

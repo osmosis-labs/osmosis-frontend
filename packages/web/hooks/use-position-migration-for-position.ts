@@ -12,7 +12,7 @@ import {
   queryLatestPositionMigrations,
   usePositionMigrations,
 } from "~/hooks/use-position-migrations";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   ChainConcentratedPoolResponse,
   ChainPositionResponse,
@@ -144,9 +144,8 @@ export const usePositionMigrationForPosition = ({
   const { migrations, priceDivergenceTiers, minAmountTolerance } =
     usePositionMigrations();
   const apiUtils = api.useUtils();
-  const { accountStore, chainStore } = useStore();
-  const userOsmoAddress =
-    accountStore.getWallet(chainStore.osmosis.chainId)?.address ?? "";
+  const { address } = useWallet();
+  const userOsmoAddress = address ?? "";
 
   // Destructured to scalars so the object literals callers pass each render
   // do not churn the revalidate callback's identity.

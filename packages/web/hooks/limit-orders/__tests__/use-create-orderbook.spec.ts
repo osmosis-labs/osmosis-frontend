@@ -33,6 +33,13 @@ jest.mock("~/stores", () => ({
   }),
 }));
 
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({
+    wallet: { address: mockWalletAddress },
+    address: mockWalletAddress,
+  }),
+}));
+
 jest.mock("~/utils/trpc", () => ({
   api: {
     useUtils: () => ({

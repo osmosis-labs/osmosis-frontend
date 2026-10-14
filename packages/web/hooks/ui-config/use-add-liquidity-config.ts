@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
-import { useStore } from "~/stores";
+import { useWallet } from "../use-wallet";
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
@@ -24,10 +24,8 @@ export function useAddLiquidityConfig(
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
-
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
