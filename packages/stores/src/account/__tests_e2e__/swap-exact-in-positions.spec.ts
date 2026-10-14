@@ -452,6 +452,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       account!.osmosis
         .sendCreateConcentratedLiquidityPositionMsg(
           queryPool!.id,
+          queryPool!.concentratedLiquidityPoolInfo!,
           minTick_,
           maxTick_,
           undefined,

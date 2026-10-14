@@ -25,6 +25,7 @@ import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
+  /** Test-only: e2e specs read chain state through these MobX queries; the account store no longer takes them. */
   public readonly queriesStore: QueriesStore<
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
@@ -58,18 +59,15 @@ export class RootStore {
       TestOsmosisChainId,
       MockAssetList,
       [testWallet],
-      this.queriesStore,
       this.chainStore,
       {
         broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
         simulateUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/simulate",
         wsObject: WebSocket as any,
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-      }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
+      OsmosisAccount.use(),
+      CosmosAccount.use(),
+      CosmwasmAccount.use()
     );
   }
 }

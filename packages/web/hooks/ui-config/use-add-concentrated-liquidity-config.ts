@@ -149,8 +149,12 @@ export function useAddConcentratedLiquidityConfig(
             baseDepositValue = baseCoin;
           }
 
+          const clPool = config.pool;
+          if (!clPool) throw new Error(`Pool #${config.poolId} not found`);
+
           await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
             config.poolId,
+            clPool,
             config.tickRange[0],
             config.tickRange[1],
             superfluidValidatorAddress,
@@ -191,6 +195,7 @@ export function useAddConcentratedLiquidityConfig(
       config.baseDepositOnly,
       config.quoteDepositOnly,
       config.tickRange,
+      config.pool,
       config.poolId,
     ]
   );
