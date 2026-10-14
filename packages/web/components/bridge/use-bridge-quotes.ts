@@ -740,6 +740,54 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote, availableBalance]);
 
+  // Narrower than isInsufficientFee: the entered amount itself is too small to
+  // cover a fee deducted from it, so raising the amount fixes it. The generic
+  // InsufficientAmountError tag is left out because providers also use it when
+  // the account has no native gas token, which a bigger amount can't fix.
+  const isAmountBelowFee = useMemo(() => {
+    if (!isInsufficientFee) return false;
+
+    // already entering the whole balance (or more), so a bigger amount isn't
+    // possible and plain "insufficient funds" is the honest label
+    if (
+      inputCoin &&
+      availableBalance &&
+      inputCoin.toDec().gte(availableBalance.toDec())
+    )
+      return false;
+
+    const errorMsg = someError?.message.toLowerCase() ?? "";
+    if (
+      errorMsg.includes("input amount is too low to cover") ||
+      errorMsg.includes("amount is too low") ||
+      errorMsg.includes("not high enough to cover")
+    ) {
+      return true;
+    }
+
+    if (!inputCoin || !selectedQuote?.gasCost || selectedQuote.isAdditiveFee)
+      return false;
+
+    let deductedFees = new Dec(0);
+    if (isSameCoinDenom(inputCoin, selectedQuote.gasCost)) {
+      deductedFees = deductedFees.add(selectedQuote.gasCost.toDec());
+    }
+    if (isSameCoinDenom(inputCoin, selectedQuote.transferFee)) {
+      deductedFees = deductedFees.add(selectedQuote.transferFee.toDec());
+    }
+    // if the whole balance can't cover the fees either, a bigger amount won't
+    // help, so leave it as plain "insufficient funds"
+    if (availableBalance && availableBalance.toDec().lte(deductedFees))
+      return false;
+    return deductedFees.isPositive() && inputCoin.toDec().lte(deductedFees);
+  }, [
+    isInsufficientFee,
+    someError,
+    inputCoin,
+    selectedQuote,
+    availableBalance,
+  ]);
+
   // Extract fee details from error message if available (for bridge amount errors)
   const insufficientFeeDetails = useMemo(() => {
     if (!isInsufficientFee || !someError?.message) return null;
@@ -1850,6 +1898,7 @@ export const useBridgeQuotes = ({
     multiTxPhase,
 
     isInsufficientFee,
+    isAmountBelowFee,
     isInsufficientBal,
     warnUserOfSlippage,
     warnUserOfPriceImpact,

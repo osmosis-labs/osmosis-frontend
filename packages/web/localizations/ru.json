@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "Недостаточно средств",
-      "feesExceedBalance": "Недостаточно средств для покрытия комиссии за перевод"
+      "feesExceedBalance": "Недостаточно средств для покрытия комиссии за перевод",
+      "amountBelowFee": "Сумма слишком мала, чтобы покрыть комиссию за перевод"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Купить криптовалюту",

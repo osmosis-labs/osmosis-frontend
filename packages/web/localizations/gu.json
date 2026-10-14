@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "અપૂરતું ભંડોળ",
-      "feesExceedBalance": "ટ્રાન્સફર ફી આવરી લેવા માટે બેલેન્સ ખૂબ ઓછું છે"
+      "feesExceedBalance": "ટ્રાન્સફર ફી આવરી લેવા માટે બેલેન્સ ખૂબ ઓછું છે",
+      "amountBelowFee": "ટ્રાન્સફર ફી આવરી લેવા માટે રકમ ખૂબ ઓછી છે"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "ક્રિપ્ટો ખરીદો",

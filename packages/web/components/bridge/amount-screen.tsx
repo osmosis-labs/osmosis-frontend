@@ -173,6 +173,7 @@ export const AmountScreen = observer(
       isLoadingBridgeQuote,
       isInsufficientBal,
       isInsufficientFee,
+      isAmountBelowFee,
       highLossWarningActive,
       errorBoxMessage,
       warningBoxMessage,
@@ -1338,6 +1339,7 @@ export const AmountScreen = observer(
             assetWithBalance={fromAsset}
             isInsufficientBal={Boolean(isInsufficientBal)}
             isInsufficientFee={Boolean(isInsufficientFee)}
+            isAmountBelowFee={Boolean(isAmountBelowFee)}
             transferGasCost={selectedQuote?.gasCost}
             additiveTransferFee={
               selectedQuote?.isAdditiveFee

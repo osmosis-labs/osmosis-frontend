@@ -72,6 +72,8 @@ export const CryptoFiatInput: FunctionComponent<{
   // TODO: Implement this logic within the component
   isInsufficientBal: boolean | undefined;
   isInsufficientFee: boolean | undefined;
+  /** The amount itself is too small to cover a fee deducted from it. */
+  isAmountBelowFee?: boolean;
 }> = ({
   currentUnit,
   setCurrentUnit,
@@ -94,6 +96,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   isInsufficientBal,
   isInsufficientFee,
+  isAmountBelowFee,
 }) => {
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
@@ -375,6 +378,11 @@ export const CryptoFiatInput: FunctionComponent<{
   // On additive-fee routes the shortfall is the fee charged on top of the
   // input, so name it explicitly rather than the generic "insufficient funds".
   const showFeeShortfall = Boolean(isInsufficientFee && additiveTransferFee);
+  // When the amount is too small to cover a fee deducted from it, the balance
+  // isn't short, so don't say "insufficient funds" next to a healthy balance.
+  const showAmountBelowFee = Boolean(
+    isAmountBelowFee && !additiveTransferFee && !isInsufficientBal
+  );
 
   return (
     <div className="relative flex flex-col items-center">
@@ -390,7 +398,9 @@ export const CryptoFiatInput: FunctionComponent<{
             <p className="body1 animate-[fadeIn_0.25s] text-rust-400">
               {showFeeShortfall
                 ? t("components.cryptoFiatInput.feesExceedBalance")
-                : t("components.cryptoFiatInput.insufficientFunds")}
+                : showAmountBelowFee
+                  ? t("components.cryptoFiatInput.amountBelowFee")
+                  : t("components.cryptoFiatInput.insufficientFunds")}
             </p>
           )}
 

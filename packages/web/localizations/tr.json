@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "Yetersiz bakiye",
-      "feesExceedBalance": "Bakiye, transfer ücretini karşılamak için çok düşük"
+      "feesExceedBalance": "Bakiye, transfer ücretini karşılamak için çok düşük",
+      "amountBelowFee": "Tutar, transfer ücretini karşılamak için çok düşük"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kripto satın al",

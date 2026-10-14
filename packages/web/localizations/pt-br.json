@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "Fundos insuficientes",
-      "feesExceedBalance": "Saldo muito baixo para cobrir a taxa de transferência"
+      "feesExceedBalance": "Saldo muito baixo para cobrir a taxa de transferência",
+      "amountBelowFee": "Valor muito baixo para cobrir a taxa de transferência"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Comprar cripto",

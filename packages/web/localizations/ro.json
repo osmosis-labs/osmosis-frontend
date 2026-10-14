@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "Fonduri insuficiente",
-      "feesExceedBalance": "Sold prea mic pentru a acoperi taxa de transfer"
+      "feesExceedBalance": "Sold prea mic pentru a acoperi taxa de transfer",
+      "amountBelowFee": "Suma este prea mică pentru a acoperi taxa de transfer"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Cumpărați cripto",

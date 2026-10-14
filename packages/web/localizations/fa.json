@@ -240,7 +240,8 @@
   "components": {
     "cryptoFiatInput": {
       "insufficientFunds": "بودجه ناکافی",
-      "feesExceedBalance": "موجودی برای پوشش کارمزد انتقال بسیار کم است"
+      "feesExceedBalance": "موجودی برای پوشش کارمزد انتقال بسیار کم است",
+      "amountBelowFee": "مبلغ برای پوشش کارمزد انتقال بسیار کم است"
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "کریپتو بخر",
