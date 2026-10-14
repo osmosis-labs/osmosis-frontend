@@ -15,7 +15,6 @@ import {
   DecUtils,
   Int,
 } from "@osmosis-labs/unit";
-import { action, computed, makeObservable, observable } from "mobx";
 
 /** Gas used to create a concentrated liquidity position. */
 export const CL_CREATE_POSITION_GAS = 3_000_000;
@@ -40,158 +39,171 @@ export function calcHighGasFee(
   return new CoinPretty(feeCurrency, new Int(feeAmount.truncate().toString()));
 }
 
-/** User input for a deposit amount of a single currency. Balances are provided by the owner
- *  via `getRawBalance` (base units), so this holds no query store. Mirrors the semantics of
- *  keplr-hooks `AmountConfig`: a fraction of the balance (1 = max, less `fee` if in the same
- *  currency) takes precedence over the typed amount, and the balance reads as 0 until loaded.
+/** User input for a deposit amount of a single currency. A fraction of the balance
+ *  (1 = max, less `fee` if in the same currency) takes precedence over the typed amount.
  */
-export class ConcentratedDepositAmount {
-  @observable.ref
-  protected _sendCurrency: AppCurrency;
+export interface DepositInputState {
+  amount: string;
+  fraction: number | undefined;
+}
 
-  @observable
-  protected _amount: string = "0";
+export const INITIAL_DEPOSIT_INPUT: DepositInputState = {
+  amount: "0",
+  fraction: undefined,
+};
 
-  @observable
-  protected _fraction: number | undefined = undefined;
-
-  @observable.ref
-  protected _fee: CoinPretty | undefined = undefined;
-
-  constructor(
-    initialSendCurrency: AppCurrency,
-    /** Returns the raw balance (base units) of the denom, or undefined if none/not loaded. */
-    protected readonly getRawBalance: (
-      coinMinimalDenom: string
-    ) => string | undefined
-  ) {
-    this._sendCurrency = initialSendCurrency;
-
-    makeObservable(this);
+/** Typing sets the amount (prefixing a leading dot) and clears any fraction. */
+export function typeDepositAmount(
+  state: DepositInputState,
+  amount: string
+): DepositInputState {
+  if (amount.startsWith(".")) {
+    amount = "0" + amount;
   }
+  if (state.amount === amount && state.fraction === undefined) return state;
+  return { amount, fraction: undefined };
+}
 
-  get sendCurrency(): AppCurrency {
-    return this._sendCurrency;
-  }
+export function setDepositFraction(
+  state: DepositInputState,
+  fraction: number | undefined
+): DepositInputState {
+  if (state.fraction === fraction) return state;
+  return { ...state, fraction };
+}
 
-  @action
-  setSendCurrency(currency: AppCurrency) {
-    this._sendCurrency = currency;
-  }
+/** User balance of the currency. Zero while balances are loading. */
+export function getDepositBalance(
+  currency: AppCurrency,
+  rawBalance: string | undefined
+): CoinPretty {
+  return new CoinPretty(currency, rawBalance ?? 0);
+}
 
-  /** Fee subtracted from the balance when a fraction (e.g. max) is selected. No-op for other currencies. */
-  @action
-  setFee(fee: CoinPretty | undefined) {
-    this._fee = fee;
-  }
-
-  @action
-  setAmount(amount: string) {
-    if (amount.startsWith(".")) {
-      amount = "0" + amount;
+/** Amount with decimals, as displayed to the user. */
+export function getDepositAmount({
+  state,
+  balance,
+  fee,
+}: {
+  state: DepositInputState;
+  balance: CoinPretty;
+  fee: CoinPretty | undefined;
+}): string {
+  if (state.fraction != null) {
+    // `CoinPretty.sub` does nothing if the currencies differ.
+    const result = fee ? balance.sub(fee) : balance;
+    if (result.toDec().lte(new Dec(0))) {
+      return "0";
     }
 
-    if (this._fraction != null) {
-      this._fraction = undefined;
+    return result
+      .mul(new Dec(state.fraction))
+      .trim(true)
+      .locale(false)
+      .hideDenom(true)
+      .toString();
+  }
+
+  return state.amount;
+}
+
+export function getDepositAmountPrimitive(
+  currency: AppCurrency,
+  amountStr: string
+): CoinPrimitive {
+  if (!amountStr) {
+    return { denom: currency.coinMinimalDenom, amount: "0" };
+  }
+
+  try {
+    return {
+      denom: currency.coinMinimalDenom,
+      amount: new Dec(amountStr)
+        .mul(DecUtils.getPrecisionDec(currency.coinDecimals))
+        .truncate()
+        .toString(),
+    };
+  } catch {
+    return { denom: currency.coinMinimalDenom, amount: "0" };
+  }
+}
+
+export function getDepositAmountError(
+  amount: string,
+  balance: CoinPretty
+): Error | undefined {
+  if (amount === "") {
+    return new EmptyAmountError("Amount is empty");
+  }
+  if (Number.isNaN(parseFloat(amount))) {
+    return new InvalidNumberAmountError("Invalid form of number");
+  }
+  let dec;
+  try {
+    dec = new Dec(amount);
+    if (dec.equals(new Dec(0))) {
+      return new ZeroAmountError("Amount is zero");
     }
-    this._amount = amount;
+  } catch {
+    return new InvalidNumberAmountError("Invalid form of number");
+  }
+  if (dec.lt(new Dec(0))) {
+    return new NegativeAmountError("Amount is negative");
+  }
+  if (dec.gt(balance.toDec())) {
+    return new InsufficientAmountError("Insufficient amount");
   }
 
-  @action
-  setIsMax(isMax: boolean) {
-    this._fraction = isMax ? 1 : undefined;
-  }
+  return;
+}
 
-  @action
-  setFraction(value: number | undefined) {
-    this._fraction = value;
-  }
-
-  get isMax(): boolean {
-    return this._fraction === 1;
-  }
-
-  get fraction(): number | undefined {
-    return this._fraction;
-  }
-
+/** Snapshot of a deposit input plus stable setters, as exposed by the add CL config. */
+export interface ConcentratedDepositAmount {
+  readonly sendCurrency: AppCurrency;
   /** User balance of the send currency. Zero while balances are loading. */
-  @computed
-  get balance(): CoinPretty {
-    return new CoinPretty(
-      this._sendCurrency,
-      this.getRawBalance(this._sendCurrency.coinMinimalDenom) ?? 0
-    );
-  }
-
+  readonly balance: CoinPretty;
   /** Amount with decimals, as displayed to the user. */
-  @computed
-  get amount(): string {
-    if (this._fraction != null) {
-      const balance = this.balance;
-      // `CoinPretty.sub` does nothing if the currencies differ.
-      const result = this._fee ? balance.sub(this._fee) : balance;
-      if (result.toDec().lte(new Dec(0))) {
-        return "0";
-      }
+  readonly amount: string;
+  readonly fraction: number | undefined;
+  readonly isMax: boolean;
+  readonly error: Error | undefined;
+  getAmountPrimitive(): CoinPrimitive;
+  setAmount(amount: string): void;
+  setIsMax(isMax: boolean): void;
+  setFraction(value: number | undefined): void;
+}
 
-      return result
-        .mul(new Dec(this._fraction))
-        .trim(true)
-        .locale(false)
-        .hideDenom(true)
-        .toString();
-    }
+export function createConcentratedDepositAmount({
+  currency,
+  rawBalance,
+  state,
+  fee,
+  setAmount,
+  setFraction,
+}: {
+  currency: AppCurrency;
+  /** Raw balance (base units) of the denom, or undefined if none/not loaded. */
+  rawBalance: string | undefined;
+  state: DepositInputState;
+  /** Subtracted from the balance when a fraction (e.g. max) is selected. No-op for other currencies. */
+  fee: CoinPretty | undefined;
+  setAmount: (amount: string) => void;
+  setFraction: (fraction: number | undefined) => void;
+}): ConcentratedDepositAmount {
+  const balance = getDepositBalance(currency, rawBalance);
+  const amount = getDepositAmount({ state, balance, fee });
 
-    return this._amount;
-  }
-
-  getAmountPrimitive(): CoinPrimitive {
-    const amountStr = this.amount;
-    const sendCurrency = this._sendCurrency;
-
-    if (!amountStr) {
-      return { denom: sendCurrency.coinMinimalDenom, amount: "0" };
-    }
-
-    try {
-      return {
-        denom: sendCurrency.coinMinimalDenom,
-        amount: new Dec(amountStr)
-          .mul(DecUtils.getPrecisionDec(sendCurrency.coinDecimals))
-          .truncate()
-          .toString(),
-      };
-    } catch {
-      return { denom: sendCurrency.coinMinimalDenom, amount: "0" };
-    }
-  }
-
-  @computed
-  get error(): Error | undefined {
-    const amount = this.amount;
-    if (amount === "") {
-      return new EmptyAmountError("Amount is empty");
-    }
-    if (Number.isNaN(parseFloat(amount))) {
-      return new InvalidNumberAmountError("Invalid form of number");
-    }
-    let dec;
-    try {
-      dec = new Dec(amount);
-      if (dec.equals(new Dec(0))) {
-        return new ZeroAmountError("Amount is zero");
-      }
-    } catch {
-      return new InvalidNumberAmountError("Invalid form of number");
-    }
-    if (dec.lt(new Dec(0))) {
-      return new NegativeAmountError("Amount is negative");
-    }
-    if (dec.gt(this.balance.toDec())) {
-      return new InsufficientAmountError("Insufficient amount");
-    }
-
-    return;
-  }
+  return {
+    sendCurrency: currency,
+    balance,
+    amount,
+    fraction: state.fraction,
+    isMax: state.fraction === 1,
+    error: getDepositAmountError(amount, balance),
+    getAmountPrimitive: () => getDepositAmountPrimitive(currency, amount),
+    setAmount,
+    setIsMax: (isMax) => setFraction(isMax ? 1 : undefined),
+    setFraction,
+  };
 }
