@@ -21,7 +21,6 @@ import {
   makeIndexedKVStore,
   OsmosisAccount,
   OsmosisQueries,
-  PoolFallbackPriceStore,
   type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
@@ -64,8 +63,6 @@ export class RootStore {
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
 
-  public readonly priceStore: PoolFallbackPriceStore;
-
   public readonly transferHistoryStore: TransferHistoryStore;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -106,24 +103,6 @@ export class RootStore {
         AlloyedPoolCodeIds,
         IS_TESTNET
       )
-    );
-
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(this.chainStore.osmosis.chainId).osmosis!
-        .queryPools,
-      assets
     );
 
     this.accountStore = new AccountStore(
