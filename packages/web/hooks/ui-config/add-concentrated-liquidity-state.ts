@@ -674,15 +674,27 @@ export function addConcentratedLiquidityReducer(
   action: AddConcentratedLiquidityAction
 ): AddConcentratedLiquidityState {
   switch (action.type) {
+    // A range set by the user (or for an existing position) counts as
+    // initialized, so historical prices loading later don't replace it.
     case "setMinRange": {
       const minInput = reducePriceInput(state.minInput, action.value);
-      if (!state.fullRange && minInput === state.minInput) return state;
-      return { ...state, fullRange: false, minInput };
+      if (
+        !state.fullRange &&
+        minInput === state.minInput &&
+        state.rangeInitialized
+      )
+        return state;
+      return { ...state, fullRange: false, minInput, rangeInitialized: true };
     }
     case "setMaxRange": {
       const maxInput = reducePriceInput(state.maxInput, action.value);
-      if (!state.fullRange && maxInput === state.maxInput) return state;
-      return { ...state, fullRange: false, maxInput };
+      if (
+        !state.fullRange &&
+        maxInput === state.maxInput &&
+        state.rangeInitialized
+      )
+        return state;
+      return { ...state, fullRange: false, maxInput, rangeInitialized: true };
     }
     case "initRange":
       return {
@@ -693,8 +705,9 @@ export function addConcentratedLiquidityReducer(
         rangeInitialized: true,
       };
     case "setFullRange":
-      if (state.fullRange === action.value) return state;
-      return { ...state, fullRange: action.value };
+      if (state.fullRange === action.value && state.rangeInitialized)
+        return state;
+      return { ...state, fullRange: action.value, rangeInitialized: true };
     case "setAnchor":
       if (state.anchor === action.anchor) return state;
       return { ...state, anchor: action.anchor };

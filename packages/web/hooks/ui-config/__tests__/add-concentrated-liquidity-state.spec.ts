@@ -215,4 +215,15 @@ describe("addConcentratedLiquidityReducer", () => {
       rangeInitialized: true,
     });
   });
+
+  it("a range set before historical prices load counts as initialized", () => {
+    expect(
+      reduce(INITIAL_ADD_CL_STATE, { type: "setMinRange", value: "1" })
+        .rangeInitialized
+    ).toBe(true);
+    expect(
+      reduce(INITIAL_ADD_CL_STATE, { type: "setFullRange", value: true })
+        .rangeInitialized
+    ).toBe(true);
+  });
 });
