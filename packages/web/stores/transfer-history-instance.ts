@@ -79,7 +79,7 @@ export function getTransferHistoryStore(): TransferHistoryStore {
   ];
 
   instance = new TransferHistoryStore(
-    () => {},
+    undefined,
     makeIndexedKVStore(TRANSFER_HISTORY_STORE_KEY),
     transferStatusProviders,
     undefined,

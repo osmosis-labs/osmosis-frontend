@@ -616,4 +616,80 @@ describe("TransferHistoryStore multi-tx entries", () => {
     expect(kvStore.get).not.toHaveBeenCalled();
     expect(kvStore.set).not.toHaveBeenCalled();
   });
+
+  it("sync applies the advance even if the entry was replaced during the storage read", async () => {
+    // syncPendingStepFromStorage awaits storage; a concurrent update (here a
+    // stale-mark from another resume path) replaces the entry object in the
+    // meantime. The advance must land on the CURRENT entry, tracking must
+    // start from the object actually stored, and the provider's status
+    // callback must then resolve the row.
+    const onTransferSuccess = jest.fn();
+    const { store, statusProvider, kvStore } = makeStore(onTransferSuccess);
+    store.pushTxNow(makeSnapshot({ pendingStep }));
+
+    let release: (v: unknown[]) => void = () => {};
+    kvStore.get.mockReturnValue(
+      new Promise<unknown[]>((resolve) => (release = resolve))
+    );
+    const syncing = store.syncPendingStepFromStorage("0xtx1");
+
+    store.markPendingStepStale("0xtx1"); // replaces the entry mid-await
+    release([
+      makeSnapshot({
+        sendTxHash: "COSMOS_TX_2",
+        firstStepTxHash: "0xtx1",
+        trackingChainId: "noble-1",
+        pendingStep: undefined,
+      }),
+    ]);
+
+    expect(await syncing).toBe("advanced");
+    const entry = store.snapshots.find(
+      (s: TxSnapshot) => s.firstStepTxHash === "0xtx1"
+    );
+    expect(entry?.sendTxHash).toBe("COSMOS_TX_2");
+    expect(entry?.pendingStep).toBeUndefined();
+    expect(statusProvider.trackTxStatus).toHaveBeenCalledTimes(1);
+
+    await store.receiveNewTxStatus("COSMOS_TX_2", "success", undefined);
+    expect(
+      store.snapshots.find((s: TxSnapshot) => s.firstStepTxHash === "0xtx1")
+        ?.status
+    ).toBe("success");
+    expect(onTransferSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it("sync reports missing when the entry disappeared during the read", async () => {
+    const kvStore = {
+      get: jest.fn(),
+      set: jest.fn().mockResolvedValue(undefined),
+    };
+    const store = new TransferHistoryStore(jest.fn(), kvStore, [], 3, false);
+    store.pushTxNow(makeSnapshot({ pendingStep, provider: "IBC" }));
+    kvStore.get.mockImplementation(async () => {
+      store.store.setState({ snapshots: [] });
+      return [];
+    });
+    expect(await store.syncPendingStepFromStorage("0xtx1")).toBe("missing");
+  });
+
+  it("replays a success that arrived before the callback was bound, once", async () => {
+    const store = new TransferHistoryStore(
+      undefined,
+      { get: jest.fn().mockResolvedValue([]), set: jest.fn() },
+      [{ providerId: "Skip", trackTxStatus: jest.fn() }],
+      3
+    );
+    store.pushTxNow(makeSnapshot({ sendTxHash: "0xsingle" }));
+    await store.receiveNewTxStatus("0xsingle", "success", undefined);
+
+    const callback = jest.fn();
+    store.setOnAccountTransferSuccess(callback);
+    store.setOnAccountTransferSuccess(callback);
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(
+      "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx"
+    );
+  });
 });

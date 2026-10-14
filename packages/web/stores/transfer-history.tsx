@@ -67,7 +67,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   private readonly _resolvedTxStatusKeys = new Set<string>();
 
   constructor(
-    protected onAccountTransferSuccess: (accountAddress: string) => void,
+    /** `undefined` until bound via `setOnAccountTransferSuccess`; successes
+     *  arriving in the meantime are replayed (once) on binding. */
+    protected onAccountTransferSuccess:
+      ((accountAddress: string) => void) | undefined,
     protected readonly kvStore: KVStore,
     protected readonly transferStatusProviders: TransferStatusProvider[] = [],
     protected readonly historyExpireDays = 3,
@@ -98,6 +101,22 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   /** Late-bound so the callback can close over React context (tRPC utils). */
   setOnAccountTransferSuccess(callback: (accountAddress: string) => void) {
     this.onAccountTransferSuccess = callback;
+    if (this.unboundSuccessAddress !== undefined) {
+      const address = this.unboundSuccessAddress;
+      this.unboundSuccessAddress = undefined;
+      callback(address);
+    }
+  }
+
+  /** Last account whose transfer succeeded before a callback was bound. */
+  private unboundSuccessAddress: string | undefined;
+
+  private notifyTransferSuccess(accountAddress: string) {
+    if (this.onAccountTransferSuccess) {
+      this.onAccountTransferSuccess(accountAddress);
+    } else {
+      this.unboundSuccessAddress = accountAddress;
+    }
   }
 
   get snapshots(): readonly TxSnapshot[] {
@@ -110,10 +129,53 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     );
   }
 
+  /** Swap an entry found synchronously just before. Only safe with no
+   *  `await` between the lookup and the call; after an await use
+   *  `updateSnapshotByKey`, which re-resolves the entry. */
   private replaceSnapshot(prev: TxSnapshot, next: TxSnapshot) {
+    let matched = false;
     this.store.setState((state) => ({
-      snapshots: state.snapshots.map((s) => (s === prev ? next : s)),
+      snapshots: state.snapshots.map((s) => {
+        if (s !== prev) return s;
+        matched = true;
+        return next;
+      }),
     }));
+    if (!matched) {
+      console.warn(
+        "Transfer snapshot update matched no entry",
+        prev.sendTxHash
+      );
+    }
+  }
+
+  /**
+   * Update an entry resolved by its immutable correlation key (the first-step
+   * hash, or the current hash for entries that never had one) against the
+   * CURRENT state. `update` receives the entry as it is now and returns the
+   * replacement, or undefined to leave it. Returns the object written, or
+   * undefined if the entry is gone / untouched.
+   */
+  private updateSnapshotByKey(
+    key: string,
+    update: (current: TxSnapshot) => TxSnapshot | undefined
+  ): TxSnapshot | undefined {
+    let written: TxSnapshot | undefined;
+    this.store.setState((state) => {
+      const index = state.snapshots.findIndex(
+        (s) => s.firstStepTxHash === key || s.sendTxHash === key
+      );
+      if (index < 0) return state;
+      written = update(state.snapshots[index]);
+      if (!written) return state;
+      const snapshots = state.snapshots.slice();
+      snapshots[index] = written;
+      return { snapshots };
+    });
+    if (!written) {
+      console.warn("Transfer snapshot update matched no entry", key);
+    }
+    return written;
   }
 
   /** Pure derivation of the history rows for an account. */
@@ -406,7 +468,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           ToastType.SUCCESS,
           { updateToastId: sendTxHash }
         );
-        this.onAccountTransferSuccess(osmoBech32Address);
+        this.notifyTransferSuccess(osmoBech32Address);
         this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "failed":
@@ -617,14 +679,27 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   async syncPendingStepFromStorage(
     sendTxHash: string
   ): Promise<"resumable" | "advanced" | "stale" | "missing"> {
-    const local = this.snapshots.find(
+    const initial = this.snapshots.find(
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
-    if (!local?.pendingStep) return "missing";
-    const firstStepHash = local.firstStepTxHash ?? sendTxHash;
+    if (!initial?.pendingStep) return "missing";
+    const firstStepHash = initial.firstStepTxHash ?? sendTxHash;
 
     const stored =
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
+
+    // The await above can overlap another sync / advance / stale-mark on the
+    // same entry, so everything below works off the entry as it is NOW,
+    // resolved by its immutable key, never off `initial`.
+    const local = this.snapshots.find(
+      (snapshot) =>
+        snapshot.firstStepTxHash === firstStepHash ||
+        snapshot.sendTxHash === firstStepHash
+    );
+    if (!local) return "missing";
+    // already advanced by a concurrent call; tracking was started there
+    if (!local.pendingStep) return "advanced";
+
     const storedSnapshot = stored.find(
       (snapshot) =>
         snapshot.firstStepTxHash === firstStepHash ||
@@ -635,7 +710,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       // uncorrelatable legacy advance): nothing can verify the step wasn't
       // signed, so it must never be signed from here. Mark it stale so the
       // row shows needs-attention instead of a silently dead Continue.
-      this.markPendingStepStale(sendTxHash);
+      this.markPendingStepStale(local.sendTxHash);
       return "missing";
     }
 
@@ -649,7 +724,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }
 
     if (storedSnapshot.pendingStep?.stale) {
-      this.markPendingStepStale(sendTxHash);
+      this.markPendingStepStale(local.sendTxHash);
       return "stale";
     }
     if (storedSnapshot.pendingStep) return "resumable";
@@ -657,15 +732,19 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // Advanced elsewhere: mirror the persisted state so this session's row
     // stops offering Continue, and pick up tracking if still pending.
     toast.dismiss(local.sendTxHash);
-    const advanced: TxSnapshot = {
-      ...local,
-      pendingStep: undefined,
-      sendTxHash: storedSnapshot.sendTxHash,
-      trackingChainId: storedSnapshot.trackingChainId,
-      estimatedArrivalUnix: storedSnapshot.estimatedArrivalUnix,
-      status: storedSnapshot.status,
-    };
-    this.replaceSnapshot(local, advanced);
+    const advanced = this.updateSnapshotByKey(firstStepHash, (current) =>
+      current.pendingStep
+        ? {
+            ...current,
+            pendingStep: undefined,
+            sendTxHash: storedSnapshot.sendTxHash,
+            trackingChainId: storedSnapshot.trackingChainId,
+            estimatedArrivalUnix: storedSnapshot.estimatedArrivalUnix,
+            status: storedSnapshot.status,
+          }
+        : undefined
+    );
+    if (!advanced) return "missing";
     if (advanced.status === "pending") {
       this.findProvider(advanced)?.trackTxStatus(advanced);
     }
