@@ -12,7 +12,11 @@ import {
   connectTestWallet,
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
-import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
+import {
+  MockKeplrClient,
+  TestWallet,
+  testWalletInfo,
+} from "~/__tests__/test-wallet";
 import { OsmosisChainInfo } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { storeContext } from "~/stores";
@@ -270,14 +274,14 @@ describe("useWallet", () => {
     expect(subscribe).toHaveBeenCalledTimes(1);
     remounted.unmount();
   });
-  it("cleans up a manager whose pending mount finishes after unmount", async () => {
+  it("cleans up a pending mount before remounting the same manager", async () => {
     const { rootStore, result } = renderHookWithProviders(() =>
       useWallet(chainId)
     );
     await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
     const manager = rootStore.accountStore.walletManager;
     let finish!: () => void;
-    jest.spyOn(manager, "onMounted").mockImplementation(
+    const mount = jest.spyOn(manager, "onMounted").mockImplementationOnce(
       () =>
         new Promise<void>((resolve) => {
           finish = resolve;
@@ -288,6 +292,9 @@ describe("useWallet", () => {
     await waitFor(() => expect(finish).toBeDefined());
     await rootStore.walletRuntime.unmount();
     expect(unmount).toHaveBeenCalledTimes(1);
+    const remount = rootStore.walletRuntime.mount();
+    await Promise.resolve();
+    expect(mount).toHaveBeenCalledTimes(1);
     const timer = setTimeout(() => {
       throw new Error("stale session timer");
     }, 60_000);
@@ -296,9 +303,80 @@ describe("useWallet", () => {
     await act(async () => {
       finish();
       await pending;
+      await remount;
     });
+    expect(mount).toHaveBeenCalledTimes(2);
     expect(unmount).toHaveBeenCalledTimes(2);
+    expect(unmount.mock.invocationCallOrder[1]).toBeLessThan(
+      mount.mock.invocationCallOrder[1]
+    );
     expect(clearTimer).toHaveBeenCalledWith(timer);
     clearTimer.mockRestore();
+  });
+
+  it("mounts a replacement manager while the old restore awaits a wallet response", async () => {
+    const { rootStore, result } = renderHookWithProviders(() => useWallet());
+    await act(() =>
+      connectTestWallet({
+        accountStore: rootStore.accountStore,
+        chainId: OsmosisChainInfo.chainId,
+      })
+    );
+    // Recreate the manager with persisted accounts, as installation does on reload.
+    await act(() =>
+      rootStore.walletRuntime.installWallet(new TestWallet(testWalletInfo))
+    );
+    const previous = rootStore.accountStore.walletManager;
+    const unmountPrevious = jest.spyOn(previous, "onUnmounted");
+    let finish!: () => void;
+    const getSimpleAccount = MockKeplrClient.prototype.getSimpleAccount;
+    const accountLookup = jest
+      .spyOn(MockKeplrClient.prototype, "getSimpleAccount")
+      .mockImplementationOnce(async function (this: MockKeplrClient, chainId) {
+        await new Promise<void>((resolve) => {
+          finish = resolve;
+        });
+        return getSimpleAccount.call(this, chainId);
+      });
+    const restoring = rootStore.walletRuntime.mount();
+    await waitFor(() => expect(finish).toBeDefined());
+    const queuedRestore = rootStore.walletRuntime.mount();
+    await act(() => result.current.disconnect());
+    const replacementWalletInfo = {
+      ...testWalletInfo,
+      name: "replacement-wallet",
+    };
+    await act(() =>
+      rootStore.walletRuntime.installWallet(
+        new TestWallet(replacementWalletInfo)
+      )
+    );
+    const manager = rootStore.accountStore.walletManager;
+    const mountReplacement = jest.spyOn(manager, "onMounted");
+    const unmountReplacement = jest.spyOn(manager, "onUnmounted");
+    const replacement = rootStore.walletRuntime.mount();
+    try {
+      await waitFor(() => expect(mountReplacement).toHaveBeenCalledTimes(1));
+      await act(async () => {
+        await replacement;
+        await result.current.connect(replacementWalletInfo.name, true);
+      });
+      expect(result.current.isWalletConnected).toBe(true);
+      expect(result.current.wallet?.walletName).toBe(
+        replacementWalletInfo.name
+      );
+    } finally {
+      await act(async () => {
+        finish();
+        await restoring;
+        await queuedRestore;
+        await replacement;
+      });
+      accountLookup.mockRestore();
+    }
+    expect(result.current.wallet?.walletName).toBe(replacementWalletInfo.name);
+    expect(unmountPrevious).toHaveBeenCalledTimes(2);
+    expect(mountReplacement).toHaveBeenCalledTimes(1);
+    expect(unmountReplacement).not.toHaveBeenCalled();
   });
 });

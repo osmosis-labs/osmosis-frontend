@@ -44,7 +44,10 @@ export class WalletRuntime {
   private subscribers = 0;
   private publishing = false;
   private mountVersion = 0;
-  private pendingMount: Promise<void> = Promise.resolve();
+  private readonly pendingMounts = new WeakMap<
+    LegacyAccountStore["walletManager"],
+    Promise<void>
+  >();
   private readonly actions = new Map<
     string,
     Pick<
@@ -155,11 +158,17 @@ export class WalletRuntime {
 
   mount = () => {
     const version = this.mountVersion;
-    // Serialize restores so a stale mount cannot remove the next mount's
-    // listeners during Strict Mode cleanup or provider replacement.
-    const pending = this.pendingMount.then(async () => {
-      if (version !== this.mountVersion) return;
-      const manager = this.legacy.walletManager;
+    const manager = this.legacy.walletManager;
+    // Serialize restores of the same manager so stale cleanup cannot remove a
+    // remount's listeners. A replacement must not wait for the old wallet's response.
+    const previous = this.pendingMounts.get(manager) ?? Promise.resolve();
+    const pending = previous.then(async () => {
+      if (
+        version !== this.mountVersion ||
+        manager !== this.legacy.walletManager
+      ) {
+        return;
+      }
       try {
         await manager.onMounted();
       } finally {
@@ -174,7 +183,10 @@ export class WalletRuntime {
         }
       }
     });
-    this.pendingMount = pending.catch(() => undefined);
+    this.pendingMounts.set(
+      manager,
+      pending.catch(() => undefined)
+    );
     return pending;
   };
 
