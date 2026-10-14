@@ -1,7 +1,6 @@
 import type { UserPosition } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -9,7 +8,7 @@ import { MyPositionCardExpandedSection } from "~/components/cards/my-position/ex
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   formatPretty,
   formatPriceWithUserPrecision,
@@ -22,10 +21,8 @@ export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
   position: UserPosition;
   showSelectedRange?: boolean;
-}> = observer((props) => {
-  const { accountStore, chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+}> = (props) => {
+  const { address } = useWallet();
   const { showLinkToPool = false, position, showSelectedRange } = props;
   const {
     poolId,
@@ -58,10 +55,10 @@ export const MyPositionCard: FunctionComponent<{
   } = api.local.concentratedLiquidity.getPositionDetails.useQuery(
     {
       position: position.position,
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
     },
     {
-      enabled: Boolean(account?.address),
+      enabled: Boolean(address),
 
       trpc: {
         context: {
@@ -175,7 +172,7 @@ export const MyPositionCard: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 const PositionDataGroup: FunctionComponent<{
   label: string;

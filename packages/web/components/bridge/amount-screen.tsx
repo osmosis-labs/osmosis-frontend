@@ -551,6 +551,8 @@ export const AmountScreen = observer(
       data: assetsBalances,
       isLoading: isLoadingAssetsBalance,
       isError: hasBalanceError,
+      isFetching: isFetchingAssetsBalance,
+      refetch: refetchAssetsBalance,
     } = api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
       { source: balanceSource! },
       {
@@ -1051,7 +1053,10 @@ export const AmountScreen = observer(
      * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
      */
     if (
-      !isLoading &&
+      // A failed balance lookup must end the loading state: on deposits
+      // `isLoading` waits for the destination asset, which is derived from a
+      // source asset that only a successful balance lookup sets.
+      (!isLoading || hasBalanceError) &&
       (!hasSupportedChains ||
         areAssetTransfersDisabled ||
         haltState.halted ||
@@ -1198,6 +1203,36 @@ export const AmountScreen = observer(
                   </div>
                 </div>
               )
+            )}
+            {/* A failed balance lookup must be visible: without this the
+                user only sees the options button and assumes a zero balance. */}
+            {!haltState.halted && hasBalanceError && fromChain && (
+              <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                <Icon
+                  id="alert-triangle"
+                  className="h-6 w-6 shrink-0 text-rust-600"
+                />
+                <div className="flex flex-col items-start gap-2">
+                  <h1 className="body2">
+                    {t("transfer.balanceUnavailable", {
+                      chain: fromChain.prettyName,
+                    })}
+                  </h1>
+                  <p className="body2 text-osmoverse-300">
+                    {t("transfer.balanceUnavailableDescription", {
+                      chain: fromChain.prettyName,
+                    })}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="xsm"
+                    onClick={() => refetchAssetsBalance()}
+                    isLoading={isFetchingAssetsBalance}
+                  >
+                    {t("transfer.retryBalance")}
+                  </Button>
+                </div>
+              </div>
             )}
             {!haltState.halted && (
               <>

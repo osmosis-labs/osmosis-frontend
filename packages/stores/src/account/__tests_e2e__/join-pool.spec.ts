@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Dec, DecUtils, CoinPretty } from "@osmosis-labs/unit";
+import { Dec, DecUtils, CoinPretty, Int } from "@osmosis-labs/unit";
 import {
   deepContained,
   getEventFromTx,
@@ -11,6 +11,33 @@ import {
 import { estimateJoinSwap } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
 import { TestOsmosisChainId } from "../../tests/mock-data";
+import { JoinPoolData } from "../osmosis/join-pool";
+
+function toJoinPoolData(pool: ObservableQueryPool): JoinPoolData {
+  const weighted = pool.weightedPoolInfo;
+  return {
+    id: pool.id,
+    totalShare: pool.totalShare,
+    swapFee: pool.sharePool!.swapFee,
+    totalWeight: weighted
+      ? new Int(weighted.totalWeight.toDec().truncate().toString())
+      : undefined,
+    assets: pool.poolAssets.map(({ amount }) => ({
+      amount,
+      weight: weighted?.assets.find(
+        (a) => a.denom === amount.currency.coinMinimalDenom
+      )?.weight
+        ? new Int(
+            weighted!.assets
+              .find((a) => a.denom === amount.currency.coinMinimalDenom)!
+              .weight.toDec()
+              .truncate()
+              .toString()
+          )
+        : undefined,
+    })),
+  };
+}
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
@@ -87,6 +114,7 @@ describe("Join Pool Tx", () => {
       account?.osmosis
         .sendJoinPoolMsg(
           queryPool!.id,
+          toJoinPoolData(queryPool!),
           shareOutAmount,
           maxSlippage,
           "",
@@ -174,6 +202,7 @@ describe("Join Pool Tx", () => {
       account?.osmosis
         .sendJoinPoolMsg(
           queryPool!.id,
+          toJoinPoolData(queryPool!),
           shareOutAmount,
           maxSlippage,
           "",

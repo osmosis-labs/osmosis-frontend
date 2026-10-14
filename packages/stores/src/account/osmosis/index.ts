@@ -55,6 +55,12 @@ import Long from "long";
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { DeliverTxResponse, SignOptions } from "../types";
+import {
+  assertJoinPoolData,
+  getJoinPoolTokenInMaxs,
+  getJoinSwapShareOutMinAmount,
+  JoinPoolData,
+} from "./join-pool";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
@@ -364,6 +370,7 @@ export class OsmosisAccountImpl {
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-pool
    * @param poolId Id of pool.
+   * @param pool Current share pool state, used to estimate the max token amounts in.
    * @param shareOutAmount LP share amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
@@ -371,72 +378,24 @@ export class OsmosisAccountImpl {
    */
   async sendJoinPoolMsg(
     poolId: string,
+    pool: JoinPoolData,
     shareOutAmount: string,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
-    const mkp = this.makeCoinPretty;
-
-    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    const queryPoolForJoin = queries.queryPools.getPool(poolId);
-    if (!queryPoolForJoin) {
-      try {
-        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
-      } catch (e) {
-        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
-      }
-    }
+    assertJoinPoolData(poolId, pool);
 
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Not a share pool");
-        }
-
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-
-        const estimated = OsmosisMath.estimateJoinSwap(
+        const tokenInMaxs = getJoinPoolTokenInMaxs(
           pool,
-          pool.poolAssets,
-          mkp,
           shareOutAmount,
+          maxSlippage,
           makeJoinPoolMsg.shareCoinDecimals
         );
-
-        const tokenInMaxs = maxSlippageDec.equals(new Dec(0))
-          ? []
-          : estimated.tokenIns.map((tokenIn) => {
-              // TODO: Add the method like toPrimitiveCoin()?
-              const dec = tokenIn.toDec();
-              const amount = dec
-                .mul(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    tokenIn.currency.coinDecimals
-                  )
-                )
-                .mul(new Dec(1).add(maxSlippageDec))
-                .truncate();
-
-              return {
-                denom: tokenIn.currency.coinMinimalDenom,
-                amount: amount.toString(),
-              };
-            });
 
         const msg = await makeJoinPoolMsg({
           poolId: BigInt(poolId),
@@ -483,6 +442,7 @@ export class OsmosisAccountImpl {
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#join-swap-extern-amount-in
    * @param poolId Id of pool to swap within.
+   * @param pool Current weighted pool state, used to estimate the min shares out.
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
@@ -490,71 +450,18 @@ export class OsmosisAccountImpl {
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
+    pool: JoinPoolData,
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
-
-    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    const queryPoolForJoinSwap = queries.queryPools.getPool(poolId);
-    if (!queryPoolForJoinSwap) {
-      try {
-        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
-      } catch (e) {
-        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
-      }
-    }
+    assertJoinPoolData(poolId, pool);
 
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        // TODO: fork on the pool type
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const totalWeight = queryPool.weightedPoolInfo?.totalWeight;
-        if (!totalWeight) {
-          throw new Error("Must be weighted pool");
-        }
-
-        const poolAsset = queryPool.getPoolAsset(
-          tokenIn.currency.coinMinimalDenom
-        );
-
-        const poolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          (asset) => asset.denom === poolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        if (!poolAssetWeight) {
-          throw new Error("Pool asset not weighted");
-        }
-
-        const estimated = OsmosisMath.estimateJoinSwapExternAmountIn(
-          {
-            amount: new Int(poolAsset.amount.toCoin().amount),
-            weight: new Int(poolAssetWeight.toDec().truncate().toString()),
-          },
-          {
-            totalShare: pool.totalShare,
-            totalWeight: new Int(totalWeight.toDec().truncate().toString()),
-            swapFee: pool.swapFee,
-          },
-          tokenIn,
-          makeJoinSwapExternAmountInMsg.shareCoinDecimals
-        );
-
         const amount = new Dec(tokenIn.amount)
           .mul(
             DecUtils.getTenExponentNInPrecisionRange(
@@ -564,11 +471,12 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
 
-        const outRatio = new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))); // not outRatio
-        const shareOutMinAmount = estimated.shareOutAmountRaw
-          .toDec()
-          .mul(outRatio)
-          .truncate();
+        const shareOutMinAmount = getJoinSwapShareOutMinAmount(
+          pool,
+          tokenIn,
+          maxSlippage,
+          makeJoinSwapExternAmountInMsg.shareCoinDecimals
+        );
 
         const msg = await makeJoinSwapExternAmountInMsg({
           poolId: BigInt(poolId),
