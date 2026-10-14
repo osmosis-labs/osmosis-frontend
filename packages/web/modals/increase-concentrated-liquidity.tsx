@@ -23,8 +23,9 @@ import {
   useTranslation,
 } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -326,10 +327,10 @@ const PriceBox: FunctionComponent<{
  */
 const ChartHeader: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
 }> = observer(({ chartConfig, addLiquidityConfig }) => {
-  const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
-    chartConfig;
+  const { historicalRange, priceDecimal, setHistoricalRange } = chartConfig;
+  const hoverPrice = useHoverPrice(chartConfig);
 
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
 
@@ -359,9 +360,9 @@ const ChartHeader: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
   position: UserPosition;
-}> = observer(({ chartConfig, position: { isFullRange } }) => {
+}> = ({ chartConfig, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     chartConfig;
 
@@ -380,4 +381,4 @@ const Chart: FunctionComponent<{
       }
     />
   );
-});
+};
