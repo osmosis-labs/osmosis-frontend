@@ -1,26 +1,23 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { OsmosisChainInfo } from "~/config/chain";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBaseProps } from "~/modals";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /** Assumed wallet connected */
 export const Swapped: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = observer(() => {
-  const { accountStore } = useStore();
+> = () => {
+  const { address, walletStatus } = useWallet();
 
-  const account = accountStore.getWallet(OsmosisChainInfo.chainId);
+  const isConnected = walletStatus === WalletStatus.Connected && !!address;
+  const { data: signature } = api.local.swapped.getSignature.useQuery(
+    { walletAddress: address ?? "" },
+    { enabled: isConnected }
+  );
 
-  if (!(account?.walletStatus === WalletStatus.Connected) || !account.address)
-    return null;
-
-  const { data: signature } = api.local.swapped.getSignature.useQuery({
-    walletAddress: account.address,
-  });
+  if (!isConnected) return null;
 
   if (!signature?.url) return null;
 
@@ -32,4 +29,4 @@ export const Swapped: FunctionComponent<
       allow="clipboard-write; payment; accelerometer; gyroscope; camera; geolocation; autoplay; fullscreen;"
     />
   );
-});
+};

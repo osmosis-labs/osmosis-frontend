@@ -6,7 +6,7 @@ import { LinkButton } from "~/components/buttons/link-button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { useOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 const OPEN_ORDERS_LIMIT = 5;
@@ -14,11 +14,10 @@ const OPEN_ORDERS_LIMIT = 5;
 export const OpenOrders: FunctionComponent = () => {
   const { t } = useTranslation();
 
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
   const { orders: openOrders, isLoading } = useOrderbookOrders({
-    userAddress: wallet?.address ?? "",
+    userAddress: address ?? "",
     pageSize: OPEN_ORDERS_LIMIT,
     filter: "open",
   });

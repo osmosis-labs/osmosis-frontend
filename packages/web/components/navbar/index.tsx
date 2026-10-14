@@ -38,6 +38,7 @@ import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useAssetAlerts } from "~/hooks/use-asset-alerts";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
+import { useWallet } from "~/hooks/use-wallet";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { SettingsModal, useGlobalIs1CTIntroModalScreen } from "~/modals";
 import {
@@ -65,285 +66,283 @@ export const NavBar: FunctionComponent<
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
-> = observer(
-  ({
-    title: titleProp,
-    className,
-    backElementClassNames,
-    menus,
-    secondaryMenuItems,
-  }) => {
-    const { accountStore } = useStore();
-    const {
-      title: navBarTitle,
-      callToActionButtons,
-      visibleBannerHeight,
-      setVisibleBannerHeight,
-    } = useNavBarStore();
-    const { t } = useTranslation();
+> = ({
+  title: titleProp,
+  className,
+  backElementClassNames,
+  menus,
+  secondaryMenuItems,
+}) => {
+  const { chainId } = OsmosisChainInfo;
+  const {
+    title: navBarTitle,
+    callToActionButtons,
+    visibleBannerHeight,
+    setVisibleBannerHeight,
+  } = useNavBarStore();
+  const { t } = useTranslation();
 
-    const featureFlags = useFeatureFlags();
+  const featureFlags = useFeatureFlags();
 
-    const {
-      isOpen: isSettingsOpen,
-      onClose: onCloseSettings,
-      onOpen: onOpenSettings,
-    } = useDisclosure();
+  const {
+    isOpen: isSettingsOpen,
+    onClose: onCloseSettings,
+    onOpen: onOpenSettings,
+  } = useDisclosure();
 
-    const {
-      isOpen: isProfileOpen,
-      onOpen: onOpenProfile,
-      onClose: onCloseProfile,
-    } = useDisclosure();
+  const {
+    isOpen: isProfileOpen,
+    onOpen: onOpenProfile,
+    onClose: onCloseProfile,
+  } = useDisclosure();
 
-    const closeMobileMenuRef = useRef(noop);
-    const bannerStackRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
-    const { isLoading: isWalletLoading } = useWalletSelect();
+  const closeMobileMenuRef = useRef(noop);
+  const bannerStackRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
-    /**
-     * Fetches the top announcement banner from the osmosis-labs/fe-content repo
-     * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
-     */
-    const { data: topAnnouncementBannerData } = useQuery({
-      queryKey: ["osmosis-top-announcement-banner"],
-      queryFn: async () =>
-        queryOsmosisCMS<TopAnnouncementBannerResponse>({
-          filePath: "cms/top-announcement-banner.json",
-        }),
-      staleTime: 1000 * 60 * 3, // 3 minutes
-      gcTime: 1000 * 60 * 3, // 3 minutes
-    });
+  /**
+   * Fetches the top announcement banner from the osmosis-labs/fe-content repo
+   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
+   */
+  const { data: topAnnouncementBannerData } = useQuery({
+    queryKey: ["osmosis-top-announcement-banner"],
+    queryFn: async () =>
+      queryOsmosisCMS<TopAnnouncementBannerResponse>({
+        filePath: "cms/top-announcement-banner.json",
+      }),
+    staleTime: 1000 * 60 * 3, // 3 minutes
+    gcTime: 1000 * 60 * 3, // 3 minutes
+  });
 
-    useEffect(() => {
-      const handler = () => {
-        closeMobileMenuRef.current();
-      };
+  useEffect(() => {
+    const handler = () => {
+      closeMobileMenuRef.current();
+    };
 
-      router.events.on("routeChangeComplete", handler);
-      return () => router.events.off("routeChangeComplete", handler);
-    }, [router.events]);
+    router.events.on("routeChangeComplete", handler);
+    return () => router.events.off("routeChangeComplete", handler);
+  }, [router.events]);
 
-    useEffect(() => {
-      const UnverifiedAssetsQueryKey = "unverified_assets";
-      if (router.query[UnverifiedAssetsQueryKey] === "true") {
-        useUserSettingsStore.getState().setShowUnverifiedAssets(true);
-        removeQueryParam(UnverifiedAssetsQueryKey);
-      }
-    }, [router.query]);
+  useEffect(() => {
+    const UnverifiedAssetsQueryKey = "unverified_assets";
+    if (router.query[UnverifiedAssetsQueryKey] === "true") {
+      useUserSettingsStore.getState().setShowUnverifiedAssets(true);
+      removeQueryParam(UnverifiedAssetsQueryKey);
+    }
+  }, [router.query]);
 
-    const wallet = accountStore.getWallet(OsmosisChainInfo.chainId);
+  const { address: walletAddress, isWalletConnected } = useWallet(chainId);
 
-    const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
-      address: wallet?.address ?? "",
-    });
+  const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
+    address: walletAddress ?? "",
+  });
 
-    // announcement banner
-    const defaultBannerLocalStorageKey = "banner";
-    const [_showBanner, setShowBanner] = useLocalStorage(
-      topAnnouncementBannerData?.banner?.localStorageKey ??
-        defaultBannerLocalStorageKey,
-      true
-    );
+  // announcement banner
+  const defaultBannerLocalStorageKey = "banner";
+  const [_showBanner, setShowBanner] = useLocalStorage(
+    topAnnouncementBannerData?.banner?.localStorageKey ??
+      defaultBannerLocalStorageKey,
+    true
+  );
 
-    const isBannerWithinDateRange =
-      topAnnouncementBannerData?.banner &&
-      (topAnnouncementBannerData.banner.startDate ||
-        topAnnouncementBannerData.banner.endDate)
-        ? dayjs().isBetween(
-            topAnnouncementBannerData.banner.startDate,
-            topAnnouncementBannerData.banner.endDate
-          )
-        : true; // if no start and end date, show banner always
+  const isBannerWithinDateRange =
+    topAnnouncementBannerData?.banner &&
+    (topAnnouncementBannerData.banner.startDate ||
+      topAnnouncementBannerData.banner.endDate)
+      ? dayjs().isBetween(
+          topAnnouncementBannerData.banner.startDate,
+          topAnnouncementBannerData.banner.endDate
+        )
+      : true; // if no start and end date, show banner always
 
-    const showBanner =
-      featureFlags.topAnnouncementBanner &&
-      _showBanner &&
-      !!topAnnouncementBannerData &&
-      Boolean(topAnnouncementBannerData?.banner) &&
-      isBannerWithinDateRange;
+  const showBanner =
+    featureFlags.topAnnouncementBanner &&
+    _showBanner &&
+    !!topAnnouncementBannerData &&
+    Boolean(topAnnouncementBannerData?.banner) &&
+    isBannerWithinDateRange;
 
-    // Denom-gated asset alerts (fe-content cms/asset-alerts.json), shown only
-    // to wallets holding an affected denom. Dismissal is persisted per alert
-    // under its localStorageKey, matching the announcement banner convention.
-    // Keep the global announcement surface bounded. Surplus alerts wait until
-    // an earlier alert is dismissed or expires.
-    const { visibleAlerts, dismissAlert } = useAssetAlerts();
-    const visibleAssetAlerts = visibleAlerts.slice(
-      0,
-      MAX_STACKED_BANNERS - (showBanner ? 1 : 0)
-    );
+  // Denom-gated asset alerts (fe-content cms/asset-alerts.json), shown only
+  // to wallets holding an affected denom. Dismissal is persisted per alert
+  // under its localStorageKey, matching the announcement banner convention.
+  // Keep the global announcement surface bounded. Surplus alerts wait until
+  // an earlier alert is dismissed or expires.
+  const { visibleAlerts, dismissAlert } = useAssetAlerts();
+  const visibleAssetAlerts = visibleAlerts.slice(
+    0,
+    MAX_STACKED_BANNERS - (showBanner ? 1 : 0)
+  );
 
-    // Banners can wrap as copy, locale, and viewport width change. Measure the
-    // rendered stack so both in-flow and fixed page content use its real height.
-    useEffect(() => {
-      const bannerStack = bannerStackRef.current;
-      if (!bannerStack) return;
+  // Banners can wrap as copy, locale, and viewport width change. Measure the
+  // rendered stack so both in-flow and fixed page content use its real height.
+  useEffect(() => {
+    const bannerStack = bannerStackRef.current;
+    if (!bannerStack) return;
 
-      const updateBannerHeight = () => {
-        setVisibleBannerHeight(
-          Math.ceil(bannerStack.getBoundingClientRect().height)
-        );
-      };
+    const updateBannerHeight = () => {
+      setVisibleBannerHeight(
+        Math.ceil(bannerStack.getBoundingClientRect().height)
+      );
+    };
 
-      updateBannerHeight();
-      window.addEventListener("resize", updateBannerHeight);
+    updateBannerHeight();
+    window.addEventListener("resize", updateBannerHeight);
 
-      const resizeObserver =
-        typeof ResizeObserver === "undefined"
-          ? undefined
-          : new ResizeObserver(updateBannerHeight);
-      resizeObserver?.observe(bannerStack);
+    const resizeObserver =
+      typeof ResizeObserver === "undefined"
+        ? undefined
+        : new ResizeObserver(updateBannerHeight);
+    resizeObserver?.observe(bannerStack);
 
-      return () => {
-        resizeObserver?.disconnect();
-        window.removeEventListener("resize", updateBannerHeight);
-        setVisibleBannerHeight(0);
-      };
-    }, [setVisibleBannerHeight]);
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateBannerHeight);
+      setVisibleBannerHeight(0);
+    };
+  }, [setVisibleBannerHeight]);
 
-    const title = navBarTitle || titleProp;
+  const title = navBarTitle || titleProp;
 
-    return (
-      <>
-        <div
-          className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
-            className
-          )}
-        >
-          <div className="relative hidden shrink-0 items-center md:flex">
-            <Popover>
-              {({ close: closeMobileMainMenu }) => {
-                closeMobileMenuRef.current = closeMobileMainMenu;
+  return (
+    <>
+      <div
+        className={classNames(
+          "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+          className
+        )}
+      >
+        <div className="relative hidden shrink-0 items-center md:flex">
+          <Popover>
+            {({ close: closeMobileMainMenu }) => {
+              closeMobileMenuRef.current = closeMobileMainMenu;
 
-                const mobileMenus = menus.concat({
-                  label: t("menu.settings"),
-                  link: (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenSettings();
-                    closeMobileMainMenu();
-                  },
-                  icon: <Icon id="setting" className="h-6 w-6" />,
-                });
+              const mobileMenus = menus.concat({
+                label: t("menu.settings"),
+                link: (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenSettings();
+                  closeMobileMainMenu();
+                },
+                icon: <Icon id="setting" className="h-6 w-6" />,
+              });
 
-                return (
-                  <>
-                    <PopoverButton as={Fragment}>
-                      <IconButton
-                        mode="unstyled"
-                        size="unstyled"
-                        className="py-0"
-                        aria-label="Open main menu dropdown"
-                        icon={
-                          <Icon
-                            id="hamburger"
-                            className="text-osmoverse-200"
-                            height={30}
-                            width={30}
-                          />
-                        }
-                      />
-                    </PopoverButton>
-                    <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
-                      <MainMenu
-                        menus={mobileMenus}
-                        secondaryMenuItems={secondaryMenuItems}
-                      />
-                      <ClientOnly>
-                        <SkeletonLoader isLoaded={!isWalletLoading}>
-                          <WalletInfo onOpenProfile={onOpenProfile} />
-                        </SkeletonLoader>
-                      </ClientOnly>
-                    </PopoverPanel>
-                  </>
-                );
-              }}
-            </Popover>
-          </div>
-          <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
-            <div className="flex items-center gap-3 lg:gap-1">
-              {callToActionButtons.map(({ className, ...rest }, index) => (
-                <Button
-                  size="md"
-                  {...rest}
-                  className={classNames("w-48 1.5lg:w-fit", className)}
-                  variant={index > 0 ? "outline" : "default"}
-                  key={index}
-                >
-                  <span className="subtitle1 mx-auto">{rest.label}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-            <IconButton
-              aria-label="Open settings dropdown"
-              icon={<Icon id="setting" width={24} height={24} />}
-              className="px-3 outline-none"
-              onClick={onOpenSettings}
-            />
-            <SettingsModal
-              isOpen={isSettingsOpen}
-              onRequestClose={onCloseSettings}
-            />
-            <ClientOnly>
-              <SkeletonLoader
-                isLoaded={
-                  wallet?.isWalletConnected
-                    ? !isWalletLoading && !isLoadingICNSQuery
-                    : !isWalletLoading
-                }
+              return (
+                <>
+                  <PopoverButton as={Fragment}>
+                    <IconButton
+                      mode="unstyled"
+                      size="unstyled"
+                      className="py-0"
+                      aria-label="Open main menu dropdown"
+                      icon={
+                        <Icon
+                          id="hamburger"
+                          className="text-osmoverse-200"
+                          height={30}
+                          width={30}
+                        />
+                      }
+                    />
+                  </PopoverButton>
+                  <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
+                    <MainMenu
+                      menus={mobileMenus}
+                      secondaryMenuItems={secondaryMenuItems}
+                    />
+                    <ClientOnly>
+                      <SkeletonLoader isLoaded={!isWalletLoading}>
+                        <WalletInfo onOpenProfile={onOpenProfile} />
+                      </SkeletonLoader>
+                    </ClientOnly>
+                  </PopoverPanel>
+                </>
+              );
+            }}
+          </Popover>
+        </div>
+        <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
+          {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
+          <div className="flex items-center gap-3 lg:gap-1">
+            {callToActionButtons.map(({ className, ...rest }, index) => (
+              <Button
+                size="md"
+                {...rest}
+                className={classNames("w-48 1.5lg:w-fit", className)}
+                variant={index > 0 ? "outline" : "default"}
+                key={index}
               >
-                <WalletInfo
-                  className="md:hidden"
-                  icnsName={icnsQuery?.primaryName}
-                  onOpenProfile={onOpenProfile}
-                />
-              </SkeletonLoader>
-            </ClientOnly>
+                <span className="subtitle1 mx-auto">{rest.label}</span>
+              </Button>
+            ))}
           </div>
         </div>
-        {/* Back-layer element to occupy space for the caller */}
-        <div className={classNames("bg-osmoverse-1000", backElementClassNames)}>
-          <div className="h-navbar md:h-navbar-mobile" />
-          <div style={{ height: visibleBannerHeight }} />
+        <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
+          <IconButton
+            aria-label="Open settings dropdown"
+            icon={<Icon id="setting" width={24} height={24} />}
+            className="px-3 outline-none"
+            onClick={onOpenSettings}
+          />
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onRequestClose={onCloseSettings}
+          />
+          <ClientOnly>
+            <SkeletonLoader
+              isLoaded={
+                isWalletConnected
+                  ? !isWalletLoading && !isLoadingICNSQuery
+                  : !isWalletLoading
+              }
+            >
+              <WalletInfo
+                className="md:hidden"
+                icnsName={icnsQuery?.primaryName}
+                onOpenProfile={onOpenProfile}
+              />
+            </SkeletonLoader>
+          </ClientOnly>
         </div>
-        <div
-          ref={bannerStackRef}
-          className="fixed top-[71px] z-[51] ml-sidebar flex w-[calc(100vw_-_14.58rem)] flex-col md:top-[57px] md:ml-0 md:w-full"
-        >
-          {showBanner && (
-            <AnnouncementBanner
-              closeBanner={() => setShowBanner(false)}
-              bannerResponse={topAnnouncementBannerData}
-            />
-          )}
-          {visibleAssetAlerts.map((alert) => (
-            <AnnouncementBanner
-              key={alert.banner.localStorageKey}
-              closeBanner={() => dismissAlert(alert.banner.localStorageKey)}
-              bannerResponse={{
-                isChainHalted: false,
-                banner: alert.banner,
-                localization: alert.localization,
-              }}
-              dismissible={!alert.banner.persistent}
-              textInterpolations={{ symbols: getMatchedSymbolsText(alert) }}
-            />
-          ))}
-        </div>
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onRequestClose={onCloseProfile}
-          icnsName={icnsQuery?.primaryName}
-        />
-      </>
-    );
-  }
-);
+      </div>
+      {/* Back-layer element to occupy space for the caller */}
+      <div className={classNames("bg-osmoverse-1000", backElementClassNames)}>
+        <div className="h-navbar md:h-navbar-mobile" />
+        <div style={{ height: visibleBannerHeight }} />
+      </div>
+      <div
+        ref={bannerStackRef}
+        className="fixed top-[71px] z-[51] ml-sidebar flex w-[calc(100vw_-_14.58rem)] flex-col md:top-[57px] md:ml-0 md:w-full"
+      >
+        {showBanner && (
+          <AnnouncementBanner
+            closeBanner={() => setShowBanner(false)}
+            bannerResponse={topAnnouncementBannerData}
+          />
+        )}
+        {visibleAssetAlerts.map((alert) => (
+          <AnnouncementBanner
+            key={alert.banner.localStorageKey}
+            closeBanner={() => dismissAlert(alert.banner.localStorageKey)}
+            bannerResponse={{
+              isChainHalted: false,
+              banner: alert.banner,
+              localization: alert.localization,
+            }}
+            dismissible={!alert.banner.persistent}
+            textInterpolations={{ symbols: getMatchedSymbolsText(alert) }}
+          />
+        ))}
+      </div>
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onRequestClose={onCloseProfile}
+        icnsName={icnsQuery?.primaryName}
+      />
+    </>
+  );
+};
 
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
@@ -363,26 +362,25 @@ const WalletInfo: FunctionComponent<
   const { t } = useTranslation();
 
   // wallet
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const walletConnected = Boolean(wallet?.isWalletConnected);
+  const { address: walletAddress, isWalletConnected: walletConnected } =
+    useWallet();
 
   const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
     api.edge.assets.getUserAsset.useQuery(
       {
         findMinDenomOrSymbol: "OSMO",
-        userOsmoAddress: wallet?.address as string,
+        userOsmoAddress: walletAddress as string,
       },
       {
-        enabled:
-          Boolean(wallet?.address) && typeof wallet?.address === "string",
+        enabled: Boolean(walletAddress) && typeof walletAddress === "string",
       }
     );
 
   useEffect(() => {
-    if (walletConnected && wallet?.address) {
-      setPreviousConnectedCosmosAccount(wallet.address);
+    if (walletConnected && walletAddress) {
+      setPreviousConnectedCosmosAccount(walletAddress);
     }
-  }, [setPreviousConnectedCosmosAccount, wallet?.address, walletConnected]);
+  }, [setPreviousConnectedCosmosAccount, walletAddress, walletConnected]);
 
   return (
     <div className={className}>
@@ -488,7 +486,7 @@ const WalletInfo: FunctionComponent<
                 <span className="body2 font-bold leading-4" title={icnsName}>
                   {Boolean(icnsName)
                     ? formatICNSName(icnsName)
-                    : shorten(wallet?.address!)}
+                    : shorten(walletAddress!)}
                 </span>
                 <span
                   data-testid="wallet-balance"
