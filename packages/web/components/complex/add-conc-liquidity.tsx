@@ -28,8 +28,9 @@ import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { AddConcentratedLiquidityConfig, useTranslation } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -132,7 +133,7 @@ const AddConcLiqView: FunctionComponent<
     { enabled: isSuperfluidPool }
   );
 
-  const { yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData, setPriceRange } = chartConfig;
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
@@ -148,8 +149,8 @@ const AddConcLiqView: FunctionComponent<
   // TODO: this is a code smell. the chart config should observe the add liq config
   //        this may be acieved by using an interface
   useEffect(() => {
-    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, rangeWithCurrencyDecimals]);
+    setPriceRange(rangeWithCurrencyDecimals);
+  }, [setPriceRange, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -380,13 +381,13 @@ const AddConcLiqView: FunctionComponent<
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
 
   addLiquidityConfig: AddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
-  const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
-    chartConfig;
+  const { historicalRange, setHistoricalRange, priceDecimal } = chartConfig;
+  const hoverPrice = useHoverPrice(chartConfig);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -410,7 +411,7 @@ const ChartHeader: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
   addLiquidityConfig: AddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
