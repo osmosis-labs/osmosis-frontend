@@ -1,16 +1,13 @@
 import { fromBech32 } from "@cosmjs/encoding";
 import {
-  IFeeConfig,
+  EmptyAmountError,
+  InsufficientAmountError,
   InvalidNumberAmountError,
+  NegativeAmountError,
+  ZeroAmountError,
 } from "@osmosis-labs/keplr-hooks";
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
-import {
-  ChainGetter,
-  CosmosQueries,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@osmosis-labs/keplr-stores";
-import { AppCurrency, Dec, RatePretty } from "@osmosis-labs/unit";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { AppCurrency, CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   action,
   computed,
@@ -38,24 +35,138 @@ export interface CreatePoolConfigOpts {
   maxAssetsCount: number;
 }
 
+/** A raw (base unit) balance of a currency, as provided to the config by the UI. */
+export interface CreatePoolBalance {
+  currency: AppCurrency;
+  /** Amount in base units. */
+  amount: string;
+}
+
+/** Amount input state for one asset in a new pool. Balances are looked up
+ *  through `getBalance` so the owner can feed them from any source. */
+export class CreatePoolAssetAmount {
+  @observable.ref
+  protected _sendCurrency: AppCurrency;
+
+  @observable
+  protected _amount: string = "";
+
+  @observable
+  protected _fraction: number | undefined = undefined;
+
+  constructor(
+    sendCurrency: AppCurrency,
+    protected readonly getBalance: (currency: AppCurrency) => CoinPretty
+  ) {
+    this._sendCurrency = sendCurrency;
+
+    makeObservable(this);
+  }
+
+  get sendCurrency(): AppCurrency {
+    return this._sendCurrency;
+  }
+
+  get fraction(): number | undefined {
+    return this._fraction;
+  }
+
+  get isMax(): boolean {
+    return this._fraction === 1;
+  }
+
+  @action
+  setSendCurrency(currency: AppCurrency) {
+    this._sendCurrency = currency;
+  }
+
+  @action
+  setAmount(amount: string) {
+    if (amount.startsWith(".")) {
+      amount = "0" + amount;
+    }
+
+    if (this._fraction != null) {
+      this._fraction = undefined;
+    }
+    this._amount = amount;
+  }
+
+  @action
+  setIsMax(isMax: boolean) {
+    this._fraction = isMax ? 1 : undefined;
+  }
+
+  @action
+  setFraction(value: number | undefined) {
+    this._fraction = value;
+  }
+
+  @computed
+  get balance(): CoinPretty {
+    return this.getBalance(this._sendCurrency);
+  }
+
+  /** Human-readable amount. Derived from the balance when a fraction is set. */
+  @computed
+  get amount(): string {
+    if (this._fraction != null) {
+      const balance = this.balance;
+      if (balance.toDec().lte(new Dec(0))) {
+        return "0";
+      }
+
+      return balance
+        .mul(new Dec(this._fraction))
+        .trim(true)
+        .locale(false)
+        .hideDenom(true)
+        .toString();
+    }
+
+    return this._amount;
+  }
+
+  @computed
+  get error(): Error | undefined {
+    const amount = this.amount;
+    if (amount === "") {
+      return new EmptyAmountError("Amount is empty");
+    }
+    if (Number.isNaN(parseFloat(amount))) {
+      return new InvalidNumberAmountError("Invalid form of number");
+    }
+    let dec;
+    try {
+      dec = new Dec(amount);
+      if (dec.equals(new Dec(0))) {
+        return new ZeroAmountError("Amount is zero");
+      }
+    } catch {
+      return new InvalidNumberAmountError("Invalid form of number");
+    }
+    if (dec.lt(new Dec(0))) {
+      return new NegativeAmountError("Amount is negative");
+    }
+    if (dec.gt(this.balance.toDec())) {
+      return new InsufficientAmountError("Insufficient amount");
+    }
+  }
+}
+
 export class ObservableCreatePoolConfig {
   @observable
   protected _sender: string;
 
+  /** User balances, set by the UI from tRPC data. */
   @observable.ref
-  protected _feeConfig: IFeeConfig | undefined;
-
-  @observable.ref
-  protected _queriesStore: IQueriesStore<CosmosQueries>;
-
-  @observable.ref
-  protected _queryBalances: ObservableQueryBalances;
+  protected _balances: CreatePoolBalance[] = [];
 
   @observable.shallow
   protected _assets: {
     percentage?: string;
     scalingFactor?: number;
-    amountConfig: AmountConfig;
+    amountConfig: CreatePoolAssetAmount;
   }[] = [];
 
   @observable
@@ -87,9 +198,6 @@ export class ObservableCreatePoolConfig {
     readonly chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
-    queriesStore: IQueriesStore<CosmosQueries>,
-    queryBalances: ObservableQueryBalances,
-    feeConfig?: IFeeConfig,
     opts: CreatePoolConfigOpts = {
       minAssetsCount: 2,
       maxAssetsCount: 4,
@@ -98,22 +206,15 @@ export class ObservableCreatePoolConfig {
     this.chainId = initialChainId;
 
     this._sender = sender;
-    this._queriesStore = queriesStore;
-    this._queryBalances = queryBalances;
-    this._feeConfig = feeConfig;
     this._opts = opts;
 
     makeObservable(this);
   }
 
-  get feeConfig(): IFeeConfig | undefined {
-    return this._feeConfig;
-  }
-
   get assets(): {
     percentage?: string;
     scalingFactor?: number;
-    amountConfig: AmountConfig;
+    amountConfig: CreatePoolAssetAmount;
   }[] {
     return this._assets;
   }
@@ -139,8 +240,8 @@ export class ObservableCreatePoolConfig {
     return this._poolType;
   }
 
-  get queryBalances(): ObservableQueryBalances {
-    return this._queryBalances;
+  get balances(): CreatePoolBalance[] {
+    return this._balances;
   }
 
   get acknowledgeFee() {
@@ -169,15 +270,22 @@ export class ObservableCreatePoolConfig {
 
   @computed
   get sendableCurrencies(): AppCurrency[] {
-    return this._queryBalances
-      .getQueryBech32Address(this._sender)
-      .positiveBalances.filter(
-        (bal) => !bal.currency.coinDenom.toLowerCase().includes("gamm")
+    return this._balances
+      .filter(
+        (bal) =>
+          new Dec(bal.amount).gt(new Dec(0)) &&
+          !bal.currency.coinDenom.toLowerCase().includes("gamm")
       )
-      .map((bal) => {
-        return bal.currency;
-      });
+      .map((bal) => bal.currency);
   }
+
+  /** Balance of the currency, zero if the user holds none. */
+  getBalance = (currency: AppCurrency): CoinPretty => {
+    const balance = this._balances.find(
+      (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+    );
+    return new CoinPretty(currency, balance?.amount ?? "0");
+  };
 
   get swapFee(): string {
     return this._swapFee;
@@ -321,8 +429,8 @@ export class ObservableCreatePoolConfig {
   }
 
   @action
-  setFeeConfig(config: IFeeConfig | undefined) {
-    this._feeConfig = config;
+  setBalances(balances: CreatePoolBalance[]) {
+    this._balances = balances;
   }
 
   @action
@@ -349,14 +457,7 @@ export class ObservableCreatePoolConfig {
 
   @action
   addAsset(currency: AppCurrency) {
-    const config = new AmountConfig(
-      this.chainGetter,
-      this._queriesStore,
-      this.chainId,
-      this.sender,
-      this.feeConfig
-    );
-    config.setSendCurrency(currency);
+    const config = new CreatePoolAssetAmount(currency, this.getBalance);
 
     if (this.canAddAsset) {
       if (this._poolType === "weighted") {

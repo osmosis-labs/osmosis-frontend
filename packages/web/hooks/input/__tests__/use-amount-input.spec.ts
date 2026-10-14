@@ -418,6 +418,51 @@ describe("useAmountInput", () => {
       expect(result.current.debouncedInAmount).toBeNull();
     });
   });
+
+  it("uses the balance override instead of the wallet balance", async () => {
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: "40000000", isFetched: true },
+      })
+    );
+
+    await connectTestWallet({
+      accountStore: rootStore.accountStore,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.toggleMax();
+    });
+
+    await waitFor(() => {
+      expect(result.current.balance?.toCoin().amount).toBe("40000000");
+      expect(result.current.inputAmount).toBe("40");
+    });
+
+    act(() => {
+      result.current.setAmount("41");
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toEqual(new Error("Insufficient balance"));
+    });
+  });
+
+  it("has no balance while the override loads", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: undefined, isFetched: false },
+      })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+    expect(result.current.balance).toBeUndefined();
+  });
 });
 
 describe("isValidNumericalRawInput", () => {

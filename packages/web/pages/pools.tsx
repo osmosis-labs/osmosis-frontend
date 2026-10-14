@@ -19,7 +19,7 @@ import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore } = useStore();
   const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -51,8 +51,7 @@ const Pools: NextPage = observer(function () {
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
-    address ?? "",
-    queriesStore
+    address ?? ""
   );
 
   // pool quick action modals

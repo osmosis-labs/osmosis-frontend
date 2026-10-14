@@ -309,7 +309,7 @@ export const usePlaceLimit = ({
     return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, account?.address, accountStore.osmosisChainId]);
+  }, [account, address, accountStore.osmosisChainId]);
 
   const limitMessages = useMemo(() => {
     if (isLedger) {

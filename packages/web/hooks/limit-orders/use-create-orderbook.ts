@@ -529,6 +529,18 @@ export function useCreateOrderbook({
 
         const osmosis = await getOsmosisCodec();
 
+        // Read the sender from the live wallet after the awaits above: the
+        // `address` snapshot is from the click, and an account switch since
+        // then would sign with the new key against the old sender.
+        const sender = accountStore.getWallet(
+          accountStore.osmosisChainId
+        )?.address;
+        if (!sender || sender !== address) {
+          throw new AccountStoreNoBroadcastErrorEvent(
+            t("errors.uhOhSomethingWentWrong")
+          );
+        }
+
         const instantiateMsgBytes = new TextEncoder().encode(
           JSON.stringify({
             base_denom: baseDenom,
@@ -542,7 +554,7 @@ export function useCreateOrderbook({
             {
               codeId: BigInt(OrderbookPoolCodeIds[0]),
               instantiateMsg: instantiateMsgBytes,
-              sender: address,
+              sender,
             }
           ),
         };
