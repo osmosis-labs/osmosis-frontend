@@ -1,10 +1,11 @@
-import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
-import { KVStore } from "../kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
 import { AxiosInstance } from "axios";
+import { Buffer } from "buffer/";
 import { action, makeObservable, observable } from "mobx";
 import { sha256 } from "sha.js";
-import { Buffer } from "buffer/";
+
 import { HasMapStore } from "../map";
+import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
 
 /**
  * Experimental implementation for json rpc.

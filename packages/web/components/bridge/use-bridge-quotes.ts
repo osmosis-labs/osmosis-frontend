@@ -8,7 +8,7 @@ import {
   SolanaBridgeTransactionRequest,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";

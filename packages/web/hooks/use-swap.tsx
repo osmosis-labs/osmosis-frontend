@@ -5,11 +5,8 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
-import {
-  ObservableSlippageConfig,
-  SignOptions,
-  TxFeMemoFlags,
-} from "@osmosis-labs/stores";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import type { SignOptions, TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   getSwapMessages,
   getSwapTxParameters,

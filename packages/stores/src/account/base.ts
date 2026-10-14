@@ -25,26 +25,57 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   Functionify,
-  KVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { queryRPCStatus } from "@osmosis-labs/server";
+import type {
+  AccountStoreWallet,
+  CosmosRegistryWallet,
+  DeliverTxResponse,
+  OneClickTradingInfo,
+  SignOptions,
+  TxEvent,
+  TxEvents,
+  TxFeMemoFlags,
+} from "@osmosis-labs/tx";
 import {
+  appendFeMemoTag,
+  CosmosKitAccountsLocalStorageKey,
   encodeAnyBase64,
+  FeMemoTag,
+  GasMultiplier,
+  getAminoConverters,
+  getEndpointString,
+  getPublicKeyTypeUrl,
+  getWalletEndpoints,
+  HasUsedOneClickTradingLocalStorageKey,
+  logger,
+  makeSignDocAmino,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
+  OneClickFeMemoTag,
+  OneClickTradingLocalStorageKey,
   QuoteStdFee,
+  removeLastSlash,
+  runBroadcastedCallbacks,
   SimulateNotAvailableError,
   TxTracer,
+  UseOneClickTradingLocalStorageKey,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import {
+  AccountStoreNoBroadcastErrorEvent,
   apiClient,
   ApiClientError,
   getChain,
+  InsufficientBalanceForFeeError,
   isNil,
+  makeLocalStorageKVStore,
   MultiEndpointClient,
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
+  WalletConnectionInProgressError,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
@@ -54,43 +85,9 @@ import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
-import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
-import { InsufficientBalanceForFeeError } from "../ui-config";
-import { getAminoConverters } from "./amino-converters";
-import {
-  appendFeMemoTag,
-  FeMemoTag,
-  OneClickFeMemoTag,
-  TxFeMemoFlags,
-} from "./memo";
-import {
-  AccountStoreWallet,
-  CosmosRegistryWallet,
-  DeliverTxResponse,
-  OneClickTradingInfo,
-  SignOptions,
-  TxEvent,
-  TxEvents,
-} from "./types";
-import {
-  AccountStoreNoBroadcastErrorEvent,
-  CosmosKitAccountsLocalStorageKey,
-  getEndpointString,
-  getPublicKeyTypeUrl,
-  getWalletEndpoints,
-  HasUsedOneClickTradingLocalStorageKey,
-  logger,
-  makeSignDocAmino,
-  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
-  OneClickTradingLocalStorageKey,
-  removeLastSlash,
-  runBroadcastedCallbacks,
-  UseOneClickTradingLocalStorageKey,
-} from "./utils";
-import { WalletConnectionInProgressError } from "./wallet-errors";
 
-export const GasMultiplier = 1.5;
+export { GasMultiplier } from "@osmosis-labs/tx";
 
 /**
  * CosmJS's own SignerData declares `accountNumber: number`, which cannot hold a

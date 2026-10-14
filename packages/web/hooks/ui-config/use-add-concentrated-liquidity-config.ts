@@ -11,8 +11,9 @@ import {
   roundPriceToNearestTick,
   roundToNearestDivisible,
 } from "@osmosis-labs/math";
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
 import { PriceConfig } from "@osmosis-labs/stores";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,

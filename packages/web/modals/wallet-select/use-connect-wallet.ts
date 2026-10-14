@@ -1,9 +1,9 @@
 import { ChainWalletBase, WalletRepo, WalletStatus } from "@cosmos-kit/core";
+import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
-  CosmosRegistryWallet,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 import { noop } from "@osmosis-labs/utils";
 import { useState } from "react";
 import { Connector } from "wagmi";

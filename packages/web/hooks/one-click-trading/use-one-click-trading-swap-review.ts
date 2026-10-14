@@ -1,4 +1,4 @@
-import { OneClickTradingInfo } from "@osmosis-labs/stores";
+import type { OneClickTradingInfo } from "@osmosis-labs/tx";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec, PricePretty } from "@osmosis-labs/unit";

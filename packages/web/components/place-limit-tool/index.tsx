@@ -1,8 +1,10 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";

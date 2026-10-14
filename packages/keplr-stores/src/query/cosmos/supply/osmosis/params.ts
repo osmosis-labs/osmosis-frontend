@@ -1,9 +1,10 @@
+import { Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
 import { ChainGetter } from "../../../../common";
 import { ObservableChainQuery } from "../../../chain-query";
 import { MintParmas } from "./types";
-import { KVStore } from "../../../../common/kv-store";
-import { computed, makeObservable } from "mobx";
-import { Dec } from "@osmosis-labs/unit";
 
 export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintParmas> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

@@ -1,8 +1,5 @@
-import {
-  ChainGetter,
-  KVStore,
-  QueriesSetBase,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, QueriesSetBase } from "@osmosis-labs/keplr-stores";
+import type { KVStore } from "@osmosis-labs/utils";
 import { DeepReadonly } from "utility-types";
 
 import {

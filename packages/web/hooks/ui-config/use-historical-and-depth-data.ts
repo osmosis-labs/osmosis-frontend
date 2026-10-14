@@ -6,11 +6,11 @@ import {
 } from "@osmosis-labs/math";
 import type {
   ActiveLiquidityPerTickRange,
-  ConcentratedPoolRawResponse,
   Pool,
   TimeDuration,
   TokenPairHistoricalPrice,
 } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { Currency } from "@osmosis-labs/types";
 import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { action, autorun, computed, makeObservable, observable } from "mobx";

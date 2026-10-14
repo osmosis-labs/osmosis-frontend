@@ -1,11 +1,7 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
-  formatWarnPct,
-  InsufficientBalanceForFeeError,
-  ObservableSlippageConfig,
-  TxFeMemoFlags,
-} from "@osmosis-labs/stores";
-import { QuoteDirection } from "@osmosis-labs/tx";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
+import { formatWarnPct, QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -14,7 +10,10 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -37,8 +36,7 @@ import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { Button } from "~/components/ui/button";
-import { Button as UIButton } from "~/components/ui/button";
+import { Button, Button as UIButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";

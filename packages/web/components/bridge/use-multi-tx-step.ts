@@ -1,5 +1,5 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
 

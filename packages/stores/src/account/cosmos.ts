@@ -5,15 +5,11 @@ import {
   IQueriesStore,
   txEventsWithPreOnFulfill,
 } from "@osmosis-labs/keplr-stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { AppCurrency, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
-import {
-  AccountStore,
-  CosmwasmAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
+import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 import { OsmosisQueries } from "../queries";
 
 export interface CosmosAccount {

@@ -1,9 +1,10 @@
+import { RatePretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import { ObservableChainQuery } from "../../chain-query";
 import { DistributionParams } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable } from "mobx";
-import { RatePretty } from "@osmosis-labs/unit";
 
 export class ObservableQueryDistributionParams extends ObservableChainQuery<DistributionParams> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

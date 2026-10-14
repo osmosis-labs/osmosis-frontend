@@ -1,4 +1,5 @@
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -8,8 +9,7 @@ import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { AssetBreakdownChart } from "~/components/chart";
-import { Button } from "~/components/ui/button";
-import { Button as UIButton } from "~/components/ui/button";
+import { Button, Button as UIButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { IncentivizePoolModal } from "~/modals";
 

@@ -1,6 +1,6 @@
 import type { AssetVariant } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useRef, useState } from "react";

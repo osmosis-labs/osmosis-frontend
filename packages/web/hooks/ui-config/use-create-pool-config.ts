@@ -1,8 +1,6 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import {
-  CreatePoolConfigOpts,
-  ObservableCreatePoolConfig,
-} from "@osmosis-labs/stores";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import type { CreatePoolConfigOpts } from "@osmosis-labs/types";
 import { useEffect, useState } from "react";
 
 import { api } from "~/utils/trpc";

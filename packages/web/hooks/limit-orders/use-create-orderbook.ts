@@ -1,6 +1,6 @@
 import { OrderbookPoolCodeIds } from "@osmosis-labs/server";
-import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/stores";
 import { getOsmosisCodec } from "@osmosis-labs/tx";
+import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 
 import { useTranslation } from "~/hooks/language";

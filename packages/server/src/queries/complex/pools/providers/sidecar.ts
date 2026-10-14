@@ -1,3 +1,4 @@
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
@@ -11,7 +12,6 @@ import {
   SearchType,
   SortType,
 } from "../../../../queries/complex/pools";
-import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";

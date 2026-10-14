@@ -7,7 +7,15 @@ import {
 } from "@osmosis-labs/keplr-stores";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
+import type {
+  DeliverTxResponse,
+  JoinPoolData,
+  SignOptions,
+} from "@osmosis-labs/tx";
 import {
+  assertJoinPoolData,
+  getJoinPoolTokenInMaxs,
+  getJoinSwapShareOutMinAmount,
   getLastPositionEventAmounts,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToGaugeMsg,
@@ -54,13 +62,6 @@ import Long from "long";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
-import { DeliverTxResponse, SignOptions } from "../types";
-import {
-  assertJoinPoolData,
-  getJoinPoolTokenInMaxs,
-  getJoinSwapShareOutMinAmount,
-  JoinPoolData,
-} from "./join-pool";
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";

@@ -1,8 +1,9 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import { ObservableChainQuery } from "../../chain-query";
 import { StakingParams } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable } from "mobx";
 
 export class ObservableQueryStakingParams extends ObservableChainQuery<StakingParams> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
