@@ -1,47 +1,52 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import type { UserPosition } from "@osmosis-labs/server";
-import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
-import { useEffect } from "react";
-import { useCallback, useState } from "react";
+import type { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { useCallback, useMemo, useState } from "react";
 
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
+import {
+  getEffectiveLiquidity,
+  getEffectiveLiquidityAmounts,
+  getRemoveConcentratedLiquidityError,
+} from "./remove-concentrated-liquidity";
+
+export type RemoveConcentratedLiquidityConfig = {
+  /** Fraction (0 to 1) of the position's liquidity to remove. */
+  readonly percentage: number;
+  readonly effectiveLiquidity: Dec | undefined;
+  readonly effectiveLiquidityAmounts:
+    { base: CoinPretty; quote: CoinPretty } | undefined;
+  readonly error: Error | undefined;
+  setPercentage: (percentage: number) => void;
+};
 
 export function useRemoveConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
   position: UserPosition
 ): {
-  config: ObservableRemoveConcentratedLiquidityConfig;
+  config: RemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
   const apiUtils = api.useUtils();
 
   const { wallet: account } = useWallet(osmosisChainId);
 
-  const [config] = useState(
-    () =>
-      new ObservableRemoveConcentratedLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        {
-          baseAsset: position.currentCoins[0],
-          quoteAsset: position.currentCoins[1],
-          liquidity: position.liquidity,
-        }
-      )
-  );
+  const [percentage, setPercentage] = useState(1);
 
-  useEffect(() => {
-    config.setPosition({
-      baseAsset: position.currentCoins[0],
-      quoteAsset: position.currentCoins[1],
-      liquidity: position.liquidity,
-    });
-  }, [config, position]);
+  const { liquidity, currentCoins } = position;
+  const [baseAsset, quoteAsset] = currentCoins;
+  const config = useMemo<RemoveConcentratedLiquidityConfig>(() => {
+    const pos = { baseAsset, quoteAsset, liquidity };
+    return {
+      percentage,
+      effectiveLiquidity: getEffectiveLiquidity(pos, percentage),
+      effectiveLiquidityAmounts: getEffectiveLiquidityAmounts(pos, percentage),
+      error: getRemoveConcentratedLiquidityError(percentage),
+      setPercentage,
+    };
+  }, [baseAsset, quoteAsset, liquidity, percentage]);
 
   const removeLiquidity = useCallback(
     () =>

@@ -47,7 +47,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const isSendingMsg = !account || txTypeInProgress !== "";
 
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
-    chainStore,
     chainId,
     poolId,
     props.position

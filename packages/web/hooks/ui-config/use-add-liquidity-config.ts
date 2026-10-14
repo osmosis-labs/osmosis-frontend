@@ -7,18 +7,43 @@ import {
 } from "@osmosis-labs/server";
 import {
   type AddLiquidityPoolData,
-  ObservableAddLiquidityConfig,
   type OsmosisAccountImpl,
 } from "@osmosis-labs/stores";
-import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import type { Currency } from "@osmosis-labs/types";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  type IntPretty,
+  type RatePretty,
+} from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useReducer, useRef } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
+import {
+  type AddLiquidityAction,
+  type AddLiquidityActionInput,
+  type AddLiquidityContext,
+  addLiquidityReducer,
+  getAddLiquidityError,
+  getAmounts,
+  getBalance,
+  getInputsScopeKey,
+  getPoolAssets,
+  getSingleAmountInPriceImpact,
+  getSupportsSingleAmountIn,
+  getTotalShare,
+  getTotalWeight,
+  initialAddLiquidityState,
+  type PoolAsset,
+  type PoolAssetCurrency,
+} from "./add-liquidity";
+import { getAssetAmountError } from "./create-pool";
 
 /** Converts a tRPC share pool (weighted or stable) into the plain data the add liquidity config consumes.
  *  Pool assets and amounts come from the raw chain pool, in chain order; currencies come from the pool's reserve coins,
@@ -99,7 +124,15 @@ export async function sendAddLiquidity({
   fetchPool,
   onFulfill,
 }: {
-  config: ObservableAddLiquidityConfig;
+  config: Pick<
+    AddLiquidityConfig,
+    | "poolId"
+    | "isSingleAmountIn"
+    | "singleAmountInConfig"
+    | "shareOutAmount"
+    | "poolAssetConfigs"
+    | "resetInputs"
+  >;
   osmosis: Pick<
     OsmosisAccountImpl,
     "sendJoinPoolMsg" | "sendJoinSwapExternAmountInMsg"
@@ -133,7 +166,7 @@ export async function sendAddLiquidity({
   }
   // Typed amounts are in the config's currencies; if the fresh pool resolves
   // any asset with other decimals, the amounts would not mean what the user
-  // saw. Refresh the config (which clears the inputs) instead of sending.
+  // saw. Clear the inputs (the fresh pool reaches the config through the pool query) instead of sending.
   const decimalsByDenom = new Map(
     freshPool.assets.map(({ amount: { currency } }) => [
       currency.coinMinimalDenom,
@@ -146,7 +179,7 @@ export async function sendAddLiquidity({
       sendCurrency.coinDecimals
   );
   if (currencyChanged) {
-    config.setPool(freshPool);
+    config.resetInputs();
     throw new AddLiquidityPreflightError(
       `Pool #${poolId} asset details changed; amounts need re-entering`
     );
@@ -176,15 +209,54 @@ export async function sendAddLiquidity({
 /** A join that stopped before anything was signed, e.g. the fresh pool fetch failed. */
 export class AddLiquidityPreflightError extends Error {}
 
-/** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
- *  Updates `poolId` and `bech32Address` in effects, and feeds the pool and the user's balances
- *  from tRPC into the config.
+export type AddLiquidityAssetConfig = {
+  readonly sendCurrency: PoolAssetCurrency;
+  readonly balance: CoinPretty;
+  readonly amount: string;
+  readonly error: Error | undefined;
+  /** Sets the typed text only, without balancing the other assets. */
+  setAmount: (amount: string) => void;
+};
+
+export type AddLiquidityConfig = {
+  readonly poolId: string;
+  /** The pool data the config was last given, e.g. to build join msgs. */
+  readonly pool: AddLiquidityPoolData | undefined;
+  readonly stableSwapInfo: AddLiquidityPoolData["stableSwapInfo"];
+  readonly isSingleAmountIn: boolean;
+  readonly supportsSingleAmountIn: boolean;
+  readonly poolAssets: PoolAsset[];
+  readonly poolAssetConfigs: AddLiquidityAssetConfig[];
+  /** The config of the selected asset, only in single amount in mode. */
+  readonly singleAmountInConfig: AddLiquidityAssetConfig | undefined;
+  readonly singleAmountInAsset: PoolAsset | undefined;
+  readonly singleAmountInBalance: CoinPretty | undefined;
+  readonly singleAmountInPriceImpact: RatePretty | undefined;
+  readonly totalWeight: IntPretty;
+  readonly totalShare: IntPretty;
+  readonly shareOutAmount: IntPretty | undefined;
+  readonly error: Error | undefined;
+  getBalance: (currency: Currency) => CoinPretty;
+  getAmountAt: (index: number) => string;
+  getSenderBalanceAt: (index: number) => CoinPretty;
+  /** Sets an asset's amount and balances the others (and the share out amount) to match. */
+  setAmountAt: (index: number, amount: string) => void;
+  setMax: () => void;
+  setIsSingleAmountIn: (value: boolean) => void;
+  setSingleAmountInConfigIndex: (index: number) => void;
+  /** Clears all typed amounts. */
+  resetInputs: () => void;
+};
+
+/** Add liquidity input state for the React view lifecycle. The pool and the user's balances
+ *  come from tRPC. The returned config changes identity whenever its state changes; its
+ *  actions always use the latest pool and balances.
  */
 export function useAddLiquidityConfig(
   osmosisChainId: string,
   poolId: string
 ): {
-  config: ObservableAddLiquidityConfig;
+  config: AddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
   const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
@@ -201,26 +273,103 @@ export function useAddLiquidityConfig(
       pool && pool.id === poolId ? makeAddLiquidityPoolData(pool) : undefined,
     [pool, poolId]
   );
+  const balanceMap = useMemo(
+    () =>
+      new Map(
+        (address ? (balances ?? []) : []).map(({ denom, amount }) => [
+          denom,
+          amount,
+        ])
+      ),
+    [address, balances]
+  );
+  const ctx = useMemo<AddLiquidityContext>(
+    () => ({ pool: poolData, balances: balanceMap }),
+    [poolData, balanceMap]
+  );
+  const scopeKey = getInputsScopeKey(poolId, address, poolData);
 
-  // Seed with already available (e.g. cached) data so the first paint is initialized.
-  // Later updates are pushed from effects below.
-  const [config] = useState(() => {
-    const config = new ObservableAddLiquidityConfig(poolId, address);
-    config.setPool(poolData);
-    config.setBalances(address ? balances : undefined);
-    return config;
-  });
+  const [state, dispatch] = useReducer(
+    addLiquidityReducer,
+    initialAddLiquidityState
+  );
 
-  useEffect(() => {
-    config.setSender(address);
-    config.setPoolId(poolId);
-  }, [config, address, poolId]);
-  useEffect(() => {
-    config.setPool(poolData);
-  }, [config, poolData]);
-  useEffect(() => {
-    config.setBalances(address ? balances : undefined);
-  }, [config, address, balances]);
+  const config = useMemo<AddLiquidityConfig>(() => {
+    const act = (action: AddLiquidityActionInput) =>
+      dispatch({ ...action, ctx, scopeKey } as AddLiquidityAction);
+
+    // inputs typed for another pool, sender or asset currencies don't apply
+    const inputs =
+      state.scopeKey === scopeKey
+        ? state
+        : { amounts: [], shareOutAmount: undefined };
+    const amounts = getAmounts(poolData, inputs.amounts);
+    const poolAssets = getPoolAssets(poolData);
+
+    const poolAssetConfigs = poolAssets.map(
+      ({ currency }, index): AddLiquidityAssetConfig => {
+        const balance = getBalance(balanceMap, currency);
+        return {
+          sendCurrency: currency,
+          balance,
+          amount: amounts[index],
+          error: getAssetAmountError(amounts[index], balance),
+          setAmount: (amount) => act({ type: "setRawAmountAt", index, amount }),
+        };
+      }
+    );
+
+    const isSingleAmountIn = state.isSingleAmountIn;
+    const singleAmountInConfig =
+      isSingleAmountIn &&
+      state.singleAmountInConfigIndex < poolAssetConfigs.length
+        ? poolAssetConfigs[state.singleAmountInConfigIndex]
+        : undefined;
+    const singleAmountInAsset = poolAssets.find(
+      (asset) =>
+        asset.currency.coinMinimalDenom ===
+        singleAmountInConfig?.sendCurrency.coinMinimalDenom
+    );
+
+    return {
+      poolId,
+      pool: poolData,
+      stableSwapInfo: poolData?.stableSwapInfo,
+      isSingleAmountIn,
+      supportsSingleAmountIn: getSupportsSingleAmountIn(poolData),
+      poolAssets,
+      poolAssetConfigs,
+      singleAmountInConfig,
+      singleAmountInAsset,
+      singleAmountInBalance: singleAmountInAsset
+        ? getBalance(balanceMap, singleAmountInAsset.currency)
+        : undefined,
+      singleAmountInPriceImpact: isSingleAmountIn
+        ? getSingleAmountInPriceImpact(poolAssets, singleAmountInConfig)
+        : undefined,
+      totalWeight: getTotalWeight(poolAssets),
+      totalShare: getTotalShare(poolData),
+      shareOutAmount: inputs.shareOutAmount,
+      error: getAddLiquidityError({
+        configs: poolAssetConfigs,
+        isSingleAmountIn,
+        singleAmountInConfig,
+        shareOutAmount: inputs.shareOutAmount,
+      }),
+      getBalance: (currency) => getBalance(balanceMap, currency),
+      getAmountAt: (index) => amounts[index],
+      getSenderBalanceAt: (index) =>
+        getBalance(balanceMap, poolAssets[index].currency),
+      setAmountAt: (index, amount) =>
+        act({ type: "setAmountAt", index, amount }),
+      setMax: () => act({ type: "setMax" }),
+      setIsSingleAmountIn: (value) =>
+        act({ type: "setIsSingleAmountIn", value }),
+      setSingleAmountInConfigIndex: (index) =>
+        act({ type: "setSingleAmountInConfigIndex", index }),
+      resetInputs: () => act({ type: "reset" }),
+    };
+  }, [state, ctx, scopeKey, poolData, balanceMap, poolId]);
 
   const apiUtils = api.useUtils();
   // The button only disables once the tx is signing, which is after the fresh

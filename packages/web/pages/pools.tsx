@@ -48,11 +48,7 @@ const Pools: NextPage = observer(function () {
   }, [address, chainId, onOpenWalletSelect]);
   const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
-  const createPoolConfig = useCreatePoolConfig(
-    chainStore,
-    chainId,
-    address ?? ""
-  );
+  const createPoolConfig = useCreatePoolConfig(address ?? "");
 
   // pool quick action modals
   const [addLiquidityModalPool, setAddLiquidityModalPool] = useState<{

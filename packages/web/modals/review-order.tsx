@@ -2,7 +2,6 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import {
   formatWarnPct,
   InsufficientBalanceForFeeError,
-  ObservableSlippageConfig,
   TxFeMemoFlags,
 } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
@@ -53,6 +52,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
@@ -73,7 +73,7 @@ interface ReviewOrderProps {
    */
   confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
-  slippageConfig?: ObservableSlippageConfig;
+  slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;

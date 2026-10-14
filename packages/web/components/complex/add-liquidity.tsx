@@ -1,4 +1,3 @@
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -14,14 +13,15 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
+import type { AddLiquidityConfig } from "~/hooks/ui-config/use-add-liquidity-config";
 import { useStore } from "~/stores";
 
 export const AddLiquidity: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: AddLiquidityConfig;
     actionButton: ReactNode;
   } & CustomClasses
-> = observer(({ className, addLiquidityConfig, actionButton }) => {
+> = ({ className, addLiquidityConfig, actionButton }) => {
   const { t } = useTranslation();
 
   return (
@@ -126,10 +126,10 @@ export const AddLiquidity: FunctionComponent<
       {actionButton}
     </div>
   );
-});
+};
 
 const AmountInput: FunctionComponent<{
-  addLiquidityConfig: ObservableAddLiquidityConfig;
+  addLiquidityConfig: AddLiquidityConfig;
   currency: Currency;
   weightFraction: RatePretty;
   index: number;

@@ -1,12 +1,41 @@
+import {
+  EmptyAmountError,
+  InsufficientAmountError,
+} from "@osmosis-labs/keplr-hooks";
 import { makePoolFromChainPool } from "@osmosis-labs/server";
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
-import { CoinPretty, Int } from "@osmosis-labs/unit";
+import { NotInitializedError } from "@osmosis-labs/stores";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { act, renderHook } from "@testing-library/react";
 
 import {
   AddLiquidityPreflightError,
   makeAddLiquidityPoolData,
   sendAddLiquidity,
+  useAddLiquidityConfig,
 } from "~/hooks/ui-config/use-add-liquidity-config";
+
+// The tRPC queries the hook reads, backed by mutable test data
+let mockPool: any;
+let mockBalances: { denom: string; amount: string }[] | undefined;
+
+jest.mock("~/utils/trpc", () => ({
+  api: {
+    useUtils: () => ({}),
+    local: {
+      pools: { getPool: { useQuery: () => ({ data: mockPool }) } },
+      balances: {
+        getUserBalances: { useQuery: () => ({ data: mockBalances }) },
+      },
+    },
+  },
+}));
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({ wallet: undefined, address: "osmo1sender" }),
+}));
+jest.mock("~/components/alert", () => ({
+  displayToast: jest.fn(),
+  ToastType: { ERROR: "error" },
+}));
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
 const atomDenom =
@@ -218,25 +247,30 @@ describe("sendAddLiquidity", () => {
       },
     }) as any;
 
-  function makeConfig(isSingle: boolean) {
-    const seeded = makeAddLiquidityPoolData(rawPool("1000000000"))!;
-    const config = new ObservableAddLiquidityConfig("1", "osmo1sender");
-    config.setPool(seeded);
-    config.setBalances([
+  beforeEach(() => {
+    mockPool = rawPool("1000000000");
+    mockBalances = [
       { denom: "uosmo", amount: "500000000" },
       { denom: atomDenom, amount: "50000000" },
-    ]);
+    ];
+  });
+
+  function setup(isSingle: boolean) {
+    const hook = renderHook(() => useAddLiquidityConfig("osmosis-1", "1"));
     if (isSingle) {
-      config.setIsSingleAmountIn(true);
-      config.singleAmountInConfig?.setAmount("10");
+      act(() => hook.result.current.config.setIsSingleAmountIn(true));
+      act(() =>
+        hook.result.current.config.singleAmountInConfig?.setAmount("10")
+      );
     } else {
-      config.setAmountAt(0, "10");
+      act(() => hook.result.current.config.setAmountAt(0, "10"));
     }
-    return config;
+    return hook;
   }
 
   it("builds a balanced join from freshly fetched pool data, not the seeded config", async () => {
-    const config = makeConfig(false);
+    const { result } = setup(false);
+    const { config } = result.current;
     const osmosis = {
       sendJoinPoolMsg: jest.fn().mockResolvedValue(undefined),
       sendJoinSwapExternAmountInMsg: jest.fn(),
@@ -260,14 +294,14 @@ describe("sendAddLiquidity", () => {
   });
 
   it("builds a single asset join from freshly fetched pool data", async () => {
-    const config = makeConfig(true);
+    const { result } = setup(true);
     const osmosis = {
       sendJoinPoolMsg: jest.fn(),
       sendJoinSwapExternAmountInMsg: jest.fn().mockResolvedValue(undefined),
     };
 
     await sendAddLiquidity({
-      config,
+      config: result.current.config,
       osmosis,
       fetchPool: async () => rawPool("3000000000"),
       onFulfill: jest.fn(),
@@ -280,6 +314,7 @@ describe("sendAddLiquidity", () => {
   });
 
   it("fails when the fetch fails or the pool is not joinable", async () => {
+    const { result } = setup(false);
     const osmosis = {
       sendJoinPoolMsg: jest.fn(),
       sendJoinSwapExternAmountInMsg: jest.fn(),
@@ -287,7 +322,7 @@ describe("sendAddLiquidity", () => {
 
     await expect(
       sendAddLiquidity({
-        config: makeConfig(false),
+        config: result.current.config,
         osmosis,
         fetchPool: async () => {
           throw new Error("offline");
@@ -297,7 +332,7 @@ describe("sendAddLiquidity", () => {
     ).rejects.toThrow(AddLiquidityPreflightError);
     await expect(
       sendAddLiquidity({
-        config: makeConfig(false),
+        config: result.current.config,
         osmosis,
         fetchPool: async () => ({ ...rawPool("1"), type: "concentrated" }),
         onFulfill: jest.fn(),
@@ -307,7 +342,7 @@ describe("sendAddLiquidity", () => {
   });
 
   it("does not send when the fresh pool has other decimals for an asset", async () => {
-    const config = makeConfig(true);
+    const { result, rerender } = setup(true);
     const osmosis = {
       sendJoinPoolMsg: jest.fn(),
       sendJoinSwapExternAmountInMsg: jest.fn(),
@@ -318,17 +353,135 @@ describe("sendAddLiquidity", () => {
       new CoinPretty(osmo, new Int("990000000")),
     ];
 
-    await expect(
-      sendAddLiquidity({
-        config,
-        osmosis,
-        fetchPool: async () => fresh,
-        onFulfill: jest.fn(),
-      })
-    ).rejects.toThrow(AddLiquidityPreflightError);
+    await act(async () => {
+      await expect(
+        sendAddLiquidity({
+          config: result.current.config,
+          osmosis,
+          fetchPool: async () => fresh,
+          onFulfill: jest.fn(),
+        })
+      ).rejects.toThrow(AddLiquidityPreflightError);
+    });
     expect(osmosis.sendJoinSwapExternAmountInMsg).not.toHaveBeenCalled();
-    // the config now has the fresh currency and no stale input
-    expect(config.poolAssetConfigs[1].sendCurrency.coinDecimals).toBe(8);
-    expect(config.singleAmountInConfig?.amount ?? "").toBe("");
+    // no stale input is left
+    expect(result.current.config.singleAmountInConfig?.amount ?? "").toBe("");
+
+    // the pool query then delivers the fresh pool, with the fresh currency
+    mockPool = fresh;
+    rerender();
+    expect(
+      result.current.config.poolAssetConfigs[1].sendCurrency.coinDecimals
+    ).toBe(8);
+    expect(result.current.config.singleAmountInConfig?.amount ?? "").toBe("");
+  });
+});
+
+describe("useAddLiquidityConfig", () => {
+  beforeEach(() => {
+    mockPool = {
+      id: "1",
+      type: "weighted",
+      reserveCoins,
+      raw: {
+        total_weight: "2",
+        pool_params: { swap_fee: "0.003" },
+        total_shares: { denom: "gamm/pool/1", amount: "100000000000000000000" },
+        pool_assets: [
+          { weight: "1", token: { denom: "uosmo", amount: "1000000000" } },
+          { weight: "1", token: { denom: atomDenom, amount: "100000000" } },
+        ],
+      },
+    };
+    mockBalances = [
+      { denom: "uosmo", amount: "500000000" },
+      { denom: atomDenom, amount: "50000000" },
+    ];
+  });
+
+  it("is not initialized without a pool", () => {
+    mockPool = undefined;
+    const { result } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    expect(result.current.config.error).toBeInstanceOf(NotInitializedError);
+    expect(result.current.config.poolAssets).toEqual([]);
+  });
+
+  it("balances the other assets and the share out amount when typing", () => {
+    const { result } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    expect(result.current.config.error).toBeInstanceOf(EmptyAmountError);
+
+    act(() => result.current.config.setAmountAt(0, "10"));
+    const { config } = result.current;
+    expect(config.getAmountAt(0)).toBe("10");
+    // 10 OSMO of 1000 OSMO is 1% of the pool: 1 ATOM of 100
+    expect(config.getAmountAt(1)).toBe("1");
+    expect(config.shareOutAmount?.toDec().toString()).toBe(
+      "1.000000000000000000"
+    );
+    expect(config.error).toBeUndefined();
+  });
+
+  it("reports insufficient balance and clears the share out amount", () => {
+    const { result } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    act(() => result.current.config.setAmountAt(0, "10"));
+    act(() => result.current.config.setAmountAt(0, "501"));
+    expect(result.current.config.error).toBeInstanceOf(InsufficientAmountError);
+    expect(result.current.config.shareOutAmount).toBeUndefined();
+  });
+
+  it("sets the max feasible balanced amounts, keeping OSMO for fees", () => {
+    const { result } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    act(() => result.current.config.setMax());
+    const { config } = result.current;
+    // 500 OSMO (the whole balance) needs 50 ATOM, which is available, so OSMO
+    // is the base; its amount is reduced by the 0.0125 fee padding
+    expect(config.getAmountAt(0)).toBe("499.9875");
+    expect(config.getAmountAt(1)).toBe("49.99875");
+    expect(config.error).toBeUndefined();
+  });
+
+  it("clears inputs when the pool's asset decimals change", () => {
+    const { result, rerender } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    act(() => result.current.config.setAmountAt(0, "10"));
+    expect(result.current.config.getAmountAt(0)).toBe("10");
+
+    mockPool = {
+      ...mockPool,
+      reserveCoins: [
+        new CoinPretty({ ...atom, coinDecimals: 8 }, new Int("99000000")),
+        new CoinPretty(osmo, new Int("990000000")),
+      ],
+    };
+    rerender();
+    expect(result.current.config.getAmountAt(0)).toBe("");
+    expect(result.current.config.shareOutAmount).toBeUndefined();
+  });
+
+  it("single amount in prefers OSMO and does not balance other assets", () => {
+    const { result } = renderHook(() =>
+      useAddLiquidityConfig("osmosis-1", "1")
+    );
+    expect(result.current.config.supportsSingleAmountIn).toBe(true);
+    act(() => result.current.config.setIsSingleAmountIn(true));
+    expect(result.current.config.singleAmountInAsset?.currency.coinDenom).toBe(
+      "OSMO"
+    );
+
+    act(() => result.current.config.singleAmountInConfig?.setAmount("10"));
+    expect(result.current.config.error).toBeUndefined();
+    expect(result.current.config.poolAssetConfigs[1].amount).toBe("");
+    expect(
+      result.current.config.singleAmountInPriceImpact?.toDec().toString()
+    ).toBe(new Dec(1).sub(new Dec(1000).quo(new Dec(1010))).toString());
   });
 });
