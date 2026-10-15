@@ -92,7 +92,7 @@ export function useRemoveConcentratedLiquidityConfig(
       account,
       transactionContext,
       position.id,
-      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils,
       poolId,
       signAndBroadcast,
     ]
