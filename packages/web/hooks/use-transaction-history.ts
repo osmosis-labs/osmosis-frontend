@@ -22,6 +22,9 @@ export type HistoryBridgeTransaction = Extract<
   { __type: "recentTransfer" }
 >;
 
+const UNKNOWN_SENDER_REFETCH_MS = 30_000;
+const UNKNOWN_SENDER_MAX_REFETCHES = 10;
+
 export const useTransactionHistory = ({
   pageSize = "100",
   pageNumber = "0",
@@ -46,6 +49,19 @@ export const useTransactionHistory = ({
       },
       {
         enabled: Boolean(isWalletConnected && address),
+        // An Axelar deposit's source sender comes from Axelarscan, which can
+        // lag or time out; the server retries on the next request, so poll a
+        // few times while any is still unknown.
+        refetchInterval: (query) =>
+          query.state.dataUpdateCount <= UNKNOWN_SENDER_MAX_REFETCHES &&
+          query.state.data?.transfers.some(
+            (t) =>
+              t.direction === "deposit" &&
+              t.fromChain.chainType === "evm" &&
+              !t.fromAddress
+          )
+            ? UNKNOWN_SENDER_REFETCH_MS
+            : false,
       }
     );
 

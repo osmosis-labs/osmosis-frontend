@@ -1303,7 +1303,8 @@
       "search": "Szukaj aktywa, sieci, kwoty lub adresu",
       "noMatches": "Brak pasujących transakcji",
       "pageHint": "Filtry dotyczą tylko transakcji na tej stronie. Sprawdź następną stronę lub zmień filtry."
-    }
+    },
+    "unknownAddressTooltip": "Nie udało się ustalić tego adresu na podstawie danych mostu. Może pojawić się później; możesz go też znaleźć w eksploratorze."
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",

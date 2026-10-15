@@ -1303,7 +1303,8 @@
       "search": "Varlık, zincir, tutar veya adres ara",
       "noMatches": "Eşleşen işlem yok",
       "pageHint": "Filtreler yalnızca bu sayfadaki işlemlere uygulanır. Sonraki sayfaya bakın veya filtrelerinizi değiştirin."
-    }
+    },
+    "unknownAddressTooltip": "Bu adres köprü verilerinden belirlenemedi. Daha sonra görünebilir; ayrıca gezginde de bulabilirsiniz."
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",

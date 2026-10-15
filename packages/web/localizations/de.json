@@ -1303,7 +1303,8 @@
       "search": "Asset, Chain, Betrag oder Adresse suchen",
       "noMatches": "Keine passenden Transaktionen",
       "pageHint": "Filter gelten nur für die Transaktionen auf dieser Seite. Öffne die nächste Seite oder passe deine Filter an."
-    }
+    },
+    "unknownAddressTooltip": "Diese Adresse konnte aus den Daten der Bridge nicht ermittelt werden. Sie wird möglicherweise später angezeigt; du findest sie auch im Explorer."
   },
   "date": {
     "earlierToday": "Heute früh",

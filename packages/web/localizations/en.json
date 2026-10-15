@@ -1303,7 +1303,8 @@
       "search": "Search asset, chain, amount or address",
       "noMatches": "No matching transactions",
       "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
-    }
+    },
+    "unknownAddressTooltip": "We couldn't determine this address from the bridge's data. It may appear later; you can also find it in the explorer."
   },
   "date": {
     "earlierToday": "Earlier today",

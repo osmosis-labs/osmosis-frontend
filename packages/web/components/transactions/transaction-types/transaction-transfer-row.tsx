@@ -13,6 +13,7 @@ import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { UnknownAddress } from "~/components/transactions/unknown-address";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
@@ -243,10 +244,16 @@ export const TransactionTransferRow = ({
             {t("transfer.from")} {chainPrettyName}
           </p>
           <p className="body2 lg:caption text-osmoverse-300">
-            {shorten(transaction.fromAddress || transaction.toAddress, {
-              prefixLength: width < 924 ? 4 : 10,
-              suffixLength: width < 924 ? 4 : 8,
-            })}
+            {/* the sender can be unknown, e.g. an Axelar deposit whose
+                source sender couldn't be looked up yet */}
+            {transaction.fromAddress ? (
+              shorten(transaction.fromAddress, {
+                prefixLength: width < 924 ? 4 : 10,
+                suffixLength: width < 924 ? 4 : 8,
+              })
+            ) : (
+              <UnknownAddress />
+            )}
           </p>
         </div>
       )}
@@ -281,10 +288,15 @@ export const TransactionTransferRow = ({
             {t("transfer.to")} {chainPrettyName}
           </p>
           <p className="body2 lg:caption text-osmoverse-300">
-            {shorten(transaction.toAddress, {
-              prefixLength: width < 924 ? 4 : 10,
-              suffixLength: width < 924 ? 4 : 8,
-            })}
+            {/* unknown e.g. for a bridge payload that couldn't be decoded */}
+            {transaction.toAddress ? (
+              shorten(transaction.toAddress, {
+                prefixLength: width < 924 ? 4 : 10,
+                suffixLength: width < 924 ? 4 : 8,
+              })
+            ) : (
+              <UnknownAddress />
+            )}
           </p>
         </div>
       )}

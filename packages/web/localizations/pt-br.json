@@ -1303,7 +1303,8 @@
       "search": "Buscar ativo, rede, valor ou endereço",
       "noMatches": "Nenhuma transação correspondente",
       "pageHint": "Os filtros se aplicam apenas às transações desta página. Tente a próxima página ou ajuste os filtros."
-    }
+    },
+    "unknownAddressTooltip": "Não foi possível determinar este endereço a partir dos dados da ponte. Ele pode aparecer mais tarde; você também pode encontrá-lo no explorador."
   },
   "date": {
     "earlierToday": "Hoje mais cedo",

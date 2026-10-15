@@ -405,12 +405,9 @@ function resolveMemoDestination(
   if (gmp && typeof gmp.destination_chain === "string") {
     const chain = findEvmChainByAxelarName(gmp.destination_chain);
     // destination_address is the bridge's contract; the user's address is
-    // in the payload
-    const receiver =
-      decodeGmpRecipient(gmp) ??
-      (typeof gmp.destination_address === "string"
-        ? gmp.destination_address
-        : firstHopReceiver);
+    // in the payload. Unknown ("") if the payload can't be decoded, rather
+    // than showing the contract as the recipient.
+    const receiver = decodeGmpRecipient(gmp) ?? "";
     if (chain) return { chain, receiver };
   }
 
