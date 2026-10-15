@@ -1,11 +1,12 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { useStore } from "~/stores";
+import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import {
   BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
   BRIDGE_ROUTE_EXPIRED_MESSAGE,
@@ -72,7 +73,8 @@ export type MultiTxStepQuoteParams = Omit<
  * the resume-from-history flow (`useMultiTxResume`).
  */
 export const useMultiTxFinalStep = () => {
-  const { accountStore, transferHistoryStore } = useStore();
+  const { accountStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const apiUtils = api.useUtils();
 
   /** Connects the wallet on the intermediate chain (chain-suggest if
@@ -253,7 +255,7 @@ export const useMultiTxFinalStep = () => {
  * chain, connects the wallet there, and signs the final step.
  */
 export const useMultiTxResume = () => {
-  const { transferHistoryStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const { getIntermediateAccount, signFinalStep } = useMultiTxFinalStep();
   const [resumingTxHashes, setResumingTxHashes] = useState<ReadonlySet<string>>(
     new Set()

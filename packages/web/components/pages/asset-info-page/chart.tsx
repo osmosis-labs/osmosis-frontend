@@ -1,7 +1,6 @@
 import { Dec } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { UTCTimestamp } from "lightweight-charts";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -26,13 +25,13 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useFeatureFlags, useTranslation } from "~/hooks";
-import { AvailablePriceRanges } from "~/hooks/ui-config";
+import { AvailablePriceRanges, useAssetInfoHover } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { humanizeTime } from "~/utils/date";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
-export const AssetPriceChart: FunctionComponent = observer(() => {
+export const AssetPriceChart: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
   const apiUtils = api.useUtils();
 
@@ -94,9 +93,9 @@ export const AssetPriceChart: FunctionComponent = observer(() => {
       <ChartFooter />
     </section>
   );
-});
+};
 
-const ChartFooter: FunctionComponent = observer(() => {
+const ChartFooter: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
   const { advancedChart } = useFeatureFlags();
   const { t } = useTranslation();
@@ -173,10 +172,12 @@ const ChartFooter: FunctionComponent = observer(() => {
       </div>
     </footer>
   );
-});
+};
 
-const ChartHeader = observer(() => {
+const ChartHeader: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { hoverData: hoveredPrice, hoverDate } =
+    useAssetInfoHover(assetInfoConfig);
 
   const { data: marketAsset, isLoading } =
     api.edge.assets.getMarketAsset.useQuery(
@@ -190,7 +191,7 @@ const ChartHeader = observer(() => {
 
   const hoverData = useMemo(() => {
     let data = new Dec(0);
-    const decHoverPrice = assetInfoConfig.hoverData?.toDec();
+    const decHoverPrice = hoveredPrice?.toDec();
 
     if (decHoverPrice) {
       data = decHoverPrice;
@@ -206,7 +207,7 @@ const ChartHeader = observer(() => {
 
     return data;
   }, [
-    assetInfoConfig.hoverData,
+    hoveredPrice,
     assetInfoConfig.dataType,
     assetInfoConfig.lastChartData?.close,
     marketAsset?.currentPrice,
@@ -214,7 +215,7 @@ const ChartHeader = observer(() => {
   ]);
 
   const fiatSymbol =
-    assetInfoConfig.hoverData?.fiatCurrency?.symbol ??
+    hoveredPrice?.fiatCurrency?.symbol ??
     marketAsset?.currentPrice?.symbol ??
     "$";
 
@@ -223,12 +224,12 @@ const ChartHeader = observer(() => {
       <HistoricalChartHeader
         isLoading={isLoading || assetInfoConfig.isHistoricalDataLoading}
         hoverData={hoverData}
-        hoverDate={assetInfoConfig.hoverDate}
+        hoverDate={hoverDate}
         fiatSymbol={fiatSymbol}
       />
     </header>
   );
-});
+};
 
 const COMPACT_UNIT_BY_KEY: Record<string, string> = {
   "timeUnits.second": "s",

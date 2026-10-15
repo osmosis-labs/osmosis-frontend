@@ -1,10 +1,8 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import {
-  CreatePoolConfigOpts,
-  ObservableCreatePoolConfig,
-} from "@osmosis-labs/stores";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import type { CreatePoolConfigOpts } from "@osmosis-labs/types";
 import { useEffect, useState } from "react";
 
+import { StaticChainGetter } from "~/config/chain";
 import { api } from "~/utils/trpc";
 
 /** Maintains a single instance of `ObservableCreatePoolConfig` for React view lifecycle.
@@ -12,14 +10,18 @@ import { api } from "~/utils/trpc";
  *  balances (from tRPC) into the config.
  */
 export function useCreatePoolConfig(
-  chainGetter: ChainGetter,
   chainId: string,
   bech32Address: string,
   opts?: CreatePoolConfigOpts
 ) {
   const [config] = useState(
     () =>
-      new ObservableCreatePoolConfig(chainGetter, chainId, bech32Address, opts)
+      new ObservableCreatePoolConfig(
+        StaticChainGetter,
+        chainId,
+        bech32Address,
+        opts
+      )
   );
   // the constructor takes the initial values, so these only sync later changes
   useEffect(() => {

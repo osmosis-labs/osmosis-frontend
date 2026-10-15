@@ -5,11 +5,8 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
-import {
-  ObservableSlippageConfig,
-  SignOptions,
-  TxFeMemoFlags,
-} from "@osmosis-labs/stores";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import type { SignOptions, TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   getSwapMessages,
   getSwapTxParameters,
@@ -47,6 +44,7 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
+import { OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import {
@@ -123,7 +121,7 @@ export function useSwap(
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const apiUtils = api.useUtils();
-  const { chainStore, accountStore } = useStore();
+  const { accountStore } = useStore();
   const { wallet: account, address, txTypeInProgress } = useWallet();
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
@@ -362,7 +360,7 @@ export function useSwap(
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
+    chainId: OsmosisChainInfo.chainId,
     messages,
     enabled: true,
     signOptions: {
@@ -563,7 +561,7 @@ export function useSwap(
           ) {
             await accountStore
               .signAndBroadcast(
-                chainStore.osmosis.chainId,
+                OsmosisChainInfo.chainId,
                 "Add 1CT session",
                 oneClickMessages.msgs,
                 undefined,
@@ -617,7 +615,7 @@ export function useSwap(
 
             await accountStore
               .signAndBroadcast(
-                chainStore.osmosis.chainId,
+                OsmosisChainInfo.chainId,
                 quoteType === "out-given-in"
                   ? routes.length === 1
                     ? "swapExactAmountIn"
@@ -657,7 +655,7 @@ export function useSwap(
           } else {
             accountStore
               .signAndBroadcast(
-                chainStore.osmosis.chainId,
+                OsmosisChainInfo.chainId,
                 quoteType === "out-given-in"
                   ? routes.length === 1
                     ? "swapExactAmountIn"
@@ -731,7 +729,6 @@ export function useSwap(
       account,
       accountStore,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-      chainStore.osmosis.chainId,
       featureFlags.swapToolSimulateFee,
       hasOverSpendLimitError,
       inAmountInput,
@@ -1142,7 +1139,6 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { chainStore } = useStore();
   const { txTypeInProgress } = useWallet();
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
@@ -1200,7 +1196,7 @@ function useSwapAmountInput({
     isLoading: isLoadingCurrentBalanceNetworkFee_,
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
+    chainId: OsmosisChainInfo.chainId,
     messages: [
       ...(quoteForCurrentBalance?.messages ?? []),
       ...(oneClickMessages?.msgs ?? []),

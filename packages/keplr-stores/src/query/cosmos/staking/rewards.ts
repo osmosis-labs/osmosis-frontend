@@ -1,14 +1,14 @@
-import { Rewards } from "./types";
-import { KVStore } from "../../../common/kv-store";
+import { CoinPretty, Currency, Dec, Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
+import { ChainGetter, StoreUtils } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
-import { computed, makeObservable } from "mobx";
-import { CoinPretty, Dec, Int, Currency } from "@osmosis-labs/unit";
-import { StoreUtils } from "../../../common";
-import { computedFn } from "mobx-utils";
+import { Rewards } from "./types";
 
 export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
   protected bech32Address: string;

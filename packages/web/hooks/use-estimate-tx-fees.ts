@@ -2,26 +2,28 @@ import { EncodeObject } from "@cosmjs/proto-signing";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
-  AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
-  InsufficientBalanceForFeeError,
   OsmosisAccount,
-  SignOptions,
-  SwapRequiresError,
 } from "@osmosis-labs/stores";
+import type { AccountStoreWallet, SignOptions } from "@osmosis-labs/tx";
 import {
   getFallbackFeeAmountFromBalances,
   InsufficientFeeError,
   type QuoteStdFee,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isNil,
+  SwapRequiresError,
+} from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { useMemo } from "react";
 
+import { getChainInfo } from "~/config/chain";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -43,7 +45,6 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   accountStore,
-  chainStore,
   chainId,
   signOptions,
 }: {
@@ -51,7 +52,6 @@ async function estimateTxFeesQueryFn({
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
-  chainStore: ReturnType<typeof useStore>["chainStore"];
   chainId: string;
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
@@ -98,7 +98,6 @@ async function estimateTxFeesQueryFn({
 
     return getFallbackFeeEstimate({
       wallet,
-      chainStore,
       chainId,
       apiUtils,
     });
@@ -128,12 +127,10 @@ function isInsufficientFeeError(error: unknown) {
 
 async function getFallbackFeeEstimate({
   wallet,
-  chainStore,
   chainId,
   apiUtils,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
-  chainStore: ReturnType<typeof useStore>["chainStore"];
   chainId: string;
   apiUtils: ReturnType<typeof api.useUtils>;
 }): Promise<QueryResult> {
@@ -141,7 +138,7 @@ async function getFallbackFeeEstimate({
     throw new Error("No wallet address available.");
   }
 
-  const chain = chainStore.getChain(chainId);
+  const chain = getChainInfo(chainId);
   const feeDenoms =
     chain?.feeCurrencies
       ?.map((currency) => currency.coinMinimalDenom)
@@ -237,7 +234,7 @@ export function useEstimateTxFees({
   enabled?: boolean;
   signOptions?: SignOptions;
 }) {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
   const { wallet, address } = useWallet(chainId);
@@ -257,7 +254,6 @@ export function useEstimateTxFees({
         accountStore,
         messages: messages!,
         apiUtils,
-        chainStore,
         chainId,
         signOptions,
       });

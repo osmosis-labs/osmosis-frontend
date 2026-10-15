@@ -1,41 +1,24 @@
-import {
-  ChainGetter,
-  ChainIdHelper,
-  CosmosQueries,
-  IQueriesStore,
-  txEventsWithPreOnFulfill,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { getTimeoutHeight } from "@osmosis-labs/server";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeIBCTransferMsg } from "@osmosis-labs/tx";
-import { AppCurrency, Dec, DecUtils, Int } from "@osmosis-labs/unit";
+import { AppCurrency, Dec, DecUtils } from "@osmosis-labs/unit";
 
-import {
-  AccountStore,
-  CosmwasmAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
-import { OsmosisQueries } from "../queries";
+import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;
 }
 
 export const CosmosAccount = {
-  use(options: {
-    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-  }): (
+  use(): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
     chainId: string
   ) => CosmosAccount {
     return (base, chainGetter, chainId) => {
       return {
-        cosmos: new CosmosAccountImpl(
-          base,
-          chainGetter,
-          chainId,
-          options.queriesStore
-        ),
+        cosmos: new CosmosAccountImpl(base, chainGetter, chainId),
       };
     };
   },
@@ -47,10 +30,7 @@ export class CosmosAccountImpl {
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<
-      CosmosQueries & OsmosisQueries
-    >
+    protected readonly chainId: string
   ) {}
 
   private get address() {
@@ -90,29 +70,12 @@ export class CosmosAccountImpl {
       return dec.truncate().toString();
     })();
 
-    const destinationInfo = this.queriesStore.get(channel.counterpartyChainId)
-      .cosmos.queryRPCStatus;
-
-    await destinationInfo.waitFreshResponse();
-
-    if (!destinationInfo.network) {
-      throw new Error(
-        `Failed to fetch the network chain id of ${channel.counterpartyChainId}`
-      );
-    }
-
-    if (
-      !destinationInfo.latestBlockHeight ||
-      destinationInfo.latestBlockHeight.equals(new Int("0"))
-    ) {
-      throw new Error(
-        `Failed to fetch the latest block of ${channel.counterpartyChainId}`
-      );
-    }
-
-    const revisionNumber = ChainIdHelper.parse(
-      destinationInfo.network
-    ).version.toString();
+    // Latest block height + 150 on the counterparty chain, with its revision
+    // number (omitted when 0). Fetched from the registry RPCs, hedged.
+    const timeoutHeight = await getTimeoutHeight({
+      chainList: this.base.chains,
+      chainId: channel.counterpartyChainId,
+    });
 
     const msg = await makeIBCTransferMsg({
       sourcePort: channel.portId,
@@ -124,11 +87,10 @@ export class CosmosAccountImpl {
       receiver: recipient,
       sender: this.address,
       timeoutHeight: {
-        revisionNumber:
-          revisionNumber !== "0" ? BigInt(revisionNumber) : undefined,
-        revisionHeight: BigInt(
-          destinationInfo.latestBlockHeight.add(new Int("150")).toString()
-        ),
+        revisionNumber: timeoutHeight.revisionNumber
+          ? BigInt(timeoutHeight.revisionNumber)
+          : undefined,
+        revisionHeight: BigInt(timeoutHeight.revisionHeight),
       },
       timeoutTimestamp: BigInt(0),
       memo: memo ? memo : "",
@@ -141,24 +103,7 @@ export class CosmosAccountImpl {
       "",
       undefined,
       undefined,
-      txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          const queries = this.queriesStore.get(this.chainId);
-
-          // After succeeding to send token, refresh the balance.
-          const queryBalance = queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.find((bal) => {
-              return (
-                bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-              );
-            });
-
-          if (queryBalance) {
-            queryBalance.fetch();
-          }
-        }
-      })
+      onTxEvents
     );
   }
 }

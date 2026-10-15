@@ -1,11 +1,12 @@
-import { KVStore } from "../../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { autorun } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
 import { ChannelResponse } from "./types";
-import { autorun } from "mobx";
 
 export class ObservableChainQueryIBCChannel extends ObservableChainQuery<ChannelResponse> {
   protected disposer?: () => void;

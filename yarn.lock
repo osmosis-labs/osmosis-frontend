@@ -8207,6 +8207,7 @@ __metadata:
   dependencies:
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
+    "@osmosis-labs/utils": "npm:^1.0.0"
     "@types/sha.js": "npm:^2.4.0"
     axios: "npm:^0.34.0"
     buffer: "npm:^6.0.3"
@@ -8356,6 +8357,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@osmosis-labs/tx@workspace:packages/tx"
   dependencies:
+    "@chain-registry/types": "npm:^0.46.0"
+    "@cosmjs/amino": "npm:0.36.2"
+    "@cosmjs/encoding": "npm:0.36.2"
+    "@cosmjs/math": "npm:0.36.2"
+    "@cosmjs/proto-signing": "npm:0.36.2"
+    "@cosmjs/stargate": "npm:0.36.2"
+    "@cosmos-kit/core": "npm:^2.18.1"
+    "@osmosis-labs/math": "npm:^5.1.0"
     "@osmosis-labs/proto-codecs": "npm:^5.1.0"
     "@osmosis-labs/server": "npm:^1.0.0"
     "@osmosis-labs/types": "npm:^1.0.0"
@@ -8370,6 +8379,7 @@ __metadata:
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.14"
     typescript: "npm:5.9.3"
+    utility-types: "npm:^3.10.0"
   languageName: unknown
   linkType: soft
 
@@ -8415,6 +8425,7 @@ __metadata:
     bs58check: "npm:^4.0.0"
     ecashaddrjs: "npm:^2.0.0"
     eslint: "npm:^9.39.5"
+    fake-indexeddb: "npm:5.0.2"
     jest: "npm:^30.5.2"
     jest-in-case: "npm:^1.0.2"
     prettier: "npm:^3.6.2"

@@ -1,10 +1,11 @@
-import { KVStore } from "../common/kv-store";
-import { toGenerator } from "../common/mobx";
+import type { KVStore } from "@osmosis-labs/utils";
 import { flow, makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
-import { Channel } from "./types";
+
 import { HasMapStore } from "../common";
 import { ChainIdHelper } from "../common/cosmos";
+import { toGenerator } from "../common/mobx";
+import { Channel } from "./types";
 
 export class IBCChannelStoreInner {
   // channelMap[portId][channelId]
@@ -39,7 +40,6 @@ export class IBCChannelStoreInner {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const channelMapOfPort = this.channelMap.get(portId)!;
 
     const channels: Channel[] = [];
@@ -68,7 +68,6 @@ export class IBCChannelStoreInner {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.channelMap.get(channel.portId)!.set(channel.channelId, channel);
 
     yield this.saveChannels();
@@ -90,7 +89,6 @@ export class IBCChannelStoreInner {
             this.channelMap.set(portId, observable.map({}, { deep: false }));
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const innerMap = this.channelMap.get(portId)!;
           innerMap.set(channelId, map[channelId]);
         }

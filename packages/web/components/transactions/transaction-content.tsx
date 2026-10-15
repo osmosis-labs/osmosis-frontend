@@ -1,10 +1,10 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
-  AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
 } from "@osmosis-labs/stores";
+import type { AccountStoreWallet } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { parseAsStringLiteral, useQueryState } from "nuqs";

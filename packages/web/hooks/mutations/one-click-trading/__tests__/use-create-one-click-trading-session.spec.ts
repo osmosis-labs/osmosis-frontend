@@ -1,5 +1,5 @@
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { TxEvent } from "@osmosis-labs/stores";
+import type { TxEvent } from "@osmosis-labs/tx";
 import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import { parseAuthenticator } from "@osmosis-labs/utils";
 

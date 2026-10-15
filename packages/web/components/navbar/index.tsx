@@ -31,6 +31,7 @@ import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
@@ -72,11 +73,7 @@ export const NavBar: FunctionComponent<
   menus,
   secondaryMenuItems,
 }) => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-  } = useStore();
+  const { chainId } = OsmosisChainInfo;
   const {
     title: navBarTitle,
     callToActionButtons,

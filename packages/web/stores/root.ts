@@ -1,29 +1,13 @@
-import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
-import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
-import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
-import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
-import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
-import {
-  CosmosQueries,
-  CosmwasmQueries,
-  QueriesStore,
-} from "@osmosis-labs/keplr-stores";
-import {
-  AlloyedPoolCodeIds,
-  TransmuterPoolCodeIds,
-} from "@osmosis-labs/server";
 import {
   AccountStore,
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
   LPCurrencyRegistrar,
-  makeIndexedKVStore,
   OsmosisAccount,
-  OsmosisQueries,
-  type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
+import type { TxEvents } from "@osmosis-labs/tx";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
@@ -31,39 +15,20 @@ import {
   toastOnBroadcastFailed,
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
-import {
-  BlacklistedPoolIds,
-  IS_TESTNET,
-  WALLETCONNECT_PROJECT_KEY,
-  WALLETCONNECT_RELAY_URL,
-} from "~/config";
+import { WALLETCONNECT_PROJECT_KEY, WALLETCONNECT_RELAY_URL } from "~/config";
+import { ChainInfos, OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import {
-  getKeplrCompatibleChain,
-  withCosmosKitFields,
-} from "~/config/keplr-chain";
-import { checkSolanaSignatureOutcome } from "~/utils/solana";
-
-import {
-  TRANSFER_HISTORY_STORE_KEY,
-  TransferHistoryStore,
-} from "./transfer-history";
+import { withCosmosKitFields } from "~/config/keplr-chain";
 
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
   public readonly chainStore: ChainStore;
 
-  public readonly queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, OsmosisQueries]
-  >;
-
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
-
-  public readonly transferHistoryStore: TransferHistoryStore;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -73,37 +38,7 @@ export class RootStore {
   }: {
     txEvents?: TxEvents;
   } = {}) {
-    this.chainStore = new ChainStore(
-      ChainList.map((chain) =>
-        getKeplrCompatibleChain({ chain, assetLists: AssetLists })
-      ),
-      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
-        (IS_TESTNET ? "osmo-test-5" : "osmosis")
-    );
-
-    const webApiBaseUrl =
-      typeof window !== "undefined"
-        ? window.origin
-        : "https://app.osmosis.zone";
-
-    this.queriesStore = new QueriesStore(
-      makeIndexedKVStore("store_web_queries_v12"),
-      this.chainStore,
-      // These are Keplr store factories, not React Hooks.
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmosQueries.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmwasmQueries.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisQueries.use(
-        this.chainStore.osmosis.chainId,
-        webApiBaseUrl,
-        BlacklistedPoolIds,
-        TransmuterPoolCodeIds,
-        AlloyedPoolCodeIds,
-        IS_TESTNET
-      )
-    );
+    this.chainStore = new ChainStore(ChainInfos, OsmosisChainInfo.chainId);
 
     this.accountStore = new AccountStore(
       // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
@@ -116,7 +51,6 @@ export class RootStore {
        * @see wallet-registry.ts
        */
       [],
-      this.queriesStore,
       this.chainStore,
       {
         walletConnectOptions: {
@@ -147,75 +81,11 @@ export class RootStore {
       },
       // These are Keplr store factories, not React Hooks.
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use(),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-      }),
+      CosmosAccount.use(),
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    const transferStatusProviders = [
-      new SquidTransferStatusProvider(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        IS_TESTNET ? "testnet" : "mainnet",
-        ChainList
-      ),
-      new SkipTransferStatusProvider(
-        IS_TESTNET ? "testnet" : "mainnet",
-        ChainList,
-        {
-          transactionStatus: async ({ chainID, txHash, env }) => {
-            const response = await fetch(
-              `/api/skip-tx-status?chainID=${chainID}&txHash=${txHash}&env=${env}`
-            );
-            const responseJson = await response.json();
-            if (!response.ok) {
-              throw new Error(
-                "Failed to fetch transaction status: " + responseJson.error
-              );
-            }
-            return responseJson;
-          },
-          trackTransaction: async ({ chainID, txHash, env }) => {
-            const response = await fetch(
-              `/api/skip-track-tx?chainID=${chainID}&txHash=${txHash}&env=${env}`
-            );
-            const responseJson = await response.json();
-            if (!response.ok) {
-              throw new Error(
-                "Failed to track transaction: " + responseJson.error
-              );
-            }
-            return responseJson;
-          },
-        },
-        // Resolves Solana-signed transfers from the chain: a tx that never
-        // landed is invisible to Skip, including after a reload.
-        checkSolanaSignatureOutcome
-      ),
-      new IbcTransferStatusProvider(ChainList, AssetLists),
-      new NomicTransferStatusProvider(
-        ChainList,
-        IS_TESTNET ? "testnet" : "mainnet"
-      ),
-      // Kept after the Int3face bridge provider's removal so past int3face
-      // transfers still render in transfer history; see the note on the class.
-      new Int3faceTransferStatusProvider(
-        ChainList,
-        IS_TESTNET ? "testnet" : "mainnet"
-      ),
-    ];
-
-    this.transferHistoryStore = new TransferHistoryStore(
-      () => {
-        // txEvents passed to root store is used to invalidate
-        // tRPC queries, the params are not used
-        txEvents?.onFulfill?.("", "");
-      },
-      makeIndexedKVStore(TRANSFER_HISTORY_STORE_KEY),
-      transferStatusProviders
+      CosmwasmAccount.use()
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

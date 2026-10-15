@@ -1,12 +1,8 @@
-import {
-  ChainGetter,
-  KVStore,
-  ObservableChainQuery,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
+import type { NumPools } from "@osmosis-labs/types";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { NumPools } from "./types";
 
 export class ObservableQueryNumPools extends ObservableChainQuery<NumPools> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

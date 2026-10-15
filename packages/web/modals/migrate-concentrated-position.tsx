@@ -5,6 +5,7 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import type { PoolAssetInfo } from "~/components/assets/types";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   USDC_ALLOYED_DENOM,
   USDC_CANONICAL_SYMBOL,
@@ -14,7 +15,6 @@ import {
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import {
   formatWalletDrawCap,
   getRangeMaxWithdrawAmounts,
@@ -163,8 +163,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
-  const { chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
+  const { chainId } = OsmosisChainInfo;
   const {
     wallet: account,
     address: accountAddress,

@@ -1,7 +1,8 @@
-import { CoinGeckoPriceStore } from "./index";
-import { MemoryKVStore } from "../common/kv-store";
-import { autorun } from "mobx";
+import { MemoryKVStore } from "@osmosis-labs/utils";
 import Http from "http";
+import { autorun } from "mobx";
+
+import { CoinGeckoPriceStore } from "./index";
 
 describe("Test coin gecko price store", () => {
   const createMockCoingeckoServer = (delay: number = 50) => {

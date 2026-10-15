@@ -1,9 +1,9 @@
-import { DenomHelper } from "../../../common/denom";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter, QueryResponse } from "../../../common";
-import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@osmosis-labs/unit";
-import { StoreUtils } from "../../../common";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable, override } from "mobx";
+
+import { ChainGetter, QueryResponse, StoreUtils } from "../../../common";
+import { DenomHelper } from "../../../common/denom";
 import { BalanceRegistry, ObservableQueryBalanceInner } from "../../balances";
 import { ObservableChainQuery } from "../../chain-query";
 import { Balances } from "./types";
@@ -155,7 +155,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
       chainId,
       chainGetter,
       denomHelper,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       this.nativeBalances.get(key)!
     );
   }

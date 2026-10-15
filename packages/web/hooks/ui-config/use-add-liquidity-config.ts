@@ -1,15 +1,15 @@
+import type { Pool } from "@osmosis-labs/server";
 import {
   makeGammShareCurrency,
   makeUnlistedAssetCurrency,
-  type Pool,
-  type StablePoolRawResponse,
-  type WeightedPoolRawResponse,
 } from "@osmosis-labs/server";
-import {
-  type AddLiquidityPoolData,
-  ObservableAddLiquidityConfig,
-  type OsmosisAccountImpl,
-} from "@osmosis-labs/stores";
+import type { OsmosisAccountImpl } from "@osmosis-labs/stores";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
+import type {
+  AddLiquidityPoolData,
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

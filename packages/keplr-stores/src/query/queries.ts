@@ -1,13 +1,14 @@
+import type { KVStore } from "@osmosis-labs/utils";
 import { makeObservable, observable, runInAction } from "mobx";
-import { KVStore } from "../common/kv-store";
 import { DeepReadonly, UnionToIntersection } from "utility-types";
-import { ObservableQueryBalances } from "./balances";
+
 import {
+  ChainedFunctionifyTuple,
   ChainGetter,
   IObject,
   mergeStores,
-  ChainedFunctionifyTuple,
 } from "../common";
+import { ObservableQueryBalances } from "./balances";
 
 export interface QueriesSetBase {
   readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
@@ -23,7 +24,6 @@ export const createQueriesSetBase = (
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export interface IQueriesStore<T extends IObject = {}> {
   get(chainId: string): DeepReadonly<QueriesSetBase & T>;
 }
@@ -83,7 +83,6 @@ export class QueriesStore<Injects extends Array<IObject>> {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.queriesMap.get(chainId)! as DeepReadonly<
       QueriesSetBase & UnionToIntersection<Injects[number]>
     >;

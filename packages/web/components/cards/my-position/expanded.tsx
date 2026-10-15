@@ -28,8 +28,9 @@ import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { usePositionMigrationForPosition } from "~/hooks/use-position-migration-for-position";
@@ -600,16 +601,16 @@ const PriceBox: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -627,15 +628,15 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
+  config: HistoricalAndLiquidityData;
   position: UserPosition;
-}> = observer(({ config, position: { isFullRange } }) => {
+}> = ({ config, position: { isFullRange } }) => {
   const {
     historicalChartData,
     yRange,
@@ -662,7 +663,7 @@ const Chart: FunctionComponent<{
       }
     />
   );
-});
+};
 
 const SuperfluidPositionInfo: FunctionComponent<
   NonNullable<

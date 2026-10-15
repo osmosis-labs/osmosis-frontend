@@ -5,20 +5,12 @@ import {
   TransferStatusReceiver,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import { KVStore } from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
-import {
-  action,
-  autorun,
-  makeObservable,
-  observable,
-  runInAction,
-  toJS,
-} from "mobx";
-import { computedFn } from "mobx-utils";
 import { FunctionComponent, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { createStore, StoreApi } from "zustand/vanilla";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
@@ -27,6 +19,8 @@ import { useTranslation } from "~/hooks";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
 
+/** IndexedDB key. The persisted value is a raw `TxSnapshot[]` (unchanged from
+ *  the MobX-era store, so pending transfers survive the migration). */
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
 /** Long stop on the expiry exemption for unresolved mid-flow multi-tx
@@ -34,16 +28,36 @@ export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
  *  entry whose first transaction never landed doesn't live forever. */
 const MULTI_TX_RESUME_EXPIRE_DAYS = 30;
 
+export type TransferHistoryState = {
+  /** Volatile list of tx snapshots. Updated immutably. */
+  snapshots: TxSnapshot[];
+  isRestoredFromIndexedDB: boolean;
+};
+
+export type TransferHistoryEntry = TxSnapshot & {
+  createdAt: Date;
+  providerName?: string;
+  status: TransferStatus;
+  explorerUrl: string;
+};
+
 /**
  * Stores and tracks status for bridge transfers.
+ *
+ * State lives in a vanilla Zustand store (`this.store`, subscribed from React
+ * via `useStore(store.store, selector)`). Persistence is hand-rolled against
+ * the `KVStore` rather than Zustand's `persist` middleware: the stored value
+ * must stay a bare `TxSnapshot[]` (persist wraps it in `{state, version}`),
+ * and writes need the cross-session merge in `persistSnapshots`.
+ *
  * NOTE: source keyPrefix values must be unique.
  */
 export class TransferHistoryStore implements TransferStatusReceiver {
-  /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
-  @observable
-  protected snapshots: TxSnapshot[] = [];
-  @observable
-  private isRestoredFromIndexedDB = false;
+  readonly store: StoreApi<TransferHistoryState> =
+    createStore<TransferHistoryState>(() => ({
+      snapshots: [],
+      isRestoredFromIndexedDB: false,
+    }));
 
   /**
    * Since we can't control how many times a status provider
@@ -53,49 +67,131 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   private readonly _resolvedTxStatusKeys = new Set<string>();
 
   constructor(
-    protected readonly onAccountTransferSuccess: (
-      accountAddress: string
-    ) => void,
+    /** `undefined` until bound via `setOnAccountTransferSuccess`; successes
+     *  arriving in the meantime are replayed (once) on binding. */
+    protected onAccountTransferSuccess:
+      ((accountAddress: string) => void) | undefined,
     protected readonly kvStore: KVStore,
     protected readonly transferStatusProviders: TransferStatusProvider[] = [],
-    protected readonly historyExpireDays = 3
+    protected readonly historyExpireDays = 3,
+    /** Disabled on the server so storage / restore are never touched. */
+    enabled = true
   ) {
     this.transferStatusProviders.forEach(
       (source) => (source.statusReceiverDelegate = this)
     );
 
-    makeObservable(this);
+    if (!enabled) return;
 
     // persist snapshots on change (merged against storage, so a session
     // holding a stale in-memory copy can never regress an entry another
     // session already advanced)
-    autorun(() => {
-      if (this.isRestoredFromIndexedDB) {
-        // toJS inside the autorun so deep snapshot changes are tracked
-        void this.persistSnapshots(toJS(this.snapshots));
+    this.store.subscribe((state, prev) => {
+      if (
+        state.isRestoredFromIndexedDB &&
+        (state.snapshots !== prev.snapshots || !prev.isRestoredFromIndexedDB)
+      ) {
+        void this.persistSnapshots(state.snapshots);
       }
     });
 
-    this.restoreSnapshots();
+    void this.restoreSnapshots();
   }
 
-  getHistoriesByAccount = computedFn((accountAddress: string) => {
-    const histories: (TxSnapshot & {
-      createdAt: Date;
-      providerName?: string;
-      status: TransferStatus;
-      explorerUrl: string;
-    })[] = [];
-    this.snapshots.forEach((snapshot) => {
-      const statusSource = this.transferStatusProviders.find((source) =>
-        snapshot.provider.startsWith(source.providerId)
+  /** Late-bound so the callback can close over React context (tRPC utils). */
+  setOnAccountTransferSuccess(callback: (accountAddress: string) => void) {
+    this.onAccountTransferSuccess = callback;
+    if (this.unboundSuccessAddress !== undefined) {
+      const address = this.unboundSuccessAddress;
+      this.unboundSuccessAddress = undefined;
+      callback(address);
+    }
+  }
+
+  /** Last account whose transfer succeeded before a callback was bound. */
+  private unboundSuccessAddress: string | undefined;
+
+  private notifyTransferSuccess(accountAddress: string) {
+    if (this.onAccountTransferSuccess) {
+      this.onAccountTransferSuccess(accountAddress);
+    } else {
+      this.unboundSuccessAddress = accountAddress;
+    }
+  }
+
+  get snapshots(): readonly TxSnapshot[] {
+    return this.store.getState().snapshots;
+  }
+
+  private findProvider(snapshot: TxSnapshot) {
+    return this.transferStatusProviders.find((source) =>
+      snapshot.provider.startsWith(source.providerId)
+    );
+  }
+
+  /** Swap an entry found synchronously just before. Only safe with no
+   *  `await` between the lookup and the call; after an await use
+   *  `updateSnapshotByKey`, which re-resolves the entry. */
+  private replaceSnapshot(prev: TxSnapshot, next: TxSnapshot) {
+    let matched = false;
+    this.store.setState((state) => ({
+      snapshots: state.snapshots.map((s) => {
+        if (s !== prev) return s;
+        matched = true;
+        return next;
+      }),
+    }));
+    if (!matched) {
+      console.warn(
+        "Transfer snapshot update matched no entry",
+        prev.sendTxHash
       );
+    }
+  }
+
+  /**
+   * Update an entry resolved by its immutable correlation key (the first-step
+   * hash, or the current hash for entries that never had one) against the
+   * CURRENT state. `update` receives the entry as it is now and returns the
+   * replacement, or undefined to leave it. Returns the object written, or
+   * undefined if the entry is gone / untouched.
+   */
+  private updateSnapshotByKey(
+    key: string,
+    update: (current: TxSnapshot) => TxSnapshot | undefined
+  ): TxSnapshot | undefined {
+    let written: TxSnapshot | undefined;
+    this.store.setState((state) => {
+      const index = state.snapshots.findIndex(
+        (s) => s.firstStepTxHash === key || s.sendTxHash === key
+      );
+      if (index < 0) return state;
+      written = update(state.snapshots[index]);
+      if (!written) return state;
+      const snapshots = state.snapshots.slice();
+      snapshots[index] = written;
+      return { snapshots };
+    });
+    if (!written) {
+      console.warn("Transfer snapshot update matched no entry", key);
+    }
+    return written;
+  }
+
+  /** Pure derivation of the history rows for an account. */
+  getHistoriesByAccount(
+    accountAddress: string,
+    snapshots: readonly TxSnapshot[] = this.snapshots
+  ) {
+    const histories: TransferHistoryEntry[] = [];
+    snapshots.forEach((snapshot) => {
+      const statusSource = this.findProvider(snapshot);
       if (statusSource && snapshot.osmoBech32Address === accountAddress) {
         // makeExplorerUrl already returns "" when it can't resolve a link
         // (e.g. the tx's chain is no longer in the registry). This try/catch
         // is a render-safety backstop: an explorer URL is cosmetic, so any
-        // unexpected throw from a status provider must not escape this computed
-        // and crash the transaction history / portfolio page. Fall back to an
+        // unexpected throw from a status provider must not escape and crash
+        // the transaction history / portfolio page. Fall back to an
         // empty URL, which the UI renders as "no explorer link".
         let explorerUrl = "";
         try {
@@ -114,19 +210,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     });
 
     return histories;
-  });
+  }
 
-  /**
-   * Add transaction to be tracked starting now.
-   * @param prefixedKey Identifier of transaction, with a prefix corresponding to a tx status source. Example: `axelar<tx hash>`
-   * @param amount Human readable amount. (e.g. `12 ETH`)
-   * @param isWithdraw Indicates if this is a withdraw from Osmosis.
-   * @param accountAddress The address of the user's account.
-   * @param chainPrettyName The pretty name of the chain.
-   * @param estimatedArrivalUnix The estimated arrival time in Unix timestamp.
-   * @param amountLogo The logo URL of the amount's currency.
-   */
-  @action
+  /** Add transaction to be tracked starting now. */
   pushTxNow(snapshot: TxSnapshot) {
     // For multi-tx entries, pin the immutable first-step hash: sendTxHash
     // is reassigned when the transfer advances, and the first-step hash is
@@ -145,9 +231,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       fromAsset,
       direction,
     } = snapshot;
-    const statusSource = this.transferStatusProviders.find((source) =>
-      snapshot.provider.startsWith(source.providerId)
-    );
+    const statusSource = this.findProvider(snapshot);
 
     // start tracking for life of current session — except mid-flow multi-tx
     // entries: their first tx's status completes when funds reach the
@@ -209,7 +293,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       );
     }, 1000);
 
-    this.snapshots.push(snapshot);
+    const pushed = snapshot;
+    this.store.setState((state) => ({
+      snapshots: [...state.snapshots, pushed],
+    }));
   }
 
   /**
@@ -217,7 +304,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * key the entry on the final step's tx hash, and hand status tracking to
    * the provider (polling on the intermediate chain the step was signed on).
    */
-  @action
   advanceMultiTxStep(
     prevSendTxHash: string,
     {
@@ -248,43 +334,43 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // since further updates are keyed on the final step's hash
     toast.dismiss(snapshot.sendTxHash);
 
-    // keep the immutable correlation key even for entries created before
-    // firstStepTxHash existed, so other sessions can match the advance
-    snapshot.firstStepTxHash = snapshot.firstStepTxHash ?? prevSendTxHash;
-    // Keep a copy of the step being advanced past: if the signed tx then
-    // fails on-chain (or its transfer times out and refunds), the funds are
-    // still on the intermediate chain and the step is restored from this.
-    snapshot.advancedStep = snapshot.pendingStep
-      ? toJS(snapshot.pendingStep)
-      : undefined;
-    snapshot.multiTxStepVersion = (snapshot.multiTxStepVersion ?? 0) + 1;
-    snapshot.pendingStep = undefined;
-    snapshot.sendTxHash = finalSendTxHash;
-    snapshot.trackingChainId = trackingChainId;
-    snapshot.estimatedArrivalUnix = estimatedArrivalUnix;
-    snapshot.status = "pending";
+    const next: TxSnapshot = {
+      ...snapshot,
+      // keep the immutable correlation key even for entries created before
+      // firstStepTxHash existed, so other sessions can match the advance
+      firstStepTxHash: snapshot.firstStepTxHash ?? prevSendTxHash,
+      // Keep a copy of the step being advanced past: if the signed tx then
+      // fails on-chain (or its transfer times out and refunds), the funds are
+      // still on the intermediate chain and the step is restored from this.
+      advancedStep: snapshot.pendingStep
+        ? { ...snapshot.pendingStep }
+        : undefined,
+      multiTxStepVersion: (snapshot.multiTxStepVersion ?? 0) + 1,
+      pendingStep: undefined,
+      sendTxHash: finalSendTxHash,
+      trackingChainId,
+      estimatedArrivalUnix,
+      status: "pending",
+    };
+    this.replaceSnapshot(snapshot, next);
 
-    const statusSource = this.transferStatusProviders.find((source) =>
-      snapshot.provider.startsWith(source.providerId)
-    );
-    statusSource?.trackTxStatus(toJS(snapshot));
+    this.findProvider(next)?.trackTxStatus(next);
   }
 
   /**
-   * Forward tx info the relevant status source to start tracking the transfer status
-   * of an initiated transfer.
+   * Receives status updates from providers (and the bridge flows) for a
+   * tracked transfer, updating the snapshot and surfacing toasts.
    */
-  @action
   async receiveNewTxStatus(
     sendTxHash: string,
     status: TransferStatus,
     reason: TransferFailureReason | undefined
   ) {
-    const snapshot = this.snapshots.find(
+    const found = this.snapshots.find(
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
 
-    if (!snapshot) {
+    if (!found) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
     }
@@ -305,11 +391,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       fromChain,
       toChain,
       osmoBech32Address,
-    } = snapshot;
+    } = found;
 
     // set updates
-    snapshot.status = status;
-    snapshot.reason = reason;
+    const snapshot: TxSnapshot = { ...found, status, reason };
+    this.replaceSnapshot(found, snapshot);
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
@@ -382,7 +468,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           ToastType.SUCCESS,
           { updateToastId: sendTxHash }
         );
-        this.onAccountTransferSuccess(osmoBech32Address);
+        this.notifyTransferSuccess(osmoBech32Address);
         this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "failed":
@@ -394,11 +480,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         // funds are, instead of leaving a dead "failed" row with copy that
         // implies the deposit itself failed.
         if (snapshot.advancedStep && snapshot.firstStepTxHash) {
-          snapshot.status = "pending";
-          snapshot.reason = undefined;
-          snapshot.pendingStep = toJS(snapshot.advancedStep);
-          snapshot.advancedStep = undefined;
-          snapshot.multiTxStepVersion = (snapshot.multiTxStepVersion ?? 0) + 1;
+          const restoredStep = { ...snapshot.advancedStep };
+          this.replaceSnapshot(snapshot, {
+            ...snapshot,
+            status: "pending",
+            reason: undefined,
+            pendingStep: restoredStep,
+            advancedStep: undefined,
+            multiTxStepVersion: (snapshot.multiTxStepVersion ?? 0) + 1,
+          });
           // The failed attempt's hash is fully handled: resolve it so a
           // duplicate provider callback can't re-enter and overwrite the
           // restore (a retry advances under a NEW final hash).
@@ -408,7 +498,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               titleTranslationKey: "transfer.multiTxStepFailedTitle",
               captionTranslationKey: [
                 "transfer.multiTxStepFailed",
-                { chain: snapshot.pendingStep.prettyName },
+                { chain: restoredStep.prettyName },
               ],
             },
             ToastType.ERROR,
@@ -461,14 +551,16 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * reached the destination. The entry keeps its pending step, marked
    * stale, and expires with the snapshot.
    */
-  @action
   markPendingStepStale(sendTxHash: string) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
     if (!snapshot?.pendingStep) return;
 
-    snapshot.pendingStep.stale = true;
+    this.replaceSnapshot(snapshot, {
+      ...snapshot,
+      pendingStep: { ...snapshot.pendingStep, stale: true },
+    });
   }
 
   /**
@@ -479,7 +571,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * serialized cross-tab via the Web Locks API where available so
    * concurrent writers cannot interleave.
    */
-  protected async persistSnapshots(snapshots: TxSnapshot[]): Promise<void> {
+  protected async persistSnapshots(
+    snapshots: readonly TxSnapshot[]
+  ): Promise<void> {
     const keyOf = (snapshot: TxSnapshot) =>
       snapshot.firstStepTxHash ?? snapshot.sendTxHash;
     const write = async () => {
@@ -537,7 +631,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * so the next lock holder's storage check sees it.
    */
   async persistNow(): Promise<void> {
-    await this.persistSnapshots(toJS(this.snapshots));
+    await this.persistSnapshots(this.snapshots);
   }
 
   /**
@@ -585,14 +679,27 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   async syncPendingStepFromStorage(
     sendTxHash: string
   ): Promise<"resumable" | "advanced" | "stale" | "missing"> {
-    const local = this.snapshots.find(
+    const initial = this.snapshots.find(
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
-    if (!local?.pendingStep) return "missing";
-    const firstStepHash = local.firstStepTxHash ?? sendTxHash;
+    if (!initial?.pendingStep) return "missing";
+    const firstStepHash = initial.firstStepTxHash ?? sendTxHash;
 
     const stored =
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
+
+    // The await above can overlap another sync / advance / stale-mark on the
+    // same entry, so everything below works off the entry as it is NOW,
+    // resolved by its immutable key, never off `initial`.
+    const local = this.snapshots.find(
+      (snapshot) =>
+        snapshot.firstStepTxHash === firstStepHash ||
+        snapshot.sendTxHash === firstStepHash
+    );
+    if (!local) return "missing";
+    // already advanced by a concurrent call; tracking was started there
+    if (!local.pendingStep) return "advanced";
+
     const storedSnapshot = stored.find(
       (snapshot) =>
         snapshot.firstStepTxHash === firstStepHash ||
@@ -603,7 +710,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       // uncorrelatable legacy advance): nothing can verify the step wasn't
       // signed, so it must never be signed from here. Mark it stale so the
       // row shows needs-attention instead of a silently dead Continue.
-      this.markPendingStepStale(sendTxHash);
+      this.markPendingStepStale(local.sendTxHash);
       return "missing";
     }
 
@@ -617,26 +724,29 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }
 
     if (storedSnapshot.pendingStep?.stale) {
-      this.markPendingStepStale(sendTxHash);
+      this.markPendingStepStale(local.sendTxHash);
       return "stale";
     }
     if (storedSnapshot.pendingStep) return "resumable";
 
     // Advanced elsewhere: mirror the persisted state so this session's row
     // stops offering Continue, and pick up tracking if still pending.
-    runInAction(() => {
-      toast.dismiss(local.sendTxHash);
-      local.pendingStep = undefined;
-      local.sendTxHash = storedSnapshot.sendTxHash;
-      local.trackingChainId = storedSnapshot.trackingChainId;
-      local.estimatedArrivalUnix = storedSnapshot.estimatedArrivalUnix;
-      local.status = storedSnapshot.status;
-    });
-    if (local.status === "pending") {
-      const statusSource = this.transferStatusProviders.find((source) =>
-        local.provider.startsWith(source.providerId)
-      );
-      statusSource?.trackTxStatus(toJS(local));
+    toast.dismiss(local.sendTxHash);
+    const advanced = this.updateSnapshotByKey(firstStepHash, (current) =>
+      current.pendingStep
+        ? {
+            ...current,
+            pendingStep: undefined,
+            sendTxHash: storedSnapshot.sendTxHash,
+            trackingChainId: storedSnapshot.trackingChainId,
+            estimatedArrivalUnix: storedSnapshot.estimatedArrivalUnix,
+            status: storedSnapshot.status,
+          }
+        : undefined
+    );
+    if (!advanced) return "missing";
+    if (advanced.status === "pending") {
+      this.findProvider(advanced)?.trackTxStatus(advanced);
     }
     return "advanced";
   }
@@ -661,10 +771,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           : snapshot
       );
 
-    liveSnapshots.forEach(async (snapshot) => {
-      const statusSource = this.transferStatusProviders.find((source) =>
-        snapshot.provider.startsWith(source.providerId)
-      );
+    liveSnapshots.forEach((snapshot) => {
+      const statusSource = this.findProvider(snapshot);
 
       // start receiving tx status updates again for snapshots that were still pending
       if (
@@ -684,15 +792,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       ) {
         this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
       }
-
-      runInAction(() => {
-        this.snapshots.push(snapshot);
-      });
     });
 
-    runInAction(() => {
-      this.isRestoredFromIndexedDB = true;
-    });
+    // Append (not replace): a transfer pushed while restore was in flight
+    // must be kept. One atomic update so the persist subscriber sees the
+    // restored flag and the merged list together.
+    this.store.setState((state) => ({
+      snapshots: [...state.snapshots, ...liveSnapshots],
+      isRestoredFromIndexedDB: true,
+    }));
   }
 }
 

@@ -1,7 +1,5 @@
-import {
-  type ConcentratedPoolRawResponse,
-  DEFAULT_VS_CURRENCY,
-} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -22,8 +20,9 @@ import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
@@ -455,16 +454,16 @@ const PoolDataGroup: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -486,14 +485,14 @@ const ChartHeader: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalChartData,
     yRange,
@@ -515,7 +514,7 @@ const Chart: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;

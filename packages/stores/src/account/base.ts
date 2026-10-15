@@ -22,29 +22,58 @@ import {
   BaseAccount,
   ChainedFunctionifyTuple,
   ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
   Functionify,
-  KVStore,
-  QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { queryRPCStatus } from "@osmosis-labs/server";
+import type {
+  AccountStoreWallet,
+  CosmosRegistryWallet,
+  DeliverTxResponse,
+  OneClickTradingInfo,
+  SignOptions,
+  TxEvent,
+  TxEvents,
+  TxFeMemoFlags,
+} from "@osmosis-labs/tx";
 import {
+  appendFeMemoTag,
+  CosmosKitAccountsLocalStorageKey,
   encodeAnyBase64,
+  FeMemoTag,
+  GasMultiplier,
+  getAminoConverters,
+  getEndpointString,
+  getPublicKeyTypeUrl,
+  getWalletEndpoints,
+  HasUsedOneClickTradingLocalStorageKey,
+  logger,
+  makeSignDocAmino,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
+  OneClickFeMemoTag,
+  OneClickTradingLocalStorageKey,
+  padSessionKeyBytes,
   QuoteStdFee,
+  removeLastSlash,
+  runBroadcastedCallbacks,
   SimulateNotAvailableError,
   TxTracer,
+  UseOneClickTradingLocalStorageKey,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import {
+  AccountStoreNoBroadcastErrorEvent,
   apiClient,
   ApiClientError,
   getChain,
+  InsufficientBalanceForFeeError,
   isNil,
+  makeLocalStorageKVStore,
   MultiEndpointClient,
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
+  WalletConnectionInProgressError,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
@@ -54,44 +83,7 @@ import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
-import { makeLocalStorageKVStore } from "../kv-store";
-import { OsmosisQueries } from "../queries";
-import { InsufficientBalanceForFeeError } from "../ui-config";
-import { getAminoConverters } from "./amino-converters";
-import {
-  appendFeMemoTag,
-  FeMemoTag,
-  OneClickFeMemoTag,
-  TxFeMemoFlags,
-} from "./memo";
-import {
-  AccountStoreWallet,
-  CosmosRegistryWallet,
-  DeliverTxResponse,
-  OneClickTradingInfo,
-  SignOptions,
-  TxEvent,
-  TxEvents,
-} from "./types";
-import {
-  AccountStoreNoBroadcastErrorEvent,
-  CosmosKitAccountsLocalStorageKey,
-  getEndpointString,
-  getPublicKeyTypeUrl,
-  getWalletEndpoints,
-  HasUsedOneClickTradingLocalStorageKey,
-  logger,
-  makeSignDocAmino,
-  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
-  OneClickTradingLocalStorageKey,
-  padSessionKeyBytes,
-  removeLastSlash,
-  runBroadcastedCallbacks,
-  UseOneClickTradingLocalStorageKey,
-} from "./utils";
-import { WalletConnectionInProgressError } from "./wallet-errors";
-
-export const GasMultiplier = 1.5;
+export { GasMultiplier } from "@osmosis-labs/tx";
 
 /**
  * CosmJS's own SignerData declares `accountNumber: number`, which cannot hold a
@@ -227,9 +219,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     readonly osmosisChainId: string,
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
-    protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, OsmosisQueries]
-    >,
     protected readonly chainGetter: ChainGetter,
     protected readonly options: {
       walletConnectOptions?: WalletConnectOptions;
@@ -811,34 +800,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
-
-      /**
-       * Refetch balances.
-       * After sending tx, the balances have probably changed due to the fee.
-       *
-       * Best effort: the tx has already been included. `balances` builds a
-       * query for every currency on the chain and throws on one no balance
-       * registry handles (e.g. an `erc20:` currency on Injective), which must
-       * not turn a fulfilled tx into a broadcast failure.
-       */
-      try {
-        for (const feeAmount of fee.amount) {
-          if (!wallet.address) continue;
-
-          const queries = this.queriesStore.get(chainNameOrId);
-          const bal = queries.queryBalances
-            .getQueryBech32Address(wallet.address)
-            .balances.find(
-              (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-            );
-
-          if (bal) {
-            bal.waitFreshResponse();
-          }
-        }
-      } catch (e) {
-        console.warn("Failed to refresh fee balances after tx:", e);
-      }
 
       if (this.options.preTxEvents?.onFulfill) {
         this.options.preTxEvents.onFulfill(chainNameOrId, tx);

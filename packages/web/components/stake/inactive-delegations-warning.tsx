@@ -5,9 +5,9 @@ import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useStakeToEnterActiveSet } from "~/hooks/use-inactive-delegations";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 
@@ -26,8 +26,7 @@ export const inactiveStatusTranslationKey = (
  */
 export function useInactiveStatusLabel() {
   const { t } = useTranslation();
-  const { chainStore } = useStore();
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
   const stakeToEnter = useStakeToEnterActiveSet();
 
   return useCallback(
@@ -66,8 +65,7 @@ export const InactiveDelegationsList: FunctionComponent<{
   inactiveDelegations: InactiveDelegation[];
   className?: string;
 }> = observer(({ inactiveDelegations, className }) => {
-  const { chainStore } = useStore();
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
   const statusLabel = useInactiveStatusLabel();
 
   return (

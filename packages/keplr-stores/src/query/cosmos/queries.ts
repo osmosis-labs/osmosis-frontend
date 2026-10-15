@@ -1,12 +1,19 @@
-import { QueriesSetBase } from "../queries";
-import { KVStore } from "../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { DeepReadonly } from "utility-types";
+
 import { ChainGetter } from "../../common";
+import { QueriesSetBase } from "../queries";
 import { ObservableQueryAccount } from "./account";
 import {
-  ObservableQueryInflation,
-  ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal,
-} from "./supply";
+  ObservableQueryCosmosBalanceRegistry,
+  ObservableQuerySpendableBalances,
+} from "./balance";
+import { ObservableQueryDistributionParams } from "./distribution";
+import {
+  ObservableQueryDenomTrace,
+  ObservableQueryIBCChannel,
+  ObservableQueryIBCClientState,
+} from "./ibc";
 import {
   ObservableQueryDelegations,
   ObservableQueryDelegatorValidators,
@@ -16,23 +23,17 @@ import {
   ObservableQueryUnbondingDelegations,
   ObservableQueryValidators,
 } from "./staking";
+import { ObservableQueryRPCStatus } from "./status";
 import {
-  ObservableQueryDenomTrace,
-  ObservableQueryIBCChannel,
-  ObservableQueryIBCClientState,
-} from "./ibc";
-import {
-  ObservableQueryCosmosBalanceRegistry,
-  ObservableQuerySpendableBalances,
-} from "./balance";
-import { DeepReadonly } from "utility-types";
+  ObservableQueryInflation,
+  ObservableQueryMintingInfation,
+  ObservableQuerySupplyTotal,
+} from "./supply";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
   ObservableQueryOsmosisMintParmas,
 } from "./supply/osmosis";
-import { ObservableQueryDistributionParams } from "./distribution";
-import { ObservableQueryRPCStatus } from "./status";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;

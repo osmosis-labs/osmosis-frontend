@@ -1,9 +1,9 @@
 import type { MainWalletBase } from "@cosmos-kit/core";
+import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
-  type CosmosRegistryWallet,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import {
   FunctionComponent,
