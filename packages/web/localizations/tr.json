@@ -1300,7 +1300,7 @@
       "swap": "Swap'lar",
       "deposit": "Yatırmalar",
       "withdraw": "Çekimler",
-      "search": "Varlık, zincir veya sağlayıcı ara",
+      "search": "Varlık, zincir, tutar veya adres ara",
       "noMatches": "Eşleşen işlem yok",
       "pageHint": "Filtreler yalnızca bu sayfadaki işlemlere uygulanır. Sonraki sayfaya bakın veya filtrelerinizi değiştirin."
     }

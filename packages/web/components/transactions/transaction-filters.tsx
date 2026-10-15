@@ -54,7 +54,17 @@ const SEARCH_KEYS: Fuse.FuseOptionKey<HistoryTransaction>[] = [
   },
 ];
 
-/** Filter by transaction kind, then fuzzy search assets/chains/provider. */
+/** Shortest word matched against addresses, so short words don't hit by chance. */
+const MIN_ADDRESS_TERM_LENGTH = 4;
+
+/**
+ * Filter by transaction kind, then search. Every word of the query must
+ * match the transaction:
+ * - numbers match amounts as a substring ("5.5" finds 5.505156 and 15.5)
+ * - other words fuzzy match assets, chains and provider, or match a
+ *   transfer's from/to address as a substring (case-insensitive; a
+ *   shortened `0xc8E4...A487` must match at both ends)
+ */
 export function filterTransactions(
   transactions: HistoryTransaction[],
   { kinds, query }: { kinds: readonly TransactionKind[]; query: string | null }
@@ -64,12 +74,88 @@ export function filterTransactions(
       ? transactions
       : transactions.filter((tx) => kinds.includes(getTransactionKind(tx)));
 
-  const trimmed = query?.trim();
-  if (!trimmed) return byKind;
+  const terms = query?.trim().split(/\s+/).filter(Boolean) ?? [];
+  if (terms.length === 0) return byKind;
 
-  // fuse returns results by relevance; keep the date order of the history
-  const matches = new Set(new DataFilter(byKind, SEARCH_KEYS).process(trimmed));
-  return byKind.filter((tx) => matches.has(tx));
+  const searcher = new DataFilter(byKind, SEARCH_KEYS);
+  const termMatchers = terms.map(
+    (term): ((tx: HistoryTransaction) => boolean) => {
+      if (isNumberTerm(term)) {
+        const n = normalizeNumberTerm(term);
+        return (tx) => getAmounts(tx).some((amount) => amount.includes(n));
+      }
+
+      const fuzzyMatches = new Set(searcher.process(term));
+      const fragments = term
+        .toLowerCase()
+        .split(/\.{2,}|…/)
+        .filter(Boolean);
+      const isAddressTerm =
+        fragments.length > 0 &&
+        fragments.every((f) => f.length >= MIN_ADDRESS_TERM_LENGTH);
+
+      return (tx) =>
+        fuzzyMatches.has(tx) ||
+        (isAddressTerm &&
+          getAddresses(tx).some((address) =>
+            fragments.every((f) => address.includes(f))
+          ));
+    }
+  );
+
+  // keeps the date order of the history (fuse returns by relevance)
+  return byKind.filter((tx) => termMatchers.every((matches) => matches(tx)));
+}
+
+/** Counterparty addresses of a transfer, lowercased. Swaps have none. */
+function getAddresses(tx: HistoryTransaction): string[] {
+  if (tx.__type === "transaction") return [];
+  return [tx.fromAddress, tx.toAddress]
+    .filter(Boolean)
+    .map((address) => address.toLowerCase());
+}
+
+/** e.g. `5.5`, `.5`, `1,000`, `5,5`, `$5.5` */
+function isNumberTerm(term: string) {
+  return /^\$?(\d[\d,]*(\.\d*)?|\.\d+)$/.test(term);
+}
+
+/** To the plain decimal form amounts are matched in. */
+function normalizeNumberTerm(term: string) {
+  const n = term.replace(/^\$/, "");
+  if (n.includes(".")) return n.replace(/,/g, "");
+  // thousands separators (1,000 / 1,000,000), otherwise a decimal comma
+  return /^\d{1,3}(,\d{3})+$/.test(n)
+    ? n.replace(/,/g, "")
+    : n.replace(",", ".");
+}
+
+/** The amounts shown for a transaction, as plain decimals (e.g. "5.505156"). */
+function getAmounts(tx: HistoryTransaction): string[] {
+  if (tx.__type === "transaction") {
+    const info = tx.metadata?.[0]?.value?.[0]?.txInfo;
+    return [info?.tokenIn?.token, info?.tokenOut?.token].flatMap((token) =>
+      token && typeof token.toDec === "function"
+        ? [trimDecimal(token.toDec().toString())]
+        : []
+    );
+  }
+  return [tx.fromAsset, tx.toAsset].flatMap((asset) =>
+    asset.amount ? [baseUnitsToDecimal(asset.amount, asset.decimals)] : []
+  );
+}
+
+function baseUnitsToDecimal(amount: string, decimals: number) {
+  if (!/^\d+$/.test(amount)) return amount;
+  if (decimals <= 0) return amount;
+  const padded = amount.padStart(decimals + 1, "0");
+  return trimDecimal(
+    `${padded.slice(0, -decimals)}.${padded.slice(-decimals)}`
+  );
+}
+
+function trimDecimal(value: string) {
+  return value.includes(".") ? value.replace(/\.?0+$/, "") : value;
 }
 
 /**

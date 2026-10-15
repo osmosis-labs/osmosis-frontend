@@ -1300,7 +1300,7 @@
       "swap": "Swaps",
       "deposit": "Dépôts",
       "withdraw": "Retraits",
-      "search": "Rechercher un actif, une chaîne ou un fournisseur",
+      "search": "Rechercher un actif, une chaîne, un montant ou une adresse",
       "noMatches": "Aucune transaction correspondante",
       "pageHint": "Les filtres ne s'appliquent qu'aux transactions de cette page. Essayez la page suivante ou modifiez vos filtres."
     }

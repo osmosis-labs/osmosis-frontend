@@ -1300,7 +1300,7 @@
       "swap": "Swaps",
       "deposit": "Depósitos",
       "withdraw": "Saques",
-      "search": "Buscar ativo, rede ou provedor",
+      "search": "Buscar ativo, rede, valor ou endereço",
       "noMatches": "Nenhuma transação correspondente",
       "pageHint": "Os filtros se aplicam apenas às transações desta página. Tente a próxima página ou ajuste os filtros."
     }

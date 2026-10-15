@@ -1300,7 +1300,7 @@
       "swap": "Swap-uri",
       "deposit": "Depuneri",
       "withdraw": "Retrageri",
-      "search": "Caută activ, rețea sau furnizor",
+      "search": "Caută activ, rețea, sumă sau adresă",
       "noMatches": "Nicio tranzacție potrivită",
       "pageHint": "Filtrele se aplică doar tranzacțiilor de pe această pagină. Încearcă pagina următoare sau ajustează filtrele."
     }

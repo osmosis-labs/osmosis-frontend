@@ -1300,7 +1300,7 @@
       "swap": "Swaps",
       "deposit": "Deposits",
       "withdraw": "Withdrawals",
-      "search": "Search asset, chain or provider",
+      "search": "Search asset, chain, amount or address",
       "noMatches": "No matching transactions",
       "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
     }

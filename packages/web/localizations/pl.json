@@ -1300,7 +1300,7 @@
       "swap": "Swapy",
       "deposit": "Wpłaty",
       "withdraw": "Wypłaty",
-      "search": "Szukaj aktywa, sieci lub dostawcy",
+      "search": "Szukaj aktywa, sieci, kwoty lub adresu",
       "noMatches": "Brak pasujących transakcji",
       "pageHint": "Filtry dotyczą tylko transakcji na tej stronie. Sprawdź następną stronę lub zmień filtry."
     }

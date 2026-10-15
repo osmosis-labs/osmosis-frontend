@@ -1300,7 +1300,7 @@
       "swap": "Swaps",
       "deposit": "Einzahlungen",
       "withdraw": "Auszahlungen",
-      "search": "Asset, Chain oder Anbieter suchen",
+      "search": "Asset, Chain, Betrag oder Adresse suchen",
       "noMatches": "Keine passenden Transaktionen",
       "pageHint": "Filter gelten nur für die Transaktionen auf dieser Seite. Öffne die nächste Seite oder passe deine Filter an."
     }
