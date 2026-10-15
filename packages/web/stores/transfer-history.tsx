@@ -28,12 +28,6 @@ export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
  *  entry whose first transaction never landed doesn't live forever. */
 const MULTI_TX_RESUME_EXPIRE_DAYS = 30;
 
-/** Imported withdrawals younger than this are tracked to their final status;
- *  older ones are settled as delivered. Status providers poll for a few
- *  minutes at most, so tracking long-settled transfers only produces false
- *  connection errors. */
-const IMPORT_TRACKING_WINDOW_SECONDS = 24 * 60 * 60;
-
 /** How long after a local deposit's estimated arrival an imported arrival
  *  of the same asset is still treated as that deposit. */
 const IMPORT_DEPOSIT_MATCH_GRACE_SECONDS = 60 * 60;
@@ -596,20 +590,23 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       if (s.firstStepTxHash) knownHashes.add(s.firstStepTxHash);
     });
     const matchedLocalDeposits = new Set<TxSnapshot>();
-    const nowUnix = Date.now() / 1000;
 
     const toAdd: TxSnapshot[] = [];
     const refreshed = new Map<TxSnapshot, TxSnapshot>();
     for (const incoming of snapshots) {
       // Refresh details of previously imported entries (parsing improves
-      // over time), keeping the status this browser already resolved.
+      // over time). Keep what's already resolved: a final status, and a
+      // sender/link a later response may lack (e.g. a timed-out lookup).
       const previous = importedByHash.get(incoming.sendTxHash);
       if (previous) {
+        const isSettled = previous.status !== "pending";
         const next: TxSnapshot = {
           ...incoming,
+          fromAddress: incoming.fromAddress || previous.fromAddress,
+          explorerUrl: incoming.explorerUrl ?? previous.explorerUrl,
           imported: true,
-          status: previous.status,
-          reason: previous.reason,
+          status: isSettled ? previous.status : incoming.status,
+          reason: isSettled ? previous.reason : incoming.reason,
         };
         if (!isSameSnapshot(previous, next)) refreshed.set(previous, next);
         continue;
@@ -628,18 +625,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         }
       }
 
-      const isTrackable =
-        incoming.status === "pending" &&
-        nowUnix - incoming.createdAtUnix < IMPORT_TRACKING_WINDOW_SECONDS;
-
-      const snapshot: TxSnapshot = {
-        ...incoming,
-        imported: true,
-        status:
-          incoming.status === "pending" && !isTrackable
-            ? "success"
-            : incoming.status,
-      };
+      // Pending withdrawals are tracked to their final status (via Skip,
+      // which traces old transfers by hash too); the index alone can't tell
+      // whether a transfer was delivered, timed out or refunded.
+      const snapshot: TxSnapshot = { ...incoming, imported: true };
       knownHashes.add(snapshot.sendTxHash);
       toAdd.push(snapshot);
     }
@@ -657,6 +646,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       if (snapshot.status === "pending") {
         this.findTrackingProvider(snapshot)?.trackTxStatus(snapshot);
       } else {
+        this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
+      }
+    });
+    // settled by the server (e.g. Axelarscan) while tracked here: a late
+    // provider update must not overwrite it
+    refreshed.forEach((snapshot) => {
+      if (snapshot.status !== "pending") {
         this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
       }
     });

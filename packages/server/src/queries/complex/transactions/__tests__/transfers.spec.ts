@@ -7,7 +7,7 @@ import { Transaction } from "../../../data-services";
 import {
   decodeGmpRecipient,
   mapTransfers,
-  resolveAxelarDepositSenders,
+  resolveAxelarTransfers,
 } from "../transfers";
 import { IndexedTransferTxs } from "./transfer-fixtures";
 
@@ -204,7 +204,7 @@ describe("mapTransfers", () => {
         }),
       } as Response);
 
-      const [transfer] = await resolveAxelarDepositSenders(
+      const [transfer] = await resolveAxelarTransfers(
         map(IndexedTransferTxs.gmpDeposit, address)
       );
 
@@ -233,10 +233,75 @@ describe("mapTransfers", () => {
         hash: "LOOKUPFAILS",
       };
 
-      const [transfer] = await resolveAxelarDepositSenders(map(tx, address));
+      const [transfer] = await resolveAxelarTransfers(map(tx, address));
 
       expect(transfer.fromAddress).toBe("");
       expect(transfer.toAddress).toBe(address);
+    });
+
+    it("looks an unindexed call up again on a later request", async () => {
+      const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: [] }),
+      } as Response);
+      const tx = { ...IndexedTransferTxs.gmpDeposit, hash: "NOTINDEXEDYET" };
+
+      await resolveAxelarTransfers(map(tx, address));
+      await resolveAxelarTransfers(map(tx, address));
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("Axelar GMP withdrawals", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const axelarscanResponse = (simplified_status: string) =>
+      ({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              simplified_status,
+              call: { transactionHash: IndexedTransferTxs.squid.hash },
+            },
+          ],
+        }),
+      }) as Response;
+
+    it("takes the final status from Axelarscan", async () => {
+      jest
+        .spyOn(global, "fetch")
+        .mockResolvedValue(axelarscanResponse("received"));
+
+      const [transfer] = await resolveAxelarTransfers(
+        map(IndexedTransferTxs.squid)
+      );
+
+      expect(transfer.status).toBe("success");
+    });
+
+    it("keeps an unsettled transfer pending and doesn't cache it", async () => {
+      const fetchMock = jest
+        .spyOn(global, "fetch")
+        .mockResolvedValue(axelarscanResponse("approved"));
+      const tx = { ...IndexedTransferTxs.gmp, hash: "INFLIGHT" };
+
+      const [transfer] = await resolveAxelarTransfers(map(tx));
+      await resolveAxelarTransfers(map(tx));
+
+      expect(transfer.status).toBe("pending");
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("doesn't look up plain IBC withdrawals", async () => {
+      const fetchMock = jest.spyOn(global, "fetch");
+
+      await resolveAxelarTransfers(map(IndexedTransferTxs.send));
+
+      expect(fetchMock).not.toHaveBeenCalled();
     });
   });
 

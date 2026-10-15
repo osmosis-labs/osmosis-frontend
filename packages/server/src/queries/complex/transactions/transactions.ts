@@ -3,16 +3,15 @@ import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { IS_TESTNET } from "../../../env";
 import { getAsset } from "../../../queries/complex/assets";
 import { Metadata, queryTransactions } from "../../../queries/data-services";
-import { IS_TESTNET } from "../../../env";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
   FormattedTransfer,
   mapTransfers,
-  resolveAxelarDepositSenders,
-  TRANSFER_MESSAGE_TYPES,
+  resolveAxelarTransfers,
 } from "./transfers";
 
 export interface FormattedMetadata {
@@ -126,35 +125,63 @@ export interface GetTransactionsResponse {
   hasNextPage: boolean;
 }
 
+export const TRANSACTION_TYPES = ["swap", "deposit", "withdraw"] as const;
+export type TransactionType = (typeof TRANSACTION_TYPES)[number];
+
+/**
+ * Index message types per transaction type. The historical data service
+ * filters by message type, so type filters apply across all pages.
+ */
+const MESSAGE_TYPES_BY_TRANSACTION_TYPE: Record<TransactionType, string[]> = {
+  swap: [
+    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+  ],
+  deposit: ["/ibc.core.channel.v1.MsgRecvPacket"],
+  // Skip and Squid withdrawals are contract calls
+  withdraw: [
+    "/ibc.applications.transfer.v1.MsgTransfer",
+    "/cosmwasm.wasm.v1.MsgExecuteContract",
+  ],
+};
+
 export async function getTransactions({
   address,
   page = "0",
   pageSize = "100",
   assetLists,
   chainList,
+  types = TRANSACTION_TYPES,
 }: {
   address: string;
   page?: string;
   pageSize?: string;
   assetLists: AssetList[];
   chainList: Chain[];
+  /** Only these transaction types; all by default. */
+  types?: readonly TransactionType[];
 }): Promise<GetTransactionsResponse> {
+  const selectedTypes = TRANSACTION_TYPES.filter((type) =>
+    types.includes(type)
+  );
   return await cachified({
     cache: transactionsCache,
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
-    key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
+    key: `transactions-${address}-page-${page}-pageSize-${pageSize}-types-${selectedTypes.join(",")}`,
     getFreshValue: async () => {
+      if (selectedTypes.length === 0) {
+        return { transactions: [], transfers: [], hasNextPage: false };
+      }
+
       const data = await queryTransactions({
         address,
         page,
         pageSize,
-        messageTypes: [
-          "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-          "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
-          "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
-          "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
-          ...TRANSFER_MESSAGE_TYPES,
-        ],
+        messageTypes: selectedTypes.flatMap(
+          (type) => MESSAGE_TYPES_BY_TRANSACTION_TYPE[type]
+        ),
       });
 
       // if the length of the data is equal to the page size, there is a next page
@@ -191,7 +218,7 @@ export async function getTransactions({
             transaction.metadata && transaction.metadata.length > 0
         );
 
-      const transfers = await resolveAxelarDepositSenders(
+      const transfers = await resolveAxelarTransfers(
         mapTransfers({
           transactions: data ?? [],
           address,
@@ -202,8 +229,14 @@ export async function getTransactions({
       );
 
       return {
-        transactions: mappedSwapTransactions,
-        transfers,
+        // a tx can hold messages of several types (e.g. a swap and a
+        // transfer); return only the selected types
+        transactions: selectedTypes.includes("swap")
+          ? mappedSwapTransactions
+          : [],
+        transfers: transfers.filter((transfer) =>
+          selectedTypes.includes(transfer.direction)
+        ),
         hasNextPage,
       };
     },

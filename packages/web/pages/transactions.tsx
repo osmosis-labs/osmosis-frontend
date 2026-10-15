@@ -8,6 +8,10 @@ import { LinkButton } from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
+import {
+  TRANSACTION_KINDS,
+  useTransactionFilters,
+} from "~/components/transactions/transaction-filters";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
 import {
   useFeatureFlags,
@@ -47,9 +51,13 @@ const Transactions: React.FC = observer(() => {
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
+  // type filters run in the API, so they apply across all pages
+  const [{ txTypes }] = useTransactionFilters();
   const { transactions, hasNextPage, isLoading } = useTransactionHistory({
     pageNumber: pageString,
     pageSize: pageSizeString,
+    types:
+      txTypes.length === TRANSACTION_KINDS.length ? undefined : [...txTypes],
   });
 
   useEffect(() => {

@@ -833,16 +833,57 @@ describe("TransferHistoryStore.importSnapshots", () => {
     });
   });
 
-  it("settles old pending withdrawals without tracking them", async () => {
+  it("tracks old pending withdrawals rather than assuming delivery", async () => {
     const { store, skip } = makeStore();
     await untilRestored(store);
 
     store.importSnapshots([
-      makeIndexed({ createdAtUnix: nowUnix() - 2 * 24 * 60 * 60 }),
+      makeIndexed({ createdAtUnix: nowUnix() - 30 * 24 * 60 * 60 }),
     ]);
 
+    expect(store.snapshots[0].status).toBe("pending");
+    expect(skip.trackTxStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ sendTxHash: "OSMOHASH1" })
+    );
+  });
+
+  it("keeps a resolved sender and link when a refresh lacks them", async () => {
+    const { store } = makeStore();
+    await untilRestored(store);
+    const deposit = (fromAddress: string, explorerUrl?: string) =>
+      makeIndexed({
+        direction: "deposit",
+        status: "success",
+        statusProvider: undefined,
+        fromAddress,
+        explorerUrl,
+      });
+
+    store.importSnapshots([
+      deposit(
+        "0xc8E4D1e39819d9C11B860356Ba5eF1100aB3A487",
+        "https://axelarscan.io/gmp/0xsource"
+      ),
+    ]);
+    // e.g. the Axelarscan lookup timed out this time
+    store.importSnapshots([deposit("")]);
+
+    expect(store.snapshots[0]).toMatchObject({
+      fromAddress: "0xc8E4D1e39819d9C11B860356Ba5eF1100aB3A487",
+      explorerUrl: "https://axelarscan.io/gmp/0xsource",
+    });
+  });
+
+  it("takes a final status the server resolved for a pending import", async () => {
+    const { store } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+    store.importSnapshots([makeIndexed({ status: "success" })]);
+    // a late provider update must not overwrite it
+    await store.receiveNewTxStatus("OSMOHASH1", "failed", undefined);
+
     expect(store.snapshots[0].status).toBe("success");
-    expect(skip.trackTxStatus).not.toHaveBeenCalled();
   });
 
   it("updates imported transfers silently", async () => {

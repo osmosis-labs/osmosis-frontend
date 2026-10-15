@@ -25,9 +25,12 @@ export type HistoryBridgeTransaction = Extract<
 export const useTransactionHistory = ({
   pageSize = "100",
   pageNumber = "0",
+  types,
 }: {
   pageNumber?: string;
   pageSize?: string;
+  /** Only these transaction types (filtered by the API); all by default. */
+  types?: ("swap" | "deposit" | "withdraw")[];
 } = {}) => {
   const { address, isWalletConnected } = useWallet();
   const transferHistoryStore = useTransferHistoryStore();
@@ -39,6 +42,7 @@ export const useTransactionHistory = ({
         address: address || "",
         page: pageNumber,
         pageSize,
+        types,
       },
       {
         enabled: Boolean(isWalletConnected && address),

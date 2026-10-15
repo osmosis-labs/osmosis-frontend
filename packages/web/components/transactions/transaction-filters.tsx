@@ -3,6 +3,7 @@ import {
   parseAsArrayOf,
   parseAsString,
   parseAsStringLiteral,
+  useQueryState,
   useQueryStates,
 } from "nuqs";
 import { ReactNode, useCallback, useMemo } from "react";
@@ -115,19 +116,28 @@ function getAddresses(tx: HistoryTransaction): string[] {
     .map((address) => address.toLowerCase());
 }
 
-/** e.g. `5.5`, `.5`, `1,000`, `5,5`, `$5.5` */
+/** e.g. `5.5`, `.5`, `1,000`, `5,5`, `$5.5`, `1.000,50` */
+const EUROPEAN_NUMBER = /^\d{1,3}(\.\d{3})+,\d+$/;
+
 function isNumberTerm(term: string) {
-  return /^\$?(\d[\d,]*(\.\d*)?|\.\d+)$/.test(term);
+  const n = term.replace(/^\$/, "");
+  return /^(\d[\d,]*(\.\d*)?|\.\d+)$/.test(n) || EUROPEAN_NUMBER.test(n);
 }
 
-/** To the plain decimal form amounts are matched in. */
+/**
+ * To the plain decimal form amounts are matched in (no grouping, `.` as the
+ * decimal point, no trailing zeros, e.g. `1000.5`).
+ */
 function normalizeNumberTerm(term: string) {
   const n = term.replace(/^\$/, "");
-  if (n.includes(".")) return n.replace(/,/g, "");
+  if (EUROPEAN_NUMBER.test(n)) {
+    return trimDecimal(n.replace(/\./g, "").replace(",", "."));
+  }
+  if (n.includes(".")) return trimDecimal(n.replace(/,/g, ""));
   // thousands separators (1,000 / 1,000,000), otherwise a decimal comma
-  return /^\d{1,3}(,\d{3})+$/.test(n)
-    ? n.replace(/,/g, "")
-    : n.replace(",", ".");
+  return trimDecimal(
+    /^\d{1,3}(,\d{3})+$/.test(n) ? n.replace(/,/g, "") : n.replace(",", ".")
+  );
 }
 
 /** The amounts shown for a transaction, as plain decimals (e.g. "5.505156"). */
@@ -161,10 +171,12 @@ function trimDecimal(value: string) {
 /**
  * Filter state, kept in the URL like the pools table filters.
  *
- * TODO: filter via the API. Filtering is client-side, so it only covers the
- * transactions on the current page (`getTransactions` pages 100 index
- * records). Pass the types/query to `getTransactions` (message types and
- * denoms on the historical data service) so filters search all history.
+ * Types are filtered by the API (as message types), across all pages.
+ *
+ * TODO: search via the API. The search is client-side, so it only covers
+ * the transactions on the current page (`getTransactions` pages 100 index
+ * records): the historical data service can't filter by denom, amount,
+ * address or date yet.
  */
 export function useTransactionFilters() {
   return useQueryStates(
@@ -211,6 +223,8 @@ export const TransactionFilters = ({
   // width === 0 during SSR; default to the wide layout to avoid a flash of the compact layout on hydration.
   const isWide = width === 0 || width >= Breakpoint.xl;
   const [filters, setFilters] = useTransactionFilters();
+  // a type change refetches from the API: start again from the first page
+  const [, setPage] = useQueryState("page");
 
   const onSearchInput = useCallback(
     (data: string) => {
@@ -233,7 +247,9 @@ export const TransactionFilters = ({
       debounce={500}
       currentValue={filters.txSearch ?? undefined}
       onInput={onSearchInput}
-      className={isWide ? undefined : "!w-full"}
+      // wide enough for the placeholder ("Search asset, chain, amount or
+      // address"); the pools table's content-sized box would truncate it
+      className={isWide ? "!w-[28rem]" : "!w-full"}
     />
   );
 
@@ -250,6 +266,7 @@ export const TransactionFilters = ({
           { id: "withdraw", display: t("transactions.filter.withdraw") },
         ]}
         onSelect={(kind) => {
+          void setPage(null);
           if (filters.txTypes.includes(kind as TransactionKind)) {
             setFilters((state) => ({
               ...state,

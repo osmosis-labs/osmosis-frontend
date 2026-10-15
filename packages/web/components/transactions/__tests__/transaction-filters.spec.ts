@@ -146,8 +146,11 @@ describe("filterTransactions", () => {
 
     it("accepts a decimal comma, thousands separators and a $ sign", () => {
       // "5,50" is a decimal comma; "5,505" would read as 5505
-      expect(search("5,50")).toEqual(["wd-usdt-avalanche"]);
+      expect(search("5,50")).toEqual(["wd-usdt-avalanche", "swap-usdc-osmo"]);
       expect(search("$1.25")).toEqual(["swap-osmo-atom"]);
+      // trailing zeros, which the shown amounts don't have
+      expect(search("15.50")).toEqual(["swap-usdc-osmo"]);
+      expect(search("1.250")).toEqual(["swap-osmo-atom"]);
       expect(
         ids(
           filterTransactions(
@@ -165,6 +168,23 @@ describe("filterTransactions", () => {
           )
         )
       ).toEqual(["big"]);
+    });
+
+    it("accepts European notation", () => {
+      const big = transfer({
+        sendTxHash: "big",
+        direction: "deposit",
+        asset: "OSMO",
+        // 1000.5
+        amount: "1000500000",
+        chain: "Noble",
+        counterparty: "noble1x",
+      });
+      for (const query of ["1.000,50", "$1.000,5", "1,000.50"]) {
+        expect(
+          ids(filterTransactions([big], { kinds: TRANSACTION_KINDS, query }))
+        ).toEqual(["big"]);
+      }
     });
   });
 

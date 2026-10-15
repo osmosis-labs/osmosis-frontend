@@ -5,13 +5,6 @@ import { getAddress } from "viem";
 import { Message, Transaction } from "../../../queries/data-services";
 import { getAsset } from "../assets";
 
-/** Message types whose txs can be a bridge/IBC transfer into or out of Osmosis. */
-export const TRANSFER_MESSAGE_TYPES = [
-  "/ibc.applications.transfer.v1.MsgTransfer",
-  "/ibc.core.channel.v1.MsgRecvPacket",
-  "/cosmwasm.wasm.v1.MsgExecuteContract",
-];
-
 const MSG_TRANSFER = "/ibc.applications.transfer.v1.MsgTransfer";
 const MSG_RECV_PACKET = "/ibc.core.channel.v1.MsgRecvPacket";
 const MSG_EXECUTE_CONTRACT = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -500,20 +493,31 @@ const AXELARSCAN = {
   testnet: "https://testnet.axelarscan.io",
 };
 
-/** GMP sources by Osmosis tx hash. Settled transfers never change. */
-const axelarSourceCache = new Map<
-  string,
-  { sender: string; sourceTxHash: string } | null
->();
-const AXELAR_SOURCE_CACHE_MAX = 5_000;
+type AxelarGmp = {
+  /** The EVM account that sent the GMP call (deposits). */
+  sender?: string;
+  sourceTxHash: string;
+  status: "success" | "failed" | "pending";
+};
 
 /**
- * Axelar GMP deposits carry the bridge contract as sender. Look up the
- * originating tx on Axelarscan (by the Osmosis arrival tx hash) to show the
- * user's source address and link the source tx. Best effort: on failure the
- * transfer is returned as is.
+ * Settled GMP calls by Osmosis tx hash; they never change. Unsettled calls
+ * and calls Axelarscan hasn't indexed yet aren't cached, so they're looked
+ * up again on a later request.
  */
-export async function resolveAxelarDepositSenders(
+const axelarGmpCache = new Map<string, AxelarGmp>();
+const AXELAR_GMP_CACHE_MAX = 5_000;
+
+/**
+ * Fill in what only Axelarscan knows about Axelar GMP transfers (looked up
+ * by the Osmosis tx hash). Best effort: on failure a transfer is returned as
+ * is.
+ * - Deposits carry the bridge contract as sender: show the user's source
+ *   address and link the source tx.
+ * - Withdrawals: their final status, since Skip can't trace every GMP route
+ *   (e.g. Squid's multicall).
+ */
+export async function resolveAxelarTransfers(
   transfers: FormattedTransfer[],
   {
     env = "mainnet",
@@ -522,36 +526,41 @@ export async function resolveAxelarDepositSenders(
 ): Promise<FormattedTransfer[]> {
   return Promise.all(
     transfers.map(async (transfer) => {
-      if (
-        transfer.direction !== "deposit" ||
-        transfer.fromChain.chainType !== "evm" ||
-        transfer.fromAddress
-      ) {
-        return transfer;
-      }
+      const isGmpDeposit =
+        transfer.direction === "deposit" &&
+        transfer.fromChain.chainType === "evm" &&
+        !transfer.fromAddress;
+      const isPendingGmpWithdrawal =
+        transfer.direction === "withdraw" &&
+        transfer.toChain.chainType === "evm" &&
+        transfer.status === "pending";
+      if (!isGmpDeposit && !isPendingGmpWithdrawal) return transfer;
 
-      const source = await lookupAxelarSource(
-        transfer.sendTxHash,
-        env,
-        timeoutMs
-      );
-      if (!source) return transfer;
-      return {
-        ...transfer,
-        fromAddress: source.sender,
-        explorerUrl: `${AXELARSCAN[env]}/gmp/${source.sourceTxHash}`,
-      };
+      const gmp = await lookupAxelarGmp(transfer.sendTxHash, env, timeoutMs);
+      if (!gmp) return transfer;
+
+      if (isGmpDeposit) {
+        return gmp.sender
+          ? {
+              ...transfer,
+              fromAddress: gmp.sender,
+              explorerUrl: `${AXELARSCAN[env]}/gmp/${gmp.sourceTxHash}`,
+            }
+          : transfer;
+      }
+      return { ...transfer, status: gmp.status };
     })
   );
 }
 
-async function lookupAxelarSource(
+async function lookupAxelarGmp(
   osmosisTxHash: string,
   env: "mainnet" | "testnet",
   timeoutMs: number
-) {
+): Promise<AxelarGmp | undefined> {
   const key = `${env}:${osmosisTxHash}`;
-  if (axelarSourceCache.has(key)) return axelarSourceCache.get(key);
+  const cached = axelarGmpCache.get(key);
+  if (cached) return cached;
 
   try {
     const response = await fetch(`${AXELARSCAN_API[env]}/gmp/searchGMP`, {
@@ -560,28 +569,41 @@ async function lookupAxelarSource(
       body: JSON.stringify({ txHash: osmosisTxHash, size: 1 }),
       signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!response.ok) return undefined;
+    if (!response.ok) return;
     const json = (await response.json()) as {
       data?: {
+        simplified_status?: string;
         call?: { transactionHash?: string; transaction?: { from?: string } };
       }[];
     };
-    const call = json.data?.[0]?.call;
-    const from = call?.transaction?.from;
-    const result =
-      from && call?.transactionHash
-        ? { sender: getAddress(from), sourceTxHash: call.transactionHash }
-        : null;
+    const record = json.data?.[0];
+    const call = record?.call;
+    // not indexed yet: look again on a later request
+    if (!call?.transactionHash) return;
 
-    if (axelarSourceCache.size >= AXELAR_SOURCE_CACHE_MAX) {
-      const oldest = axelarSourceCache.keys().next().value;
-      if (oldest !== undefined) axelarSourceCache.delete(oldest);
+    const from = call.transaction?.from;
+    const gmp: AxelarGmp = {
+      sender: from ? getAddress(from) : undefined,
+      sourceTxHash: call.transactionHash,
+      status:
+        record?.simplified_status === "received"
+          ? "success"
+          : record?.simplified_status === "failed"
+            ? "failed"
+            : "pending",
+    };
+
+    if (gmp.status !== "pending") {
+      if (axelarGmpCache.size >= AXELAR_GMP_CACHE_MAX) {
+        const oldest = axelarGmpCache.keys().next().value;
+        if (oldest !== undefined) axelarGmpCache.delete(oldest);
+      }
+      axelarGmpCache.set(key, gmp);
     }
-    axelarSourceCache.set(key, result);
-    return result;
+    return gmp;
   } catch {
     // network error or timeout: retried on a later request
-    return undefined;
+    return;
   }
 }
 
