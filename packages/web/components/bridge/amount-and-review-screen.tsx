@@ -6,13 +6,14 @@ import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
+import { OsmosisChainInfo } from "~/config/chain";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { refetchUserQueries, useStore } from "~/stores";
+import { refetchUserQueries } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { AmountScreen } from "./amount-screen";
@@ -43,7 +44,6 @@ export const AmountAndReviewScreen = observer(
     selectedAssetDenom,
     onClose,
   }: AmountAndConfirmationScreenProps) => {
-    const { accountStore } = useStore();
     const apiUtils = api.useUtils();
     const { setCurrentScreen } = useScreenManager();
 
@@ -148,7 +148,7 @@ export const AmountAndReviewScreen = observer(
       // selected variant on withdraw.
       variantAssets: assetsInOsmosis,
       chain: {
-        chainId: accountStore.osmosisChainId,
+        chainId: OsmosisChainInfo.chainId,
         chainType: "cosmos",
       },
       direction,

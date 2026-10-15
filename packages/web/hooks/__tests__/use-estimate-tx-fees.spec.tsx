@@ -27,15 +27,6 @@ jest.mock("@osmosis-labs/tx", () => {
   };
 });
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: {
-      getWallet: mockGetWallet,
-      estimateFee: mockEstimateFee,
-    },
-  }),
-}));
-
 jest.mock("~/config/chain", () => ({
   getChainInfo: (chainId: string) => mockGetChain(chainId),
 }));

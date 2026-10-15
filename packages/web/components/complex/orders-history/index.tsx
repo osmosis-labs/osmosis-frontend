@@ -16,6 +16,7 @@ import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -28,7 +29,6 @@ import {
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import {
   formatFiatPrice,
   formatPretty,
@@ -60,7 +60,6 @@ const gridClasses =
 
 export const OrderHistory = () => {
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
   const { t } = useTranslation();
   const { address, isWalletConnected } = useWallet();
   const listRef = useRef<HTMLTableElement>(null);
@@ -164,7 +163,7 @@ export const OrderHistory = () => {
                 walletOptions: [
                   {
                     walletType: "cosmos",
-                    chainId: accountStore.osmosisChainId,
+                    chainId: OsmosisChainInfo.chainId,
                   },
                 ],
               })

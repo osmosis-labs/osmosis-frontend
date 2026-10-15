@@ -14,6 +14,7 @@ import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { PrivateText } from "~/components/privacy";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   Breakpoint,
   useFilteredData,
@@ -27,7 +28,6 @@ import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
@@ -66,7 +66,6 @@ export const TokenSelectModalLimit: FunctionComponent<
 }) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize(Breakpoint.sm);
-  const { accountStore } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
   const recommendedAssets = useRecommendedAssets();
   const shouldShowUnverifiedAssets = useUserSettingsStore(
@@ -220,7 +219,7 @@ export const TokenSelectModalLimit: FunctionComponent<
                     walletOptions: [
                       {
                         walletType: "cosmos",
-                        chainId: accountStore.osmosisChainId,
+                        chainId: OsmosisChainInfo.chainId,
                       },
                     ],
                   })

@@ -1,14 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
-import { AccountStore } from "@osmosis-labs/stores";
 import type { AvailableFlags } from "@osmosis-labs/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
 import { httpLink } from "@trpc/react-query";
 import { mockFlags } from "jest-launchdarkly-mock";
-import { when } from "mobx";
 import { ReactNode } from "react";
 
 import { registerTestCleanup } from "~/__tests__/setup-tests";
@@ -18,6 +16,7 @@ import { MultiLanguageProvider } from "~/hooks/language/context";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
+import type { WalletRuntime } from "~/stores/wallet-runtime";
 
 let testRootStore: RootStore;
 const testRootStores = new Set<RootStore>();
@@ -38,7 +37,7 @@ registerTestCleanup(async () => {
   await queryClient.cancelQueries();
   queryClient.clear();
   for (const rootStore of testRootStores) {
-    testWalletManagers.add(rootStore.accountStore.walletManager);
+    testWalletManagers.add(rootStore.walletRuntime.walletManager);
   }
   for (const manager of testWalletManagers) {
     manager.onUnmounted();
@@ -107,36 +106,33 @@ export function mockFeatureFlags(
 }
 
 async function waitTestAccountLoaded(
-  account: ReturnType<AccountStore["getWallet"]>
+  account: ReturnType<WalletRuntime["getWallet"]>
 ) {
   if (!account) {
     throw new Error("Test account does not exist");
   }
-  // MobX owns/cancels both the reaction and timeout on resolution or rejection.
-  // Keep the timeout below Jest's default 5s test timeout so this descriptive
-  // rejection, not a generic test timeout, reports a wallet that never connects.
-  await when(
-    () =>
-      account.isReadyToSendTx &&
-      account.walletStatus === WalletStatus.Connected,
-    { timeout: 4_000 }
-  );
+  const deadline = Date.now() + 4_000;
+  while (account.walletStatus !== WalletStatus.Connected || !account.address) {
+    if (Date.now() >= deadline)
+      throw new Error("Test wallet did not connect within 4s");
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
 }
 
 export async function connectTestWallet({
-  accountStore,
+  walletRuntime,
   chainId,
 }: {
-  accountStore: AccountStore<any>;
+  walletRuntime: WalletRuntime;
   chainId: string;
 }) {
-  testWalletManagers.add(accountStore.walletManager);
-  const walletManager = await accountStore.addWallet(
+  testWalletManagers.add(walletRuntime.walletManager);
+  const walletManager = await walletRuntime.installWallet(
     new TestWallet(testWalletInfo)
   );
   testWalletManagers.add(walletManager);
   await walletManager.onMounted();
-  await accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
-  const account = accountStore.getWallet(chainId);
+  await walletRuntime.getWalletRepo(chainId).connect(testWalletInfo.name, true);
+  const account = walletRuntime.getWallet(chainId);
   await waitTestAccountLoaded(account);
 }

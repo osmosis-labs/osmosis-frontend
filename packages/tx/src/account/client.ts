@@ -8,7 +8,6 @@ import type { AminoTypes } from "@cosmjs/stargate";
 import { WalletStatus } from "@cosmos-kit/core";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
-import { Dec } from "@osmosis-labs/unit";
 import {
   AccountStoreNoBroadcastErrorEvent,
   ApiClientError,
@@ -16,7 +15,6 @@ import {
   getChain,
   InsufficientBalanceForFeeError,
   MultiEndpointClient,
-  OneClickTradingMaxGasLimit,
 } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
@@ -27,6 +25,7 @@ import { type QuoteStdFee, SimulateNotAvailableError } from "../gas";
 import { TxTracer } from "../tracer";
 import { getAminoConverters } from "./amino-converters";
 import { appendFeMemoTag, FeMemoTag, type TxFeMemoFlags } from "./memo";
+import { confirmOneClickFeeLimit, isWithinOneClickFeeLimit } from "./one-click";
 import type {
   AccountStoreWallet,
   DeliverTxResponse,
@@ -63,6 +62,7 @@ export type OneClickSigningAdapter = {
   getInfo: () => Promise<OneClickTradingInfo | undefined>;
   shouldSign: (input: {
     messages: readonly EncodeObject[];
+    chainId?: string;
   }) => Promise<boolean>;
   extensionOptions: (input: {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
@@ -462,22 +462,21 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         chainId: chainId,
       };
 
-      const oneClickTradingInfo = await (deps.oneClick
-        ? deps.oneClick.getInfo()
-        : undefined);
+      const oneClickTradingInfo = signOptions?.useOneClickTrading
+        ? await deps.oneClick?.getInfo()
+        : undefined;
 
+      const eligible = Boolean(
+        signOptions?.useOneClickTrading &&
+        (await deps.oneClick?.shouldSign({ messages, chainId: wallet.chainId }))
+      );
       const isWithinNetworkFeeLimit =
+        eligible &&
         !!oneClickTradingInfo &&
-        new Dec(fee.gas).lte(
-          new Dec(
-            typeof oneClickTradingInfo.networkFeeLimit !== "string"
-              ? OneClickTradingMaxGasLimit
-              : oneClickTradingInfo.networkFeeLimit
-          )
-        );
+        isWithinOneClickFeeLimit(oneClickTradingInfo, fee.gas);
 
       if (
-        signOptions?.useOneClickTrading &&
+        eligible &&
         /**
          * Should not surpass network fee limit.
          */
@@ -495,23 +494,13 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
       }
 
       if (
-        signOptions?.useOneClickTrading &&
+        eligible &&
         !isWithinNetworkFeeLimit &&
         deps.options?.preTxEvents?.onExceeds1CTNetworkFeeLimit
       ) {
-        const confirmationState = await new Promise<"continue" | "finish">(
-          (resolve) => {
-            const fn = deps.options?.preTxEvents?.onExceeds1CTNetworkFeeLimit;
-            if (!fn) return resolve("continue");
-            fn({
-              continueTx: () => resolve("continue"),
-              finish: () => resolve("finish"),
-            });
-          }
+        await confirmOneClickFeeLimit(
+          deps.options.preTxEvents.onExceeds1CTNetworkFeeLimit
         );
-        if (confirmationState === "finish") {
-          throw new AccountStoreNoBroadcastErrorEvent("User cancelled");
-        }
       }
 
       return "signAmino" in offlineSigner || "signAmino" in wallet.client
@@ -925,7 +914,10 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         // check for one click trading tx decoration
         const shouldBeSignedWithOneClickTrading =
           signOptions?.useOneClickTrading &&
-          (await deps.oneClick?.shouldSign({ messages }));
+          (await deps.oneClick?.shouldSign({
+            messages,
+            chainId: wallet.chainId,
+          }));
         const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
           ? await deps.oneClick?.extensionOptions({
               oneClickTradingInfo: await (deps.oneClick

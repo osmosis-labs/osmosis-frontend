@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
@@ -22,7 +23,6 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
@@ -69,7 +69,7 @@ export const usePlaceLimit = ({
 }: UsePlaceLimitParams) => {
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const {
     makerFee,
     isMakerFeeLoading,
@@ -308,12 +308,12 @@ export const usePlaceLimit = ({
    */
   const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
+      OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, address, accountStore.osmosisChainId]);
+  }, [account, address]);
 
   const limitMessages = useMemo(() => {
     if (isLedger) {
@@ -384,7 +384,7 @@ export const usePlaceLimit = ({
                     fallbackGetAuthenticatorId:
                       apiUtils.local.oneClickTrading.getSessionAuthenticator
                         .fetch,
-                    accountStore,
+                    walletApi,
                     allowedMessages: oneClickMessages.allowedMessages,
                     sessionPeriod: oneClickMessages.sessionPeriod,
                     spendLimitTokenDecimals:
@@ -399,7 +399,7 @@ export const usePlaceLimit = ({
                   oneClickMessages.type === "remove-1ct-session"
                 ) {
                   await onEnd1CTSession({
-                    accountStore,
+                    walletApi,
                     authenticatorId: oneClickMessages.authenticatorId,
                   });
                 }
@@ -439,7 +439,7 @@ export const usePlaceLimit = ({
                     fallbackGetAuthenticatorId:
                       apiUtils.local.oneClickTrading.getSessionAuthenticator
                         .fetch,
-                    accountStore,
+                    walletApi,
                     allowedMessages: oneClickMessages.allowedMessages,
                     sessionPeriod: oneClickMessages.sessionPeriod,
                     spendLimitTokenDecimals:
@@ -454,7 +454,7 @@ export const usePlaceLimit = ({
                   oneClickMessages.type === "remove-1ct-session"
                 ) {
                   onEnd1CTSession({
-                    accountStore,
+                    walletApi,
                     authenticatorId: oneClickMessages.authenticatorId,
                   });
                 }
@@ -478,7 +478,7 @@ export const usePlaceLimit = ({
       signAndBroadcast,
       account?.address,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-      accountStore,
+      walletApi,
       t,
     ]
   );
@@ -669,7 +669,7 @@ export const usePlaceLimit = ({
     isLoading: gasFeeLoading,
     error: limitGasError,
   } = useEstimateTxFees({
-    chainId: accountStore.osmosisChainId,
+    chainId: OsmosisChainInfo.chainId,
     messages: limitMessages,
     enabled: shouldEstimateLimitGas,
   });

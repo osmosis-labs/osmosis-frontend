@@ -1,5 +1,5 @@
-import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 import { FlatCompat } from "@eslint/eslintrc";
 
@@ -69,6 +69,33 @@ const webRules = {
       },
     ],
     "import/no-default-export": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        paths: [
+          {
+            name: "@osmosis-labs/stores",
+            importNames: [
+              "AccountStore",
+              "CosmosAccount",
+              "CosmwasmAccount",
+              "OsmosisAccount",
+              "OsmosisAccountImpl",
+            ],
+            message: "Use useWallet and the standalone tx functions.",
+          },
+        ],
+        patterns: [
+          {
+            group: [
+              "@osmosis-labs/stores/build/account",
+              "@osmosis-labs/stores/build/account/**",
+            ],
+            message: "Use useWallet and the standalone tx functions.",
+          },
+        ],
+      },
+    ],
   },
 };
 
@@ -83,6 +110,7 @@ const protoCodecsConfig = {
   },
 };
 
+// eslint-disable-next-line import/no-default-export -- ESLint loads its flat config through the default export.
 export default [
   {
     ignores: [

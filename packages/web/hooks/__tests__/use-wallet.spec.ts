@@ -84,7 +84,7 @@ describe("useWallet", () => {
     expect(result.current.address).toBeUndefined();
 
     await act(() =>
-      connectTestWallet({ accountStore: rootStore.accountStore, chainId })
+      connectTestWallet({ walletRuntime: rootStore.walletRuntime, chainId })
     );
 
     await waitFor(() => {
@@ -115,19 +115,19 @@ describe("useWallet", () => {
       useWallet(chainId)
     );
     await act(() =>
-      connectTestWallet({ accountStore: rootStore.accountStore, chainId })
+      connectTestWallet({ walletRuntime: rootStore.walletRuntime, chainId })
     );
 
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "swap")
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap")
       );
     });
     await waitFor(() => expect(result.current.txTypeInProgress).toBe("swap"));
 
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "")
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "")
       );
     });
     await waitFor(() => expect(result.current.txTypeInProgress).toBe(""));
@@ -137,7 +137,7 @@ describe("useWallet", () => {
     const { result, rootStore } = renderHookWithProviders(() => useWallet());
     await act(() =>
       connectTestWallet({
-        accountStore: rootStore.accountStore,
+        walletRuntime: rootStore.walletRuntime,
         chainId: OsmosisChainInfo.chainId,
       })
     );
@@ -170,7 +170,7 @@ describe("useWallet", () => {
     const second = renderHook(() => useWallet(chainId), { wrapper });
 
     await act(() =>
-      connectTestWallet({ accountStore: rootStore.accountStore, chainId })
+      connectTestWallet({ walletRuntime: rootStore.walletRuntime, chainId })
     );
     expect(first.result.current).toBe(second.result.current);
     expect(second.result.current.address).toBeTruthy();
@@ -178,21 +178,19 @@ describe("useWallet", () => {
     first.unmount();
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "swap")
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap")
       );
     });
     expect(second.result.current.txTypeInProgress).toBe("swap");
 
     second.unmount();
-    runInAction(() =>
-      rootStore.accountStore.txTypeInProgressByChain.set(chainId, "")
-    );
+    runInAction(() => rootStore.walletRuntime.setTxTypeInProgress(chainId, ""));
     const remounted = renderHook(() => useWallet(chainId), { wrapper });
     expect(remounted.result.current.txTypeInProgress).toBe("");
 
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "join")
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "join")
       );
     });
     expect(remounted.result.current.txTypeInProgress).toBe("join");
@@ -208,20 +206,17 @@ describe("useWallet", () => {
     );
     await act(async () => {
       await connectTestWallet({
-        accountStore: rootStore.accountStore,
+        walletRuntime: rootStore.walletRuntime,
         chainId,
       });
-      await rootStore.accountStore
+      await rootStore.walletRuntime
         .getWalletRepo(otherChainId)
         .connect(testWalletInfo.name, true);
     });
     act(() => {
       runInAction(() => {
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "swap");
-        rootStore.accountStore.txTypeInProgressByChain.set(
-          otherChainId,
-          "join"
-        );
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap");
+        rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "join");
       });
     });
     expect(result.current.txTypeInProgress).toBe("swap");
@@ -233,14 +228,14 @@ describe("useWallet", () => {
 
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(chainId, "")
+        rootStore.walletRuntime.setTxTypeInProgress(chainId, "")
       );
     });
     expect(result.current).toBe(snapshot);
 
     act(() => {
       runInAction(() =>
-        rootStore.accountStore.txTypeInProgressByChain.set(otherChainId, "")
+        rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "")
       );
     });
     expect(result.current.txTypeInProgress).toBe("");
@@ -251,13 +246,15 @@ describe("useWallet", () => {
     );
     await act(async () => {
       await expect(
-        rootStore.accountStore.signAndBroadcast(chainId, "swap", [])
+        rootStore.walletRuntime.transactions.signAndBroadcast(
+          chainId,
+          "swap",
+          []
+        )
       ).rejects.toThrow("is not provided");
     });
     expect(result.current.txTypeInProgress).toBe("");
-    expect(rootStore.accountStore.txTypeInProgressByChain.get(chainId)).toBe(
-      ""
-    );
+    expect(rootStore.walletRuntime.store.getState().progress[chainId]).toBe("");
   });
 
   it("follows a replacement manager and disconnects through the hook", async () => {
@@ -265,10 +262,10 @@ describe("useWallet", () => {
       useWallet(chainId)
     );
     await act(() =>
-      connectTestWallet({ accountStore: rootStore.accountStore, chainId })
+      connectTestWallet({ walletRuntime: rootStore.walletRuntime, chainId })
     );
     const previous = result.current.wallet;
-    const manager = rootStore.accountStore.walletManager;
+    const manager = rootStore.walletRuntime.walletManager;
     const unmount = jest.spyOn(manager, "onUnmounted");
     const timer = manager.session.timeoutId;
     const clearTimer = jest.spyOn(globalThis, "clearTimeout");
@@ -301,32 +298,33 @@ describe("useWallet", () => {
     expect(result.current.useOneClickTrading).toBe(false);
     expect(result.current.oneClickTradingInfo).toBeNull();
     await act(() =>
-      rootStore.accountStore.setShouldUseOneClickTrading({ nextValue: true })
+      rootStore.walletRuntime.setShouldUseOneClickTrading({ nextValue: true })
     );
     expect(result.current.useOneClickTrading).toBe(true);
     expect(await storage.get(UseOneClickTradingLocalStorageKey)).toBe(true);
   });
 
-  it("releases the compatibility subscription after the final subscriber", async () => {
+  it("releases Zustand subscriptions on unmount", async () => {
     const first = renderHookWithProviders(() => useWallet(chainId));
     const { rootStore } = first;
     const wrapper = ({ children }: PropsWithChildren) =>
       createElement(storeContext.Provider, { value: rootStore }, children);
-    const subscribe = jest.spyOn(rootStore.accountStore, "subscribeState");
+    const unsubscribe = jest.fn();
+    const subscribe = jest
+      .spyOn(rootStore.walletRuntime.store, "subscribe")
+      .mockReturnValue(unsubscribe);
     const second = renderHook(() => useWallet(chainId), { wrapper });
-    expect(subscribe).not.toHaveBeenCalled();
-    first.unmount();
-    second.unmount();
-    const remounted = renderHook(() => useWallet(chainId), { wrapper });
     expect(subscribe).toHaveBeenCalledTimes(1);
-    remounted.unmount();
+    second.unmount();
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+    first.unmount();
   });
   it("cleans up a pending mount before remounting the same manager", async () => {
     const { rootStore, result } = renderHookWithProviders(() =>
       useWallet(chainId)
     );
     await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
-    const manager = rootStore.accountStore.walletManager;
+    const manager = rootStore.walletRuntime.walletManager;
     let finish!: () => void;
     const mount = jest.spyOn(manager, "onMounted").mockImplementationOnce(
       () =>
@@ -365,7 +363,7 @@ describe("useWallet", () => {
     const { rootStore, result } = renderHookWithProviders(() => useWallet());
     await act(() =>
       connectTestWallet({
-        accountStore: rootStore.accountStore,
+        walletRuntime: rootStore.walletRuntime,
         chainId: OsmosisChainInfo.chainId,
       })
     );
@@ -373,7 +371,7 @@ describe("useWallet", () => {
     await act(() =>
       rootStore.walletRuntime.installWallet(new TestWallet(testWalletInfo))
     );
-    const previous = rootStore.accountStore.walletManager;
+    const previous = rootStore.walletRuntime.walletManager;
     const unmountPrevious = jest.spyOn(previous, "onUnmounted");
     let finish!: () => void;
     const getSimpleAccount = MockKeplrClient.prototype.getSimpleAccount;
@@ -398,7 +396,7 @@ describe("useWallet", () => {
         new TestWallet(replacementWalletInfo)
       )
     );
-    const manager = rootStore.accountStore.walletManager;
+    const manager = rootStore.walletRuntime.walletManager;
     const mountReplacement = jest.spyOn(manager, "onMounted");
     const unmountReplacement = jest.spyOn(manager, "onUnmounted");
     const replacement = rootStore.walletRuntime.mount();

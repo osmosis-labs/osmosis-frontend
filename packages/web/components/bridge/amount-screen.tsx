@@ -34,6 +34,7 @@ import {
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
   useConnectWalletModalRedirect,
@@ -47,7 +48,6 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
 import {
   depositHaltReasonKey,
   withdrawalHaltReasonKey,
@@ -163,7 +163,7 @@ export const AmountScreen = observer(
     onConfirm,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
-    const { accountStore } = useStore();
+    const walletApi = useWallet();
     const { t } = useTranslation();
     const featureFlags = useFeatureFlags();
 
@@ -200,7 +200,7 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const { wallet: osmosisAccount } = useWallet();
+    const { wallet: osmosisAccount } = walletApi;
     const {
       address: evmAddress,
       connector: evmConnector,
@@ -285,7 +285,7 @@ export const AmountScreen = observer(
 
     const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
       {
-        findChainNameOrId: accountStore.osmosisChainId,
+        findChainNameOrId: OsmosisChainInfo.chainId,
       },
       {
         throwOnError: true,
@@ -381,8 +381,8 @@ export const AmountScreen = observer(
             onOpenBridgeWalletSelect();
           }
         } else if (chain.chainType === "cosmos") {
-          const account = accountStore.getWallet(chain.chainId);
-          const accountRepo = accountStore.getWalletRepo(chain.chainId);
+          const account = walletApi.getChainWallet(chain.chainId).wallet;
+          const accountRepo = walletApi.getChainWallet(chain.chainId);
 
           if (
             // If the account is already connected
@@ -407,7 +407,7 @@ export const AmountScreen = observer(
         }
       },
       [
-        accountStore,
+        walletApi,
         direction,
         evmWalletCurrentChainId,
         fromChain,
@@ -653,7 +653,7 @@ export const AmountScreen = observer(
         setToAsset({
           address: destinationAsset.coinMinimalDenom,
           decimals: destinationAsset.coinDecimals,
-          chainId: accountStore.osmosisChainId,
+          chainId: OsmosisChainInfo.chainId,
           chainType: "cosmos",
           denom: destinationAsset.coinDenom,
           // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
@@ -661,14 +661,7 @@ export const AmountScreen = observer(
           transferTypes: [],
         });
       }
-    }, [
-      accountStore.osmosisChainId,
-      assetsInOsmosis,
-      toAsset,
-      direction,
-      setToAsset,
-      fromAsset,
-    ]);
+    }, [assetsInOsmosis, toAsset, direction, setToAsset, fromAsset]);
 
     /**
      * Withdraw
@@ -1097,7 +1090,7 @@ export const AmountScreen = observer(
           }
         : undefined;
       const osmosisChainFallback: BridgeChainWithDisplayInfo = {
-        chainId: accountStore.osmosisChainId,
+        chainId: OsmosisChainInfo.chainId,
         chainType: "cosmos" as const,
         bech32Prefix: "osmo",
         prettyName: "Osmosis",

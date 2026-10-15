@@ -57,25 +57,6 @@ jest.mock("~/utils/trpc", () => {
   };
 });
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: {
-      osmosisChainId: "osmosis-1",
-      getWallet: () => ({
-        address: undefined,
-        txTypeInProgress: "",
-        isWalletConnected: false,
-        client: {
-          getAccount: jest.fn().mockResolvedValue({ isNanoLedger: true }),
-        },
-        walletInfo: { prettyName: "Keplr" },
-      }),
-      shouldBeSignedWithOneClickTrading: jest.fn().mockResolvedValue(false),
-      signAndBroadcast: jest.fn(),
-    },
-  }),
-}));
-
 jest.mock("~/hooks/use-wallet", () => ({
   useWallet: () => ({
     wallet: {

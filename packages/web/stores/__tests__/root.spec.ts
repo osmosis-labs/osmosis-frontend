@@ -1,5 +1,5 @@
 import { ChainIdHelper } from "@osmosis-labs/keplr-stores";
-import type { DeliverTxResponse, TxEvents } from "@osmosis-labs/stores";
+import type { DeliverTxResponse, TxEvents } from "@osmosis-labs/tx";
 
 import { registerTestCleanup } from "~/__tests__/setup-tests";
 import { prettifyTxError } from "~/components/alert/prettify";
@@ -16,8 +16,8 @@ jest.mock("~/components/alert/prettify", () => ({
 
 const stores = new Set<RootStore>();
 registerTestCleanup(() => {
-  for (const { accountStore } of stores) {
-    const manager = accountStore.walletManager;
+  for (const { walletRuntime } of stores) {
+    const manager = walletRuntime.walletManager;
     manager.onUnmounted();
     if (manager.session.timeoutId !== undefined) {
       clearTimeout(manager.session.timeoutId as ReturnType<typeof setTimeout>);
@@ -30,7 +30,7 @@ registerTestCleanup(() => {
 function createStore(txEvents?: TxEvents) {
   const store = new RootStore({ txEvents });
   stores.add(store);
-  return store.accountStore;
+  return store.walletRuntime;
 }
 
 beforeEach(() => jest.clearAllMocks());
@@ -39,13 +39,13 @@ describe("RootStore static chain wiring", () => {
   const { identifier } = ChainIdHelper.parse(OsmosisChainInfo.chainId);
 
   it("resolves identifiers and revisions with configured currency metadata", () => {
-    const accountStore = createStore();
-    const chain = accountStore["chainGetter"].getChain(identifier);
+    const walletRuntime = createStore();
+    const chain = StaticChainGetter.getChain(identifier);
     const currency = OsmosisChainInfo.currencies.find(
       (currency) => currency.coinMinimalDenom === "uosmo"
     )!;
 
-    expect(accountStore.osmosisChainId).toBe(OsmosisChainInfo.chainId);
+    expect(walletRuntime.config.osmosisChainId).toBe(OsmosisChainInfo.chainId);
     expect(chain.chainId).toBe(OsmosisChainInfo.chainId);
     expect(StaticChainGetter.getChain(`${identifier}-999`).chainId).toBe(
       OsmosisChainInfo.chainId
@@ -64,8 +64,8 @@ describe("RootStore static chain wiring", () => {
       onFulfill: jest.fn(),
       onSign: jest.fn(),
     };
-    const accountStore = createStore(txEvents);
-    const events = accountStore["options"].preTxEvents!;
+    const walletRuntime = createStore(txEvents);
+    const events = walletRuntime["options"]!.preTxEvents!;
     const error = new Error("insufficient funds");
     const hash = new Uint8Array([0xab, 0xcd]);
     const tx = { code: 0, transactionHash: "abcd" } as DeliverTxResponse;

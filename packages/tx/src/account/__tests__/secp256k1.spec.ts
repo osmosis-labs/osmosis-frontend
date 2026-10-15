@@ -17,7 +17,7 @@ const SIGNATURE =
 const privateKey = () => new PrivKeySecp256k1(fromHex("1".padStart(64, "0")));
 
 // Mnemonic derivation exercises Keplr -> bip32 -> tiny-secp256k1. Signing
-// exercises the separate, still elliptic-backed one-click trading API.
+// exercises the Noble-backed digest signing API.
 describe("secp256k1 dependency compatibility", () => {
   it.each([
     {
