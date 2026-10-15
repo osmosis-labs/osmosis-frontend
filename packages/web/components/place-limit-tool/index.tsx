@@ -30,6 +30,7 @@ import {
 import {
   ATOM_BASE_DENOM,
   deferQueryCorrection,
+  getAllowedQuoteDenom,
   TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -225,12 +226,20 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
+    // The price selector resets a quote that is not on the allowlist, but
+    // that lands a task later; never price or place an order against one in
+    // the meantime.
+    const allowedQuote = useMemo(
+      () => getAllowedQuoteDenom(quote, tab) ?? USDC_BASE_DENOM,
+      [quote, tab]
+    );
+
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
       useQueryParams: false,
       baseDenom: from,
-      quoteDenom: quote,
+      quoteDenom: allowedQuote,
       type,
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
