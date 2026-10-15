@@ -5,7 +5,6 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
-import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import type { SignOptions, TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   getSwapMessages,
@@ -29,7 +28,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -59,6 +58,7 @@ import {
   useOneClickTradingSession,
 } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -1620,7 +1620,7 @@ export function useAmountWithSlippage({
   quoteType,
 }: {
   swapState: SwapState;
-  slippageConfig: ObservableSlippageConfig;
+  slippageConfig: SlippageConfig;
   quoteType: QuoteDirection;
 }) {
   const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
@@ -1696,11 +1696,19 @@ export function useDynamicSlippageConfig({
   feeError,
   quoteType = "out-given-in",
 }: {
-  slippageConfig: ObservableSlippageConfig;
+  slippageConfig: SlippageConfig;
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
+  // The config changes identity on every slippage update and this effect writes
+  // to it, so read the latest through a ref and re-run only on fee error changes.
+  const slippageConfigRef = useRef(slippageConfig);
   useEffect(() => {
+    slippageConfigRef.current = slippageConfig;
+  }, [slippageConfig]);
+
+  useEffect(() => {
+    const slippageConfig = slippageConfigRef.current;
     if (feeError) {
       if (
         (feeError.message.includes("Swap requires") ||
@@ -1735,7 +1743,7 @@ export function useDynamicSlippageConfig({
         }
       }
     }
-  }, [feeError, slippageConfig, quoteType]);
+  }, [feeError, quoteType]);
 }
 
 /** Extracts the numerical values from the swap required error

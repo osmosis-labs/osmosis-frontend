@@ -1,5 +1,4 @@
 import { Dec, IBCCurrency } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
 import {
@@ -14,7 +13,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
-export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
+export const Step3Confirm: FunctionComponent<StepProps> = (props) => {
   const { createPoolConfig: config } = props;
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
@@ -122,7 +121,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             <Checkbox
               variant="destructive"
               checked={config.acknowledgeFee}
-              onClick={() => (config.acknowledgeFee = !config.acknowledgeFee)}
+              onClick={() => config.setAcknowledgeFee(!config.acknowledgeFee)}
             />
             <label className="cursor-pointer pl-3 md:pl-1">
               {isMobile ? (
@@ -138,4 +137,4 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
       </div>
     </StepBase>
   );
-});
+};

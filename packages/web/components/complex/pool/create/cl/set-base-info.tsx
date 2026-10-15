@@ -8,7 +8,6 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { Fragment, useMemo, useState } from "react";
@@ -21,6 +20,7 @@ import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { CL_POOL_CREATION_TICK_SPACING } from "~/config";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import type { CreatePoolConfig } from "~/hooks/ui-config/use-create-pool-config";
 import {
   useDuplicateGate,
   useDuplicatePoolCheck,
@@ -34,7 +34,7 @@ import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
-  config: ObservableCreatePoolConfig;
+  config: CreatePoolConfig;
   advanceStep?: () => void;
   selectedBase?: SelectionToken;
   selectedQuote: SelectionToken;
@@ -110,7 +110,8 @@ export const SetBaseInfos = observer(
       enabled: Boolean(baseDenom && quoteDenom),
     });
     useDuplicateGate({
-      config,
+      setDuplicateBlocking: config.setDuplicateBlocking,
+      setDuplicateAcknowledged: config.setDuplicateAcknowledged,
       status: duplicateCheck.status,
       exactMatches: duplicateCheck.exactMatches,
       proposed: duplicateProposed,
@@ -204,7 +205,7 @@ export const SetBaseInfos = observer(
                 similarMatches={duplicateCheck.similarMatches}
                 acknowledged={config.duplicateAcknowledged}
                 onToggleAcknowledged={() =>
-                  (config.duplicateAcknowledged = !config.duplicateAcknowledged)
+                  config.setDuplicateAcknowledged(!config.duplicateAcknowledged)
                 }
                 onUseExistingPool={onUseExistingPool}
               />

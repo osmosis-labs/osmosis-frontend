@@ -1,4 +1,3 @@
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { NotInitializedError } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -259,7 +258,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config as ObservableAddLiquidityConfig}
+        addLiquidityConfig={addLiquidityConfig}
         actionButton={accountActionButton}
       />
     </ModalBase>
