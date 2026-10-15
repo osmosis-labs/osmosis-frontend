@@ -212,9 +212,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         // unexpected throw from a status provider must not escape and crash
         // the transaction history / portfolio page. Fall back to an
         // empty URL, which the UI renders as "no explorer link".
-        let explorerUrl = "";
+        let explorerUrl = snapshot.explorerUrl ?? "";
         try {
-          explorerUrl = statusSource.makeExplorerUrl(snapshot);
+          explorerUrl ||= statusSource.makeExplorerUrl(snapshot);
         } catch (e) {
           console.error("Failed to build transfer explorer URL", e);
         }
@@ -586,6 +586,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }
 
     const existing = this.snapshots;
+    const importedByHash = new Map<string, TxSnapshot>();
+    existing.forEach((s) => {
+      if (s.imported) importedByHash.set(s.sendTxHash, s);
+    });
     const knownHashes = new Set<string>();
     existing.forEach((s) => {
       knownHashes.add(s.sendTxHash);
@@ -595,7 +599,21 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     const nowUnix = Date.now() / 1000;
 
     const toAdd: TxSnapshot[] = [];
+    const refreshed = new Map<TxSnapshot, TxSnapshot>();
     for (const incoming of snapshots) {
+      // Refresh details of previously imported entries (parsing improves
+      // over time), keeping the status this browser already resolved.
+      const previous = importedByHash.get(incoming.sendTxHash);
+      if (previous) {
+        const next: TxSnapshot = {
+          ...incoming,
+          imported: true,
+          status: previous.status,
+          reason: previous.reason,
+        };
+        if (!isSameSnapshot(previous, next)) refreshed.set(previous, next);
+        continue;
+      }
       if (knownHashes.has(incoming.sendTxHash)) continue;
 
       if (incoming.direction === "deposit") {
@@ -626,10 +644,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       toAdd.push(snapshot);
     }
 
-    if (toAdd.length === 0) return;
+    if (toAdd.length === 0 && refreshed.size === 0) return;
 
     this.store.setState((state) => ({
-      snapshots: [...state.snapshots, ...toAdd],
+      snapshots: [
+        ...state.snapshots.map((s) => refreshed.get(s) ?? s),
+        ...toAdd,
+      ],
     }));
 
     toAdd.forEach((snapshot) => {
@@ -907,6 +928,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       this.importSnapshots(awaiting);
     }
   }
+}
+
+function isSameSnapshot(a: TxSnapshot, b: TxSnapshot) {
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 /**

@@ -812,6 +812,27 @@ describe("TransferHistoryStore.importSnapshots", () => {
     expect(squid.trackTxStatus).not.toHaveBeenCalled();
   });
 
+  it("refreshes details of imported transfers, keeping their status", async () => {
+    const { store } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([
+      makeIndexed({ toAddress: "0xBeB12d8861765c850E8426Cc5c6a5207222f2477" }),
+    ]);
+    await store.receiveNewTxStatus("OSMOHASH1", "success", undefined);
+
+    store.importSnapshots([
+      makeIndexed({ toAddress: "0x1678ac809e0a5F6B3EDab7dc7099c74ee570d7fd" }),
+    ]);
+
+    expect(store.snapshots).toHaveLength(1);
+    expect(store.snapshots[0]).toMatchObject({
+      toAddress: "0x1678ac809e0a5F6B3EDab7dc7099c74ee570d7fd",
+      status: "success",
+      imported: true,
+    });
+  });
+
   it("settles old pending withdrawals without tracking them", async () => {
     const { store, skip } = makeStore();
     await untilRestored(store);

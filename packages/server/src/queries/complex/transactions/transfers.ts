@@ -1,5 +1,6 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { EthereumChainInfo } from "@osmosis-labs/utils";
+import { getAddress } from "viem";
 
 import { Message, Transaction } from "../../../queries/data-services";
 import { getAsset } from "../assets";
@@ -39,6 +40,11 @@ const AXELAR_EVM_CHAIN_IDS: Record<string, number> = {
   fraxtal: 252,
   immutable: 13371,
 };
+
+/** Squid's router on EVM chains (same address on every chain). */
+const SQUID_EVM_ROUTERS = new Set([
+  "0xce16f69375520ab01377ce7b88f5ba8c48f8d666",
+]);
 
 type TransferAsset = {
   /** Symbol, e.g. `USDC`. */
@@ -93,6 +99,11 @@ export interface FormattedTransfer {
   fromAsset: TransferAsset & { amount: string };
   toAsset: TransferAsset & { amount?: string };
   networkFee?: TransferAsset & { amount: string };
+  /**
+   * Explorer link for transfers whose `sendTxHash` (the Osmosis tx) isn't on
+   * `fromChain`, i.e. deposits: the Osmosis tx, or the source tx on Axelarscan.
+   */
+  explorerUrl?: string;
 }
 
 type ParsedRoute = {
@@ -148,6 +159,7 @@ export function mapTransfers({
         new Date(tx.blockTimestamp).getTime() / 1000
       );
       const isWithdraw = route.direction === "withdraw";
+      const osmosisTxPage = osmosisChain.explorers?.[0]?.txPage;
 
       transfers.push({
         type: "bridge-transfer",
@@ -167,6 +179,10 @@ export function mapTransfers({
         toAsset: { ...toAsset, amount: route.toAmount },
         networkFee:
           networkFee && fee ? { ...networkFee, amount: fee.amount } : undefined,
+        explorerUrl:
+          !isWithdraw && osmosisTxPage
+            ? osmosisTxPage.replace("{txHash}", tx.hash)
+            : undefined,
       });
     } catch (e) {
       // a malformed or unexpected tx shape must not break the whole page
@@ -213,19 +229,36 @@ function parseRoute(
         const token = ibcMetadata.txInfo.token;
         if (!token) continue;
         const packetData = decodePacketData(message);
-        const counterparty = ibcMetadata.txInfo.chain_from
+        const previousHop = ibcMetadata.txInfo.chain_from
           ? findCosmosChainByName(chainList, ibcMetadata.txInfo.chain_from)
           : undefined;
+
+        // Axelar GMP deposits (Skip, Squid) arrive from Axelar with the bridge
+        // contract as sender. The memo names the real source chain; the
+        // user's source address is looked up afterwards
+        // (`resolveAxelarDepositSenders`).
+        const gmp = findKey(packetData?.memo, "source_chain");
+        const sourceChain =
+          typeof gmp?.source_chain === "string"
+            ? findEvmChainByAxelarName(gmp.source_chain)
+            : undefined;
+
         return {
-          provider: "IBC",
+          provider: sourceChain
+            ? isSquidRouter(gmp?.source_address)
+              ? "Squid"
+              : "Skip"
+            : "IBC",
           direction: "deposit",
           fromDenom: token.denom,
           fromAmount: token.amount,
           toDenom: token.denom,
           toAmount: token.amount,
-          fromAddress: packetData?.sender ?? "",
-          toAddress: packetData?.receiver ?? address,
-          counterparty,
+          fromAddress: sourceChain ? "" : (packetData?.sender ?? ""),
+          // the packet receiver may be a contract (ibc hooks) that forwards
+          // the funds to the user
+          toAddress: address,
+          counterparty: sourceChain ?? previousHop,
         };
       }
     }
@@ -325,7 +358,8 @@ function parseMsgTransfer(
   const memo = parseJson(message.memo);
 
   const destination = resolveMemoDestination(memo, receiver, chainList);
-  const isGmp = Boolean(findKey(memo, "destination_chain"));
+  const gmp = findKey(memo, "destination_chain");
+  const isGmp = Boolean(gmp);
   const isForward = Boolean(findKey(memo, "forward"));
 
   // Plain transfers resolve the next hop from the index's chain name, which
@@ -337,7 +371,13 @@ function parseMsgTransfer(
       : destination.chain;
 
   return {
-    provider: isGmp ? "Squid" : isForward ? "Skip" : "IBC",
+    provider: isGmp
+      ? isSquidRouter(gmp?.destination_address)
+        ? "Squid"
+        : "Skip"
+      : isForward
+        ? "Skip"
+        : "IBC",
     direction: "withdraw",
     fromDenom: token.denom,
     fromAmount: token.amount,
@@ -366,10 +406,13 @@ function resolveMemoDestination(
   const gmp = findKey(memo, "destination_chain");
   if (gmp && typeof gmp.destination_chain === "string") {
     const chain = findEvmChainByAxelarName(gmp.destination_chain);
+    // destination_address is the bridge's contract; the user's address is
+    // in the payload
     const receiver =
-      typeof gmp.destination_address === "string"
+      decodeGmpRecipient(gmp) ??
+      (typeof gmp.destination_address === "string"
         ? gmp.destination_address
-        : firstHopReceiver;
+        : firstHopReceiver);
     if (chain) return { chain, receiver };
   }
 
@@ -383,19 +426,177 @@ function resolveMemoDestination(
   return { chain: findCosmosChainByAddress(chainList, receiver), receiver };
 }
 
-function decodePacketData(
-  message: Message
-): { sender?: string; receiver?: string } | undefined {
+function isSquidRouter(address: unknown) {
+  return (
+    typeof address === "string" && SQUID_EVM_ROUTERS.has(address.toLowerCase())
+  );
+}
+
+/**
+ * The final recipient of an Axelar GMP withdrawal, from the GMP payload
+ * (`destination_address` is only the bridge's contract):
+ * - Squid router: `abi.encode(Call[] calls, address refundRecipient, ...)`;
+ *   the refund recipient is the user.
+ * - Skip's Axelar handler: `abi.encode(uint8 command, bytes data)`, where
+ *   `data` is `(address recipient)` for sends (commands 0, 1) and
+ *   `(address token, address recipient, ...)` for swap-and-sends.
+ */
+export function decodeGmpRecipient(
+  gmp: Record<string, unknown>
+): string | undefined {
+  const bytes = toBytes(gmp.payload);
+  if (!bytes) return;
+  const word = (index: number) => bytes.slice(index * 32, (index + 1) * 32);
+
+  if (isSquidRouter(gmp.destination_address)) return wordToAddress(word(1));
+
+  const command = wordToNumber(word(0));
+  const offset = wordToNumber(word(1));
+  if (command === undefined || offset === undefined || offset % 32 !== 0) {
+    return;
+  }
+  // `data` starts after its length word
+  const data = offset / 32 + 1;
+  return wordToAddress(word(command <= 1 ? data : data + 1));
+}
+
+function toBytes(payload: unknown): Uint8Array | undefined {
+  if (Array.isArray(payload)) return Uint8Array.from(payload as number[]);
+  if (typeof payload !== "string" || payload.length === 0) return;
+  const hex = payload.replace(/^0x/, "");
+  if (/^[0-9a-fA-F]+$/.test(hex) && hex.length % 2 === 0) {
+    return Uint8Array.from(hex.match(/../g) ?? [], (b) => parseInt(b, 16));
+  }
+  try {
+    return Uint8Array.from(atob(payload), (c) => c.charCodeAt(0));
+  } catch {
+    return;
+  }
+}
+
+function wordToAddress(word: Uint8Array): string | undefined {
+  if (word.length !== 32) return;
+  if (word.slice(0, 12).some((b) => b !== 0)) return;
+  const body = word.slice(12);
+  if (body.every((b) => b === 0)) return;
+  return getAddress(
+    "0x" + Array.from(body, (b) => b.toString(16).padStart(2, "0")).join("")
+  );
+}
+
+function wordToNumber(word: Uint8Array): number | undefined {
+  if (word.length !== 32) return;
+  // anything wider than 6 bytes isn't a command or an offset
+  if (word.slice(0, 26).some((b) => b !== 0)) return;
+  return word.slice(26).reduce((n, b) => n * 256 + b, 0);
+}
+
+const AXELARSCAN_API = {
+  mainnet: "https://api.axelarscan.io",
+  testnet: "https://testnet.api.axelarscan.io",
+};
+const AXELARSCAN = {
+  mainnet: "https://axelarscan.io",
+  testnet: "https://testnet.axelarscan.io",
+};
+
+/** GMP sources by Osmosis tx hash. Settled transfers never change. */
+const axelarSourceCache = new Map<
+  string,
+  { sender: string; sourceTxHash: string } | null
+>();
+const AXELAR_SOURCE_CACHE_MAX = 5_000;
+
+/**
+ * Axelar GMP deposits carry the bridge contract as sender. Look up the
+ * originating tx on Axelarscan (by the Osmosis arrival tx hash) to show the
+ * user's source address and link the source tx. Best effort: on failure the
+ * transfer is returned as is.
+ */
+export async function resolveAxelarDepositSenders(
+  transfers: FormattedTransfer[],
+  {
+    env = "mainnet",
+    timeoutMs = 4_000,
+  }: { env?: "mainnet" | "testnet"; timeoutMs?: number } = {}
+): Promise<FormattedTransfer[]> {
+  return Promise.all(
+    transfers.map(async (transfer) => {
+      if (
+        transfer.direction !== "deposit" ||
+        transfer.fromChain.chainType !== "evm" ||
+        transfer.fromAddress
+      ) {
+        return transfer;
+      }
+
+      const source = await lookupAxelarSource(
+        transfer.sendTxHash,
+        env,
+        timeoutMs
+      );
+      if (!source) return transfer;
+      return {
+        ...transfer,
+        fromAddress: source.sender,
+        explorerUrl: `${AXELARSCAN[env]}/gmp/${source.sourceTxHash}`,
+      };
+    })
+  );
+}
+
+async function lookupAxelarSource(
+  osmosisTxHash: string,
+  env: "mainnet" | "testnet",
+  timeoutMs: number
+) {
+  const key = `${env}:${osmosisTxHash}`;
+  if (axelarSourceCache.has(key)) return axelarSourceCache.get(key);
+
+  try {
+    const response = await fetch(`${AXELARSCAN_API[env]}/gmp/searchGMP`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ txHash: osmosisTxHash, size: 1 }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) return undefined;
+    const json = (await response.json()) as {
+      data?: {
+        call?: { transactionHash?: string; transaction?: { from?: string } };
+      }[];
+    };
+    const call = json.data?.[0]?.call;
+    const from = call?.transaction?.from;
+    const result =
+      from && call?.transactionHash
+        ? { sender: getAddress(from), sourceTxHash: call.transactionHash }
+        : null;
+
+    if (axelarSourceCache.size >= AXELAR_SOURCE_CACHE_MAX) {
+      const oldest = axelarSourceCache.keys().next().value;
+      if (oldest !== undefined) axelarSourceCache.delete(oldest);
+    }
+    axelarSourceCache.set(key, result);
+    return result;
+  } catch {
+    // network error or timeout: retried on a later request
+    return undefined;
+  }
+}
+
+type PacketData = { sender?: string; receiver?: string; memo?: unknown };
+
+function decodePacketData(message: Message): PacketData | undefined {
   const data = asRecord(message.packet)?.data;
   // the index decodes packet data; fall back to raw base64 JSON
   if (typeof data !== "string") {
-    return asRecord(data) as { sender?: string; receiver?: string } | undefined;
+    return asRecord(data) as PacketData | undefined;
   }
   try {
     // atob, not Buffer: this runs on the edge runtime
     const json = atob(data);
-    return asRecord(JSON.parse(json)) as
-      { sender?: string; receiver?: string } | undefined;
+    return asRecord(JSON.parse(json)) as PacketData | undefined;
   } catch {
     return;
   }

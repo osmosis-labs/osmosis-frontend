@@ -1,9 +1,14 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { getAddress } from "viem";
 
 import { AssetLists as MockAssetLists } from "../../../__tests__/mock-asset-lists";
 import { MockChains } from "../../../__tests__/mock-chains";
 import { Transaction } from "../../../data-services";
-import { mapTransfers } from "../transfers";
+import {
+  decodeGmpRecipient,
+  mapTransfers,
+  resolveAxelarDepositSenders,
+} from "../transfers";
 import { IndexedTransferTxs } from "./transfer-fixtures";
 
 const SKIP_OUTPUT_DENOM =
@@ -122,7 +127,116 @@ describe("mapTransfers", () => {
       provider: "Squid",
       statusProvider: "Skip",
       toChain: { chainType: "evm", chainId: 8453, prettyName: "Base" },
-      toAddress: "0xce16F69375520ab01377ce7B88f5BA8C48F8D666",
+    });
+    // the user's address from the payload, not Squid's router
+    expect(transfer.toAddress.toLowerCase()).toBe(
+      "0x20a15f256f7537da4f707a196f6ddc3e2e8be9da"
+    );
+  });
+
+  it("maps a Skip Axelar send to the recipient in the payload", () => {
+    const [transfer] = map(IndexedTransferTxs.skipGmpAvalanche);
+
+    expect(transfer).toMatchObject({
+      direction: "withdraw",
+      provider: "Skip",
+      toChain: { chainType: "evm", chainId: 43114 },
+    });
+    // not Skip's Axelar handler (0xBeB12d88...)
+    expect(transfer.toAddress.toLowerCase()).toBe(
+      "0x1678ac809e0a5f6b3edab7dc7099c74ee570d7fd"
+    );
+  });
+
+  it("maps a Skip Axelar swap-and-send to the recipient in the payload", () => {
+    const [transfer] = map(IndexedTransferTxs.skipGmpEthereum);
+
+    expect(transfer).toMatchObject({
+      direction: "withdraw",
+      provider: "Skip",
+      toChain: { chainType: "evm", chainId: 1 },
+    });
+    // not Skip's Axelar handler (0xB773bCc5...)
+    expect(transfer.toAddress.toLowerCase()).toBe(
+      "0xecd570f565f272c6d5fd77fd5c25dc68c2130e52"
+    );
+  });
+
+  describe("Axelar GMP deposits", () => {
+    const address = "osmo1yamxfey40t5r62ejss9g4kskptqq3a70e9we2l";
+    const sourceTxHash =
+      "0x7a6d3d0947d0670adc6dde991721bb1573cf91ad7dc43c0c97edbe4aae793fbd";
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("uses the source chain from the memo and the user as recipient", () => {
+      const [transfer] = map(IndexedTransferTxs.gmpDeposit, address);
+
+      expect(transfer).toMatchObject({
+        direction: "deposit",
+        provider: "Skip",
+        status: "success",
+        fromChain: { chainType: "evm", chainId: 1 },
+        toChain: { chainId: "osmosis-1" },
+        // not Skip's entry point contract the packet was sent to
+        toAddress: address,
+        // not Axelar's GMP account; resolved from Axelarscan
+        fromAddress: "",
+      });
+    });
+
+    it("resolves the source sender and links the source tx", async () => {
+      const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: [
+            {
+              call: {
+                transactionHash: sourceTxHash,
+                transaction: {
+                  from: "0x6fe3c2f1826f9cbe8b788112b44bb2f631979a64",
+                },
+              },
+            },
+          ],
+        }),
+      } as Response);
+
+      const [transfer] = await resolveAxelarDepositSenders(
+        map(IndexedTransferTxs.gmpDeposit, address)
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.axelarscan.io/gmp/searchGMP",
+        expect.objectContaining({
+          body: JSON.stringify({
+            txHash: IndexedTransferTxs.gmpDeposit.hash,
+            size: 1,
+          }),
+        })
+      );
+      expect(transfer.fromAddress).toBe(
+        getAddress("0x6fe3c2f1826f9cbe8b788112b44bb2f631979a64")
+      );
+      expect(transfer.explorerUrl).toBe(
+        `https://axelarscan.io/gmp/${sourceTxHash}`
+      );
+    });
+
+    it("leaves the transfer as is when the lookup fails", async () => {
+      jest.spyOn(global, "fetch").mockRejectedValue(new Error("timeout"));
+      const tx = {
+        ...IndexedTransferTxs.gmpDeposit,
+        // a hash the cache hasn't seen
+        hash: "LOOKUPFAILS",
+      };
+
+      const [transfer] = await resolveAxelarDepositSenders(map(tx, address));
+
+      expect(transfer.fromAddress).toBe("");
+      expect(transfer.toAddress).toBe(address);
     });
   });
 
@@ -139,6 +253,23 @@ describe("mapTransfers", () => {
           "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
       },
     });
+  });
+
+  it("decodes a hex GMP payload", () => {
+    // Skip handler send: abi.encode(uint8 0, abi.encode(address recipient))
+    const payload =
+      "0x" +
+      "0".repeat(64) +
+      "40".padStart(64, "0") +
+      "20".padStart(64, "0") +
+      "1678ac809e0a5f6b3edab7dc7099c74ee570d7fd".padStart(64, "0");
+    expect(
+      decodeGmpRecipient({
+        destination_address: "0xBeB12d8861765c850E8426Cc5c6a5207222f2477",
+        payload,
+      })?.toLowerCase()
+    ).toBe("0x1678ac809e0a5f6b3edab7dc7099c74ee570d7fd");
+    expect(decodeGmpRecipient({ payload: [] })).toBeUndefined();
   });
 
   it("marks a failed withdrawal as failed", () => {

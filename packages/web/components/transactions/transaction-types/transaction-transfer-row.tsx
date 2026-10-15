@@ -243,7 +243,7 @@ export const TransactionTransferRow = ({
             {t("transfer.from")} {chainPrettyName}
           </p>
           <p className="body2 lg:caption text-osmoverse-300">
-            {shorten(transaction.toAddress, {
+            {shorten(transaction.fromAddress || transaction.toAddress, {
               prefixLength: width < 924 ? 4 : 10,
               suffixLength: width < 924 ? 4 : 8,
             })}

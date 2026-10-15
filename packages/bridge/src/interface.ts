@@ -844,6 +844,12 @@ const txSnapshotSchema = z.object({
    * Status changes on imported transfers update history silently (no toasts).
    */
   imported: z.boolean().optional(),
+  /**
+   * Explorer link, when the status provider can't build one from
+   * `sendTxHash` and `fromChain` (imported deposits are keyed on the Osmosis
+   * arrival tx, not a tx on the source chain).
+   */
+  explorerUrl: z.string().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

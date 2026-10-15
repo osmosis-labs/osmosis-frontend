@@ -5,11 +5,13 @@ import { LRUCache } from "lru-cache";
 
 import { getAsset } from "../../../queries/complex/assets";
 import { Metadata, queryTransactions } from "../../../queries/data-services";
+import { IS_TESTNET } from "../../../env";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
   FormattedTransfer,
   mapTransfers,
+  resolveAxelarDepositSenders,
   TRANSFER_MESSAGE_TYPES,
 } from "./transfers";
 
@@ -189,12 +191,15 @@ export async function getTransactions({
             transaction.metadata && transaction.metadata.length > 0
         );
 
-      const transfers = mapTransfers({
-        transactions: data ?? [],
-        address,
-        assetLists,
-        chainList,
-      });
+      const transfers = await resolveAxelarDepositSenders(
+        mapTransfers({
+          transactions: data ?? [],
+          address,
+          assetLists,
+          chainList,
+        }),
+        { env: IS_TESTNET ? "testnet" : "mainnet" }
+      );
 
       return {
         transactions: mappedSwapTransactions,
