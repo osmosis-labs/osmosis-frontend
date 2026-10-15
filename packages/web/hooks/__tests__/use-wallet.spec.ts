@@ -19,7 +19,7 @@ import {
   TestWallet,
   testWalletInfo,
 } from "~/__tests__/test-wallet";
-import { OsmosisChainInfo } from "~/config/chain";
+import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { storeContext } from "~/stores";
 
@@ -28,16 +28,22 @@ import { useWallet } from "../use-wallet";
 describe("useWallet", () => {
   const chainId = ChainList[0].chain_id;
 
-  it.each(["uosmo", "ibc/" + "A".repeat(64), "gamm/pool/1"])(
+  it.each([
+    "uosmo",
+    "uion",
+    OsmosisChainInfo.currencies.find(({ coinMinimalDenom }) =>
+      coinMinimalDenom.startsWith("ibc/")
+    )!.coinMinimalDenom,
+  ])(
     "prepares pool exits with the registered currency for %s",
     async (denom) => {
-      const { result, rootStore } = renderHookWithProviders(() => useWallet());
+      const { result } = renderHookWithProviders(() => useWallet());
       await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
       const context = result.current.transactionContext;
       const resolvedCurrency = context.findCurrency(denom);
-      const currency = rootStore.chainStore
-        .getChain(OsmosisChainInfo.chainId)
-        .findCurrency(denom);
+      const currency = StaticChainGetter.getChain(
+        OsmosisChainInfo.chainId
+      ).findCurrency(denom);
       expect(currency).toBeDefined();
       expect(resolvedCurrency).toEqual(currency);
 

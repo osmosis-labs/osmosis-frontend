@@ -1,10 +1,10 @@
-import type { TransactionPreparationContext } from "@osmosis-labs/tx";
 import {
   EmptyAmountError,
   InsufficientAmountError,
 } from "@osmosis-labs/keplr-hooks";
 import { makePoolFromChainPool } from "@osmosis-labs/server";
 import { NotInitializedError } from "@osmosis-labs/stores";
+import type { TransactionPreparationContext } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { act, renderHook } from "@testing-library/react";
 
@@ -21,7 +21,7 @@ let mockBalances: { denom: string; amount: string }[] | undefined;
 
 jest.mock("~/utils/trpc", () => ({
   api: {
-    useUtils: () => ({}),
+    useUtils: () => ({ local: { pools: { getPool: { fetch: jest.fn() } } } }),
     local: {
       pools: { getPool: { useQuery: () => ({ data: mockPool }) } },
       balances: {
@@ -311,7 +311,7 @@ describe("sendAddLiquidity", () => {
   });
 
   it("builds a single asset join from freshly fetched pool data", async () => {
-    const { result, rerender } = setup(true);
+    const { result } = setup(true);
     const { config } = result.current;
     const signAndBroadcast = signer();
     await sendAddLiquidity({
@@ -359,7 +359,6 @@ describe("sendAddLiquidity", () => {
 
   it("does not send when the fresh pool has other decimals for an asset", async () => {
     const { result, rerender } = setup(true);
-    const { config } = result.current;
     const signAndBroadcast = signer();
     const fresh = rawPool("1000000000");
     fresh.reserveCoins = [

@@ -1,4 +1,3 @@
-import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import {
   Checkbox,
   Field,
@@ -9,6 +8,7 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
+import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { Fragment, useMemo, useState } from "react";

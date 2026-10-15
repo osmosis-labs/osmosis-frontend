@@ -1,5 +1,5 @@
-import { prepareWithdrawConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
 import type { UserPosition } from "@osmosis-labs/server";
+import { prepareWithdrawConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
 import type { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo, useState } from "react";
 
