@@ -18,6 +18,7 @@ export const transactionsRouter = createTRPCRouter({
         page,
         pageSize,
         assetLists: ctx.assetLists,
+        chainList: ctx.chainList,
       });
       return res;
     }),

@@ -832,6 +832,18 @@ const txSnapshotSchema = z.object({
    * when checking whether another session already signed the next step.
    */
   firstStepTxHash: z.string().optional(),
+  /**
+   * Provider whose status provider tracks this transfer, when it differs
+   * from `provider`. Set on transfers imported from the transaction index,
+   * whose originating provider's status API can't look them up (e.g. Squid
+   * needs the original quote id); Skip can trace any route by tx hash.
+   */
+  statusProvider: z.string().optional(),
+  /**
+   * Imported from the transaction index rather than made in this browser.
+   * Status changes on imported transfers update history silently (no toasts).
+   */
+  imported: z.boolean().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

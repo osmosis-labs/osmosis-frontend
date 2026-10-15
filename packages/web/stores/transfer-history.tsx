@@ -28,6 +28,16 @@ export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
  *  entry whose first transaction never landed doesn't live forever. */
 const MULTI_TX_RESUME_EXPIRE_DAYS = 30;
 
+/** Imported withdrawals younger than this are tracked to their final status;
+ *  older ones are settled as delivered. Status providers poll for a few
+ *  minutes at most, so tracking long-settled transfers only produces false
+ *  connection errors. */
+const IMPORT_TRACKING_WINDOW_SECONDS = 24 * 60 * 60;
+
+/** How long after a local deposit's estimated arrival an imported arrival
+ *  of the same asset is still treated as that deposit. */
+const IMPORT_DEPOSIT_MATCH_GRACE_SECONDS = 60 * 60;
+
 export type TransferHistoryState = {
   /** Volatile list of tx snapshots. Updated immutably. */
   snapshots: TxSnapshot[];
@@ -123,9 +133,18 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     return this.store.getState().snapshots;
   }
 
+  /** Provider for display (name, explorer link). */
   private findProvider(snapshot: TxSnapshot) {
     return this.transferStatusProviders.find((source) =>
       snapshot.provider.startsWith(source.providerId)
+    );
+  }
+
+  /** Provider that tracks the transfer's status. */
+  private findTrackingProvider(snapshot: TxSnapshot) {
+    const providerId = snapshot.statusProvider ?? snapshot.provider;
+    return this.transferStatusProviders.find((source) =>
+      providerId.startsWith(source.providerId)
     );
   }
 
@@ -231,7 +250,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       fromAsset,
       direction,
     } = snapshot;
-    const statusSource = this.findProvider(snapshot);
+    const statusSource = this.findTrackingProvider(snapshot);
 
     // start tracking for life of current session — except mid-flow multi-tx
     // entries: their first tx's status completes when funds reach the
@@ -354,7 +373,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     };
     this.replaceSnapshot(snapshot, next);
 
-    this.findProvider(next)?.trackTxStatus(next);
+    this.findTrackingProvider(next)?.trackTxStatus(next);
   }
 
   /**
@@ -396,6 +415,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // set updates
     const snapshot: TxSnapshot = { ...found, status, reason };
     this.replaceSnapshot(found, snapshot);
+
+    // Imported transfers were made elsewhere (another browser or device):
+    // update history silently rather than toasting about them here.
+    if (found.imported) {
+      if (status !== "pending") this._resolvedTxStatusKeys.add(sendTxHash);
+      return;
+    }
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
@@ -540,6 +566,79 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         this._resolvedTxStatusKeys.add(sendTxHash);
         break;
     }
+  }
+
+  /** Imports received before the stored history was restored. */
+  private importsAwaitingRestore: TxSnapshot[] = [];
+
+  /**
+   * Add transfers found in the transaction index (made in any browser or
+   * device) to history. Idempotent: transfers already in history are
+   * skipped, matched by Osmosis tx hash, or for deposits made in this
+   * browser (whose snapshot holds the source chain's hash) by asset and
+   * arrival time. Recent withdrawals are tracked to their final status.
+   */
+  importSnapshots(snapshots: TxSnapshot[]) {
+    if (!this.store.getState().isRestoredFromIndexedDB) {
+      // dedupe needs the stored history; finish after restore
+      this.importsAwaitingRestore.push(...snapshots);
+      return;
+    }
+
+    const existing = this.snapshots;
+    const knownHashes = new Set<string>();
+    existing.forEach((s) => {
+      knownHashes.add(s.sendTxHash);
+      if (s.firstStepTxHash) knownHashes.add(s.firstStepTxHash);
+    });
+    const matchedLocalDeposits = new Set<TxSnapshot>();
+    const nowUnix = Date.now() / 1000;
+
+    const toAdd: TxSnapshot[] = [];
+    for (const incoming of snapshots) {
+      if (knownHashes.has(incoming.sendTxHash)) continue;
+
+      if (incoming.direction === "deposit") {
+        const localDeposit = findMatchingLocalDeposit(
+          incoming,
+          existing,
+          matchedLocalDeposits
+        );
+        if (localDeposit) {
+          matchedLocalDeposits.add(localDeposit);
+          continue;
+        }
+      }
+
+      const isTrackable =
+        incoming.status === "pending" &&
+        nowUnix - incoming.createdAtUnix < IMPORT_TRACKING_WINDOW_SECONDS;
+
+      const snapshot: TxSnapshot = {
+        ...incoming,
+        imported: true,
+        status:
+          incoming.status === "pending" && !isTrackable
+            ? "success"
+            : incoming.status,
+      };
+      knownHashes.add(snapshot.sendTxHash);
+      toAdd.push(snapshot);
+    }
+
+    if (toAdd.length === 0) return;
+
+    this.store.setState((state) => ({
+      snapshots: [...state.snapshots, ...toAdd],
+    }));
+
+    toAdd.forEach((snapshot) => {
+      if (snapshot.status === "pending") {
+        this.findTrackingProvider(snapshot)?.trackTxStatus(snapshot);
+      } else {
+        this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
+      }
+    });
   }
 
   /**
@@ -746,7 +845,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     );
     if (!advanced) return "missing";
     if (advanced.status === "pending") {
-      this.findProvider(advanced)?.trackTxStatus(advanced);
+      this.findTrackingProvider(advanced)?.trackTxStatus(advanced);
     }
     return "advanced";
   }
@@ -772,7 +871,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       );
 
     liveSnapshots.forEach((snapshot) => {
-      const statusSource = this.findProvider(snapshot);
+      const statusSource = this.findTrackingProvider(snapshot);
 
       // start receiving tx status updates again for snapshots that were still pending
       if (
@@ -801,7 +900,65 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       snapshots: [...state.snapshots, ...liveSnapshots],
       isRestoredFromIndexedDB: true,
     }));
+
+    if (this.importsAwaitingRestore.length > 0) {
+      const awaiting = this.importsAwaitingRestore;
+      this.importsAwaitingRestore = [];
+      this.importSnapshots(awaiting);
+    }
   }
+}
+
+/**
+ * A deposit made in this browser is keyed on its source chain tx hash, so its
+ * arrival on Osmosis (as found in the index) can't be matched by hash.
+ * Match on the received asset and the arrival time instead, nearest first,
+ * each local deposit at most once.
+ */
+export function findMatchingLocalDeposit(
+  incoming: TxSnapshot,
+  existing: readonly TxSnapshot[],
+  alreadyMatched: ReadonlySet<TxSnapshot>
+): TxSnapshot | undefined {
+  let best: TxSnapshot | undefined;
+  for (const local of existing) {
+    if (
+      local.imported ||
+      local.direction !== "deposit" ||
+      alreadyMatched.has(local) ||
+      local.osmoBech32Address !== incoming.osmoBech32Address ||
+      !isSameReceivedAsset(local, incoming)
+    ) {
+      continue;
+    }
+    const windowEnd =
+      Math.max(local.estimatedArrivalUnix, local.createdAtUnix) +
+      IMPORT_DEPOSIT_MATCH_GRACE_SECONDS;
+    if (
+      incoming.createdAtUnix < local.createdAtUnix ||
+      incoming.createdAtUnix > windowEnd
+    ) {
+      continue;
+    }
+    if (!best || local.createdAtUnix > best.createdAtUnix) best = local;
+  }
+  return best;
+}
+
+/**
+ * Whether an indexed arrival is the asset a local deposit received. A deposit
+ * that converts on arrival (e.g. USDC into alloyed allUSDC) records the
+ * converted asset locally, while the index sees the asset that arrived, so
+ * fall back to a 1:1-converted amount of the same precision.
+ */
+function isSameReceivedAsset(local: TxSnapshot, incoming: TxSnapshot) {
+  if (local.toAsset.address === incoming.toAsset.address) return true;
+  if (local.toAsset.decimals !== incoming.toAsset.decimals) return false;
+
+  const expected = Number(local.toAsset.amount ?? local.fromAsset.amount);
+  const arrived = Number(incoming.toAsset.amount ?? incoming.fromAsset.amount);
+  if (!(expected > 0) || !(arrived > 0)) return false;
+  return Math.abs(arrived - expected) / expected <= 0.02;
 }
 
 const PendingTransferLoadingIcon: FunctionComponent<{

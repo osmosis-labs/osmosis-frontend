@@ -1,4 +1,4 @@
-import { AssetList } from "@osmosis-labs/types";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -7,6 +7,11 @@ import { getAsset } from "../../../queries/complex/assets";
 import { Metadata, queryTransactions } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
+import {
+  FormattedTransfer,
+  mapTransfers,
+  TRANSFER_MESSAGE_TYPES,
+} from "./transfers";
 
 export interface FormattedMetadata {
   value: {
@@ -114,6 +119,8 @@ function mapMetadata(
 
 export interface GetTransactionsResponse {
   transactions: FormattedTransaction[];
+  /** Bridge/IBC transfers, so history isn't limited to the browser that made them. */
+  transfers: FormattedTransfer[];
   hasNextPage: boolean;
 }
 
@@ -122,11 +129,13 @@ export async function getTransactions({
   page = "0",
   pageSize = "100",
   assetLists,
+  chainList,
 }: {
   address: string;
   page?: string;
   pageSize?: string;
   assetLists: AssetList[];
+  chainList: Chain[];
 }): Promise<GetTransactionsResponse> {
   return await cachified({
     cache: transactionsCache,
@@ -142,6 +151,7 @@ export async function getTransactions({
           "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
           "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
           "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+          ...TRANSFER_MESSAGE_TYPES,
         ],
       });
 
@@ -179,8 +189,16 @@ export async function getTransactions({
             transaction.metadata && transaction.metadata.length > 0
         );
 
+      const transfers = mapTransfers({
+        transactions: data ?? [],
+        address,
+        assetLists,
+        chainList,
+      });
+
       return {
         transactions: mappedSwapTransactions,
+        transfers,
         hasNextPage,
       };
     },

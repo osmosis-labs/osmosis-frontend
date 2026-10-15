@@ -693,3 +693,243 @@ describe("TransferHistoryStore multi-tx entries", () => {
     );
   });
 });
+
+describe("TransferHistoryStore.importSnapshots", () => {
+  const { TransferHistoryStore } = jest.requireActual("../transfer-history");
+  const { displayToast } = jest.requireMock("~/components/alert/toast");
+
+  const account = "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx";
+  const usdcOnOsmosis =
+    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+  const nowUnix = () => Math.floor(Date.now() / 1000);
+
+  const makeIndexed = (overrides: Partial<TxSnapshot> = {}): TxSnapshot =>
+    ({
+      type: "bridge-transfer",
+      direction: "withdraw",
+      provider: "Squid",
+      statusProvider: "Skip",
+      createdAtUnix: nowUnix() - 60,
+      estimatedArrivalUnix: nowUnix() - 60,
+      sendTxHash: "OSMOHASH1",
+      status: "pending",
+      fromAddress: account,
+      toAddress: "0xce16F69375520ab01377ce7B88f5BA8C48F8D666",
+      osmoBech32Address: account,
+      fromChain: {
+        chainType: "cosmos",
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+      },
+      toChain: { chainType: "evm", chainId: 8453, prettyName: "Base" },
+      fromAsset: {
+        denom: "USDC",
+        address: usdcOnOsmosis,
+        decimals: 6,
+        amount: "1000000",
+      },
+      toAsset: { denom: "USDC", address: usdcOnOsmosis, decimals: 6 },
+      ...overrides,
+    }) as TxSnapshot;
+
+  const makeStore = (stored: TxSnapshot[] = []) => {
+    const onTransferSuccess = jest.fn();
+    const kvStore = {
+      get: jest.fn().mockResolvedValue(stored),
+      set: jest.fn().mockResolvedValue(undefined),
+    };
+    const provider = (providerId: string) => ({
+      providerId,
+      trackTxStatus: jest.fn(),
+      makeExplorerUrl: jest.fn().mockReturnValue(""),
+    });
+    const skip = provider("Skip");
+    const squid = provider("Squid");
+    const ibc = provider("IBC");
+    const store = new TransferHistoryStore(
+      onTransferSuccess,
+      kvStore,
+      [squid, skip, ibc],
+      3
+    );
+    return { store, skip, squid, ibc, onTransferSuccess };
+  };
+
+  const untilRestored = async (store: {
+    store: { getState: () => { isRestoredFromIndexedDB: boolean } };
+  }) => {
+    while (!store.store.getState().isRestoredFromIndexedDB) {
+      await Promise.resolve();
+    }
+  };
+
+  beforeEach(() => {
+    (displayToast as jest.Mock).mockClear();
+  });
+
+  it("adds indexed transfers once and lists them for the account", async () => {
+    const { store } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+    store.importSnapshots([makeIndexed()]);
+
+    const rows = store.getHistoriesByAccount(account);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ sendTxHash: "OSMOHASH1", imported: true });
+  });
+
+  it("skips transfers already in local history by tx hash", async () => {
+    const local = makeIndexed({ provider: "Skip", statusProvider: undefined });
+    const { store } = makeStore([local]);
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+
+    expect(store.snapshots).toHaveLength(1);
+    expect(store.snapshots[0].imported).toBeUndefined();
+  });
+
+  it("waits for stored history before deduping", async () => {
+    const local = makeIndexed({ provider: "Skip", statusProvider: undefined });
+    const { store } = makeStore([local]);
+
+    store.importSnapshots([makeIndexed()]);
+    await untilRestored(store);
+
+    expect(store.snapshots).toHaveLength(1);
+  });
+
+  it("tracks recent withdrawals with the status provider, not the display provider", async () => {
+    const { store, skip, squid } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+
+    expect(skip.trackTxStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ sendTxHash: "OSMOHASH1" })
+    );
+    expect(squid.trackTxStatus).not.toHaveBeenCalled();
+  });
+
+  it("settles old pending withdrawals without tracking them", async () => {
+    const { store, skip } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([
+      makeIndexed({ createdAtUnix: nowUnix() - 2 * 24 * 60 * 60 }),
+    ]);
+
+    expect(store.snapshots[0].status).toBe("success");
+    expect(skip.trackTxStatus).not.toHaveBeenCalled();
+  });
+
+  it("updates imported transfers silently", async () => {
+    const { store, onTransferSuccess } = makeStore();
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+    await store.receiveNewTxStatus("OSMOHASH1", "success", undefined);
+
+    expect(store.snapshots[0].status).toBe("success");
+    expect(displayToast).not.toHaveBeenCalled();
+    expect(onTransferSuccess).not.toHaveBeenCalled();
+
+    // a transfer made in this browser still toasts
+    store.pushTxNow(
+      makeIndexed({ sendTxHash: "LOCAL", statusProvider: undefined })
+    );
+    await store.receiveNewTxStatus("LOCAL", "success", undefined);
+    expect(displayToast).toHaveBeenCalled();
+  });
+
+  it("matches an indexed arrival to a deposit made in this browser", async () => {
+    const createdAtUnix = nowUnix() - 3000;
+    const localDeposit = makeIndexed({
+      direction: "deposit",
+      provider: "Skip",
+      statusProvider: undefined,
+      sendTxHash: "0xevmhash",
+      createdAtUnix,
+      estimatedArrivalUnix: createdAtUnix + 600,
+      status: "success",
+    });
+    const { store } = makeStore([localDeposit]);
+    await untilRestored(store);
+
+    const arrival = (sendTxHash: string, arrivedAtUnix: number) =>
+      makeIndexed({
+        direction: "deposit",
+        provider: "IBC",
+        statusProvider: undefined,
+        status: "success",
+        sendTxHash,
+        createdAtUnix: arrivedAtUnix,
+      });
+
+    store.importSnapshots([
+      // within the local deposit's arrival window: the same transfer
+      arrival("RECV1", createdAtUnix + 300),
+      // a second arrival of the same asset can't be the same deposit
+      arrival("RECV2", createdAtUnix + 400),
+      // before the local deposit was made: unrelated
+      arrival("RECV3", createdAtUnix - 300),
+    ]);
+
+    expect(store.snapshots.map((s: TxSnapshot) => s.sendTxHash)).toEqual([
+      "0xevmhash",
+      "RECV2",
+      "RECV3",
+    ]);
+  });
+
+  it("matches an arrival converted into another asset on Osmosis by amount", async () => {
+    const createdAtUnix = nowUnix() - 3000;
+    const alloyedUsdc =
+      "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+    const localDeposit = makeIndexed({
+      direction: "deposit",
+      provider: "Skip",
+      statusProvider: undefined,
+      sendTxHash: "0xevmhash",
+      createdAtUnix,
+      estimatedArrivalUnix: createdAtUnix + 600,
+      status: "success",
+      toAsset: {
+        denom: "USDC",
+        address: alloyedUsdc,
+        decimals: 6,
+        amount: "999960000",
+      },
+    });
+    const { store } = makeStore([localDeposit]);
+    await untilRestored(store);
+
+    const arrival = (sendTxHash: string, amount: string) =>
+      makeIndexed({
+        direction: "deposit",
+        provider: "IBC",
+        statusProvider: undefined,
+        status: "success",
+        sendTxHash,
+        createdAtUnix: createdAtUnix + 300,
+        fromAsset: {
+          denom: "USDC",
+          address: usdcOnOsmosis,
+          decimals: 6,
+          amount,
+        },
+        toAsset: { denom: "USDC", address: usdcOnOsmosis, decimals: 6, amount },
+      });
+
+    // a different amount of a different asset is another transfer
+    store.importSnapshots([arrival("OTHER", "5000000")]);
+    // the alloy conversion's arrival is the local deposit
+    store.importSnapshots([arrival("CONVERTED", "999950000")]);
+
+    expect(store.snapshots.map((s: TxSnapshot) => s.sendTxHash)).toEqual([
+      "0xevmhash",
+      "OTHER",
+    ]);
+  });
+});

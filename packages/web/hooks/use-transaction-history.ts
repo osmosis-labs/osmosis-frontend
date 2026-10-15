@@ -1,6 +1,10 @@
-import { useMemo } from "react";
+import type { TxSnapshot } from "@osmosis-labs/bridge";
+import { useEffect, useMemo } from "react";
 
-import { useTransferHistoriesByAccount } from "~/stores/transfer-history-instance";
+import {
+  useTransferHistoriesByAccount,
+  useTransferHistoryStore,
+} from "~/stores/transfer-history-instance";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "./use-wallet";
@@ -26,6 +30,7 @@ export const useTransactionHistory = ({
   pageSize?: string;
 } = {}) => {
   const { address, isWalletConnected } = useWallet();
+  const transferHistoryStore = useTransferHistoryStore();
   const recentTransfers = useTransferHistoriesByAccount(address || "");
 
   const { data: transactionsData, isLoading } =
@@ -39,6 +44,17 @@ export const useTransactionHistory = ({
         enabled: Boolean(isWalletConnected && address),
       }
     );
+
+  // Transfers from the transaction index, so history includes transfers
+  // made in other browsers or devices (local history is per browser).
+  // The server shapes them as TxSnapshots; the store dedupes and tracks them.
+  const indexedTransfers = transactionsData?.transfers;
+  useEffect(() => {
+    if (!indexedTransfers?.length) return;
+    transferHistoryStore.importSnapshots(
+      indexedTransfers as unknown as TxSnapshot[]
+    );
+  }, [indexedTransfers, transferHistoryStore]);
 
   const { transactions, hasNextPage } = useMemo(
     () =>
