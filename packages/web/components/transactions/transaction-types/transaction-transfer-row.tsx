@@ -385,18 +385,26 @@ export const TransactionTransferRow = ({
 
   const providerLogoUrl =
     BridgeLogoUrls[transaction.provider as keyof typeof BridgeLogoUrls];
-  const providerLogo = (logoSize: number) =>
+  // in a round badge rather than cropped: some logos (IBC) are wordmarks
+  const providerLogo = (badgeSize: "sm" | "md") =>
     providerLogoUrl ? (
       <Tooltip
         content={`${t("transactions.transfer.provider")}: ${transaction.provider}`}
       >
-        <Image
-          src={providerLogoUrl}
-          alt={transaction.provider}
-          width={logoSize}
-          height={logoSize}
-          className="rounded-full"
-        />
+        <span
+          className={classNames(
+            "flex shrink-0 items-center justify-center rounded-full bg-osmoverse-700",
+            badgeSize === "sm" ? "h-4 w-4 p-0.5" : "h-6 w-6 p-1"
+          )}
+        >
+          <Image
+            src={providerLogoUrl}
+            alt={transaction.provider}
+            width={16}
+            height={16}
+            className="h-full w-full object-contain"
+          />
+        </span>
       </Tooltip>
     ) : null;
 
@@ -404,7 +412,7 @@ export const TransactionTransferRow = ({
     return (
       <SmallTransactionContainer
         status={simplifiedStatus}
-        titleAdornment={providerLogo(14)}
+        titleAdornment={providerLogo("sm")}
         title={{
           pending: pendingText,
           success: successText,
@@ -422,7 +430,7 @@ export const TransactionTransferRow = ({
     <LargeTransactionContainer
       iconId={transaction.direction === "withdraw" ? "withdraw" : "deposit"}
       status={simplifiedStatus}
-      titleAdornment={providerLogo(18)}
+      titleAdornment={providerLogo("md")}
       title={{
         pending: pendingText,
         success: successText,
