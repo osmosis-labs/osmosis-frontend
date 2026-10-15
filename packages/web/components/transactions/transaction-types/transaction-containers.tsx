@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
@@ -8,6 +8,7 @@ import { theme } from "~/tailwind.config";
 export const SmallTransactionContainer = ({
   status,
   title,
+  titleAdornment,
   leftComponent,
   rightComponent,
   isSelected,
@@ -15,6 +16,8 @@ export const SmallTransactionContainer = ({
 }: {
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
+  /** Shown after the title, e.g. the bridge provider's logo. */
+  titleAdornment?: ReactNode;
   leftComponent: JSX.Element | null;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
@@ -36,14 +39,17 @@ export const SmallTransactionContainer = ({
     onClick={() => onClick?.()}
   >
     <div className="flex flex-col">
-      <p
-        className={classNames(
-          "body2",
-          status === "failed" ? "text-rust-400" : "text-white-full"
-        )}
-      >
-        {title[status]}
-      </p>
+      <div className="flex items-center gap-1.5">
+        <p
+          className={classNames(
+            "body2",
+            status === "failed" ? "text-rust-400" : "text-white-full"
+          )}
+        >
+          {title[status]}
+        </p>
+        {titleAdornment}
+      </div>
       {leftComponent}
     </div>
     <div className="flex items-center justify-end">{rightComponent}</div>
@@ -54,6 +60,7 @@ export const LargeTransactionContainer = ({
   iconId,
   status,
   title,
+  titleAdornment,
   rightComponent,
   isSelected,
   onClick,
@@ -62,6 +69,8 @@ export const LargeTransactionContainer = ({
   iconId: SpriteIconId;
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
+  /** Shown after the title, e.g. the bridge provider's logo. */
+  titleAdornment?: ReactNode;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
@@ -102,7 +111,7 @@ export const LargeTransactionContainer = ({
         )}
       </div>
 
-      <div>
+      <div className="flex items-center gap-2">
         <p
           className={classNames(
             "subtitle1 md:body2 text-osmoverse-100",
@@ -111,6 +120,7 @@ export const LargeTransactionContainer = ({
         >
           {title[status]}
         </p>
+        {titleAdornment}
       </div>
     </div>
 

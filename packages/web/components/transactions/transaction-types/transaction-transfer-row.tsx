@@ -2,6 +2,7 @@ import { TxSnapshot } from "@osmosis-labs/bridge";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import Image from "next/image";
 import React from "react";
 
 import { Icon } from "~/components/assets";
@@ -20,6 +21,7 @@ import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
+import { BridgeLogoUrls } from "~/utils/bridge";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
 
@@ -381,10 +383,28 @@ export const TransactionTransferRow = ({
       ? t("transactions.historyTable.failWithdraw")
       : t("transactions.historyTable.failDeposit");
 
+  const providerLogoUrl =
+    BridgeLogoUrls[transaction.provider as keyof typeof BridgeLogoUrls];
+  const providerLogo = (logoSize: number) =>
+    providerLogoUrl ? (
+      <Tooltip
+        content={`${t("transactions.transfer.provider")}: ${transaction.provider}`}
+      >
+        <Image
+          src={providerLogoUrl}
+          alt={transaction.provider}
+          width={logoSize}
+          height={logoSize}
+          className="rounded-full"
+        />
+      </Tooltip>
+    ) : null;
+
   if (size === "sm") {
     return (
       <SmallTransactionContainer
         status={simplifiedStatus}
+        titleAdornment={providerLogo(14)}
         title={{
           pending: pendingText,
           success: successText,
@@ -402,6 +422,7 @@ export const TransactionTransferRow = ({
     <LargeTransactionContainer
       iconId={transaction.direction === "withdraw" ? "withdraw" : "deposit"}
       status={simplifiedStatus}
+      titleAdornment={providerLogo(18)}
       title={{
         pending: pendingText,
         success: successText,
