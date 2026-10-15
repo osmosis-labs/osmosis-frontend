@@ -16,7 +16,6 @@ import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
-
 import { WalletRuntime } from "~/stores/wallet-runtime";
 
 export class RootStore {
