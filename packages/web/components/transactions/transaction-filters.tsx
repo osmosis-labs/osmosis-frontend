@@ -17,6 +17,11 @@ import { HistoryTransaction } from "~/hooks/use-transaction-history";
 export const TRANSACTION_KINDS = ["swap", "deposit", "withdraw"] as const;
 export type TransactionKind = (typeof TRANSACTION_KINDS)[number];
 
+/** Whether every kind is selected (a URL can repeat kinds, so not by length). */
+export function isAllKinds(kinds: readonly TransactionKind[]) {
+  return TRANSACTION_KINDS.every((kind) => kinds.includes(kind));
+}
+
 export function getTransactionKind(tx: HistoryTransaction): TransactionKind {
   return tx.__type === "transaction" ? "swap" : tx.direction;
 }
@@ -55,25 +60,29 @@ const SEARCH_KEYS: Fuse.FuseOptionKey<HistoryTransaction>[] = [
   },
 ];
 
-/** Shortest word matched against addresses, so short words don't hit by chance. */
-const MIN_ADDRESS_TERM_LENGTH = 4;
+/**
+ * Shortest word matched against addresses, so short words don't hit by
+ * chance: a given 3 characters appear in ~1% of random EVM addresses (2 would
+ * be ~1 in 7, and would match whole chains by their address prefix).
+ */
+const MIN_ADDRESS_TERM_LENGTH = 3;
 
 /**
  * Filter by transaction kind, then search. Every word of the query must
  * match the transaction:
  * - numbers match amounts as a substring ("5.5" finds 5.505156 and 15.5)
  * - other words fuzzy match assets, chains and provider, or match a
- *   transfer's from/to address as a substring (case-insensitive; a
- *   shortened `0xc8E4...A487` must match at both ends)
+ *   transfer's from/to address as a substring (case-insensitive, 3+
+ *   characters; a shortened `0xc8E4...A487` must match at both ends)
+ * - `0x` alone matches transfers to or from an EVM address
  */
 export function filterTransactions(
   transactions: HistoryTransaction[],
   { kinds, query }: { kinds: readonly TransactionKind[]; query: string | null }
 ): HistoryTransaction[] {
-  const byKind =
-    kinds.length === TRANSACTION_KINDS.length
-      ? transactions
-      : transactions.filter((tx) => kinds.includes(getTransactionKind(tx)));
+  const byKind = isAllKinds(kinds)
+    ? transactions
+    : transactions.filter((tx) => kinds.includes(getTransactionKind(tx)));
 
   const terms = query?.trim().split(/\s+/).filter(Boolean) ?? [];
   if (terms.length === 0) return byKind;
@@ -88,6 +97,11 @@ export function filterTransactions(
           ? normalizeNumberTerm(term)
           : term.replace(/[$,]/g, "");
         return (tx) => getAmounts(tx).some((amount) => amount.includes(n));
+      }
+
+      if (term.toLowerCase() === "0x") {
+        return (tx) =>
+          getAddresses(tx).some((address) => address.startsWith("0x"));
       }
 
       const fuzzyMatches = new Set(searcher.process(term));
@@ -183,7 +197,7 @@ function trimDecimal(value: string) {
  * address or date yet.
  */
 export function useTransactionFilters() {
-  return useQueryStates(
+  const [filters, setFilters] = useQueryStates(
     {
       txSearch: parseAsString,
       txTypes: parseAsArrayOf(
@@ -192,6 +206,12 @@ export function useTransactionFilters() {
     },
     { history: "push" }
   );
+  // the URL can repeat kinds (`txTypes=swap,swap`): use each once, in order
+  const txTypes = useMemo(
+    () => TRANSACTION_KINDS.filter((kind) => filters.txTypes.includes(kind)),
+    [filters.txTypes]
+  );
+  return [{ ...filters, txTypes }, setFilters] as const;
 }
 
 export function useFilteredTransactions(transactions: HistoryTransaction[]) {
@@ -205,8 +225,7 @@ export function useFilteredTransactions(transactions: HistoryTransaction[]) {
     [transactions, filters.txTypes, filters.txSearch]
   );
   const isFiltering =
-    Boolean(filters.txSearch?.trim()) ||
-    filters.txTypes.length !== TRANSACTION_KINDS.length;
+    Boolean(filters.txSearch?.trim()) || !isAllKinds(filters.txTypes);
   return { filtered, isFiltering, query: filters.txSearch };
 }
 

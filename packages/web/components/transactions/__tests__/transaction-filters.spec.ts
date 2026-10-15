@@ -215,9 +215,16 @@ describe("filterTransactions", () => {
       expect(search("$")).toEqual([]);
     });
 
-    it("ignores short words for address matching", () => {
-      // "c8e" appears in the address but is too short to count
-      expect(search("c8e")).toEqual([]);
+    it("matches 3 characters but not 2", () => {
+      // both appear in 0xc8E4D1e39819d9C11B860356Ba5eF1100aB3A487
+      expect(search("c8e")).toEqual(["wd-usdt-avalanche"]);
+      expect(search("c8")).toEqual([]);
+    });
+
+    it("matches EVM transfers with 0x alone", () => {
+      expect(search("0x")).toEqual(["wd-usdt-avalanche"]);
+      expect(search("0X")).toEqual(["wd-usdt-avalanche"]);
+      expect(search("0x usdc")).toEqual([]);
     });
   });
 
@@ -230,5 +237,14 @@ describe("filterTransactions", () => {
 
   it("combines kind and search", () => {
     expect(search("usdc", ["swap"])).toEqual(["swap-usdc-osmo"]);
+  });
+
+  it("doesn't treat repeated kinds as all kinds", () => {
+    // e.g. from a URL like ?txTypes=swap,swap,deposit
+    expect(search("", ["swap", "swap", "deposit"])).toEqual([
+      "swap-osmo-atom",
+      "dep-usdc-noble",
+      "swap-usdc-osmo",
+    ]);
   });
 });

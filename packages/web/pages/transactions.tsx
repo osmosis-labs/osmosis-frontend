@@ -9,7 +9,7 @@ import { TransactionContent } from "~/components/transactions/transaction-conten
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
 import {
-  TRANSACTION_KINDS,
+  isAllKinds,
   useTransactionFilters,
 } from "~/components/transactions/transaction-filters";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
@@ -56,8 +56,7 @@ const Transactions: React.FC = observer(() => {
   const { transactions, hasNextPage, isLoading } = useTransactionHistory({
     pageNumber: pageString,
     pageSize: pageSizeString,
-    types:
-      txTypes.length === TRANSACTION_KINDS.length ? undefined : [...txTypes],
+    types: isAllKinds(txTypes) ? undefined : [...txTypes],
   });
 
   useEffect(() => {

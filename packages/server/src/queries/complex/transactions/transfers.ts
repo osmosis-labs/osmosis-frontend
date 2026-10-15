@@ -627,7 +627,10 @@ async function lookupAxelarGmp(
  *
  * Sends and packets are matched on channel, receiver and amount (the index
  * doesn't give a send's packet sequence), each packet at most once, earliest
- * after the send first.
+ * after the send first. Identical sends (same channel, receiver and amount)
+ * can't be told apart, so a send is only settled when every packet that could
+ * be its outcome agrees; otherwise it stays pending (and is tracked client
+ * side).
  */
 export function settleIbcWithdrawals({
   transfers,
@@ -682,7 +685,7 @@ export function settleIbcWithdrawals({
     if (!tx || !send || !token) return transfer;
 
     const sentAt = new Date(tx.blockTimestamp).getTime();
-    const packet = packets.find(
+    const candidates = packets.filter(
       (p) =>
         !used.has(p) &&
         p.at >= sentAt &&
@@ -690,7 +693,10 @@ export function settleIbcWithdrawals({
         p.receiver === send.receiver &&
         p.amount === token.amount
     );
+    const [packet] = candidates;
     if (!packet) return transfer;
+    // ambiguous: an identical send could own a packet with another outcome
+    if (candidates.some((p) => p.status !== packet.status)) return transfer;
     used.add(packet);
     return { ...transfer, status: packet.status };
   });

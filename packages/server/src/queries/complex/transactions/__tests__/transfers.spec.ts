@@ -325,6 +325,24 @@ describe("mapTransfers", () => {
       ).toBe("refunded");
     });
 
+    it("leaves it pending when identical sends' outcomes disagree", () => {
+      // an identical send (same channel, receiver, amount) timed out: either
+      // packet could be this send's
+      expect(
+        settle([
+          outcome("MsgAcknowledgement", { minutesAfter: 1 }),
+          outcome("MsgTimeout", { minutesAfter: 2 }),
+        ])
+      ).toBe("pending");
+      // all agree: settled
+      expect(
+        settle([
+          outcome("MsgAcknowledgement", { minutesAfter: 1 }),
+          outcome("MsgAcknowledgement", { minutesAfter: 2 }),
+        ])
+      ).toBe("success");
+    });
+
     it("leaves it pending without a matching packet", () => {
       expect(settle([])).toBe("pending");
       // a different amount, or a packet from before the send
