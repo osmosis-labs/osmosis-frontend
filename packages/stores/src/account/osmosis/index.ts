@@ -2018,13 +2018,13 @@ export class OsmosisAccountImpl {
     );
   }
 
+  // Exit pool estimates only round-trip base amounts through the currency, so
+  // a denom missing from the asset list (e.g. an unlisted ibc/ asset in an
+  // old pool) falls back to a 0-decimal currency instead of blocking the exit.
   protected makeCoinPretty = (coin: Coin): CoinPretty => {
     const currency = this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(coin.denom);
-    if (!currency) {
-      throw new Error("Unknown currency");
-    }
+      .forceFindCurrency(coin.denom);
     return new CoinPretty(currency, coin.amount);
   };
 }

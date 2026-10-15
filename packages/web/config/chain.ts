@@ -7,8 +7,8 @@ import { ChainList } from "~/config/generated/chain-list";
 import { getKeplrCompatibleChain } from "~/config/keplr-chain";
 
 /**
- * Static chain config, built once from the generated lists. Replaces reads of the MobX
- * `ChainStore`, which `RootStore` still constructs from `ChainInfos` for the account store.
+ * Static chain config, built once from the generated lists and shared by the account store
+ * and web runtime.
  */
 export const ChainInfos: ChainInfoWithExplorer[] = ChainList.map((chain) =>
   getKeplrCompatibleChain({ chain, assetLists: AssetLists })
@@ -67,7 +67,7 @@ export function findOsmosisCurrency(
  * Read-only `ChainGetter` over the static chain config, for the `packages/stores` configs that
  * take one. Currencies are never registered at runtime, so `addUnknownCurrencies` is a no-op.
  */
-export const StaticChainGetter: ChainGetter = {
+export const StaticChainGetter = {
   getChain(chainId) {
     const chainInfo = getChainInfo(chainId);
     const findCurrency = (coinMinimalDenom: string) =>
@@ -86,4 +86,4 @@ export const StaticChainGetter: ChainGetter = {
         },
     };
   },
-};
+} satisfies ChainGetter;
