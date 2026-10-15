@@ -1,5 +1,11 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { getAddress } from "viem";
+import {
+  encodeAbiParameters,
+  encodeFunctionData,
+  getAddress,
+  parseAbi,
+  zeroAddress,
+} from "viem";
 
 import { AssetLists as MockAssetLists } from "../../../__tests__/mock-asset-lists";
 import { MockChains } from "../../../__tests__/mock-chains";
@@ -425,6 +431,125 @@ describe("mapTransfers", () => {
         address:
           "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
       },
+    });
+  });
+
+  describe("Squid recipients", () => {
+    const SQUID_ROUTER = "0xce16F69375520ab01377ce7B88f5BA8C48F8D666";
+    const user = "0xc8E4D1e39819d9C11B860356Ba5eF1100aB3A487";
+    const refund = "0x1111111111111111111111111111111111111111";
+    const token = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+    const router = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+    const multicall = "0xaD6Cea45f98444a922a2b4fE96b8C90F0862D2F4";
+
+    type Call = {
+      callType: number;
+      target: `0x${string}`;
+      callData: `0x${string}`;
+    };
+    const payload = (calls: Call[]) =>
+      encodeAbiParameters(
+        [
+          {
+            type: "tuple[]",
+            components: [
+              { name: "callType", type: "uint8" },
+              { name: "target", type: "address" },
+              { name: "value", type: "uint256" },
+              { name: "callData", type: "bytes" },
+              { name: "payload", type: "bytes" },
+            ],
+          },
+          { type: "address" },
+        ],
+        [
+          calls.map((c) => ({
+            ...c,
+            value: BigInt(0),
+            payload: "0x" as const,
+          })),
+          refund,
+        ]
+      );
+    const recipient = (calls: Call[]) =>
+      decodeGmpRecipient({
+        destination_address: SQUID_ROUTER,
+        payload: payload(calls),
+      });
+
+    const erc20 = parseAbi([
+      "function approve(address spender, uint256 amount)",
+      "function transfer(address to, uint256 amount)",
+    ]);
+    const swapRouter02 = parseAbi([
+      "function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96) params)",
+    ]);
+    const approve: Call = {
+      callType: 0,
+      target: token,
+      callData: encodeFunctionData({
+        abi: erc20,
+        functionName: "approve",
+        args: [router, BigInt(1)],
+      }),
+    };
+    const swapTo = (to: `0x${string}`): Call => ({
+      callType: 1,
+      target: router,
+      callData: encodeFunctionData({
+        abi: swapRouter02,
+        functionName: "exactInputSingle",
+        args: [
+          {
+            tokenIn: token,
+            tokenOut: token,
+            fee: 100,
+            recipient: to,
+            amountIn: BigInt(1),
+            amountOutMinimum: BigInt(1),
+            sqrtPriceLimitX96: BigInt(0),
+          },
+        ],
+      }),
+    });
+
+    it("is whoever the last call pays out to, not the refund recipient", () => {
+      // native balance send
+      expect(
+        recipient([
+          approve,
+          swapTo(multicall),
+          { callType: 2, target: user, callData: "0x" },
+        ])
+      ).toBe(user);
+      // ERC-20 transfer
+      expect(
+        recipient([
+          approve,
+          {
+            callType: 1,
+            target: token,
+            callData: encodeFunctionData({
+              abi: erc20,
+              functionName: "transfer",
+              args: [user, BigInt(1)],
+            }),
+          },
+        ])
+      ).toBe(user);
+      // swap paying out directly
+      expect(recipient([approve, swapTo(user)])).toBe(user);
+    });
+
+    it("is unknown when the last call isn't a recognised payout", () => {
+      // paying back into the multicall
+      expect(recipient([approve, swapTo(multicall)])).toBeUndefined();
+      // an unknown call
+      expect(recipient([approve])).toBeUndefined();
+      expect(
+        recipient([{ callType: 2, target: zeroAddress, callData: "0x" }])
+      ).toBeUndefined();
+      expect(recipient([])).toBeUndefined();
     });
   });
 

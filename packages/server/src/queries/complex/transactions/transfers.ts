@@ -434,11 +434,13 @@ function isSquidRouter(address: unknown) {
 /**
  * The final recipient of an Axelar GMP withdrawal, from the GMP payload
  * (`destination_address` is only the bridge's contract):
- * - Squid router: `abi.encode(Call[] calls, address refundRecipient, ...)`;
- *   the refund recipient is the user.
+ * - Squid router: the payout of the multicall it runs (see
+ *   `decodeSquidRecipient`). Not the route's refund recipient, which can
+ *   differ from the recipient.
  * - Skip's Axelar handler: `abi.encode(uint8 command, bytes data)`, where
  *   `data` is `(address recipient)` for sends (commands 0, 1) and
  *   `(address token, address recipient, ...)` for swap-and-sends.
+ * Undefined when the payload doesn't say: shown as unknown.
  */
 export function decodeGmpRecipient(
   gmp: Record<string, unknown>
@@ -447,7 +449,9 @@ export function decodeGmpRecipient(
   if (!bytes) return;
   const word = (index: number) => bytes.slice(index * 32, (index + 1) * 32);
 
-  if (isSquidRouter(gmp.destination_address)) return wordToAddress(word(1));
+  if (isSquidRouter(gmp.destination_address)) {
+    return decodeSquidRecipient(bytes);
+  }
 
   const command = wordToNumber(word(0));
   const offset = wordToNumber(word(1));
@@ -457,6 +461,79 @@ export function decodeGmpRecipient(
   // `data` starts after its length word
   const data = offset / 32 + 1;
   return wordToAddress(word(command <= 1 ? data : data + 1));
+}
+
+/** Squid's multicall, which holds funds between the route's calls. */
+const SQUID_MULTICALL = "0xad6cea45f98444a922a2b4fe96b8c90f0862d2f4";
+
+/** Squid multicall call types (`ISquidMulticall.CallType`). */
+const SQUID_CALL_FULL_NATIVE_BALANCE = 2;
+
+/**
+ * Payout calls by selector, and the argument (32-byte word after the
+ * selector) holding the recipient.
+ */
+const SQUID_PAYOUT_RECIPIENT_ARG: Record<string, number> = {
+  // ERC-20 transfer(address to, uint256 amount)
+  a9059cbb: 0,
+  // Uniswap V3 SwapRouter02 exactInputSingle((tokenIn, tokenOut, fee,
+  // recipient, amountIn, amountOutMinimum, sqrtPriceLimitX96))
+  "04e45aaf": 3,
+  // Uniswap V3 SwapRouter exactInputSingle((tokenIn, tokenOut, fee,
+  // recipient, deadline, amountIn, amountOutMinimum, sqrtPriceLimitX96))
+  "414bf389": 3,
+};
+
+/**
+ * The recipient of a Squid route: whoever its last call pays out to. The
+ * payload is `abi.encode(Call[] calls, address refundRecipient)` with
+ * `Call = (uint8 callType, address target, uint256 value, bytes callData,
+ * bytes payload)`; the multicall holds the funds until the last call moves
+ * them out by sending the native balance (target is the recipient), an
+ * ERC-20 transfer, or a swap paying out directly. Anything else is unknown.
+ */
+function decodeSquidRecipient(bytes: Uint8Array): string | undefined {
+  const wordAt = (offset: number) => bytes.slice(offset, offset + 32);
+  const numberAt = (offset: number) => wordToNumber(wordAt(offset));
+
+  const callsOffset = numberAt(0);
+  if (callsOffset === undefined) return;
+  const count = numberAt(callsOffset);
+  if (!count) return;
+
+  // offsets of the dynamic tuples are relative to the start of the array data
+  const arrayStart = callsOffset + 32;
+  const lastOffset = numberAt(arrayStart + (count - 1) * 32);
+  if (lastOffset === undefined) return;
+  const call = arrayStart + lastOffset;
+
+  const callType = numberAt(call);
+  const target = wordToAddress(wordAt(call + 32));
+  let recipient: string | undefined;
+
+  if (callType === SQUID_CALL_FULL_NATIVE_BALANCE) {
+    recipient = target;
+  } else {
+    const callDataOffset = numberAt(call + 96);
+    if (callDataOffset === undefined) return;
+    const callDataStart = call + callDataOffset;
+    const callDataLength = numberAt(callDataStart);
+    if (!callDataLength || callDataLength < 4) return;
+    const callData = bytes.slice(
+      callDataStart + 32,
+      callDataStart + 32 + callDataLength
+    );
+    const selector = Array.from(callData.slice(0, 4), (b) =>
+      b.toString(16).padStart(2, "0")
+    ).join("");
+    const arg = SQUID_PAYOUT_RECIPIENT_ARG[selector];
+    if (arg === undefined) return;
+    recipient = wordToAddress(callData.slice(4 + arg * 32, 4 + (arg + 1) * 32));
+  }
+
+  // paying back into the multicall isn't a payout
+  if (!recipient || recipient.toLowerCase() === SQUID_MULTICALL) return;
+  return recipient;
 }
 
 function toBytes(payload: unknown): Uint8Array | undefined {
