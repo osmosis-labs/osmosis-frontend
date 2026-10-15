@@ -34,6 +34,90 @@ yarn lint:fix
 yarn build && yarn start
 ```
 
+### Cloudflare production candidate (`master-cf`)
+
+`master-cf` starts from production `master` (`951fade04`), with Cloudflare
+compatibility changes ported from `stage-cf` (`74bbbc0c1`). It does not include
+unreleased stage features. Next.js, its bundle analyzer and ESLint config are
+updated together to 15.5.27 to satisfy OpenNext's >=15.5.26 peer requirement.
+Vercel Speed Insights is removed from this Cloudflare branch.
+
+Deployment resources are separate from staging:
+
+| Resource                  | Production candidate                      | Staging (on `stage-cf`)           |
+| ------------------------- | ----------------------------------------- | --------------------------------- |
+| Worker and self-reference | `osmosis-frontend-production`             | `osmosis-frontend-stage`          |
+| R2 incremental cache      | `osmosis-frontend-production-cache`       | `osmosis-frontend-stage-cache`    |
+| Revalidation queue        | `DOQueueHandler` in the production Worker | Separate staging Worker namespace |
+
+The initial deployment uses only the Worker's `workers.dev` hostname. The config
+contains no production custom domain or route. Deploying this branch does not
+move `app.osmosis.zone` away from Vercel.
+
+Use Node 24, a Workers Paid account, and R2 on the same Cloudflare account.
+From the repository root:
+
+```bash
+corepack yarn install --immutable
+yarn cf:build
+yarn cf:dry-run
+```
+
+Before the first remote deployment, authenticate Wrangler or configure
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and create the cache bucket once:
+
+```bash
+yarn cf:cache:create
+```
+
+Set production `NEXT_PUBLIC_*` values in the build environment (or the ignored
+`packages/web/.env.production.local`) before building. Match Vercel production's
+LaunchDarkly, WalletConnect, chain and data-provider configuration. Rebuild after
+changing public values; dashboard runtime variables cannot change the browser
+bundle. Pin `ASSET_LIST_COMMIT_HASH` and `NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH`
+to the same generated-data inputs as the Vercel release when comparing providers.
+Allow the candidate hostname in relevant provider origin settings.
+
+Configure runtime variables and secrets on `osmosis-frontend-production`,
+including the configured providers' `SKIP_API_KEY`, `SOLANA_RPC_URL`,
+`SWAPPED_COM_SK`, `COINGECKO_API_KEY` and `NUMIA_API_KEY` as needed. Secrets belong
+in Cloudflare, not the repository. Existing stage secrets are not inherited.
+`cf:deploy` preserves dashboard variables using `--keep-vars`.
+
+```bash
+yarn cf:deploy
+```
+
+This rebuilds, populates the production R2 cache and deploys the Worker with its
+Durable Object migration. For [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), connect a separate
+Worker to this repository with production branch `master-cf`, repository root
+`/`, build command `yarn cf:build`, and deploy command
+`yarn workspace @osmosis-labs/web exec opennextjs-cloudflare deploy -- --keep-vars`.
+Disable non-production branch builds for this production Worker. Supply Node 24
+and production build variables in its build settings.
+
+Verify `/`, `/apps`, `/assets`, an asset detail page, `/api/pools/1`, images,
+wallet connection and quotes on the candidate hostname. Check same-origin API
+POSTs, unit-value serialization, ISR cache reads and background regeneration.
+Use `yarn cf:preview` for local Workers preview and
+`yarn workspace @osmosis-labs/web exec wrangler tail` for deployed logs.
+
+Before introducing production traffic, validate a separate routing Worker on
+`stage.osmosis.zone`. Production routing should start with 100% Vercel, then use
+sticky browser cohorts for 1%, 5%, 25%, 50% and 100% Cloudflare. Route pages,
+`/_next/*`, images and `/api/*` consistently; initially bypass the router cache.
+The force-Vercel switch must override existing cohort cookies. Test rollback
+from an already-open Cloudflare page and ensure its referenced assets remain
+available. Do not replay failed mutation requests against the other provider.
+Compare errors, API failures, chunk errors, latency and wallet/transaction flows
+by provider before raising traffic. Keep Vercel running through the soak period.
+
+For future production releases, merge `origin/master` into `master-cf`; port
+Cloudflare fixes individually from `stage-cf` rather than merging its unreleased
+application changes. Record the production base commit and deployed Worker
+version for each candidate. Worker rollback does not revert R2 or Durable Object
+state.
+
 ### Analyze
 
 View the size of the various webpack bundles on both the server and the client.

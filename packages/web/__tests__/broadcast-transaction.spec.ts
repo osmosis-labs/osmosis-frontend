@@ -2,7 +2,7 @@
 import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import broadcastTransactionHandler from "~/pages/api/broadcast-transaction";
+import { broadcastTransactionHandler } from "~/pages/api/broadcast-transaction";
 
 // Mocking ChainList to control its behavior in tests
 jest.mock("~/config/generated/chain-list", () => ({

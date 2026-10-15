@@ -46,3 +46,8 @@ generated
 robots.txt
 sitemap-*.xml
 sitemap.xml
+
+# Cloudflare / OpenNext
+.open-next
+.wrangler
+.dev.vars

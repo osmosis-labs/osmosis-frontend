@@ -1,17 +1,12 @@
 import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { NextRequest } from "next/server";
 
 import { edgeRouter } from "~/server/api/edge-router";
 import { createEdgeTrpcContext } from "~/server/api/trpc";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
-// We're using the edge-runtime
-export const config = {
-  runtime: "edge",
-};
-
-export default async function handler(req: NextRequest) {
+async function handler(req: Request) {
   return fetchRequestHandler({
     endpoint: constructEdgeUrlPathname("main"),
     router: edgeRouter,
@@ -28,3 +23,9 @@ export default async function handler(req: NextRequest) {
         : undefined,
   });
 }
+
+export default toNodeApiHandler(handler);
+
+export const config = {
+  api: { bodyParser: false },
+};

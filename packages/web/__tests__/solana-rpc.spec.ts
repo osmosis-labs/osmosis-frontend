@@ -2,7 +2,7 @@
 import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import solanaRpcHandler from "~/pages/api/solana-rpc";
+import { solanaRpcHandler } from "~/pages/api/solana-rpc";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 const KEYED_RPC = "https://solana-provider.test/?api-key=secret";

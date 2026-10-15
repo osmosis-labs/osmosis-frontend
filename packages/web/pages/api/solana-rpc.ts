@@ -10,6 +10,8 @@
  * a time, so the route can't be used as a general proxy for our key.
  */
 
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
+
 const SOLANA_PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 
 /** Methods the in-app Solana bridge flow calls from the browser. */
@@ -37,7 +39,7 @@ const json = (body: unknown, status: number) =>
     headers: { "Content-Type": "application/json" },
   });
 
-export default async function solanaRpcHandler(req: Request) {
+export async function solanaRpcHandler(req: Request) {
   if (req.method !== "POST") {
     return json({ error: "Method not allowed" }, 405);
   }
@@ -111,6 +113,8 @@ export default async function solanaRpcHandler(req: Request) {
   }
 }
 
+export default toNodeApiHandler(solanaRpcHandler);
+
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };

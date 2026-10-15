@@ -31,7 +31,12 @@
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
     "lint:workspace": "sherif --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e",
     "lint:workspace:fix": "yarn lint:workspace -f",
-    "postinstall": "yarn lint:workspace"
+    "postinstall": "yarn lint:workspace",
+    "cf:build": "yarn workspace @osmosis-labs/web cf:build",
+    "cf:preview": "yarn workspace @osmosis-labs/web cf:preview",
+    "cf:dry-run": "yarn workspace @osmosis-labs/web cf:dry-run",
+    "cf:deploy": "yarn workspace @osmosis-labs/web cf:deploy",
+    "cf:cache:create": "yarn workspace @osmosis-labs/web cf:cache:create"
   },
   "pre-commit": [
     "pre-commit"
