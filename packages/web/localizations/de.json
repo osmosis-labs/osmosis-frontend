@@ -1294,6 +1294,15 @@
       "providerFee": "Anbietergebühr",
       "provider": "Anbieter",
       "networkFee": "Netzwerkgebühr"
+    },
+    "filter": {
+      "type": "Type",
+      "swap": "Swap",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "search": "Search asset, chain or provider",
+      "noMatches": "No matching transactions",
+      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
     }
   },
   "date": {
