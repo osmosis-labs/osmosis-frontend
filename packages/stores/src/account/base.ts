@@ -285,19 +285,34 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     autorun(async () => {
       const sessionRevision = this.sessionRevision;
       const preferenceRevision = this.preferenceRevision;
-      const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
-      const oneClickTradingInfo = await this.getOneClickTradingInfo();
-      const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
-      runInAction(() => {
-        if (this.preferenceRevision === preferenceRevision) {
-          this.useOneClickTrading = isOneClickTradingEnabled;
-        }
-        if (this.sessionRevision === sessionRevision) {
-          this.oneClickTradingInfo = oneClickTradingInfo ?? null;
-          this.hasUsedOneClickTrading = hasUsedOneClickTrading;
-        }
-        this.isStateHydrated = true;
-      });
+      try {
+        const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
+        const oneClickTradingInfo = await this.getOneClickTradingInfo();
+        const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
+        runInAction(() => {
+          // The enabled value is derived from the session too, so a session
+          // write during the reads also makes it stale.
+          if (
+            this.preferenceRevision === preferenceRevision &&
+            this.sessionRevision === sessionRevision
+          ) {
+            this.useOneClickTrading = isOneClickTradingEnabled;
+          }
+          if (this.sessionRevision === sessionRevision) {
+            this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+            this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+          }
+        });
+      } catch (e) {
+        // A stored value that cannot be read (corrupt JSON, blocked storage)
+        // must not leave the one-click state loading forever. The defaults
+        // (disabled, no session) stand until the next write replaces it.
+        console.error("Failed to read one-click trading state", e);
+      } finally {
+        runInAction(() => {
+          this.isStateHydrated = true;
+        });
+      }
     });
   }
 
