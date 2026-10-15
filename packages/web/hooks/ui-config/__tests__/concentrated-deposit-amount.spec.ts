@@ -1,11 +1,11 @@
+import { CoinPretty } from "@osmosis-labs/unit";
 import {
   EmptyAmountError,
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import { CoinPretty } from "@osmosis-labs/unit";
+} from "@osmosis-labs/utils";
 
 import {
   calcHighGasFee,

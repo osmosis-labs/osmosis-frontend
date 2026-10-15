@@ -1,10 +1,7 @@
-import {
-  EmptyAmountError,
-  InsufficientAmountError,
-} from "@osmosis-labs/keplr-hooks";
 import { makePoolFromChainPool } from "@osmosis-labs/server";
-import { NotInitializedError } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { EmptyAmountError, InsufficientAmountError } from "@osmosis-labs/utils";
+import { NotInitializedError } from "@osmosis-labs/utils";
 import { act, renderHook } from "@testing-library/react";
 
 import {

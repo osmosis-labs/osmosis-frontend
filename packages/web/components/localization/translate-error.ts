@@ -1,15 +1,15 @@
 import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "@osmosis-labs/server";
+import {
   EmptyAmountError,
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import {
-  NoRouteError,
-  NotEnoughLiquidityError,
-  NotEnoughQuotedError,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/utils";
 import {
   CalculatingShareOutAmountError,
   DepositNoBalanceError,
