@@ -1276,7 +1276,7 @@
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
-    "launchAlert": "目前僅顯示交易和轉帳歷史記錄。即將支援更多交易類型。",
+    "launchAlert": "顯示您的兌換、存入及提取記錄。",
     "history": "歷史",
     "orders": "命令",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "網路費"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "交易類型",
+      "swap": "兌換",
+      "deposit": "存入",
+      "withdraw": "提取",
+      "search": "搜尋資產、鏈或服務商",
+      "noMatches": "沒有符合的交易",
+      "pageHint": "篩選只適用於本頁的交易。請查看下一頁或調整篩選條件。"
     }
   },
   "date": {

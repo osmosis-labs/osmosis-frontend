@@ -1276,7 +1276,7 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
-    "launchAlert": "現在、取引と送金の履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
+    "launchAlert": "スワップ、入金、出金が表示されます。",
     "history": "歴史",
     "orders": "注文",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "ネットワーク料金"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "取引の種類",
+      "swap": "スワップ",
+      "deposit": "入金",
+      "withdraw": "出金",
+      "search": "アセット、チェーン、プロバイダーを検索",
+      "noMatches": "一致する取引はありません",
+      "pageHint": "フィルターはこのページの取引にのみ適用されます。次のページを確認するか、フィルターを調整してください。"
     }
   },
   "date": {

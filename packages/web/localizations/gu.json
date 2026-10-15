@@ -1276,7 +1276,7 @@
     "totalFees": "કુલ ફી",
     "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
     "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
-    "launchAlert": "હાલમાં માત્ર વેપાર અને ટ્રાન્સફર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
+    "launchAlert": "તમારા સ્વેપ, ડિપોઝિટ અને ઉપાડ દર્શાવવામાં આવે છે.",
     "history": "ઇતિહાસ",
     "orders": "ઓર્ડર",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "નેટવર્ક ફી"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "વ્યવહારના પ્રકારો",
+      "swap": "સ્વેપ",
+      "deposit": "ડિપોઝિટ",
+      "withdraw": "ઉપાડ",
+      "search": "એસેટ, ચેઇન અથવા પ્રદાતા શોધો",
+      "noMatches": "કોઈ મેળ ખાતા વ્યવહારો નથી",
+      "pageHint": "ફિલ્ટર ફક્ત આ પૃષ્ઠ પરના વ્યવહારો પર લાગુ થાય છે. આગલું પૃષ્ઠ અજમાવો અથવા તમારા ફિલ્ટર બદલો."
     }
   },
   "date": {

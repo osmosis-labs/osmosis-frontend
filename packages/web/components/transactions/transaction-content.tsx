@@ -96,30 +96,34 @@ export const TransactionContent = ({
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          <TabList className="flex items-center gap-8">
-            {TX_PAGE_TABS.map((defaultTab) => (
-              <Tab key={defaultTab}>
-                <span
-                  className={classNames(
-                    {
-                      "text-osmoverse-500": defaultTab !== tab,
-                    },
-                    "text-h5 font-h5 sm:text-h6"
-                  )}
-                >
-                  {t(
-                    defaultTab === "history"
-                      ? "transactions.history"
-                      : "transactions.orders"
-                  )}
-                </span>
-              </Tab>
-            ))}
-          </TabList>
+          <TransactionFilters
+            showControls={tab === "history" && Boolean(showTransactionContent)}
+            heading={
+              <TabList className="mr-auto flex items-center gap-8">
+                {TX_PAGE_TABS.map((defaultTab) => (
+                  <Tab key={defaultTab}>
+                    <span
+                      className={classNames(
+                        {
+                          "text-osmoverse-500": defaultTab !== tab,
+                        },
+                        "text-h5 font-h5 sm:text-h6"
+                      )}
+                    >
+                      {t(
+                        defaultTab === "history"
+                          ? "transactions.history"
+                          : "transactions.orders"
+                      )}
+                    </span>
+                  </Tab>
+                ))}
+              </TabList>
+            }
+          />
           <TabPanels>
             <TabPanel>
               <>
-                {showTransactionContent && <TransactionFilters />}
                 <div className="-mx-4 flex flex-col">
                   {showConnectWallet ? (
                     <NoTransactionsSplash variant="connect" />

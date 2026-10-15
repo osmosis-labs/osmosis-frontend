@@ -1276,7 +1276,7 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
-    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "launchAlert": "Sunt afișate swap-urile, depunerile și retragerile tale.",
     "history": "Istorie",
     "orders": "Comenzi",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "Taxa de retea"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "Tipuri de tranzacții",
+      "swap": "Swap-uri",
+      "deposit": "Depuneri",
+      "withdraw": "Retrageri",
+      "search": "Caută activ, rețea sau furnizor",
+      "noMatches": "Nicio tranzacție potrivită",
+      "pageHint": "Filtrele se aplică doar tranzacțiilor de pe această pagină. Încearcă pagina următoare sau ajustează filtrele."
     }
   },
   "date": {

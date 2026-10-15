@@ -1276,7 +1276,7 @@
     "totalFees": "Total des frais",
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
-    "launchAlert": "Actuellement, seul l'historique des transactions et des transferts est affiché. D'autres types de transactions seront bientôt disponibles.",
+    "launchAlert": "Vos swaps, dépôts et retraits sont affichés.",
     "history": "Histoire",
     "orders": "Ordres",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "Frais de réseau"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "Types de transaction",
+      "swap": "Swaps",
+      "deposit": "Dépôts",
+      "withdraw": "Retraits",
+      "search": "Rechercher un actif, une chaîne ou un fournisseur",
+      "noMatches": "Aucune transaction correspondante",
+      "pageHint": "Les filtres ne s'appliquent qu'aux transactions de cette page. Essayez la page suivante ou modifiez vos filtres."
     }
   },
   "date": {

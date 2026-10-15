@@ -1276,7 +1276,7 @@
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
-    "launchAlert": "Şu anda yalnızca işlem ve transfer geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek geliyor.",
+    "launchAlert": "Swap, yatırma ve çekme işlemleriniz gösterilir.",
     "history": "Tarih",
     "orders": "Emirler",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "Ağ ücreti"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "İşlem türleri",
+      "swap": "Swap'lar",
+      "deposit": "Yatırmalar",
+      "withdraw": "Çekimler",
+      "search": "Varlık, zincir veya sağlayıcı ara",
+      "noMatches": "Eşleşen işlem yok",
+      "pageHint": "Filtreler yalnızca bu sayfadaki işlemlere uygulanır. Sonraki sayfaya bakın veya filtrelerinizi değiştirin."
     }
   },
   "date": {

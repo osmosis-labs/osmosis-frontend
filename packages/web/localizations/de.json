@@ -1276,7 +1276,7 @@
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
-    "launchAlert": "Derzeit wird nur der Handels- und Überweisungsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
+    "launchAlert": "Angezeigt werden deine Swaps, Einzahlungen und Auszahlungen.",
     "history": "Geschichte",
     "orders": "Aufträge",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "Netzwerkgebühr"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "Transaktionsarten",
+      "swap": "Swaps",
+      "deposit": "Einzahlungen",
+      "withdraw": "Auszahlungen",
+      "search": "Asset, Chain oder Anbieter suchen",
+      "noMatches": "Keine passenden Transaktionen",
+      "pageHint": "Filter gelten nur für die Transaktionen auf dieser Seite. Öffne die nächste Seite oder passe deine Filter an."
     }
   },
   "date": {

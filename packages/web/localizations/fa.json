@@ -1276,7 +1276,7 @@
     "totalFees": "مجموع هزینه ها",
     "transactionHash": "هش تراکنش",
     "viewOnExplorer": "مشاهده در اکسپلورر",
-    "launchAlert": "در حال حاضر فقط تاریخچه معاملات و نقل و انتقالات نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
+    "launchAlert": "سواپ‌ها، واریزها و برداشت‌های شما نمایش داده می‌شوند.",
     "history": "تاریخ",
     "orders": "سفارشات",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "هزینه شبکه"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
-      "search": "Search asset, chain or provider",
-      "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "type": "انواع تراکنش",
+      "swap": "سواپ‌ها",
+      "deposit": "واریزها",
+      "withdraw": "برداشت‌ها",
+      "search": "جستجوی دارایی، زنجیره یا ارائه‌دهنده",
+      "noMatches": "هیچ تراکنش منطبقی یافت نشد",
+      "pageHint": "فیلترها فقط روی تراکنش‌های این صفحه اعمال می‌شوند. صفحه بعد را امتحان کنید یا فیلترها را تغییر دهید."
     }
   },
   "date": {

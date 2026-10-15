@@ -1276,7 +1276,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Showing your swaps, deposits and withdrawals.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
@@ -1296,13 +1296,13 @@
       "networkFee": "Network fee"
     },
     "filter": {
-      "type": "Type",
-      "swap": "Swap",
-      "deposit": "Deposit",
-      "withdraw": "Withdraw",
+      "type": "Transaction types",
+      "swap": "Swaps",
+      "deposit": "Deposits",
+      "withdraw": "Withdrawals",
       "search": "Search asset, chain or provider",
       "noMatches": "No matching transactions",
-      "pageHint": "Filters apply to the transactions on this page. Try the next page or adjust your filters."
+      "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
     }
   },
   "date": {
