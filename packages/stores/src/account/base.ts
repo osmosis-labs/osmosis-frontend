@@ -290,7 +290,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         const oneClickTradingInfo = await this.getOneClickTradingInfo();
         const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
         runInAction(() => {
-          if (this.preferenceRevision === preferenceRevision) {
+          // The enabled value is derived from the session too, so a session
+          // write during the reads also makes it stale.
+          if (
+            this.preferenceRevision === preferenceRevision &&
+            this.sessionRevision === sessionRevision
+          ) {
             this.useOneClickTrading = isOneClickTradingEnabled;
           }
           if (this.sessionRevision === sessionRevision) {
