@@ -12,6 +12,7 @@ export {
   makeSignDocAmino,
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
+  padSessionKeyBytes,
   removeLastSlash,
   runBroadcastedCallbacks,
   UseOneClickTradingLocalStorageKey,
