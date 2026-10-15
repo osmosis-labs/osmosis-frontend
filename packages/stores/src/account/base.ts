@@ -79,7 +79,14 @@ import axios from "axios";
 import { Buffer } from "buffer/";
 import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import { action, autorun, makeObservable, observable, runInAction } from "mobx";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  observe,
+  runInAction,
+} from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
@@ -120,7 +127,43 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   hasUsedOneClickTrading = false;
 
+  @observable
+  isStateHydrated = false;
+
+  private sessionRevision = 0;
+  private preferenceRevision = 0;
+
   txTypeInProgressByChain = observable.map<string, string>();
+
+  private readonly stateListeners = new Set<() => void>();
+  private stateDisposers: (() => void)[] = [];
+
+  /** Compatibility boundary for non-MobX consumers. Cosmos Kit publishes via
+   * refresh; legacy observable writes publish here without a React reaction. */
+  subscribeState = (listener: () => void) => {
+    this.stateListeners.add(listener);
+    if (this.stateListeners.size === 1) {
+      const notify = () => this.notifyState();
+      this.stateDisposers = [
+        observe(this.txTypeInProgressByChain, notify),
+        observe(this, "oneClickTradingInfo", notify),
+        observe(this, "useOneClickTrading", notify),
+        observe(this, "hasUsedOneClickTrading", notify),
+        observe(this, "isStateHydrated", notify),
+      ];
+    }
+    return () => {
+      this.stateListeners.delete(listener);
+      if (this.stateListeners.size === 0) {
+        this.stateDisposers.forEach((dispose) => dispose());
+        this.stateDisposers = [];
+      }
+    };
+  };
+
+  private notifyState() {
+    this.stateListeners.forEach((listener) => listener());
+  }
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
@@ -240,13 +283,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
+      const sessionRevision = this.sessionRevision;
+      const preferenceRevision = this.preferenceRevision;
       const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
-        this.useOneClickTrading = isOneClickTradingEnabled;
-        this.oneClickTradingInfo = oneClickTradingInfo ?? null;
-        this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+        if (this.preferenceRevision === preferenceRevision) {
+          this.useOneClickTrading = isOneClickTradingEnabled;
+        }
+        if (this.sessionRevision === sessionRevision) {
+          this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+          this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+        }
+        this.isStateHydrated = true;
       });
     });
   }
@@ -335,6 +385,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @action
   private refresh() {
     this._refreshRequests++;
+    this.notifyState();
   }
 
   async addWallet(wallet: MainWalletBase) {
@@ -575,13 +626,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.txTypeInProgressByChain.set(chainNameOrId, type);
     });
 
-    const wallet = this.getWallet(chainNameOrId);
-
-    if (!wallet) {
-      throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
-    }
-
     try {
+      const wallet = this.getWallet(chainNameOrId);
+      if (!wallet) {
+        throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
+      }
       if (wallet.walletStatus !== WalletStatus.Connected) {
         throw new Error(`Wallet for chain ${chainNameOrId} is not connected.`);
       }
@@ -1666,6 +1715,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    const revision = ++this.sessionRevision;
     const nextValue = data ?? null;
 
     await this._kvStore.set<boolean>(
@@ -1679,8 +1729,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * from walletAccountSet.disconnect. So, we use runInAction instead.
      */
     return runInAction(() => {
-      this.oneClickTradingInfo = nextValue;
-      this.hasUsedOneClickTrading = true;
+      if (this.sessionRevision === revision) {
+        this.oneClickTradingInfo = nextValue;
+        this.hasUsedOneClickTrading = true;
+      }
     });
   }
 
@@ -1710,6 +1762,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    */
   @action
   async setShouldUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+    this.preferenceRevision++;
     this.useOneClickTrading = nextValue;
     await this._kvStore.set<boolean>(
       UseOneClickTradingLocalStorageKey,

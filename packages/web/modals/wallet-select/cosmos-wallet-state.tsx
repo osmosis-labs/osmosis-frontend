@@ -19,10 +19,10 @@ import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
+import { useWallet } from "~/hooks/use-wallet";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { ModalView } from "~/modals/wallet-select/utils";
-import { useStore } from "~/stores";
 
 import { QRCodeView } from "./qr-code-view";
 import { WalletTutorial } from "./wallet-tutorial";
@@ -70,7 +70,7 @@ export const CosmosWalletState: FunctionComponent<
     setShow1CTEditParams,
   }) => {
     const { t } = useTranslation();
-    const { accountStore } = useStore();
+    const { hasUsedOneClickTrading, matchError } = useWallet();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
     const { previousConnectedCosmosAccount, hasFunds } =
@@ -89,7 +89,7 @@ export const CosmosWalletState: FunctionComponent<
     }
 
     if (modalView === "error") {
-      const error = accountStore.matchError(currentWallet?.message ?? "");
+      const error = matchError(currentWallet?.message ?? "");
 
       let message = error.message;
 
@@ -278,7 +278,7 @@ export const CosmosWalletState: FunctionComponent<
     } else if (
       !show1CTEditParams &&
       isReturningUser &&
-      accountStore.hasUsedOneClickTrading
+      hasUsedOneClickTrading
     ) {
       oneClickTradingScreen = WalletSelect1CTScreens.WelcomeBack;
     } else if (isReturningUser) {
