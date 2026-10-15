@@ -206,6 +206,15 @@ describe("filterTransactions", () => {
       expect(search("0xc8E4D1e3...ffffffff")).toEqual([]);
     });
 
+    it("never matches numbers against addresses", () => {
+      // "9819" and "1100" appear in 0xc8E4D1e39819d9C11B860356Ba5eF1100aB3A487
+      expect(search("9819")).toEqual([]);
+      expect(search("1100")).toEqual([]);
+      // malformed numbers still only look at amounts
+      expect(search("98.19.1")).toEqual([]);
+      expect(search("$")).toEqual([]);
+    });
+
     it("ignores short words for address matching", () => {
       // "c8e" appears in the address but is too short to count
       expect(search("c8e")).toEqual([]);

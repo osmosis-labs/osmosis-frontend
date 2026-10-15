@@ -81,8 +81,12 @@ export function filterTransactions(
   const searcher = new DataFilter(byKind, SEARCH_KEYS);
   const termMatchers = terms.map(
     (term): ((tx: HistoryTransaction) => boolean) => {
-      if (isNumberTerm(term)) {
-        const n = normalizeNumberTerm(term);
+      // only digits and separators: an amount, never an address or name
+      if (/^[$\d.,]+$/.test(term)) {
+        if (!/\d/.test(term)) return () => false;
+        const n = isNumberTerm(term)
+          ? normalizeNumberTerm(term)
+          : term.replace(/[$,]/g, "");
         return (tx) => getAmounts(tx).some((amount) => amount.includes(n));
       }
 
