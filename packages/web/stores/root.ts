@@ -79,6 +79,10 @@ export class RootStore {
       // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
       CosmwasmAccount.use()
     );
-    this.walletRuntime = new WalletRuntime(this.accountStore, { preTxEvents });
+    this.walletRuntime = new WalletRuntime(this.accountStore, {
+      preTxEvents,
+      findCurrency: (chainId, denom) =>
+        StaticChainGetter.getChain(chainId).findCurrency(denom),
+    });
   }
 }

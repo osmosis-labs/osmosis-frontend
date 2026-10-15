@@ -10,6 +10,7 @@ import {
   type WalletTxDependencies,
   type WalletTxTransport,
 } from "@osmosis-labs/tx";
+import type { Currency } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 import axios from "axios";
 import { runInAction } from "mobx";
@@ -57,6 +58,11 @@ export type WalletSnapshot = {
 
 type WalletState = { chains: Record<string, WalletSnapshot> };
 
+type WalletRuntimeOptions = WalletTxDependencies["options"] & {
+  /** Resolve chain currencies, including assets registered at runtime. */
+  findCurrency?: (chainId: string, denom: string) => Currency | undefined;
+};
+
 function equalSnapshot(a: WalletSnapshot, b: WalletSnapshot) {
   return (Object.keys(a) as (keyof WalletSnapshot)[]).every((key) =>
     Object.is(a[key], b[key])
@@ -95,7 +101,7 @@ export class WalletRuntime {
 
   constructor(
     private readonly legacy: LegacyAccountStore,
-    options?: WalletTxDependencies["options"],
+    private readonly options?: WalletRuntimeOptions,
     transport?: WalletTxTransport
   ) {
     this.transactions = createWalletTxClient({
@@ -158,9 +164,11 @@ export class WalletRuntime {
           chainId,
           chains: this.legacy.chains,
           findCurrency: (denom) =>
-            getChainInfo(chainId).currencies.find(
-              (currency) => currency.coinMinimalDenom === denom
-            ) ?? findOsmosisCurrency(denom),
+            this.options?.findCurrency
+              ? this.options.findCurrency(chainId, denom)
+              : (getChainInfo(chainId).currencies.find(
+                  (currency) => currency.coinMinimalDenom === denom
+                ) ?? findOsmosisCurrency(denom)),
           stakeCurrency: () => getChainInfo(chainId).stakeCurrency,
           simulatePositionMigration: (input) =>
             this.transactions.simulatePositionMigration(input),
