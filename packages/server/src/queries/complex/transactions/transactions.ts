@@ -5,13 +5,19 @@ import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "../../../env";
 import { getAsset } from "../../../queries/complex/assets";
-import { Metadata, queryTransactions } from "../../../queries/data-services";
+import {
+  Metadata,
+  queryTransactions,
+  Transaction,
+} from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
   FormattedTransfer,
+  IBC_OUTCOME_MESSAGE_TYPES,
   mapTransfers,
   resolveAxelarTransfers,
+  settleIbcWithdrawals,
 } from "./transfers";
 
 export interface FormattedMetadata {
@@ -218,15 +224,20 @@ export async function getTransactions({
             transaction.metadata && transaction.metadata.length > 0
         );
 
-      const transfers = await resolveAxelarTransfers(
-        mapTransfers({
-          transactions: data ?? [],
-          address,
-          assetLists,
-          chainList,
-        }),
-        { env: IS_TESTNET ? "testnet" : "mainnet" }
-      );
+      const parsed = mapTransfers({
+        transactions: data ?? [],
+        address,
+        assetLists,
+        chainList,
+      });
+      const settled = await settleIbcWithdrawalsFromIndex({
+        transfers: parsed,
+        transactions: data ?? [],
+        address,
+      });
+      const transfers = await resolveAxelarTransfers(settled, {
+        env: IS_TESTNET ? "testnet" : "mainnet",
+      });
 
       return {
         // a tx can hold messages of several types (e.g. a swap and a
@@ -241,4 +252,63 @@ export async function getTransactions({
       };
     },
   });
+}
+
+/** Pages of the user's ack/timeout txs to look through for pending sends. */
+const MAX_IBC_OUTCOME_PAGES = 3;
+
+/**
+ * Settle pending IBC withdrawals from the relayer's acknowledgement /
+ * timeout txs in the index (see `settleIbcWithdrawals`). Fetches more pages
+ * only while sends remain unmatched and older than the oldest fetched outcome.
+ * Best effort: on failure the transfers are returned as is.
+ */
+async function settleIbcWithdrawalsFromIndex({
+  transfers,
+  transactions,
+  address,
+}: {
+  transfers: FormattedTransfer[];
+  transactions: Transaction[];
+  address: string;
+}): Promise<FormattedTransfer[]> {
+  const isPendingIbc = (t: FormattedTransfer) =>
+    t.direction === "withdraw" &&
+    t.status === "pending" &&
+    t.toChain.chainType === "cosmos";
+  if (!transfers.some(isPendingIbc)) return transfers;
+
+  const pageSize = 100;
+  let outcomes: Transaction[] = [];
+  let settled = transfers;
+  try {
+    for (let page = 0; page < MAX_IBC_OUTCOME_PAGES; page++) {
+      const batch = await queryTransactions({
+        address,
+        page: String(page),
+        pageSize: String(pageSize),
+        messageTypes: IBC_OUTCOME_MESSAGE_TYPES,
+      });
+      outcomes = outcomes.concat(batch ?? []);
+      settled = settleIbcWithdrawals({
+        transfers,
+        transactions,
+        outcomes,
+        address,
+      });
+
+      // outcomes are newest first: older pages only help older sends
+      const oldestOutcome = outcomes.at(-1)?.blockTimestamp;
+      const unsettledOlder = settled.some(
+        (t) =>
+          isPendingIbc(t) &&
+          oldestOutcome !== undefined &&
+          t.createdAtUnix * 1000 < new Date(oldestOutcome).getTime()
+      );
+      if ((batch?.length ?? 0) < pageSize || !unsettledOlder) break;
+    }
+  } catch {
+    // index error: leave the rest to client-side tracking
+  }
+  return settled;
 }

@@ -8,6 +8,7 @@ import {
   decodeGmpRecipient,
   mapTransfers,
   resolveAxelarTransfers,
+  settleIbcWithdrawals,
 } from "../transfers";
 import { IndexedTransferTxs } from "./transfer-fixtures";
 
@@ -253,6 +254,89 @@ describe("mapTransfers", () => {
     });
   });
 
+  describe("IBC withdrawal outcomes", () => {
+    const send = IndexedTransferTxs.send;
+    const sender = "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj";
+    const sendMsg = send.messages[0] as Record<string, any>;
+
+    /** A relayer's ack/timeout tx, shaped as the index returns it. */
+    const outcome = (
+      type: "MsgAcknowledgement" | "MsgTimeout",
+      {
+        minutesAfter = 1,
+        acknowledgement = { result: "AQ==" } as unknown,
+        amount = sendMsg.token.amount,
+      } = {}
+    ) =>
+      ({
+        hash: `${type}-${minutesAfter}-${amount}`,
+        blockTimestamp: new Date(
+          new Date(send.blockTimestamp).getTime() + minutesAfter * 60_000
+        ).toISOString(),
+        messages: [
+          {
+            "@type": `/ibc.core.channel.v1.${type}`,
+            packet: {
+              sequence: "1",
+              source_port: "transfer",
+              source_channel: sendMsg.source_channel,
+              data: {
+                amount,
+                denom: "uusdc",
+                receiver: sendMsg.receiver,
+                sender,
+              },
+            },
+            ...(type === "MsgAcknowledgement" ? { acknowledgement } : {}),
+          },
+        ],
+      }) as unknown as Transaction;
+
+    const settle = (outcomes: Transaction[]) =>
+      settleIbcWithdrawals({
+        transfers: map(send),
+        transactions: [send],
+        outcomes,
+        address: sender,
+      })[0].status;
+
+    it("settles a delivered transfer from its acknowledgement", () => {
+      expect(settle([outcome("MsgAcknowledgement")])).toBe("success");
+    });
+
+    it("settles an error ack or a timeout as refunded", () => {
+      expect(
+        settle([
+          outcome("MsgAcknowledgement", {
+            acknowledgement: { error: "ABCI code: 5" },
+          }),
+        ])
+      ).toBe("refunded");
+      expect(settle([outcome("MsgTimeout")])).toBe("refunded");
+    });
+
+    it("decodes a raw base64 acknowledgement", () => {
+      expect(
+        settle([
+          outcome("MsgAcknowledgement", {
+            acknowledgement: btoa(JSON.stringify({ error: "failed" })),
+          }),
+        ])
+      ).toBe("refunded");
+    });
+
+    it("leaves it pending without a matching packet", () => {
+      expect(settle([])).toBe("pending");
+      // a different amount, or a packet from before the send
+      expect(settle([outcome("MsgAcknowledgement", { amount: "1" })])).toBe(
+        "pending"
+      );
+      expect(
+        settle([outcome("MsgAcknowledgement", { minutesAfter: -5 })])
+      ).toBe("pending");
+    });
+  });
+
   describe("Axelar GMP withdrawals", () => {
     afterEach(() => {
       jest.restoreAllMocks();
@@ -265,7 +349,13 @@ describe("mapTransfers", () => {
           data: [
             {
               simplified_status,
-              call: { transactionHash: IndexedTransferTxs.squid.hash },
+              call: {
+                transactionHash: IndexedTransferTxs.squid.hash,
+                // withdrawals originate on Osmosis
+                transaction: {
+                  from: "osmo1yjkmhaq0xhpvhwzk7mncaurasdl0wyesf5cjcl",
+                },
+              },
             },
           ],
         }),

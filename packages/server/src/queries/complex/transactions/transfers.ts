@@ -8,6 +8,11 @@ import { getAsset } from "../assets";
 const MSG_TRANSFER = "/ibc.applications.transfer.v1.MsgTransfer";
 const MSG_RECV_PACKET = "/ibc.core.channel.v1.MsgRecvPacket";
 const MSG_EXECUTE_CONTRACT = "/cosmwasm.wasm.v1.MsgExecuteContract";
+const MSG_ACKNOWLEDGEMENT = "/ibc.core.channel.v1.MsgAcknowledgement";
+const MSG_TIMEOUT = "/ibc.core.channel.v1.MsgTimeout";
+
+/** Relayer txs that settle an IBC transfer sent from Osmosis. */
+export const IBC_OUTCOME_MESSAGE_TYPES = [MSG_ACKNOWLEDGEMENT, MSG_TIMEOUT];
 
 /**
  * Axelar chain names (as used in GMP memos' `destination_chain`) to EVM chain ids.
@@ -83,7 +88,7 @@ export interface FormattedTransfer {
   /** Osmosis tx hash. */
   sendTxHash: string;
   /** Deposits are final once they arrive; withdrawals still need resolving. */
-  status: "success" | "pending" | "failed";
+  status: "success" | "pending" | "failed" | "refunded";
   fromAddress: string;
   toAddress: string;
   osmoBech32Address: string;
@@ -419,6 +424,10 @@ function resolveMemoDestination(
   return { chain: findCosmosChainByAddress(chainList, receiver), receiver };
 }
 
+function isEvmAddress(address: string) {
+  return /^0x[0-9a-fA-F]{40}$/.test(address);
+}
+
 function isSquidRouter(address: unknown) {
   return (
     typeof address === "string" && SQUID_EVM_ROUTERS.has(address.toLowerCase())
@@ -581,9 +590,11 @@ async function lookupAxelarGmp(
     // not indexed yet: look again on a later request
     if (!call?.transactionHash) return;
 
+    // the source account: an EVM address for deposits, but the Osmosis
+    // account (`osmo1...`) for withdrawals, which getAddress would reject
     const from = call.transaction?.from;
     const gmp: AxelarGmp = {
-      sender: from ? getAddress(from) : undefined,
+      sender: from && isEvmAddress(from) ? getAddress(from) : undefined,
       sourceTxHash: call.transactionHash,
       status:
         record?.simplified_status === "received"
@@ -605,6 +616,98 @@ async function lookupAxelarGmp(
     // network error or timeout: retried on a later request
     return;
   }
+}
+
+/**
+ * Pending IBC withdrawals sent from the user's account whose outcome is in
+ * `outcomes` (the relayer's acknowledgement / timeout txs, which the index
+ * lists under the packet's sender). Skip can't trace transfers to every chain,
+ * and its tracking can't settle old ones, so settle them from the index:
+ * a successful ack is delivered; an error ack or a timeout is refunded.
+ *
+ * Sends and packets are matched on channel, receiver and amount (the index
+ * doesn't give a send's packet sequence), each packet at most once, earliest
+ * after the send first.
+ */
+export function settleIbcWithdrawals({
+  transfers,
+  transactions,
+  outcomes,
+  address,
+}: {
+  transfers: FormattedTransfer[];
+  /** The index txs the transfers were parsed from. */
+  transactions: Transaction[];
+  outcomes: Transaction[];
+  address: string;
+}): FormattedTransfer[] {
+  const packets = outcomes.flatMap((tx) =>
+    (tx.messages ?? []).flatMap((message) => {
+      const type = message["@type"];
+      if (type !== MSG_ACKNOWLEDGEMENT && type !== MSG_TIMEOUT) return [];
+      const packet = asRecord(message.packet);
+      const data = decodePacketData(message) as
+        (PacketData & { amount?: string }) | undefined;
+      if (!packet || data?.sender !== address) return [];
+      return [
+        {
+          channel: packet.source_channel,
+          receiver: data.receiver,
+          amount: data.amount,
+          at: new Date(tx.blockTimestamp).getTime(),
+          status:
+            type === MSG_TIMEOUT || isErrorAcknowledgement(message)
+              ? ("refunded" as const)
+              : ("success" as const),
+        },
+      ];
+    })
+  );
+  packets.sort((a, b) => a.at - b.at);
+  const used = new Set<(typeof packets)[number]>();
+
+  return transfers.map((transfer) => {
+    if (
+      transfer.direction !== "withdraw" ||
+      transfer.status !== "pending" ||
+      transfer.toChain.chainType !== "cosmos"
+    ) {
+      return transfer;
+    }
+    const tx = transactions.find((t) => t.hash === transfer.sendTxHash);
+    const send = tx?.messages?.find(
+      (m) => m["@type"] === MSG_TRANSFER && m.sender === address
+    );
+    const token = asRecord(send?.token);
+    if (!tx || !send || !token) return transfer;
+
+    const sentAt = new Date(tx.blockTimestamp).getTime();
+    const packet = packets.find(
+      (p) =>
+        !used.has(p) &&
+        p.at >= sentAt &&
+        p.channel === send.source_channel &&
+        p.receiver === send.receiver &&
+        p.amount === token.amount
+    );
+    if (!packet) return transfer;
+    used.add(packet);
+    return { ...transfer, status: packet.status };
+  });
+}
+
+/** The ack is `{ result }` on success and `{ error }` on failure, decoded by
+ *  the index or as raw base64 JSON. */
+function isErrorAcknowledgement(message: Message) {
+  let ack: unknown = message.acknowledgement;
+  if (typeof ack === "string") {
+    try {
+      ack = JSON.parse(atob(ack));
+    } catch {
+      return false;
+    }
+  }
+  return Boolean(asRecord(ack)?.error);
 }
 
 type PacketData = { sender?: string; receiver?: string; memo?: unknown };
