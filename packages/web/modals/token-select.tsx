@@ -1,4 +1,10 @@
-import { AppCurrency, CoinPretty, IBCCurrency } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  AppCurrency,
+  CoinPretty,
+  IBCCurrency,
+  PricePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -7,7 +13,7 @@ import { PrivateText } from "~/components/privacy";
 import { InputProps } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
-import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useBatchedPrices } from "~/hooks/queries/assets/use-prices";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { getLogoURIs } from "~/utils/logo-uri";
 
@@ -28,6 +34,14 @@ export const TokenSelectModal: FunctionComponent<
   } & InputProps<string>
 > = (props) => {
   const { t } = useTranslation();
+  const { prices } = useBatchedPrices(
+    props.tokens.flatMap(({ token }) =>
+      token instanceof CoinPretty && token.toDec().isPositive()
+        ? [token.currency.coinMinimalDenom]
+        : []
+    ),
+    { enabled: props.isOpen, source: "market" }
+  );
 
   return (
     <ModalBase
@@ -61,6 +75,7 @@ export const TokenSelectModal: FunctionComponent<
               key={selectKey}
               token={t.token}
               chainName={t.chainName}
+              price={prices?.[currency.coinMinimalDenom]}
               onSelect={() => {
                 props.onSelect(selectKey);
                 props.onRequestClose();
@@ -76,8 +91,9 @@ export const TokenSelectModal: FunctionComponent<
 const TokenRow: FunctionComponent<{
   token: CoinPretty | AppCurrency;
   chainName: string;
+  price?: PricePretty;
   onSelect: () => void;
-}> = ({ token, chainName, onSelect }) => {
+}> = ({ token, chainName, price, onSelect }) => {
   const currency = token instanceof CoinPretty ? token.currency : token;
   const { coinDenom, coinImageUrl } = currency;
   const networkName = chainName;
@@ -93,9 +109,10 @@ const TokenRow: FunctionComponent<{
     token instanceof CoinPretty
       ? token.hideDenom(true).maxDecimals(8).trim(true).toString()
       : undefined;
-  const { fiatValue } = useCoinFiatValue(
-    token instanceof CoinPretty ? token : undefined
-  );
+  const fiatValue =
+    token instanceof CoinPretty && price
+      ? new PricePretty(DEFAULT_VS_CURRENCY, token.toDec().mul(price.toDec()))
+      : undefined;
   const tokenPrice = fiatValue?.toString();
 
   return (

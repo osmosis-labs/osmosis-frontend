@@ -45,7 +45,33 @@ export type PriceMap = {
   [baseCoinMinimalDenom: string]: Record<string, string>;
 };
 
+// Shared by all callers in this Edge isolate, independently of DataLoader caches.
+let activePriceRequests = 0;
+const priceRequestQueue: (() => void)[] = [];
+
 export async function queryPrices(coinMinimalDenoms: string[]) {
+  const queuedAt = Date.now();
+  if (activePriceRequests >= 2) {
+    await new Promise<void>((resolve) => priceRequestQueue.push(resolve));
+  } else {
+    activePriceRequests++;
+  }
+
+  try {
+    // Do not start stale queued work after the tRPC procedure's 12s deadline.
+    if (Date.now() - queuedAt >= 10_000) {
+      throw new Error("SQS price request expired in queue");
+    }
+    return await fetchPrices(coinMinimalDenoms);
+  } finally {
+    const next = priceRequestQueue.shift();
+    if (next)
+      next(); // Transfer this slot directly to the oldest waiter.
+    else activePriceRequests--;
+  }
+}
+
+async function fetchPrices(coinMinimalDenoms: string[]) {
   const url = new URL("/tokens/prices", SIDECAR_BASE_URL);
 
   url.searchParams.append("base", coinMinimalDenoms.join(","));

@@ -1,7 +1,5 @@
 import { Asset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -9,67 +7,70 @@ import {
   queryPrices,
 } from "../../../../../queries/sidecar/prices";
 import { EdgeDataLoader } from "../../../../../utils/batching";
-import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
 
-const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
-
-/** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to pools then querying CoinGecko if not available.
- *  @throws if there's an issue getting the price. */
-export function getPriceFromSidecar(asset: Asset) {
-  return getBatchLoader().then((loader) =>
-    loader.load(asset.coinMinimalDenom).then((price) => new Dec(price))
-  );
+// Cache settled values, not rejected promises. In-flight work is deduplicated
+// separately so eviction or expiry cannot duplicate an outstanding lookup.
+const priceCache = new LRUCache<
+  string,
+  { value: string | Error; expiresAt: number }
+>({ max: 1_500 });
+function cachePrice(denom: string, value: string | Error, ttl: number) {
+  priceCache.set(denom, { value, expiresAt: Date.now() + ttl });
 }
+const inFlight = new Map<string, Promise<string>>();
 
-/** Prevent long-running batch loaders as recommended by `DataLoader` docs. */
-function getBatchLoader() {
-  return cachified({
-    cache: sidecarCache,
-    key: "sidecar-batch-loader",
-    // This TTL only controls the lifetime of the DataLoader instance, not the individual cache entries.
-    // The value is chosen arbitrarily to prevent long-running batch loaders as recommended by the documentation
-    ttl: 1000 * 60 * 10, // 10 minutes
-    getFreshValue: () =>
-      new EdgeDataLoader(
-        (coinMinimalDenoms: readonly string[]) =>
-          queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
-            coinMinimalDenoms.map((baseCoinMinimalDenom) => {
-              try {
-                // Accepts the current or legacy quote key: sidecar flips its
-                // quote denom on restart, independently of this deploy.
-                const price = getQuotePrice(priceMap[baseCoinMinimalDenom]);
-
-                if (isNil(price)) {
-                  return new Error(
-                    `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-                  );
-                }
-
-                // trim to 18 decimals to silence Dec warnings
-                const p = price.replace(/(\.\d{18})\d*/, "$1");
-
-                if (isNil(p)) {
-                  return new Error(
-                    `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-                  );
-                }
-
-                if (new Dec(p).isZero())
-                  return new Error(
-                    `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-                  );
-                else return p;
-              } catch (e) {
-                return new Error(
-                  `No SQS price result for ${baseCoinMinimalDenom} and USDC`
-                );
-              }
-            })
-          ),
-        {
-          // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
-          maxBatchSize: 100,
+const loader = new EdgeDataLoader<string, string>(
+  async (denoms) => {
+    try {
+      const priceMap = await queryPrices([...denoms]);
+      return denoms.map((denom) => {
+        let result: string | Error = new Error(
+          `No SQS price result for ${denom} and USDC`
+        );
+        try {
+          const price = getQuotePrice(priceMap[denom]);
+          if (price !== undefined) {
+            const trimmed = price.replace(/(\.\d{18})\d*/, "$1");
+            if (new Dec(trimmed).isPositive()) result = trimmed;
+          }
+        } catch {
+          // Invalid prices are unavailable, just like missing or zero prices.
         }
-      ),
-  });
+        cachePrice(denom, result, result instanceof Error ? 60_000 : 10_000);
+        return result;
+      });
+    } catch (cause) {
+      const error = cause instanceof Error ? cause : new Error(String(cause));
+      // Briefly suppress retries during an upstream outage without treating it
+      // as evidence that these assets have no route.
+      return denoms.map((denom) => {
+        cachePrice(denom, error, 10_000);
+        return error;
+      });
+    }
+  },
+  {
+    // SQS's Nginx URI limit requires batches of at most 100 denoms.
+    maxBatchSize: 100,
+    // The bounded TTL cache above owns retention; DataLoader only batches.
+    cache: false,
+  }
+);
+
+/** Gets a USD price from SQS. Unavailable prices reject rather than return zero. */
+export async function getPriceFromSidecar(asset: Asset): Promise<Dec> {
+  const denom = asset.coinMinimalDenom;
+  const cached = priceCache.get(denom);
+  if (cached && cached.expiresAt > Date.now()) {
+    if (cached.value instanceof Error) throw cached.value;
+    return new Dec(cached.value);
+  }
+  if (cached) priceCache.delete(denom);
+
+  let pending = inFlight.get(denom);
+  if (!pending) {
+    pending = loader.load(denom).finally(() => inFlight.delete(denom));
+    inFlight.set(denom, pending);
+  }
+  return new Dec(await pending);
 }

@@ -103,6 +103,7 @@ export const assetsRouter = createTRPCRouter({
               poolId,
             }),
           cacheKey: JSON.stringify({
+            procedure: "getUserAssets",
             search,
             userOsmoAddress,
             onlyVerified,
@@ -181,20 +182,28 @@ export const assetsRouter = createTRPCRouter({
     .input(
       z.object({
         coinMinimalDenoms: z.array(z.string()).max(100),
+        source: z.enum(["sidecar", "market"]).default("sidecar"),
       })
     )
-    .query(async ({ input: { coinMinimalDenoms }, ctx }) => {
+    .query(async ({ input: { coinMinimalDenoms, source }, ctx }) => {
       const uniqueDenoms = Array.from(new Set(coinMinimalDenoms));
       // A single asset without a price must not fail the whole batch.
       const results = await Promise.allSettled(
-        uniqueDenoms.map((coinMinimalDenom) =>
-          getAssetPrice({ ...ctx, asset: { coinMinimalDenom } })
-        )
+        uniqueDenoms.map(async (coinMinimalDenom) => {
+          if (source === "sidecar") {
+            return getAssetPrice({ ...ctx, asset: { coinMinimalDenom } });
+          }
+          // Resolve through the registry, just like the SQS price path.
+          const asset = getAsset({ ...ctx, anyDenom: coinMinimalDenom });
+          const activity = await getAssetMarketActivity(asset);
+          const price = activity?.price?.toDec();
+          return price?.isPositive() ? price : undefined;
+        })
       );
 
       const prices: Record<string, PricePretty> = {};
       results.forEach((result, index) => {
-        if (result.status === "fulfilled") {
+        if (result.status === "fulfilled" && result.value !== undefined) {
           prices[uniqueDenoms[index]] = new PricePretty(
             DEFAULT_VS_CURRENCY,
             result.value
@@ -444,6 +453,7 @@ export const assetsRouter = createTRPCRouter({
             let assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               search,
+              onlyVerified,
               categories,
               userOsmoAddress,
               includePreview,
@@ -456,16 +466,13 @@ export const assetsRouter = createTRPCRouter({
 
             let priceAssets = await Promise.all(
               assets.map(async (asset) => {
-                const [currentPrice, priceChange24h] = await Promise.all([
-                  getAssetPrice({ ...ctx, asset })
-                    .then(
-                      (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
-                    )
-                    .catch((e) => captureErrorAndReturn(e, undefined)),
-                  getAssetMarketActivity(asset).then(
-                    (activity) => activity?.price24hChange
-                  ),
-                ]);
+                const activity = await getAssetMarketActivity(asset).catch(
+                  (e) => captureErrorAndReturn(e, undefined)
+                );
+                const currentPrice = activity?.price?.toDec().isPositive()
+                  ? activity.price
+                  : undefined;
+                const priceChange24h = activity?.price24hChange;
 
                 return {
                   ...asset,
@@ -490,6 +497,7 @@ export const assetsRouter = createTRPCRouter({
             return bridgeAssets;
           },
           cacheKey: JSON.stringify({
+            procedure: "getUserBridgeAssets",
             search,
             onlyVerified,
             userOsmoAddress,
@@ -499,6 +507,33 @@ export const assetsRouter = createTRPCRouter({
           }),
           cursor,
           limit,
+        }).then(async (page) => {
+          // Unpaginated callers receive market snapshots only. Never turn an
+          // omitted limit into a request to route-search the entire asset list.
+          if (!cursor && !limit) return page;
+          const items = await Promise.all(
+            page.items.map(async (asset) => {
+              const activity = await getAssetMarketActivity(asset).catch((e) =>
+                captureErrorAndReturn(e, undefined)
+              );
+              if (!activity?.liquidity?.toDec().isPositive()) return asset;
+              const price = await getAssetPrice({ ...ctx, asset }).catch((e) =>
+                captureErrorAndReturn(e, undefined)
+              );
+              if (!price) return asset;
+              return {
+                ...asset,
+                currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
+                usdValue: asset.amount
+                  ? new PricePretty(
+                      DEFAULT_VS_CURRENCY,
+                      price.mul(asset.amount.toDec())
+                    )
+                  : asset.usdValue,
+              };
+            })
+          );
+          return { ...page, items };
         })
     ),
   getUserAssetsTotal: publicProcedure
@@ -896,10 +931,13 @@ export const assetsRouter = createTRPCRouter({
               }) as typeof assets;
           },
           cacheKey: JSON.stringify({
+            procedure: "getImmersiveBridgeAssets",
             search,
             userOsmoAddress,
             includePreview,
-            variantsToBeExcluded: variantsNotToBeExcluded,
+            variantsNotToBeExcluded,
+            deprioritizedDenoms,
+            type,
             prioritizedDenoms,
           }),
           cursor,

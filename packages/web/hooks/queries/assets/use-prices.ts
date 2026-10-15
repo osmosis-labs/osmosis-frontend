@@ -25,7 +25,7 @@ function combinePriceBatches(
  *  Assets without a price are absent from the map. */
 export function useBatchedPrices(
   coinMinimalDenoms: string[],
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; source?: "sidecar" | "market" }
 ) {
   // `gamm` shares have no price, same as `usePrice`.
   const denoms = Array.from(
@@ -42,7 +42,7 @@ export function useBatchedPrices(
     (t) =>
       batches.map((batch) =>
         t.edge.assets.getAssetPrices(
-          { coinMinimalDenoms: batch },
+          { coinMinimalDenoms: batch, source: options?.source ?? "sidecar" },
           {
             enabled,
             gcTime: 1000 * 60, // 1 minute

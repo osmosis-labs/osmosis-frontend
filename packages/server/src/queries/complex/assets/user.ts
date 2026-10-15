@@ -1,5 +1,5 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
-import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import {
   aggregateCoinsByDenom,
   isNil,
@@ -16,14 +16,9 @@ import {
   getUserTotalDelegatedCoin,
   getUserTotalUndelegations,
 } from "../staking/user";
-import {
-  AssetFilter,
-  calcSumCoinsValue,
-  getAsset,
-  getAssetMarketActivity,
-  getAssets,
-} from ".";
+import { AssetFilter, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getAssetMarketActivity } from "./market";
 import { calcAssetValue } from "./price";
 
 /** Available if the user holds a balance. */
@@ -52,6 +47,7 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
     assets: [asset],
     userOsmoAddress: userOsmoAddress,
     includePreview: true,
+    priceSource: "sidecar",
   });
   return userAssets[0];
 }
@@ -63,6 +59,7 @@ export async function mapGetAssetsWithUserBalances<
   TAsset extends MinimalAsset & { liquidity?: number | PricePretty },
 >({
   poolId,
+  priceSource = "market",
   ...params
 }: {
   assetLists: AssetList[];
@@ -70,6 +67,8 @@ export async function mapGetAssetsWithUserBalances<
   assets?: TAsset[];
   userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
+  /** Lists use market snapshots; explicit single-asset reads may use SQS. */
+  priceSource?: "market" | "sidecar";
   /**
    * If poolId is provided, only include assets that are part of the pool.
    */
@@ -79,11 +78,15 @@ export async function mapGetAssetsWithUserBalances<
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
 
+  const marketPrices = new Map<string, PricePretty>();
   assets = await Promise.all(
     assets.map(async (asset) => {
       const marketActivity = await getAssetMarketActivity({
         coinMinimalDenom: asset.coinMinimalDenom,
-      });
+      }).catch((e) => captureErrorAndReturn(e, undefined));
+      if (marketActivity?.price?.toDec().isPositive()) {
+        marketPrices.set(asset.coinMinimalDenom, marketActivity.price);
+      }
 
       return {
         ...asset,
@@ -120,16 +123,20 @@ export async function mapGetAssetsWithUserBalances<
       // not a user asset
       if (!balance) return asset;
 
-      // is user asset, include user data
-      const usdValue = await calcAssetValue({
-        ...params,
-        anyDenom: asset.coinMinimalDenom,
-        amount: balance.amount,
-      }).catch((e) => captureErrorAndReturn(e, undefined));
+      const amount = new CoinPretty(asset, balance.amount);
+      const marketPrice = marketPrices.get(asset.coinMinimalDenom);
+      const usdValue =
+        priceSource === "sidecar" && amount.toDec().isPositive()
+          ? await calcAssetValue({
+              ...params,
+              anyDenom: asset.coinMinimalDenom,
+              amount: balance.amount,
+            }).catch((e) => captureErrorAndReturn(e, undefined))
+          : marketPrice?.toDec().mul(amount.toDec());
 
       return {
         ...asset,
-        amount: new CoinPretty(asset, balance.amount),
+        amount,
         usdValue: usdValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, usdValue)
           : undefined,
@@ -198,10 +205,21 @@ export async function getUserAssetsTotal(params: {
     undelegatingCoin,
   ];
 
-  const aggregatedValue = await calcSumCoinsValue({
-    ...params,
-    coins: allCoins,
-  });
+  // Totals include every holding, but must not route-search every holding.
+  const values = await Promise.all(
+    aggregateCoinsByDenom(allCoins).map(async (coin) => {
+      const activity = await getAssetMarketActivity(coin.currency).catch((e) =>
+        captureErrorAndReturn(e, undefined)
+      );
+      return activity?.price?.toDec().isPositive()
+        ? activity.price.toDec().mul(coin.toDec())
+        : new Dec(0);
+    })
+  );
+  const aggregatedValue = values.reduce(
+    (sum, value) => sum.add(value),
+    new Dec(0)
+  );
 
   return {
     value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),

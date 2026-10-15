@@ -58,14 +58,14 @@ export const TokenSelect: FunctionComponent<{
     const setIsSelectOpen =
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
-    // Prices for the whole list are needed at once to sort by fiat value.
+    // Sort with cached market snapshots; never route-search the whole list.
     const { prices } = useBatchedPrices(
       tokens.map((token) =>
         token instanceof CoinPretty
           ? token.currency.coinMinimalDenom
           : token.coinMinimalDenom
       ),
-      { enabled: sortByBalances }
+      { enabled: sortByBalances && isSelectOpen, source: "market" }
     );
 
     const inputRef = useRef<HTMLInputElement | null>(null);
