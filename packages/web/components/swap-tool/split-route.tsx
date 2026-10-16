@@ -1,10 +1,9 @@
 import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, memo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
@@ -28,7 +27,7 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
-}> = observer(({ route }) => {
+}> = memo(({ route }) => {
   const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
     ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
     : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
@@ -82,7 +81,7 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
   />
 );
 
-const Pools: FunctionComponent<Route> = observer(({ pools }) => {
+const Pools: FunctionComponent<Route> = memo(({ pools }) => {
   const { isMobile } = useWindowSize();
   const router = useRouter();
 

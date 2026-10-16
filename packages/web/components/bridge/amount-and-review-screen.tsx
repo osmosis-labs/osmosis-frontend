@@ -1,8 +1,7 @@
 import type { Bridge, BridgeSupportedAsset } from "@osmosis-labs/bridge";
 import { CoinPretty } from "@osmosis-labs/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
@@ -38,7 +37,7 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
-export const AmountAndReviewScreen = observer(
+export const AmountAndReviewScreen = memo(
   ({
     direction,
     selectedAssetDenom,

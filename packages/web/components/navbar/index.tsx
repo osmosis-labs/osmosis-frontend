@@ -9,12 +9,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   Fragment,
   FunctionComponent,
+  memo,
   useEffect,
   useRef,
   useState,
@@ -345,7 +345,7 @@ export const NavBar: FunctionComponent<
 
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
-> = observer(({ className, onOpenProfile, icnsName }) => {
+> = memo(({ className, onOpenProfile, icnsName }) => {
   const currentAvatar = useProfileStore((state) => state.currentAvatar);
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
@@ -510,7 +510,7 @@ const WalletInfo: FunctionComponent<
   );
 });
 
-const OneClickTradingRadialProgress = observer(() => {
+const OneClickTradingRadialProgress = memo(() => {
   const { oneClickTradingInfo, getTimeRemaining, getTotalSessionTime } =
     useOneClickTradingSession();
   const [percentage, setPercentage] = useState(100);

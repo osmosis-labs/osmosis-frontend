@@ -10,8 +10,7 @@ import {
 } from "@headlessui/react";
 import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, memo, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
@@ -45,7 +44,7 @@ interface SetBaseInfosProps {
   onUseExistingPool?: (poolId: string) => void;
 }
 
-export const SetBaseInfos = observer(
+export const SetBaseInfos = memo(
   ({
     config,
     advanceStep,

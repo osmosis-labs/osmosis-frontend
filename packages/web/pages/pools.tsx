@@ -3,10 +3,9 @@ import {
   prepareCreateStableswapPoolMsg,
 } from "@osmosis-labs/tx";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
@@ -22,7 +21,7 @@ import {
 import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 
-const Pools: NextPage = observer(function () {
+const Pools: NextPage = memo(function () {
   const { t } = useTranslation();
 
   const { chainId } = OsmosisChainInfo;
