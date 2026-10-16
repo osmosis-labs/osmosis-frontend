@@ -11,13 +11,13 @@ import {
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, {
   ComponentProps,
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -76,7 +76,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   showLinkToPool?: boolean;
   isLoadingPositionDetails: boolean;
   hasPositionDetailsError: boolean;
-}> = observer(
+}> = memo(
   ({
     poolId,
     position,

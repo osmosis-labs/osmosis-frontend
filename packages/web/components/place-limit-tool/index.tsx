@@ -6,10 +6,10 @@ import {
   isValidNumericalRawInput,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -141,7 +141,7 @@ const NON_DISPLAY_ERRORS = [
   "limitOrders.priceTooHigh",
 ];
 
-export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
+export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
   ({
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,

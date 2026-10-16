@@ -5,10 +5,10 @@ import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { InsufficientBalanceForFeeError, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -81,7 +81,7 @@ export interface SwapToolProps {
 
 const LOW_LIQUIDITY_WARNING_THRESHOLD = new Dec(3000);
 
-export const SwapTool: FunctionComponent<SwapToolProps> = observer(
+export const SwapTool: FunctionComponent<SwapToolProps> = memo(
   ({
     useOtherCurrencies,
     useQueryParams,
