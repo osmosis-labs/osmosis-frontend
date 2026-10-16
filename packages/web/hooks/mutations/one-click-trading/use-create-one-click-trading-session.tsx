@@ -247,6 +247,32 @@ export async function onAdd1CTSession({
   );
 }
 
+/**
+ * Runs the session update that rides along with a trade. The trade has already
+ * landed, so a failure here is reported as a 1-Click Trading error rather than
+ * a failed trade.
+ */
+export async function update1CTSessionAfterTrade(
+  update: () => Promise<void>,
+  type: "create-1ct-session" | "remove-1ct-session"
+) {
+  try {
+    await update();
+  } catch (e) {
+    console.error("Failed to update the 1-Click Trading session", e);
+    displayToast(
+      {
+        titleTranslationKey:
+          type === "create-1ct-session"
+            ? "oneClickTrading.toast.currentlyUnavailable"
+            : "oneClickTrading.toast.errorEndingSession",
+        captionTranslationKey: "oneClickTrading.toast.pleaseTryAgain",
+      },
+      ToastType.ERROR
+    );
+  }
+}
+
 export async function makeCreate1CTSessionMessage({
   transaction1CTParams,
   spendLimitTokenDecimals,

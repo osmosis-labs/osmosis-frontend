@@ -190,13 +190,27 @@ export class WalletRuntime {
       },
       options,
     });
-    this.hydration = this.hydrate();
-    // Storage can be unavailable in private browsing. Render a hydrated,
-    // disabled session while keeping failures observable to explicit callers.
-    void this.hydration.catch(() =>
-      this.updateSession({ isStateHydrated: true })
-    );
+    this.hydration = this.readSession();
+    if (typeof window !== "undefined") {
+      // Another tab may start or end the session. Read it again so this tab
+      // stops decorating or signing with a session that no longer exists.
+      window.addEventListener("storage", this.onStorage);
+    }
   }
+
+  private readonly onStorage = (event: StorageEvent) => {
+    const prefix = this.storage.prefix() + "/";
+    if (
+      event.key === null ||
+      [
+        OneClickTradingLocalStorageKey,
+        UseOneClickTradingLocalStorageKey,
+        HasUsedOneClickTradingLocalStorageKey,
+      ].some((key) => event.key === prefix + key)
+    ) {
+      void this.readSession();
+    }
+  };
 
   private createManager() {
     const chains = this.config.chains.map((chain) => ({
@@ -226,7 +240,7 @@ export class WalletRuntime {
       this.wallets,
       logger,
       true,
-      // Refresh connected chain wallets without prompting for inactive chains.
+      // Keystore change events are handled by `subscribeKeystoreChange`.
       false,
       ["https://daodao.zone", "https://dao.daodao.zone"],
       assets,
@@ -256,7 +270,13 @@ export class WalletRuntime {
         wallet.updateCallbacks({
           ...wallet.callbacks,
           afterDisconnect: async () => {
-            if (wallet.chain.chain_id === this.config.osmosisChainId)
+            // Remove the session when the Osmosis wallet disconnects. Without
+            // one there is nothing to clear, and clearing would mark one-click
+            // trading as used.
+            if (
+              wallet.chain.chain_id === this.config.osmosisChainId &&
+              (await this.getOneClickTradingInfo())
+            )
               await this.setOneClickTradingInfo(undefined);
           },
         });
@@ -426,14 +446,25 @@ export class WalletRuntime {
     this.publish();
   }
 
-  private async hydrate() {
+  /** Never rejects: an unreadable or malformed record reads as no session. */
+  private async readSession() {
     const sessionRevision = this.sessionRevision;
     const preferenceRevision = this.preferenceRevision;
-    const [info, enabled, used] = await Promise.all([
-      this.storage.get<OneClickTradingInfo>(OneClickTradingLocalStorageKey),
-      this.storage.get<boolean>(UseOneClickTradingLocalStorageKey),
-      this.storage.get<boolean>(HasUsedOneClickTradingLocalStorageKey),
-    ]);
+    let info: OneClickTradingInfo | undefined;
+    let enabled: boolean | undefined;
+    let used: boolean | undefined;
+    try {
+      [info, enabled, used] = await Promise.all([
+        this.storage.get<OneClickTradingInfo>(OneClickTradingLocalStorageKey),
+        this.storage.get<boolean>(UseOneClickTradingLocalStorageKey),
+        this.storage.get<boolean>(HasUsedOneClickTradingLocalStorageKey),
+      ]);
+    } catch (e) {
+      // Blocked storage or corrupt JSON must not leave one-click state
+      // loading forever. The defaults (disabled, no session) stand until the
+      // next write replaces them.
+      console.error("Failed to read one-click trading state", e);
+    }
     this.updateSession({
       isStateHydrated: true,
       ...(sessionRevision === this.sessionRevision
@@ -446,10 +477,7 @@ export class WalletRuntime {
       sessionRevision === this.sessionRevision
         ? {
             useOneClickTrading: Boolean(
-              info &&
-              enabled &&
-              BigInt(info.sessionPeriod.end) >
-                BigInt(Date.now()) * BigInt(1_000_000)
+              info && enabled && isSessionUnexpired(info)
             ),
           }
         : {}),
@@ -669,4 +697,15 @@ export class WalletRuntime {
       clearTimeout(manager.session.timeoutId);
     }
   };
+}
+
+/** False for an expired session or one whose stored end time is malformed. */
+function isSessionUnexpired(info: OneClickTradingInfo) {
+  try {
+    return (
+      BigInt(info.sessionPeriod.end) > BigInt(Date.now()) * BigInt(1_000_000)
+    );
+  } catch {
+    return false;
+  }
 }

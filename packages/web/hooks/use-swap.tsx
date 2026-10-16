@@ -51,7 +51,10 @@ import {
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import {
   use1CTSwapReviewMessages,
@@ -675,32 +678,40 @@ export function useSwap(
                     oneClickMessages &&
                     oneClickMessages.type === "create-1ct-session"
                   ) {
-                    await onAdd1CTSession({
-                      privateKey: oneClickMessages.key,
-                      tx,
-                      userOsmoAddress: account?.address ?? "",
-                      fallbackGetAuthenticatorId:
-                        apiUtils.local.oneClickTrading.getSessionAuthenticator
-                          .fetch,
-                      walletApi,
-                      allowedMessages: oneClickMessages.allowedMessages,
-                      sessionPeriod: oneClickMessages.sessionPeriod,
-                      spendLimitTokenDecimals:
-                        oneClickMessages.spendLimitTokenDecimals,
-                      transaction1CTParams:
-                        oneClickMessages.transaction1CTParams,
-                      allowedAmount: oneClickMessages.allowedAmount,
-                      t,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onAdd1CTSession({
+                          privateKey: oneClickMessages.key,
+                          tx,
+                          userOsmoAddress: account?.address ?? "",
+                          fallbackGetAuthenticatorId:
+                            apiUtils.local.oneClickTrading
+                              .getSessionAuthenticator.fetch,
+                          walletApi,
+                          allowedMessages: oneClickMessages.allowedMessages,
+                          sessionPeriod: oneClickMessages.sessionPeriod,
+                          spendLimitTokenDecimals:
+                            oneClickMessages.spendLimitTokenDecimals,
+                          transaction1CTParams:
+                            oneClickMessages.transaction1CTParams,
+                          allowedAmount: oneClickMessages.allowedAmount,
+                          t,
+                        }),
+                      "create-1ct-session"
+                    );
                   } else if (
                     shouldSend1CTTx &&
                     oneClickMessages &&
                     oneClickMessages.type === "remove-1ct-session"
                   ) {
-                    await onEnd1CTSession({
-                      walletApi,
-                      authenticatorId: oneClickMessages.authenticatorId,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onEnd1CTSession({
+                          walletApi,
+                          authenticatorId: oneClickMessages.authenticatorId,
+                        }),
+                      "remove-1ct-session"
+                    );
                   }
 
                   resolve(

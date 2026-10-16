@@ -127,6 +127,39 @@ it("keeps the committed session and preference when persistence fails", async ()
   expect(runtime.store.getState().useOneClickTrading).toBe(false);
 });
 
+it.each([
+  [
+    "a malformed session",
+    async (storage: KVStore) => {
+      await storage.set(OneClickTradingLocalStorageKey, {
+        ...info,
+        sessionPeriod: { end: "1.5" },
+      });
+      await storage.set(UseOneClickTradingLocalStorageKey, true);
+    },
+  ],
+  [
+    "an unreadable store",
+    async (storage: KVStore) => {
+      jest.spyOn(storage, "get").mockRejectedValue(new SyntaxError("bad JSON"));
+    },
+  ],
+])("recovers from %s on hydration", async (_, prepare) => {
+  jest.spyOn(console, "error").mockImplementation(() => {});
+  const storage = new MemoryKVStore("account_store");
+  await prepare(storage);
+  const runtime = makeRuntime(storage);
+  await expect(
+    runtime.shouldBeSignedWithOneClickTrading({ messages: [] })
+  ).resolves.toBe(false);
+  expect(runtime.store.getState()).toMatchObject({
+    useOneClickTrading: false,
+    isStateHydrated: true,
+  });
+  await runtime.setOneClickTradingInfo(info);
+  expect(await runtime.getOneClickTradingInfo()).toBe(info);
+});
+
 it("does not hydrate an enabled preference from a session removed during the reads", async () => {
   const readers = new Map<string, (value: unknown) => void>();
   const storage: KVStore = {

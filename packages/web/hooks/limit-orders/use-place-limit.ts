@@ -15,7 +15,10 @@ import { OsmosisChainInfo } from "~/config/chain";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -425,38 +428,47 @@ export const usePlaceLimit = ({
             "",
             undefined,
             memoFlags ? { preferNoSetMemo: true } : undefined,
-            (tx) => {
+            async (tx) => {
               if (!tx.code) {
                 if (
                   shouldSend1CTTx &&
                   oneClickMessages &&
                   oneClickMessages.type === "create-1ct-session"
                 ) {
-                  onAdd1CTSession({
-                    privateKey: oneClickMessages.key,
-                    tx,
-                    userOsmoAddress: account?.address ?? "",
-                    fallbackGetAuthenticatorId:
-                      apiUtils.local.oneClickTrading.getSessionAuthenticator
-                        .fetch,
-                    walletApi,
-                    allowedMessages: oneClickMessages.allowedMessages,
-                    sessionPeriod: oneClickMessages.sessionPeriod,
-                    spendLimitTokenDecimals:
-                      oneClickMessages.spendLimitTokenDecimals,
-                    transaction1CTParams: oneClickMessages.transaction1CTParams,
-                    allowedAmount: oneClickMessages.allowedAmount,
-                    t,
-                  });
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        walletApi,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                      }),
+                    "create-1ct-session"
+                  );
                 } else if (
                   shouldSend1CTTx &&
                   oneClickMessages &&
                   oneClickMessages.type === "remove-1ct-session"
                 ) {
-                  onEnd1CTSession({
-                    walletApi,
-                    authenticatorId: oneClickMessages.authenticatorId,
-                  });
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onEnd1CTSession({
+                        walletApi,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                      }),
+                    "remove-1ct-session"
+                  );
                 }
               }
             },
