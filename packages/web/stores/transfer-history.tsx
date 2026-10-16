@@ -1016,6 +1016,9 @@ export function findMatchingLocalDeposit(
     if (
       local.imported ||
       local.direction !== "deposit" ||
+      // its funds never arrived, so an arrival can't be this deposit
+      local.status === "failed" ||
+      local.status === "refunded" ||
       alreadyMatched.has(local) ||
       local.osmoBech32Address !== incoming.osmoBech32Address ||
       !isSameReceivedAsset(local, incoming)
@@ -1037,25 +1040,49 @@ export function findMatchingLocalDeposit(
 }
 
 /**
- * Whether an indexed arrival is the asset a local deposit received. A deposit
- * that converts on arrival (e.g. USDC into alloyed allUSDC) records the alloy
- * locally, while the index sees the asset that arrived: match an arrival of
- * one of the alloy's variants by its 1:1-converted amount.
+ * Whether an indexed arrival is the asset a local deposit received, in about
+ * the amount it sent. A deposit that converts on arrival (e.g. USDC into
+ * alloyed allUSDC) records the alloy locally, while the index sees the asset
+ * that arrived: match an arrival of one of the alloy's variants by its
+ * 1:1-converted amount.
  */
 function isSameReceivedAsset(local: TxSnapshot, incoming: TxSnapshot) {
-  if (local.toAsset.address === incoming.toAsset.address) return true;
+  const expected =
+    displayAmount(local.toAsset) ?? displayAmount(local.fromAsset);
+  const arrived =
+    displayAmount(incoming.toAsset) ??
+    displayAmount({
+      ...incoming.fromAsset,
+      decimals: incoming.toAsset.decimals,
+    });
+
+  if (local.toAsset.address === incoming.toAsset.address) {
+    // an unknown amount can't rule the arrival out
+    if (expected === undefined || arrived === undefined) return true;
+    // bridge fees can come off the amount on the way, but an arrival can't
+    // be more than was sent
+    return arrived <= expected * 1.02 && arrived >= expected * 0.8;
+  }
+
   if (
     !incoming.toAsset.alloy ||
     incoming.toAsset.alloy !== local.toAsset.address ||
-    local.toAsset.decimals !== incoming.toAsset.decimals
+    expected === undefined ||
+    arrived === undefined
   ) {
     return false;
   }
-
-  const expected = Number(local.toAsset.amount ?? local.fromAsset.amount);
-  const arrived = Number(incoming.toAsset.amount ?? incoming.fromAsset.amount);
-  if (!(expected > 0) || !(arrived > 0)) return false;
   return Math.abs(arrived - expected) / expected <= 0.02;
+}
+
+/** An asset amount in display units, from the asset's own decimals. */
+function displayAmount(asset: {
+  amount?: string;
+  decimals: number;
+}): number | undefined {
+  const amount = Number(asset.amount);
+  if (!(amount > 0)) return;
+  return amount / 10 ** asset.decimals;
 }
 
 const PendingTransferLoadingIcon: FunctionComponent<{

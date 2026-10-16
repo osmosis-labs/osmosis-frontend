@@ -321,15 +321,28 @@ function parseRecvPacket(
  */
 function isPacketForAddress(packetData: PacketData, address: string) {
   if (packetData.receiver === address) return true;
+  if (
+    typeof packetData.receiver !== "string" ||
+    !isContractAddress(packetData.receiver)
+  ) {
+    return false;
+  }
+
+  // Skip's entry point pays the post-swap action's recipient. The user can
+  // also appear only as the recovery address, or as the fallback of an
+  // `ibc_transfer` that sends the funds on from Osmosis: neither is a
+  // deposit to them.
+  const skipCall = findKey(packetData.memo, "post_swap_action");
+  if (skipCall) {
+    const action = asRecord(skipCall.post_swap_action);
+    return asRecord(action?.transfer)?.to_address === address;
+  }
+
   const memo =
     typeof packetData.memo === "string"
       ? packetData.memo
       : JSON.stringify(packetData.memo ?? "");
-  return (
-    typeof packetData.receiver === "string" &&
-    isContractAddress(packetData.receiver) &&
-    memo.includes(address)
-  );
+  return memo.includes(address);
 }
 
 /** Cosmos contract addresses are 32 bytes; accounts are 20. */

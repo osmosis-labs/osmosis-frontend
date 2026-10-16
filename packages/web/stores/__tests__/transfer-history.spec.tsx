@@ -1003,6 +1003,61 @@ describe("TransferHistoryStore.importSnapshots", () => {
     ]);
   });
 
+  it("doesn't match an arrival of the same asset in another amount, or to a failed deposit", async () => {
+    const createdAtUnix = nowUnix() - 3000;
+    const localDeposit = (sendTxHash: string, status: TxSnapshot["status"]) =>
+      makeIndexed({
+        direction: "deposit",
+        provider: "Skip",
+        statusProvider: undefined,
+        sendTxHash,
+        createdAtUnix,
+        estimatedArrivalUnix: createdAtUnix + 600,
+        status,
+        // 10 USDC sent from the source chain
+        fromAsset: {
+          denom: "USDC",
+          address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          decimals: 6,
+          amount: "10000000",
+        },
+      });
+    const { store } = makeStore([localDeposit("0xfailed", "failed")]);
+    await untilRestored(store);
+
+    const arrival = (sendTxHash: string, amount: string) =>
+      makeIndexed({
+        direction: "deposit",
+        provider: "IBC",
+        statusProvider: undefined,
+        status: "success",
+        sendTxHash,
+        createdAtUnix: createdAtUnix + 300,
+        fromAsset: {
+          denom: "USDC",
+          address: usdcOnOsmosis,
+          decimals: 6,
+          amount,
+        },
+        toAsset: { denom: "USDC", address: usdcOnOsmosis, decimals: 6, amount },
+      });
+
+    // the failed deposit's funds never arrived
+    store.importSnapshots([arrival("AFTERFAILED", "9950000")]);
+    store.pushTxNow(localDeposit("0xpending", "pending"));
+    // 1,000 USDC from elsewhere isn't the pending 10 USDC deposit
+    store.importSnapshots([arrival("UNRELATED", "1000000000")]);
+    // 9.95 USDC after bridge fees is
+    store.importSnapshots([arrival("ARRIVAL", "9950000")]);
+
+    expect(store.snapshots.map((s: TxSnapshot) => s.sendTxHash)).toEqual([
+      "0xfailed",
+      "AFTERFAILED",
+      "0xpending",
+      "UNRELATED",
+    ]);
+  });
+
   it("doesn't match an arrival of another asset by amount alone", async () => {
     const createdAtUnix = nowUnix() - 600;
     const localDeposit = makeIndexed({

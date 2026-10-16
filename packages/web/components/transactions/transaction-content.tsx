@@ -76,6 +76,16 @@ export const TransactionContent = ({
     query,
   } = useFilteredTransactions(transactions);
 
+  const hasWallet = Boolean(
+    wallet && wallet.isWalletConnected && wallet.address
+  );
+  // A type filter runs in the API, so it can return nothing at all: keep the
+  // controls (to change it back) and say nothing matched, rather than showing
+  // the no-history splash without a way out.
+  const showControls = hasWallet && (transactions.length > 0 || isFiltering);
+  const showNoMatches =
+    hasWallet && isFiltering && !isLoading && filteredTransactions.length === 0;
+
   return (
     <ClientOnly className="w-full">
       <div className="flex w-full flex-col pb-16">
@@ -97,7 +107,7 @@ export const TransactionContent = ({
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
           <TransactionFilters
-            showControls={tab === "history" && Boolean(showTransactionContent)}
+            showControls={tab === "history" && showControls}
             heading={
               <TabList className="mr-auto flex items-center gap-8">
                 {TX_PAGE_TABS.map((defaultTab) => (
@@ -127,9 +137,7 @@ export const TransactionContent = ({
                 <div className="-mx-4 flex flex-col">
                   {showConnectWallet ? (
                     <NoTransactionsSplash variant="connect" />
-                  ) : showTransactionContent &&
-                    isFiltering &&
-                    filteredTransactions.length === 0 ? (
+                  ) : showNoMatches ? (
                     <div className="flex flex-col items-center gap-2 py-16 text-center">
                       <p className="subtitle1">
                         {query?.trim()

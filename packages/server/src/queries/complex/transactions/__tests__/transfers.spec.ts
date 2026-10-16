@@ -297,6 +297,41 @@ describe("mapTransfers", () => {
       ).toEqual([]);
     });
 
+    describe("when the user is in the memo but not the recipient", () => {
+      const otherUser = "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj";
+      // swap the memo's post-swap action, keeping the user as recovery address
+      const withPostSwapAction = (action: string) => {
+        const escaped = (text: string) => JSON.stringify(text).slice(1, -1);
+        const from = `"post_swap_action":{"transfer":{"to_address":"${address}"}}`;
+        return JSON.parse(
+          JSON.stringify(IndexedTransferTxs.gmpDeposit).replace(
+            escaped(from),
+            escaped(`"post_swap_action":${action}`)
+          )
+        ) as Transaction;
+      };
+
+      it("drops a packet that pays another user", () => {
+        expect(
+          map(
+            withPostSwapAction(`{"transfer":{"to_address":"${otherUser}"}}`),
+            address
+          )
+        ).toEqual([]);
+      });
+
+      it("drops a packet sent on from Osmosis", () => {
+        expect(
+          map(
+            withPostSwapAction(
+              `{"ibc_transfer":{"ibc_info":{"source_channel":"channel-122","receiver":"inj1dnukvllpvhmvpecw5sy2g2u204hw38zqe70q2y","memo":"","recover_address":"${address}"}}}`
+            ),
+            address
+          )
+        ).toEqual([]);
+      });
+    });
+
     describe("when the relayer tx executed several GMP calls", () => {
       const hex = (text: string) =>
         "0x" + Buffer.from(text).toString("hex").padStart(64, "0");
