@@ -1,7 +1,4 @@
-import {
-  type AddLiquidityPoolData,
-  ObservableAddLiquidityConfig,
-} from "@osmosis-labs/stores";
+import type { AddLiquidityPoolData } from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 import {
@@ -121,38 +118,7 @@ const scripts: Record<string, Op[]> = {
   ],
 };
 
-function snapshotLegacy(c: ObservableAddLiquidityConfig) {
-  return {
-    amounts: c.poolAssetConfigs.map((a) => a.amount),
-    shareOut: c.shareOutAmount?.toDec().toString(),
-    error: c.error?.constructor.name,
-    isSingle: c.isSingleAmountIn,
-    singleDenom: c.singleAmountInConfig?.sendCurrency.coinMinimalDenom,
-    impact: c.singleAmountInPriceImpact?.toDec().toString(),
-  };
-}
-
-function runLegacy(
-  pool: AddLiquidityPoolData,
-  bal: [string, string][],
-  ops: Op[]
-) {
-  const c = new ObservableAddLiquidityConfig("1", "osmo1sender");
-  c.setPool(pool);
-  c.setBalances(bal.map(([denom, amount]) => ({ denom, amount })));
-  const out = [snapshotLegacy(c)];
-  for (const o of ops) {
-    if (o.op === "amount") c.setAmountAt(o.index, o.amount);
-    if (o.op === "max") c.setMax();
-    if (o.op === "single") c.setIsSingleAmountIn(o.value);
-    if (o.op === "singleIndex") c.setSingleAmountInConfigIndex(o.index);
-    if (o.op === "singleAmount") c.singleAmountInConfig?.setAmount(o.amount);
-    out.push(snapshotLegacy(c));
-  }
-  return out;
-}
-
-function runNew(
+function runOperations(
   pool: AddLiquidityPoolData,
   bal: [string, string][],
   ops: Op[]
@@ -231,17 +197,14 @@ function runNew(
   return out;
 }
 
-describe("add liquidity calculations match the legacy config", () => {
+// Expectations captured from the legacy config before its removal.
+describe("add liquidity calculation regressions", () => {
   const pools = { osmoAtom, atomOsmoUsdc, noOsmo };
   for (const [poolName, pool] of Object.entries(pools)) {
     for (const [balName, bal] of Object.entries(balanceSets)) {
       for (const [scriptName, ops] of Object.entries(scripts)) {
         it(`${poolName} / ${balName} / ${scriptName}`, () => {
-          const legacy = runLegacy(pool, bal, ops);
-          const next = runNew(pool, bal, ops);
-          expect(next).toEqual(
-            legacy.map(({ impact: _impact, ...rest }) => rest)
-          );
+          expect(runOperations(pool, bal, ops)).toMatchSnapshot();
         });
       }
     }

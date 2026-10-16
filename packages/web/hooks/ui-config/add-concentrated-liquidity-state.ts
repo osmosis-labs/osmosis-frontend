@@ -47,7 +47,7 @@ export class InvalidRangeError extends Error {
 }
 
 // ---------------------------------------------------------------------------
-// Price input (mirrors `PriceConfig` of packages/stores)
+// Price input
 // ---------------------------------------------------------------------------
 
 /** Multiply a price (without currency decimals) by this to include them, divide to remove them. */

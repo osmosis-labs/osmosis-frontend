@@ -1,0 +1,3711 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / atomLimited / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "49.99999",
+      "283.3333",
+      "166.6666",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "16.666664705882352941",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / atomLimited / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "5.66",
+      "3.33",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "49.99999",
+      "283.3333",
+      "166.6666",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "16.666664705882352941",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / atomLimited / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "88.2",
+      "500",
+      "294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "29.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "88.2",
+      "500",
+      "294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "29.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "88.2",
+      "0.1",
+      "294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "29.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "88.2",
+      "0.1",
+      "294",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "29.411764705882352941",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.35",
+      "2",
+      "1.17",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.117647058823529412",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.35",
+      "2",
+      "1.17",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.117647058823529412",
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / atomLimited / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "56.6",
+      "33.3",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "3.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.08",
+      "0.5",
+      "0.29",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.029411764705882353",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+      "0.29",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+      "0.29",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+      "0.29",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+      "0.29",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000333333333333",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / none / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / none / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / none / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "0.1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "0.1",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "2",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "2",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / none / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+      "",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+      "",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / plenty / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1588.233",
+      "8999.987",
+      "5294.109",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "529.411000000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / plenty / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "5.66",
+      "3.33",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1588.233",
+      "8999.987",
+      "5294.109",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "529.411000000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / plenty / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "1588",
+      "9000",
+      "5294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "529.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "1588",
+      "9000",
+      "5294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "529.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "1588",
+      "0.1",
+      "5294",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "529.411764705882352941",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "1588",
+      "0.1",
+      "5294",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "529.411764705882352941",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.35",
+      "2",
+      "1.17",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.117647058823529412",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.35",
+      "2",
+      "1.17",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.117647058823529412",
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / plenty / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "56.6",
+      "33.3",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "3.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.08",
+      "0.5",
+      "0.29",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.029411764705882353",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+      "0.29",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+      "0.29",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+      "0.29",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+      "0.29",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000333333333333",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / tinyOsmo / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "-0.0025",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / tinyOsmo / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "5.66",
+      "3.33",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "0.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "-0.0025",
+      "3.33",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / tinyOsmo / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.01",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.000588235294117647",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.01",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.000588235294117647",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+      "0",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "0.000588235294117647",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000588235294117647",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+      "0",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / tinyOsmo / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "56.6",
+      "33.3",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "3.333333333333333333",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+      "33.3",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+      "33.3",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+      "33.3",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+      "33.3",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+      "33.3",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000333333333333",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / zeroOne / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / zeroOne / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / zeroOne / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "",
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.001",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.000058823529411765",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.001",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.000058823529411765",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+      "0",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "0.000058823529411765",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000058823529411765",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+      "0",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions atomOsmoUsdc / zeroOne / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+      "",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+      "",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0.5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / atomLimited / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "50",
+      "0.4",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / atomLimited / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.810000007371000067",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "50",
+      "0.4",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / atomLimited / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "50",
+      "0.4",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "50",
+      "0.4",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "50",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "50",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "40.500000368550003354",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "249",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "202.499999794968750205",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "249",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "202.499999794968750205",
+    "singleDenom": "uatom",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / atomLimited / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.08",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "8.100000073710000671",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "62.4",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "50.624999948742187551",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000810000007371",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / none / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / none / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / none / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / none / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / plenty / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / plenty / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.810000007371000067",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / plenty / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "249",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "202.499999794968750205",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "249",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "202.499999794968750205",
+    "singleDenom": "uatom",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / plenty / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.08",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "8.100000073710000671",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "62.4",
+      "0.5",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "50.624999948742187551",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000810000007371",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / tinyOsmo / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / tinyOsmo / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.810000007371000067",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / tinyOsmo / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "72",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "7290.000066339000603685",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "9000",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "9000",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / tinyOsmo / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.08",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "8.100000073710000671",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000810000007371",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / zeroOne / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / zeroOne / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / zeroOne / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "weth",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions noOsmo / zeroOne / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / atomLimited / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "499.9875",
+      "49.99875",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "49.998750000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / atomLimited / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.100000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "499.9875",
+      "49.99875",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "49.998750000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / atomLimited / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "500",
+      "50",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "50.000000000000000000",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "500",
+      "50",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "50.000000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "500",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "50.000000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "500",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "50.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / atomLimited / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "1.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "5",
+      "0.5",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.500000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000100000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / none / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / none / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / none / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0",
+      "0.1",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "2",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / none / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / plenty / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "8999.987",
+      "899.9987",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "899.998700000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / plenty / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.100000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "8999.987",
+      "899.9987",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "899.998700000000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / plenty / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "9000",
+      "900",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "900.000000000000000000",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "9000",
+      "900",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "900.000000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "900.000000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "9000",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "900.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / plenty / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "1.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "5",
+      "0.5",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.500000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000100000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / tinyOsmo / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-0.0025",
+      "",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / tinyOsmo / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-0.0025",
+      "",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / tinyOsmo / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0.01",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.001000000000000000",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0.01",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": "0.001000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0.01",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.001000000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0.01",
+      "0.1",
+    ],
+    "error": undefined,
+    "isSingle": false,
+    "shareOut": "0.001000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "20",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "2.000000000000000000",
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / tinyOsmo / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "5",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "0.500000000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000100000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / zeroOne / max 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / zeroOne / maxAfterTyping 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "1",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / zeroOne / single 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "5",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0.001",
+      "0",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": "0.000100000000000000",
+    "singleDenom": "uosmo",
+  },
+  {
+    "amounts": [
+      "0.001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": true,
+    "shareOut": "0.000100000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0.001",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": true,
+    "shareOut": "0.000100000000000000",
+    "singleDenom": "uatom",
+  },
+  {
+    "amounts": [
+      "0.001",
+      "0.1",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": "0.000100000000000000",
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.001",
+      "2",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.001",
+      "2",
+    ],
+    "error": undefined,
+    "isSingle": true,
+    "shareOut": undefined,
+    "singleDenom": "uosmo",
+  },
+]
+`;
+
+exports[`add liquidity calculation regressions osmoAtom / zeroOne / typed 1`] = `
+[
+  {
+    "amounts": [
+      "",
+      "",
+    ],
+    "error": "EmptyAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "10",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "abc",
+      "0.5",
+    ],
+    "error": "InvalidNumberAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0",
+      "0.5",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "-3",
+      "0.5",
+    ],
+    "error": "NegativeAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "123456789",
+      "0.5",
+    ],
+    "error": "InsufficientAmountError",
+    "isSingle": false,
+    "shareOut": undefined,
+    "singleDenom": undefined,
+  },
+  {
+    "amounts": [
+      "0.000001",
+      "0",
+    ],
+    "error": "ZeroAmountError",
+    "isSingle": false,
+    "shareOut": "0.000000100000000000",
+    "singleDenom": undefined,
+  },
+]
+`;
