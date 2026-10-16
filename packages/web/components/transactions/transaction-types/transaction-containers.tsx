@@ -2,13 +2,31 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { theme } from "~/tailwind.config";
+
+/** The row title, with an optional tooltip (e.g. the bridge provider). */
+const TransactionTitle = ({
+  tooltip,
+  children,
+}: {
+  tooltip?: ReactNode;
+  children: JSX.Element;
+}) =>
+  tooltip ? (
+    // let clicks through so the row still opens its details
+    <Tooltip content={tooltip} className="w-fit" enablePropagation>
+      {children}
+    </Tooltip>
+  ) : (
+    children
+  );
 
 export const SmallTransactionContainer = ({
   status,
   title,
-  titleAdornment,
+  titleTooltip,
   leftComponent,
   rightComponent,
   isSelected,
@@ -16,8 +34,8 @@ export const SmallTransactionContainer = ({
 }: {
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
-  /** Shown after the title, e.g. the bridge provider's logo. */
-  titleAdornment?: ReactNode;
+  /** Shown on hovering the title, e.g. the bridge provider. */
+  titleTooltip?: ReactNode;
   leftComponent: JSX.Element | null;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
@@ -39,7 +57,7 @@ export const SmallTransactionContainer = ({
     onClick={() => onClick?.()}
   >
     <div className="flex flex-col">
-      <div className="flex items-center gap-1.5">
+      <TransactionTitle tooltip={titleTooltip}>
         <p
           className={classNames(
             "body2",
@@ -48,8 +66,7 @@ export const SmallTransactionContainer = ({
         >
           {title[status]}
         </p>
-        {titleAdornment}
-      </div>
+      </TransactionTitle>
       {leftComponent}
     </div>
     <div className="flex items-center justify-end">{rightComponent}</div>
@@ -60,7 +77,7 @@ export const LargeTransactionContainer = ({
   iconId,
   status,
   title,
-  titleAdornment,
+  titleTooltip,
   rightComponent,
   isSelected,
   onClick,
@@ -69,8 +86,8 @@ export const LargeTransactionContainer = ({
   iconId: SpriteIconId;
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
-  /** Shown after the title, e.g. the bridge provider's logo. */
-  titleAdornment?: ReactNode;
+  /** Shown on hovering the title, e.g. the bridge provider. */
+  titleTooltip?: ReactNode;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
@@ -111,16 +128,17 @@ export const LargeTransactionContainer = ({
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <p
-          className={classNames(
-            "subtitle1 md:body2 text-osmoverse-100",
-            status === "failed" ? "text-rust-400" : "text-white-full"
-          )}
-        >
-          {title[status]}
-        </p>
-        {titleAdornment}
+      <div>
+        <TransactionTitle tooltip={titleTooltip}>
+          <p
+            className={classNames(
+              "subtitle1 md:body2 text-osmoverse-100",
+              status === "failed" ? "text-rust-400" : "text-white-full"
+            )}
+          >
+            {title[status]}
+          </p>
+        </TransactionTitle>
       </div>
     </div>
 

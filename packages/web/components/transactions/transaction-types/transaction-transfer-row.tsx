@@ -2,7 +2,6 @@ import { TxSnapshot } from "@osmosis-labs/bridge";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import Image from "next/image";
 import React from "react";
 
 import { Icon } from "~/components/assets";
@@ -21,7 +20,6 @@ import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
-import { BridgeLogoUrls } from "~/utils/bridge";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
 
@@ -383,36 +381,15 @@ export const TransactionTransferRow = ({
       ? t("transactions.historyTable.failWithdraw")
       : t("transactions.historyTable.failDeposit");
 
-  const providerLogoUrl =
-    BridgeLogoUrls[transaction.provider as keyof typeof BridgeLogoUrls];
-  // in a round badge rather than cropped: some logos (IBC) are wordmarks
-  const providerLogo = (badgeSize: "sm" | "md") =>
-    providerLogoUrl ? (
-      <Tooltip
-        content={`${t("transactions.transfer.provider")}: ${transaction.provider}`}
-      >
-        <span
-          className={classNames(
-            "flex shrink-0 items-center justify-center rounded-full bg-osmoverse-700",
-            badgeSize === "sm" ? "h-4 w-4 p-0.5" : "h-6 w-6 p-1"
-          )}
-        >
-          <Image
-            src={providerLogoUrl}
-            alt={transaction.provider}
-            width={16}
-            height={16}
-            className="h-full w-full object-contain"
-          />
-        </span>
-      </Tooltip>
-    ) : null;
+  const providerTooltip = transaction.provider
+    ? `${t("transactions.transfer.provider")}: ${transaction.provider}`
+    : undefined;
 
   if (size === "sm") {
     return (
       <SmallTransactionContainer
         status={simplifiedStatus}
-        titleAdornment={providerLogo("sm")}
+        titleTooltip={providerTooltip}
         title={{
           pending: pendingText,
           success: successText,
@@ -430,7 +407,7 @@ export const TransactionTransferRow = ({
     <LargeTransactionContainer
       iconId={transaction.direction === "withdraw" ? "withdraw" : "deposit"}
       status={simplifiedStatus}
-      titleAdornment={providerLogo("md")}
+      titleTooltip={providerTooltip}
       title={{
         pending: pendingText,
         success: successText,
