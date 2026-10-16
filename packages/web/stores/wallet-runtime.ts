@@ -191,11 +191,14 @@ export class WalletRuntime {
       options,
     });
     this.hydration = this.readSession();
-    if (typeof window !== "undefined") {
-      // Another tab may start or end the session. Read it again so this tab
-      // stops decorating or signing with a session that no longer exists.
-      window.addEventListener("storage", this.onStorage);
-    }
+  }
+
+  // Another tab may start or end the session. Read it again so this tab stops
+  // decorating or signing with a session that no longer exists.
+  private listenForOtherTabs(listen: boolean) {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("storage", this.onStorage);
+    if (listen) window.addEventListener("storage", this.onStorage);
   }
 
   private readonly onStorage = (event: StorageEvent) => {
@@ -671,6 +674,7 @@ export class WalletRuntime {
   };
 
   mount = () => {
+    this.listenForOtherTabs(true);
     const version = this.mountVersion;
     const manager = this.manager;
     // Serialize restores of the same manager so stale cleanup cannot remove a
@@ -702,6 +706,7 @@ export class WalletRuntime {
   unmount = async () => {
     this.mountVersion++;
     this.unsubscribeKeystoreChange?.();
+    this.listenForOtherTabs(false);
     const manager = this.manager;
     await manager.onUnmounted();
     if (manager.session.timeoutId !== undefined) {
