@@ -382,6 +382,15 @@ describe("mapTransfers", () => {
 
         expect(transfer.fromAddress).toBe("");
       });
+
+      it("leaves the sender unknown when the only call indexed is another user's", async () => {
+        const [transfer] = await lookUp(
+          [record("99", otherUser, otherSender)],
+          "BUNDLEDGMPONEOTHER"
+        );
+
+        expect(transfer.fromAddress).toBe("");
+      });
     });
 
     it("resolves the source sender and links the source tx", async () => {

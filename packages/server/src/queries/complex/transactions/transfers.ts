@@ -801,8 +801,15 @@ function findGmpRecord(
   records: AxelarGmpRecord[],
   transfer: FormattedTransfer
 ): AxelarGmpRecord | undefined {
-  if (records.length <= 1 || transfer.direction === "withdraw") {
-    return records[0];
+  if (transfer.direction === "withdraw") return records[0];
+  if (records.length <= 1) {
+    // a lone record can still be another user's call, indexed before the
+    // user's; its amount must match (the payload needn't name the user)
+    const [only] = records;
+    const amount = only?.call?.returnValues?.amount;
+    return amount === undefined || amount === transfer.fromAsset.amount
+      ? only
+      : undefined;
   }
   const addressHex = Array.from(
     new TextEncoder().encode(transfer.osmoBech32Address),
