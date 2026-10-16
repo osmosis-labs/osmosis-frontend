@@ -1,12 +1,5 @@
-import {
-  EmptyAmountError,
-  InsufficientAmountError,
-  InvalidNumberAmountError,
-  NegativeAmountError,
-  ZeroAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { DefaultGasPriceStep } from "@osmosis-labs/tx";
+import type { CoinPrimitive } from "@osmosis-labs/types";
 import {
   AppCurrency,
   CoinPretty,
@@ -15,6 +8,13 @@ import {
   DecUtils,
   Int,
 } from "@osmosis-labs/unit";
+import {
+  EmptyAmountError,
+  InsufficientAmountError,
+  InvalidNumberAmountError,
+  NegativeAmountError,
+  ZeroAmountError,
+} from "@osmosis-labs/utils";
 
 /** Gas used to create a concentrated liquidity position. */
 export const CL_CREATE_POSITION_GAS = 3_000_000;

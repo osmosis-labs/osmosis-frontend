@@ -5,7 +5,9 @@ import type {
 import { type StdFee } from "@cosmjs/amino";
 import { type EncodeObject } from "@cosmjs/proto-signing";
 import {
+  ChainWalletBase,
   MainWalletBase,
+  State,
   WalletConnectOptions,
   WalletManager,
   WalletStatus,
@@ -142,6 +144,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
+  private _unsubscribeKeystoreChange?: () => void;
 
   private _kvStore: KVStore = makeLocalStorageKVStore("account_store");
 
@@ -175,7 +178,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }));
   }
 
-  /** Temporary adapter used by the frontend until one-click extraction (PR 3). */
+  /** Bridges one-click session signing, which still lives in this store, into the tx client. */
   get oneClickSigningAdapter(): OneClickSigningAdapter {
     return {
       getInfo: () => this.getOneClickTradingInfo(),
@@ -256,19 +259,34 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     autorun(async () => {
       const sessionRevision = this.sessionRevision;
       const preferenceRevision = this.preferenceRevision;
-      const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
-      const oneClickTradingInfo = await this.getOneClickTradingInfo();
-      const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
-      runInAction(() => {
-        if (this.preferenceRevision === preferenceRevision) {
-          this.useOneClickTrading = isOneClickTradingEnabled;
-        }
-        if (this.sessionRevision === sessionRevision) {
-          this.oneClickTradingInfo = oneClickTradingInfo ?? null;
-          this.hasUsedOneClickTrading = hasUsedOneClickTrading;
-        }
-        this.isStateHydrated = true;
-      });
+      try {
+        const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
+        const oneClickTradingInfo = await this.getOneClickTradingInfo();
+        const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
+        runInAction(() => {
+          // The enabled value is derived from the session too, so a session
+          // write during the reads also makes it stale.
+          if (
+            this.preferenceRevision === preferenceRevision &&
+            this.sessionRevision === sessionRevision
+          ) {
+            this.useOneClickTrading = isOneClickTradingEnabled;
+          }
+          if (this.sessionRevision === sessionRevision) {
+            this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+            this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+          }
+        });
+      } catch (e) {
+        // A stored value that cannot be read (corrupt JSON, blocked storage)
+        // must not leave the one-click state loading forever. The defaults
+        // (disabled, no session) stand until the next write replaces it.
+        console.error("Failed to read one-click trading state", e);
+      } finally {
+        runInAction(() => {
+          this.isStateHydrated = true;
+        });
+      }
     });
   }
 
@@ -294,7 +312,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       wallets,
       logger,
       true,
-      true,
+      // Keystore change events are handled by `_subscribeKeystoreChange`.
+      false,
       ["https://daodao.zone", "https://dao.daodao.zone"],
       this.walletManagerAssets,
       "icns",
@@ -348,9 +367,116 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
     });
 
+    this._subscribeKeystoreChange(this._walletManager);
     this.refresh();
 
     return this._walletManager;
+  }
+
+  /**
+   * Re-fetch the account of every connected chain wallet when the user
+   * switches accounts in the wallet extension.
+   *
+   * cosmos-kit's own handler is not used: it bails out unless the main wallet
+   * is connected, which never happens when chain wallets connect without sync
+   * (as the app does), and when it does run it connects every active chain
+   * wallet, prompting for chains the user never approved.
+   */
+  private _subscribeKeystoreChange(walletManager: WalletManager) {
+    this._unsubscribeKeystoreChange?.();
+    this._unsubscribeKeystoreChange = undefined;
+    if (typeof window === "undefined") return;
+
+    let isSubscribed = true;
+    // Chain wallets with a refresh in flight, flagged when another event
+    // arrives meanwhile so the account is read again after it.
+    const refreshing = new Map<ChainWalletBase, { rerun: boolean }>();
+    // Chain wallets whose last refresh failed. They stay eligible so a later
+    // event can recover them, until a disconnect resets their state.
+    const failed = new Set<ChainWalletBase>();
+
+    const isEligible = (chainWallet: ChainWalletBase) => {
+      if (chainWallet.isWalletConnected) return true;
+      if (failed.has(chainWallet) && chainWallet.state === State.Error) {
+        return true;
+      }
+      failed.delete(chainWallet);
+      return false;
+    };
+
+    const refreshAccount = async (chainWallet: ChainWalletBase) => {
+      const inFlight = refreshing.get(chainWallet);
+      if (inFlight) {
+        inFlight.rerun = true;
+        return;
+      }
+
+      const run = { rerun: false };
+      refreshing.set(chainWallet, run);
+      try {
+        do {
+          run.rerun = false;
+          // A disconnect clears the account and a reconnect replaces it, so an
+          // unchanged object means the connection is the one this read began on.
+          const accountBefore = chainWallet.data;
+          // Drop the result if it is superseded, or the wallet was disconnected,
+          // reconnected or the manager rebuilt while it was being read.
+          const isStale = () =>
+            run.rerun ||
+            !isSubscribed ||
+            chainWallet.data !== accountBefore ||
+            !isEligible(chainWallet);
+          try {
+            if (!chainWallet.client) throw new Error("Wallet client missing");
+            const account = await chainWallet.client.getSimpleAccount(
+              chainWallet.chainId
+            );
+            if (isStale()) continue;
+            failed.delete(chainWallet);
+            chainWallet.setData(account);
+            chainWallet.setMessage(undefined);
+            chainWallet.setState(State.Done);
+          } catch (e) {
+            if (isStale()) continue;
+            logger.error(
+              `Failed to refresh ${chainWallet.walletName} account on ${chainWallet.chainName}`,
+              e
+            );
+            failed.add(chainWallet);
+            try {
+              chainWallet.setError(e instanceof Error ? e : String(e));
+            } catch {
+              // Rethrown since the manager is created with `throwErrors`.
+            }
+          }
+        } while (run.rerun && isSubscribed);
+      } finally {
+        refreshing.delete(chainWallet);
+      }
+    };
+
+    const listeners = walletManager.mainWallets.flatMap((mainWallet) => {
+      const onKeystoreChange = () => {
+        mainWallet
+          .getChainWalletList(false)
+          .filter(isEligible)
+          .forEach((chainWallet) => {
+            refreshAccount(chainWallet);
+          });
+      };
+
+      return (mainWallet.walletInfo.connectEventNamesOnWindow ?? []).map(
+        (eventName) => {
+          window.addEventListener(eventName, onKeystoreChange);
+          return () => window.removeEventListener(eventName, onKeystoreChange);
+        }
+      );
+    });
+
+    this._unsubscribeKeystoreChange = () => {
+      isSubscribed = false;
+      listeners.forEach((unsubscribe) => unsubscribe());
+    };
   }
 
   @action
@@ -643,6 +769,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private async signOneClick({
     wallet,
+    oneClickTradingInfo,
     signerAddress,
     messages,
     fee,
@@ -651,6 +778,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memoFlags,
   }: {
     wallet: AccountStoreWallet;
+    oneClickTradingInfo: OneClickTradingInfo;
     signerAddress: string;
     messages: readonly EncodeObject[];
     fee: StdFee;
@@ -667,11 +795,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
-    }
-
-    const oneClickTradingInfo = await this.getOneClickTradingInfo();
-    if (isNil(oneClickTradingInfo)) {
-      throw new Error("One click trading info is not available");
     }
 
     // Tag the memo so we know the tx originated from the frontend (QA), plus
@@ -851,6 +974,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
+      return false;
+    }
+
+    // The session may belong to an account the user has switched away from.
+    if (
+      oneClickTradingInfo.userOsmoAddress !==
+      this.getWallet(this.osmosisChainId)?.address
+    ) {
       return false;
     }
 

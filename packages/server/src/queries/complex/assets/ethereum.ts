@@ -45,7 +45,9 @@ export async function getEvmBalance({
     try {
       const publicClient = createPublicClient({
         chain: evmChain,
-        transport: http(rpcUrl),
+        // The loop is the retry: a hung endpoint should hand over to the next
+        // URL in seconds, not after viem's default 10s timeout and 3 retries.
+        transport: http(rpcUrl, { timeout: 3_000, retryCount: 0 }),
       });
 
       const balance =

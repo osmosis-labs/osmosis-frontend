@@ -1,11 +1,11 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { Currency } from "@osmosis-labs/types";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
+} from "@osmosis-labs/utils";
 import {
   InsufficientBalanceError,
   InsufficientBalanceForFeeError,

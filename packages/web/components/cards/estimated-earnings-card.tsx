@@ -1,5 +1,4 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
@@ -29,7 +28,7 @@ const PriceCaption: FunctionComponent<{
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
   stakingAPR: Dec;
-}> = observer(({ stakeAmount, stakingAPR }) => {
+}> = ({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
 
   const osmo = OsmosisChainInfo.stakeCurrency;
@@ -90,4 +89,4 @@ export const EstimatedEarningCard: FunctionComponent<{
       </div>
     </OsmoverseCard>
   );
-});
+};

@@ -1,27 +1,25 @@
 import { fromBech32 } from "@cosmjs/encoding";
-import {
-  EmptyAmountError,
-  InsufficientAmountError,
-  InvalidNumberAmountError,
-  NegativeAmountError,
-  ZeroAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import type { ObservableQueryPool } from "@osmosis-labs/stores";
+import type { PoolType } from "@osmosis-labs/types";
+import { AppCurrency, CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   DepositNoBalanceError,
+  EmptyAmountError,
   HighSwapFeeError,
+  InsufficientAmountError,
+  InvalidNumberAmountError,
   InvalidScalingFactorControllerAddress,
   InvalidSwapFeeError,
   MaxAssetsCountError,
   MinAssetsCountError,
+  NegativeAmountError,
   NegativePercentageError,
   NegativeSwapFeeError,
   PercentageSumError,
   ScalingFactorTooLowError,
-} from "@osmosis-labs/stores";
-import { AppCurrency, CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
+  ZeroAmountError,
+} from "@osmosis-labs/utils";
 
-export type CreatePoolType = ObservableQueryPool["type"];
+export type CreatePoolType = PoolType;
 
 export interface CreatePoolConfigOpts {
   minAssetsCount: number;

@@ -213,8 +213,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       const defaultSlippage =
         quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+        slippageConfig.slippage
+          .toDec()
+          .equals(new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2)))
       ) {
         return;
       }

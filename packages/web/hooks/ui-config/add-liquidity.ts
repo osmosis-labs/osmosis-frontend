@@ -1,10 +1,4 @@
-import {
-  type AddLiquidityPoolData,
-  CalculatingShareOutAmountError,
-  NotInitializedError,
-  OSMO_MEDIUM_TX_FEE,
-} from "@osmosis-labs/stores";
-import type { Currency } from "@osmosis-labs/types";
+import type { AddLiquidityPoolData, Currency } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
@@ -13,6 +7,11 @@ import {
   IntPretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import {
+  CalculatingShareOutAmountError,
+  NotInitializedError,
+  OSMO_MEDIUM_TX_FEE,
+} from "@osmosis-labs/utils";
 
 import { getAssetAmountError } from "./create-pool";
 

@@ -1,5 +1,5 @@
-import { ChainIdHelper } from "@osmosis-labs/keplr-stores";
 import type { DeliverTxResponse, TxEvents } from "@osmosis-labs/stores";
+import { ChainIdHelper } from "@osmosis-labs/utils";
 
 import { registerTestCleanup } from "~/__tests__/setup-tests";
 import { prettifyTxError } from "~/components/alert/prettify";

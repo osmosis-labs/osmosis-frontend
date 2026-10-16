@@ -1,10 +1,10 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
-import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import {
   prepareRedelegateMsgs,
   prepareSetValidatorSetPreferenceAndDelegateToValidatorSetMsg,
   prepareSetValidatorSetPreferenceMsg,
 } from "@osmosis-labs/tx";
+import type * as Staking from "@osmosis-labs/types";
+import type * as StakingType from "@osmosis-labs/types";
 import {
   CoinPretty,
   Currency,

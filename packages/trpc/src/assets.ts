@@ -438,68 +438,87 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
         },
         ctx,
-      }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-            let assets = await mapGetAssetsWithUserBalances({
-              ...ctx,
-              search,
-              categories,
-              userOsmoAddress,
-              includePreview,
-            });
+      }) => {
+        const getUserAssets = async () => {
+          const assets = await mapGetAssetsWithUserBalances({
+            ...ctx,
+            search,
+            categories,
+            userOsmoAddress,
+            includePreview,
+          });
 
-            if (!search)
-              assets = assets.filter((asset) =>
-                asset.amount?.toDec().isPositive()
-              );
+          if (search) return assets;
+          return assets.filter((asset) => asset.amount?.toDec().isPositive());
+        };
 
-            let priceAssets = await Promise.all(
-              assets.map(async (asset) => {
-                const [currentPrice, priceChange24h] = await Promise.all([
-                  getAssetPrice({ ...ctx, asset })
-                    .then(
-                      (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
-                    )
-                    .catch((e) => captureErrorAndReturn(e, undefined)),
-                  getAssetMarketActivity(asset).then(
-                    (activity) => activity?.price24hChange
-                  ),
-                ]);
+        const withPrices = (
+          assets: Awaited<ReturnType<typeof getUserAssets>>
+        ) =>
+          Promise.all(
+            assets.map(async (asset) => {
+              const [currentPrice, priceChange24h] = await Promise.all([
+                getAssetPrice({ ...ctx, asset })
+                  .then((price) => new PricePretty(DEFAULT_VS_CURRENCY, price))
+                  .catch((e) => captureErrorAndReturn(e, undefined)),
+                getAssetMarketActivity(asset).then(
+                  (activity) => activity?.price24hChange
+                ),
+              ]);
 
-                return {
-                  ...asset,
-                  currentPrice,
-                  priceChange24h,
-                };
-              })
-            );
+              return getBridgeAsset(ctx.assetLists, {
+                ...asset,
+                currentPrice,
+                priceChange24h,
+              });
+            })
+          );
 
-            if (sortInput) {
-              priceAssets = sort(
-                priceAssets,
+        const cacheKey = JSON.stringify({
+          search,
+          onlyVerified,
+          userOsmoAddress,
+          sort: sortInput,
+          categories,
+          includePreview,
+        });
+
+        // Sorting by a price field needs every row priced first.
+        if (
+          sortInput?.keyPath === "currentPrice" ||
+          sortInput?.keyPath === "priceChange24h"
+        ) {
+          return maybeCachePaginatedItems({
+            getFreshItems: async () =>
+              sort(
+                await withPrices(await getUserAssets()),
                 sortInput.keyPath,
                 sortInput.direction
-              );
-            }
+              ),
+            cacheKey,
+            cursor,
+            limit,
+          });
+        }
 
-            const bridgeAssets = priceAssets.map((asset) =>
-              getBridgeAsset(ctx.assetLists, asset)
-            );
-
-            return bridgeAssets;
+        // Otherwise price only the returned page. A search matches every
+        // listed asset, held or not (a one-letter query matches hundreds),
+        // and pricing them all at once floods SQS with parallel requests.
+        return maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            const assets = await getUserAssets();
+            return sortInput
+              ? sort(assets, sortInput.keyPath, sortInput.direction)
+              : assets;
           },
-          cacheKey: JSON.stringify({
-            search,
-            onlyVerified,
-            userOsmoAddress,
-            sort: sortInput,
-            categories,
-            includePreview,
-          }),
+          cacheKey,
           cursor,
           limit,
-        })
+        }).then(async ({ items, nextCursor }) => ({
+          items: await withPrices(items),
+          nextCursor,
+        }));
+      }
     ),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
