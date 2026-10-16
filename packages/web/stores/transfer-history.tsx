@@ -38,6 +38,17 @@ export type TransferHistoryState = {
   isRestoredFromIndexedDB: boolean;
 };
 
+/**
+ * Identifies a history entry: its tx hash, plus the packet for an imported
+ * deposit (a relayer tx can deliver several packets to the same user).
+ */
+export function transferKey({
+  sendTxHash,
+  packetId,
+}: Pick<TxSnapshot, "sendTxHash" | "packetId">) {
+  return packetId ? `${sendTxHash}/${packetId}` : sendTxHash;
+}
+
 export type TransferHistoryEntry = TxSnapshot & {
   createdAt: Date;
   providerName?: string;
@@ -223,6 +234,27 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     });
 
     return histories;
+  }
+
+  /**
+   * History rows for transfers from the transaction index (e.g. one page of
+   * it), with the status tracked here for those already imported. Transfers
+   * made in this browser are left out: they're in `getHistoriesByAccount`.
+   */
+  getIndexedHistories(
+    accountAddress: string,
+    indexed: readonly TxSnapshot[],
+    snapshots: readonly TxSnapshot[] = this.snapshots
+  ) {
+    const rows = matchIndexedTransfers(indexed, snapshots).flatMap(
+      (match, i) =>
+        match.kind === "imported"
+          ? [match.entry]
+          : match.kind === "new"
+            ? [{ ...indexed[i], imported: true }]
+            : []
+    );
+    return this.getHistoriesByAccount(accountAddress, rows);
   }
 
   /** Add transaction to be tracked starting now. */
@@ -567,10 +599,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
   /**
    * Add transfers found in the transaction index (made in any browser or
-   * device) to history. Idempotent: transfers already in history are
-   * skipped, matched by Osmosis tx hash, or for deposits made in this
-   * browser (whose snapshot holds the source chain's hash) by asset and
-   * arrival time. Recent withdrawals are tracked to their final status.
+   * device) to history, to track their status. Idempotent: see
+   * `matchIndexedTransfers`. Pending withdrawals are tracked to their final
+   * status.
    */
   importSnapshots(snapshots: TxSnapshot[]) {
     if (!this.store.getState().isRestoredFromIndexedDB) {
@@ -579,26 +610,16 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       return;
     }
 
-    const existing = this.snapshots;
-    const importedByHash = new Map<string, TxSnapshot>();
-    existing.forEach((s) => {
-      if (s.imported) importedByHash.set(s.sendTxHash, s);
-    });
-    const knownHashes = new Set<string>();
-    existing.forEach((s) => {
-      knownHashes.add(s.sendTxHash);
-      if (s.firstStepTxHash) knownHashes.add(s.firstStepTxHash);
-    });
-    const matchedLocalDeposits = new Set<TxSnapshot>();
-
+    const matches = matchIndexedTransfers(snapshots, this.snapshots);
     const toAdd: TxSnapshot[] = [];
     const refreshed = new Map<TxSnapshot, TxSnapshot>();
-    for (const incoming of snapshots) {
-      // Refresh details of previously imported entries (parsing improves
-      // over time). Keep what's already resolved: a final status, and a
-      // sender/link a later response may lack (e.g. a timed-out lookup).
-      const previous = importedByHash.get(incoming.sendTxHash);
-      if (previous) {
+    snapshots.forEach((incoming, i) => {
+      const match = matches[i];
+      if (match.kind === "imported") {
+        // Refresh details of previously imported entries (parsing improves
+        // over time). Keep what's already resolved: a final status, and a
+        // sender/link a later response may lack (e.g. a timed-out lookup).
+        const previous = match.entry;
         const isSettled = previous.status !== "pending";
         const next: TxSnapshot = {
           ...incoming,
@@ -609,29 +630,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           reason: isSettled ? previous.reason : incoming.reason,
         };
         if (!isSameSnapshot(previous, next)) refreshed.set(previous, next);
-        continue;
+      } else if (match.kind === "new") {
+        // Pending withdrawals are tracked to their final status (via Skip,
+        // which traces old transfers by hash too); the index alone can't
+        // tell whether a transfer was delivered, timed out or refunded.
+        toAdd.push({ ...incoming, imported: true });
       }
-      if (knownHashes.has(incoming.sendTxHash)) continue;
-
-      if (incoming.direction === "deposit") {
-        const localDeposit = findMatchingLocalDeposit(
-          incoming,
-          existing,
-          matchedLocalDeposits
-        );
-        if (localDeposit) {
-          matchedLocalDeposits.add(localDeposit);
-          continue;
-        }
-      }
-
-      // Pending withdrawals are tracked to their final status (via Skip,
-      // which traces old transfers by hash too); the index alone can't tell
-      // whether a transfer was delivered, timed out or refunded.
-      const snapshot: TxSnapshot = { ...incoming, imported: true };
-      knownHashes.add(snapshot.sendTxHash);
-      toAdd.push(snapshot);
-    }
+    });
 
     if (toAdd.length === 0 && refreshed.size === 0) return;
 
@@ -691,7 +696,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     snapshots: readonly TxSnapshot[]
   ): Promise<void> {
     const keyOf = (snapshot: TxSnapshot) =>
-      snapshot.firstStepTxHash ?? snapshot.sendTxHash;
+      snapshot.firstStepTxHash ?? transferKey(snapshot);
     const write = async () => {
       const stored =
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
@@ -926,6 +931,71 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 }
 
+type IndexedTransferMatch =
+  /** Imported earlier; the entry tracks its status. */
+  | { kind: "imported"; entry: TxSnapshot }
+  /** Made in this browser, or a repeat within the batch. */
+  | { kind: "known" }
+  | { kind: "new" };
+
+/**
+ * How each transfer from the transaction index relates to history: imported
+ * earlier (matched by tx hash and packet), made in this browser (by Osmosis
+ * tx hash, or for deposits, whose snapshot holds the source chain's hash, by
+ * asset and arrival time), or new.
+ */
+function matchIndexedTransfers(
+  indexed: readonly TxSnapshot[],
+  existing: readonly TxSnapshot[]
+): IndexedTransferMatch[] {
+  const importedByKey = new Map<string, TxSnapshot>();
+  // imported before deposits were keyed by packet: one entry per tx hash
+  const legacyByHash = new Map<string, TxSnapshot>();
+  const localHashes = new Set<string>();
+  existing.forEach((s) => {
+    if (s.imported) {
+      importedByKey.set(transferKey(s), s);
+      if (s.direction === "deposit" && !s.packetId) {
+        legacyByHash.set(s.sendTxHash, s);
+      }
+    } else {
+      localHashes.add(s.sendTxHash);
+      if (s.firstStepTxHash) localHashes.add(s.firstStepTxHash);
+    }
+  });
+
+  const seen = new Set<string>();
+  const claimed = new Set<TxSnapshot>();
+  const matchedLocalDeposits = new Set<TxSnapshot>();
+  return indexed.map((incoming): IndexedTransferMatch => {
+    const key = transferKey(incoming);
+    if (seen.has(key)) return { kind: "known" };
+    seen.add(key);
+
+    const entry =
+      importedByKey.get(key) ??
+      (incoming.packetId ? legacyByHash.get(incoming.sendTxHash) : undefined);
+    if (entry && !claimed.has(entry)) {
+      claimed.add(entry);
+      return { kind: "imported", entry };
+    }
+    if (localHashes.has(incoming.sendTxHash)) return { kind: "known" };
+
+    if (incoming.direction === "deposit") {
+      const localDeposit = findMatchingLocalDeposit(
+        incoming,
+        existing,
+        matchedLocalDeposits
+      );
+      if (localDeposit) {
+        matchedLocalDeposits.add(localDeposit);
+        return { kind: "known" };
+      }
+    }
+    return { kind: "new" };
+  });
+}
+
 function isSameSnapshot(a: TxSnapshot, b: TxSnapshot) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
@@ -968,13 +1038,19 @@ export function findMatchingLocalDeposit(
 
 /**
  * Whether an indexed arrival is the asset a local deposit received. A deposit
- * that converts on arrival (e.g. USDC into alloyed allUSDC) records the
- * converted asset locally, while the index sees the asset that arrived, so
- * fall back to a 1:1-converted amount of the same precision.
+ * that converts on arrival (e.g. USDC into alloyed allUSDC) records the alloy
+ * locally, while the index sees the asset that arrived: match an arrival of
+ * one of the alloy's variants by its 1:1-converted amount.
  */
 function isSameReceivedAsset(local: TxSnapshot, incoming: TxSnapshot) {
   if (local.toAsset.address === incoming.toAsset.address) return true;
-  if (local.toAsset.decimals !== incoming.toAsset.decimals) return false;
+  if (
+    !incoming.toAsset.alloy ||
+    incoming.toAsset.alloy !== local.toAsset.address ||
+    local.toAsset.decimals !== incoming.toAsset.decimals
+  ) {
+    return false;
+  }
 
   const expected = Number(local.toAsset.amount ?? local.fromAsset.amount);
   const arrived = Number(incoming.toAsset.amount ?? incoming.fromAsset.amount);

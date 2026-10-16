@@ -1,3 +1,4 @@
+import type { TxSnapshot } from "@osmosis-labs/bridge";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
 import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
 import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
@@ -103,5 +104,31 @@ export function useTransferHistoriesByAccount(accountAddress: string) {
   return useMemo(
     () => transferHistoryStore.getHistoriesByAccount(accountAddress, snapshots),
     [transferHistoryStore, accountAddress, snapshots]
+  );
+}
+
+/**
+ * Reactive history rows for transfers from the transaction index (e.g. one
+ * page of it), with the status tracked in this browser.
+ */
+export function useIndexedTransferHistories(
+  accountAddress: string,
+  indexed: readonly TxSnapshot[] | undefined
+) {
+  const transferHistoryStore = getTransferHistoryStore();
+  const snapshots = useStore(
+    transferHistoryStore.store,
+    (state) => state.snapshots
+  );
+  return useMemo(
+    () =>
+      indexed?.length
+        ? transferHistoryStore.getIndexedHistories(
+            accountAddress,
+            indexed,
+            snapshots
+          )
+        : [],
+    [transferHistoryStore, accountAddress, indexed, snapshots]
   );
 }

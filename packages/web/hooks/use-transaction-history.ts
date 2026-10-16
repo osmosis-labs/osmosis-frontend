@@ -2,6 +2,7 @@ import type { TxSnapshot } from "@osmosis-labs/bridge";
 import { useEffect, useMemo } from "react";
 
 import {
+  useIndexedTransferHistories,
   useTransferHistoriesByAccount,
   useTransferHistoryStore,
 } from "~/stores/transfer-history-instance";
@@ -37,7 +38,7 @@ export const useTransactionHistory = ({
 } = {}) => {
   const { address, isWalletConnected } = useWallet();
   const transferHistoryStore = useTransferHistoryStore();
-  const recentTransfers = useTransferHistoriesByAccount(address || "");
+  const storedTransfers = useTransferHistoriesByAccount(address || "");
 
   const { data: transactionsData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
@@ -67,14 +68,24 @@ export const useTransactionHistory = ({
 
   // Transfers from the transaction index, so history includes transfers
   // made in other browsers or devices (local history is per browser).
-  // The server shapes them as TxSnapshots; the store dedupes and tracks them.
-  const indexedTransfers = transactionsData?.transfers;
+  // The server shapes them as TxSnapshots; the store tracks their status.
+  const indexedTransfers = transactionsData?.transfers as unknown as
+    TxSnapshot[] | undefined;
   useEffect(() => {
     if (!indexedTransfers?.length) return;
-    transferHistoryStore.importSnapshots(
-      indexedTransfers as unknown as TxSnapshot[]
-    );
+    transferHistoryStore.importSnapshots(indexedTransfers);
   }, [indexedTransfers, transferHistoryStore]);
+
+  // This page's indexed transfers, plus the ones made in this browser (which
+  // may not be indexed yet). Imported transfers only show on their own page.
+  const pageTransfers = useIndexedTransferHistories(
+    address || "",
+    indexedTransfers
+  );
+  const recentTransfers = useMemo(
+    () => [...storedTransfers.filter((t) => !t.imported), ...pageTransfers],
+    [storedTransfers, pageTransfers]
+  );
 
   const { transactions, hasNextPage } = useMemo(
     () =>

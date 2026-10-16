@@ -695,7 +695,9 @@ describe("TransferHistoryStore multi-tx entries", () => {
 });
 
 describe("TransferHistoryStore.importSnapshots", () => {
-  const { TransferHistoryStore } = jest.requireActual("../transfer-history");
+  const { TransferHistoryStore, transferKey } = jest.requireActual(
+    "../transfer-history"
+  );
   const { displayToast } = jest.requireMock("~/components/alert/toast");
 
   const account = "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx";
@@ -981,7 +983,13 @@ describe("TransferHistoryStore.importSnapshots", () => {
           decimals: 6,
           amount,
         },
-        toAsset: { denom: "USDC", address: usdcOnOsmosis, decimals: 6, amount },
+        toAsset: {
+          denom: "USDC",
+          address: usdcOnOsmosis,
+          decimals: 6,
+          amount,
+          alloy: alloyedUsdc,
+        },
       });
 
     // a different amount of a different asset is another transfer
@@ -993,5 +1001,146 @@ describe("TransferHistoryStore.importSnapshots", () => {
       "0xevmhash",
       "OTHER",
     ]);
+  });
+
+  it("doesn't match an arrival of another asset by amount alone", async () => {
+    const createdAtUnix = nowUnix() - 600;
+    const localDeposit = makeIndexed({
+      direction: "deposit",
+      provider: "Skip",
+      statusProvider: undefined,
+      sendTxHash: "0xevmhash",
+      createdAtUnix,
+      estimatedArrivalUnix: createdAtUnix + 600,
+      status: "pending",
+      toAsset: {
+        denom: "USDC",
+        address: usdcOnOsmosis,
+        decimals: 6,
+        amount: "100000000",
+      },
+    });
+    const { store } = makeStore([localDeposit]);
+    await untilRestored(store);
+
+    // 99 ATOM two minutes later: same precision, within 2% of the amount
+    const atom = {
+      denom: "ATOM",
+      address:
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+      decimals: 6,
+      amount: "99000000",
+    };
+    store.importSnapshots([
+      makeIndexed({
+        direction: "deposit",
+        provider: "IBC",
+        statusProvider: undefined,
+        status: "success",
+        sendTxHash: "ATOMRECV",
+        createdAtUnix: createdAtUnix + 120,
+        fromAsset: atom,
+        toAsset: atom,
+      }),
+    ]);
+
+    expect(store.snapshots.map((s: TxSnapshot) => s.sendTxHash)).toEqual([
+      "0xevmhash",
+      "ATOMRECV",
+    ]);
+  });
+
+  describe("deposits delivered in one relayer tx", () => {
+    const deposit = (packetId: string | undefined, amount: string) =>
+      makeIndexed({
+        direction: "deposit",
+        provider: "IBC",
+        statusProvider: undefined,
+        status: "success",
+        sendTxHash: "RELAYERTX",
+        packetId,
+        fromAsset: {
+          denom: "USDC",
+          address: usdcOnOsmosis,
+          decimals: 6,
+          amount,
+        },
+      });
+
+    it("keeps one entry per packet", async () => {
+      const { store } = makeStore();
+      await untilRestored(store);
+
+      store.importSnapshots([
+        deposit("channel-208/1", "1000000"),
+        deposit("channel-208/2", "2000000"),
+      ]);
+      store.importSnapshots([deposit("channel-208/2", "2000000")]);
+
+      expect(
+        store.getHistoriesByAccount(account).map(transferKey).sort()
+      ).toEqual(["RELAYERTX/channel-208/1", "RELAYERTX/channel-208/2"]);
+    });
+
+    it("replaces an entry imported before deposits had packets", async () => {
+      // parsed from the tx's first packet, which may not be the user's
+      const legacy = { ...deposit(undefined, "5"), imported: true };
+      const { store } = makeStore([legacy]);
+      await untilRestored(store);
+
+      store.importSnapshots([
+        deposit("channel-208/1", "1000000"),
+        deposit("channel-208/2", "2000000"),
+      ]);
+
+      expect(
+        store.snapshots.map((s: TxSnapshot) => [s.packetId, s.fromAsset.amount])
+      ).toEqual([
+        ["channel-208/1", "1000000"],
+        ["channel-208/2", "2000000"],
+      ]);
+    });
+  });
+
+  describe("getIndexedHistories", () => {
+    it("lists only the given transfers, with the status tracked here", async () => {
+      const { store } = makeStore();
+      await untilRestored(store);
+      const page0 = [makeIndexed({ sendTxHash: "PAGE0" })];
+      const page3 = [makeIndexed({ sendTxHash: "PAGE3" })];
+
+      store.importSnapshots(page0);
+      store.importSnapshots(page3);
+      await store.receiveNewTxStatus("PAGE0", "success", undefined);
+
+      // page 3's transfer doesn't leak onto page 0
+      expect(store.getIndexedHistories(account, page0)).toEqual([
+        expect.objectContaining({
+          sendTxHash: "PAGE0",
+          status: "success",
+          imported: true,
+        }),
+      ]);
+    });
+
+    it("lists transfers not imported yet, or pruned since", async () => {
+      const { store } = makeStore();
+      await untilRestored(store);
+
+      expect(store.getIndexedHistories(account, [makeIndexed()])).toMatchObject(
+        [{ sendTxHash: "OSMOHASH1", imported: true }]
+      );
+    });
+
+    it("leaves out transfers made in this browser", async () => {
+      const local = makeIndexed({
+        provider: "Skip",
+        statusProvider: undefined,
+      });
+      const { store } = makeStore([local]);
+      await untilRestored(store);
+
+      expect(store.getIndexedHistories(account, [makeIndexed()])).toEqual([]);
+    });
   });
 });
