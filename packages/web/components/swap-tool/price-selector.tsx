@@ -12,10 +12,12 @@ import { Icon } from "~/components/assets";
 import {
   ATOM_BASE_DENOM,
   deferQueryCorrection,
+  getAllowedQuoteDenom,
+  SELL_QUOTES,
   TRADE_PAIR_QUERY_OPTIONS,
+  UI_DEFAULT_QUOTES,
   USDC_BASE_DENOM,
-  USDC_NOBLE_BASE_DENOM,
-  USDT_BASE_DENOM,
+  VALID_QUOTES,
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -36,46 +38,6 @@ import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
-
-const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
-
-/**
- * Quotes a user may receive when selling. Sell mode is deliberately limited
- * to the canonical stables, but Noble USDC stays selectable (not default)
- * while pairs that only have a Noble-quoted orderbook remain: dropping it
- * here would make limit sells on those pairs impossible while limit buys
- * still work. Keeps default ordering (UI_DEFAULT_QUOTES) separate from the
- * Sell allowlist.
- */
-const SELL_QUOTES: string[] = [...UI_DEFAULT_QUOTES, USDC_NOBLE_BASE_DENOM];
-
-/**
- * Quotes selectable in Buy and Limit mode: the two canonical stables and the
- * constituents that redeem 1:1 into them through their transmuter pools.
- * Constituent sets read from the pool contracts (allUSDC
- * osmo147h5x9p...hr75m0, allUSDT osmo1em6xs47...avdxek), not inferred from
- * variant grouping. Other variants are not quotes, except where noted.
- */
-const VALID_QUOTES: string[] = [
-  ...UI_DEFAULT_QUOTES,
-  // allUSDC constituents
-  // "USDC.noble"
-  USDC_NOBLE_BASE_DENOM,
-  // "USDC.eth.axl"
-  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
-  // "USDC.inj"
-  "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138",
-  // allUSDT constituents
-  // "USDT.eth.axl"
-  "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4",
-  // "USDT.eth.inj"
-  "ibc/2AD3C64D19ADFBB522CD738B58F421102143F827C1CAFF574A8BF0B81017D53D",
-  // "USDT.eth.atom"
-  "ibc/7BC2F718C47C0749791F2612A914C8C39D1A4F533A27AF7285D924D4B617DDA6",
-  // Kept as a quote in its own right; not an alloy constituent.
-  // "USDT.kava"
-  "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
-];
 
 function sortByAmount(
   assetA?: MaybeUserAssetCoin,
@@ -165,11 +127,14 @@ export const PriceSelector = memo(
       }
     }, [base, quote, baseMinimalDenom, quoteMinimalDenom, setBase]);
 
+    // Reset a quote the pickers would not offer (unknown, or not on the
+    // allowlist for this tab), so a link cannot select one.
+    const isQuoteAllowed = !!getAllowedQuoteDenom(quote, tab);
     useEffect(() => {
-      if (!quoteAsset) {
+      if (!isQuoteAllowed) {
         return deferQueryCorrection(() => setQuote(USDC_BASE_DENOM));
       }
-    }, [quoteAsset, setQuote]);
+    }, [isQuoteAllowed, setQuote]);
 
     const { address, isWalletConnected } = useWallet();
 

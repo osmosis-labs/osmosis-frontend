@@ -288,7 +288,8 @@ it.each(["continue", "finish"] as const)(
     const { deps, wallet, signDirect } = fixture();
     const signSession = jest.fn();
     deps.oneClick = {
-      getInfo: async () => ({ networkFeeLimit: "1" }) as any,
+      getInfo: async () =>
+        ({ networkFeeLimit: "1", userOsmoAddress: address }) as any,
       shouldSign: async () => true,
       extensionOptions: async () => undefined,
       sign: signSession,
@@ -316,3 +317,31 @@ it.each(["continue", "finish"] as const)(
     expect(signSession).not.toHaveBeenCalled();
   }
 );
+
+it("passes the checked session to signing if it changes during eligibility", async () => {
+  const { deps, wallet } = fixture();
+  const checked = {
+    networkFeeLimit: "100000",
+    userOsmoAddress: address,
+  } as any;
+  const replaced = { ...checked, authenticatorId: "other" };
+  let current = checked;
+  const sign = jest.fn();
+  deps.oneClick = {
+    getInfo: async () => current,
+    shouldSign: async () => {
+      current = replaced;
+      return true;
+    },
+    extensionOptions: async () => undefined,
+    sign,
+  };
+  await createWalletTxClient(deps).sign({
+    wallet,
+    messages: [message],
+    fee,
+    memo: "",
+    signOptions: { useOneClickTrading: true },
+  });
+  expect(sign.mock.calls[0][0].oneClickTradingInfo).toBe(checked);
+});

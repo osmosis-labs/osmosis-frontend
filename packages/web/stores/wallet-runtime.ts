@@ -3,7 +3,9 @@ import type {
   Chain as RegistryChain,
 } from "@chain-registry/types";
 import {
+  type ChainWalletBase,
   type MainWalletBase,
+  State,
   type WalletConnectOptions,
   WalletManager,
   WalletStatus,
@@ -141,6 +143,7 @@ export class WalletRuntime {
     >
   >();
   private manager: WalletManager;
+  private unsubscribeKeystoreChange?: () => void;
   private wallets: MainWalletBase[];
   private readonly storage: KVStore;
   private sessionRevision = 0;
@@ -173,7 +176,7 @@ export class WalletRuntime {
         extensionOptions: getOneClickExtensionOptions,
         sign: async (input) => {
           const registry = await this.transactions.getRegistry();
-          const info = await this.getOneClickTradingInfo();
+          const info = input.oneClickTradingInfo;
           return signOneClick(input, {
             chains: config.chains,
             registry,
@@ -223,7 +226,8 @@ export class WalletRuntime {
       this.wallets,
       logger,
       true,
-      true,
+      // Refresh connected chain wallets without prompting for inactive chains.
+      false,
       ["https://daodao.zone", "https://dao.daodao.zone"],
       assets,
       "icns",
@@ -260,6 +264,112 @@ export class WalletRuntime {
       }
     }
     return manager;
+  }
+
+  /**
+   * Re-fetch the account of every connected chain wallet when the user
+   * switches accounts in the wallet extension.
+   *
+   * cosmos-kit's own handler is not used: it bails out unless the main wallet
+   * is connected, which never happens when chain wallets connect without sync
+   * (as the app does), and when it does run it connects every active chain
+   * wallet, prompting for chains the user never approved.
+   */
+  private subscribeKeystoreChange(walletManager: WalletManager) {
+    this.unsubscribeKeystoreChange?.();
+    this.unsubscribeKeystoreChange = undefined;
+    if (typeof window === "undefined") return;
+
+    let isSubscribed = true;
+    // Chain wallets with a refresh in flight, flagged when another event
+    // arrives meanwhile so the account is read again after it.
+    const refreshing = new Map<ChainWalletBase, { rerun: boolean }>();
+    // Chain wallets whose last refresh failed. They stay eligible so a later
+    // event can recover them, until a disconnect resets their state.
+    const failed = new Set<ChainWalletBase>();
+
+    const isEligible = (chainWallet: ChainWalletBase) => {
+      if (chainWallet.isWalletConnected) return true;
+      if (failed.has(chainWallet) && chainWallet.state === State.Error) {
+        return true;
+      }
+      failed.delete(chainWallet);
+      return false;
+    };
+
+    const refreshAccount = async (chainWallet: ChainWalletBase) => {
+      const inFlight = refreshing.get(chainWallet);
+      if (inFlight) {
+        inFlight.rerun = true;
+        return;
+      }
+
+      const run = { rerun: false };
+      refreshing.set(chainWallet, run);
+      try {
+        do {
+          run.rerun = false;
+          // A disconnect clears the account and a reconnect replaces it, so an
+          // unchanged object means the connection is the one this read began on.
+          const accountBefore = chainWallet.data;
+          // Drop the result if it is superseded, or the wallet was disconnected,
+          // reconnected or the manager rebuilt while it was being read.
+          const isStale = () =>
+            run.rerun ||
+            !isSubscribed ||
+            chainWallet.data !== accountBefore ||
+            !isEligible(chainWallet);
+          try {
+            if (!chainWallet.client) throw new Error("Wallet client missing");
+            const account = await chainWallet.client.getSimpleAccount(
+              chainWallet.chainId
+            );
+            if (isStale()) continue;
+            failed.delete(chainWallet);
+            chainWallet.setData(account);
+            chainWallet.setMessage(undefined);
+            chainWallet.setState(State.Done);
+          } catch (e) {
+            if (isStale()) continue;
+            logger.error(
+              `Failed to refresh ${chainWallet.walletName} account on ${chainWallet.chainName}`,
+              e
+            );
+            failed.add(chainWallet);
+            try {
+              chainWallet.setError(e instanceof Error ? e : String(e));
+            } catch {
+              // Rethrown since the manager is created with `throwErrors`.
+            }
+          }
+        } while (run.rerun && isSubscribed);
+      } finally {
+        refreshing.delete(chainWallet);
+      }
+    };
+
+    const listeners = walletManager.mainWallets.flatMap((mainWallet) => {
+      const onKeystoreChange = () => {
+        mainWallet
+          .getChainWalletList(false)
+          .filter(isEligible)
+          .forEach((chainWallet) => {
+            refreshAccount(chainWallet);
+          });
+      };
+
+      return (mainWallet.walletInfo.connectEventNamesOnWindow ?? []).map(
+        (eventName) => {
+          window.addEventListener(eventName, onKeystoreChange);
+          return () => window.removeEventListener(eventName, onKeystoreChange);
+        }
+      );
+    });
+
+    this.unsubscribeKeystoreChange = () => {
+      isSubscribed = false;
+      listeners.forEach((unsubscribe) => unsubscribe());
+    };
   }
 
   get walletManager() {
@@ -332,7 +442,8 @@ export class WalletRuntime {
             hasUsedOneClickTrading: Boolean(used),
           }
         : {}),
-      ...(preferenceRevision === this.preferenceRevision
+      ...(preferenceRevision === this.preferenceRevision &&
+      sessionRevision === this.sessionRevision
         ? {
             useOneClickTrading: Boolean(
               info &&
@@ -511,6 +622,7 @@ export class WalletRuntime {
   installWallet = async (wallet: MainWalletBase) => {
     const previous = this.manager;
     this.wallets = [...this.wallets, wallet];
+    this.unsubscribeKeystoreChange?.();
     await previous.onUnmounted();
     if (previous.session.timeoutId !== undefined)
       clearTimeout(previous.session.timeoutId);
@@ -530,6 +642,7 @@ export class WalletRuntime {
         return;
       }
       try {
+        this.subscribeKeystoreChange(manager);
         await manager.onMounted();
       } finally {
         if (version !== this.mountVersion || manager !== this.manager) {
@@ -549,6 +662,7 @@ export class WalletRuntime {
 
   unmount = async () => {
     this.mountVersion++;
+    this.unsubscribeKeystoreChange?.();
     const manager = this.manager;
     await manager.onUnmounted();
     if (manager.session.timeoutId !== undefined) {

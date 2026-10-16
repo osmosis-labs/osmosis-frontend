@@ -37,6 +37,7 @@ registerTestCleanup(async () => {
   await queryClient.cancelQueries();
   queryClient.clear();
   for (const rootStore of testRootStores) {
+    await rootStore.walletRuntime.unmount();
     testWalletManagers.add(rootStore.walletRuntime.walletManager);
   }
   for (const manager of testWalletManagers) {
@@ -131,7 +132,7 @@ export async function connectTestWallet({
     new TestWallet(testWalletInfo)
   );
   testWalletManagers.add(walletManager);
-  await walletManager.onMounted();
+  await walletRuntime.mount();
   await walletRuntime.getWalletRepo(chainId).connect(testWalletInfo.name, true);
   const account = walletRuntime.getWallet(chainId);
   await waitTestAccountLoaded(account);

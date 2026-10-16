@@ -51,6 +51,8 @@ export type SignerData = {
 };
 export type SessionSignRequest = {
   wallet: AccountStoreWallet;
+  /** The session checked against the signer, so another tab cannot swap it. */
+  oneClickTradingInfo: OneClickTradingInfo;
   signerAddress: string;
   messages: readonly EncodeObject[];
   fee: StdFee;
@@ -358,7 +360,8 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
               gas_wanted?: string;
               log?: string;
               code?: number;
-              height?: number;
+              // A live subscription gives a number, an indexed lookup a string.
+              height?: number | string;
               tx_result?: {
                 data: string;
                 code?: number;
@@ -373,7 +376,8 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
               return {
                 transactionHash: broadcasted.txhash.toLowerCase(),
                 code: tx?.code ?? tx?.tx_result?.code ?? 0,
-                height: tx?.height,
+                height:
+                  tx?.height !== undefined ? Number(tx.height) : undefined,
                 rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
                 events: tx?.events ?? tx?.tx_result?.events,
                 gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
@@ -468,6 +472,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
 
       const eligible = Boolean(
         signOptions?.useOneClickTrading &&
+        oneClickTradingInfo?.userOsmoAddress === wallet.address &&
         (await deps.oneClick?.shouldSign({ messages, chainId: wallet.chainId }))
       );
       const isWithinNetworkFeeLimit =
@@ -484,6 +489,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
       ) {
         return deps.oneClick!.sign({
           wallet,
+          oneClickTradingInfo: oneClickTradingInfo!,
           signerAddress: wallet.address ?? "",
           messages,
           fee,
@@ -911,18 +917,20 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         const registry = await service.getRegistry();
         const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
-        // check for one click trading tx decoration
+        // Check ownership against the same session used for decoration.
+        const oneClickTradingInfo = signOptions?.useOneClickTrading
+          ? await deps.oneClick?.getInfo()
+          : undefined;
         const shouldBeSignedWithOneClickTrading =
           signOptions?.useOneClickTrading &&
+          oneClickTradingInfo?.userOsmoAddress === wallet.address &&
           (await deps.oneClick?.shouldSign({
             messages,
             chainId: wallet.chainId,
           }));
         const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
           ? await deps.oneClick?.extensionOptions({
-              oneClickTradingInfo: await (deps.oneClick
-                ? deps.oneClick.getInfo()
-                : undefined),
+              oneClickTradingInfo,
             })
           : undefined;
 

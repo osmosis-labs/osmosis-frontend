@@ -382,14 +382,15 @@ export function useAddLiquidityConfig(
 
   const apiUtils = api.useUtils();
   // The button only disables once the tx is signing, which is after the fresh
-  // pool fetch, so ignore clicks while a submit is already in flight.
-  const isSubmittingRef = useRef(false);
-  const addLiquidity = useCallback(async () => {
-    return new Promise<void>(async (resolve, reject) => {
-      if (isSubmittingRef.current) return;
-      isSubmittingRef.current = true;
+  // pool fetch, so a click while a submit is in flight joins that submit
+  // instead of starting a second one. Every caller gets a promise that
+  // settles, so the modal close and loading state chained on it always run.
+  const inFlightRef = useRef<Promise<void>>();
+  const addLiquidity = useCallback(() => {
+    if (inFlightRef.current) return inFlightRef.current;
+    const submit = new Promise<void>(async (resolve, reject) => {
       try {
-        if (!account) return;
+        if (!account) throw new Error("No account connected");
 
         await sendAddLiquidity({
           config,
@@ -409,10 +410,15 @@ export function useAddLiquidityConfig(
           );
         }
         reject(e.message);
-      } finally {
-        isSubmittingRef.current = false;
       }
     });
+    inFlightRef.current = submit;
+    submit
+      .catch(() => {})
+      .finally(() => {
+        if (inFlightRef.current === submit) inFlightRef.current = undefined;
+      });
+    return submit;
   }, [
     account,
     apiUtils.local.pools.getPool,

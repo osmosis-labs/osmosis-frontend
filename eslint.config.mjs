@@ -88,6 +88,16 @@ const webRules = {
         patterns: [
           {
             group: [
+              "@osmosis-labs/keplr-hooks",
+              "@osmosis-labs/keplr-hooks/**",
+              "@osmosis-labs/keplr-stores",
+              "@osmosis-labs/keplr-stores/**",
+            ],
+            message:
+              "Use the standalone types, utils, or tx packages; the legacy Keplr packages are being retired.",
+          },
+          {
+            group: [
               "@osmosis-labs/stores/build/account",
               "@osmosis-labs/stores/build/account/**",
             ],

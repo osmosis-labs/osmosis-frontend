@@ -126,3 +126,26 @@ it("keeps the committed session and preference when persistence fails", async ()
   expect(await runtime.getOneClickTradingInfo()).toEqual(info);
   expect(runtime.store.getState().useOneClickTrading).toBe(false);
 });
+
+it("does not hydrate an enabled preference from a session removed during the reads", async () => {
+  const readers = new Map<string, (value: unknown) => void>();
+  const storage: KVStore = {
+    prefix: () => "account_store",
+    get: <T>(key: string) =>
+      new Promise<T | undefined>((resolve) =>
+        readers.set(key, resolve as (value: unknown) => void)
+      ),
+    set: async () => {},
+  };
+  const runtime = makeRuntime(storage);
+  await runtime.setOneClickTradingInfo(undefined);
+  readers.get(OneClickTradingLocalStorageKey)!(info);
+  readers.get(UseOneClickTradingLocalStorageKey)!(true);
+  readers.get(HasUsedOneClickTradingLocalStorageKey)!(true);
+  expect(await runtime.getOneClickTradingInfo()).toBeUndefined();
+  expect(runtime.store.getState()).toMatchObject({
+    oneClickTradingInfo: null,
+    useOneClickTrading: false,
+    isStateHydrated: true,
+  });
+});

@@ -1,3 +1,4 @@
+import { ChainIdHelper as PlainChainIdHelper } from "@osmosis-labs/utils";
 import type { AxiosInstance } from "axios";
 
 import { authAccountFixtures } from "./__fixtures__/auth-accounts";
@@ -84,6 +85,10 @@ describe("BaseAccount.fetchFromRest", () => {
 });
 
 describe("ChainIdHelper", () => {
+  it("reexports the canonical plain helper", () => {
+    expect(ChainIdHelper).toBe(PlainChainIdHelper);
+  });
+
   it.each([
     ["osmosis-1", { identifier: "osmosis", version: 1 }],
     ["cosmoshub-4", { identifier: "cosmoshub", version: 4 }],

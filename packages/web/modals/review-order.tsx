@@ -221,12 +221,17 @@ export function ReviewOrder({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const diffGteSlippage = hasQuoteDriftedBeyondSlippage({
-    initial: reviewedOutput?.toDec(),
-    current: amountWithSlippage?.toDec(),
-    slippageTolerance: slippageConfig?.slippage.toDec(),
-    quoteType,
-  });
+  // A resting limit order fills at its limit price, so movement in the market
+  // quote is not drift for it; only market orders compare against the
+  // reviewed quote.
+  const diffGteSlippage =
+    orderType === "market" &&
+    hasQuoteDriftedBeyondSlippage({
+      initial: reviewedOutput?.toDec(),
+      current: amountWithSlippage?.toDec(),
+      slippageTolerance: slippageConfig?.slippage.toDec(),
+      quoteType,
+    });
 
   /**
    * Live loss figures for the trade being reviewed (MTN-150).

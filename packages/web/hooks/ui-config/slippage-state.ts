@@ -1,8 +1,8 @@
+import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import {
   InvalidSlippageError,
   NegativeSlippageError,
-} from "@osmosis-labs/stores";
-import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+} from "@osmosis-labs/utils";
 
 export const DefaultSelectableSlippages: ReadonlyArray<Dec> = [
   // 0.5%
