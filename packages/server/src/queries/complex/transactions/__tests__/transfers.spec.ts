@@ -16,20 +16,36 @@ import {
   resolveAxelarTransfers,
   settleIbcWithdrawals,
 } from "../transfers";
-import { IndexedTransferTxs } from "./transfer-fixtures";
+import { BundledDepositsTx, IndexedTransferTxs } from "./transfer-fixtures";
 
 const SKIP_OUTPUT_DENOM =
   "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138";
 
-// the Skip fixture swaps into an asset the mock asset list doesn't have
+const AXL_USDC =
+  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
+const ALL_USDC =
+  "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+
+// the Skip fixture swaps into an asset the mock asset list doesn't have, and
+// the mock list predates alloys
 const assetLists: AssetList[] = MockAssetLists.map((list) => {
-  if (list.chain_name !== "osmosis") return list;
+  const assets = list.assets.map((a) =>
+    a.coinMinimalDenom === AXL_USDC ? { ...a, variantGroupKey: ALL_USDC } : a
+  );
+  if (list.chain_name !== "osmosis") return { ...list, assets };
   const template = list.assets.find((a) => a.symbol === "LUNC")!;
   return {
     ...list,
     assets: [
-      ...list.assets,
+      ...assets,
       { ...template, coinMinimalDenom: SKIP_OUTPUT_DENOM, symbol: "TESTOUT" },
+      {
+        ...template,
+        coinMinimalDenom: ALL_USDC,
+        symbol: "allUSDC",
+        isAlloyed: true,
+        variantGroupKey: ALL_USDC,
+      },
     ],
   };
 });
@@ -108,6 +124,84 @@ describe("mapTransfers", () => {
       fromAsset: { denom: "USDC", amount: "224867279694" },
     });
     expect(transfer.statusProvider).toBeUndefined();
+    // the relayer paid the tx's fee, not the user
+    expect(transfer.networkFee).toBeUndefined();
+  });
+
+  it("tags a deposit with the alloy its asset is a variant of", () => {
+    const [deposit] = map(
+      BundledDepositsTx,
+      "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5"
+    );
+    expect(deposit.toAsset).toMatchObject({
+      address: AXL_USDC,
+      alloy: ALL_USDC,
+    });
+
+    // not an alloy variant
+    const address = "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj";
+    expect(map(IndexedTransferTxs.recv, address)[0].toAsset.alloy).toBe(
+      undefined
+    );
+  });
+
+  describe("relayer txs delivering several packets", () => {
+    const user = "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5";
+
+    /** The bundled tx with packet `index`'s receiver swapped for `receiver`. */
+    function withReceiver(index: number, receiver: string): Transaction {
+      return {
+        ...BundledDepositsTx,
+        messages: BundledDepositsTx.messages.map((m, i) =>
+          i === index
+            ? {
+                ...m,
+                packet: {
+                  ...(m.packet as object),
+                  data: { ...(m.packet as any).data, receiver },
+                },
+              }
+            : m
+        ),
+      };
+    }
+
+    it("maps only the packet sent to the user", () => {
+      const transfers = map(BundledDepositsTx, user);
+
+      expect(transfers).toHaveLength(1);
+      // the user's 47.05 USDC, not the first packet (someone else's USDT)
+      expect(transfers[0]).toMatchObject({
+        direction: "deposit",
+        sendTxHash: BundledDepositsTx.hash,
+        packetId: "channel-208/2208862",
+        toAddress: user,
+        fromAsset: { address: AXL_USDC, amount: "47050927" },
+      });
+    });
+
+    it("maps each receiver's own packet", () => {
+      expect(
+        map(BundledDepositsTx, "osmo1alqv73k4v2fvky6au4zw6wq55xfxm43427302s")
+      ).toMatchObject([
+        { packetId: "channel-208/2208864", fromAsset: { amount: "243459899" } },
+      ]);
+    });
+
+    it("maps every packet sent to the same user, keyed by packet", () => {
+      const transfers = map(withReceiver(3, user), user);
+
+      expect(transfers.map((t) => [t.packetId, t.fromAsset.amount])).toEqual([
+        ["channel-208/2208862", "47050927"],
+        ["channel-208/2208863", "48832897"],
+      ]);
+    });
+
+    it("maps nothing for an address no packet was sent to", () => {
+      expect(
+        map(BundledDepositsTx, "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj")
+      ).toEqual([]);
+    });
   });
 
   it("maps a Skip swap_and_action to the final forward hop", () => {
@@ -194,6 +288,67 @@ describe("mapTransfers", () => {
       });
     });
 
+    it("drops an ibc-hooks packet whose memo is for another user", () => {
+      expect(
+        map(
+          IndexedTransferTxs.gmpDeposit,
+          "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj"
+        )
+      ).toEqual([]);
+    });
+
+    describe("when the relayer tx executed several GMP calls", () => {
+      const hex = (text: string) =>
+        "0x" + Buffer.from(text).toString("hex").padStart(64, "0");
+      const record = (amount: string, recipient: string, from: string) => ({
+        call: {
+          transactionHash: sourceTxHash,
+          transaction: { from },
+          returnValues: {
+            amount,
+            payload: hex(`{"to_address":"${recipient}"}`),
+          },
+        },
+      });
+      const otherUser = "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj";
+      const userSender = "0x6fe3c2f1826f9cbe8b788112b44bb2f631979a64";
+      const otherSender = "0x1678ac809e0a5f6b3edab7dc7099c74ee570d7fd";
+
+      function lookUp(data: unknown[], hash: string) {
+        jest.spyOn(global, "fetch").mockResolvedValue({
+          ok: true,
+          json: async () => ({ data }),
+        } as Response);
+        return resolveAxelarTransfers(
+          map({ ...IndexedTransferTxs.gmpDeposit, hash }, address)
+        );
+      }
+
+      it("takes the user's call, by amount and recipient", async () => {
+        const [transfer] = await lookUp(
+          [
+            record("1500000000", otherUser, otherSender),
+            record("1500000000", address, userSender),
+          ],
+          "BUNDLEDGMP"
+        );
+
+        expect(transfer.fromAddress).toBe(getAddress(userSender));
+      });
+
+      it("leaves the sender unknown when no call is the user's", async () => {
+        const [transfer] = await lookUp(
+          [
+            record("1500000000", otherUser, otherSender),
+            record("99", address, otherSender),
+          ],
+          "BUNDLEDGMPOTHERS"
+        );
+
+        expect(transfer.fromAddress).toBe("");
+      });
+    });
+
     it("resolves the source sender and links the source tx", async () => {
       const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({
         ok: true,
@@ -220,7 +375,7 @@ describe("mapTransfers", () => {
         expect.objectContaining({
           body: JSON.stringify({
             txHash: IndexedTransferTxs.gmpDeposit.hash,
-            size: 1,
+            size: 25,
           }),
         })
       );

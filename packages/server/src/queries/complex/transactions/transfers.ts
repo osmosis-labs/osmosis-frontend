@@ -87,6 +87,12 @@ export interface FormattedTransfer {
   estimatedArrivalUnix: number;
   /** Osmosis tx hash. */
   sendTxHash: string;
+  /**
+   * Deposits: the IBC packet it arrived in (`<destination channel>/<sequence>`).
+   * A relayer tx can deliver several packets, to several users or to the
+   * same one, so a deposit is keyed by tx hash and packet.
+   */
+  packetId?: string;
   /** Deposits are final once they arrive; withdrawals still need resolving. */
   status: "success" | "pending" | "failed" | "refunded";
   fromAddress: string;
@@ -95,7 +101,15 @@ export interface FormattedTransfer {
   fromChain: TransferChain;
   toChain: TransferChain;
   fromAsset: TransferAsset & { amount: string };
-  toAsset: TransferAsset & { amount?: string };
+  toAsset: TransferAsset & {
+    amount?: string;
+    /**
+     * Deposits: the alloyed asset (minimal denom) the arriving asset is a
+     * variant of. A deposit made in this app can convert into it on
+     * arrival (e.g. USDC into allUSDC), recording the alloy as received.
+     */
+    alloy?: string;
+  };
   networkFee?: TransferAsset & { amount: string };
   /**
    * Explorer link for transfers whose `sendTxHash` (the Osmosis tx) isn't on
@@ -115,6 +129,7 @@ type ParsedRoute = {
   toAddress: string;
   /** Counterparty chain: destination for withdrawals, source for deposits. */
   counterparty: TransferChain | undefined;
+  packetId?: string;
 };
 
 /**
@@ -137,51 +152,62 @@ export function mapTransfers({
 
   for (const tx of transactions) {
     try {
-      const route = parseRoute(tx, address, chainList);
-      if (!route?.counterparty) continue;
-
       const osmosisChain = chainList.find((c) => c.chain_id === tx.chainId);
       if (!osmosisChain) continue;
       const osmosis = toCosmosChain(osmosisChain);
 
-      const fromAsset = toTransferAsset(assetLists, route.fromDenom);
-      const toAsset = toTransferAsset(assetLists, route.toDenom);
-      if (!fromAsset || !toAsset) continue;
+      for (const route of parseRoutes(tx, address, chainList)) {
+        if (!route.counterparty) continue;
 
-      const fee = tx.fee?.[0];
-      const networkFee = fee
-        ? toTransferAsset(assetLists, fee.denom)
-        : undefined;
+        const fromAsset = toTransferAsset(assetLists, route.fromDenom);
+        const toAsset = toTransferAsset(assetLists, route.toDenom);
+        if (!fromAsset || !toAsset) continue;
 
-      const createdAtUnix = Math.floor(
-        new Date(tx.blockTimestamp).getTime() / 1000
-      );
-      const isWithdraw = route.direction === "withdraw";
-      const osmosisTxPage = osmosisChain.explorers?.[0]?.txPage;
+        const createdAtUnix = Math.floor(
+          new Date(tx.blockTimestamp).getTime() / 1000
+        );
+        const isWithdraw = route.direction === "withdraw";
 
-      transfers.push({
-        type: "bridge-transfer",
-        direction: route.direction,
-        provider: route.provider,
-        statusProvider: isWithdraw ? "Skip" : undefined,
-        createdAtUnix,
-        estimatedArrivalUnix: createdAtUnix,
-        sendTxHash: tx.hash,
-        status: tx.code !== 0 ? "failed" : isWithdraw ? "pending" : "success",
-        fromAddress: route.fromAddress,
-        toAddress: route.toAddress,
-        osmoBech32Address: address,
-        fromChain: isWithdraw ? osmosis : route.counterparty,
-        toChain: isWithdraw ? route.counterparty : osmosis,
-        fromAsset: { ...fromAsset, amount: route.fromAmount },
-        toAsset: { ...toAsset, amount: route.toAmount },
-        networkFee:
-          networkFee && fee ? { ...networkFee, amount: fee.amount } : undefined,
-        explorerUrl:
-          !isWithdraw && osmosisTxPage
-            ? osmosisTxPage.replace("{txHash}", tx.hash)
-            : undefined,
-      });
+        // a deposit's tx (MsgRecvPacket) is signed and paid for by a relayer
+        const fee = isWithdraw ? tx.fee?.[0] : undefined;
+        const networkFee = fee
+          ? toTransferAsset(assetLists, fee.denom)
+          : undefined;
+        const osmosisTxPage = osmosisChain.explorers?.[0]?.txPage;
+
+        transfers.push({
+          type: "bridge-transfer",
+          direction: route.direction,
+          provider: route.provider,
+          statusProvider: isWithdraw ? "Skip" : undefined,
+          createdAtUnix,
+          estimatedArrivalUnix: createdAtUnix,
+          sendTxHash: tx.hash,
+          packetId: route.packetId,
+          status: tx.code !== 0 ? "failed" : isWithdraw ? "pending" : "success",
+          fromAddress: route.fromAddress,
+          toAddress: route.toAddress,
+          osmoBech32Address: address,
+          fromChain: isWithdraw ? osmosis : route.counterparty,
+          toChain: isWithdraw ? route.counterparty : osmosis,
+          fromAsset: { ...fromAsset, amount: route.fromAmount },
+          toAsset: {
+            ...toAsset,
+            amount: route.toAmount,
+            alloy: isWithdraw
+              ? undefined
+              : findAlloy(assetLists, route.toDenom),
+          },
+          networkFee:
+            networkFee && fee
+              ? { ...networkFee, amount: fee.amount }
+              : undefined,
+          explorerUrl:
+            !isWithdraw && osmosisTxPage
+              ? osmosisTxPage.replace("{txHash}", tx.hash)
+              : undefined,
+        });
+      }
     } catch (e) {
       // a malformed or unexpected tx shape must not break the whole page
       continue;
@@ -191,76 +217,125 @@ export function mapTransfers({
   return transfers;
 }
 
-function parseRoute(
+/**
+ * The user's transfers in a tx: the withdrawal they signed, or the deposits
+ * a relayer delivered to them (one per packet; a relayer bundles packets for
+ * several users, and the index lists the tx under each receiver).
+ */
+function parseRoutes(
   tx: Transaction,
   address: string,
   chainList: Chain[]
-): ParsedRoute | undefined {
-  const ibcMetadata = tx.metadata
-    ?.find((m) => m.type === "osmosis-ui")
-    ?.value?.find(
-      (v) => v.txType === "ibc_send" || v.txType === "ibc_received"
-    );
+): ParsedRoute[] {
+  const ibcMetadata =
+    tx.metadata?.find((m) => m.type === "osmosis-ui")?.value ?? [];
+  const ibcSend = ibcMetadata.find((v) => v.txType === "ibc_send");
+  const deposits: ParsedRoute[] = [];
 
-  for (const message of tx.messages ?? []) {
+  const messages = tx.messages ?? [];
+  for (const [index, message] of messages.entries()) {
     switch (message["@type"]) {
       case MSG_EXECUTE_CONTRACT: {
         if (message.sender !== address) continue;
         const route =
           parseSkipContract(message, chainList) ??
           parseSquidMulticall(message, chainList);
-        if (route) return route;
+        if (route) return [route];
         continue;
       }
       case MSG_TRANSFER: {
         if (message.sender !== address) continue;
-        return parseMsgTransfer(
+        const route = parseMsgTransfer(
           message,
           chainList,
-          ibcMetadata?.txType === "ibc_send"
-            ? ibcMetadata.txInfo.chain_to
-            : undefined
+          ibcSend?.txInfo.chain_to
         );
+        return route ? [route] : [];
       }
       case MSG_RECV_PACKET: {
-        if (ibcMetadata?.txType !== "ibc_received") continue;
-        const token = ibcMetadata.txInfo.token;
-        if (!token) continue;
-        const packetData = decodePacketData(message);
-        const previousHop = ibcMetadata.txInfo.chain_from
-          ? findCosmosChainByName(chainList, ibcMetadata.txInfo.chain_from)
+        // each packet's metadata is at its message's index
+        const received = ibcMetadata.find(
+          (v) => v.txType === "ibc_received" && v.txMessageIndex === index
+        );
+        const deposit = received
+          ? parseRecvPacket(message, received.txInfo, address, chainList)
           : undefined;
-
-        // Axelar GMP deposits (Skip, Squid) arrive from Axelar with the bridge
-        // contract as sender. The memo names the real source chain; the
-        // user's source address is looked up afterwards
-        // (`resolveAxelarDepositSenders`).
-        const gmp = findKey(packetData?.memo, "source_chain");
-        const sourceChain =
-          typeof gmp?.source_chain === "string"
-            ? findEvmChainByAxelarName(gmp.source_chain)
-            : undefined;
-
-        return {
-          provider: sourceChain
-            ? isSquidRouter(gmp?.source_address)
-              ? "Squid"
-              : "Skip"
-            : "IBC",
-          direction: "deposit",
-          fromDenom: token.denom,
-          fromAmount: token.amount,
-          toDenom: token.denom,
-          toAmount: token.amount,
-          fromAddress: sourceChain ? "" : (packetData?.sender ?? ""),
-          // the packet receiver may be a contract (ibc hooks) that forwards
-          // the funds to the user
-          toAddress: address,
-          counterparty: sourceChain ?? previousHop,
-        };
+        if (deposit) deposits.push(deposit);
+        continue;
       }
     }
   }
+  return deposits;
+}
+
+/** A packet delivered to Osmosis, if it was sent to `address`. */
+function parseRecvPacket(
+  message: Message,
+  info: { token?: { denom: string; amount: string }; chain_from?: string },
+  address: string,
+  chainList: Chain[]
+): ParsedRoute | undefined {
+  const token = info.token;
+  const packet = asRecord(message.packet);
+  const packetData = decodePacketData(message);
+  if (!token || !packet || !packetData) return;
+  if (!isPacketForAddress(packetData, address)) return;
+
+  const previousHop = info.chain_from
+    ? findCosmosChainByName(chainList, info.chain_from)
+    : undefined;
+
+  // Axelar GMP deposits (Skip, Squid) arrive from Axelar with the bridge
+  // contract as sender. The memo names the real source chain; the user's
+  // source address is looked up afterwards (`resolveAxelarTransfers`).
+  const gmp = findKey(packetData.memo, "source_chain");
+  const sourceChain =
+    typeof gmp?.source_chain === "string"
+      ? findEvmChainByAxelarName(gmp.source_chain)
+      : undefined;
+
+  return {
+    provider: sourceChain
+      ? isSquidRouter(gmp?.source_address)
+        ? "Squid"
+        : "Skip"
+      : "IBC",
+    direction: "deposit",
+    fromDenom: token.denom,
+    fromAmount: token.amount,
+    toDenom: token.denom,
+    toAmount: token.amount,
+    fromAddress: sourceChain ? "" : (packetData.sender ?? ""),
+    // the packet receiver may be a contract (ibc hooks) that forwards the
+    // funds to the user
+    toAddress: address,
+    counterparty: sourceChain ?? previousHop,
+    packetId: `${packet.destination_channel}/${packet.sequence}`,
+  };
+}
+
+/**
+ * Whether a packet was sent to `address`: as its receiver, or through an
+ * ibc-hooks contract (e.g. Skip's entry point) whose memo names the user as
+ * the recipient of the funds.
+ */
+function isPacketForAddress(packetData: PacketData, address: string) {
+  if (packetData.receiver === address) return true;
+  const memo =
+    typeof packetData.memo === "string"
+      ? packetData.memo
+      : JSON.stringify(packetData.memo ?? "");
+  return (
+    typeof packetData.receiver === "string" &&
+    isContractAddress(packetData.receiver) &&
+    memo.includes(address)
+  );
+}
+
+/** Cosmos contract addresses are 32 bytes; accounts are 20. */
+function isContractAddress(address: string) {
+  // bech32: prefix, "1", 52 data chars + 6 checksum chars for 32 bytes
+  return address.length - address.lastIndexOf("1") - 1 > 39;
 }
 
 /** Skip Go entry point: `swap_and_action` / `action` ending in an IBC transfer. */
@@ -584,9 +659,9 @@ type AxelarGmp = {
 };
 
 /**
- * Settled GMP calls by Osmosis tx hash; they never change. Unsettled calls
- * and calls Axelarscan hasn't indexed yet aren't cached, so they're looked
- * up again on a later request.
+ * Settled GMP calls by Osmosis tx hash (and packet, for deposits); they never
+ * change. Unsettled calls and calls Axelarscan hasn't indexed yet aren't
+ * cached, so they're looked up again on a later request.
  */
 const axelarGmpCache = new Map<string, AxelarGmp>();
 const AXELAR_GMP_CACHE_MAX = 5_000;
@@ -619,7 +694,7 @@ export async function resolveAxelarTransfers(
         transfer.status === "pending";
       if (!isGmpDeposit && !isPendingGmpWithdrawal) return transfer;
 
-      const gmp = await lookupAxelarGmp(transfer.sendTxHash, env, timeoutMs);
+      const gmp = await lookupAxelarGmp(transfer, env, timeoutMs);
       if (!gmp) return transfer;
 
       if (isGmpDeposit) {
@@ -636,12 +711,24 @@ export async function resolveAxelarTransfers(
   );
 }
 
+type AxelarGmpRecord = {
+  simplified_status?: string;
+  call?: {
+    transactionHash?: string;
+    transaction?: { from?: string };
+    returnValues?: { amount?: string; payload?: string };
+  };
+};
+
+/** Relayer txs can execute several GMP calls; enough to find the user's. */
+const AXELAR_GMP_SEARCH_SIZE = 25;
+
 async function lookupAxelarGmp(
-  osmosisTxHash: string,
+  transfer: FormattedTransfer,
   env: "mainnet" | "testnet",
   timeoutMs: number
 ): Promise<AxelarGmp | undefined> {
-  const key = `${env}:${osmosisTxHash}`;
+  const key = `${env}:${transfer.sendTxHash}:${transfer.packetId ?? ""}`;
   const cached = axelarGmpCache.get(key);
   if (cached) return cached;
 
@@ -649,17 +736,15 @@ async function lookupAxelarGmp(
     const response = await fetch(`${AXELARSCAN_API[env]}/gmp/searchGMP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ txHash: osmosisTxHash, size: 1 }),
+      body: JSON.stringify({
+        txHash: transfer.sendTxHash,
+        size: AXELAR_GMP_SEARCH_SIZE,
+      }),
       signal: AbortSignal.timeout(timeoutMs),
     });
     if (!response.ok) return;
-    const json = (await response.json()) as {
-      data?: {
-        simplified_status?: string;
-        call?: { transactionHash?: string; transaction?: { from?: string } };
-      }[];
-    };
-    const record = json.data?.[0];
+    const json = (await response.json()) as { data?: AxelarGmpRecord[] };
+    const record = findGmpRecord(json.data ?? [], transfer);
     const call = record?.call;
     // not indexed yet: look again on a later request
     if (!call?.transactionHash) return;
@@ -690,6 +775,32 @@ async function lookupAxelarGmp(
     // network error or timeout: retried on a later request
     return;
   }
+}
+
+/**
+ * The transfer's GMP call among those its Osmosis tx took part in. A
+ * withdrawal's tx is the user's own; a deposit's relayer tx can execute
+ * calls for several users, so match the amount and the user's address in
+ * the payload. Undefined when that can't single one out, rather than
+ * showing another user's call.
+ */
+function findGmpRecord(
+  records: AxelarGmpRecord[],
+  transfer: FormattedTransfer
+): AxelarGmpRecord | undefined {
+  if (records.length <= 1 || transfer.direction === "withdraw") {
+    return records[0];
+  }
+  const addressHex = Array.from(
+    new TextEncoder().encode(transfer.osmoBech32Address),
+    (b) => b.toString(16).padStart(2, "0")
+  ).join("");
+  const matches = records.filter(
+    (r) =>
+      r.call?.returnValues?.amount === transfer.fromAsset.amount &&
+      Boolean(r.call?.returnValues?.payload?.toLowerCase().includes(addressHex))
+  );
+  return matches.length === 1 ? matches[0] : undefined;
 }
 
 /**
@@ -820,6 +931,18 @@ function toTransferAsset(
       coinGeckoId: asset.coinGeckoId,
       imageUrl: asset.coinImageUrl,
     };
+  } catch {
+    return;
+  }
+}
+
+/** The alloyed asset `denom` is a variant of, if any. */
+function findAlloy(assetLists: AssetList[], denom: string): string | undefined {
+  try {
+    const { variantGroupKey } = getAsset({ assetLists, anyDenom: denom });
+    if (!variantGroupKey || variantGroupKey === denom) return;
+    const canonical = getAsset({ assetLists, anyDenom: variantGroupKey });
+    return canonical.isAlloyed ? canonical.coinMinimalDenom : undefined;
   } catch {
     return;
   }

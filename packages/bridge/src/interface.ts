@@ -771,9 +771,21 @@ const txSnapshotSchema = z.object({
   toAsset: bridgeAssetSchema.extend({
     amount: z.string().optional(),
     imageUrl: z.string().optional(),
+    /**
+     * On imported deposits: the alloyed asset (minimal denom) the arriving
+     * asset is a variant of, which a deposit made in this browser may have
+     * recorded as received (converted on arrival).
+     */
+    alloy: z.string().optional(),
   }),
   status: transferStatusSchema,
   sendTxHash: z.string(),
+  /**
+   * On imported deposits: the IBC packet it arrived in
+   * (`<destination channel>/<sequence>`). A relayer tx can deliver several
+   * packets to the same user, so these are keyed by `sendTxHash` and packet.
+   */
+  packetId: z.string().optional(),
   fromChain: bridgeChainSchema.and(
     z.object({
       prettyName: z.string(),

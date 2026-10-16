@@ -112,6 +112,8 @@ export const IndexedTransferTxs = {
     ],
     memo: "Relayed with 💜 by Lavender.Five Nodes 🐝 (8) | hermes 1.10.5 (https://hermes.informal.systems)",
     messages: [
+      // the relayer updates the client first; metadata indexes messages
+      { "@type": "/ibc.core.client.v1.MsgUpdateClient" },
       {
         packet: {
           sequence: "1024796",
@@ -795,6 +797,8 @@ export const IndexedTransferTxs = {
     ],
     memo: "Inter Blockchain Services Relayer | hermes 1.13.2+5e78a424 (https://hermes.informal.systems)",
     messages: [
+      // the relayer updates the client first; metadata indexes messages
+      { "@type": "/ibc.core.client.v1.MsgUpdateClient" },
       {
         packet: {
           sequence: "2491523",
@@ -860,3 +864,202 @@ export const IndexedTransferTxs = {
   | "gmpDeposit",
   Transaction
 >;
+
+/**
+ * A relayer tx delivering four Axelar packets to four users (C4A99B8A...).
+ * The index lists it under each receiver.
+ */
+export const BundledDepositsTx = {
+  _id: "C4A99B8A530427F6CD00D8A13C029198F3E19A30FB11145D9BB5397240949C8A#22368927",
+  hash: "C4A99B8A530427F6CD00D8A13C029198F3E19A30FB11145D9BB5397240949C8A",
+  chainId: "osmosis-1",
+  schemaVersion: 10,
+  blockTimestamp: "2024-10-14T21:56:22.893Z",
+  index: 0,
+  height: 22368927,
+  fee: [
+    {
+      denom: "uosmo",
+      amount: "3981",
+    },
+  ],
+  code: 0,
+  info: "",
+  gasWanted: 1447394,
+  gasUsed: 1329138,
+  codespace: null,
+  addressIndex: [
+    "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+    "osmo19w2t4ue7qpdh6022m3yxmxvv3w7jla7u3hfq0r",
+    "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+    "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5",
+    "osmo1c0z47y2z8k9mvsvkdpwasgktmc6hqk453gdzvu",
+    "osmo1alqv73k4v2fvky6au4zw6wq55xfxm43427302s",
+    "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+    "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+  ],
+  messageTypes: [
+    "/ibc.core.client.v1.MsgUpdateClient",
+    "/ibc.core.channel.v1.MsgRecvPacket",
+  ],
+  memo: "Relayed by IcyCRO 🧊 | hermes 1.8.2+06dfbaf (https://hermes.informal.systems)",
+  messages: [
+    {
+      "@type": "/ibc.core.client.v1.MsgUpdateClient",
+    },
+    {
+      packet: {
+        sequence: "2208861",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "2743791",
+          denom: "polygon-uusdt",
+          receiver: "osmo19w2t4ue7qpdh6022m3yxmxvv3w7jla7u3hfq0r",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208862",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "47050927",
+          denom: "uusdc",
+          receiver: "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208863",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "48832897",
+          denom: "uusdc",
+          receiver: "osmo1c0z47y2z8k9mvsvkdpwasgktmc6hqk453gdzvu",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208864",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "243459899",
+          denom: "uusdc",
+          receiver: "osmo1alqv73k4v2fvky6au4zw6wq55xfxm43427302s",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+  ],
+  metadata: [
+    {
+      type: "osmosis-ui",
+      value: [
+        {
+          txType: "ibc_received",
+          txMessageIndex: 1,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              amount: "2743791",
+              denom:
+                "ibc/2F6003A92088B989A159C593C551DF7B04FA0A0419CA3ED087E45E0006ECFF6E",
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 2,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "47050927",
+              usd: 47.050927,
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 3,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "48832897",
+              usd: 48.832897,
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 4,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "243459899",
+              usd: 243.459899,
+            },
+            chain_from: "axelar",
+          },
+        },
+      ],
+    },
+  ],
+} as unknown as Transaction;
