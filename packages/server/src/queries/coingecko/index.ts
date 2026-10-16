@@ -2,7 +2,6 @@ export * from "./coin";
 export * from "./list";
 export * from "./market-chart";
 export * from "./price";
-export * from "./search";
 
 const COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
 

@@ -1,15 +1,14 @@
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 
-type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
-  void,
-  unknown,
-  { authenticatorId: string },
-  unknown
+type UseRemoveOneClickTradingMutationOptions = Omit<
+  UseMutationOptions<void, unknown, { authenticatorId: string }, unknown>,
+  "mutationFn"
 >;
 
 export async function onEnd1CTSession({
@@ -40,25 +39,26 @@ export const useRemoveOneClickTradingSession = ({
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
   const { accountStore } = useStore();
+  const { signAndBroadcast, getChainWallet } = useWallet();
 
-  return useMutation(async ({ authenticatorId }) => {
-    const userOsmoAddress = accountStore.getWallet(
-      accountStore.osmosisChainId
-    )?.address;
+  return useMutation({
+    ...queryOptions,
+    mutationFn: async ({ authenticatorId }: { authenticatorId: string }) => {
+      const userOsmoAddress = getChainWallet(
+        accountStore.osmosisChainId
+      ).address;
 
-    if (!userOsmoAddress) {
-      throw new Error("User Osmo address not found");
-    }
+      if (!userOsmoAddress) {
+        throw new Error("User Osmo address not found");
+      }
 
-    const msg = await makeRemoveAuthenticatorMsg({
-      id: BigInt(authenticatorId),
-      sender: userOsmoAddress,
-    });
+      const msg = await makeRemoveAuthenticatorMsg({
+        id: BigInt(authenticatorId),
+        sender: userOsmoAddress,
+      });
 
-    await new Promise<DeliverTxResponse>((resolve, reject) => {
-      accountStore
-        .signAndBroadcast(
-          accountStore.osmosisChainId,
+      await new Promise<DeliverTxResponse>((resolve, reject) => {
+        signAndBroadcast(
           "addOrRemoveAuthenticators",
           [msg],
           "",
@@ -73,12 +73,12 @@ export const useRemoveOneClickTradingSession = ({
               }
             },
           }
-        )
-        .catch((error) => {
+        ).catch((error) => {
           reject(error);
         });
-    });
+      });
 
-    onEnd1CTSession({ accountStore, authenticatorId });
-  }, queryOptions);
+      onEnd1CTSession({ accountStore, authenticatorId });
+    },
+  });
 };

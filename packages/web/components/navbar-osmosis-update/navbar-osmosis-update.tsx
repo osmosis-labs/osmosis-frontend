@@ -24,11 +24,13 @@ export const NavbarOsmosisUpdate = () => {
    * Fetches the latest update from the osmosis-labs/fe-content repo
    * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/osmosis-update.json
    */
-  const { data, isLoading } = useQuery(["osmosis-updates"], async () =>
-    queryOsmosisCMS<{ iframeUrl: string }>({
-      filePath: "cms/osmosis-update.json",
-    })
-  );
+  const { data, isLoading } = useQuery({
+    queryKey: ["osmosis-updates"],
+    queryFn: async () =>
+      queryOsmosisCMS<{ iframeUrl: string }>({
+        filePath: "cms/osmosis-update.json",
+      }),
+  });
 
   const hasNoUpdates = !data?.iframeUrl && !isLoading;
 

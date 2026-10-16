@@ -1,5 +1,7 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import { Dec } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -19,12 +21,13 @@ import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -51,11 +54,10 @@ const OpenCreatePositionSearchParam = "open_create_position";
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
+    const { address, signAndBroadcast, transactionContext } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -72,11 +74,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { data: userPositions, isFetched: isUserPositionsFetched } =
       api.local.concentratedLiquidity.getUserPositions.useQuery(
         {
-          userOsmoAddress: account?.address ?? "",
+          userOsmoAddress: address ?? "",
           forPoolId: poolId,
         },
         {
-          enabled: !isWalletLoading && Boolean(account?.address),
+          enabled: !isWalletLoading && Boolean(address),
         }
       );
 
@@ -113,12 +115,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const onClickCollectAllRewards = () => {
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          claimableSpreadRewardPositions.map(({ id }) => id),
-          claimableIncentivePositions.map(({ id }) => id),
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        claimableSpreadRewardPositions.map(({ id }) => id),
+        claimableIncentivePositions.map(({ id }) => id),
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     };
 
@@ -307,7 +310,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       annotationDatum={{
                         price: currentPrice
                           ? Number(currentPrice.toString())
-                          : lastChartData?.close ?? 0,
+                          : (lastChartData?.close ?? 0),
                         depth: xRange[1],
                       }}
                       offset={{
@@ -453,16 +456,16 @@ const PoolDataGroup: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -484,14 +487,14 @@ const ChartHeader: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalChartData,
     yRange,
@@ -513,20 +516,55 @@ const Chart: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
-}> = observer(({ poolId, onIncentivize }) => {
-  const { derivedDataStore } = useStore();
+}> = ({ poolId, onIncentivize }) => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
+  const { isLoading: isWalletLoading } = useWalletSelect();
+  const { address } = useWallet();
 
-  const concentratedPoolDetail =
-    derivedDataStore.concentratedPoolDetails.get(poolId);
+  const { data: poolGaugeIncentives } =
+    api.edge.pools.getPoolGaugeIncentives.useQuery({ poolId });
 
-  const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+  const hasIncentives = Boolean(poolGaugeIncentives);
+
+  const { data: userPositions } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      {
+        userOsmoAddress: address ?? "",
+        forPoolId: poolId,
+      },
+      {
+        enabled: !isWalletLoading && Boolean(address),
+      }
+    );
+
+  const userPoolAssets = useMemo(() => {
+    const coinSums = new Map<string, CoinPretty>();
+    userPositions?.forEach(({ currentCoins }) => {
+      currentCoins.forEach((asset) => {
+        const existing = coinSums.get(asset.currency.coinMinimalDenom);
+        coinSums.set(
+          asset.currency.coinMinimalDenom,
+          existing ? existing.add(asset) : asset
+        );
+      });
+    });
+    return Array.from(coinSums.values());
+  }, [userPositions]);
+  const userPoolValue = useMemo(
+    () =>
+      (userPositions ?? []).reduce(
+        (sum, { currentValue }) => sum.add(currentValue),
+        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+      ),
+    [userPositions]
+  );
+  const numUserPositions = userPositions?.length ?? 0;
 
   const { data: incentives, isLoading: isLoadingIncentives } =
     api.edge.pools.getPoolIncentives.useQuery(
@@ -546,21 +584,18 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             {t("clPositions.totalBalance")}
           </span>
           <div>
-            <h4 className="text-osmoverse-100">
-              {concentratedPoolDetail.userPoolValue.toString()}
-            </h4>
+            <h4 className="text-osmoverse-100">{userPoolValue.toString()}</h4>
             <span className="subtitle1 text-osmoverse-300">
-              {concentratedPoolDetail.userPositions.length === 1
+              {numUserPositions === 1
                 ? t("clPositions.onePosition")
                 : t("clPositions.numPositions", {
-                    numPositions:
-                      concentratedPoolDetail.userPositions.length.toString(),
+                    numPositions: numUserPositions.toString(),
                   })}
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-5">
-          {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+          {userPoolAssets.map((asset) => (
             <div
               className="subtitle1 flex gap-2"
               key={asset.currency.coinMinimalDenom}
@@ -623,24 +658,17 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             {t("pool.incentives")}
           </span>
           <div className="flex w-full items-center">
-            {concentratedPoolDetail.incentiveGauges.map((incentive) => (
-              <div
-                className="flex items-center gap-3"
-                key={incentive.coinPerDay.denom}
-              >
+            {poolGaugeIncentives && (
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  {incentive.apr && (
-                    <span className="subtitle1 text-osmoverse-100">
-                      +{incentive.apr.maxDecimals(0).toString()}
-                    </span>
-                  )}
                   <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                     <EntityImage
                       logoURIs={{
-                        png: incentive.coinPerDay.currency.coinImageUrl,
+                        png: poolGaugeIncentives.coinPerDay.currency
+                          .coinImageUrl,
                       }}
-                      name={incentive.coinPerDay.currency.coinDenom}
-                      symbol={incentive.coinPerDay.currency.coinDenom}
+                      name={poolGaugeIncentives.coinPerDay.currency.coinDenom}
+                      symbol={poolGaugeIncentives.coinPerDay.currency.coinDenom}
                       width={20}
                       height={20}
                     />
@@ -649,14 +677,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
                 <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
                   <span>
                     {t("pool.dailyEarnAmount", {
-                      amount: formatPretty(incentive.coinPerDay, {
+                      amount: formatPretty(poolGaugeIncentives.coinPerDay, {
                         maxDecimals: 2,
                       }),
                     })}
                   </span>
                 </div>
               </div>
-            ))}
+            )}
           </div>
           <span className="caption mr-auto text-osmoverse-500">
             *{t("pool.onlyInRangePositions")}
@@ -665,4 +693,4 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
       )}
     </div>
   );
-});
+};

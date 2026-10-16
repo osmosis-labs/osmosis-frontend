@@ -2,11 +2,11 @@
   "object" == typeof exports && "undefined" != typeof module
     ? (module.exports = n(require("dayjs")))
     : "function" == typeof define && define.amd
-    ? define(["dayjs"], n)
-    : ((e =
-        "undefined" != typeof globalThis
-          ? globalThis
-          : e || self).dayjs_locale_fr = n(e.dayjs));
+      ? define(["dayjs"], n)
+      : ((e =
+          "undefined" != typeof globalThis
+            ? globalThis
+            : e || self).dayjs_locale_fr = n(e.dayjs));
 })(this, function (e) {
   "use strict";
   function n(e) {
@@ -78,5 +78,5 @@
         return "晚上";
       },
     };
-  return t.default.locale(i, null, !0), i;
+  return (t.default.locale(i, null, !0), i);
 });

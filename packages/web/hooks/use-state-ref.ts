@@ -6,15 +6,13 @@ type ReadOnlyRefObject<T> = {
 };
 
 type UseStateRef = {
-  <S>(initialState: S | (() => S)): [
-    S,
-    Dispatch<SetStateAction<S>>,
-    ReadOnlyRefObject<S>
-  ];
+  <S>(
+    initialState: S | (() => S)
+  ): [S, Dispatch<SetStateAction<S>>, ReadOnlyRefObject<S>];
   <S = undefined>(): [
     S | undefined,
     Dispatch<SetStateAction<S | undefined>>,
-    ReadOnlyRefObject<S | undefined>
+    ReadOnlyRefObject<S | undefined>,
   ];
 };
 

@@ -55,6 +55,27 @@ const esmModules = [
   "msw",
   "@mswjs",
   "@open-draft",
+  // react-markdown 10 and its unified pipeline publish ESM only.
+  "react-markdown",
+  "(remark|rehype|mdast|hast|micromark|unist)(-.*)?",
+  "unified",
+  "vfile(-.*)?",
+  "devlop",
+  "bail",
+  "trough",
+  "is-plain-obj",
+  "zwitch",
+  "(comma|space)-separated-tokens",
+  "(decode-named-character-reference|character-entities.*)",
+  "(parse|stringify)-entities",
+  "character-reference-invalid",
+  "is-(alphanumerical|alphabetical|decimal|hexadecimal)",
+  "estree-util-is-identifier-name",
+  "property-information",
+  "html-url-attributes",
+  "ccount",
+  "longest-streak",
+  "trim-lines",
 ];
 
 module.exports = async () => ({

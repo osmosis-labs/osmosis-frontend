@@ -195,7 +195,6 @@ export * from "./bridge";
 export * from "./categories";
 export * from "./config";
 export * from "./ethereum";
-export * from "./gas";
 export * from "./market";
 export * from "./price";
 export * from "./user";

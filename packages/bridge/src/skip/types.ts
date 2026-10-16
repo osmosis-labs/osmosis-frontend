@@ -64,8 +64,7 @@ export type SkipRouteRequestGivenOut = SkipRouteRequestBase & {
 };
 
 export type SkipRouteRequest =
-  | SkipRouteRequestGivenIn
-  | SkipRouteRequestGivenOut;
+  SkipRouteRequestGivenIn | SkipRouteRequestGivenOut;
 
 export type SkipRouteResponse = {
   source_asset_denom: string;
@@ -149,8 +148,7 @@ export type SkipTransfer = {
 };
 
 export type SkipSwap = (
-  | { swap_in: SkipSwapExactCoinIn }
-  | { swap_out: SkipSwapExactCoinOut }
+  { swap_in: SkipSwapExactCoinIn } | { swap_out: SkipSwapExactCoinOut }
 ) & {
   estimated_affiliate_fee?: string;
 };

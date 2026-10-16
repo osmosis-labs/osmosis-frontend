@@ -1,13 +1,13 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { WalletStatus } from "@cosmos-kit/core";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-  MemoryKVStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { Coin, Int } from "@osmosis-labs/unit";
+import { MemoryKVStore } from "@osmosis-labs/utils";
 import { when } from "mobx";
 import WebSocket from "ws";
 
@@ -19,13 +19,13 @@ import {
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
-import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
 import { MockAssetList, MockChainList, TestOsmosisChainId } from "./mock-data";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
+  /** Test-only: e2e specs read chain state through these MobX queries; the account store no longer takes them. */
   public readonly queriesStore: QueriesStore<
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
@@ -59,18 +59,15 @@ export class RootStore {
       TestOsmosisChainId,
       MockAssetList,
       [testWallet],
-      this.queriesStore,
       this.chainStore,
       {
         broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
         simulateUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/simulate",
         wsObject: WebSocket as any,
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-      }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
+      OsmosisAccount.use(),
+      CosmosAccount.use(),
+      CosmwasmAccount.use()
     );
   }
 }
@@ -125,10 +122,7 @@ export function getAmountsTransferredMapFromEvent(attributes: any): any {
 
     let newMapValue = coin.amount;
     if (actualAmountsMapByDenom.has(coin.denom)) {
-      newMapValue = newMapValue.add(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        actualAmountsMapByDenom.get(coin.denom)!
-      );
+      newMapValue = newMapValue.add(actualAmountsMapByDenom.get(coin.denom)!);
     }
 
     actualAmountsMapByDenom.set(coin.denom, newMapValue);
@@ -219,7 +213,6 @@ export async function getLatestQueryPool(
 ): Promise<ObservableQueryPool> {
   // refresh stores
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const osmosisQueries = queryStore.get(chainId).osmosis!;
   const queryNumPools = osmosisQueries.queryGammNumPools;
   const queryPools = osmosisQueries.queryPools;
@@ -242,6 +235,5 @@ export async function getLatestQueryPool(
 
   // get query pool
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return osmosisQueries.queryPools.getPool(poolId)!;
 }

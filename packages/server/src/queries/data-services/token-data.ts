@@ -21,18 +21,6 @@ export interface TokenData {
   coingecko_mcap: number | null;
 }
 
-export async function queryTokenData({
-  coinDenom,
-}: {
-  coinDenom: string;
-}): Promise<TokenData> {
-  // collect params
-  const url = new URL(`/tokens/v2/${coinDenom}`, HISTORICAL_DATA_URL);
-
-  // for some reason it returns in an array format, but let's return the first item
-  return (await apiClient<TokenData[]>(url.toString()))?.[0];
-}
-
 export async function queryAllTokenData(): Promise<TokenData[]> {
   // collect params
   const url = new URL("/tokens/v2/all", HISTORICAL_DATA_URL);

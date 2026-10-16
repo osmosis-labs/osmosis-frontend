@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
@@ -16,7 +15,7 @@ export const EvmWalletState: FunctionComponent<
     status: ConnectEvmWalletReturn["status"];
     error: ConnectEvmWalletReturn["error"];
   }
-> = observer(({ onRequestClose, onConnect, connector, status, error }) => {
+> = ({ onRequestClose, onConnect, connector, status, error }) => {
   const { t } = useTranslation();
 
   if (status === "success") {
@@ -67,7 +66,7 @@ export const EvmWalletState: FunctionComponent<
     );
   }
 
-  if (status === "loading") {
+  if (status === "pending") {
     const title = t("walletSelect.connectingWallet");
     const desc = t("walletSelect.openExtension", {
       walletName: connector?.name ?? "",
@@ -85,4 +84,4 @@ export const EvmWalletState: FunctionComponent<
   }
 
   return <></>;
-});
+};

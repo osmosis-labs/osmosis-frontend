@@ -1,5 +1,5 @@
+import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
-import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -10,8 +10,8 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
+import { findOsmosisCurrency } from "~/config/chain";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 import type { RouterOutputs } from "~/utils/trpc";
 
@@ -29,15 +29,12 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = observer(({ route }) => {
-  const { chainStore } = useStore();
-  const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
-
   const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
-    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
-    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
+    ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
+    : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
   const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
-    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
-    : osmosisChain.findCurrency(
+    ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
+    : findOsmosisCurrency(
         (route as RouteOutGivenIn).tokenOutDenoms[
           (route as RouteOutGivenIn).tokenOutDenoms.length - 1
         ]
@@ -90,16 +87,10 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const router = useRouter();
 
   const { t } = useTranslation();
-  /** Share same tippy instance to handle animation */
-  const [source, target] = useSingleton();
 
   return (
-    <>
-      <Tooltip
-        singleton={source}
-        moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
-        content=""
-      />
+    // Only one pool tooltip is open at a time while hovering across the route.
+    <FloatingDelayGroup delay={0}>
       <div className="absolute flex w-full justify-evenly">
         {pools.map(
           (
@@ -115,7 +106,6 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           ) => (
             <Tooltip
               key={`${id}${index}`}
-              singleton={target}
               content={
                 <div className="space-y-3">
                   {inCurrency && outCurrency && (
@@ -181,15 +171,15 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                         type === "concentrated"
                           ? "clPositions.supercharged"
                           : type === "cosmwasm-transmuter" ||
-                            type === "cosmwasm-alloyed"
-                          ? "pool.transmuter"
-                          : type === "cosmwasm-astroport-pcl"
-                          ? "Astroport PCL"
-                          : type === "cosmwasm-whitewhale"
-                          ? "Skeleton Swap"
-                          : type === "cosmwasm"
-                          ? "pool.custom"
-                          : "pool.stableswapEnabled"
+                              type === "cosmwasm-alloyed"
+                            ? "pool.transmuter"
+                            : type === "cosmwasm-astroport-pcl"
+                              ? "Astroport PCL"
+                              : type === "cosmwasm-whitewhale"
+                                ? "Skeleton Swap"
+                                : type === "cosmwasm"
+                                  ? "pool.custom"
+                                  : "pool.stableswapEnabled"
                       )}
                     </div>
                   )}
@@ -226,7 +216,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           )
         )}
       </div>
-    </>
+    </FloatingDelayGroup>
   );
 });
 

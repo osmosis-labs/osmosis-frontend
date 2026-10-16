@@ -132,9 +132,8 @@ export class TradePage extends BasePage {
   /**
    * Navigate to the app home and wait for the trade widget to mount.
    *
-   * Retries with backoff because the EU/SG monitoring suites load the app
-   * through an HTTP CONNECT proxy where the initial page load can stall —
-   * previously this surfaced as a hard `beforeAll` timeout instead of a
+   * Retries with backoff because the initial page load can stall in CI.
+   * Previously this surfaced as a hard `beforeAll` timeout instead of a
    * recoverable retry.
    */
   async goto(retries = 2) {
@@ -275,6 +274,36 @@ export class TradePage extends BasePage {
   }
 
   /**
+   * If the review-trade dialog gates Confirm behind the high-loss checkbox
+   * (slippage tolerance >= 2%, price impact >= 5%, or a limit priced past
+   * market), tick it. Ungated trades render no checkbox and pass straight
+   * through. Must run after disable1CTIfNeeded and setSlippageTolerance: the
+   * former clicks any checked button in the dialog, and raising slippage
+   * re-arms (unticks) the box.
+   */
+  async acknowledgeLossIfNeeded() {
+    // Located via its sibling label: in the CI browser the checkbox exposes no
+    // accessible name, so getByRole's name filter never matches it.
+    const lossCheckbox = this.page.locator(
+      '//div[@role="dialog"]//label[contains(., "I understand this trade may lose")]/../button[@role="checkbox"]'
+    );
+    // Wait for the dialog to settle into one of its two states rather than
+    // probing for the checkbox on a fixed timer: a slow render would otherwise
+    // read as "not gated" and leave Confirm disabled.
+    const enabledConfirm = this.page.locator(
+      '//div[@class]/button[.="Confirm" and not(@disabled)]'
+    );
+    await lossCheckbox
+      .or(enabledConfirm)
+      .first()
+      .waitFor({ state: "visible", timeout: 15000 });
+    if (await lossCheckbox.isVisible()) {
+      await lossCheckbox.check({ timeout: 3000 });
+      console.log("Ticked the high-loss acknowledgement checkbox.");
+    }
+  }
+
+  /**
    * Lightweight Keplr approval helper used by the *AndApprove methods.
    * Delegates to the shared helper which handles both headed and headless modes.
    */
@@ -295,6 +324,7 @@ export class TradePage extends BasePage {
     await this.swapBtn.click({ timeout: 4000 });
     await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
 
     const msgContentAmount = await this.approveInKeplrAndGetMsg(context);
@@ -381,9 +411,9 @@ export class TradePage extends BasePage {
       return trxUrl;
     } catch (error) {
       // The "View explorer" link lives in the same success toast that the WS
-      // TxTracer drives; over the geo proxies it may never render even when the
-      // tx is confirmed on-chain (see startTxConfirmation). Fall back to the
-      // hash captured from the broadcast response so the test can still proceed.
+      // TxTracer drives. The toast may never render even when the tx is
+      // confirmed on-chain (see startTxConfirmation). Fall back to the hash
+      // captured from the broadcast response so the test can still proceed.
       if (this.lastTxHash) {
         const fallbackUrl = buildExplorerTxUrl(this.lastTxHash);
         console.log(
@@ -473,7 +503,7 @@ export class TradePage extends BasePage {
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]'
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400" or @class="text-osmoverse-100" or @class="text-rust-400"]'
     );
     return await priceInpactSpan.textContent();
   }
@@ -565,6 +595,7 @@ export class TradePage extends BasePage {
         // sequence mismatch) instead of timing out on it.
         const confirmation = this.startTxConfirmation(40_000);
         confirmation.catch(() => {});
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -716,6 +747,7 @@ export class TradePage extends BasePage {
         // sequence mismatch) instead of timing out on it.
         const confirmation = this.startTxConfirmation(40_000);
         confirmation.catch(() => {});
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
@@ -860,16 +892,16 @@ export class TradePage extends BasePage {
 
   /**
    * Confirms a just-submitted transaction succeeded, resilient to WebSocket
-   * flakiness over the EU/SG geo proxies.
+   * flakiness.
    *
    * Two signals race:
    *   1. Primary (WebSocket): the in-app "Transaction Successful" toast, driven
-   *      by the app's WS `TxTracer`. Fast, but over the HTTP CONNECT proxy the
-   *      WebSocket often stalls/disconnects, so the toast may never render even
-   *      when the tx is included on-chain.
+   *      by the app's WS `TxTracer`. Fast, but the WebSocket can stall or
+   *      disconnect, so the toast may never render even when the tx is included
+   *      on-chain.
    *   2. Fallback (REST): capture the broadcast tx hash and poll the Osmosis LCD
-   *      `GET /cosmos/tx/v1beta1/txs/{hash}` directly from Node (NOT through the
-   *      browser proxy), passing as soon as the tx is on-chain with code 0.
+   *      `GET /cosmos/tx/v1beta1/txs/{hash}` directly from Node, passing as soon
+   *      as the tx is on-chain with code 0.
    *
    * Whichever confirms first wins; the loser is aborted. Only if BOTH fail does
    * this reject. This must be armed before the Keplr approval click (mirroring
@@ -965,7 +997,7 @@ export class TradePage extends BasePage {
         controller.abort();
         const detail = err?.errors
           ? err.errors.map((e: any) => e?.message ?? String(e)).join(" | ")
-          : err?.message ?? String(err);
+          : (err?.message ?? String(err));
         throw new Error(
           `Transaction not confirmed via WebSocket toast or on-chain REST poll: ${detail}`
         );
@@ -984,7 +1016,7 @@ export class TradePage extends BasePage {
    * - Waits for sell button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll (see startTxConfirmation)
    * - No retry logic - for retry support, use sellAndGetWalletMsg()
    */
   async sellAndApprove(
@@ -1006,6 +1038,7 @@ export class TradePage extends BasePage {
     }
 
     const confirmation = this.startTxConfirmation();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
@@ -1023,7 +1056,7 @@ export class TradePage extends BasePage {
    * - Waits for buy button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll, armed before the confirm click (see startTxConfirmation)
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -1045,6 +1078,7 @@ export class TradePage extends BasePage {
     }
 
     const confirmation = this.startTxConfirmation();
+    await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await confirmation;
@@ -1094,7 +1128,7 @@ export class TradePage extends BasePage {
    * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
    * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Confirms via WebSocket toast OR proxy-safe REST poll, armed before the confirm click (see startTxConfirmation)
+   * - Confirms via WebSocket toast OR REST poll, armed before the confirm click (see startTxConfirmation)
    * - Retries only on swap button disabled errors; other errors fail immediately
    */
   async swapAndApprove(
@@ -1124,6 +1158,7 @@ export class TradePage extends BasePage {
         }
 
         const confirmation = this.startTxConfirmation();
+        await this.acknowledgeLossIfNeeded();
         await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
 

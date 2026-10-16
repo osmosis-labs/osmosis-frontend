@@ -1,29 +1,4 @@
 import {
-  type ChainsResponse,
-  type ChainType,
-  type GetRoute as SquidGetRouteParams,
-  type RouteResponse,
-  type TokensResponse,
-} from "@0xsquid/sdk";
-
-/**
- * The v2 Squid API returns `target` instead of `targetAddress` and no longer
- * includes `routeType`. The bundled `@0xsquid/sdk@1.x` types are stale.
- *
- * TODO: Upgrade `@0xsquid/sdk` to v2 and use the official types from
- * `@0xsquid/squid-types` (`OnChainExecutionData`). That major bump touches
- * ethers v5→v6 and reshapes several other types, so it needs its own PR.
- */
-interface SquidTransactionRequest {
-  target: string;
-  data: string;
-  value: string;
-  gasLimit: string;
-  gasPrice: string;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-}
-import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
@@ -33,9 +8,10 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
-  getEvmRpcTransport,
+  getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
+  redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
@@ -64,12 +40,20 @@ import {
   GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
+import { SquidProviderId } from "./constants";
 import { getSquidErrors } from "./error";
+import type {
+  SquidChainsResponse,
+  SquidGetRouteParams,
+  SquidRouteResponse,
+  SquidTokensResponse,
+  SquidTransactionRequest,
+} from "./types";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
-  static readonly ID = "Squid";
+  static readonly ID = SquidProviderId;
   readonly providerName = SquidBridgeProvider.ID;
 
   protected readonly apiURL: string;
@@ -129,7 +113,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         };
 
         const url = new URL(`${this.apiURL}/v2/route`);
-        const data = await apiClient<RouteResponse>(url.toString(), {
+        const data = await apiClient<SquidRouteResponse>(url.toString(), {
           headers: {
             "x-integrator-id": this.integratorId,
             "Content-Type": "application/json",
@@ -200,8 +184,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        const transactionRequest = data.route
-          .transactionRequest as unknown as SquidTransactionRequest;
+        const transactionRequest = data.route.transactionRequest;
         const isEvmTransaction = fromChain.chainType === "evm";
 
         if (!aggregatePriceImpact) {
@@ -244,8 +227,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           expectedOutput: {
             ...toAsset,
             amount: toAmount,
+            // Squid reports a loss as a positive percentage; the interface
+            // wants a fraction, negative for a loss.
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
+              .neg()
               .toString(),
           },
           fromChain,
@@ -272,6 +258,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   amount: "0",
                 },
           estimatedTime: estimatedRouteDuration,
+          quoteId: data.route.quoteId,
           estimatedGasFee:
             gasCosts.length === 1
               ? {
@@ -416,10 +403,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       for (const variant of tokenVariants) {
         const chainInfo =
-          // `ChainType` is a runtime enum, so importing it as a value pulls the
-          // whole SDK — and its nested `@cosmjs/tendermint-rpc` → axios 0.21.4 —
-          // into the client bundle. Compare against the literal instead.
-          variant.chainType === ("evm" as ChainType)
+          variant.chainType === "evm"
             ? {
                 chainId: variant.chainId as number,
                 chainType: "evm" as const,
@@ -497,7 +481,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain, {
+        transport: getServerEvmRpcTransport(evmChain, {
           timeout: 3_000,
           retryCount: 0,
         }),
@@ -516,7 +500,9 @@ export class SquidBridgeProvider implements BridgeProvider {
       throw new BridgeQuoteError({
         bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
-        message: `Error creating approval Tx: ${e}`,
+        // viem error text includes the request URL, which for a keyed
+        // provider carries the API key.
+        message: redactConfiguredEvmRpcUrls(`Error creating approval Tx: ${e}`),
       });
     }
 
@@ -668,7 +654,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
-          const data = await apiClient<ChainsResponse>(
+          const data = await apiClient<SquidChainsResponse>(
             `${this.apiURL}/v2/chains`,
             {
               headers: {
@@ -689,7 +675,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       // cachified throw instead, so it propagates as a provider failure
       // the client retries. (cachified types the checked value as {}.)
       checkValue: (value) => {
-        const chains = value as ChainsResponse["chains"];
+        const chains = value as SquidChainsResponse["chains"];
         return (chains?.length ?? 0) > 0 || "empty Squid chains response";
       },
     });
@@ -702,7 +688,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
-          const data = await apiClient<TokensResponse>(
+          const data = await apiClient<SquidTokensResponse>(
             `${this.apiURL}/v2/tokens`,
             {
               headers: {
@@ -718,7 +704,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       },
       // see getChains: never cache a degraded/empty registry response
       checkValue: (value) => {
-        const tokens = value as TokensResponse["tokens"];
+        const tokens = value as SquidTokensResponse["tokens"];
         return (
           (tokens?.length ?? 0) > 0 || "empty Squid token registry response"
         );

@@ -40,6 +40,7 @@ import {
   getSuiPackageIds,
   listAvailableSuiWallets,
   normalizeSuiAddress,
+  type ProtoValue,
   subscribeToAvailableSuiWallets,
   SuiRedeemError,
   WORMHOLE_SUI_CORE_STATE,
@@ -126,33 +127,28 @@ describe("decodeBase64Vaa", () => {
 });
 
 describe("getSuiPackageIds", () => {
-  it("returns the upgrade_cap.fields.package from both state objects", async () => {
-    const getObject = jest.fn(async ({ id }: { id: string }) => {
-      if (id === WORMHOLE_SUI_CORE_STATE) {
-        return {
-          data: {
-            content: {
-              dataType: "moveObject",
-              fields: {
-                upgrade_cap: { fields: { package: "0xcorePkgAbc" } },
-              },
-            },
-          },
-        };
+  // Mirrors how the gRPC ledger service encodes a state object's Move JSON.
+  const struct = (fields: Record<string, ProtoValue>): ProtoValue => ({
+    kind: { oneofKind: "structValue", structValue: { fields } },
+  });
+  const str = (stringValue: string): ProtoValue => ({
+    kind: { oneofKind: "stringValue", stringValue },
+  });
+  const stateObject = (upgradeCapFields: Record<string, ProtoValue>) => ({
+    response: {
+      object: { json: struct({ upgrade_cap: struct(upgradeCapFields) }) },
+    },
+  });
+
+  it("returns the upgrade_cap.package from both state objects", async () => {
+    const getObject = jest.fn(async ({ objectId }: { objectId: string }) => {
+      if (objectId === WORMHOLE_SUI_CORE_STATE) {
+        return stateObject({ package: str("0xcorePkgAbc") });
       }
-      if (id === WORMHOLE_SUI_TOKEN_BRIDGE_STATE) {
-        return {
-          data: {
-            content: {
-              dataType: "moveObject",
-              fields: {
-                upgrade_cap: { fields: { package: "0xtbPkgDef" } },
-              },
-            },
-          },
-        };
+      if (objectId === WORMHOLE_SUI_TOKEN_BRIDGE_STATE) {
+        return stateObject({ package: str("0xtbPkgDef") });
       }
-      throw new Error(`unexpected id: ${id}`);
+      throw new Error(`unexpected id: ${objectId}`);
     });
 
     const ids = await getSuiPackageIds({ getObject });
@@ -161,10 +157,8 @@ describe("getSuiPackageIds", () => {
     expect(getObject).toHaveBeenCalledTimes(2);
   });
 
-  it("throws when the state object isn't a Move object", async () => {
-    const getObject = jest.fn(async () => ({
-      data: { content: { dataType: "package" } },
-    }));
+  it("throws when the object comes back without JSON", async () => {
+    const getObject = jest.fn(async () => ({ response: { object: {} } }));
 
     await expect(getSuiPackageIds({ getObject })).rejects.toThrow(
       SuiRedeemError
@@ -172,14 +166,7 @@ describe("getSuiPackageIds", () => {
   });
 
   it("throws when the upgrade_cap.package field is missing", async () => {
-    const getObject = jest.fn(async () => ({
-      data: {
-        content: {
-          dataType: "moveObject",
-          fields: { upgrade_cap: { fields: {} } },
-        },
-      },
-    }));
+    const getObject = jest.fn(async () => stateObject({}));
 
     await expect(getSuiPackageIds({ getObject })).rejects.toThrow(
       SuiRedeemError
@@ -259,7 +246,7 @@ describe("executeSuiRedeem", () => {
         connection,
         suiClient: {
           getObject: jest.fn(),
-          waitForTransaction: jest.fn(),
+          getTransaction: jest.fn(),
         },
       })
     ).rejects.toMatchObject({ code: "wallet_mismatch" });
@@ -284,7 +271,7 @@ describe("executeSuiRedeem", () => {
         connection,
         suiClient: {
           getObject: jest.fn(),
-          waitForTransaction: jest.fn(),
+          getTransaction: jest.fn(),
         },
       })
     ).rejects.toMatchObject({
@@ -312,7 +299,7 @@ describe("executeSuiRedeem", () => {
         connection,
         suiClient: {
           getObject,
-          waitForTransaction: jest.fn(),
+          getTransaction: jest.fn(),
         },
       })
     ).rejects.toMatchObject({ code: "unsupported_token" });

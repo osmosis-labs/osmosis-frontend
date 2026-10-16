@@ -1,13 +1,12 @@
-import { ObservableQuery } from "../common";
-import { KVStore } from "../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
 import Axios, { AxiosInstance } from "axios";
 import { override } from "mobx";
-import { ChainGetter } from "../common";
-import { HasMapStore } from "../common";
+
+import { ChainGetter, HasMapStore, ObservableQuery } from "../common";
 
 export class ObservableChainQueryRPC<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
@@ -43,7 +42,7 @@ export class ObservableChainQueryRPC<
 
 export class ObservableChainQueryRPCMap<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends HasMapStore<ObservableChainQueryRPC<T, E>> {
   constructor(
     protected readonly kvStore: KVStore,

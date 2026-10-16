@@ -1,7 +1,7 @@
+import { SwapAdBannerResponse } from "@osmosis-labs/server";
 import { act, screen } from "@testing-library/react";
 
 import { renderWithProviders } from "~/__tests__/test-utils";
-import { SwapAdBannerResponse } from "~/pages";
 
 import { AdBannerContent } from "../ad-banner";
 
@@ -26,8 +26,8 @@ test("renders ad banner content correctly", () => {
   });
 
   const headerElement = screen.getByText(mockAd.headerOrTranslationKey);
-  const subheaderElement = screen.getByText(mockAd.subheaderOrTranslationKey);
-  const imageElement = screen.getByAltText(mockAd.iconImageAltOrTranslationKey);
+  const subheaderElement = screen.getByText("Mock Subheader");
+  const imageElement = screen.getByAltText("Mock Icon");
   const linkElement = screen.getByRole("link");
 
   expect(headerElement).toBeInTheDocument();

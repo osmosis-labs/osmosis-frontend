@@ -1,4 +1,3 @@
-import type { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
@@ -9,18 +8,23 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { SquidBridgeProvider } from ".";
+import { SquidProviderId } from "./constants";
+import type { SquidStatusResponse } from "./types";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly providerId = SquidBridgeProvider.ID;
+  readonly providerId = SquidProviderId;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
   readonly apiUrl: string;
   readonly squidScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
+  constructor(
+    protected readonly integratorId: string,
+    env: BridgeEnvironment,
+    protected readonly chainList: Chain[]
+  ) {
     this.apiUrl =
       env === "mainnet"
         ? "https://v2.api.squidrouter.com"
@@ -41,6 +45,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
       toChain: { chainId: toChainId },
+      quoteId,
     } = snapshot;
     await poll({
       fn: async () => {
@@ -53,8 +58,15 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           if (toChainId) {
             url.searchParams.append("toChainId", toChainId.toString());
           }
+          if (quoteId) {
+            url.searchParams.append("quoteId", quoteId);
+          }
 
-          const data = await apiClient<StatusResponse>(url.toString());
+          const data = await apiClient<SquidStatusResponse>(url.toString(), {
+            headers: {
+              "x-integrator-id": this.integratorId,
+            },
+          });
 
           if (!data || !data.id || !data.squidTransactionStatus) {
             return;

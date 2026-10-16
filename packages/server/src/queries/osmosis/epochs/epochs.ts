@@ -10,7 +10,7 @@ export interface Epochs {
       current_epoch_start_time: string;
       epoch_counting_started: boolean;
       current_epoch_ended: boolean;
-    }
+    },
   ];
 }
 

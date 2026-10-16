@@ -190,9 +190,8 @@ describe("MultiEndpointClient", () => {
         { address: "https://endpoint1.com" },
       ]);
 
-      const result = await client.fetchWithEndpoint<typeof mockResult>(
-        "/status"
-      );
+      const result =
+        await client.fetchWithEndpoint<typeof mockResult>("/status");
 
       expect(result.data).toEqual(mockResult);
       expect(result.endpointAddress).toBe("https://endpoint1.com");
@@ -216,9 +215,8 @@ describe("MultiEndpointClient", () => {
         { hedgeDelay: 50, timeout: 200, maxTotalTime: 2000 }
       );
 
-      const result = await client.fetchWithEndpoint<typeof mockResult>(
-        "/status"
-      );
+      const result =
+        await client.fetchWithEndpoint<typeof mockResult>("/status");
 
       expect(result.data).toEqual(mockResult);
       expect(result.endpointAddress).toBe("https://endpoint2.com");

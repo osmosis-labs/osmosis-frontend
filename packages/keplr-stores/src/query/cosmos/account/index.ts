@@ -1,12 +1,13 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
+import { ChainGetter } from "../../../common";
+import { BaseAccount } from "../../../common/cosmos";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
 import { AuthAccount } from "./types";
-import { computed, makeObservable } from "mobx";
-import { BaseAccount } from "../../../common/cosmos";
 
 export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccount> {
   constructor(

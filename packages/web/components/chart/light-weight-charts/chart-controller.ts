@@ -19,7 +19,7 @@ export interface Series {
 export interface ChartControllerParams<
   T = TimeChartOptions,
   K = Time,
-  N = Series
+  N = Series,
 > {
   options: DeepPartial<T>;
   series?: N[];
@@ -36,7 +36,7 @@ type ChartControllerEvents<T = TimeChartOptions, K = Time, N = Series> = {
 export abstract class ChartController<
   T = TimeChartOptions,
   K = Time,
-  N = Series
+  N = Series,
 > {
   protected api: IChartApi;
   protected onCrosshairMove: ((param: MouseEventParams<K>) => void) | undefined;

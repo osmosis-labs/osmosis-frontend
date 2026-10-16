@@ -1,7 +1,8 @@
 import type { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/v1beta1/coin";
+import type { MsgBeginRedelegate } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/staking/v1beta1/tx";
 import type { Height } from "@osmosis-labs/proto-codecs/build/codegen/ibc/core/client/v1/client";
 
-import { getIbcCodec } from "../codec";
+import { getCosmosCodec, getIbcCodec } from "../codec";
 
 export async function makeIBCTransferMsg({
   sourcePort,
@@ -55,3 +56,20 @@ export async function makeIBCTransferMsg({
 }
 
 makeIBCTransferMsg.gas = 250_000;
+
+export async function makeBeginRedelegateMsg({
+  delegatorAddress,
+  validatorSrcAddress,
+  validatorDstAddress,
+  amount,
+}: MsgBeginRedelegate) {
+  const cosmosCodec = await getCosmosCodec();
+  return cosmosCodec.staking.v1beta1.MessageComposer.withTypeUrl.beginRedelegate(
+    {
+      delegatorAddress,
+      validatorSrcAddress,
+      validatorDstAddress,
+      amount,
+    }
+  );
+}

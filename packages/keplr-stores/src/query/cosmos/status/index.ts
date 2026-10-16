@@ -1,7 +1,8 @@
-import { KVStore } from "../../../common/kv-store";
+import { Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+
 import { ChainGetter } from "../../../common";
 import { ObservableChainQueryRPC } from "../../chain-rpc-query";
-import { Int } from "@osmosis-labs/unit";
 
 export class ObservableQueryRPCStatus extends ObservableChainQueryRPC<{
   jsonrpc: "2.0";

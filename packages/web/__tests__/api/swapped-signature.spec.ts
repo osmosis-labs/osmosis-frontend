@@ -4,24 +4,24 @@ import swappedSignatureHandler from "~/pages/api/swapped-signature";
 
 const VALID_WALLET = "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3";
 
-function createMockResponse() {
+type MockResponse = NextApiResponse & { body: unknown };
+
+/** Implements only what the handler calls; the cast covers the rest. */
+function createMockResponse(): MockResponse {
   const res = {
     statusCode: 200,
     body: undefined as unknown,
-    status(code: number) {
+    status(code: number): MockResponse {
       res.statusCode = code;
-      return res;
+      return res as unknown as MockResponse;
     },
-    json(data: unknown) {
+    json(data: unknown): MockResponse {
       res.body = data;
-      return res;
+      return res as unknown as MockResponse;
     },
-  } satisfies Pick<NextApiResponse, "status" | "json"> & {
-    statusCode: number;
-    body: unknown;
   };
 
-  return res;
+  return res as unknown as MockResponse;
 }
 
 describe("POST /api/swapped-signature", () => {

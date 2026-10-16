@@ -1,6 +1,6 @@
 import { toBase64 } from "@cosmjs/encoding";
-import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,
@@ -26,6 +26,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -325,12 +326,15 @@ export async function makeCreate1CTSessionMessage({
           .filter((authenticator) =>
             isAuthenticatorOneClickTradingSession({ authenticator })
           )
-          .reduce((min, authenticator) => {
-            if (isNil(min)) return authenticator.id;
-            return new Dec(authenticator.id).lt(new Dec(min))
-              ? authenticator.id
-              : min;
-          }, null as string | null)
+          .reduce(
+            (min, authenticator) => {
+              if (isNil(min)) return authenticator.id;
+              return new Dec(authenticator.id).lt(new Dec(min))
+                ? authenticator.id
+                : min;
+            },
+            null as string | null
+          )
       : undefined;
 
   const authenticatorsToRemove = authenticatorToRemoveId
@@ -370,31 +374,40 @@ export const useCreateOneClickTradingSession = ({
   queryOptions,
 }: {
   onBroadcasted?: () => void;
-  queryOptions?: UseMutationOptions<
-    unknown,
-    unknown,
-    {
-      spendLimitTokenDecimals: number | undefined;
-      transaction1CTParams: OneClickTradingTransactionParams | undefined;
-      additionalAuthenticatorsToRemove?: bigint[];
-    },
-    unknown
+  queryOptions?: Omit<
+    UseMutationOptions<
+      unknown,
+      unknown,
+      {
+        spendLimitTokenDecimals: number | undefined;
+        transaction1CTParams: OneClickTradingTransactionParams | undefined;
+        additionalAuthenticatorsToRemove?: bigint[];
+      },
+      unknown
+    >,
+    "mutationFn"
   >;
 } = {}) => {
   const { accountStore } = useStore();
+  const { signAndBroadcast, getChainWallet } = useWallet();
 
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
 
-  return useMutation(
-    async ({
+  return useMutation({
+    ...queryOptions,
+    mutationFn: async ({
       transaction1CTParams,
       spendLimitTokenDecimals,
       additionalAuthenticatorsToRemove,
+    }: {
+      transaction1CTParams: OneClickTradingTransactionParams | undefined;
+      spendLimitTokenDecimals: number | undefined;
+      additionalAuthenticatorsToRemove?: bigint[];
     }) => {
-      const userOsmoAddress = accountStore.getWallet(
+      const userOsmoAddress = getChainWallet(
         accountStore.osmosisChainId
-      )?.address;
+      ).address;
 
       if (!userOsmoAddress) {
         throw new CreateOneClickSessionError("Osmosis account not found");
@@ -422,28 +435,25 @@ export const useCreateOneClickTradingSession = ({
         });
 
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            "addOrRemoveAuthenticators",
-            msgs,
-            "",
-            undefined,
-            undefined,
-            {
-              onBroadcasted,
-              onFulfill: (tx) => {
-                if (tx.code === 0) {
-                  resolve(tx);
-                } else {
-                  reject(new Error("Transaction failed"));
-                }
-              },
-            }
-          )
-          .catch((error) => {
-            reject(error);
-          });
+        signAndBroadcast(
+          "addOrRemoveAuthenticators",
+          msgs,
+          "",
+          undefined,
+          undefined,
+          {
+            onBroadcasted,
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          }
+        ).catch((error) => {
+          reject(error);
+        });
       });
 
       onAdd1CTSession({
@@ -461,6 +471,5 @@ export const useCreateOneClickTradingSession = ({
         t,
       });
     },
-    queryOptions
-  );
+  });
 };

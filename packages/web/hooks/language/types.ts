@@ -11,12 +11,12 @@ type PathsToStringProps<T> = T extends string
 type Join<T extends string[], D extends string> = T extends []
   ? never
   : T extends [infer F]
-  ? F
-  : T extends [infer F, ...infer R]
-  ? F extends string
-    ? `${F}${D}${Join<Extract<R, string[]>, D>}`
-    : never
-  : string;
+    ? F
+    : T extends [infer F, ...infer R]
+      ? F extends string
+        ? `${F}${D}${Join<Extract<R, string[]>, D>}`
+        : never
+      : string;
 
 type StringWithAutocomplete<T> = T | (string & Record<never, never>);
 

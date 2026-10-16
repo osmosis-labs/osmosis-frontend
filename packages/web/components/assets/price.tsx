@@ -1,6 +1,7 @@
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import { PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { Dec } from "@osmosis-labs/unit";
+import { keepPreviousData } from "@tanstack/react-query";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
@@ -94,7 +95,7 @@ export const HistoricalPriceSparkline: FunctionComponent<{
       },
       {
         staleTime: 1000 * 30, // 30 secs
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
       }
     );
 

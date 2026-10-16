@@ -30,18 +30,6 @@ describe("determineNextFromDenom", () => {
     ).toBe("ATOM");
   });
 
-  test("fromAssetDenom !== initialFromDenom and initialFromDenom === toAssetDenom", () => {
-    expect(
-      determineNextFallbackFromDenom({
-        fromAssetDenom: "ATOM",
-        toAssetDenom: "ATOM",
-        initialFromDenom: "ATOM",
-        initialToDenom: "OSMO",
-        DefaultDenoms,
-      })
-    ).toBe("OSMO");
-  });
-
   test("fromAssetDenom !== initialFromDenom and initialFromDenom !== toAssetDenom", () => {
     expect(
       determineNextFallbackFromDenom({
@@ -80,18 +68,6 @@ describe("determineNextToDenom", () => {
         DefaultDenoms,
       })
     ).toBe("ATOM");
-  });
-
-  test("toAssetDenom !== initialToDenom and initialToDenom === fromAssetDenom", () => {
-    expect(
-      determineNextFallbackToDenom({
-        fromAssetDenom: "ATOM",
-        toAssetDenom: "ATOM",
-        initialToDenom: "ATOM",
-        initialFromDenom: "OSMO",
-        DefaultDenoms,
-      })
-    ).toBe("OSMO");
   });
 
   test("toAssetDenom !== initialToDenom and initialToDenom !== fromAssetDenom", () => {

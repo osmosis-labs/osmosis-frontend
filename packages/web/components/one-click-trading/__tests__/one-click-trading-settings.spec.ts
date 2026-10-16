@@ -50,7 +50,7 @@ describe("compare1CTTransactionParams", () => {
     const nextParams: OneClickTradingTransactionParams = {
       ...prevParams,
       spendLimit: mockPricePretty(7000),
-      sessionPeriod: { end: "3hours" },
+      sessionPeriod: { end: "1day" },
     };
 
     const changes = compare1CTTransactionParams({ prevParams, nextParams });

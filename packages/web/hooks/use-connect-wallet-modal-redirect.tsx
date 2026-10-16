@@ -4,6 +4,7 @@ import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { t } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
@@ -27,33 +28,27 @@ export function useConnectWalletModalRedirect(
   onConnect?: () => void
 ) {
   const { accountStore } = useStore();
-  const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
+  const { walletStatus } = useWallet();
 
   const { onOpenWalletSelect, isLoading: isWalletLoading_ } = useWalletSelect();
   const isWalletLoading =
-    isWalletLoading_ ||
-    osmosisAccount?.walletStatus === WalletStatus.Connecting;
+    isWalletLoading_ || walletStatus === WalletStatus.Connecting;
 
   const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
-    () => osmosisAccount?.walletStatus === WalletStatus.Connected
+    () => walletStatus === WalletStatus.Connected
   );
   const [showSelf, setShowSelf] = useState(true);
 
   useEffect(() => {
-    if (
-      !walletInitiallyConnected &&
-      osmosisAccount?.walletStatus === WalletStatus.Connected
-    ) {
+    if (!walletInitiallyConnected && walletStatus === WalletStatus.Connected) {
       setShowSelf(true);
     }
-  }, [osmosisAccount?.walletStatus, walletInitiallyConnected]);
+  }, [walletStatus, walletInitiallyConnected]);
 
   const resetState = useCallback(() => {
     setShowSelf(false);
-    setWalletInitiallyConnected(
-      osmosisAccount?.walletStatus === WalletStatus.Connected
-    );
-  }, [osmosisAccount?.walletStatus]);
+    setWalletInitiallyConnected(walletStatus === WalletStatus.Connected);
+  }, [walletStatus]);
 
   const defaultChildren = (
     <h6 className="flex items-center gap-3">
@@ -65,8 +60,7 @@ export function useConnectWalletModalRedirect(
   return {
     showModalBase: showSelf,
     accountActionButton:
-      isWalletLoading ||
-      osmosisAccount?.walletStatus === WalletStatus.Connected ? (
+      isWalletLoading || walletStatus === WalletStatus.Connected ? (
         <Button {...actionButtonProps}>
           {actionButtonProps?.children ?? defaultChildren}
         </Button>
@@ -87,7 +81,7 @@ export function useConnectWalletModalRedirect(
           {defaultChildren}
         </Button>
       ),
-    walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,
+    walletConnected: walletStatus === WalletStatus.Connected,
     resetState,
   };
 }

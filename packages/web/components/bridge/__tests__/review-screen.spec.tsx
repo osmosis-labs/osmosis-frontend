@@ -57,7 +57,7 @@ const makeQuote = (overrides?: Partial<BridgeQuote>): BridgeQuote =>
     hasAcknowledgedLoss: false,
     setLossAcknowledged: jest.fn(),
     ...overrides,
-  } as unknown as BridgeQuote);
+  }) as unknown as BridgeQuote;
 
 const warnedQuote = (overrides?: Partial<BridgeQuote>): BridgeQuote =>
   makeQuote({

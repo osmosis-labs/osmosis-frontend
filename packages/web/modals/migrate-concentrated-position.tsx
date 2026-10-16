@@ -1,11 +1,12 @@
 import type { UserPosition } from "@osmosis-labs/server";
+import { prepareMigrateConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import type { PoolAssetInfo } from "~/components/assets/types";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   USDC_ALLOYED_DENOM,
   USDC_CANONICAL_SYMBOL,
@@ -13,8 +14,8 @@ import {
   USDC_TRANSMUTER_POOL_ID,
 } from "~/config/position-migration";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import {
   formatWalletDrawCap,
   getRangeMaxWithdrawAmounts,
@@ -60,7 +61,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
      */
     revalidate: () => Promise<MigrationRevalidation | undefined>;
   } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const {
     position,
     toPoolId,
@@ -163,9 +164,14 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   ) as PoolAssetInfo[];
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const { chainId } = OsmosisChainInfo;
+  const {
+    wallet: account,
+    address: accountAddress,
+    txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(chainId);
   const apiUtils = api.useUtils();
 
   /* For a full-range or ultra-wide position the range-edge maxima are
@@ -178,9 +184,9 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   const needsBalanceBound =
     maxWalletDraw !== undefined && !maxWalletDraw.isInformative;
   const { data: walletBalances } = api.local.balances.getUserBalances.useQuery(
-    { bech32Address: account?.address ?? "" },
+    { bech32Address: accountAddress ?? "" },
     {
-      enabled: Boolean(account?.address) && needsBalanceBound,
+      enabled: Boolean(accountAddress) && needsBalanceBound,
       refetchInterval: 15_000,
     }
   );
@@ -229,7 +235,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
      navigation is a convenience and must never read as a migration error. */
   const routeAwayIfPoolEmptied = useCallback(async () => {
     if (router.pathname !== "/pool/[id]" || router.query.id !== poolId) return;
-    const address = account?.address;
+    const address = accountAddress;
     if (!address) return;
     try {
       const positions =
@@ -244,7 +250,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     } catch {
       // Stay put.
     }
-  }, [router, poolId, account?.address, apiUtils]);
+  }, [router, poolId, accountAddress, apiUtils]);
 
   const migrate = useCallback(async () => {
     if (!account) return;
@@ -266,7 +272,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       }
       const freshMinAmountTolerance = fresh.minAmountTolerance;
 
-      await account.osmosis.sendMigrateConcentratedLiquidityPositionMsg(
+      await prepareMigrateConcentratedLiquidityPositionMsg(
+        transactionContext,
         positionId,
         toPoolId,
         new Int(rawPosition.lower_tick),
@@ -293,7 +300,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             void routeAwayIfPoolEmptied();
           }
         }
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
     } catch (e) {
       // Surfaced rather than only logged: a refusal here is the safety
       // mechanism working, and the user needs to know the position was not
@@ -305,21 +312,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   }, [
     account,
     revalidate,
-    t,
+    transactionContext,
     positionId,
     toPoolId,
     rawPosition.lower_tick,
     rawPosition.upper_tick,
-    apiUtils,
+    t,
+    apiUtils.local.concentratedLiquidity,
     props,
     routeAwayIfPoolEmptied,
+    signAndBroadcast,
   ]);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
         isMigrating ||
-        Boolean(account?.txTypeInProgress) ||
+        Boolean(txTypeInProgress) ||
         // Held while the divergence sits outside the allowance, the polled
         // pool data is mid-refetch, or the balances backing the disclosed
         // draw cap have not loaded; all three resolve on their own and the
@@ -446,23 +455,23 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
                       noble: formatWalletDrawCap(maxWalletDraw.noble, 2),
                     })
                   : // A full-range or ultra-wide position makes the edge
-                  // maxima astronomical noise; show the position-scaled
-                  // bound instead: the sized message amounts are a fixed
-                  // ceiling at ~the position's own sides, approximated by
-                  // the polled composition plus drift headroom and clamped
-                  // by the wallet balance.
-                  balancesReady && walletBalances && baseCoin && nobleCoin
-                  ? t("clPositions.migrateMaxWalletDrawWideRange", {
-                      base: formatWalletDrawCap(
-                        drawCapForWideRange(baseCoin)!,
-                        6
-                      ),
-                      noble: formatWalletDrawCap(
-                        drawCapForWideRange(nobleCoin)!,
-                        2
-                      ),
-                    })
-                  : "..."}
+                    // maxima astronomical noise; show the position-scaled
+                    // bound instead: the sized message amounts are a fixed
+                    // ceiling at ~the position's own sides, approximated by
+                    // the polled composition plus drift headroom and clamped
+                    // by the wallet balance.
+                    balancesReady && walletBalances && baseCoin && nobleCoin
+                    ? t("clPositions.migrateMaxWalletDrawWideRange", {
+                        base: formatWalletDrawCap(
+                          drawCapForWideRange(baseCoin)!,
+                          6
+                        ),
+                        noble: formatWalletDrawCap(
+                          drawCapForWideRange(nobleCoin)!,
+                          2
+                        ),
+                      })
+                    : "..."}
               </span>
             </div>
           )}
@@ -472,4 +481,4 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};

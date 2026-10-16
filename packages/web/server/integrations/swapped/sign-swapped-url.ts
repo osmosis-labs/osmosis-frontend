@@ -10,7 +10,10 @@ const BASE_CURRENCY_AMOUNT = 200;
 const STYLE = "9a4e4a18a5725bf1c9237c1297549aa0";
 
 export class SwappedSignUrlError extends Error {
-  constructor(message: string, readonly statusCode: number = 400) {
+  constructor(
+    message: string,
+    readonly statusCode: number = 400
+  ) {
     super(message);
     this.name = "SwappedSignUrlError";
   }

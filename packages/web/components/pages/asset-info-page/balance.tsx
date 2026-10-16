@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { PropsWithChildren, ReactElement } from "react";
 
 import { Icon } from "~/components/assets";
@@ -13,7 +12,7 @@ import { Button } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import {
@@ -22,8 +21,7 @@ import {
 } from "~/utils/halt-reasons";
 import { api } from "~/utils/trpc";
 
-export const AssetBalance = observer(({ className }: CustomClasses) => {
-  const { chainStore, accountStore } = useStore();
+export const AssetBalance = ({ className }: CustomClasses) => {
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
@@ -31,18 +29,17 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { isMobile } = useWindowSize();
   const hideBalances = useUserSettingsStore((state) => state.hideBalances);
 
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
 
   const { data, isLoading } = api.edge.assets.getUserBridgeAsset.useQuery(
     {
       findMinDenomOrSymbol: asset.coinDenom,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
     },
-    { enabled: Boolean(account?.address) }
+    { enabled: Boolean(address) }
   );
 
-  if (!account?.isWalletConnected) {
+  if (!isWalletConnected) {
     return null;
   }
 
@@ -66,14 +63,15 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
   const depositDisabledReason = isStrandedToken
     ? t("assets.strandedTokenDepositDisabled")
     : depositsHalted
-    ? asset.tooltipMessage ?? t(depositHaltReasonKey(asset.depositHaltReason))
-    : undefined;
+      ? (asset.tooltipMessage ??
+        t(depositHaltReasonKey(asset.depositHaltReason)))
+      : undefined;
   const withdrawDisabledReason = isStrandedToken
     ? t("assets.strandedTokenWithdrawDisabled")
     : withdrawalsHalted
-    ? asset.tooltipMessage ??
-      t(withdrawalHaltReasonKey(asset.withdrawalHaltReason))
-    : undefined;
+      ? (asset.tooltipMessage ??
+        t(withdrawalHaltReasonKey(asset.withdrawalHaltReason)))
+      : undefined;
 
   const ConditionalTooltip = ({
     children,
@@ -160,4 +158,4 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
       )}
     </section>
   );
-});
+};

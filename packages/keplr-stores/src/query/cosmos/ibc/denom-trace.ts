@@ -1,11 +1,12 @@
-import { KVStore } from "../../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { autorun, computed } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
 import { DenomTraceResponse } from "./types";
-import { autorun, computed } from "mobx";
 
 export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTraceResponse> {
   protected disposer?: () => void;

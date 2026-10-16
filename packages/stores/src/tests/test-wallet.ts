@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import type { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
 import type { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
@@ -96,7 +95,6 @@ export class MockKeplrClient implements WalletClient {
     this.client = client;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async enable(_chainIds: string | string[]) {
     await this.client.enable();
   }
@@ -147,7 +145,6 @@ export class MockKeplrClient implements WalletClient {
     ) as unknown as OfflineDirectSigner;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async addChain(_chainInfo: ChainRecord) {
     /**
      * Not implemented in mock keplr
@@ -207,7 +204,10 @@ export class ChainMockKeplrExtension extends ChainWalletBase {
 }
 
 export class TestWallet extends MainWalletBase {
-  constructor(walletInfo: Wallet, protected readonly mnemonic?: string) {
+  constructor(
+    walletInfo: Wallet,
+    protected readonly mnemonic?: string
+  ) {
     super(walletInfo, ChainMockKeplrExtension);
   }
 

@@ -1,6 +1,7 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   CellContext,
   createColumnHelper,
@@ -10,7 +11,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -38,12 +38,12 @@ import {
 } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -71,17 +71,16 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
   hideDust: boolean;
   setHideDust: (value: boolean) => void;
-}> = observer(({ tableTopPadding = 0, hideDust, setHideDust }) => {
+}> = ({ tableTopPadding = 0, hideDust, setHideDust }) => {
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { accountStore } = useStore();
   const showUnverifiedAssetsFromStore = useUserSettingsStore(
     (state) => state.showUnverifiedAssets
   );
   const setShowUnverifiedAssets = useUserSettingsStore(
     (state) => state.setShowUnverifiedAssets
   );
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
@@ -129,12 +128,12 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     hasNextPage,
     isLoading,
     isFetching,
-    isPreviousData,
+    isPlaceholderData,
     isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
       limit: 50,
       search: searchQuery,
       onlyVerified: !searchQuery && showUnverifiedAssets === false,
@@ -142,10 +141,10 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       sort,
     },
     {
-      enabled: !isLoadingWallet && Boolean(account?.address),
+      enabled: !isLoadingWallet && Boolean(address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
 
       // expensive query
       trpc: {
@@ -339,7 +338,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       />
       <table
         className={classNames(
-          isPreviousData &&
+          isPlaceholderData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
@@ -473,7 +472,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 // table cells
 

@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CSSProperties } from "react";
@@ -94,12 +93,12 @@ const TopGainers = () => {
   );
 };
 
-const SwapAdsBanner = observer(() => {
+const SwapAdsBanner = () => {
   const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
     undefined,
     {
       staleTime: 1000 * 60 * 30, // 30 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
       select: (data) => ({
         ...data,
         banners: data.banners.filter((banner) =>
@@ -119,6 +118,6 @@ const SwapAdsBanner = observer(() => {
       <AdBanners ads={data.banners} localization={data.localization} />
     </ErrorBoundary>
   );
-});
+};
 
-export default observer(Home);
+export default Home;

@@ -170,7 +170,7 @@ export async function generateCosmosUnsignedTx({
     bech32Address,
   });
 
-  const sequence: number = parseSequenceFromAccount(account);
+  const sequence = parseSequenceFromAccount(account);
   const [{ SignMode }, { TxBody, TxRaw, AuthInfo, SignerInfo, Fee }] =
     await Promise.all([
       import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
@@ -180,25 +180,27 @@ export async function generateCosmosUnsignedTx({
   // create placeholder transaction document
   const rawUnsignedTx = TxRaw.encode({
     bodyBytes: TxBody.encode(TxBody.fromPartial(body)).finish(),
-    authInfoBytes: AuthInfo.encode({
-      signerInfos: [
-        SignerInfo.fromPartial({
-          // Pub key is ignored.
-          // It is fine to ignore the pub key when simulating tx.
-          // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
-          modeInfo: {
-            single: {
-              mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+    authInfoBytes: AuthInfo.encode(
+      AuthInfo.fromPartial({
+        signerInfos: [
+          SignerInfo.fromPartial({
+            // Pub key is ignored.
+            // It is fine to ignore the pub key when simulating tx.
+            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
+            modeInfo: {
+              single: {
+                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+              },
+              multi: undefined,
             },
-            multi: undefined,
-          },
-          sequence,
+            sequence,
+          }),
+        ],
+        fee: Fee.fromPartial({
+          amount: [],
         }),
-      ],
-      fee: Fee.fromPartial({
-        amount: [],
-      }),
-    }).finish(),
+      })
+    ).finish(),
     // Because of the validation of tx itself, the signature must exist.
     // However, since they do not actually verify the signature, it is okay to use any value.
     signatures: [new Uint8Array(64)],
@@ -214,10 +216,10 @@ export async function generateCosmosUnsignedTx({
 // The structure of the account object is different for base and vesting accounts.
 // Therefore, we need to check the type of the account object to parse the sequence number.
 function parseSequenceFromAccount(account: any) {
-  let sequence: number = 0;
+  let sequence: unknown;
   if (account.account["@type"] === BaseAccountTypeStr) {
     const base_acc = account as BaseAccount;
-    sequence = Number(base_acc.account.sequence);
+    sequence = base_acc.account.sequence;
   } else if ("base_account" in account.account) {
     // some chains return a non-standard account object that includes a base_account object
     // Example: injective
@@ -227,21 +229,35 @@ function parseSequenceFromAccount(account: any) {
       account_number: string;
       sequence: string;
     };
-    sequence = Number(baseAcc.sequence);
+    sequence = baseAcc.sequence;
   } else {
     // We assume that if not a base account, it's a vesting account.
     const vesting_acc = account as VestingAccount;
-    sequence = Number(
-      vesting_acc.account.base_vesting_account.base_account.sequence
-    );
+    sequence = vesting_acc.account.base_vesting_account.base_account.sequence;
   }
 
-  if (Number.isNaN(sequence)) {
+  // Some non-standard endpoints return the sequence as a JSON number; accept it
+  // only while it is still exact.
+  if (
+    typeof sequence === "number" &&
+    Number.isSafeInteger(sequence) &&
+    sequence >= 0
+  ) {
+    return BigInt(sequence);
+  }
+
+  // Cosmos sequences are uint64 decimal strings. Bound the input before parsing
+  // and avoid Number, which loses precision above 2^53.
+  if (typeof sequence !== "string" || !/^\d{1,20}$/.test(sequence)) {
     throw new Error(
-      "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
+      "Invalid sequence number: " + String(sequence).slice(0, 40)
     );
   }
-  return sequence;
+  const parsedSequence = BigInt(sequence);
+  if (parsedSequence > BigInt("18446744073709551615")) {
+    throw new Error("Invalid sequence number: " + sequence);
+  }
+  return parsedSequence;
 }
 
 /**

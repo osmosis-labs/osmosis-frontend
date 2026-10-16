@@ -1,4 +1,5 @@
 import { BigDec, maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -25,10 +26,7 @@ import {
   getPoolIncentives,
 } from "../../../queries/complex/pools/incentives";
 import { getValidatorInfo } from "../../../queries/complex/staking/validator";
-import {
-  ConcentratedPoolRawResponse,
-  queryPoolChain,
-} from "../../../queries/osmosis";
+import { queryPoolChain } from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
@@ -658,8 +656,8 @@ export async function mapGetUserPositions({
             isUnbonding: false,
           })
         : isFullRange
-        ? "fullRange"
-        : undefined;
+          ? "fullRange"
+          : undefined;
 
       return {
         id: position.position_id,

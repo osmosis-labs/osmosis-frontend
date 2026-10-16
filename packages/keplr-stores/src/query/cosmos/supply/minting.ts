@@ -1,7 +1,8 @@
+import type { KVStore } from "@osmosis-labs/utils";
+
+import { ChainGetter } from "../../../common";
 import { ObservableChainQuery } from "../../chain-query";
 import { MintingInflation } from "./types";
-import { KVStore } from "../../../common/kv-store";
-import { ChainGetter } from "../../../common";
 
 export class ObservableQueryMintingInfation extends ObservableChainQuery<MintingInflation> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

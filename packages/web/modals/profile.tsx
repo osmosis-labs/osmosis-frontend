@@ -50,8 +50,8 @@ import { useDisclosure, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { useProfileStore } from "~/stores/profile-store";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -65,7 +65,6 @@ export const ProfileModal: FunctionComponent<
 > = observer((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const { accountStore } = useStore();
   const { currentAvatar, setCurrentAvatar } = useProfileStore();
   const router = useRouter();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
@@ -82,8 +81,8 @@ export const ProfileModal: FunctionComponent<
     onOpen: onOpenQR,
   } = useDisclosure();
 
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const { wallet, address: walletAddress } = useWallet();
+  const { isNewAccount } = useIsCosmosNewAccount({ address: walletAddress });
   const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const [show1CTSettings, setShow1CTSettings] = useState(false);
@@ -95,15 +94,15 @@ export const ProfileModal: FunctionComponent<
     2000
   );
 
-  const address = wallet?.address ?? "";
+  const address = walletAddress ?? "";
 
   const { data: userOsmoAsset } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: "OSMO",
-      userOsmoAddress: wallet?.address ?? "",
+      userOsmoAddress: walletAddress ?? "",
     },
     {
-      enabled: Boolean(wallet?.address) && typeof wallet?.address === "string",
+      enabled: Boolean(walletAddress) && typeof walletAddress === "string",
     }
   );
 
@@ -467,25 +466,23 @@ const OneClickTradingProfileSection: FunctionComponent<{
   setShow1CTSettings: (value: boolean) => void;
   onRestartSession: () => void;
 }> = ({ setShow1CTSettings, onRestartSession }) => {
-  const { accountStore } = useStore();
   const { t } = useTranslation();
   const { isOneClickTradingExpired, oneClickTradingInfo } =
     useOneClickTradingSession();
 
   const create1CTSession = useCreateOneClickTradingSession();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
-  const shouldFetchSessionAuthenticator =
-    !!account?.address && !!oneClickTradingInfo;
+  const shouldFetchSessionAuthenticator = !!address && !!oneClickTradingInfo;
   const { data: sessionAuthenticator } =
     api.local.oneClickTrading.getSessionAuthenticator.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress: address ?? "",
         publicKey: oneClickTradingInfo?.publicKey ?? "",
       },
       {
         enabled: shouldFetchSessionAuthenticator,
-        cacheTime: 15_000, // 15 seconds
+        gcTime: 15_000, // 15 seconds
         staleTime: 15_000, // 15 seconds
         retry: false,
       }
@@ -511,7 +508,7 @@ const OneClickTradingProfileSection: FunctionComponent<{
         {isOneClickTradingExpired && oneClickTradingInfo && (
           <Button
             size="sm"
-            isLoading={create1CTSession.isLoading}
+            isLoading={create1CTSession.isPending}
             loadingText={null}
             classes={{
               spinner: "!h-4 !w-4",

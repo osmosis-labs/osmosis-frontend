@@ -1,5 +1,4 @@
 import { RatePretty } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { PoolCard } from "~/components/cards";
@@ -7,20 +6,18 @@ import { SectionPlaceholderCard } from "~/components/complex/section-placeholder
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { useHideDustUserSetting, useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-export const MyPoolsCardsGrid = observer(() => {
-  const { accountStore, chainStore } = useStore();
+export const MyPoolsCardsGrid = () => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const { address } = useWallet();
 
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
   const {
@@ -29,10 +26,10 @@ export const MyPoolsCardsGrid = observer(() => {
     isError,
   } = api.edge.pools.getUserPools.useQuery(
     {
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
     },
     {
-      enabled: Boolean(account?.address),
+      enabled: Boolean(address),
 
       // expensive query
       trpc: {
@@ -61,7 +58,7 @@ export const MyPoolsCardsGrid = observer(() => {
     [dustFilteredPools, poolCountShowMoreThreshold, showMoreMyPools]
   );
 
-  if (!account?.address) {
+  if (!address) {
     return null;
   }
 
@@ -120,7 +117,7 @@ export const MyPoolsCardsGrid = observer(() => {
                   {
                     label: t("pools.APR"),
                     value: isMobile ? (
-                      apr.upper?.maxDecimals(0).toString() ?? ""
+                      (apr.upper?.maxDecimals(0).toString() ?? "")
                     ) : (
                       <h6>{apr.upper?.maxDecimals(2).toString()}</h6>
                     ),
@@ -177,4 +174,4 @@ export const MyPoolsCardsGrid = observer(() => {
       )}
     </div>
   );
-});
+};

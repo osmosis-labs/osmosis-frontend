@@ -9,7 +9,6 @@ Components:
   - Cosmos messages
   - Cosmwasm contract execute message
   - Osmosis messages
-- CurrencyRegistrar: maps IBC denoms to human readable denoms into `ChainStore` objects
 - Data: Provides wrapper stores that compute on data in the lower-level query stores.
 - IbcHistory: stores IBC transfer transaction state in `localStorage` for some time, including pending status
 - Price: maps coin denoms to price info (currently CoinGecko, with a fallback to pool data for tokens not on CoinGecko)

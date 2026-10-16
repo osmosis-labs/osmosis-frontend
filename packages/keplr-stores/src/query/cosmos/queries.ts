@@ -1,37 +1,39 @@
-import { QueriesSetBase } from "../queries";
-import { KVStore } from "../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { DeepReadonly } from "utility-types";
+
 import { ChainGetter } from "../../common";
+import { QueriesSetBase } from "../queries";
 import { ObservableQueryAccount } from "./account";
 import {
-  ObservableQueryInflation,
-  ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal,
-} from "./supply";
-import {
-  ObservableQueryDelegations,
-  ObservableQueryRewards,
-  ObservableQueryStakingParams,
-  ObservableQueryStakingPool,
-  ObservableQueryUnbondingDelegations,
-  ObservableQueryValidators,
-} from "./staking";
+  ObservableQueryCosmosBalanceRegistry,
+  ObservableQuerySpendableBalances,
+} from "./balance";
+import { ObservableQueryDistributionParams } from "./distribution";
 import {
   ObservableQueryDenomTrace,
   ObservableQueryIBCChannel,
   ObservableQueryIBCClientState,
 } from "./ibc";
 import {
-  ObservableQueryCosmosBalanceRegistry,
-  ObservableQuerySpendableBalances,
-} from "./balance";
-import { DeepReadonly } from "utility-types";
+  ObservableQueryDelegations,
+  ObservableQueryDelegatorValidators,
+  ObservableQueryRewards,
+  ObservableQueryStakingParams,
+  ObservableQueryStakingPool,
+  ObservableQueryUnbondingDelegations,
+  ObservableQueryValidators,
+} from "./staking";
+import { ObservableQueryRPCStatus } from "./status";
+import {
+  ObservableQueryInflation,
+  ObservableQueryMintingInfation,
+  ObservableQuerySupplyTotal,
+} from "./supply";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
   ObservableQueryOsmosisMintParmas,
 } from "./supply/osmosis";
-import { ObservableQueryDistributionParams } from "./distribution";
-import { ObservableQueryRPCStatus } from "./status";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -75,6 +77,7 @@ export class CosmosQueriesImpl {
   public readonly queryInflation: DeepReadonly<ObservableQueryInflation>;
   public readonly queryRewards: DeepReadonly<ObservableQueryRewards>;
   public readonly queryDelegations: DeepReadonly<ObservableQueryDelegations>;
+  public readonly queryDelegatorValidators: DeepReadonly<ObservableQueryDelegatorValidators>;
   public readonly queryUnbondingDelegations: DeepReadonly<ObservableQueryUnbondingDelegations>;
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
@@ -162,6 +165,11 @@ export class CosmosQueriesImpl {
       chainGetter
     );
     this.queryDelegations = new ObservableQueryDelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+    this.queryDelegatorValidators = new ObservableQueryDelegatorValidators(
       kvStore,
       chainId,
       chainGetter

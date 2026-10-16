@@ -1,5 +1,6 @@
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
+import type { CoinPrimitive } from "@osmosis-labs/types";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -8,7 +9,7 @@ import { useCallback, useMemo } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useSwapAsset } from "~/hooks/use-swap";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /**
@@ -137,13 +138,12 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { accountStore } = useStore();
+  const { address } = useWallet();
   const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
   const { data: selectableAssetPages } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
       {
-        userOsmoAddress: accountStore.getWallet(accountStore.osmosisChainId)
-          ?.address,
+        userOsmoAddress: address,
         includePreview: false,
         limit: 50, // items per page
       },
@@ -164,7 +164,7 @@ export const useOrderbook = ({
   const selectableAssets = useMemo(
     () =>
       true
-        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        ? (selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [])
         : [],
     [selectableAssetPages?.pages]
   );
@@ -294,11 +294,10 @@ const useOrdersQuery = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
-      cacheTime: refetchInterval,
+      gcTime: refetchInterval,
       staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0 && sqsActiveOrders,
       refetchOnMount: true,
-      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -326,11 +325,10 @@ const useOrdersQuery = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
-      cacheTime: refetchInterval,
+      gcTime: refetchInterval,
       staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0 && !sqsActiveOrders,
       refetchOnMount: true,
-      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -432,7 +430,6 @@ const useClaimableOrdersQuery = ({
         enabled:
           !!userAddress && addresses.length > 0 && !disabled && sqsActiveOrders,
         refetchOnMount: true,
-        keepPreviousData: false,
         trpc: {
           abortOnUnmount: true,
           context: {
@@ -454,7 +451,6 @@ const useClaimableOrdersQuery = ({
           !disabled &&
           !sqsActiveOrders,
         refetchOnMount: true,
-        keepPreviousData: false,
         trpc: {
           abortOnUnmount: true,
           context: {
@@ -485,8 +481,7 @@ export const useOrderbookClaimableOrders = ({
   refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const { data: orders, isLoading } = useClaimableOrdersQuery({
     userAddress,
@@ -521,10 +516,14 @@ export const useOrderbookClaimableOrders = ({
     }[];
 
     if (msgs.length > 0) {
-      await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
+        "executeWasm",
+        msgs
+      ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
     }
-  }, [orders, account, addresses]);
+  }, [account, orders, addresses, transactionContext, signAndBroadcast]);
 
   return {
     orders: orders ?? [],

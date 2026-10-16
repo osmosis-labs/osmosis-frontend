@@ -1,11 +1,12 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
+import type { LiquidityPosition } from "@osmosis-labs/types";
 import { CoinPretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -13,7 +14,6 @@ import {
   ObservableQueryLiquidityPositionById,
   ObservableQueryLiquidityPositionsById,
 } from "./position-by-id";
-import { LiquidityPosition } from "./types";
 
 const URL_BASE = "/osmosis/concentratedliquidity/v1beta1";
 

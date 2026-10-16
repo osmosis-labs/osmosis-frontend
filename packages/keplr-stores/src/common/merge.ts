@@ -34,11 +34,11 @@ export type Functionify<Params extends Array<any>, Return> = (
 export type ChainedFunctionifyTuple<
   Base extends IObject,
   Params extends Array<any>,
-  Injects extends Array<any>
+  Injects extends Array<any>,
 > = Injects extends [infer Head, ...infer Tail]
   ? [
       Functionify<[Base, ...Params], Head>,
-      ...ChainedFunctionifyTuple<Base & Head, Params, Tail>
+      ...ChainedFunctionifyTuple<Base & Head, Params, Tail>,
     ]
   : [];
 
@@ -67,7 +67,7 @@ export const mergeStores = <
   Base extends IObject,
   Params extends Array<any>,
   Injects extends Array<IObject>,
-  Return = Base & UnionToIntersection<Injects[number]>
+  Return = Base & UnionToIntersection<Injects[number]>,
 >(
   baseStore: Base,
   parameters: Params,

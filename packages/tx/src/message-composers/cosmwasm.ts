@@ -3,7 +3,7 @@ import type { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/
 import { getCosmwasmCodec } from "../codec";
 
 export async function makeExecuteCosmwasmContractMsg<
-  Obj extends Record<any, any>
+  Obj extends Record<any, any>,
 >({
   sender,
   contract,

@@ -12,7 +12,7 @@ import { z } from "zod";
  *  ```
  */
 export function createSortSchema<
-  TKeyPaths extends readonly [string, ...string[]]
+  TKeyPaths extends readonly [string, ...string[]],
 >(keyPaths: TKeyPaths) {
   return z.object({
     keyPath: z.enum(keyPaths),

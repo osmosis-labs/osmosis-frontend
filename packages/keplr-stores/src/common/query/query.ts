@@ -1,3 +1,6 @@
+import type { KVStore } from "@osmosis-labs/utils";
+import Axios, { AxiosInstance } from "axios";
+import EventEmitter from "eventemitter3";
 import {
   action,
   autorun,
@@ -9,12 +12,10 @@ import {
   onBecomeUnobserved,
   reaction,
 } from "mobx";
-import Axios, { AxiosInstance } from "axios";
-import { KVStore } from "../kv-store";
-import { toGenerator } from "../mobx";
 import { DeepReadonly } from "utility-types";
+
 import { HasMapStore } from "../map";
-import EventEmitter from "eventemitter3";
+import { toGenerator } from "../mobx";
 
 export type QueryOptions = {
   // millisec
@@ -194,8 +195,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
    *
    */
   public static experimentalDeferInitialQueryController:
-    | DeferInitialQueryController
-    | undefined = undefined;
+    DeferInitialQueryController | undefined = undefined;
 
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
     "The network connection was lost.",
@@ -778,7 +778,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
  */
 export class ObservableQuery<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQueryBase<T, E> {
   protected static eventListener: EventEmitter = new EventEmitter();
 

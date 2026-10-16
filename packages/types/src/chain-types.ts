@@ -56,27 +56,26 @@ interface Bech32Config {
   bech32PrefixConsPub: string;
 }
 
-interface FeeToken
-  extends Omit<
-    MinimalAsset,
-    | "isUnstable"
-    | "coinName"
-    | "isUnstable"
-    | "unstableReason"
-    | "lastDowntimeDate"
-    | "lastRecoveryDate"
-    | "areTransfersDisabled"
-    | "areDepositsHalted"
-    | "depositHaltReason"
-    | "areWithdrawalsHalted"
-    | "withdrawalHaltReason"
-    | "plannedShutdownDate"
-    | "isVerified"
-    | "isAlloyed"
-    | "variantGroupKey"
-    | "coinGeckoId"
-    | "coinMinimalDenom"
-  > {
+interface FeeToken extends Omit<
+  MinimalAsset,
+  | "isUnstable"
+  | "coinName"
+  | "isUnstable"
+  | "unstableReason"
+  | "lastDowntimeDate"
+  | "lastRecoveryDate"
+  | "areTransfersDisabled"
+  | "areDepositsHalted"
+  | "depositHaltReason"
+  | "areWithdrawalsHalted"
+  | "withdrawalHaltReason"
+  | "plannedShutdownDate"
+  | "isVerified"
+  | "isAlloyed"
+  | "variantGroupKey"
+  | "coinGeckoId"
+  | "coinMinimalDenom"
+> {
   coinMinimalDenom?: string;
   coinGeckoId?: string;
   contractAddress?: string;
@@ -101,27 +100,26 @@ interface FeeToken
   high_gas_price?: number;
 }
 
-interface ChainCurrency
-  extends Omit<
-    MinimalAsset,
-    | "isUnstable"
-    | "coinName"
-    | "isUnstable"
-    | "unstableReason"
-    | "lastDowntimeDate"
-    | "lastRecoveryDate"
-    | "areTransfersDisabled"
-    | "areDepositsHalted"
-    | "depositHaltReason"
-    | "areWithdrawalsHalted"
-    | "withdrawalHaltReason"
-    | "plannedShutdownDate"
-    | "isVerified"
-    | "isAlloyed"
-    | "variantGroupKey"
-    | "coinGeckoId"
-    | "coinMinimalDenom"
-  > {
+interface ChainCurrency extends Omit<
+  MinimalAsset,
+  | "isUnstable"
+  | "coinName"
+  | "isUnstable"
+  | "unstableReason"
+  | "lastDowntimeDate"
+  | "lastRecoveryDate"
+  | "areTransfersDisabled"
+  | "areDepositsHalted"
+  | "depositHaltReason"
+  | "areWithdrawalsHalted"
+  | "withdrawalHaltReason"
+  | "plannedShutdownDate"
+  | "isVerified"
+  | "isAlloyed"
+  | "variantGroupKey"
+  | "coinGeckoId"
+  | "coinMinimalDenom"
+> {
   coinMinimalDenom?: string;
   coinGeckoId?: string;
   contractAddress?: string;

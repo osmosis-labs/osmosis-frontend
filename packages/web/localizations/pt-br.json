@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
     "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
+    "inactiveValidators": {
+      "title": "Validadores inativos detectados",
+      "squadDescription": "Esses validadores saíram do conjunto ativo e não rendem mais recompensas. Redelegue para validadores ativos para voltar a ganhar. A redelegação é imediata, sem período de desvinculação.",
+      "statusInactive": "Fora do conjunto ativo",
+      "statusInactiveShortfall": "Inativo: faltam ~{amount} para o conjunto ativo",
+      "statusJailed": "Preso: sem recompensas",
+      "redelegate": "Redelegar",
+      "stakeWarning": "Seu esquadrão de stake inclui validadores inativos. Parte de qualquer novo stake iria para eles e não renderia nada.",
+      "editSquad": "Editar esquadrão de stake",
+      "redelegateDescription": "Selecione os validadores para redelegar {amount}. O valor é dividido igualmente entre eles; o resto do seu stake não muda.",
+      "topThirdHidden": "Os maiores validadores, que juntos detêm um terço de todo o stake, ficam ocultos por padrão para ajudar a manter a Osmosis descentralizada.",
+      "topThirdShown": "Estes são os maiores validadores, que juntos detêm um terço de todo o stake. Escolher validadores menores ajuda a manter a Osmosis descentralizada.",
+      "alertDescription": "Alguns dos seus validadores saíram do conjunto ativo, então o OSMO delegado a eles não está rendendo recompensas. Redelegue na página de Stake para voltar a ganhar.",
+      "dismiss": "Dispensar",
+      "goToStake": "Ir para Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "O que é piquetagem?",
@@ -720,7 +735,7 @@
       "description": "Selecione os validadores aos quais você gostaria de delegar. Depois de concluído, continue apostando. Você pode editar seu conjunto de validadores a qualquer momento.",
       "searchPlaceholder": "Procure um validador",
       "button": "Definir Esquadrão",
-      "button2": "Definir esquadrão e aposta",
+      "button2": "Definir esquadrão e aposta {amount}",
       "noResults": "Nenhum resultado encontrado",
       "column": {
         "validator": "Validador",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "Revisar retirada",
     "moreDepositOptions": "Mais opções de depósito",
     "moreWithdrawOptions": "Mais opções de retirada",
-    "convertTo": "Converter para",
     "depositAs": "Depositar como",
     "withdrawAs": "Retirar como",
     "withdrawViaRoute": "via {route}",
@@ -1006,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "As transferências provavelmente levarão mais tempo do que o normal ou poderão falhar totalmente. Prossiga por sua conta e risco.",
     "ibcConnectionDown": "Conexão IBC nativa indisponível",
     "ibcConnectionDownDescription": "A rota IBC direta para {asset} está atualmente inativa. As opções abaixo podem oferecer um caminho alternativo, mas também podem ser afetadas.",
+    "balanceUnavailable": "Não foi possível carregar seu saldo em {chain}",
+    "balanceUnavailableDescription": "Não conseguimos acessar {chain} para verificar seu saldo, então ele pode aparecer como 0. Seus fundos não foram afetados. Tente novamente ou use as opções abaixo.",
+    "retryBalance": "Tentar novamente",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Transferências nativas indisponíveis para {asset}",
@@ -1063,6 +1080,9 @@
       "date": "Data",
       "wormchainReceive": "Recebimento na Wormchain",
       "checkingSolana": "Verificando o status de resgate na Solana...",
+      "checkingGuardians": "Verificando esta transferência com a Wormhole, aguarde...",
+      "guardianSetExpired": "Esta transferência foi assinada pelo conjunto de guardiões {index} da Wormhole, que já expirou, por isso não pode ser resgatada como está. Os guardiões da Wormhole precisam observar novamente a transação original e assiná-la de novo. Entre em contato com a Wormhole informando o hash da sua transação.",
+      "guardianCheckUnavailable": "Não conseguimos confirmar esta transferência com a Wormhole agora. Você ainda pode tentar resgatá-la; se falhar, você perde apenas a taxa de rede.",
       "dailyLimitExceeded": "Limite diário excedido",
       "governorBodyEnqueued": "Esta transferência levará até {hours} horas para ser concluída, pois a Wormhole atingiu o limite diário de transferências para {chain}. Este é um recurso de segurança normal e temporário da rede Wormhole.",
       "governorBodyLikelyEnqueued": "O valor desta transferência (~{amount}) excede a margem disponível em {chain} (~{available} restantes). Os guardiões da Wormhole provavelmente a colocarão na fila por até {hours} horas.",
@@ -1256,7 +1276,7 @@
     "totalFees": "Taxas totais",
     "transactionHash": "Hash de transação",
     "viewOnExplorer": "Ver no explorador",
-    "launchAlert": "Atualmente, apenas o histórico de transações e transferências é exibido. Suporte para mais tipos de transações em breve.",
+    "launchAlert": "São exibidos seus swaps, depósitos e saques.",
     "history": "História",
     "orders": "Pedidos",
     "historyTable": {
@@ -1274,7 +1294,17 @@
       "providerFee": "Taxa de provedor",
       "provider": "Provedor",
       "networkFee": "Taxa de rede"
-    }
+    },
+    "filter": {
+      "type": "Tipos de transação",
+      "swap": "Swaps",
+      "deposit": "Depósitos",
+      "withdraw": "Saques",
+      "search": "Buscar ativo, rede, valor ou endereço",
+      "noMatches": "Nenhuma transação correspondente",
+      "pageHint": "Os filtros se aplicam apenas às transações desta página. Tente a próxima página ou ajuste os filtros."
+    },
+    "unknownAddressTooltip": "Não foi possível determinar este endereço a partir dos dados da ponte. Ele pode aparecer mais tarde; você também pode encontrá-lo no explorador."
   },
   "date": {
     "earlierToday": "Hoje mais cedo",
@@ -1348,6 +1378,11 @@
     "lowerSlippageToleranceRecommended": "Recomenda-se uma menor tolerância ao deslizamento.",
     "tryHigherSlippage": "Experimente uma tolerância máxima de escorregamento mais alta.",
     "reviewTrade": "Revise o comércio",
+    "highPriceImpact": {
+      "title": "O impacto no preço é alto",
+      "description": "Esta negociação move o preço de mercado em {impact}, portanto você pode receber muito menos do que o valor exibido."
+    },
+    "lossAcknowledgement": "Sim, entendo que esta negociação pode causar uma perda significativa de valor e desejo continuar.",
     "errors": {
       "noAssetAvailable": "Você não tem nenhum fundo {coinName} no Osmosis para negociar. Escolha uma opção para continuar.",
       "tradeMayResultInLossOfValue": "Sua negociação pode resultar em perda significativa de valor",
@@ -1394,7 +1429,14 @@
       "filled": "Pedidos preenchidos para reivindicar"
     },
     "priceReaches": "Se o preço {denom} atingir {price}",
-    "belowMinimumAmount": "{amount} mínimo"
+    "belowMinimumAmount": "{amount} mínimo",
+    "noOrderbookForPair": "Não existe nenhum orderbook para {base}/{quote}. Crie um para habilitar limit orders para este par.",
+    "createOrderbook": "Criar Orderbook",
+    "noOrderbookExists": "Sem orderbook para {denom}",
+    "clickToCreateOrderbook": "Clique para criar um orderbook para este par.",
+    "creationInProgress": "A criação de um orderbook para este par já está em andamento em outra aba",
+    "creationAwaitingConfirmation": "Uma criação anterior de livro de ordens para este par ainda aguarda confirmação onchain. Tente novamente em alguns minutos.",
+    "createOrderbookDescription": "Criar um orderbook pool permite que limit orders sejam colocadas para este par de negociação na Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

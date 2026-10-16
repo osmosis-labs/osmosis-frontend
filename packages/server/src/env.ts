@@ -4,10 +4,8 @@ export const SPEND_LIMIT_CONTRACT_ADDRESS =
   process.env.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS;
 
 // github
-export const GITHUB_URL = process.env.GITHUB_URL;
 export const FE_CONTENT_COMMIT_HASH =
   process.env.NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH;
-export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;
 export const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
 export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 

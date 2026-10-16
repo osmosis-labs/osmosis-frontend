@@ -1,17 +1,22 @@
-import { CoinUtils, Dec, Int } from "@osmosis-labs/unit";
+import {
+  bigIntAbs as abs,
+  bigIntPow as pow,
+  CoinUtils,
+  Dec,
+  exponentDecStringToDecString,
+  Int,
+  isExponentDecString,
+  isValidDecimalString,
+} from "@osmosis-labs/unit";
 
-// `**` on bigint requires an ES2016+ target, so use square-and-multiply instead.
-const pow = (base: bigint, exp: bigint): bigint => {
-  let result = BigInt(1);
-  while (exp > BigInt(0)) {
-    if (exp % BigInt(2) === BigInt(1)) result *= base;
-    base *= base;
-    exp /= BigInt(2);
-  }
-  return result;
-};
-
-const abs = (n: bigint): bigint => (n < BigInt(0) ? -n : n);
+// These helpers used to be defined here and are part of this package's public
+// surface; they now live in unit and are re-exported unchanged.
+export {
+  exponentDecStringToDecString,
+  isExponentDecString,
+  isValidDecimalString,
+  isValidIntegerString,
+} from "@osmosis-labs/unit";
 
 export class BigDec {
   public static readonly precision = 36;
@@ -36,7 +41,6 @@ export class BigDec {
       throw new Error("Too much precision");
     }
     if (BigDec.precisionMultipliers[prec.toString()]) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return BigDec.precisionMultipliers[prec.toString()]!;
     }
 
@@ -313,8 +317,9 @@ export class BigDec {
     } else if (remainder > fivePrecision) {
       return quotient + BigInt(1);
     } else {
-      // always round to an even number
-      if (quotient / BigInt(2) === BigInt(0)) {
+      // Exactly half: round to the even neighbour, as cosmos-sdk's
+      // chopPrecisionAndRound does (quo.Bit(0) == 0 keeps quo).
+      if (quotient % BigInt(2) === BigInt(0)) {
         return quotient;
       } else {
         return quotient + BigInt(1);
@@ -372,8 +377,7 @@ export class BigDec {
       this.isNegative() && !(integer === BigInt(0) && fractionStr.length === 0);
 
     const integerStr = locale
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      ? // @ts-ignore
         CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 
@@ -412,79 +416,5 @@ export class BigDec {
 
   public truncateDec(): BigDec {
     return new BigDec(this.chopPrecisionAndTruncate(), 0);
-  }
-}
-
-const regexIntString = /^-?\d+$/;
-const regexDecString = /^-?\d+.?\d*$/;
-const regexExponentDecString = /^(-?)([\d.]+)e([-+])([\d]+)$/;
-
-export function isValidIntegerString(str: string): boolean {
-  return regexIntString.test(str);
-}
-
-export function isValidDecimalString(str: string): boolean {
-  return regexDecString.test(str);
-}
-
-export function isExponentDecString(str: string): boolean {
-  return regexExponentDecString.test(str);
-}
-
-function makeZerosStr(len: number): string {
-  let r = "";
-  for (let i = 0; i < len; i++) {
-    r += "0";
-  }
-  return r;
-}
-
-function removeHeadZeros(str: string): string {
-  while (str.length > 0 && str[0] === "0") {
-    str = str.slice(1);
-  }
-  if (str.length === 0 || str[0] === ".") {
-    return "0" + str;
-  }
-  return str;
-}
-
-export function exponentDecStringToDecString(str: string): string {
-  const split = str.split(regexExponentDecString);
-  if (split.length !== 6) {
-    return str;
-  }
-
-  const isNeg = split[1] === "-";
-  let numStr = split[2];
-  const numStrFractionIndex = numStr.indexOf(".");
-
-  const exponentStr = split[4];
-  let exponent = parseInt(exponentStr) * (split[3] === "-" ? -1 : 1);
-
-  if (numStrFractionIndex >= 0) {
-    const fractionLen = numStr.length - numStrFractionIndex - 1;
-    exponent = exponent - fractionLen;
-
-    numStr = removeHeadZeros(numStr.replace(".", ""));
-  }
-
-  const prefix = isNeg ? "-" : "";
-
-  if (exponent < 0) {
-    if (numStr.length > -exponent) {
-      const fractionPosition = numStr.length + exponent;
-
-      return (
-        prefix +
-        (numStr.slice(0, fractionPosition) +
-          "." +
-          numStr.slice(fractionPosition))
-      );
-    }
-
-    return prefix + "0." + makeZerosStr(-(numStr.length + exponent)) + numStr;
-  } else {
-    return prefix + numStr + makeZerosStr(exponent);
   }
 }

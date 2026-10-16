@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
 import {
   Coin,

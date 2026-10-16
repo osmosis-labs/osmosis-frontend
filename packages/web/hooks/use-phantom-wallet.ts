@@ -1,3 +1,4 @@
+import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 export const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
@@ -9,7 +10,9 @@ export type PhantomProvider = {
     onlyIfTrusted?: boolean;
   }) => Promise<{ publicKey?: { toBase58: () => string } }>;
   disconnect?: () => Promise<void>;
-  signTransaction?: (tx: unknown) => Promise<unknown>;
+  signTransaction?: <Tx extends Transaction | VersionedTransaction>(
+    tx: Tx
+  ) => Promise<Tx>;
   signAndSendTransaction?: (tx: unknown) => Promise<{ signature: string }>;
   on?: (event: string, handler: (arg: unknown) => void) => void;
   off?: (event: string, handler: (arg: unknown) => void) => void;
@@ -18,10 +21,10 @@ export type PhantomProvider = {
 export const getPhantomProvider = (): PhantomProvider | undefined =>
   typeof window === "undefined"
     ? undefined
-    : (window as unknown as { phantom?: { solana?: PhantomProvider } }).phantom
+    : ((window as unknown as { phantom?: { solana?: PhantomProvider } }).phantom
         ?.solana ??
       (window as unknown as { solana?: PhantomProvider }).solana ??
-      undefined;
+      undefined);
 
 // Module-level connection state so every consumer (amount screen, wallet
 // select modal, quote flow) observes the same Phantom session.
@@ -87,8 +90,15 @@ const eagerConnect = () => {
  * prompt (or the install page when the extension is absent) and the
  * resulting address is visible to every consumer of this hook, tracking
  * account switches and disconnects from the extension.
+ *
+ * `restoreSession` re-establishes a previously approved session silently on
+ * mount. It is off by default: the bridge screens mount this hook for every
+ * transfer, and a site-to-Phantom connection is only wanted while Solana
+ * routes are offered (the `solanaSkipRoutes` flag), so callers pass the flag.
  */
-export const usePhantomWallet = () => {
+export const usePhantomWallet = ({
+  restoreSession = false,
+}: { restoreSession?: boolean } = {}) => {
   const address = useSyncExternalStore(
     subscribe,
     () => phantomAddress,
@@ -96,7 +106,9 @@ export const usePhantomWallet = () => {
   );
 
   // restore a previously approved session across page loads
-  useEffect(eagerConnect, []);
+  useEffect(() => {
+    if (restoreSession) eagerConnect();
+  }, [restoreSession]);
 
   const connect = useCallback(async (): Promise<string | undefined> => {
     const provider = getPhantomProvider();

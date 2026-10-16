@@ -1,17 +1,16 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
+import type { AccountLockedLongerDuration } from "@osmosis-labs/types";
 import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { AccountLockedLongerDuration } from "./types";
 
 export class ObservableQueryAccountLockedInner extends ObservableChainQuery<AccountLockedLongerDuration> {
   constructor(
@@ -173,7 +172,6 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             });
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const value = map.get(key)!;
           value.amount = value.amount.add(
             new CoinPretty(currency, new Dec(coin.amount))
@@ -309,7 +307,6 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
               });
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const value = map.get(
               time.toString() + "/" + currency.coinMinimalDenom
             )!;
@@ -389,7 +386,6 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             });
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const value = map.get(time)!;
           value.amount = value.amount.add(
             new CoinPretty(currency, new Dec(matchedCoin.amount))

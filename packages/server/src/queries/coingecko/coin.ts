@@ -1,6 +1,6 @@
 import { apiClient, camelCaseToSnakeCase } from "@osmosis-labs/utils";
 
-import { authHeaders, CoingeckoVsCurrencies, DETAILS_API_URL } from ".";
+import { authHeaders, DETAILS_API_URL } from ".";
 
 export interface CoingeckoReposUrl {
   github: string[];
@@ -141,22 +141,6 @@ export async function queryCoingeckoCoin(
   }
 
   return apiClient<CoingeckoCoin>(url.toString(), {
-    headers: authHeaders,
-  });
-}
-
-export async function queryCoingeckoCoins(
-  ids: string[],
-  vsCurrency: CoingeckoVsCurrencies = "usd",
-  lang = "en"
-) {
-  const url = new URL("/api/v3/coins/markets", DETAILS_API_URL);
-
-  url.searchParams.append("vs_currency", vsCurrency);
-  url.searchParams.append("locale", lang);
-  url.searchParams.append("ids", ids.join(","));
-
-  return apiClient<CoingeckoCoin[]>(url.toString(), {
     headers: authHeaders,
   });
 }

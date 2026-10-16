@@ -134,9 +134,7 @@ export interface NonCosmosCounterparty {
 }
 
 export type Counterparty =
-  | CosmosCounterparty
-  | EVMCounterparty
-  | NonCosmosCounterparty;
+  CosmosCounterparty | EVMCounterparty | NonCosmosCounterparty;
 
 export interface Price {
   poolId: string;
