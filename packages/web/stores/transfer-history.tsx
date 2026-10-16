@@ -28,11 +28,26 @@ export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
  *  entry whose first transaction never landed doesn't live forever. */
 const MULTI_TX_RESUME_EXPIRE_DAYS = 30;
 
+/** How long after a local deposit's estimated arrival an imported arrival
+ *  of the same asset is still treated as that deposit. */
+const IMPORT_DEPOSIT_MATCH_GRACE_SECONDS = 60 * 60;
+
 export type TransferHistoryState = {
   /** Volatile list of tx snapshots. Updated immutably. */
   snapshots: TxSnapshot[];
   isRestoredFromIndexedDB: boolean;
 };
+
+/**
+ * Identifies a history entry: its tx hash, plus the packet for an imported
+ * deposit (a relayer tx can deliver several packets to the same user).
+ */
+export function transferKey({
+  sendTxHash,
+  packetId,
+}: Pick<TxSnapshot, "sendTxHash" | "packetId">) {
+  return packetId ? `${sendTxHash}/${packetId}` : sendTxHash;
+}
 
 export type TransferHistoryEntry = TxSnapshot & {
   createdAt: Date;
@@ -123,9 +138,18 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     return this.store.getState().snapshots;
   }
 
+  /** Provider for display (name, explorer link). */
   private findProvider(snapshot: TxSnapshot) {
     return this.transferStatusProviders.find((source) =>
       snapshot.provider.startsWith(source.providerId)
+    );
+  }
+
+  /** Provider that tracks the transfer's status. */
+  private findTrackingProvider(snapshot: TxSnapshot) {
+    const providerId = snapshot.statusProvider ?? snapshot.provider;
+    return this.transferStatusProviders.find((source) =>
+      providerId.startsWith(source.providerId)
     );
   }
 
@@ -193,9 +217,9 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         // unexpected throw from a status provider must not escape and crash
         // the transaction history / portfolio page. Fall back to an
         // empty URL, which the UI renders as "no explorer link".
-        let explorerUrl = "";
+        let explorerUrl = snapshot.explorerUrl ?? "";
         try {
-          explorerUrl = statusSource.makeExplorerUrl(snapshot);
+          explorerUrl ||= statusSource.makeExplorerUrl(snapshot);
         } catch (e) {
           console.error("Failed to build transfer explorer URL", e);
         }
@@ -210,6 +234,27 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     });
 
     return histories;
+  }
+
+  /**
+   * History rows for transfers from the transaction index (e.g. one page of
+   * it), with the status tracked here for those already imported. Transfers
+   * made in this browser are left out: they're in `getHistoriesByAccount`.
+   */
+  getIndexedHistories(
+    accountAddress: string,
+    indexed: readonly TxSnapshot[],
+    snapshots: readonly TxSnapshot[] = this.snapshots
+  ) {
+    const rows = matchIndexedTransfers(indexed, snapshots).flatMap(
+      (match, i) =>
+        match.kind === "imported"
+          ? [match.entry]
+          : match.kind === "new"
+            ? [{ ...indexed[i], imported: true }]
+            : []
+    );
+    return this.getHistoriesByAccount(accountAddress, rows);
   }
 
   /** Add transaction to be tracked starting now. */
@@ -231,7 +276,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       fromAsset,
       direction,
     } = snapshot;
-    const statusSource = this.findProvider(snapshot);
+    const statusSource = this.findTrackingProvider(snapshot);
 
     // start tracking for life of current session — except mid-flow multi-tx
     // entries: their first tx's status completes when funds reach the
@@ -354,7 +399,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     };
     this.replaceSnapshot(snapshot, next);
 
-    this.findProvider(next)?.trackTxStatus(next);
+    this.findTrackingProvider(next)?.trackTxStatus(next);
   }
 
   /**
@@ -396,6 +441,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     // set updates
     const snapshot: TxSnapshot = { ...found, status, reason };
     this.replaceSnapshot(found, snapshot);
+
+    // Imported transfers were made elsewhere (another browser or device):
+    // update history silently rather than toasting about them here.
+    if (found.imported) {
+      if (status !== "pending") this._resolvedTxStatusKeys.add(sendTxHash);
+      return;
+    }
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
@@ -542,6 +594,75 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }
   }
 
+  /** Imports received before the stored history was restored. */
+  private importsAwaitingRestore: TxSnapshot[] = [];
+
+  /**
+   * Add transfers found in the transaction index (made in any browser or
+   * device) to history, to track their status. Idempotent: see
+   * `matchIndexedTransfers`. Pending withdrawals are tracked to their final
+   * status.
+   */
+  importSnapshots(snapshots: TxSnapshot[]) {
+    if (!this.store.getState().isRestoredFromIndexedDB) {
+      // dedupe needs the stored history; finish after restore
+      this.importsAwaitingRestore.push(...snapshots);
+      return;
+    }
+
+    const matches = matchIndexedTransfers(snapshots, this.snapshots);
+    const toAdd: TxSnapshot[] = [];
+    const refreshed = new Map<TxSnapshot, TxSnapshot>();
+    snapshots.forEach((incoming, i) => {
+      const match = matches[i];
+      if (match.kind === "imported") {
+        // Refresh details of previously imported entries (parsing improves
+        // over time). Keep what's already resolved: a final status, and a
+        // sender/link a later response may lack (e.g. a timed-out lookup).
+        const previous = match.entry;
+        const isSettled = previous.status !== "pending";
+        const next: TxSnapshot = {
+          ...incoming,
+          fromAddress: incoming.fromAddress || previous.fromAddress,
+          explorerUrl: incoming.explorerUrl ?? previous.explorerUrl,
+          imported: true,
+          status: isSettled ? previous.status : incoming.status,
+          reason: isSettled ? previous.reason : incoming.reason,
+        };
+        if (!isSameSnapshot(previous, next)) refreshed.set(previous, next);
+      } else if (match.kind === "new") {
+        // Pending withdrawals are tracked to their final status (via Skip,
+        // which traces old transfers by hash too); the index alone can't
+        // tell whether a transfer was delivered, timed out or refunded.
+        toAdd.push({ ...incoming, imported: true });
+      }
+    });
+
+    if (toAdd.length === 0 && refreshed.size === 0) return;
+
+    this.store.setState((state) => ({
+      snapshots: [
+        ...state.snapshots.map((s) => refreshed.get(s) ?? s),
+        ...toAdd,
+      ],
+    }));
+
+    toAdd.forEach((snapshot) => {
+      if (snapshot.status === "pending") {
+        this.findTrackingProvider(snapshot)?.trackTxStatus(snapshot);
+      } else {
+        this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
+      }
+    });
+    // settled by the server (e.g. Axelarscan) while tracked here: a late
+    // provider update must not overwrite it
+    refreshed.forEach((snapshot) => {
+      if (snapshot.status !== "pending") {
+        this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
+      }
+    });
+  }
+
   /**
    * A mid-flow multi-tx entry whose expected funds are no longer on the
    * intermediate account must stop offering Continue: signing again could
@@ -575,7 +696,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     snapshots: readonly TxSnapshot[]
   ): Promise<void> {
     const keyOf = (snapshot: TxSnapshot) =>
-      snapshot.firstStepTxHash ?? snapshot.sendTxHash;
+      snapshot.firstStepTxHash ?? transferKey(snapshot);
     const write = async () => {
       const stored =
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
@@ -746,7 +867,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     );
     if (!advanced) return "missing";
     if (advanced.status === "pending") {
-      this.findProvider(advanced)?.trackTxStatus(advanced);
+      this.findTrackingProvider(advanced)?.trackTxStatus(advanced);
     }
     return "advanced";
   }
@@ -772,7 +893,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       );
 
     liveSnapshots.forEach((snapshot) => {
-      const statusSource = this.findProvider(snapshot);
+      const statusSource = this.findTrackingProvider(snapshot);
 
       // start receiving tx status updates again for snapshots that were still pending
       if (
@@ -801,7 +922,174 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       snapshots: [...state.snapshots, ...liveSnapshots],
       isRestoredFromIndexedDB: true,
     }));
+
+    if (this.importsAwaitingRestore.length > 0) {
+      const awaiting = this.importsAwaitingRestore;
+      this.importsAwaitingRestore = [];
+      this.importSnapshots(awaiting);
+    }
   }
+}
+
+type IndexedTransferMatch =
+  /** Imported earlier; the entry tracks its status. */
+  | { kind: "imported"; entry: TxSnapshot }
+  /** Made in this browser, or a repeat within the batch. */
+  | { kind: "known" }
+  | { kind: "new" };
+
+/**
+ * How each transfer from the transaction index relates to history: imported
+ * earlier (matched by tx hash and packet), made in this browser (by Osmosis
+ * tx hash, or for deposits, whose snapshot holds the source chain's hash, by
+ * asset and arrival time), or new.
+ */
+function matchIndexedTransfers(
+  indexed: readonly TxSnapshot[],
+  existing: readonly TxSnapshot[]
+): IndexedTransferMatch[] {
+  const importedByKey = new Map<string, TxSnapshot>();
+  // imported before deposits were keyed by packet: one entry per tx hash
+  const legacyByHash = new Map<string, TxSnapshot>();
+  // Uppercased: the index gives Cosmos tx hashes in uppercase, while a
+  // transfer made in this browser keeps the broadcast's lowercase hash.
+  const localHashes = new Set<string>();
+  existing.forEach((s) => {
+    if (s.imported) {
+      importedByKey.set(transferKey(s), s);
+      if (s.direction === "deposit" && !s.packetId) {
+        legacyByHash.set(s.sendTxHash, s);
+      }
+    } else {
+      localHashes.add(s.sendTxHash.toUpperCase());
+      if (s.firstStepTxHash) localHashes.add(s.firstStepTxHash.toUpperCase());
+    }
+  });
+
+  const seen = new Set<string>();
+  const claimed = new Set<TxSnapshot>();
+  const matchedLocalDeposits = new Set<TxSnapshot>();
+  return indexed.map((incoming): IndexedTransferMatch => {
+    const key = transferKey(incoming);
+    if (seen.has(key)) return { kind: "known" };
+    seen.add(key);
+
+    // made in this browser, so it's listed (and tracked) as that entry; this
+    // comes first so a copy imported before hashes were compared by case is
+    // never listed too
+    if (localHashes.has(incoming.sendTxHash.toUpperCase())) {
+      return { kind: "known" };
+    }
+    const entry =
+      importedByKey.get(key) ??
+      (incoming.packetId ? legacyByHash.get(incoming.sendTxHash) : undefined);
+    if (entry && !claimed.has(entry)) {
+      claimed.add(entry);
+      return { kind: "imported", entry };
+    }
+
+    if (incoming.direction === "deposit") {
+      const localDeposit = findMatchingLocalDeposit(
+        incoming,
+        existing,
+        matchedLocalDeposits
+      );
+      if (localDeposit) {
+        matchedLocalDeposits.add(localDeposit);
+        return { kind: "known" };
+      }
+    }
+    return { kind: "new" };
+  });
+}
+
+function isSameSnapshot(a: TxSnapshot, b: TxSnapshot) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+/**
+ * A deposit made in this browser is keyed on its source chain tx hash, so its
+ * arrival on Osmosis (as found in the index) can't be matched by hash.
+ * Match on the received asset and the arrival time instead, nearest first,
+ * each local deposit at most once.
+ */
+export function findMatchingLocalDeposit(
+  incoming: TxSnapshot,
+  existing: readonly TxSnapshot[],
+  alreadyMatched: ReadonlySet<TxSnapshot>
+): TxSnapshot | undefined {
+  let best: TxSnapshot | undefined;
+  for (const local of existing) {
+    if (
+      local.imported ||
+      local.direction !== "deposit" ||
+      // its funds never arrived, so an arrival can't be this deposit
+      local.status === "failed" ||
+      local.status === "refunded" ||
+      alreadyMatched.has(local) ||
+      local.osmoBech32Address !== incoming.osmoBech32Address ||
+      !isSameReceivedAsset(local, incoming)
+    ) {
+      continue;
+    }
+    const windowEnd =
+      Math.max(local.estimatedArrivalUnix, local.createdAtUnix) +
+      IMPORT_DEPOSIT_MATCH_GRACE_SECONDS;
+    if (
+      incoming.createdAtUnix < local.createdAtUnix ||
+      incoming.createdAtUnix > windowEnd
+    ) {
+      continue;
+    }
+    if (!best || local.createdAtUnix > best.createdAtUnix) best = local;
+  }
+  return best;
+}
+
+/**
+ * Whether an indexed arrival is the asset a local deposit received, in about
+ * the amount it sent. A deposit that converts on arrival (e.g. USDC into
+ * alloyed allUSDC) records the alloy locally, while the index sees the asset
+ * that arrived: match an arrival of one of the alloy's variants by its
+ * 1:1-converted amount.
+ */
+function isSameReceivedAsset(local: TxSnapshot, incoming: TxSnapshot) {
+  const expected =
+    displayAmount(local.toAsset) ?? displayAmount(local.fromAsset);
+  const arrived =
+    displayAmount(incoming.toAsset) ??
+    displayAmount({
+      ...incoming.fromAsset,
+      decimals: incoming.toAsset.decimals,
+    });
+
+  if (local.toAsset.address === incoming.toAsset.address) {
+    // an unknown amount can't rule the arrival out
+    if (expected === undefined || arrived === undefined) return true;
+    // bridge fees can come off the amount on the way, but an arrival can't
+    // be more than was sent
+    return arrived <= expected * 1.02 && arrived >= expected * 0.8;
+  }
+
+  if (
+    !incoming.toAsset.alloy ||
+    incoming.toAsset.alloy !== local.toAsset.address ||
+    expected === undefined ||
+    arrived === undefined
+  ) {
+    return false;
+  }
+  return Math.abs(arrived - expected) / expected <= 0.02;
+}
+
+/** An asset amount in display units, from the asset's own decimals. */
+function displayAmount(asset: {
+  amount?: string;
+  decimals: number;
+}): number | undefined {
+  const amount = Number(asset.amount);
+  if (!(amount > 0)) return;
+  return amount / 10 ** asset.decimals;
 }
 
 const PendingTransferLoadingIcon: FunctionComponent<{

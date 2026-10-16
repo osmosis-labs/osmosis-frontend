@@ -1276,7 +1276,7 @@
     "totalFees": "Tarifas totales",
     "transactionHash": "Hash de transacción",
     "viewOnExplorer": "Ver en el explorador",
-    "launchAlert": "Actualmente, solo se muestra el historial de transacciones y transferencias. Próximamente, se admitirán más tipos de transacciones.",
+    "launchAlert": "Se muestran tus swaps, depósitos y retiros.",
     "history": "Historia",
     "orders": "Pedidos",
     "historyTable": {
@@ -1294,7 +1294,17 @@
       "providerFee": "Tarifa del proveedor",
       "provider": "Proveedor",
       "networkFee": "Tarifa de red"
-    }
+    },
+    "filter": {
+      "type": "Tipos de transacción",
+      "swap": "Swaps",
+      "deposit": "Depósitos",
+      "withdraw": "Retiros",
+      "search": "Buscar activo, cadena, monto o dirección",
+      "noMatches": "No hay transacciones que coincidan",
+      "pageHint": "Los filtros solo se aplican a las transacciones de esta página. Prueba la página siguiente o ajusta los filtros."
+    },
+    "unknownAddressTooltip": "No pudimos determinar esta dirección a partir de los datos del puente. Puede aparecer más tarde; también puedes encontrarla en el explorador."
   },
   "date": {
     "earlierToday": "El día de hoy",

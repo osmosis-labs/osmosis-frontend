@@ -1276,7 +1276,7 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
-    "launchAlert": "現在、取引と送金の履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
+    "launchAlert": "スワップ、入金、出金が表示されます。",
     "history": "歴史",
     "orders": "注文",
     "historyTable": {
@@ -1294,7 +1294,17 @@
       "providerFee": "プロバイダー料金",
       "provider": "プロバイダー",
       "networkFee": "ネットワーク料金"
-    }
+    },
+    "filter": {
+      "type": "取引の種類",
+      "swap": "スワップ",
+      "deposit": "入金",
+      "withdraw": "出金",
+      "search": "アセット、チェーン、金額、アドレスを検索",
+      "noMatches": "一致する取引はありません",
+      "pageHint": "フィルターはこのページの取引にのみ適用されます。次のページを確認するか、フィルターを調整してください。"
+    },
+    "unknownAddressTooltip": "ブリッジのデータからこのアドレスを特定できませんでした。後で表示される場合があります。エクスプローラーでも確認できます。"
   },
   "date": {
     "earlierToday": "本日",

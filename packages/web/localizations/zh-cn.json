@@ -1276,7 +1276,7 @@
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
-    "launchAlert": "目前仅显示交易和转账历史记录。即将支持更多交易类型。",
+    "launchAlert": "显示您的兑换、存入和提取记录。",
     "history": "历史",
     "orders": "命令",
     "historyTable": {
@@ -1294,7 +1294,17 @@
       "providerFee": "供应商费用",
       "provider": "提供者",
       "networkFee": "网络费"
-    }
+    },
+    "filter": {
+      "type": "交易类型",
+      "swap": "兑换",
+      "deposit": "存入",
+      "withdraw": "提取",
+      "search": "搜索资产、链、金额或地址",
+      "noMatches": "没有匹配的交易",
+      "pageHint": "筛选仅适用于本页的交易。请查看下一页或调整筛选条件。"
+    },
+    "unknownAddressTooltip": "无法从跨链桥数据中确定此地址。稍后可能会显示；您也可以在浏览器中查看。"
   },
   "date": {
     "earlierToday": "今天早些时候",

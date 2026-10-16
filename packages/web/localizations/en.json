@@ -1276,7 +1276,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Showing your swaps, deposits and withdrawals.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
@@ -1294,7 +1294,17 @@
       "providerFee": "Provider fee",
       "provider": "Provider",
       "networkFee": "Network fee"
-    }
+    },
+    "filter": {
+      "type": "Transaction types",
+      "swap": "Swaps",
+      "deposit": "Deposits",
+      "withdraw": "Withdrawals",
+      "search": "Search asset, chain, amount or address",
+      "noMatches": "No matching transactions",
+      "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
+    },
+    "unknownAddressTooltip": "We couldn't determine this address from the bridge's data. It may appear later; you can also find it in the explorer."
   },
   "date": {
     "earlierToday": "Earlier today",
