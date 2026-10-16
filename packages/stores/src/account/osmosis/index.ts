@@ -42,14 +42,7 @@ import {
   prepareWithdrawDelegationRewardsMsg,
   type TransactionPreparationContext,
 } from "@osmosis-labs/tx";
-import {
-  AppCurrency,
-  Coin,
-  CoinPretty,
-  Currency,
-  Dec,
-  Int,
-} from "@osmosis-labs/unit";
+import { AppCurrency, Currency, Dec, Int } from "@osmosis-labs/unit";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 
@@ -1135,14 +1128,4 @@ export class OsmosisAccountImpl {
       ))
     );
   }
-
-  // Exit pool estimates only round-trip base amounts through the currency, so
-  // a denom missing from the asset list (e.g. an unlisted ibc/ asset in an
-  // old pool) falls back to a 0-decimal currency instead of blocking the exit.
-  protected makeCoinPretty = (coin: Coin): CoinPretty => {
-    const currency = this.chainGetter
-      .getChain(this.chainId)
-      .forceFindCurrency(coin.denom);
-    return new CoinPretty(currency, coin.amount);
-  };
 }

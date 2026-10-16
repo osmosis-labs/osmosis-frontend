@@ -52,6 +52,8 @@ export type SignerData = {
 };
 export type SessionSignRequest = {
   wallet: AccountStoreWallet;
+  /** The session checked against the signer, so another tab cannot swap it. */
+  oneClickTradingInfo: OneClickTradingInfo;
   signerAddress: string;
   messages: readonly EncodeObject[];
   fee: StdFee;
@@ -358,7 +360,8 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
               gas_wanted?: string;
               log?: string;
               code?: number;
-              height?: number;
+              // A live subscription gives a number, an indexed lookup a string.
+              height?: number | string;
               tx_result?: {
                 data: string;
                 code?: number;
@@ -373,7 +376,8 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
               return {
                 transactionHash: broadcasted.txhash.toLowerCase(),
                 code: tx?.code ?? tx?.tx_result?.code ?? 0,
-                height: tx?.height,
+                height:
+                  tx?.height !== undefined ? Number(tx.height) : undefined,
                 rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
                 events: tx?.events ?? tx?.tx_result?.events,
                 gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
@@ -465,6 +469,11 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
       const oneClickTradingInfo = await (deps.oneClick
         ? deps.oneClick.getInfo()
         : undefined);
+      // The session is stored per browser, not per account. After an account
+      // switch it belongs to another address, so sign with the wallet instead.
+      const useOneClickTrading =
+        signOptions?.useOneClickTrading &&
+        oneClickTradingInfo?.userOsmoAddress === wallet.address;
 
       const isWithinNetworkFeeLimit =
         !!oneClickTradingInfo &&
@@ -477,14 +486,19 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         );
 
       if (
-        signOptions?.useOneClickTrading &&
+        useOneClickTrading &&
+        oneClickTradingInfo &&
+        deps.oneClick &&
         /**
          * Should not surpass network fee limit.
          */
         isWithinNetworkFeeLimit
       ) {
-        return deps.oneClick!.sign({
+        return deps.oneClick.sign({
           wallet,
+          // Sign with the session checked above, not a fresh read that another
+          // tab may have replaced in the meantime.
+          oneClickTradingInfo,
           signerAddress: wallet.address ?? "",
           messages,
           fee,
@@ -495,7 +509,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
       }
 
       if (
-        signOptions?.useOneClickTrading &&
+        useOneClickTrading &&
         !isWithinNetworkFeeLimit &&
         deps.options?.preTxEvents?.onExceeds1CTNetworkFeeLimit
       ) {
@@ -923,15 +937,17 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
         // check for one click trading tx decoration
+        const oneClickTradingInfo =
+          signOptions?.useOneClickTrading && deps.oneClick
+            ? await deps.oneClick.getInfo()
+            : undefined;
         const shouldBeSignedWithOneClickTrading =
           signOptions?.useOneClickTrading &&
+          // Decorate with the session read above only if it is this account's.
+          oneClickTradingInfo?.userOsmoAddress === wallet.address &&
           (await deps.oneClick?.shouldSign({ messages }));
         const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
-          ? await deps.oneClick?.extensionOptions({
-              oneClickTradingInfo: await (deps.oneClick
-                ? deps.oneClick.getInfo()
-                : undefined),
-            })
+          ? await deps.oneClick?.extensionOptions({ oneClickTradingInfo })
           : undefined;
 
         const estimate = await deps.transport.request<QuoteStdFee>(

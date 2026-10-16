@@ -1,16 +1,5 @@
 import { TxTracer } from "../tracer";
 
-it("rejects tracing when the subscription fails without an unhandled rejection", async () => {
-  const tracer = Object.create(TxTracer.prototype) as TxTracer;
-  jest.spyOn(tracer, "queryTx").mockRejectedValue(new Error("not indexed yet"));
-  jest
-    .spyOn(tracer, "subscribeTx")
-    .mockRejectedValue(new Error("all RPC endpoints failed"));
-  await expect(tracer.traceTx(Uint8Array.from([1]))).rejects.toThrow(
-    "all RPC endpoints failed"
-  );
-});
-
 it("accepts an already indexed transaction while handling a failed subscription", async () => {
   const tracer = Object.create(TxTracer.prototype) as TxTracer;
   jest.spyOn(tracer, "queryTx").mockResolvedValue({ code: 0 });
@@ -43,32 +32,6 @@ it("waits for an indexed transaction when the subscription fails first", async (
   await pending;
 });
 
-it.each(["error", "empty"])(
-  "rejects after a delayed %s query and a failed subscription",
-  async (outcome) => {
-    const tracer = Object.create(TxTracer.prototype) as TxTracer;
-    let finishQuery!: () => void;
-    jest.spyOn(tracer, "queryTx").mockImplementation(
-      () =>
-        new Promise((resolve, reject) => {
-          finishQuery = () =>
-            outcome === "error"
-              ? reject(new Error("query failed"))
-              : resolve({ total_count: "0" });
-        })
-    );
-    jest
-      .spyOn(tracer, "subscribeTx")
-      .mockRejectedValue(new Error("subscription failed"));
-    const pending = expect(
-      tracer.traceTx({ "message.sender": "osmo1test" })
-    ).rejects.toThrow("subscription failed");
-    await Promise.resolve();
-    finishQuery();
-    await pending;
-  }
-);
-
 it("accepts a live transaction without waiting for the query", async () => {
   const tracer = Object.create(TxTracer.prototype) as TxTracer;
   let rejectQuery!: (error: Error) => void;
@@ -84,31 +47,6 @@ it("accepts a live transaction without waiting for the query", async () => {
     height: 123,
   });
   rejectQuery(new Error("query failed after live success"));
-});
-
-it("bounds the query wait after a subscription failure", async () => {
-  jest.useFakeTimers();
-  try {
-    const tracer = Object.create(TxTracer.prototype) as TxTracer;
-    let rejectQuery!: (error: Error) => void;
-    jest.spyOn(tracer, "queryTx").mockImplementation(
-      () =>
-        new Promise((_resolve, reject) => {
-          rejectQuery = reject;
-        })
-    );
-    jest
-      .spyOn(tracer, "subscribeTx")
-      .mockRejectedValue(new Error("subscription failed"));
-    const pending = expect(
-      tracer.traceTx(Uint8Array.from([1]))
-    ).rejects.toThrow("subscription failed");
-    await jest.advanceTimersByTimeAsync(10_000);
-    await pending;
-    rejectQuery(new Error("late query failure"));
-  } finally {
-    jest.useRealTimers();
-  }
 });
 
 class FakeSocket {

@@ -93,12 +93,18 @@ async function fetchPosition(
     quoteAsset: asset(position.asset1),
   };
 }
+// Exit pool estimates only round-trip base amounts through the currency, so
+// a denom missing from the asset list (e.g. an unlisted ibc/ asset in an
+// old pool) falls back to a 0-decimal currency instead of blocking the exit.
 function makeCoinPretty(
   context: TransactionPreparationContext,
   coin: Coin
 ): CoinPretty {
-  const currency = context.findCurrency(coin.denom);
-  if (!currency) throw new Error("Unknown currency");
+  const currency = context.findCurrency(coin.denom) ?? {
+    coinMinimalDenom: coin.denom,
+    coinDenom: coin.denom,
+    coinDecimals: 0,
+  };
   return new CoinPretty(currency, coin.amount);
 }
 

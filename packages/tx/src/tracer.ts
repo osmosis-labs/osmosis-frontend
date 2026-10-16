@@ -407,10 +407,10 @@ export class TxTracer {
   traceTx(
     query: Uint8Array | Record<string, string | number | boolean>
   ): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<any>((resolve) => {
       // At first, try to query the tx at the same time of subscribing the tx.
       // But, the querying's error will be ignored.
-      const pendingQuery = this.queryTx(query)
+      this.queryTx(query)
         .then((result) => {
           if (query instanceof Uint8Array) {
             resolve(result);
@@ -426,15 +426,10 @@ export class TxTracer {
           // noop
         });
 
-      this.subscribeTx(query).then(resolve, (error) => {
-        // A subscription error does not invalidate an in-flight lookup of an
-        // already indexed transaction. Let that lookup resolve the trace first,
-        // but bound the wait in case the node never answers it.
-        const timeout = setTimeout(() => reject(error), 10_000);
-        void pendingQuery.then(() => {
-          clearTimeout(timeout);
-          reject(error);
-        });
+      this.subscribeTx(query).then(resolve, () => {
+        // The tx was already accepted by the node, so a failed subscription
+        // must not report it as failed: it can still be included. The lookup
+        // above can still resolve the trace if the tx is indexed.
       });
     });
   }
