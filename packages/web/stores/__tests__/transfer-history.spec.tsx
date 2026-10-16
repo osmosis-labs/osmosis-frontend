@@ -792,6 +792,34 @@ describe("TransferHistoryStore.importSnapshots", () => {
     expect(store.snapshots[0].imported).toBeUndefined();
   });
 
+  it("skips a transfer made in this browser whose hash differs only in case", async () => {
+    // the broadcast's hash is lowercase; the index's is uppercase
+    const local = makeIndexed({
+      provider: "Skip",
+      statusProvider: undefined,
+      sendTxHash: "osmohash1",
+    });
+    const { store } = makeStore([local]);
+    await untilRestored(store);
+
+    store.importSnapshots([makeIndexed()]);
+
+    expect(store.snapshots).toHaveLength(1);
+    expect(store.getIndexedHistories(account, [makeIndexed()])).toEqual([]);
+  });
+
+  it("doesn't list a copy imported before hashes were compared by case", async () => {
+    const local = makeIndexed({
+      provider: "Skip",
+      statusProvider: undefined,
+      sendTxHash: "osmohash1",
+    });
+    const { store } = makeStore([local, makeIndexed({ imported: true })]);
+    await untilRestored(store);
+
+    expect(store.getIndexedHistories(account, [makeIndexed()])).toEqual([]);
+  });
+
   it("waits for stored history before deduping", async () => {
     const local = makeIndexed({ provider: "Skip", statusProvider: undefined });
     const { store } = makeStore([local]);

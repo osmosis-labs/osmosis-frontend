@@ -951,6 +951,8 @@ function matchIndexedTransfers(
   const importedByKey = new Map<string, TxSnapshot>();
   // imported before deposits were keyed by packet: one entry per tx hash
   const legacyByHash = new Map<string, TxSnapshot>();
+  // Uppercased: the index gives Cosmos tx hashes in uppercase, while a
+  // transfer made in this browser keeps the broadcast's lowercase hash.
   const localHashes = new Set<string>();
   existing.forEach((s) => {
     if (s.imported) {
@@ -959,8 +961,8 @@ function matchIndexedTransfers(
         legacyByHash.set(s.sendTxHash, s);
       }
     } else {
-      localHashes.add(s.sendTxHash);
-      if (s.firstStepTxHash) localHashes.add(s.firstStepTxHash);
+      localHashes.add(s.sendTxHash.toUpperCase());
+      if (s.firstStepTxHash) localHashes.add(s.firstStepTxHash.toUpperCase());
     }
   });
 
@@ -972,6 +974,12 @@ function matchIndexedTransfers(
     if (seen.has(key)) return { kind: "known" };
     seen.add(key);
 
+    // made in this browser, so it's listed (and tracked) as that entry; this
+    // comes first so a copy imported before hashes were compared by case is
+    // never listed too
+    if (localHashes.has(incoming.sendTxHash.toUpperCase())) {
+      return { kind: "known" };
+    }
     const entry =
       importedByKey.get(key) ??
       (incoming.packetId ? legacyByHash.get(incoming.sendTxHash) : undefined);
@@ -979,7 +987,6 @@ function matchIndexedTransfers(
       claimed.add(entry);
       return { kind: "imported", entry };
     }
-    if (localHashes.has(incoming.sendTxHash)) return { kind: "known" };
 
     if (incoming.direction === "deposit") {
       const localDeposit = findMatchingLocalDeposit(
