@@ -467,6 +467,9 @@ export class WalletRuntime {
       this.updateSession({ isStateHydrated: true });
       return;
     }
+    // A record without the fields the session UI reads would crash it, so it
+    // reads as no session.
+    if (info && !isWellFormedSession(info)) info = undefined;
     // Keep the current object when the stored session is unchanged, so a
     // re-read for another key does not invalidate a signature in progress.
     const current = this.store.getState().oneClickTradingInfo;
@@ -705,6 +708,16 @@ export class WalletRuntime {
       clearTimeout(manager.session.timeoutId);
     }
   };
+}
+
+function isWellFormedSession(info: OneClickTradingInfo) {
+  return (
+    typeof info === "object" &&
+    typeof info.userOsmoAddress === "string" &&
+    typeof info.sessionPeriod === "object" &&
+    info.sessionPeriod !== null &&
+    /^\d+$/.test(String(info.sessionPeriod.end))
+  );
 }
 
 /** False for an expired session or one whose stored end time is malformed. */

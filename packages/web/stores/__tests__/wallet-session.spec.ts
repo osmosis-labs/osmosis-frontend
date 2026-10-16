@@ -139,6 +139,13 @@ it.each([
     },
   ],
   [
+    "a session without a period",
+    async (storage: KVStore) => {
+      const { sessionPeriod: _, ...rest } = info;
+      await storage.set(OneClickTradingLocalStorageKey, rest);
+    },
+  ],
+  [
     "an unreadable store",
     async (storage: KVStore) => {
       jest.spyOn(storage, "get").mockRejectedValue(new SyntaxError("bad JSON"));
@@ -156,6 +163,7 @@ it.each([
     useOneClickTrading: false,
     isStateHydrated: true,
   });
+  expect(runtime.store.getState().oneClickTradingInfo).toBeNull();
   await runtime.setOneClickTradingInfo(info);
   expect(await runtime.getOneClickTradingInfo()).toBe(info);
 });
