@@ -43,7 +43,11 @@ jest.mock("~/config/chain", () => ({
 jest.mock("~/hooks/use-wallet", () => ({
   useWallet: (chainId?: string) => {
     const wallet = mockGetWallet(chainId);
-    return { wallet, address: wallet?.address };
+    return {
+      wallet,
+      address: wallet?.address,
+      estimateFee: (input: object) => mockEstimateFee({ ...input, wallet }),
+    };
   },
 }));
 

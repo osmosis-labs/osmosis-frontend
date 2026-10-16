@@ -3,6 +3,11 @@ import type {
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
+import {
+  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock,
+  prepareCollectAllPositionsRewardsMsgs,
+  prepareStakeExistingPositionMsg,
+} from "@osmosis-labs/tx";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
@@ -81,7 +86,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     isLoadingPositionDetails,
     hasPositionDetailsError,
   }) => {
-    const { wallet: account, txTypeInProgress } = useWallet();
+    const {
+      wallet: account,
+      txTypeInProgress,
+      signAndBroadcast,
+      transactionContext,
+    } = useWallet();
 
     const {
       position: rawPosition,
@@ -181,14 +191,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const sendCollectAllRewardsMsg = useCallback(() => {
       const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
       const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          hasSpreadRewards ? [rawPosition.position.position_id] : [],
-          hasIncentiveRewards ? [rawPosition.position.position_id] : [],
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        hasSpreadRewards ? [rawPosition.position.position_id] : [],
+        hasIncentiveRewards ? [rawPosition.position.position_id] : [],
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
-    }, [account, rawPosition]);
+    }, [
+      rawPosition.claimable_incentives.length,
+      rawPosition.claimable_spread_rewards.length,
+      rawPosition.position.position_id,
+      signAndBroadcast,
+      transactionContext,
+    ]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
@@ -362,11 +379,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isOpen={selectSfValidatorAddress}
                     onRequestClose={() => setSelectSfValidatorAddress(false)}
                     onSelectValidator={(validatorAddress) => {
-                      account.osmosis
-                        .sendStakeExistingPositionMsg(
-                          position.id,
-                          validatorAddress
-                        )
+                      prepareStakeExistingPositionMsg(
+                        transactionContext,
+                        position.id,
+                        validatorAddress
+                      )
+                        .then((prepared) => signAndBroadcast(...prepared))
                         .catch(console.error);
                       setSelectSfValidatorAddress(false);
                     }}
@@ -399,18 +417,23 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               }
               onClick={useCallback(() => {
                 if (superfluidData?.delegationLockId) {
-                  account!.osmosis
-                    .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                      [
-                        {
-                          lockId: superfluidData.delegationLockId,
-                          isSynthetic: true,
-                        },
-                      ]
-                    )
+                  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                    transactionContext,
+                    [
+                      {
+                        lockId: superfluidData.delegationLockId,
+                        isSynthetic: true,
+                      },
+                    ]
+                  )
+                    .then((prepared) => signAndBroadcast(...prepared))
                     .catch(console.error);
                 } else setActiveModal("remove");
-              }, [account, superfluidData])}
+              }, [
+                signAndBroadcast,
+                superfluidData?.delegationLockId,
+                transactionContext,
+              ])}
               isLoading={isLoadingPositionDetails}
             >
               {Boolean(superfluidData?.delegationLockId)

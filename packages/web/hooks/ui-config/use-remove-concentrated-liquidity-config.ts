@@ -1,4 +1,5 @@
 import type { UserPosition } from "@osmosis-labs/server";
+import { prepareWithdrawConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
 import type { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo, useState } from "react";
 
@@ -31,7 +32,11 @@ export function useRemoveConcentratedLiquidityConfig(
 } {
   const apiUtils = api.useUtils();
 
-  const { wallet: account } = useWallet(osmosisChainId);
+  const {
+    wallet: account,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
 
   const [percentage, setPercentage] = useState(1);
 
@@ -60,28 +65,37 @@ export function useRemoveConcentratedLiquidityConfig(
             return Promise.reject("No account");
           }
 
-          account.osmosis
-            .sendWithdrawConcentratedLiquidityPositionMsg(
-              position.id,
-              liquidity,
-              undefined,
-              (tx) => {
-                if (tx.code) {
-                  reject(tx.rawLog);
-                } else {
-                  // refresh tick data
-                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                    .invalidate({ poolId })
-                    .finally(() => resolve());
-                }
+          prepareWithdrawConcentratedLiquidityPositionMsg(
+            transactionContext,
+            position.id,
+            liquidity,
+            undefined,
+            (tx) => {
+              if (tx.code) {
+                reject(tx.rawLog);
+              } else {
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .finally(() => resolve());
               }
-            )
+            }
+          )
+            .then((prepared) => signAndBroadcast(...prepared))
             .catch(reject);
         } catch (e: any) {
           reject(e);
         }
       }),
-    [config.effectiveLiquidity, account, poolId, position.id, apiUtils]
+    [
+      config.effectiveLiquidity,
+      account,
+      transactionContext,
+      position.id,
+      apiUtils,
+      poolId,
+      signAndBroadcast,
+    ]
   );
 
   return { config, removeLiquidity };

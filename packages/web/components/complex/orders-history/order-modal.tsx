@@ -1,4 +1,5 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -53,7 +54,7 @@ const OrderDetails = ({
   isModal,
   onRequestClose,
 }: OrderDetailsProps) => {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
 
   const tokenIn = useMemo(() => {
@@ -146,18 +147,19 @@ const OrderDetails = ({
 
     try {
       setBroadcasting(true);
-      await account.cosmwasm.sendMultiExecuteContractMsg(
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
         "executeWasm",
         msgs,
         undefined
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
       onRequestClose();
     } catch (error) {
       console.error(error);
       setBroadcasting(false);
     }
-  }, [account, order, onRequestClose]);
+  }, [order, account, transactionContext, onRequestClose, signAndBroadcast]);
 
   const buttonText = useMemo(() => {
     if (

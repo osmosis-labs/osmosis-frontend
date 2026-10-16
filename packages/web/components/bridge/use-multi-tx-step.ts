@@ -5,6 +5,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import { useWallet } from "~/hooks/use-wallet";
 import { useStore } from "~/stores";
 import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import {
@@ -74,6 +75,7 @@ export type MultiTxStepQuoteParams = Omit<
  */
 export const useMultiTxFinalStep = () => {
   const { accountStore } = useStore();
+  const { getChainWallet } = useWallet();
   const transferHistoryStore = useTransferHistoryStore();
   const apiUtils = api.useUtils();
 
@@ -162,8 +164,7 @@ export const useMultiTxFinalStep = () => {
         // resumable and another session could sign it again.
         let broadcasted = false;
         try {
-          return await accountStore.signAndBroadcast(
-            stepChainId,
+          return await getChainWallet(stepChainId).signAndBroadcast(
             `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
             transactionStep.msgs,
             "",
@@ -243,7 +244,11 @@ export const useMultiTxFinalStep = () => {
       }
       return signExclusively();
     },
-    [accountStore, apiUtils, transferHistoryStore]
+    [
+      apiUtils.bridgeTransfer.getTransactionStepByBridge,
+      getChainWallet,
+      transferHistoryStore,
+    ]
   );
 
   return { getIntermediateAccount, signFinalStep };

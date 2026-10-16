@@ -1,8 +1,10 @@
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import { getTimeoutHeight } from "@osmosis-labs/server";
 import type { DeliverTxResponse } from "@osmosis-labs/tx";
-import { makeIBCTransferMsg } from "@osmosis-labs/tx";
-import { AppCurrency, Dec, DecUtils } from "@osmosis-labs/unit";
+import {
+  prepareIBCTransferMsg,
+  type TransactionPreparationContext,
+} from "@osmosis-labs/tx";
+import { AppCurrency } from "@osmosis-labs/unit";
 
 import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 
@@ -32,6 +34,23 @@ export class CosmosAccountImpl {
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string
   ) {}
+
+  private get preparationContext(): TransactionPreparationContext {
+    const getAddress = () => this.address;
+    return {
+      get address() {
+        return getAddress();
+      },
+      chainId: this.chainId,
+      chains: this.base.chains,
+      findCurrency: (denom) =>
+        this.chainGetter.getChain(this.chainId).findCurrency(denom),
+      stakeCurrency: () =>
+        this.chainGetter.getChain(this.chainId).stakeCurrency,
+      simulatePositionMigration: (input) =>
+        this.base.simulatePositionMigration(input),
+    };
+  }
 
   private get address() {
     return this.base.getWallet(this.chainId)?.address ?? "";
@@ -64,46 +83,17 @@ export class CosmosAccountImpl {
         },
     memo?: string
   ) {
-    const actualAmount = (() => {
-      let dec = new Dec(amount);
-      dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
-      return dec.truncate().toString();
-    })();
-
-    // Latest block height + 150 on the counterparty chain, with its revision
-    // number (omitted when 0). Fetched from the registry RPCs, hedged.
-    const timeoutHeight = await getTimeoutHeight({
-      chainList: this.base.chains,
-      chainId: channel.counterpartyChainId,
-    });
-
-    const msg = await makeIBCTransferMsg({
-      sourcePort: channel.portId,
-      sourceChannel: channel.channelId,
-      token: {
-        denom: currency.coinMinimalDenom,
-        amount: actualAmount,
-      },
-      receiver: recipient,
-      sender: this.address,
-      timeoutHeight: {
-        revisionNumber: timeoutHeight.revisionNumber
-          ? BigInt(timeoutHeight.revisionNumber)
-          : undefined,
-        revisionHeight: BigInt(timeoutHeight.revisionHeight),
-      },
-      timeoutTimestamp: BigInt(0),
-      memo: memo ? memo : "",
-    });
-
     await this.base.signAndBroadcast(
       this.chainId,
-      "sendIbcTransfer",
-      [msg],
-      "",
-      undefined,
-      undefined,
-      onTxEvents
+      ...(await prepareIBCTransferMsg(
+        this.preparationContext,
+        channel,
+        amount,
+        currency,
+        recipient,
+        onTxEvents,
+        memo
+      ))
     );
   }
 }

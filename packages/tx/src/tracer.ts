@@ -297,6 +297,13 @@ export class TxTracer {
           }
         }
 
+        if (obj?.id && obj.error && this.txSubscribes.has(obj.id)) {
+          this.txSubscribes
+            .get(obj.id)!
+            .rejector(new Error(obj.error.data || obj.error.message));
+          this.txSubscribes.delete(obj.id);
+        }
+
         if (obj?.result?.data?.type === "tendermint/event/NewBlock") {
           for (const handler of this.newBlockSubscribes) {
             handler.handler(obj.result.data.value);
@@ -311,9 +318,10 @@ export class TxTracer {
                   .get(obj.id)!
                   .rejector(new Error(obj.error.data || obj.error.message));
               } else {
-                this.txSubscribes
-                  .get(obj.id)!
-                  .resolver(obj.result.data.value.TxResult.result);
+                this.txSubscribes.get(obj.id)!.resolver({
+                  ...obj.result.data.value.TxResult.result,
+                  height: Number(obj.result.data.value.TxResult.height),
+                });
               }
 
               this.txSubscribes.delete(obj.id);
@@ -418,7 +426,11 @@ export class TxTracer {
           // noop
         });
 
-      this.subscribeTx(query).then(resolve);
+      this.subscribeTx(query).then(resolve, () => {
+        // The tx was already accepted by the node, so a failed subscription
+        // must not report it as failed: it can still be included. The lookup
+        // above can still resolve the trace if the tx is indexed.
+      });
     });
   }
 

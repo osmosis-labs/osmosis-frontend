@@ -1,4 +1,5 @@
 import { makePoolFromChainPool } from "@osmosis-labs/server";
+import type { TransactionPreparationContext } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { EmptyAmountError, InsufficientAmountError } from "@osmosis-labs/utils";
 import { NotInitializedError } from "@osmosis-labs/utils";
@@ -17,7 +18,7 @@ let mockBalances: { denom: string; amount: string }[] | undefined;
 
 jest.mock("~/utils/trpc", () => ({
   api: {
-    useUtils: () => ({}),
+    useUtils: () => ({ local: { pools: { getPool: { fetch: jest.fn() } } } }),
     local: {
       pools: { getPool: { useQuery: () => ({ data: mockPool }) } },
       balances: {
@@ -265,62 +266,76 @@ describe("sendAddLiquidity", () => {
     return hook;
   }
 
+  const transactionContext = {
+    address: "osmo1sender",
+    chainId: "osmosis-1",
+    chains: [],
+    findCurrency: () => undefined,
+    stakeCurrency: () => osmo,
+    simulatePositionMigration: jest.fn(),
+  } satisfies TransactionPreparationContext;
+
+  function signer() {
+    return jest.fn(async (_type: string, messages: any) => {
+      if (typeof messages === "function") await messages();
+    });
+  }
+
   it("builds a balanced join from freshly fetched pool data, not the seeded config", async () => {
     const { result } = setup(false);
     const { config } = result.current;
-    const osmosis = {
-      sendJoinPoolMsg: jest.fn().mockResolvedValue(undefined),
-      sendJoinSwapExternAmountInMsg: jest.fn(),
-    };
-    const onFulfill = jest.fn();
-
+    const signAndBroadcast = signer();
     await sendAddLiquidity({
       config,
-      osmosis,
+      signAndBroadcast,
+      transactionContext,
       fetchPool: async () => rawPool("2000000000"),
-      onFulfill,
+      onFulfill: jest.fn(),
     });
-
-    expect(osmosis.sendJoinPoolMsg).toHaveBeenCalledTimes(1);
-    const [poolId, pool, shareOut] = osmosis.sendJoinPoolMsg.mock.calls[0];
-    expect(poolId).toBe("1");
-    expect(pool.assets[0].amount.toCoin().amount).toBe("2000000000");
+    expect(signAndBroadcast).toHaveBeenCalledTimes(1);
+    const messages = await signAndBroadcast.mock.calls[0][1]();
+    expect(messages[0].value).toEqual(
+      expect.objectContaining({
+        poolId: BigInt(1),
+        sender: "osmo1sender",
+        shareOutAmount: "1000000000000000000",
+        tokenInMaxs: expect.arrayContaining([
+          { denom: "uosmo", amount: "20500000" },
+        ]),
+      })
+    );
     expect(config.pool?.assets[0].amount.toCoin().amount).toBe("1000000000");
-    // the user's estimate is kept
-    expect(shareOut).toBe("1.000000000000000000");
   });
 
   it("builds a single asset join from freshly fetched pool data", async () => {
     const { result } = setup(true);
-    const osmosis = {
-      sendJoinPoolMsg: jest.fn(),
-      sendJoinSwapExternAmountInMsg: jest.fn().mockResolvedValue(undefined),
-    };
-
+    const { config } = result.current;
+    const signAndBroadcast = signer();
     await sendAddLiquidity({
-      config: result.current.config,
-      osmosis,
+      config,
+      signAndBroadcast,
+      transactionContext,
       fetchPool: async () => rawPool("3000000000"),
       onFulfill: jest.fn(),
     });
-
-    const [, pool, tokenIn] =
-      osmosis.sendJoinSwapExternAmountInMsg.mock.calls[0];
-    expect(pool.assets[0].amount.toCoin().amount).toBe("3000000000");
-    expect(tokenIn.amount).toBe("10");
+    const messages = await signAndBroadcast.mock.calls[0][1]();
+    expect(messages[0].value).toEqual(
+      expect.objectContaining({
+        poolId: BigInt(1),
+        sender: "osmo1sender",
+        tokenIn: { denom: "uosmo", amount: "10000000" },
+      })
+    );
   });
 
-  it("fails when the fetch fails or the pool is not joinable", async () => {
+  it("fails before signing when the fetch fails or the pool is not joinable", async () => {
     const { result } = setup(false);
-    const osmosis = {
-      sendJoinPoolMsg: jest.fn(),
-      sendJoinSwapExternAmountInMsg: jest.fn(),
-    };
-
+    const signAndBroadcast = signer();
     await expect(
       sendAddLiquidity({
         config: result.current.config,
-        osmosis,
+        signAndBroadcast,
+        transactionContext,
         fetchPool: async () => {
           throw new Error("offline");
         },
@@ -330,41 +345,36 @@ describe("sendAddLiquidity", () => {
     await expect(
       sendAddLiquidity({
         config: result.current.config,
-        osmosis,
+        signAndBroadcast,
+        transactionContext,
         fetchPool: async () => ({ ...rawPool("1"), type: "concentrated" }),
         onFulfill: jest.fn(),
       })
     ).rejects.toThrow("not a joinable share pool");
-    expect(osmosis.sendJoinPoolMsg).not.toHaveBeenCalled();
+    expect(signAndBroadcast).not.toHaveBeenCalled();
   });
 
   it("does not send when the fresh pool has other decimals for an asset", async () => {
     const { result, rerender } = setup(true);
-    const osmosis = {
-      sendJoinPoolMsg: jest.fn(),
-      sendJoinSwapExternAmountInMsg: jest.fn(),
-    };
+    const signAndBroadcast = signer();
     const fresh = rawPool("1000000000");
     fresh.reserveCoins = [
       new CoinPretty({ ...atom, coinDecimals: 8 }, new Int("99000000")),
       new CoinPretty(osmo, new Int("990000000")),
     ];
-
     await act(async () => {
       await expect(
         sendAddLiquidity({
           config: result.current.config,
-          osmosis,
+          signAndBroadcast,
+          transactionContext,
           fetchPool: async () => fresh,
           onFulfill: jest.fn(),
         })
       ).rejects.toThrow(AddLiquidityPreflightError);
     });
-    expect(osmosis.sendJoinSwapExternAmountInMsg).not.toHaveBeenCalled();
-    // no stale input is left
+    expect(signAndBroadcast).not.toHaveBeenCalled();
     expect(result.current.config.singleAmountInConfig?.amount ?? "").toBe("");
-
-    // the pool query then delivers the fresh pool, with the fresh currency
     mockPool = fresh;
     rerender();
     expect(

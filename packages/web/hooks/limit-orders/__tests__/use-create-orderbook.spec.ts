@@ -35,6 +35,8 @@ jest.mock("~/stores", () => ({
 
 jest.mock("~/hooks/use-wallet", () => ({
   useWallet: () => ({
+    signAndBroadcast: (...args: unknown[]) =>
+      mockSignAndBroadcast("osmosis-1", ...args),
     wallet: { address: mockWalletAddress },
     address: mockWalletAddress,
   }),

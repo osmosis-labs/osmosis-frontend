@@ -1,3 +1,7 @@
+import {
+  prepareCreateBalancerPoolMsg,
+  prepareCreateStableswapPoolMsg,
+} from "@osmosis-labs/tx";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -22,7 +26,13 @@ const Pools: NextPage = observer(function () {
   const { t } = useTranslation();
 
   const { chainId } = OsmosisChainInfo;
-  const { wallet: account, address, txTypeInProgress } = useWallet();
+  const {
+    wallet: account,
+    address,
+    txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
@@ -67,7 +77,8 @@ const Pools: NextPage = observer(function () {
   const onCreatePool = useCallback(async () => {
     try {
       if (createPoolConfig.poolType === "weighted") {
-        await account?.osmosis.sendCreateBalancerPoolMsg(
+        await prepareCreateBalancerPoolMsg(
+          transactionContext,
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.percentage)
@@ -90,13 +101,14 @@ const Pools: NextPage = observer(function () {
           () => {
             setIsCreatingPool(false);
           }
-        );
+        ).then((prepared) => signAndBroadcast(...prepared));
       } else if (createPoolConfig.poolType === "stable") {
         const scalingFactorController =
           createPoolConfig.scalingFactorControllerAddress
             ? createPoolConfig.scalingFactorControllerAddress
             : undefined;
-        await account?.osmosis.sendCreateStableswapPoolMsg(
+        await prepareCreateStableswapPoolMsg(
+          transactionContext,
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.scalingFactor)
@@ -117,13 +129,20 @@ const Pools: NextPage = observer(function () {
           () => {
             setIsCreatingPool(false);
           }
-        );
+        ).then((prepared) => signAndBroadcast(...prepared));
       }
     } catch (e) {
       setIsCreatingPool(false);
       console.error(e);
     }
-  }, [createPoolConfig, account]);
+  }, [
+    createPoolConfig.poolType,
+    createPoolConfig.swapFee,
+    createPoolConfig.assets,
+    createPoolConfig.scalingFactorControllerAddress,
+    transactionContext,
+    signAndBroadcast,
+  ]);
 
   return (
     <main className="m-auto max-w-container px-8 pt-8 md:px-3 md:pt-4">

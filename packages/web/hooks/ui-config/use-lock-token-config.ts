@@ -1,3 +1,8 @@
+import {
+  prepareBeginUnlockingMsg,
+  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock,
+  prepareLockTokensMsg,
+} from "@osmosis-labs/tx";
 import { AppCurrency } from "@osmosis-labs/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback } from "react";
@@ -13,7 +18,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     locks: { lockId: string; isSynthetic: boolean }[]
   ) => Promise<"synthetic" | "normal">;
 } {
-  const { wallet: account } = useWallet();
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
 
   const config = useAmountInput({
     currency: sendCurrency,
@@ -29,7 +34,8 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             return reject("Tried to lock non-gamm token");
           }
 
-          await account?.osmosis.sendLockTokensMsg(
+          await prepareLockTokensMsg(
+            transactionContext,
             lockDuration.asSeconds(),
             [
               {
@@ -39,14 +45,14 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             ],
             undefined,
             () => resolve()
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e) {
           console.error(e);
           reject();
         }
       });
     },
-    [account, sendCurrency, config.amount]
+    [sendCurrency, config.amount, transactionContext, signAndBroadcast]
   );
 
   const unlockTokens = useCallback(
@@ -59,27 +65,29 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
 
           if (isSuperfluidUnlock) {
             // superfluid (synthetic) unlock
-            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+            await prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+              transactionContext,
               locks,
               undefined,
               (tx) => {
                 if (!Boolean(tx.code)) resolve("synthetic");
                 else reject();
               }
-            );
+            ).then((prepared) => signAndBroadcast(...prepared));
           } else {
             // normal unlock of available shares escrowed in lock
             const blockGasLimitLockIds = locks
               .slice(0, 10)
               .map(({ lockId }) => lockId);
-            await account.osmosis.sendBeginUnlockingMsg(
+            await prepareBeginUnlockingMsg(
+              transactionContext,
               blockGasLimitLockIds,
               undefined,
               (tx) => {
                 if (!Boolean(tx.code)) resolve("normal");
                 else reject();
               }
-            );
+            ).then((prepared) => signAndBroadcast(...prepared));
           }
         } catch (e) {
           console.error(e);
@@ -87,7 +95,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [account]
+    [account, signAndBroadcast, transactionContext]
   );
 
   return { config, lockToken, unlockTokens };

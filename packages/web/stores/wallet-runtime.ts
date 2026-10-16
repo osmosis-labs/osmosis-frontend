@@ -1,8 +1,22 @@
 import type { MainWalletBase } from "@cosmos-kit/core";
 import { WalletStatus } from "@cosmos-kit/core";
-import type { OneClickTradingInfo } from "@osmosis-labs/tx";
+import { Hash } from "@keplr-wallet/crypto/build/hash";
+import {
+  type ChainBoundTxArguments,
+  createWalletTxClient,
+  type OneClickTradingInfo,
+  type TransactionPreparationContext,
+  type WalletTxClient,
+  type WalletTxDependencies,
+  type WalletTxTransport,
+} from "@osmosis-labs/tx";
+import type { Currency } from "@osmosis-labs/unit";
+import { apiClient } from "@osmosis-labs/utils";
+import axios from "axios";
+import { runInAction } from "mobx";
 import { createStore } from "zustand/vanilla";
 
+import { findOsmosisCurrency, getChainInfo } from "~/config/chain";
 import type { RootStore } from "~/stores/root";
 
 type LegacyAccountStore = RootStore["accountStore"];
@@ -25,9 +39,29 @@ export type WalletSnapshot = {
   disconnect: () => Promise<void>;
   supportsChain: (chainId: string) => Promise<boolean>;
   matchError: LegacyAccountStore["matchError"];
+  signAndBroadcast: (
+    ...args: ChainBoundTxArguments
+  ) => ReturnType<WalletTxClient["signAndBroadcast"]>;
+  estimateFee: (
+    input: Omit<Parameters<WalletTxClient["estimateFee"]>[0], "wallet">
+  ) => ReturnType<WalletTxClient["estimateFee"]>;
+  simulatePositionMigration: (input: {
+    messages: Parameters<
+      WalletTxClient["simulatePositionMigration"]
+    >[0]["messages"];
+    bech32Address?: string;
+  }) => ReturnType<WalletTxClient["simulatePositionMigration"]>;
+  transactionContext: TransactionPreparationContext;
+  /** Imperative cross-chain actions; use useWallet(chainId) for reactive state. */
+  getChainWallet: (chainId: string) => WalletSnapshot;
 };
 
 type WalletState = { chains: Record<string, WalletSnapshot> };
+
+type WalletRuntimeOptions = WalletTxDependencies["options"] & {
+  /** Resolve chain currencies, including assets registered at runtime. */
+  findCurrency?: (chainId: string, denom: string) => Currency | undefined;
+};
 
 function equalSnapshot(a: WalletSnapshot, b: WalletSnapshot) {
   return (Object.keys(a) as (keyof WalletSnapshot)[]).every((key) =>
@@ -52,16 +86,47 @@ export class WalletRuntime {
     string,
     Pick<
       WalletSnapshot,
-      "connect" | "disconnect" | "supportsChain" | "matchError"
+      | "connect"
+      | "disconnect"
+      | "supportsChain"
+      | "matchError"
+      | "signAndBroadcast"
+      | "estimateFee"
+      | "simulatePositionMigration"
+      | "transactionContext"
     >
   >();
 
-  constructor(private readonly legacy: LegacyAccountStore) {}
+  readonly transactions: WalletTxClient;
+
+  constructor(
+    private readonly legacy: LegacyAccountStore,
+    private readonly options?: WalletRuntimeOptions,
+    transport?: WalletTxTransport
+  ) {
+    this.transactions = createWalletTxClient({
+      chains: legacy.chains,
+      getWallet: (chainId) => legacy.getWallet(chainId),
+      transport: transport ?? {
+        post: (url, data) => axios.post(url, data),
+        get: (url, options) => axios.get(url, options),
+        request: apiClient,
+      },
+      hash: (bytes) => Hash.sha256(bytes),
+      setTxTypeInProgress: (chainId, type) =>
+        runInAction(() => {
+          legacy.txTypeInProgressByChain.set(chainId, type);
+        }),
+      oneClick: legacy.oneClickSigningAdapter,
+      options,
+    });
+  }
 
   private read(chainId: string): WalletSnapshot {
     const wallet = this.legacy.getWallet(chainId);
     let actions = this.actions.get(chainId);
     if (!actions) {
+      const runtime = this;
       actions = {
         connect: async (walletName, force = false) => {
           await this.legacy.getWalletRepo(chainId).connect(walletName, force);
@@ -75,6 +140,39 @@ export class WalletRuntime {
           return connected.supportsChain(targetChainId);
         },
         matchError: (error) => this.legacy.matchError(error),
+        signAndBroadcast: (...args) =>
+          this.transactions.signAndBroadcast(chainId, ...args),
+        estimateFee: (input) => {
+          const wallet = this.legacy.getWallet(chainId);
+          if (!wallet)
+            throw new Error(`Wallet for chain ${chainId} is not provided.`);
+          return this.transactions.estimateFee({ ...input, wallet });
+        },
+        simulatePositionMigration: (input) =>
+          this.transactions.simulatePositionMigration({
+            ...input,
+            chainId,
+            bech32Address:
+              input.bech32Address ??
+              this.legacy.getWallet(chainId)?.address ??
+              "",
+          }),
+        transactionContext: {
+          get address() {
+            return runtime.legacy.getWallet(chainId)?.address ?? "";
+          },
+          chainId,
+          chains: this.legacy.chains,
+          findCurrency: (denom) =>
+            this.options?.findCurrency
+              ? this.options.findCurrency(chainId, denom)
+              : (getChainInfo(chainId).currencies.find(
+                  (currency) => currency.coinMinimalDenom === denom
+                ) ?? findOsmosisCurrency(denom)),
+          stakeCurrency: () => getChainInfo(chainId).stakeCurrency,
+          simulatePositionMigration: (input) =>
+            this.transactions.simulatePositionMigration(input),
+        },
       };
       this.actions.set(chainId, actions);
     }
@@ -90,6 +188,7 @@ export class WalletRuntime {
       useOneClickTrading: this.legacy.useOneClickTrading,
       hasUsedOneClickTrading: this.legacy.hasUsedOneClickTrading,
       isStateHydrated: this.legacy.isStateHydrated,
+      getChainWallet: this.getSnapshot,
       ...actions,
     };
   }

@@ -1,20 +1,21 @@
 import { queryPositionById } from "@osmosis-labs/server";
+import { Dec, Int } from "@osmosis-labs/unit";
+
 import {
   makeCreatePositionMsg,
   makeSwapExactAmountInMsg,
   makeWithdrawPositionMsg,
-} from "@osmosis-labs/tx";
-import { Dec, Int } from "@osmosis-labs/unit";
-
-import { OsmosisAccountImpl } from "../osmosis";
+} from "../../message-composers";
+import { prepareMigrateConcentratedLiquidityPositionMsg } from "../osmosis";
+import type { TransactionPreparationContext } from "../types";
 
 jest.mock("@osmosis-labs/server", () => ({
   ...jest.requireActual("@osmosis-labs/server"),
   queryPositionById: jest.fn(),
 }));
 
-jest.mock("@osmosis-labs/tx", () => ({
-  ...jest.requireActual("@osmosis-labs/tx"),
+jest.mock("../../message-composers", () => ({
+  ...jest.requireActual("../../message-composers"),
   makeCreatePositionMsg: jest.fn(),
   makeSwapExactAmountInMsg: jest.fn(),
   makeWithdrawPositionMsg: jest.fn(),
@@ -86,14 +87,27 @@ describe("sendMigrateConcentratedLiquidityPositionMsg", () => {
     chains,
   };
 
-  const makeAccount = () => {
-    type ConstructorArgs = ConstructorParameters<typeof OsmosisAccountImpl>;
-    return new OsmosisAccountImpl(
-      base as unknown as ConstructorArgs[0],
-      {} as ConstructorArgs[1],
-      CHAIN_ID
-    );
-  };
+  const makeAccount = () => ({
+    sendMigrateConcentratedLiquidityPositionMsg: async (
+      ...args: Parameters<
+        typeof prepareMigrateConcentratedLiquidityPositionMsg
+      > extends [unknown, ...infer Args]
+        ? Args
+        : never
+    ) => {
+      const context = {
+        address: ADDRESS,
+        chainId: CHAIN_ID,
+        chains,
+        simulatePositionMigration: base.simulatePositionMigration,
+      } as unknown as TransactionPreparationContext;
+      const prepared = await prepareMigrateConcentratedLiquidityPositionMsg(
+        context,
+        ...args
+      );
+      await base.signAndBroadcast(CHAIN_ID, ...prepared);
+    },
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

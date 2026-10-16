@@ -3,7 +3,6 @@ import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
@@ -34,8 +33,12 @@ export function useConvertVariant(
   givenVariantOrCoinMinimalDenom?: AssetVariant | string,
   enabled = true
 ) {
-  const { accountStore } = useStore();
-  const { wallet: account, address, txTypeInProgress } = useWallet();
+  const {
+    wallet: account,
+    address,
+    txTypeInProgress,
+    signAndBroadcast,
+  } = useWallet();
   const transactionIdentifier = "convertVariant";
 
   // If the variant is not provided, we will fetch from user's list of variants
@@ -121,28 +124,25 @@ export function useConvertVariant(
           return reject(messages);
         }
 
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            variantTransactionIdentifier,
-            messages,
-            undefined,
-            undefined,
-            undefined,
-            {
-              onFulfill: (tx) => {
-                if (tx.code) return reject(tx.code);
-                resolve();
-              },
-              onBroadcastFailed: reject,
-            }
-          )
-          .catch((e) => {
-            console.error("Error broadcasting convert variant tx", e);
-            reject(e);
-          });
+        signAndBroadcast(
+          variantTransactionIdentifier,
+          messages,
+          undefined,
+          undefined,
+          undefined,
+          {
+            onFulfill: (tx) => {
+              if (tx.code) return reject(tx.code);
+              resolve();
+            },
+            onBroadcastFailed: reject,
+          }
+        ).catch((e) => {
+          console.error("Error broadcasting convert variant tx", e);
+          reject(e);
+        });
       }),
-    [variant, account, quote, accountStore, variantTransactionIdentifier]
+    [variant, account, quote, signAndBroadcast, variantTransactionIdentifier]
   );
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);

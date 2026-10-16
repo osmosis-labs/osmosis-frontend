@@ -1,4 +1,5 @@
 import type { UserPosition } from "@osmosis-labs/server";
+import { prepareMigrateConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -168,6 +169,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
     wallet: account,
     address: accountAddress,
     txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
   } = useWallet(chainId);
   const apiUtils = api.useUtils();
 
@@ -269,7 +272,8 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
       }
       const freshMinAmountTolerance = fresh.minAmountTolerance;
 
-      await account.osmosis.sendMigrateConcentratedLiquidityPositionMsg(
+      await prepareMigrateConcentratedLiquidityPositionMsg(
+        transactionContext,
         positionId,
         toPoolId,
         new Int(rawPosition.lower_tick),
@@ -296,7 +300,7 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
             void routeAwayIfPoolEmptied();
           }
         }
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
     } catch (e) {
       // Surfaced rather than only logged: a refusal here is the safety
       // mechanism working, and the user needs to know the position was not
@@ -308,14 +312,16 @@ export const MigrateConcentratedPositionModal: FunctionComponent<
   }, [
     account,
     revalidate,
-    t,
+    transactionContext,
     positionId,
     toPoolId,
     rawPosition.lower_tick,
     rawPosition.upper_tick,
-    apiUtils,
+    t,
+    apiUtils.local.concentratedLiquidity,
     props,
     routeAwayIfPoolEmptied,
+    signAndBroadcast,
   ]);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(

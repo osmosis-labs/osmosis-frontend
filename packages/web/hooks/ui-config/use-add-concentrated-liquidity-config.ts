@@ -1,5 +1,9 @@
 import { BigDec } from "@osmosis-labs/math";
 import type { Pool } from "@osmosis-labs/server";
+import {
+  prepareAddToConcentratedLiquidityPositionMsg,
+  prepareCreateConcentratedLiquidityPositionMsg,
+} from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
   AppCurrency,
@@ -488,7 +492,11 @@ export function useAddConcentratedLiquidityConfig(
 } {
   const apiUtils = api.useUtils();
 
-  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const {
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
   const address = walletAddress ?? "";
 
   const chain = useMemo(() => {
@@ -582,7 +590,8 @@ export function useAddConcentratedLiquidityConfig(
           const clPool = clPoolParams;
           if (!clPool) throw new Error(`Pool #${poolId} not found`);
 
-          await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+          await prepareCreateConcentratedLiquidityPositionMsg(
+            transactionContext,
             poolId,
             clPool,
             tickRange[0],
@@ -606,7 +615,7 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
@@ -614,16 +623,19 @@ export function useAddConcentratedLiquidityConfig(
       });
     },
     [
-      poolId,
-      account,
-      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
-      apiUtils.local.pools.getPool,
-      baseDepositAmountIn,
-      quoteDepositAmountIn,
+      quoteDepositAmountIn.sendCurrency,
+      quoteDepositAmountIn.amount,
+      baseDepositAmountIn.sendCurrency,
+      baseDepositAmountIn.amount,
       baseDepositOnly,
       quoteDepositOnly,
-      tickRange,
       clPoolParams,
+      poolId,
+      transactionContext,
+      tickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils.local.pools.getPool,
+      signAndBroadcast,
     ]
   );
 
@@ -644,7 +656,8 @@ export function useAddConcentratedLiquidityConfig(
           : quoteDepositAmountIn.getAmountPrimitive();
 
         try {
-          await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await prepareAddToConcentratedLiquidityPositionMsg(
+            transactionContext,
             positionId,
             coin0,
             coin1,
@@ -664,21 +677,22 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
         }
       }),
     [
-      poolId,
+      quoteDepositOnly,
+      baseDepositAmountIn,
+      baseDepositOnly,
+      quoteDepositAmountIn,
+      transactionContext,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      baseDepositAmountIn,
-      quoteDepositAmountIn,
-      baseDepositOnly,
-      quoteDepositOnly,
-      account,
+      poolId,
+      signAndBroadcast,
     ]
   );
 

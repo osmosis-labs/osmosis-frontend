@@ -1,4 +1,5 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -56,7 +57,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const { wallet: account, address } = useWallet();
+    const { address, signAndBroadcast, transactionContext } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -114,12 +115,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const onClickCollectAllRewards = () => {
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          claimableSpreadRewardPositions.map(({ id }) => id),
-          claimableIncentivePositions.map(({ id }) => id),
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        claimableSpreadRewardPositions.map(({ id }) => id),
+        claimableIncentivePositions.map(({ id }) => id),
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     };
 

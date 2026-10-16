@@ -19,7 +19,6 @@ import {
 } from "~/hooks/use-convert-variant";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const useAssetVariantsModalStore = create<{
@@ -260,8 +259,8 @@ const AssetVariantRow: React.FC<{
   ) => void;
 }> = ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
-  const { wallet: account } = useWallet();
+
+  const { estimateFee, wallet: account } = useWallet();
 
   const {
     onConvert,
@@ -289,7 +288,7 @@ const AssetVariantRow: React.FC<{
 
     if (!Array.isArray(messages)) return;
 
-    await accountStore.estimateFee({ wallet: account, messages });
+    await estimateFee({ messages });
   });
 
   const isUnavailable = Boolean(simulation?.error) || isError;

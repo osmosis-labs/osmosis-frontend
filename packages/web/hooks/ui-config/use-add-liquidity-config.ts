@@ -3,7 +3,10 @@ import {
   makeGammShareCurrency,
   makeUnlistedAssetCurrency,
 } from "@osmosis-labs/server";
-import type { OsmosisAccountImpl } from "@osmosis-labs/stores";
+import {
+  prepareJoinPoolMsg,
+  prepareJoinSwapExternAmountInMsg,
+} from "@osmosis-labs/tx";
 import type {
   AddLiquidityPoolData,
   Currency,
@@ -24,7 +27,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { api } from "~/utils/trpc";
 
-import { useWallet } from "../use-wallet";
+import { useWallet, type WalletSnapshot } from "../use-wallet";
 import {
   type AddLiquidityAction,
   type AddLiquidityActionInput,
@@ -120,7 +123,8 @@ export function makeAddLiquidityPoolData(
  *  and the msg's slippage bounds must come from current reserves. Amounts typed by the user are kept. */
 export async function sendAddLiquidity({
   config,
-  osmosis,
+  signAndBroadcast,
+  transactionContext,
   fetchPool,
   onFulfill,
 }: {
@@ -133,10 +137,8 @@ export async function sendAddLiquidity({
     | "poolAssetConfigs"
     | "resetInputs"
   >;
-  osmosis: Pick<
-    OsmosisAccountImpl,
-    "sendJoinPoolMsg" | "sendJoinSwapExternAmountInMsg"
-  >;
+  signAndBroadcast: WalletSnapshot["signAndBroadcast"];
+  transactionContext: WalletSnapshot["transactionContext"];
   fetchPool: () => Promise<Parameters<typeof makeAddLiquidityPoolData>[0]>;
   onFulfill: () => void;
 }) {
@@ -186,23 +188,25 @@ export async function sendAddLiquidity({
   }
 
   if (singleAmountIn) {
-    await osmosis.sendJoinSwapExternAmountInMsg(
+    await prepareJoinSwapExternAmountInMsg(
+      transactionContext,
       poolId,
       freshPool,
       singleAmountIn,
       undefined,
       undefined,
       onFulfill
-    );
+    ).then((prepared) => signAndBroadcast(...prepared));
   } else if (shareOutAmount) {
-    await osmosis.sendJoinPoolMsg(
+    await prepareJoinPoolMsg(
+      transactionContext,
       poolId,
       freshPool,
       shareOutAmount,
       undefined,
       undefined,
       onFulfill
-    );
+    ).then((prepared) => signAndBroadcast(...prepared));
   }
 }
 
@@ -259,7 +263,12 @@ export function useAddLiquidityConfig(
   config: AddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { wallet: account, address: walletAddress } = useWallet(osmosisChainId);
+  const {
+    wallet: account,
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
   const address = walletAddress ?? "";
 
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
@@ -385,7 +394,8 @@ export function useAddLiquidityConfig(
 
         await sendAddLiquidity({
           config,
-          osmosis: account.osmosis,
+          signAndBroadcast,
+          transactionContext,
           fetchPool: () =>
             apiUtils.local.pools.getPool.fetch({ poolId }, { staleTime: 0 }),
           onFulfill: resolve,
@@ -409,7 +419,14 @@ export function useAddLiquidityConfig(
         if (inFlightRef.current === submit) inFlightRef.current = undefined;
       });
     return submit;
-  }, [account, apiUtils, config, poolId]);
+  }, [
+    account,
+    apiUtils.local.pools.getPool,
+    config,
+    poolId,
+    signAndBroadcast,
+    transactionContext,
+  ]);
 
   return { config, addLiquidity };
 }

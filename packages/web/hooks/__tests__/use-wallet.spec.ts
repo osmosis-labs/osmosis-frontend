@@ -1,8 +1,10 @@
 import {
   HasUsedOneClickTradingLocalStorageKey,
   OneClickTradingLocalStorageKey,
+  prepareExitPoolMsg,
   UseOneClickTradingLocalStorageKey,
 } from "@osmosis-labs/tx";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { makeLocalStorageKVStore } from "@osmosis-labs/utils";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { runInAction } from "mobx";
@@ -17,7 +19,7 @@ import {
   TestWallet,
   testWalletInfo,
 } from "~/__tests__/test-wallet";
-import { OsmosisChainInfo } from "~/config/chain";
+import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { storeContext } from "~/stores";
 
@@ -25,6 +27,51 @@ import { useWallet } from "../use-wallet";
 
 describe("useWallet", () => {
   const chainId = ChainList[0].chain_id;
+
+  it.each([
+    "uosmo",
+    "uion",
+    OsmosisChainInfo.currencies.find(({ coinMinimalDenom }) =>
+      coinMinimalDenom.startsWith("ibc/")
+    )!.coinMinimalDenom,
+  ])(
+    "prepares pool exits with the registered currency for %s",
+    async (denom) => {
+      const { result } = renderHookWithProviders(() => useWallet());
+      await waitFor(() => expect(result.current.isStateHydrated).toBe(true));
+      const context = result.current.transactionContext;
+      const resolvedCurrency = context.findCurrency(denom);
+      const currency = StaticChainGetter.getChain(
+        OsmosisChainInfo.chainId
+      ).findCurrency(denom);
+      expect(currency).toBeDefined();
+      expect(resolvedCurrency).toEqual(currency);
+
+      const prepared = await prepareExitPoolMsg(
+        context,
+        "999",
+        "1",
+        new Int("100000000000000000000"),
+        [
+          { denom, amount: "1000000" },
+          { denom: "uion", amount: "2000000" },
+        ],
+        new Dec(0)
+      );
+      const messages =
+        typeof prepared[1] === "function" ? await prepared[1]() : prepared[1];
+      expect(messages[0].value).toEqual(
+        expect.objectContaining({
+          poolId: BigInt(999),
+          shareInAmount: "1000000000000000000",
+          tokenOutMins: [
+            { denom, amount: "9750" },
+            { denom: "uion", amount: "19500" },
+          ],
+        })
+      );
+    }
+  );
 
   it("re-renders a non-observer component when the wallet connects", async () => {
     let renders = 0;

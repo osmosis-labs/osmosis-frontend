@@ -1,4 +1,8 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  prepareWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs,
+  prepareWithdrawDelegationRewardsMsg,
+} from "@osmosis-labs/tx";
 import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Currency, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -44,7 +48,12 @@ export const StakeDashboard: React.FC<{
   onRedelegate,
 }) => {
   const { t } = useTranslation();
-  const { wallet: account, address: walletAddress } = useWallet();
+  const {
+    isReadyToSendTx,
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
   const address = walletAddress ?? "";
   const osmo = OsmosisChainInfo.stakeCurrency;
 
@@ -84,10 +93,12 @@ export const StakeDashboard: React.FC<{
   );
 
   const collectRewards = useCallback(() => {
-    if (account?.osmosis) {
-      account.osmosis.sendWithdrawDelegationRewardsMsg("").catch(console.error);
+    if (isReadyToSendTx) {
+      prepareWithdrawDelegationRewardsMsg(transactionContext, "")
+        .then((prepared) => signAndBroadcast(...prepared))
+        .catch(console.error);
     }
-  }, [account]);
+  }, [isReadyToSendTx, signAndBroadcast, transactionContext]);
 
   const { price: osmoPrice } = usePrice(osmo);
 
@@ -106,15 +117,22 @@ export const StakeDashboard: React.FC<{
       denom: osmo,
     };
 
-    if (account?.osmosis) {
-      account.osmosis
-        .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          collectAndReinvestCoin,
-          ""
-        )
+    if (isReadyToSendTx) {
+      prepareWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+        transactionContext,
+        collectAndReinvestCoin,
+        ""
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     }
-  }, [account, osmo, osmoRewardsAmount]);
+  }, [
+    isReadyToSendTx,
+    osmo,
+    osmoRewardsAmount,
+    signAndBroadcast,
+    transactionContext,
+  ]);
 
   const isCompact =
     Boolean(fiatBalance?.toDec().gte(new Dec(COMPACT_STAKED_BALANCE_USD))) ||

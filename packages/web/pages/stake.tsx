@@ -1,4 +1,8 @@
 import {
+  prepareDelegateToValidatorSetMsg,
+  prepareUndelegateFromRebalancedValidatorSet,
+} from "@osmosis-labs/tx";
+import {
   DefaultGasPriceStep,
   makeDelegateToValidatorSetMsg,
 } from "@osmosis-labs/tx";
@@ -49,9 +53,11 @@ export const Staking: React.FC = observer(() => {
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
   const osmosisChainId = OsmosisChainInfo.chainId;
   const {
-    wallet: account,
+    isReadyToSendTx,
     address: walletAddress,
     isWalletConnected,
+    signAndBroadcast,
+    transactionContext,
   } = useWallet();
   const address = walletAddress ?? "";
 
@@ -185,24 +191,24 @@ export const Staking: React.FC = observer(() => {
   }, []);
 
   const stakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis
-        .sendDelegateToValidatorSetMsg(coin, "")
+    if (isReadyToSendTx && coin?.amount) {
+      prepareDelegateToValidatorSetMsg(transactionContext, coin, "")
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [account?.address, account?.osmosis, coin]);
+  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
 
   const unstakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis
-        .sendUndelegateFromRebalancedValidatorSet(coin, "")
+    if (isReadyToSendTx && coin?.amount) {
+      prepareUndelegateFromRebalancedValidatorSet(transactionContext, coin, "")
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [account?.address, account?.osmosis, coin]);
+  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 

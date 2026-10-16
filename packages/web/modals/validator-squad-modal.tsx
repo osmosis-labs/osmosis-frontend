@@ -1,3 +1,8 @@
+import {
+  prepareRedelegateMsgs,
+  prepareSetValidatorSetPreferenceAndDelegateToValidatorSetMsg,
+  prepareSetValidatorSetPreferenceMsg,
+} from "@osmosis-labs/tx";
 import type * as Staking from "@osmosis-labs/types";
 import type * as StakingType from "@osmosis-labs/types";
 import {
@@ -135,7 +140,12 @@ export const ValidatorSquadModal: FunctionComponent<
   // chain
   const { chainId } = OsmosisChainInfo;
 
-  const { wallet: account, address: walletAddress } = useWallet(chainId);
+  const {
+    wallet: account,
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(chainId);
 
   // i18n
   const { t, language } = useTranslation();
@@ -647,7 +657,8 @@ export const ValidatorSquadModal: FunctionComponent<
       );
       if (!redelegations.length) return;
 
-      await account.osmosis.sendRedelegateMsgs(
+      await prepareRedelegateMsgs(
+        transactionContext,
         redelegations,
         getRedelegationPreferenceUpdate(
           [...usersValidatorSetPreferenceMap.keys()],
@@ -655,35 +666,39 @@ export const ValidatorSquadModal: FunctionComponent<
         ),
         "",
         onRequestClose
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
       return;
     }
 
     // stake button
     if (action === "stake") {
-      await account.osmosis.sendSetValidatorSetPreferenceAndDelegateToValidatorSetMsg(
+      await prepareSetValidatorSetPreferenceAndDelegateToValidatorSetMsg(
+        transactionContext,
         operatorAddresses,
         coin,
         "",
         onRequestClose
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
     } else {
       // edit / view all
-      await account.osmosis.sendSetValidatorSetPreferenceMsg(
+      await prepareSetValidatorSetPreferenceMsg(
+        transactionContext,
         operatorAddresses,
         "",
         onRequestClose
-      );
+      ).then((prepared) => signAndBroadcast(...prepared));
     }
   }, [
     selectedOperatorAddresses,
     account,
     isRedelegating,
+    action,
     inactiveDelegations,
+    transactionContext,
     usersValidatorSetPreferenceMap,
     onRequestClose,
+    signAndBroadcast,
     coin,
-    action,
   ]);
 
   const totalInactiveStake = useMemo(
