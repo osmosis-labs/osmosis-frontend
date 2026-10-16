@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import type { PoolType } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useState } from "react";
@@ -9,8 +9,6 @@ import { Button } from "~/components/ui/button";
 import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
-
-type PoolType = ObservableQueryPool["type"];
 
 interface PoolTypeConfig {
   imageSrc: string;

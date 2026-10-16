@@ -1,6 +1,6 @@
-import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { EmptyAmountError } from "@osmosis-labs/utils";
 import { act, renderHook } from "@testing-library/react";
 
 import {

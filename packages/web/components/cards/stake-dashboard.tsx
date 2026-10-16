@@ -1,5 +1,5 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Currency, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";

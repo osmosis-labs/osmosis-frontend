@@ -1,5 +1,5 @@
-import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
+import { EmptyAmountError } from "@osmosis-labs/utils";
 
 export type RemoveConcentratedLiquidityPosition = {
   liquidity: Dec;

@@ -1,5 +1,5 @@
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
+import type { CoinPrimitive } from "@osmosis-labs/types";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";

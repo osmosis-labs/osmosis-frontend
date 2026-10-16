@@ -1,4 +1,4 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
+import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

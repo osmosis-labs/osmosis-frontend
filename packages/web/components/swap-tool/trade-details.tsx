@@ -1,7 +1,7 @@
 import { Disclosure } from "@headlessui/react";
-import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { EmptyAmountError } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";

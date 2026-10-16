@@ -1,5 +1,6 @@
-import { ChainGetter, ChainIdHelper } from "@osmosis-labs/keplr-stores";
+import type { ChainGetter } from "@osmosis-labs/types";
 import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
+import { ChainIdHelper } from "@osmosis-labs/utils";
 
 import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "~/config/env";
 import { AssetLists } from "~/config/generated/asset-lists";

@@ -30,6 +30,7 @@
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/utils": "^1.0.0",
     "mobx": "^6.1.7"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
-import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import type * as Staking from "@osmosis-labs/types";
+import type * as StakingType from "@osmosis-labs/types";
 import {
   CoinPretty,
   Currency,
