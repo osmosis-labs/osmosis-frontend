@@ -461,9 +461,17 @@ export class WalletRuntime {
       ]);
     } catch (e) {
       // Blocked storage or corrupt JSON must not leave one-click state
-      // loading forever. The defaults (disabled, no session) stand until the
-      // next write replaces them.
+      // loading forever. The current state (the defaults on first read)
+      // stands until the next write replaces it.
       console.error("Failed to read one-click trading state", e);
+      this.updateSession({ isStateHydrated: true });
+      return;
+    }
+    // Keep the current object when the stored session is unchanged, so a
+    // re-read for another key does not invalidate a signature in progress.
+    const current = this.store.getState().oneClickTradingInfo;
+    if (current && info && JSON.stringify(current) === JSON.stringify(info)) {
+      info = current;
     }
     this.updateSession({
       isStateHydrated: true,
