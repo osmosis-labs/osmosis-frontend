@@ -72,6 +72,19 @@ const webRules = {
     "no-restricted-imports": [
       "error",
       {
+        paths: [
+          {
+            name: "@osmosis-labs/stores",
+            importNames: [
+              "AccountStore",
+              "CosmosAccount",
+              "CosmwasmAccount",
+              "OsmosisAccount",
+              "OsmosisAccountImpl",
+            ],
+            message: "Use useWallet and the standalone tx functions.",
+          },
+        ],
         patterns: [
           {
             group: [
@@ -82,6 +95,13 @@ const webRules = {
             ],
             message:
               "Use the standalone types, utils, or tx packages; the legacy Keplr packages are being retired.",
+          },
+          {
+            group: [
+              "@osmosis-labs/stores/build/account",
+              "@osmosis-labs/stores/build/account/**",
+            ],
+            message: "Use useWallet and the standalone tx functions.",
           },
         ],
       },

@@ -46,7 +46,6 @@ import {
   handleExternalLink,
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
-import { useStore } from "~/stores";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { useProfileStore } from "~/stores/profile-store";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
@@ -347,7 +346,6 @@ export const NavBar: FunctionComponent<
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
 > = observer(({ className, onOpenProfile, icnsName }) => {
-  const { accountStore } = useStore();
   const currentAvatar = useProfileStore((state) => state.currentAvatar);
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
@@ -390,7 +388,7 @@ const WalletInfo: FunctionComponent<
           onClick={() => {
             onOpenWalletSelect({
               walletOptions: [
-                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+                { walletType: "cosmos", chainId: OsmosisChainInfo.chainId },
               ],
             });
           }}

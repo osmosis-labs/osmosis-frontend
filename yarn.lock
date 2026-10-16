@@ -8365,6 +8365,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:0.36.2"
     "@cosmjs/stargate": "npm:0.36.2"
     "@cosmos-kit/core": "npm:^2.18.1"
+    "@keplr-wallet/crypto": "npm:0.13.41"
     "@osmosis-labs/math": "npm:^5.1.0"
     "@osmosis-labs/proto-codecs": "npm:^5.1.0"
     "@osmosis-labs/server": "npm:^1.0.0"

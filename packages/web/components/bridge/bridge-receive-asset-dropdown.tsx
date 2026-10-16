@@ -8,8 +8,8 @@ import { Icon } from "~/components/assets";
 import { SupportedAsset } from "~/components/bridge/use-bridges-supported-assets";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
@@ -71,7 +71,6 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
   assetsInOsmosis,
   counterpartySupportedAssetsByChainId,
 }) => {
-  const { accountStore } = useStore();
   const { t } = useTranslation();
 
   return (
@@ -150,7 +149,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
                         chainType: "cosmos",
                         address: asset.coinMinimalDenom,
                         decimals: asset.coinDecimals,
-                        chainId: accountStore.osmosisChainId,
+                        chainId: OsmosisChainInfo.chainId,
                         denom: asset.coinDenom,
                         supportedVariants: {},
                         transferTypes: [],

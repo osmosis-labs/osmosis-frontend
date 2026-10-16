@@ -14,7 +14,6 @@ import {
 } from "@cosmos-kit/core";
 // The CommonJS barrel also loads mnemonic/BIP32 code and browser crypto polyfills.
 import { Hash } from "@keplr-wallet/crypto/build/hash";
-import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -30,17 +29,18 @@ import type {
   TxFeMemoFlags,
 } from "@osmosis-labs/tx";
 import {
-  appendFeMemoTag,
+  canSignOneClick,
+  getOneClickExtensionOptions,
+  signOneClick,
+} from "@osmosis-labs/tx";
+import {
   CosmosKitAccountsLocalStorageKey,
   createWalletTxClient,
-  getPublicKeyTypeUrl,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
-  OneClickFeMemoTag,
   type OneClickSigningAdapter,
   OneClickTradingLocalStorageKey,
-  padSessionKeyBytes,
   UseOneClickTradingLocalStorageKey,
   type WalletTxClient,
 } from "@osmosis-labs/tx";
@@ -68,17 +68,6 @@ import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 export { GasMultiplier } from "@osmosis-labs/tx";
-
-/**
- * CosmJS's own SignerData declares `accountNumber: number`, which cannot hold a
- * uint64 — chains on Cosmos SDK 0.53+ assign account numbers above 2^53. Carry
- * it as a decimal string and convert at the encoder instead.
- */
-type SignerData = {
-  accountNumber: string;
-  sequence: number;
-  chainId: string;
-};
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -178,7 +167,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }));
   }
 
-  /** Bridges one-click session signing, which still lives in this store, into the tx client. */
+  /** Published AccountStore compatibility boundary for standalone transactions. */
   get oneClickSigningAdapter(): OneClickSigningAdapter {
     return {
       getInfo: () => this.getOneClickTradingInfo(),
@@ -767,117 +756,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  private async signOneClick({
-    wallet,
-    oneClickTradingInfo,
-    signerAddress,
-    messages,
-    fee,
-    memo,
-    signerData: { accountNumber, sequence, chainId },
-    memoFlags,
-  }: {
-    wallet: AccountStoreWallet;
-    oneClickTradingInfo: OneClickTradingInfo;
-    signerAddress: string;
-    messages: readonly EncodeObject[];
-    fee: StdFee;
-    memo: string;
-    signerData: SignerData;
-    memoFlags?: TxFeMemoFlags;
-  }): Promise<TxRaw> {
-    if (!wallet.offlineSigner) {
-      throw new Error("offlineSigner is not available in wallet");
-    }
-
-    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
-      (account) => account.address === signerAddress
-    );
-    if (!accountFromSigner) {
-      throw new Error("Failed to retrieve account from signer");
-    }
-
-    // Tag the memo so we know the tx originated from the frontend (QA), plus
-    // any warn-accept flags the user acknowledged.
-    memo = appendFeMemoTag(memo, OneClickFeMemoTag, memoFlags);
-
-    const [
-      { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
-      { TxExtension },
-      { fromBase64 },
-      { Int53 },
-      { makeAuthInfoBytes, makeSignBytes, makeSignDoc, encodePubkey },
-      { TxRaw },
-    ] = await Promise.all([
-      import("@cosmjs/amino"),
-      import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"),
-      import("@cosmjs/encoding"),
-      import("@cosmjs/math"),
-      import("@cosmjs/proto-signing"),
-      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
-    ]);
-
-    const pubkey = encodePubkey(
-      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
-    );
-
-    const pubKeyTypeUrl = getPublicKeyTypeUrl({
-      chainId: wallet.chain.chain_id,
-      coinType:
-        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.slip44 ?? 118,
-    });
-
-    pubkey.typeUrl = pubKeyTypeUrl;
-
-    const registry = await this.getRegistry();
-    const txBodyBytes = registry.encodeTxBody({
-      messages,
-      memo,
-      nonCriticalExtensionOptions: [
-        {
-          typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
-          value: TxExtension.encode({
-            selectedAuthenticators: [
-              BigInt(oneClickTradingInfo.authenticatorId),
-            ],
-          }).finish(),
-        },
-      ],
-    }) as Uint8Array;
-
-    const privateKey = new PrivKeySecp256k1(
-      padSessionKeyBytes(fromBase64(oneClickTradingInfo.sessionKey))
-    );
-
-    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
-    const authInfoBytes = makeAuthInfoBytes(
-      [{ pubkey, sequence }],
-      fee.amount,
-      gasLimit,
-      undefined,
-      undefined
-    );
-    const signDoc = makeSignDoc(
-      txBodyBytes,
-      authInfoBytes,
-      chainId,
-      // Typed as a number upstream, but only ever handed to BigInt(), which is
-      // exact on a decimal string. Cast goes away on the @cosmjs 0.39.0 upgrade.
-      accountNumber as unknown as number
-    );
-
-    const sig = privateKey.signDigest32(Hash.sha256(makeSignBytes(signDoc)));
-
-    const signature = encodeSecp256k1Signature(
-      privateKey.getPubKey().toBytes(),
-      new Uint8Array([...sig.r, ...sig.s])
-    );
-
-    return TxRaw.fromPartial({
-      bodyBytes: signDoc.bodyBytes,
-      authInfoBytes: signDoc.authInfoBytes,
-      signatures: [fromBase64(signature.signature)],
+  private async signOneClick(
+    input: import("@osmosis-labs/tx").SessionSignRequest
+  ): Promise<TxRaw> {
+    return signOneClick(input, {
+      chains: this.chains,
+      registry: await this.getRegistry(),
+      oneClickTradingInfo: input.oneClickTradingInfo,
+      osmosisChainId: this.osmosisChainId,
     });
   }
 
@@ -967,52 +853,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    */
   async shouldBeSignedWithOneClickTrading({
     messages,
+    chainId = this.osmosisChainId,
   }: {
     messages: readonly EncodeObject[];
+    chainId?: string;
   }): Promise<boolean> {
-    const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
-    const oneClickTradingInfo = await this.getOneClickTradingInfo();
-
-    if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
-      return false;
-    }
-
-    // The session may belong to an account the user has switched away from.
-    if (
-      oneClickTradingInfo.userOsmoAddress !==
-      this.getWallet(this.osmosisChainId)?.address
-    ) {
-      return false;
-    }
-
-    const isAllowedMessageType = messages.every(({ typeUrl }) =>
-      oneClickTradingInfo.allowedMessages.includes(typeUrl)
-    );
-
-    return isAllowedMessageType;
+    return canSignOneClick({
+      info: await this.getOneClickTradingInfo(),
+      enabled: await this.isOneClickTradingEnabled(),
+      address:
+        chainId === this.osmosisChainId
+          ? this.getWallet(chainId)?.address
+          : undefined,
+      chainId,
+      osmosisChainId: this.osmosisChainId,
+      messages,
+    });
   }
 
-  /**
-   * Generates the extension options for one-click trading transactions.
-   */
-  async getOneClickTradingExtensionOptions({
-    oneClickTradingInfo,
-  }: {
+  async getOneClickTradingExtensionOptions(input: {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
-    if (!oneClickTradingInfo) return undefined;
-    const { TxExtension } =
-      await import("@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx");
-    return [
-      {
-        typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
-        value: TxExtension.encode({
-          selectedAuthenticators: [
-            BigInt(oneClickTradingInfo?.authenticatorId),
-          ],
-        }).finish(),
-      },
-    ];
+    return getOneClickExtensionOptions(input);
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {

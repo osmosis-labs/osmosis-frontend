@@ -51,7 +51,10 @@ import {
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import {
   use1CTSwapReviewMessages,
@@ -64,7 +67,6 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
 import { AppRouter } from "~/server/api/root-router";
-import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterInputs } from "~/utils/trpc";
 
@@ -121,13 +123,13 @@ export function useSwap(
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const apiUtils = api.useUtils();
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const {
     wallet: account,
     address,
     txTypeInProgress,
     signAndBroadcast,
-  } = useWallet();
+  } = walletApi;
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
@@ -346,12 +348,12 @@ export function useSwap(
    */
   const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
+      OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, address, accountStore.osmosisChainId]);
+  }, [account, address]);
 
   const messages = useMemo(() => {
     if (isLedger) {
@@ -472,7 +474,7 @@ export function useSwap(
           // our current quote's gas estimation incorrect and low. This results in out of gas error.
           const messageCanBeSignedWithOneClickTrading = !isNil(messages)
             ? isOneClickTradingEnabled &&
-              (await accountStore.shouldBeSignedWithOneClickTrading({
+              (await walletApi.shouldBeSignedWithOneClickTrading({
                 messages,
               }))
             : false;
@@ -588,7 +590,7 @@ export function useSwap(
                       fallbackGetAuthenticatorId:
                         apiUtils.local.oneClickTrading.getSessionAuthenticator
                           .fetch,
-                      accountStore,
+                      walletApi,
                       allowedMessages: oneClickMessages.allowedMessages,
                       sessionPeriod: oneClickMessages.sessionPeriod,
                       spendLimitTokenDecimals:
@@ -604,7 +606,7 @@ export function useSwap(
                     oneClickMessages.type === "remove-1ct-session"
                   ) {
                     await onEnd1CTSession({
-                      accountStore,
+                      walletApi,
                       authenticatorId: oneClickMessages.authenticatorId,
                     });
                   }
@@ -629,7 +631,7 @@ export function useSwap(
               {
                 ...signOptions,
                 useOneClickTrading:
-                  await accountStore.shouldBeSignedWithOneClickTrading({
+                  await walletApi.shouldBeSignedWithOneClickTrading({
                     messages,
                   }),
               },
@@ -664,7 +666,7 @@ export function useSwap(
               undefined,
               signOptions?.fee,
               signOptions,
-              (tx) => {
+              async (tx) => {
                 const { code } = tx;
                 if (code) {
                   reject(
@@ -676,32 +678,40 @@ export function useSwap(
                     oneClickMessages &&
                     oneClickMessages.type === "create-1ct-session"
                   ) {
-                    onAdd1CTSession({
-                      privateKey: oneClickMessages.key,
-                      tx,
-                      userOsmoAddress: account?.address ?? "",
-                      fallbackGetAuthenticatorId:
-                        apiUtils.local.oneClickTrading.getSessionAuthenticator
-                          .fetch,
-                      accountStore,
-                      allowedMessages: oneClickMessages.allowedMessages,
-                      sessionPeriod: oneClickMessages.sessionPeriod,
-                      spendLimitTokenDecimals:
-                        oneClickMessages.spendLimitTokenDecimals,
-                      transaction1CTParams:
-                        oneClickMessages.transaction1CTParams,
-                      allowedAmount: oneClickMessages.allowedAmount,
-                      t,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onAdd1CTSession({
+                          privateKey: oneClickMessages.key,
+                          tx,
+                          userOsmoAddress: account?.address ?? "",
+                          fallbackGetAuthenticatorId:
+                            apiUtils.local.oneClickTrading
+                              .getSessionAuthenticator.fetch,
+                          walletApi,
+                          allowedMessages: oneClickMessages.allowedMessages,
+                          sessionPeriod: oneClickMessages.sessionPeriod,
+                          spendLimitTokenDecimals:
+                            oneClickMessages.spendLimitTokenDecimals,
+                          transaction1CTParams:
+                            oneClickMessages.transaction1CTParams,
+                          allowedAmount: oneClickMessages.allowedAmount,
+                          t,
+                        }),
+                      "create-1ct-session"
+                    );
                   } else if (
                     shouldSend1CTTx &&
                     oneClickMessages &&
                     oneClickMessages.type === "remove-1ct-session"
                   ) {
-                    onEnd1CTSession({
-                      accountStore,
-                      authenticatorId: oneClickMessages.authenticatorId,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onEnd1CTSession({
+                          walletApi,
+                          authenticatorId: oneClickMessages.authenticatorId,
+                        }),
+                      "remove-1ct-session"
+                    );
                   }
 
                   resolve(
@@ -723,7 +733,7 @@ export function useSwap(
       }),
     [
       account,
-      accountStore,
+      walletApi,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
       featureFlags.swapToolSimulateFee,
       hasOverSpendLimitError,

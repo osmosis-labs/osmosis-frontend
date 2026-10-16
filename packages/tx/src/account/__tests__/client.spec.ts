@@ -258,3 +258,90 @@ it("preserves simulation errors and fee amount selection", async () => {
     client.estimateFee({ wallet, messages: [message] })
   ).rejects.toBeInstanceOf(SimulateNotAvailableError);
 });
+
+it("falls back to the wallet when session eligibility fails, without prompting about its fee limit", async () => {
+  const { deps, wallet, signDirect } = fixture();
+  const signSession = jest.fn();
+  const confirm = jest.fn();
+  deps.oneClick = {
+    getInfo: async () => ({ networkFeeLimit: "invalid" }) as any,
+    shouldSign: async () => false,
+    extensionOptions: async () => undefined,
+    sign: signSession,
+  };
+  deps.options = { preTxEvents: { onExceeds1CTNetworkFeeLimit: confirm } };
+  await createWalletTxClient(deps).sign({
+    wallet,
+    messages: [message],
+    fee,
+    memo: "",
+    signOptions: { useOneClickTrading: true },
+  });
+  expect(signDirect).toHaveBeenCalledTimes(1);
+  expect(signSession).not.toHaveBeenCalled();
+  expect(confirm).not.toHaveBeenCalled();
+});
+
+it.each(["continue", "finish"] as const)(
+  "honors %s when an eligible session exceeds its gas limit",
+  async (decision) => {
+    const { deps, wallet, signDirect } = fixture();
+    const signSession = jest.fn();
+    deps.oneClick = {
+      getInfo: async () =>
+        ({ networkFeeLimit: "1", userOsmoAddress: address }) as any,
+      shouldSign: async () => true,
+      extensionOptions: async () => undefined,
+      sign: signSession,
+    };
+    deps.options = {
+      preTxEvents: {
+        onExceeds1CTNetworkFeeLimit: ({ continueTx, finish }) =>
+          decision === "continue" ? continueTx() : finish(),
+      },
+    };
+    const pending = createWalletTxClient(deps).sign({
+      wallet,
+      messages: [message],
+      fee,
+      memo: "",
+      signOptions: { useOneClickTrading: true },
+    });
+    if (decision === "finish") {
+      await expect(pending).rejects.toThrow("User cancelled");
+      expect(signDirect).not.toHaveBeenCalled();
+    } else {
+      await pending;
+      expect(signDirect).toHaveBeenCalledTimes(1);
+    }
+    expect(signSession).not.toHaveBeenCalled();
+  }
+);
+
+it("passes the checked session to signing if it changes during eligibility", async () => {
+  const { deps, wallet } = fixture();
+  const checked = {
+    networkFeeLimit: "100000",
+    userOsmoAddress: address,
+  } as any;
+  const replaced = { ...checked, authenticatorId: "other" };
+  let current = checked;
+  const sign = jest.fn();
+  deps.oneClick = {
+    getInfo: async () => current,
+    shouldSign: async () => {
+      current = replaced;
+      return true;
+    },
+    extensionOptions: async () => undefined,
+    sign,
+  };
+  await createWalletTxClient(deps).sign({
+    wallet,
+    messages: [message],
+    fee,
+    memo: "",
+    signOptions: { useOneClickTrading: true },
+  });
+  expect(sign.mock.calls[0][0].oneClickTradingInfo).toBe(checked);
+});

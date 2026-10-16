@@ -1,9 +1,3 @@
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  OsmosisAccount,
-} from "@osmosis-labs/stores";
 import type { TxEvents } from "@osmosis-labs/tx";
 
 import {
@@ -20,9 +14,6 @@ import { WalletRuntime } from "~/stores/wallet-runtime";
 
 export class RootStore {
   public readonly walletRuntime: WalletRuntime;
-  public readonly accountStore: AccountStore<
-    [OsmosisAccount, CosmosAccount, CosmwasmAccount]
-  >;
 
   constructor({
     txEvents,
@@ -50,39 +41,23 @@ export class RootStore {
       },
     };
 
-    this.accountStore = new AccountStore(
-      // CosmosKit reads the chain-registry fee and staking fields when suggesting chains.
-      ChainList.map(withCosmosKitFields),
-      OsmosisChainInfo.chainId,
-      AssetLists,
-      /**
-       * No need to add default wallets as we'll lazily install them as needed.
-       * @see wallet-select.tsx
-       * @see wallet-registry.ts
-       */
-      [],
-      StaticChainGetter,
+    this.walletRuntime = new WalletRuntime(
       {
+        chains: ChainList.map(withCosmosKitFields),
+        assets: AssetLists,
+        osmosisChainId: OsmosisChainInfo.chainId,
         walletConnectOptions: {
           signClient: {
             projectId: WALLETCONNECT_PROJECT_KEY ?? "",
             relayUrl: WALLETCONNECT_RELAY_URL,
           },
         },
-        preTxEvents,
       },
-      // These are Keplr store factories, not React Hooks.
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      OsmosisAccount.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmosAccount.use(),
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- Factory API is named `use` by the upstream SDK.
-      CosmwasmAccount.use()
+      {
+        preTxEvents,
+        findCurrency: (chainId, denom) =>
+          StaticChainGetter.getChain(chainId).findCurrency(denom),
+      }
     );
-    this.walletRuntime = new WalletRuntime(this.accountStore, {
-      preTxEvents,
-      findCurrency: (chainId, denom) =>
-        StaticChainGetter.getChain(chainId).findCurrency(denom),
-    });
   }
 }

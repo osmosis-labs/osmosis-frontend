@@ -5,8 +5,8 @@ import { useCallback, useRef, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import {
   BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
@@ -74,8 +74,8 @@ export type MultiTxStepQuoteParams = Omit<
  * the resume-from-history flow (`useMultiTxResume`).
  */
 export const useMultiTxFinalStep = () => {
-  const { accountStore } = useStore();
-  const { getChainWallet } = useWallet();
+  const walletApi = useWallet();
+  const { getChainWallet } = walletApi;
   const transferHistoryStore = useTransferHistoryStore();
   const apiUtils = api.useUtils();
 
@@ -83,19 +83,17 @@ export const useMultiTxFinalStep = () => {
    *  needed) and returns the wallet's own account address there. */
   const getIntermediateAccount = useCallback(
     async (stepChainId: string): Promise<string | undefined> => {
-      let wallet = accountStore.getWallet(stepChainId);
+      let wallet = walletApi.getChainWallet(stepChainId).wallet;
       if (!wallet?.address) {
-        const osmosisWalletName = accountStore.getWallet(
-          accountStore.osmosisChainId
-        )?.walletName;
-        await accountStore
-          .getWalletRepo(stepChainId)
-          ?.connect(osmosisWalletName);
-        wallet = accountStore.getWallet(stepChainId);
+        const osmosisWalletName = walletApi.getChainWallet(
+          OsmosisChainInfo.chainId
+        ).wallet?.walletName;
+        await walletApi.getChainWallet(stepChainId)?.connect(osmosisWalletName);
+        wallet = walletApi.getChainWallet(stepChainId).wallet;
       }
       return wallet?.address;
     },
-    [accountStore]
+    [walletApi]
   );
 
   /**
