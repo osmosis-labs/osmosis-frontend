@@ -8335,7 +8335,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@ton/core": "npm:^0.61.0"
     "@ton/crypto": "npm:^3.3.0"
-    "@types/bs58check": "npm:^2.1.2"
     "@types/jest-in-case": "npm:^1.0.6"
     "@types/sha.js": "npm:^2.4.0"
     bitcoinjs-lib: "npm:^7.0.0-rc.0"
@@ -11805,15 +11804,6 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.3.0"
   checksum: 10c0/39abd9c0f8858efe3fa955f52d24ec8d953582080702cea29fd5592e697ac624e04e81da3c2b2be8f4f1387350e651802b4f1c481a9f64b002d144bd2152142b
-  languageName: node
-  linkType: hard
-
-"@types/bs58check@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@types/bs58check@npm:2.1.2"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/2bab957020229dd0b2790ba970158899809108afee30ac334371612dd9e7bf73b3c39a7944c6b3d6b0464a0c44495e15c036dbc38c0f589cc3c3f8f03a246ec4
   languageName: node
   linkType: hard
 
