@@ -144,8 +144,6 @@
     "concurrently": "^8.2.1",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "15.5.27",
-    "eslint-config-prettier": "^10.1.8",
     "fake-indexeddb": "5.0.2",
     "glob": "^9.3.4",
     "jest": "^30.5.2",
