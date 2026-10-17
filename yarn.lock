@@ -8384,8 +8384,6 @@ __metadata:
     focus-trap-react: "npm:^12.0.3"
     fuse.js: "npm:^6.5.3"
     glob: "npm:^9.3.4"
-    highcharts: "npm:^9.1.0"
-    highcharts-react-official: "npm:^3.0.0"
     jest: "npm:^30.5.2"
     jest-in-case: "npm:^1.0.2"
     jest-launchdarkly-mock: "npm:^2.1.0"
@@ -21048,23 +21046,6 @@ __metadata:
   dependencies:
     hermes-estree: "npm:0.25.1"
   checksum: 10c0/3abaa4c6f1bcc25273f267297a89a4904963ea29af19b8e4f6eabe04f1c2c7e9abd7bfc4730ddb1d58f2ea04b6fee74053d8bddb5656ec6ebf6c79cc8d14202c
-  languageName: node
-  linkType: hard
-
-"highcharts-react-official@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "highcharts-react-official@npm:3.1.0"
-  peerDependencies:
-    highcharts: ">=6.0.0"
-    react: ">=16.8.0"
-  checksum: 10c0/0b01d1289dc933a49989271c3d3f2bd6e636ace2d1d10b69917c5b1047d035c87b5041012a7b54f4f18ab7ceb543ad031560002826051e9979cf9f5eec994834
-  languageName: node
-  linkType: hard
-
-"highcharts@npm:^9.1.0":
-  version: 9.3.3
-  resolution: "highcharts@npm:9.3.3"
-  checksum: 10c0/971219d08c782d77bb7eee03ce9f4f6ad2c9ab711e8bfb3cd64de588fd0ffa8126bc165a5b55ecc1729f355172c7c2ba8bf815e2ea10916dc9e13d89303d488a
   languageName: node
   linkType: hard
 

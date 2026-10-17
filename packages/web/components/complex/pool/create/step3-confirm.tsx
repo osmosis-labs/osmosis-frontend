@@ -1,11 +1,7 @@
 import { Dec, IBCCurrency } from "@osmosis-labs/unit";
 import { FunctionComponent, useMemo } from "react";
 
-import {
-  generateCoinProportionSeries,
-  HIGHCHART_LEGEND_GRADIENTS,
-  PieChart,
-} from "~/components/chart";
+import { DonutChart, donutLegendGradient } from "~/components/chart";
 import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
@@ -18,22 +14,21 @@ export const Step3Confirm: FunctionComponent<StepProps> = (props) => {
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
-  const series = useMemo(() => {
-    return generateCoinProportionSeries(
-      config.assets.map((asset) => ({
-        currency: asset.amountConfig.sendCurrency,
-        percentage:
+  const proportions = useMemo(
+    () =>
+      config.assets.map((asset) =>
+        Number(
           config.poolType === "weighted"
             ? (asset.percentage ?? "1")
             : asset.scalingFactor
               ? new Dec(asset.scalingFactor)
                   .quo(new Dec(config.assets.length))
                   .toString()
-              : "1",
-        amount: asset.amountConfig.amount,
-      }))
-    );
-  }, [config.assets, config.poolType]);
+              : "1"
+        )
+      ),
+    [config.assets, config.poolType]
+  );
 
   return (
     <StepBase step={3} {...props}>
@@ -46,13 +41,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = (props) => {
               width: isMobile ? "96px" : "200px",
             }}
           >
-            <PieChart
-              options={{
-                series,
-              }}
-              height={isMobile ? 96 : 200}
-              width={isMobile ? 96 : 200}
-            />
+            <DonutChart size={isMobile ? 96 : 200} values={proportions} />
           </figure>
           <div className="flex flex-col gap-2">
             <div className="caption flex place-content-between text-osmoverse-500 md:text-xxs">
@@ -79,7 +68,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = (props) => {
                         <figure
                           className="mr-3 h-4 w-4 rounded-full md:mr-1 md:h-2 md:w-2"
                           style={{
-                            background: HIGHCHART_LEGEND_GRADIENTS[index],
+                            background: donutLegendGradient(index),
                           }}
                         />
                         {isMobile ? (
