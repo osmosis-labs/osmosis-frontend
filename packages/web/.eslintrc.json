@@ -16,7 +16,8 @@
           "**/*.spec.ts",
           "**/*.spec.tsx",
           "**/*.spec.js",
-          "**/setup-tests.js"
+          "**/setup-tests.js",
+          "**/web/config/generate-*.ts"
         ]
       }
     ],

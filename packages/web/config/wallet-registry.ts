@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
 import { WalletConnectionInProgressError } from "@osmosis-labs/utils";
 

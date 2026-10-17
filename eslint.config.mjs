@@ -52,6 +52,7 @@ const webRules = {
           "**/*.spec.tsx",
           "**/*.spec.js",
           "**/setup-tests.js",
+          "**/web/config/generate-*.ts",
         ],
       },
     ],
