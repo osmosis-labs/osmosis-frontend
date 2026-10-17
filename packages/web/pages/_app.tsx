@@ -11,7 +11,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
-import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
@@ -60,7 +59,6 @@ dayjs.extend(isBetween);
 dayjs.extend(localizedFormat);
 dayjs.updateLocale("es", dayjsLocaleEs);
 dayjs.updateLocale("ko", dayjsLocaleKo);
-enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
@@ -222,7 +220,7 @@ export const AppsBadge: FunctionComponent<{ appsLink: string }> = ({
    *
    * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
    *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
-   *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
+   *      This lets `AppsBadge` read the updated state through its own hook.
    *   2. It simplifies the code by avoiding state management in two files.
    *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
    *      the viewed app titles change.

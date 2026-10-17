@@ -53,7 +53,7 @@ export function useInactiveDelegations({
 /**
  * Returns the stake (minimal units) a validator outside the active set needs to
  * rank back into it, or undefined until the bonded validators and staking
- * params have loaded. Call from an observer component.
+ * params have loaded.
  */
 export function useStakeToEnterActiveSet(): (
   validatorTokens: Int

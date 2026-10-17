@@ -314,7 +314,7 @@ export const usePlaceLimit = ({
       OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // Refresh account metadata when the address changes, even if the wallet instance is unchanged.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, address]);
 

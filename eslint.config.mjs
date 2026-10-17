@@ -75,6 +75,18 @@ const webRules = {
         patterns: [
           {
             group: [
+              "mobx",
+              "mobx/**",
+              "mobx-react-lite",
+              "mobx-react-lite/**",
+              "mobx-utils",
+              "mobx-utils/**",
+            ],
+            message:
+              "MobX state has been replaced by React hooks and Zustand. Use the existing hooks and stores.",
+          },
+          {
+            group: [
               "@osmosis-labs/stores",
               "@osmosis-labs/stores/**",
               "@osmosis-labs/keplr-hooks",

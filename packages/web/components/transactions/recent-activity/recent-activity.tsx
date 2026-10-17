@@ -1,5 +1,4 @@
-import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, memo } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
@@ -28,7 +27,7 @@ const RecentActivitySkeleton = () => {
 };
 
 // v1 includes top 5 transactions from transaction history
-export const RecentActivity: FunctionComponent = observer(() => {
+export const RecentActivity: FunctionComponent = memo(() => {
   const { t } = useTranslation();
 
   const { transactions, isLoading } = useTransactionHistory();

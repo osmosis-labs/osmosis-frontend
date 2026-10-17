@@ -8,10 +8,10 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   Dispatch,
   FunctionComponent,
+  memo,
   ReactNode,
   SetStateAction,
   useCallback,
@@ -122,7 +122,7 @@ interface AmountScreenProps {
   onConfirm: () => void;
 }
 
-export const AmountScreen = observer(
+export const AmountScreen = memo(
   ({
     direction,
     selectedDenom,

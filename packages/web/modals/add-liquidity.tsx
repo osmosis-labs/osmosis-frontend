@@ -1,7 +1,6 @@
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { NotInitializedError } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, memo, useState } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
@@ -35,7 +34,7 @@ export const AddLiquidityModal: FunctionComponent<
     poolType?: PoolType;
     onAddLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const { poolId } = props;
   const { t } = useTranslation();
 

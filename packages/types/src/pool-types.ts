@@ -135,7 +135,7 @@ export type PoolType =
   | "alloyed"
   | "cosmwasm";
 
-/** Chain/sidecar pool payload used by the MobX query. Extra fields are present
+/** Chain/sidecar pool payload. Extra fields are present
  *  on some sources (CL balances, CosmWasm token balances) but not the node type. */
 export type PoolRaw =
   | WeightedPoolRawResponse
