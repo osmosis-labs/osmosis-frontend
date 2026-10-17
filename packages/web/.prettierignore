@@ -1,6 +1,5 @@
 .prettierignore
 .gitignore
-.eslintignore
 
 /.next
 /e2e/keplr-extension
