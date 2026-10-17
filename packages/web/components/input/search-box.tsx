@@ -2,10 +2,10 @@ import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import { debounce } from "debounce";
 import {
-  type ChangeEvent,
   type DOMAttributes,
   forwardRef,
   FunctionComponent,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -94,9 +94,10 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     const syncedValueRef = useRef(currentValue ?? "");
 
     const _onInput = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => {
-        syncedValueRef.current = e.target.value;
-        onInput(e.target.value);
+      (e: SyntheticEvent<HTMLInputElement>) => {
+        const value = (e.target as HTMLInputElement).value;
+        syncedValueRef.current = value;
+        onInput(value);
       },
       [onInput]
     );

@@ -385,7 +385,7 @@ export function useAddLiquidityConfig(
   // pool fetch, so a click while a submit is in flight joins that submit
   // instead of starting a second one. Every caller gets a promise that
   // settles, so the modal close and loading state chained on it always run.
-  const inFlightRef = useRef<Promise<void>>();
+  const inFlightRef = useRef<Promise<void> | undefined>(undefined);
   const addLiquidity = useCallback(() => {
     if (inFlightRef.current) return inFlightRef.current;
     const submit = new Promise<void>(async (resolve, reject) => {
