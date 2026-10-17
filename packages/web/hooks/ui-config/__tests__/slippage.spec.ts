@@ -1,10 +1,9 @@
-import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import { Dec } from "@osmosis-labs/unit";
 import { act, renderHook } from "@testing-library/react";
 
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 
-/** The same sequence of operations on the legacy MobX config and on the hook state. */
+/** Regression inputs covering accepted, rejected and normalized manual values. */
 const manualInputs = [
   "1",
   ".5",
@@ -52,29 +51,18 @@ describe("useSlippageConfig", () => {
     expect(result.current.setIsManualSlippage).toBe(setIsManualSlippage);
   });
 
-  it.each(manualInputs)(
-    "matches the legacy config for manual input %j",
-    (input) => {
-      const legacy = new ObservableSlippageConfig();
-      // what the legacy hook did on mount
-      legacy.select(0);
-      const { result } = renderHook(() => useSlippageConfig());
-      // unparsable input makes the legacy config throw before mutating anything
-      try {
-        legacy.setManualSlippage(input);
-      } catch {}
-      act(() => result.current.setManualSlippage(input));
+  it.each(manualInputs)("handles manual input %j", (input) => {
+    const { result } = renderHook(() => useSlippageConfig());
+    act(() => result.current.setManualSlippage(input));
 
-      expect(result.current.manualSlippageStr).toBe(legacy.manualSlippageStr);
-      expect(result.current.isManualSlippage).toBe(legacy.isManualSlippage);
-      expect(result.current.slippage.toDec().toString()).toBe(
-        legacy.slippage.toDec().toString()
-      );
-      expect(result.current.manualSlippageError?.constructor).toBe(
-        legacy.manualSlippageError?.constructor
-      );
-    }
-  );
+    // Expectations captured from the legacy config before its removal.
+    expect({
+      manualSlippageStr: result.current.manualSlippageStr,
+      isManualSlippage: result.current.isManualSlippage,
+      slippage: result.current.slippage.toDec().toString(),
+      error: result.current.manualSlippageError?.constructor.name,
+    }).toMatchSnapshot();
+  });
 
   it("applies a valid manual slippage as a rate", () => {
     const { result } = renderHook(() => useSlippageConfig());
@@ -129,14 +117,17 @@ describe("useSlippageConfig", () => {
     );
   });
 
-  it("matches the legacy getSmallestSlippage", () => {
-    const legacy = new ObservableSlippageConfig();
+  it.each([
+    ["0.001", 0, "0.005000000000000000"],
+    ["0.005", 0, "0.005000000000000000"],
+    ["0.006", 1, "0.010000000000000000"],
+    ["0.03", 2, "0.030000000000000000"],
+    ["0.05", 3, "0.050000000000000000"],
+    ["0.2", 3, "0.050000000000000000"],
+  ])("selects the smallest preset for rate %s", (value, index, rate) => {
     const { result } = renderHook(() => useSlippageConfig());
-    for (const v of ["0.001", "0.005", "0.006", "0.03", "0.05", "0.2"]) {
-      const [li, ld] = legacy.getSmallestSlippage(new Dec(v));
-      const [i, d] = result.current.getSmallestSlippage(new Dec(v));
-      expect(i).toBe(li);
-      expect(d.toString()).toBe(ld.toString());
-    }
+    const [i, d] = result.current.getSmallestSlippage(new Dec(value));
+    expect(i).toBe(index);
+    expect(d.toString()).toBe(rate);
   });
 });

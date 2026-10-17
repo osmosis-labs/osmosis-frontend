@@ -1,4 +1,3 @@
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 import { AppCurrency } from "@osmosis-labs/unit";
 import { act, renderHook } from "@testing-library/react";
 
@@ -237,27 +236,9 @@ describe("useCreatePoolConfig", () => {
   });
 });
 
-/** The same operations on the legacy MobX config and on the hook. */
-describe("useCreatePoolConfig parity with the legacy config", () => {
-  type Config = Pick<
-    ObservableCreatePoolConfig,
-    | "poolType"
-    | "swapFee"
-    | "canAddAsset"
-    | "positiveBalanceError"
-    | "assetCountError"
-    | "percentageError"
-    | "scalingFactorError"
-    | "swapFeeError"
-    | "amountError"
-    | "scalingFactorControllerError"
-  > & {
-    assets: {
-      percentage?: string;
-      scalingFactor?: number;
-      amountConfig: { amount: string; sendCurrency: AppCurrency };
-    }[];
-  };
+// Expectations captured from the legacy config before its removal.
+describe("useCreatePoolConfig state transitions", () => {
+  type Config = ReturnType<typeof useCreatePoolConfig>;
 
   const snapshot = (c: Config) => ({
     poolType: c.poolType,
@@ -280,7 +261,7 @@ describe("useCreatePoolConfig parity with the legacy config", () => {
     })),
   });
 
-  const steps: ((c: any) => void)[] = [
+  const steps: ((c: Config) => void)[] = [
     (c) => c.setPoolType("weighted"),
     (c) => c.addAsset(osmo),
     (c) => c.addAsset(atom),
@@ -307,28 +288,13 @@ describe("useCreatePoolConfig parity with the legacy config", () => {
 
   it("matches after every step", () => {
     mockBalances = balances;
-    const legacy = new ObservableCreatePoolConfig(
-      {
-        getChain: () => ({ bech32Config: { bech32PrefixAccAddr: "osmo" } }),
-      } as any,
-      "osmosis-1",
-      sender
-    );
-    legacy.setBalances(
-      balances.flatMap(({ amount, coin }) =>
-        coin ? [{ currency: coin.currency, amount }] : []
-      )
-    );
     const { result } = renderConfig();
 
-    expect(snapshot(result.current)).toEqual(snapshot(legacy));
-    steps.forEach((step, i) => {
-      step(legacy);
+    const states = [snapshot(result.current)];
+    steps.forEach((step) => {
       act(() => step(result.current));
-      expect({ step: i, ...snapshot(result.current) }).toEqual({
-        step: i,
-        ...snapshot(legacy),
-      });
+      states.push(snapshot(result.current));
     });
+    expect(states).toMatchSnapshot();
   });
 });

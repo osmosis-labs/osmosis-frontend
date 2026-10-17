@@ -8185,48 +8185,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@osmosis-labs/keplr-hooks@npm:0.10.24-ibc.go.v7.hot.fix, @osmosis-labs/keplr-hooks@workspace:packages/keplr-hooks":
-  version: 0.0.0-use.local
-  resolution: "@osmosis-labs/keplr-hooks@workspace:packages/keplr-hooks"
-  dependencies:
-    "@osmosis-labs/keplr-stores": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/types": "npm:^1.0.0"
-    "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/utils": "npm:^1.0.0"
-    eslint: "npm:^9.39.5"
-    jest: "npm:^30.5.2"
-    mobx: "npm:^6.1.7"
-    prettier: "npm:^3.6.2"
-    ts-jest: "npm:^29.4.14"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@osmosis-labs/keplr-stores@npm:0.10.24-ibc.go.v7.hot.fix, @osmosis-labs/keplr-stores@workspace:packages/keplr-stores":
-  version: 0.0.0-use.local
-  resolution: "@osmosis-labs/keplr-stores@workspace:packages/keplr-stores"
-  dependencies:
-    "@osmosis-labs/types": "npm:^1.0.0"
-    "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/utils": "npm:^1.0.0"
-    "@types/sha.js": "npm:^2.4.0"
-    axios: "npm:^0.34.0"
-    buffer: "npm:^6.0.3"
-    deepmerge: "npm:^4.2.2"
-    eslint: "npm:^9.39.5"
-    eventemitter3: "npm:^4.0.7"
-    jest: "npm:^30.5.2"
-    mobx: "npm:^6.1.7"
-    mobx-utils: "npm:^6.0.3"
-    p-queue: "npm:^6.6.2"
-    prettier: "npm:^3.6.2"
-    sha.js: "npm:^2.4.11"
-    ts-jest: "npm:^29.4.14"
-    typescript: "npm:5.9.3"
-    utility-types: "npm:^3.10.0"
-  languageName: unknown
-  linkType: soft
-
 "@osmosis-labs/math@npm:^5.1.0, @osmosis-labs/math@workspace:packages/math":
   version: 0.0.0-use.local
   resolution: "@osmosis-labs/math@workspace:packages/math"
@@ -8288,49 +8246,6 @@ __metadata:
     typescript: "npm:5.9.3"
     viem: "npm:~2.41.2"
     zod: "npm:^3.22.4"
-  languageName: unknown
-  linkType: soft
-
-"@osmosis-labs/stores@npm:^5.1.0, @osmosis-labs/stores@workspace:packages/stores":
-  version: 0.0.0-use.local
-  resolution: "@osmosis-labs/stores@workspace:packages/stores"
-  dependencies:
-    "@chain-registry/types": "npm:^0.46.0"
-    "@cosmjs/amino": "npm:0.36.2"
-    "@cosmjs/encoding": "npm:0.36.2"
-    "@cosmjs/math": "npm:0.36.2"
-    "@cosmjs/proto-signing": "npm:0.36.2"
-    "@cosmjs/stargate": "npm:0.36.2"
-    "@cosmos-kit/core": "npm:^2.18.1"
-    "@keplr-wallet/crypto": "npm:0.13.41"
-    "@keplr-wallet/provider-mock": "npm:0.12.12"
-    "@osmosis-labs/keplr-hooks": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/keplr-stores": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/math": "npm:^5.1.0"
-    "@osmosis-labs/proto-codecs": "npm:^5.1.0"
-    "@osmosis-labs/server": "npm:^1.0.0"
-    "@osmosis-labs/tx": "npm:^1.0.0"
-    "@osmosis-labs/types": "npm:^1.0.0"
-    "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@osmosis-labs/utils": "npm:^1.0.0"
-    "@types/ws": "npm:^7.4.1"
-    axios: "npm:^0.34.0"
-    bitcoinjs-lib: "npm:^6.1.7"
-    buffer: "npm:^6.0.3"
-    cosmjs-types: "npm:^0.10.1"
-    dayjs: "npm:^1.11.23"
-    eslint: "npm:^9.39.5"
-    jest: "npm:^30.5.2"
-    lint-staged: "npm:^17.6.0"
-    long: "npm:^5.2.3"
-    mobx: "npm:^6.3.10"
-    mobx-utils: "npm:^6.0.4"
-    prettier: "npm:^3.6.2"
-    starknet: "npm:^8.0.0"
-    ts-jest: "npm:^29.4.14"
-    typescript: "npm:5.9.3"
-    utility-types: "npm:^3.10.0"
-    ws: "npm:^7.5.11"
   languageName: unknown
   linkType: soft
 
@@ -8422,6 +8337,7 @@ __metadata:
     "@ton/crypto": "npm:^3.3.0"
     "@types/bs58check": "npm:^2.1.2"
     "@types/jest-in-case": "npm:^1.0.6"
+    "@types/sha.js": "npm:^2.4.0"
     bitcoinjs-lib: "npm:^7.0.0-rc.0"
     bs58: "npm:^6.0.0"
     bs58check: "npm:^4.0.0"
@@ -8464,7 +8380,6 @@ __metadata:
     "@osmosis-labs/bridge": "npm:^1.0.0"
     "@osmosis-labs/math": "npm:^5.1.0"
     "@osmosis-labs/server": "npm:^1.0.0"
-    "@osmosis-labs/stores": "npm:^5.1.0"
     "@osmosis-labs/trpc": "npm:^1.0.0"
     "@osmosis-labs/tx": "npm:^1.0.0"
     "@osmosis-labs/types": "npm:^1.0.0"
@@ -12386,11 +12301,11 @@ __metadata:
   linkType: hard
 
 "@types/sha.js@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "@types/sha.js@npm:2.4.0"
+  version: 2.4.4
+  resolution: "@types/sha.js@npm:2.4.4"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10c0/33554a4dc6602db53c0dfd43fc59bff0164fb05da7077e3be0de622cf42da3a2a5aad7fd87ddf95c268eabdcc16485859b317585a44ee4923d61e47ba941b457
+  checksum: 10c0/aac78c1f5b66266338581e313cf0c1f449012628d6514bf57a4e3139e82ebabba276a8e9d6ebc249a0cdc72471e536b0c6ce9f6982e5d21c5c69c46fc93629dd
   languageName: node
   linkType: hard
 
@@ -25484,7 +25399,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-utils@npm:^6.0.3, mobx-utils@npm:^6.0.4":
+"mobx-utils@npm:^6.0.4":
   version: 6.0.4
   resolution: "mobx-utils@npm:6.0.4"
   peerDependencies:
@@ -27247,7 +27162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-queue@npm:6.6.2, p-queue@npm:^6.6.2":
+"p-queue@npm:6.6.2":
   version: 6.6.2
   resolution: "p-queue@npm:6.6.2"
   dependencies:
