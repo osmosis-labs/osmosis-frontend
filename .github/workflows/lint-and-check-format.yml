@@ -76,7 +76,17 @@ jobs:
     strategy:
       matrix:
         node-version: [24.x]
-        package: ["web", "utils", "server", "stores", "math", "bridge"]
+        package:
+          [
+            "web",
+            "utils",
+            "server",
+            "math",
+            "bridge",
+            "tx",
+            "types",
+            "proto-codecs",
+          ]
 
     steps:
       - name: Checkout Repo

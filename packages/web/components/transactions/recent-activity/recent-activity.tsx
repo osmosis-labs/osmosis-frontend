@@ -10,6 +10,7 @@ import { useTransactionModal } from "~/components/transactions/use-transaction-d
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { transferKey } from "~/stores/transfer-history";
 
 const ACTIVITY_LIMIT = 5;
 
@@ -105,14 +106,14 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
             if (transaction.__type === "recentTransfer") {
               const isSelected =
-                selectedTransactionHash === transaction.sendTxHash;
+                selectedTransactionHash === transferKey(transaction);
               return (
                 <TransactionTransferRow
-                  key={transaction.sendTxHash}
+                  key={transferKey(transaction)}
                   size="sm"
                   transaction={transaction}
                   onClick={() => {
-                    setSelectedTransactionHash(transaction.sendTxHash);
+                    setSelectedTransactionHash(transferKey(transaction));
 
                     // delay to ensure the slide over transitions smoothly
                     if (!open) {

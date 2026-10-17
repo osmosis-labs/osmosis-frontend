@@ -1020,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Überweisungen dauern möglicherweise länger als üblich oder schlagen möglicherweise ganz fehl. Sie führen die Überweisung auf eigenes Risiko durch.",
     "ibcConnectionDown": "Native IBC-Verbindung nicht verfügbar",
     "ibcConnectionDownDescription": "Die direkte IBC-Route für {asset} ist derzeit nicht verfügbar. Die folgenden Optionen bieten möglicherweise einen alternativen Pfad, können aber ebenfalls betroffen sein.",
+    "balanceUnavailable": "Ihr {chain}-Guthaben konnte nicht geladen werden",
+    "balanceUnavailableDescription": "{chain} war nicht erreichbar, daher wird Ihr Guthaben möglicherweise als 0 angezeigt. Ihre Gelder sind nicht betroffen. Versuchen Sie es erneut oder nutzen Sie die Optionen unten.",
+    "retryBalance": "Erneut versuchen",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native Übertragungen für {asset} nicht verfügbar",
@@ -1273,7 +1276,7 @@
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
-    "launchAlert": "Derzeit wird nur der Handels- und Überweisungsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
+    "launchAlert": "Angezeigt werden deine Swaps, Einzahlungen und Auszahlungen.",
     "history": "Geschichte",
     "orders": "Aufträge",
     "historyTable": {
@@ -1291,7 +1294,17 @@
       "providerFee": "Anbietergebühr",
       "provider": "Anbieter",
       "networkFee": "Netzwerkgebühr"
-    }
+    },
+    "filter": {
+      "type": "Transaktionsarten",
+      "swap": "Swaps",
+      "deposit": "Einzahlungen",
+      "withdraw": "Auszahlungen",
+      "search": "Asset, Chain, Betrag oder Adresse suchen",
+      "noMatches": "Keine passenden Transaktionen",
+      "pageHint": "Filter gelten nur für die Transaktionen auf dieser Seite. Öffne die nächste Seite oder passe deine Filter an."
+    },
+    "unknownAddressTooltip": "Diese Adresse konnte aus den Daten der Bridge nicht ermittelt werden. Sie wird möglicherweise später angezeigt; du findest sie auch im Explorer."
   },
   "date": {
     "earlierToday": "Heute früh",

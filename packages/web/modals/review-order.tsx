@@ -1,11 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
-  formatWarnPct,
-  InsufficientBalanceForFeeError,
-  ObservableSlippageConfig,
-  TxFeMemoFlags,
-} from "@osmosis-labs/stores";
-import { QuoteDirection } from "@osmosis-labs/tx";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
+import { formatWarnPct, QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -14,7 +9,10 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -37,8 +35,7 @@ import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { Button } from "~/components/ui/button";
-import { Button as UIButton } from "~/components/ui/button";
+import { Button, Button as UIButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -53,10 +50,11 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { useStore } from "~/stores";
 import {
   formatFiatPrice,
   formatPretty,
@@ -73,7 +71,7 @@ interface ReviewOrderProps {
    */
   confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
-  slippageConfig?: ObservableSlippageConfig;
+  slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;
@@ -143,9 +141,8 @@ export function ReviewOrder({
     useState(false);
 
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const { address } = useWallet();
+  const { isNewAccount } = useIsCosmosNewAccount({ address });
   const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const {
@@ -224,12 +221,17 @@ export function ReviewOrder({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const diffGteSlippage = hasQuoteDriftedBeyondSlippage({
-    initial: reviewedOutput?.toDec(),
-    current: amountWithSlippage?.toDec(),
-    slippageTolerance: slippageConfig?.slippage.toDec(),
-    quoteType,
-  });
+  // A resting limit order fills at its limit price, so movement in the market
+  // quote is not drift for it; only market orders compare against the
+  // reviewed quote.
+  const diffGteSlippage =
+    orderType === "market" &&
+    hasQuoteDriftedBeyondSlippage({
+      initial: reviewedOutput?.toDec(),
+      current: amountWithSlippage?.toDec(),
+      slippageTolerance: slippageConfig?.slippage.toDec(),
+      quoteType,
+    });
 
   /**
    * Live loss figures for the trade being reviewed (MTN-150).

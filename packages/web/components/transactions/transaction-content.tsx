@@ -1,10 +1,5 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import {
-  AccountStoreWallet,
-  CosmosAccount,
-  CosmwasmAccount,
-  OsmosisAccount,
-} from "@osmosis-labs/stores";
+import type { AccountStoreWallet } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
@@ -14,6 +9,10 @@ import { ClientOnly } from "~/components/client-only";
 import { OrderHistory } from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
+import {
+  TransactionFilters,
+  useFilteredTransactions,
+} from "~/components/transactions/transaction-filters";
 import { TransactionOptionsMenu } from "~/components/transactions/transaction-options-menu";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
@@ -45,7 +44,7 @@ export const TransactionContent = ({
   isWalletConnected: boolean;
   page: string;
   hasNextPage: boolean;
-  wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  wallet?: AccountStoreWallet;
 }) => {
   const { t } = useTranslation();
 
@@ -65,6 +64,22 @@ export const TransactionContent = ({
     transactions.length > 0;
 
   const showConnectWallet = !isWalletConnected && !isLoading;
+
+  const {
+    filtered: filteredTransactions,
+    isFiltering,
+    query,
+  } = useFilteredTransactions(transactions);
+
+  const hasWallet = Boolean(
+    wallet && wallet.isWalletConnected && wallet.address
+  );
+  // A type filter runs in the API, so it can return nothing at all: keep the
+  // controls (to change it back) and say nothing matched, rather than showing
+  // the no-history splash without a way out.
+  const showControls = hasWallet && (transactions.length > 0 || isFiltering);
+  const showNoMatches =
+    hasWallet && isFiltering && !isLoading && filteredTransactions.length === 0;
 
   return (
     <ClientOnly className="w-full">
@@ -86,35 +101,51 @@ export const TransactionContent = ({
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          <TabList className="flex items-center gap-8">
-            {TX_PAGE_TABS.map((defaultTab) => (
-              <Tab key={defaultTab}>
-                <span
-                  className={classNames(
-                    {
-                      "text-osmoverse-500": defaultTab !== tab,
-                    },
-                    "text-h5 font-h5 sm:text-h6"
-                  )}
-                >
-                  {t(
-                    defaultTab === "history"
-                      ? "transactions.history"
-                      : "transactions.orders"
-                  )}
-                </span>
-              </Tab>
-            ))}
-          </TabList>
+          <TransactionFilters
+            showControls={tab === "history" && showControls}
+            heading={
+              <TabList className="mr-auto flex items-center gap-8">
+                {TX_PAGE_TABS.map((defaultTab) => (
+                  <Tab key={defaultTab}>
+                    <span
+                      className={classNames(
+                        {
+                          "text-osmoverse-500": defaultTab !== tab,
+                        },
+                        "text-h5 font-h5 sm:text-h6"
+                      )}
+                    >
+                      {t(
+                        defaultTab === "history"
+                          ? "transactions.history"
+                          : "transactions.orders"
+                      )}
+                    </span>
+                  </Tab>
+                ))}
+              </TabList>
+            }
+          />
           <TabPanels>
             <TabPanel>
               <>
                 <div className="-mx-4 flex flex-col">
                   {showConnectWallet ? (
                     <NoTransactionsSplash variant="connect" />
+                  ) : showNoMatches ? (
+                    <div className="flex flex-col items-center gap-2 py-16 text-center">
+                      <p className="subtitle1">
+                        {query?.trim()
+                          ? t("search.noResultsFor", { query: query.trim() })
+                          : t("transactions.filter.noMatches")}
+                      </p>
+                      <p className="body2 text-osmoverse-300">
+                        {t("transactions.filter.pageHint")}
+                      </p>
+                    </div>
                   ) : showTransactionContent ? (
                     <TransactionRows
-                      transactions={transactions}
+                      transactions={filteredTransactions}
                       setSelectedTransactionHash={setSelectedTransactionHash}
                       selectedTransactionHash={selectedTransactionHash}
                       setOpen={setOpen}

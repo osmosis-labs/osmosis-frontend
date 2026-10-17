@@ -18,7 +18,7 @@
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
     "build": "turbo build",
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
-    "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/stores",
+    "build:libs": "turbo build --parallel --filter @osmosis-labs/math",
     "build:clean": "yarn clean && yarn install --immutable && yarn build",
     "clean": "turbo clean --parallel; rm -rf node_modules",
     "analyze": "turbo analyze",
@@ -29,7 +29,7 @@
     "pre-commit": "lerna run pre-commit --concurrency 1",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
-    "lint:workspace": "sherif --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores --ignore-package ./packages/e2e",
+    "lint:workspace": "sherif --ignore-package ./packages/e2e --ignore-dependency bitcoinjs-lib@^6.1.7",
     "lint:workspace:fix": "yarn lint:workspace -f",
     "postinstall": "yarn lint:workspace"
   },
@@ -78,7 +78,6 @@
   },
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
   "resolutions": {
-    "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@babel/traverse": "^7.29.7",
     "elliptic": "^6.6.1",
     "pbkdf2": "^3.1.3",
@@ -86,7 +85,6 @@
     "cipher-base": "^1.0.5",
     "handlebars": "^4.7.9",
     "joi": "^17.13.4",
-    "@keplr-wallet/background/axios": "^0.34.0",
     "@keplr-wallet/cosmos/axios": "^0.34.0",
     "@keplr-wallet/ens/axios": "^0.34.0",
     "@keplr-wallet/types/axios": "^0.34.0",

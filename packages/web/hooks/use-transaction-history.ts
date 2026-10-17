@@ -1,7 +1,14 @@
-import { useMemo } from "react";
+import type { TxSnapshot } from "@osmosis-labs/bridge";
+import { useEffect, useMemo } from "react";
 
-import { useStore } from "~/stores";
+import {
+  useIndexedTransferHistories,
+  useTransferHistoriesByAccount,
+  useTransferHistoryStore,
+} from "~/stores/transfer-history-instance";
 import { api } from "~/utils/trpc";
+
+import { useWallet } from "./use-wallet";
 
 export type HistoryTransaction = ReturnType<
   typeof useTransactionHistory
@@ -16,31 +23,69 @@ export type HistoryBridgeTransaction = Extract<
   { __type: "recentTransfer" }
 >;
 
+const UNKNOWN_SENDER_REFETCH_MS = 30_000;
+const UNKNOWN_SENDER_MAX_REFETCHES = 10;
+
 export const useTransactionHistory = ({
   pageSize = "100",
   pageNumber = "0",
+  types,
 }: {
   pageNumber?: string;
   pageSize?: string;
+  /** Only these transaction types (filtered by the API); all by default. */
+  types?: ("swap" | "deposit" | "withdraw")[];
 } = {}) => {
-  const { accountStore, transferHistoryStore } = useStore();
-
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const recentTransfers = transferHistoryStore.getHistoriesByAccount(
-    wallet?.address || ""
-  );
+  const { address, isWalletConnected } = useWallet();
+  const transferHistoryStore = useTransferHistoryStore();
+  const storedTransfers = useTransferHistoriesByAccount(address || "");
 
   const { data: transactionsData, isLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
-        address: wallet?.address || "",
+        address: address || "",
         page: pageNumber,
         pageSize,
+        types,
       },
       {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+        enabled: Boolean(isWalletConnected && address),
+        // An Axelar deposit's source sender comes from Axelarscan, which can
+        // lag or time out; the server retries on the next request, so poll a
+        // few times while any is still unknown.
+        refetchInterval: (query) =>
+          query.state.dataUpdateCount <= UNKNOWN_SENDER_MAX_REFETCHES &&
+          query.state.data?.transfers.some(
+            (t) =>
+              t.direction === "deposit" &&
+              t.fromChain.chainType === "evm" &&
+              !t.fromAddress
+          )
+            ? UNKNOWN_SENDER_REFETCH_MS
+            : false,
       }
     );
+
+  // Transfers from the transaction index, so history includes transfers
+  // made in other browsers or devices (local history is per browser).
+  // The server shapes them as TxSnapshots; the store tracks their status.
+  const indexedTransfers = transactionsData?.transfers as unknown as
+    TxSnapshot[] | undefined;
+  useEffect(() => {
+    if (!indexedTransfers?.length) return;
+    transferHistoryStore.importSnapshots(indexedTransfers);
+  }, [indexedTransfers, transferHistoryStore]);
+
+  // This page's indexed transfers, plus the ones made in this browser (which
+  // may not be indexed yet). Imported transfers only show on their own page.
+  const pageTransfers = useIndexedTransferHistories(
+    address || "",
+    indexedTransfers
+  );
+  const recentTransfers = useMemo(
+    () => [...storedTransfers.filter((t) => !t.imported), ...pageTransfers],
+    [storedTransfers, pageTransfers]
+  );
 
   const { transactions, hasNextPage } = useMemo(
     () =>

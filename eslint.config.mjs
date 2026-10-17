@@ -1,5 +1,5 @@
-import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 import { FlatCompat } from "@eslint/eslintrc";
 
@@ -69,6 +69,25 @@ const webRules = {
       },
     ],
     "import/no-default-export": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: [
+              "@osmosis-labs/stores",
+              "@osmosis-labs/stores/**",
+              "@osmosis-labs/keplr-hooks",
+              "@osmosis-labs/keplr-hooks/**",
+              "@osmosis-labs/keplr-stores",
+              "@osmosis-labs/keplr-stores/**",
+            ],
+            message:
+              "The legacy store packages have been removed. Use useWallet and the standalone types, utils, or tx packages.",
+          },
+        ],
+      },
+    ],
   },
 };
 
@@ -83,6 +102,7 @@ const protoCodecsConfig = {
   },
 };
 
+// eslint-disable-next-line import/no-default-export -- ESLint loads its flat config through the default export.
 export default [
   {
     ignores: [

@@ -25,6 +25,15 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
+    "@chain-registry/types": "^0.46.0",
+    "@cosmjs/amino": "0.36.2",
+    "@cosmjs/encoding": "0.36.2",
+    "@cosmjs/math": "0.36.2",
+    "@cosmjs/proto-signing": "0.36.2",
+    "@cosmjs/stargate": "0.36.2",
+    "@cosmos-kit/core": "^2.18.1",
+    "@keplr-wallet/crypto": "0.13.41",
+    "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/types": "^1.0.0",
@@ -33,7 +42,8 @@
     "buffer": "^6.0.3",
     "cachified": "^3.5.4",
     "cosmjs-types": "^0.10.1",
-    "lru-cache": "^10.0.1"
+    "lru-cache": "^10.0.1",
+    "utility-types": "^3.10.0"
   },
   "devDependencies": {
     "eslint": "^9.39.5",

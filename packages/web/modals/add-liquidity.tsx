@@ -1,11 +1,7 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import {
-  NotInitializedError,
-  ObservableAddLiquidityConfig,
-} from "@osmosis-labs/stores";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
+import { NotInitializedError } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
@@ -14,14 +10,15 @@ import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import type { PoolType } from "~/components/complex/pools-table";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
-import { useTranslation } from "~/hooks";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
+  useTranslation,
 } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
@@ -40,25 +37,22 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { chainId } = OsmosisChainInfo;
+  const { wallet, txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = !wallet || txTypeInProgress !== "";
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
-    chainStore,
     chainId,
-    poolId,
-    queriesStore
+    poolId
   );
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
     useState(false);
 
   const { config: addConliqConfig, addLiquidity: addConLiquidity } =
-    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+    useAddConcentratedLiquidityConfig(chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
@@ -264,7 +258,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config as ObservableAddLiquidityConfig}
+        addLiquidityConfig={addLiquidityConfig}
         actionButton={accountActionButton}
       />
     </ModalBase>

@@ -17,9 +17,9 @@ import { ProgressBar } from "~/components/ui/progress-bar";
 import { IS_TESTNET } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useClipboard } from "~/hooks/use-clipboard";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -100,7 +100,6 @@ export const NomicPendingTransfers = ({
   toChain,
 }: NomicPendingTransfersProps) => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const { upsertTransaction, transactions: rawTransactions } =
     useNomicTransactionsStore(
       useShallow((state) => ({
@@ -109,9 +108,7 @@ export const NomicPendingTransfers = ({
       }))
     );
 
-  const userOsmoAddress = accountStore.getWallet(
-    accountStore.osmosisChainId
-  )?.address;
+  const { address: userOsmoAddress } = useWallet();
 
   const {
     data: pendingDepositsData,
@@ -250,16 +247,13 @@ const TransactionDetailsModal = ({
   depositData,
 }: TransactionDetailsModalProps) => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const [isOpen, setIsOpen] = useState(false);
 
   const { onCopy, hasCopied } = useClipboard(depositData.transactionId, 1000);
 
   const isComplete = successThreshold === depositData.confirmations;
 
-  const osmosisAddress = accountStore.getWallet(
-    accountStore.osmosisChainId
-  )?.address;
+  const { address: osmosisAddress } = useWallet();
   const humanizedEstimatedTime = humanizeTime(
     dayjs().add((successThreshold - depositData.confirmations) * 10, "minutes")
   );

@@ -1,47 +1,57 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import type { UserPosition } from "@osmosis-labs/server";
-import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
-import { useEffect } from "react";
-import { useCallback, useState } from "react";
+import { prepareWithdrawConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
+import type { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { useCallback, useMemo, useState } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { useWallet } from "../use-wallet";
+import {
+  getEffectiveLiquidity,
+  getEffectiveLiquidityAmounts,
+  getRemoveConcentratedLiquidityError,
+} from "./remove-concentrated-liquidity";
+
+export type RemoveConcentratedLiquidityConfig = {
+  /** Fraction (0 to 1) of the position's liquidity to remove. */
+  readonly percentage: number;
+  readonly effectiveLiquidity: Dec | undefined;
+  readonly effectiveLiquidityAmounts:
+    { base: CoinPretty; quote: CoinPretty } | undefined;
+  readonly error: Error | undefined;
+  setPercentage: (percentage: number) => void;
+};
+
 export function useRemoveConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
   position: UserPosition
 ): {
-  config: ObservableRemoveConcentratedLiquidityConfig;
+  config: RemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
+  const {
+    wallet: account,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
 
-  const [config] = useState(
-    () =>
-      new ObservableRemoveConcentratedLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        {
-          baseAsset: position.currentCoins[0],
-          quoteAsset: position.currentCoins[1],
-          liquidity: position.liquidity,
-        }
-      )
-  );
+  const [percentage, setPercentage] = useState(1);
 
-  useEffect(() => {
-    config.setPosition({
-      baseAsset: position.currentCoins[0],
-      quoteAsset: position.currentCoins[1],
-      liquidity: position.liquidity,
-    });
-  }, [config, position]);
+  const { liquidity, currentCoins } = position;
+  const [baseAsset, quoteAsset] = currentCoins;
+  const config = useMemo<RemoveConcentratedLiquidityConfig>(() => {
+    const pos = { baseAsset, quoteAsset, liquidity };
+    return {
+      percentage,
+      effectiveLiquidity: getEffectiveLiquidity(pos, percentage),
+      effectiveLiquidityAmounts: getEffectiveLiquidityAmounts(pos, percentage),
+      error: getRemoveConcentratedLiquidityError(percentage),
+      setPercentage,
+    };
+  }, [baseAsset, quoteAsset, liquidity, percentage]);
 
   const removeLiquidity = useCallback(
     () =>
@@ -55,28 +65,37 @@ export function useRemoveConcentratedLiquidityConfig(
             return Promise.reject("No account");
           }
 
-          account.osmosis
-            .sendWithdrawConcentratedLiquidityPositionMsg(
-              position.id,
-              liquidity,
-              undefined,
-              (tx) => {
-                if (tx.code) {
-                  reject(tx.rawLog);
-                } else {
-                  // refresh tick data
-                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                    .invalidate({ poolId })
-                    .finally(() => resolve());
-                }
+          prepareWithdrawConcentratedLiquidityPositionMsg(
+            transactionContext,
+            position.id,
+            liquidity,
+            undefined,
+            (tx) => {
+              if (tx.code) {
+                reject(tx.rawLog);
+              } else {
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .finally(() => resolve());
               }
-            )
+            }
+          )
+            .then((prepared) => signAndBroadcast(...prepared))
             .catch(reject);
         } catch (e: any) {
           reject(e);
         }
       }),
-    [config.effectiveLiquidity, account, poolId, position.id, apiUtils]
+    [
+      config.effectiveLiquidity,
+      account,
+      transactionContext,
+      position.id,
+      apiUtils,
+      poolId,
+      signAndBroadcast,
+    ]
   );
 
   return { config, removeLiquidity };

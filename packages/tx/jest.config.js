@@ -18,7 +18,9 @@ module.exports = {
       },
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(superjson|@cosmos-kit/core|@dao-dao/cosmiframe|uuid)/)",
+  ],
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",

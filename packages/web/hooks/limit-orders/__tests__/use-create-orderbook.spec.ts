@@ -23,13 +23,13 @@ const PAIR_PRESENT = { orderbookExists: true, endpointFunctional: true };
 
 let mockWalletAddress: string | undefined = "osmo1testaddress";
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: {
-      osmosisChainId: "osmosis-1",
-      getWallet: () => ({ address: mockWalletAddress }),
-      signAndBroadcast: mockSignAndBroadcast,
-    },
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({
+    signAndBroadcast: (...args: unknown[]) =>
+      mockSignAndBroadcast("osmosis-1", ...args),
+    getChainWallet: () => ({ wallet: { address: mockWalletAddress } }),
+    wallet: { address: mockWalletAddress },
+    address: mockWalletAddress,
   }),
 }));
 

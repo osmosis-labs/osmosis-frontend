@@ -1,0 +1,1065 @@
+import { Transaction } from "../../../data-services";
+
+/**
+ * Real records from the historical data service (`/v2/txs/{address}`),
+ * trimmed (light client proofs and prices removed).
+ */
+export const IndexedTransferTxs = {
+  send: {
+    _id: "C87D0DF06BB8BE74657EF45C13157D235BE5E9A04CA06DDB1864D4B68957950E#72572501",
+    hash: "C87D0DF06BB8BE74657EF45C13157D235BE5E9A04CA06DDB1864D4B68957950E",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T11:48:13.919Z",
+    index: 3,
+    height: 72572501,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "45000",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 500000,
+    gasUsed: 260069,
+    codespace: null,
+    addressIndex: [
+      "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj",
+      "noble1ze3f954mtj30st8dw2qhylfvvtdv5q6x86q7dw",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/ibc.applications.transfer.v1.MsgTransfer"],
+    memo: "",
+    messages: [
+      {
+        source_port: "transfer",
+        source_channel: "channel-750",
+        token: {
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          amount: "224893756165",
+        },
+        sender: "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj",
+        receiver: "noble1ze3f954mtj30st8dw2qhylfvvtdv5q6x86q7dw",
+        timeout_height: {
+          revision_number: "0",
+          revision_height: "0",
+        },
+        timeout_timestamp: "1792065195226000000",
+        memo: "",
+        "@type": "/ibc.applications.transfer.v1.MsgTransfer",
+      },
+    ],
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "ibc_send",
+            txMessageIndex: 0,
+            txFee: [
+              {
+                denom: "uosmo",
+                amount: "45000",
+                usd: 0.0019759198672821927,
+              },
+            ],
+            txInfo: {
+              token: {
+                denom:
+                  "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                amount: "224893756165",
+                usd: 224893.756165,
+              },
+              chain_to: "noble",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  recv: {
+    _id: "B7DB18904125AF1FD6A79EFB02C41B5E3AF1F45F0EB4D3EAEC65C98A038D49D4#72572500",
+    hash: "B7DB18904125AF1FD6A79EFB02C41B5E3AF1F45F0EB4D3EAEC65C98A038D49D4",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T11:48:09.241Z",
+    index: 7,
+    height: 72572500,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "24078",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 617367,
+    gasUsed: 419006,
+    codespace: null,
+    addressIndex: [
+      "osmo159rufrfkf5g8qld5zqlsejesr4mlnfx06dyzum",
+      "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj",
+      "noble1ze3f954mtj30st8dw2qhylfvvtdv5q6x86q7dw",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: [
+      "/ibc.core.client.v1.MsgUpdateClient",
+      "/ibc.core.channel.v1.MsgRecvPacket",
+    ],
+    memo: "Relayed with 💜 by Lavender.Five Nodes 🐝 (8) | hermes 1.10.5 (https://hermes.informal.systems)",
+    messages: [
+      // the relayer updates the client first; metadata indexes messages
+      { "@type": "/ibc.core.client.v1.MsgUpdateClient" },
+      {
+        packet: {
+          sequence: "1024796",
+          source_port: "transfer",
+          source_channel: "channel-1",
+          destination_port: "transfer",
+          destination_channel: "channel-750",
+          data: {
+            amount: "224867279694",
+            denom: "uusdc",
+            receiver: "osmo1ze3f954mtj30st8dw2qhylfvvtdv5q6x8zxxrj",
+            sender: "noble1ze3f954mtj30st8dw2qhylfvvtdv5q6x86q7dw",
+          },
+          timeout_height: {
+            revision_number: "0",
+            revision_height: "0",
+          },
+          timeout_timestamp: "1792066087920119401",
+        },
+        signer: "osmo159rufrfkf5g8qld5zqlsejesr4mlnfx06dyzum",
+        "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+      },
+    ],
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "ibc_received",
+            txMessageIndex: 1,
+            txFee: [
+              {
+                denom: "uosmo",
+                amount: "24078",
+                usd: 0.001057165036054878,
+              },
+            ],
+            txInfo: {
+              token: {
+                denom:
+                  "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                amount: "224867279694",
+                usd: 224867.279694,
+              },
+              chain_from: "noble",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  skip: {
+    _id: "BAC92A559399C41A13EDEDBBB704A37162D9AAA9687E27E9309664C7DF66E69C#72566941",
+    hash: "BAC92A559399C41A13EDEDBBB704A37162D9AAA9687E27E9309664C7DF66E69C",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T09:25:34.391Z",
+    index: 0,
+    height: 72566941,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "65635",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 1823184,
+    gasUsed: 1219381,
+    codespace: null,
+    addressIndex: [
+      "osmo1j26g4rrz3tlrfnmlzpgr42qlsd78r942zll2zq",
+      "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+      "inj1fjm4drzxeu4ulkdv0ajx4sp0mz0n8ksps64prk",
+      "terra1gygragtv7rhv86scnq4lkw0kw499939qer9ur5",
+      "osmo1xzphwrc9aahmq7smwaggukwx5w2w8mmtqf5mk0ky0v6hh75paxsszfnlu5",
+      "osmo1r9jc2234fljy93z80cevqjt3nmjycec8aj4cc6",
+      "osmo1yggqusvjqscjy03ysdmjh5hxmt6tv20u5ufrsuy67ksnw2xqsvzql2j70s",
+      "osmo1lur7an0wg2wf5wvyz9h6framsw2ltndn92kv3x0p68kage0kh74qzcfj6c",
+      "osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0",
+      "osmo1m8wg4vxkefhs374qxmmqpyusgz289wmulex5qdwpfx7jnrxzer5s9cv83q",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/cosmwasm.wasm.v1.MsgExecuteContract"],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1j26g4rrz3tlrfnmlzpgr42qlsd78r942zll2zq",
+        contract:
+          "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+        msg: {
+          swap_and_action: {
+            user_swap: {
+              swap_exact_asset_in: {
+                swap_venue_name: "osmosis-poolmanager",
+                operations: [
+                  {
+                    pool: "562",
+                    denom_in:
+                      "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+                    denom_out:
+                      "ibc/BE1BB42D4BE3C30D50B68D7C41DB4DFCE9678E8EF8C539F6E6A9345048894FCC",
+                  },
+                  {
+                    pool: "679",
+                    denom_in:
+                      "ibc/BE1BB42D4BE3C30D50B68D7C41DB4DFCE9678E8EF8C539F6E6A9345048894FCC",
+                    denom_out:
+                      "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                  },
+                  {
+                    pool: "3497",
+                    denom_in:
+                      "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                    denom_out:
+                      "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138",
+                  },
+                ],
+              },
+            },
+            min_asset: {
+              native: {
+                denom:
+                  "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138",
+                amount: "4716954",
+              },
+            },
+            timeout_timestamp: 1792056626701035800,
+            post_swap_action: {
+              ibc_transfer: {
+                ibc_info: {
+                  source_channel: "channel-122",
+                  receiver: "inj1fjm4drzxeu4ulkdv0ajx4sp0mz0n8ksps64prk",
+                  memo: '{"forward":{"channel":"channel-497","port":"transfer","receiver":"terra1gygragtv7rhv86scnq4lkw0kw499939qer9ur5","retries":2,"timeout":1792056626701033493}}',
+                  recover_address:
+                    "osmo1j26g4rrz3tlrfnmlzpgr42qlsd78r942zll2zq",
+                },
+              },
+            },
+            affiliates: [],
+          },
+        },
+        funds: [
+          {
+            denom:
+              "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
+            amount: "100000000000",
+          },
+        ],
+        "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      },
+    ],
+    metadata: [],
+  },
+  gmp: {
+    _id: "56F7183750316899EEB3C0AE818FE1FE2B0B3C176E109384EF9CE9357689AA4E#72566937",
+    hash: "56F7183750316899EEB3C0AE818FE1FE2B0B3C176E109384EF9CE9357689AA4E",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T09:25:21.540Z",
+    index: 0,
+    height: 72566937,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "19117",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 531010,
+    gasUsed: 357881,
+    codespace: null,
+    addressIndex: [
+      "osmo1lulklm2d20j6r9raxvq5fm5m8km7cdhttny6yj",
+      "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+      "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/ibc.applications.transfer.v1.MsgTransfer"],
+    memo: '{"squidRequestId":"018ae0eaa23612cf631b76d145881f09"}',
+    messages: [
+      {
+        source_port: "transfer",
+        source_channel: "channel-208",
+        token: {
+          denom:
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+          amount: "43729278",
+        },
+        sender: "osmo1lulklm2d20j6r9raxvq5fm5m8km7cdhttny6yj",
+        receiver:
+          "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+        timeout_height: {
+          revision_number: "0",
+          revision_height: "0",
+        },
+        timeout_timestamp: "1792059912187000000",
+        memo: '{"destination_chain":"base","destination_address":"0xce16F69375520ab01377ce7B88f5BA8C48F8D666","type":2,"fee":{"amount":"25869","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"},"payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,32,161,95,37,111,117,55,218,79,112,122,25,111,109,220,62,46,139,233,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,224,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,235,70,99,66,196,212,73,188,159,83,168,101,213,203,144,88,111,64,82,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,235,70,99,66,196,212,73,188,159,83,168,101,213,203,144,88,111,64,82,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,68,9,94,167,179,0,0,0,0,0,0,0,0,0,0,0,0,103,138,164,191,78,33,12,242,22,103,83,224,84,213,183,195,28,199,250,134,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,235,70,99,66,196,212,73,188,159,83,168,101,213,203,144,88,111,64,82,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,103,138,164,191,78,33,12,242,22,103,83,224,84,213,183,195,28,199,250,134,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,228,4,228,90,175,0,0,0,0,0,0,0,0,0,0,0,0,235,70,99,66,196,212,73,188,159,83,168,101,213,203,144,88,111,64,82,21,0,0,0,0,0,0,0,0,0,0,0,0,131,53,137,252,214,237,182,224,143,76,124,50,212,247,27,84,189,160,41,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,32,161,95,37,111,117,55,218,79,112,122,25,111,109,220,62,46,139,233,218,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,154,220,113,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,153,77,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,235,70,99,66,196,212,73,188,159,83,168,101,213,203,144,88,111,64,82,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1,138,224,234,162,54,18,207,99,27,118,209,69,136,31,9]}',
+        "@type": "/ibc.applications.transfer.v1.MsgTransfer",
+      },
+    ],
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "ibc_send",
+            txMessageIndex: 0,
+            txFee: [
+              {
+                denom: "uosmo",
+                amount: "19117",
+                usd: 0.0008311916680913097,
+              },
+            ],
+            txInfo: {
+              token: {
+                denom:
+                  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                amount: "43729278",
+                usd: 43.729304506167985,
+              },
+              chain_to: "axelar",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  squid: {
+    _id: "3487F3398A9B36B3B12E0085B0419C7059C64A3173A52DF269DA560B63AD8D1A#72566771",
+    hash: "3487F3398A9B36B3B12E0085B0419C7059C64A3173A52DF269DA560B63AD8D1A",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T09:21:21.644Z",
+    index: 0,
+    height: 72566771,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "56587",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 1571847,
+    gasUsed: 1218528,
+    codespace: null,
+    addressIndex: [
+      "osmo1yjkmhaq0xhpvhwzk7mncaurasdl0wyesf5cjcl",
+      "osmo1n6ney9tsf55etz9nrmzyd8wa7e64qd3s06a74fqs30ka8pps6cvqtsycr6",
+      "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+      "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89",
+      "osmo1r9jc2234fljy93z80cevqjt3nmjycec8aj4cc6",
+      "osmo1qqtms0c5dfg4mlw4jgyj54tnr3cxznzrz2zutthxxgx4zz9559wsq0nlmw",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/cosmwasm.wasm.v1.MsgExecuteContract"],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1yjkmhaq0xhpvhwzk7mncaurasdl0wyesf5cjcl",
+        contract:
+          "osmo1n6ney9tsf55etz9nrmzyd8wa7e64qd3s06a74fqs30ka8pps6cvqtsycr6",
+        msg: {
+          multicall: {
+            calls: [
+              {
+                msg: {
+                  stargate: {
+                    type_url: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
+                    value: {
+                      sender:
+                        "osmo1n6ney9tsf55etz9nrmzyd8wa7e64qd3s06a74fqs30ka8pps6cvqtsycr6",
+                      routes: [
+                        {
+                          pool_id: "840",
+                          token_out_denom:
+                            "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
+                        },
+                      ],
+                      token_in: {
+                        denom: "uosmo",
+                        amount: "0",
+                      },
+                      token_out_min_amount: "420259899949773",
+                    },
+                  },
+                },
+                actions: [
+                  {
+                    native_balance_fetch: {
+                      denom: "uosmo",
+                      replacer: "/stargate/value/token_in/amount",
+                    },
+                  },
+                  {
+                    field_to_proto_binary: {
+                      replacer: "/stargate/value",
+                      proto_msg_type: "osmosis_swap_exact_amt_in",
+                    },
+                  },
+                ],
+              },
+              {
+                msg: {
+                  stargate: {
+                    type_url: "/ibc.applications.transfer.v1.MsgTransfer",
+                    value: {
+                      source_port: "transfer",
+                      source_channel: "channel-208",
+                      token: {
+                        denom:
+                          "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
+                        amount: "422371758743491",
+                      },
+                      sender:
+                        "osmo1n6ney9tsf55etz9nrmzyd8wa7e64qd3s06a74fqs30ka8pps6cvqtsycr6",
+                      receiver:
+                        "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+                      timeout_timestamp: 1792059680241000000,
+                      memo: '{"ibc_callback":"osmo1n6ney9tsf55etz9nrmzyd8wa7e64qd3s06a74fqs30ka8pps6cvqtsycr6","destination_chain":"binance","destination_address":"0xce16F69375520ab01377ce7B88f5BA8C48F8D666","type":2,"fee":{"amount":"57639655176405","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"},"payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,100,142,181,194,165,166,61,168,49,2,70,179,236,193,89,107,130,162,63,158,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,187,76,219,156,189,54,176,27,209,203,174,191,45,224,141,145,115,188,9,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,187,76,219,156,189,54,176,27,209,203,174,191,45,224,141,145,115,188,9,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,46,26,125,77,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,187,76,219,156,189,54,176,27,209,203,174,191,45,224,141,145,115,188,9,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,100,142,181,194,165,166,61,168,49,2,70,179,236,193,89,107,130,162,63,158,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,238,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,166,4,75,144,2,165,124,144,51,127,127,206,128,1,157]}',
+                    },
+                  },
+                },
+                actions: [
+                  {
+                    native_balance_fetch: {
+                      denom:
+                        "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
+                      replacer: "/stargate/value/token/amount",
+                    },
+                  },
+                  {
+                    ibc_tracking: {
+                      channel: "channel-208",
+                      denom:
+                        "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
+                      amount_pointer: "/stargate/value/token/amount",
+                    },
+                  },
+                  {
+                    field_to_proto_binary: {
+                      replacer: "/stargate/value",
+                      proto_msg_type: "ibc_transfer",
+                    },
+                  },
+                ],
+              },
+            ],
+            fallback_address: "osmo1yjkmhaq0xhpvhwzk7mncaurasdl0wyesf5cjcl",
+          },
+        },
+        funds: [
+          {
+            denom: "uosmo",
+            amount: "7000000",
+          },
+        ],
+        "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      },
+    ],
+    metadata: [],
+  },
+  skipGmpAvalanche: {
+    _id: "20C3803A935C28722CEC99000FAFEB67FACC5BE2597DAE89457A4B968F9B67A1#72446033",
+    hash: "20C3803A935C28722CEC99000FAFEB67FACC5BE2597DAE89457A4B968F9B67A1",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-13T08:36:03.762Z",
+    index: 4,
+    height: 72446033,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "189963",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 1899627,
+    gasUsed: 1270410,
+    codespace: null,
+    addressIndex: [
+      "osmo1rp4l54uhgc2tts72slqfv79g6uqng0j06sgr22",
+      "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+      "osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0",
+      "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+      "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89",
+      "osmo1xzphwrc9aahmq7smwaggukwx5w2w8mmtqf5mk0ky0v6hh75paxsszfnlu5",
+      "osmo1r9jc2234fljy93z80cevqjt3nmjycec8aj4cc6",
+      "osmo1r8fd75v2smcekupys5yk5vrwq2hytgzsmzdw2ckkrutuzmct3j4qk2ltfg",
+      "osmo14euznvc7zjy5ect3s4ed7h33u5th97k5ehv8zsugyz05zx0lqdhsjycypl",
+      "osmo1ycedur3klym2dwlz0w0796zqmn7fdzn6fldwc6cuzqwarejcuq2qu8z96e",
+      "osmo1m8wg4vxkefhs374qxmmqpyusgz289wmulex5qdwpfx7jnrxzer5s9cv83q",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo19ejy8n9qsectrf4semdp9cpknflld0j64mwamn",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/cosmwasm.wasm.v1.MsgExecuteContract"],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1rp4l54uhgc2tts72slqfv79g6uqng0j06sgr22",
+        contract:
+          "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+        msg: {
+          swap_and_action: {
+            user_swap: {
+              swap_exact_asset_in: {
+                swap_venue_name: "osmosis-poolmanager",
+                operations: [
+                  {
+                    pool: "3497",
+                    denom_in:
+                      "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138",
+                    denom_out:
+                      "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+                  },
+                  {
+                    pool: "3499",
+                    denom_in:
+                      "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+                    denom_out: "uosmo",
+                  },
+                  {
+                    pool: "899",
+                    denom_in: "uosmo",
+                    denom_out:
+                      "ibc/6F62F01D913E3FFE472A38C78235B8F021B511BC6596ADFF02615C8F83D3B373",
+                  },
+                ],
+              },
+            },
+            min_asset: {
+              native: {
+                denom:
+                  "ibc/6F62F01D913E3FFE472A38C78235B8F021B511BC6596ADFF02615C8F83D3B373",
+                amount: "1339008814806887020",
+              },
+            },
+            timeout_timestamp: 1791880855386337300,
+            post_swap_action: {
+              ibc_transfer: {
+                ibc_info: {
+                  source_channel: "channel-208",
+                  receiver:
+                    "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+                  memo: '{"destination_chain":"Avalanche","destination_address":"0xBeB12d8861765c850E8426Cc5c6a5207222f2477","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,22,120,172,128,158,10,95,107,62,218,183,220,112,153,199,78,229,112,215,253],"type":2,"fee":{"amount":"61497518730892911","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
+                  recover_address:
+                    "osmo1rp4l54uhgc2tts72slqfv79g6uqng0j06sgr22",
+                },
+              },
+            },
+            affiliates: [],
+          },
+        },
+        funds: [
+          {
+            denom:
+              "ibc/794C7D7F3B857713878A3A1927251FA6AC1EEE520424C1F6FAFE9BA26D476138",
+            amount: "15000000",
+          },
+        ],
+        "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      },
+    ],
+    metadata: [],
+  },
+  skipGmpEthereum: {
+    _id: "27804297C1059C65AEA81AA7E2FAEA0A598E38BCEDBCDB53465B3FED1AC049CA#72575252",
+    hash: "27804297C1059C65AEA81AA7E2FAEA0A598E38BCEDBCDB53465B3FED1AC049CA",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T13:01:40.427Z",
+    index: 2,
+    height: 72575252,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "110898",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 2957152,
+    gasUsed: 2271445,
+    codespace: null,
+    addressIndex: [
+      "osmo1wvku95tpstce28cvxqdu2pmdczmda0r4h98luy",
+      "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+      "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+      "axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89",
+      "osmo1gy30axzt9djlqnykmmqdjn4z670ctxsyr97pvf",
+      "osmo14gf6xslwe9phn2z965t4dcu7vchhthfgv2lhyy",
+      "osmo1xzphwrc9aahmq7smwaggukwx5w2w8mmtqf5mk0ky0v6hh75paxsszfnlu5",
+      "osmo1r9jc2234fljy93z80cevqjt3nmjycec8aj4cc6",
+      "osmo1gj26haupvyh6qun4fmc5xnr0tsrg9fwfvycs567u6d5qmezue22sza64gx",
+      "osmo15zn4jn8dwyj709jvzuev74m55cf9w89wcmqemp34kr82yn2mr0kqtnhxqw",
+      "osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0",
+      "osmo1mw0ac6rwlp5r8wapwk3zs6g29h8fcscxqakdzw9emkne6c8wjp9q0t3v8t",
+      "osmo10venxtvdglryxkdmvjr8wa6n3ugja40rewddlxtg0pr30vmkf47sllgslg",
+      "osmo1cr0fq7pfhpw08as5dsthzvjnlfdtvsq7kw98lwuqxjzv5jm3j5mqf9k6as",
+      "osmo1y53uxff98xn2xftdxk2du85j88r8cxg6hndldl0uxln52ds4ukvs8zt345",
+      "osmo15vn4ear9yfsxdj67hltk8wkgefdal8fztqht8eqeaglzqp68e2jszgcv2d",
+      "osmo1k85clpg9v86h3jlt6fxkfu5jc3lgw4hyug6jmhuut44nj2w4k0ws57wqgm",
+      "osmo1m8wg4vxkefhs374qxmmqpyusgz289wmulex5qdwpfx7jnrxzer5s9cv83q",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: ["/cosmwasm.wasm.v1.MsgExecuteContract"],
+    memo: "",
+    messages: [
+      {
+        sender: "osmo1wvku95tpstce28cvxqdu2pmdczmda0r4h98luy",
+        contract:
+          "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+        msg: {
+          swap_and_action: {
+            user_swap: {
+              smart_swap_exact_asset_in: {
+                swap_venue_name: "osmosis-poolmanager",
+                routes: [
+                  {
+                    offer_asset: {
+                      native: {
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        amount: "164065432",
+                      },
+                    },
+                    operations: [
+                      {
+                        pool: "1251",
+                        denom_in:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        denom_out:
+                          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                      },
+                      {
+                        pool: "3497",
+                        denom_in:
+                          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                        denom_out:
+                          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                      },
+                    ],
+                  },
+                  {
+                    offer_asset: {
+                      native: {
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        amount: "82032716",
+                      },
+                    },
+                    operations: [
+                      {
+                        pool: "1",
+                        denom_in:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        denom_out: "uosmo",
+                      },
+                      {
+                        pool: "678",
+                        denom_in: "uosmo",
+                        denom_out:
+                          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                      },
+                    ],
+                  },
+                  {
+                    offer_asset: {
+                      native: {
+                        denom:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        amount: "27344238",
+                      },
+                    },
+                    operations: [
+                      {
+                        pool: "1135",
+                        denom_in:
+                          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                        denom_out: "uosmo",
+                      },
+                      {
+                        pool: "1133",
+                        denom_in: "uosmo",
+                        denom_out:
+                          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            min_asset: {
+              native: {
+                denom:
+                  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                amount: "449323375",
+              },
+            },
+            timeout_timestamp: 1792069583004706300,
+            post_swap_action: {
+              ibc_transfer: {
+                ibc_info: {
+                  source_channel: "channel-208",
+                  receiver:
+                    "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+                  memo: '{"destination_chain":"Ethereum","destination_address":"0xB773bCc5B325ad9AC6B36e1A046AD4466833A16E","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,236,213,112,245,101,242,114,198,213,253,119,253,92,37,220,104,194,19,14,82,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,36,234,210,254,91,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,26,184,22,157,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,163,80,81,176,55,125,13,0,0,0,0,0,0,0,0,0,0,0,0,160,184,105,145,198,33,139,54,193,209,157,74,46,158,176,206,54,6,235,72,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,160,184,105,145,198,33,139,54,193,209,157,74,46,158,176,206,54,6,235,72,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,94,85,201,230,49,250,229,38,205,75,5,38,196,129,141,110,10,158,240,227,0,0,0,0,0,0,0,0,0,0,0,0,104,179,70,88,51,251,114,167,14,205,244,133,224,228,199,189,134,101,252,69,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":2,"fee":{"amount":"1727054","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
+                  recover_address:
+                    "osmo1wvku95tpstce28cvxqdu2pmdczmda0r4h98luy",
+                },
+              },
+            },
+            affiliates: [
+              {
+                basis_points_fee: "57",
+                address: "osmo1gy30axzt9djlqnykmmqdjn4z670ctxsyr97pvf",
+              },
+              {
+                basis_points_fee: "18",
+                address: "osmo14gf6xslwe9phn2z965t4dcu7vchhthfgv2lhyy",
+              },
+            ],
+          },
+        },
+        funds: [
+          {
+            denom:
+              "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+            amount: "273442388",
+          },
+        ],
+        "@type": "/cosmwasm.wasm.v1.MsgExecuteContract",
+      },
+    ],
+    metadata: [],
+  },
+  gmpDeposit: {
+    _id: "C8613690DF484D51D694032F60C48C271F61460AE6A746DB8DDE9DE3C02AF9B4#72581564",
+    hash: "C8613690DF484D51D694032F60C48C271F61460AE6A746DB8DDE9DE3C02AF9B4",
+    chainId: "osmosis-1",
+    schemaVersion: 10,
+    blockTimestamp: "2026-10-15T15:57:50.161Z",
+    index: 1,
+    height: 72581564,
+    fee: [
+      {
+        denom: "uosmo",
+        amount: "145769",
+      },
+    ],
+    code: 0,
+    info: "",
+    gasWanted: 4049133,
+    gasUsed: 1357252,
+    codespace: null,
+    addressIndex: [
+      "osmo156vfr4kpaa0f07y673awf3u87eeemygl9tp72x",
+      "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+      "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+      "osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0",
+      "osmo1yamxfey40t5r62ejss9g4kskptqq3a70e9we2l",
+      "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+      "osmo1qp5vj4klvj86az9qc2pk6qlxrxnlk387ysylcxe6y7x0ayuaamusre4z5h",
+      "osmo1xzphwrc9aahmq7smwaggukwx5w2w8mmtqf5mk0ky0v6hh75paxsszfnlu5",
+      "osmo19ejy8n9qsectrf4semdp9cpknflld0j64mwamn",
+      "osmo1r9jc2234fljy93z80cevqjt3nmjycec8aj4cc6",
+      "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+    ],
+    messageTypes: [
+      "/ibc.core.client.v1.MsgUpdateClient",
+      "/ibc.core.channel.v1.MsgRecvPacket",
+    ],
+    memo: "Inter Blockchain Services Relayer | hermes 1.13.2+5e78a424 (https://hermes.informal.systems)",
+    messages: [
+      // the relayer updates the client first; metadata indexes messages
+      { "@type": "/ibc.core.client.v1.MsgUpdateClient" },
+      {
+        packet: {
+          sequence: "2491523",
+          source_port: "transfer",
+          source_channel: "channel-3",
+          destination_port: "transfer",
+          destination_channel: "channel-208",
+          data: {
+            denom: "uusdc",
+            amount: "1500000000",
+            sender:
+              "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+            receiver:
+              "osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u",
+            memo: '{"wasm":{"source_chain":"Ethereum","source_address":"0xB773bCc5B325ad9AC6B36e1A046AD4466833A16E","contract":"osmo10a3k4hvk37cc4hnxctw4p95fhscd2z6h2rmx0aukc6rm8u9qqx9smfsh7u","msg":{"swap_and_action_with_recover":{"user_swap":{"swap_exact_asset_in":{"swap_venue_name":"osmosis-poolmanager","operations":[{"pool":"3497","denom_in":"ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858","denom_out":"factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC"}]}},"min_asset":{"native":{"denom":"factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC","amount":"1492500000"}},"timeout_timestamp":1792081160475380603,"post_swap_action":{"transfer":{"to_address":"osmo1yamxfey40t5r62ejss9g4kskptqq3a70e9we2l"}},"affiliates":[],"recovery_addr":"osmo1yamxfey40t5r62ejss9g4kskptqq3a70e9we2l"}}}}',
+          },
+          timeout_height: {
+            revision_number: "1",
+            revision_height: "72666519",
+          },
+          timeout_timestamp: "0",
+        },
+        signer: "osmo156vfr4kpaa0f07y673awf3u87eeemygl9tp72x",
+        "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+      },
+    ],
+    metadata: [
+      {
+        type: "osmosis-ui",
+        value: [
+          {
+            txType: "ibc_received",
+            txMessageIndex: 1,
+            txFee: [
+              {
+                denom: "uosmo",
+                amount: "145769",
+                usd: 0.006643177050001413,
+              },
+            ],
+            txInfo: {
+              token: {
+                denom:
+                  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+                amount: "1500000000",
+                usd: 1500.0010801482301,
+              },
+              chain_from: "axelar",
+            },
+          },
+        ],
+      },
+    ],
+  },
+} as unknown as Record<
+  | "send"
+  | "recv"
+  | "skip"
+  | "gmp"
+  | "squid"
+  | "skipGmpAvalanche"
+  | "skipGmpEthereum"
+  | "gmpDeposit",
+  Transaction
+>;
+
+/**
+ * A relayer tx delivering four Axelar packets to four users (C4A99B8A...).
+ * The index lists it under each receiver.
+ */
+export const BundledDepositsTx = {
+  _id: "C4A99B8A530427F6CD00D8A13C029198F3E19A30FB11145D9BB5397240949C8A#22368927",
+  hash: "C4A99B8A530427F6CD00D8A13C029198F3E19A30FB11145D9BB5397240949C8A",
+  chainId: "osmosis-1",
+  schemaVersion: 10,
+  blockTimestamp: "2024-10-14T21:56:22.893Z",
+  index: 0,
+  height: 22368927,
+  fee: [
+    {
+      denom: "uosmo",
+      amount: "3981",
+    },
+  ],
+  code: 0,
+  info: "",
+  gasWanted: 1447394,
+  gasUsed: 1329138,
+  codespace: null,
+  addressIndex: [
+    "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+    "osmo19w2t4ue7qpdh6022m3yxmxvv3w7jla7u3hfq0r",
+    "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+    "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5",
+    "osmo1c0z47y2z8k9mvsvkdpwasgktmc6hqk453gdzvu",
+    "osmo1alqv73k4v2fvky6au4zw6wq55xfxm43427302s",
+    "osmo1yl6hdjhmkf37639730gffanpzndzdpmhxy9ep3",
+    "osmo17r7qdw2zk6jyw62cvwm6flmhtj9q7zd26r8zc6sqyf0pnaq46cfss8hgxg",
+  ],
+  messageTypes: [
+    "/ibc.core.client.v1.MsgUpdateClient",
+    "/ibc.core.channel.v1.MsgRecvPacket",
+  ],
+  memo: "Relayed by IcyCRO 🧊 | hermes 1.8.2+06dfbaf (https://hermes.informal.systems)",
+  messages: [
+    {
+      "@type": "/ibc.core.client.v1.MsgUpdateClient",
+    },
+    {
+      packet: {
+        sequence: "2208861",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "2743791",
+          denom: "polygon-uusdt",
+          receiver: "osmo19w2t4ue7qpdh6022m3yxmxvv3w7jla7u3hfq0r",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208862",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "47050927",
+          denom: "uusdc",
+          receiver: "osmo1q35qy6kmx9vxfd6pesa2pe0uhxckq5l6d8adz5",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208863",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "48832897",
+          denom: "uusdc",
+          receiver: "osmo1c0z47y2z8k9mvsvkdpwasgktmc6hqk453gdzvu",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+    {
+      packet: {
+        sequence: "2208864",
+        source_port: "transfer",
+        source_channel: "channel-3",
+        destination_port: "transfer",
+        destination_channel: "channel-208",
+        data: {
+          amount: "243459899",
+          denom: "uusdc",
+          receiver: "osmo1alqv73k4v2fvky6au4zw6wq55xfxm43427302s",
+          sender: "axelar19xj4ncc6h6y5ahpfqtspdx75y3dkrxj3zpah9k",
+        },
+      },
+      signer: "osmo1nna7k5lywn99cd63elcfqm6p8c5c4qcuqwwflx",
+      "@type": "/ibc.core.channel.v1.MsgRecvPacket",
+    },
+  ],
+  metadata: [
+    {
+      type: "osmosis-ui",
+      value: [
+        {
+          txType: "ibc_received",
+          txMessageIndex: 1,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              amount: "2743791",
+              denom:
+                "ibc/2F6003A92088B989A159C593C551DF7B04FA0A0419CA3ED087E45E0006ECFF6E",
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 2,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "47050927",
+              usd: 47.050927,
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 3,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "48832897",
+              usd: 48.832897,
+            },
+            chain_from: "axelar",
+          },
+        },
+        {
+          txType: "ibc_received",
+          txMessageIndex: 4,
+          txFee: [
+            {
+              denom: "uosmo",
+              amount: "3981",
+              usd: 0.0022455614191215527,
+            },
+          ],
+          txInfo: {
+            token: {
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+              amount: "243459899",
+              usd: 243.459899,
+            },
+            chain_from: "axelar",
+          },
+        },
+      ],
+    },
+  ],
+} as unknown as Transaction;

@@ -16,18 +16,20 @@ import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
-  ObservableAddConcentratedLiquidityConfig,
+  AddConcentratedLiquidityConfig,
   useAddConcentratedLiquidityConfig,
   useConnectWalletModalRedirect,
   useTranslation,
 } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import {
   formatPretty,
   formatPriceWithUserPrecision,
@@ -58,12 +60,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, position, status } = props;
-  const { chainStore, accountStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = Boolean(account?.txTypeInProgress);
+  const { chainId } = OsmosisChainInfo;
+  const { txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = Boolean(txTypeInProgress);
 
   const chartConfig = useHistoricalAndLiquidityData(poolId);
   const {
@@ -85,7 +86,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   } = position;
 
   const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
-    chainStore,
     chainId,
     poolId
   );
@@ -101,11 +101,26 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
+  const { setMinRange, setMaxRange, setFullRange, setAnchorAsset } = config;
   useEffect(() => {
     setPriceRange([lowerPrice, upperPrice]);
-    config.setMinRange(lowerPrice.toString());
-    config.setMaxRange(upperPrice.toString());
-  }, [config, setPriceRange, lowerPrice, upperPrice]);
+    // A full range position's prices are the extreme ticks, which the price
+    // inputs clamp; model it as full range so the deposit ratio matches.
+    if (isFullRange) {
+      setFullRange(true);
+    } else {
+      setMinRange(lowerPrice.toString());
+      setMaxRange(upperPrice.toString());
+    }
+  }, [
+    setMinRange,
+    setMaxRange,
+    setFullRange,
+    setPriceRange,
+    lowerPrice,
+    upperPrice,
+    isFullRange,
+  ]);
 
   return (
     <ModalBase
@@ -256,10 +271,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             currency={baseCoin.currency}
             onUpdate={useCallback(
               (amount) => {
-                config.setAnchorAsset("base");
+                setAnchorAsset("base");
                 config.baseDepositAmountIn.setAmount(amount);
               },
-              [config]
+              [setAnchorAsset, config.baseDepositAmountIn]
             )}
             onMax={config.setBaseDepositAmountMax}
             currentValue={config.baseDepositAmountIn.amount}
@@ -273,10 +288,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             currency={quoteCoin.currency}
             onUpdate={useCallback(
               (amount) => {
-                config.setAnchorAsset("quote");
+                setAnchorAsset("quote");
                 config.quoteDepositAmountIn.setAmount(amount);
               },
-              [config]
+              [setAnchorAsset, config.quoteDepositAmountIn]
             )}
             onMax={config.setQuoteDepositAmountMax}
             currentValue={config.quoteDepositAmountIn.amount}
@@ -324,11 +339,11 @@ const PriceBox: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+  chartConfig: HistoricalAndLiquidityData;
 }> = observer(({ chartConfig, addLiquidityConfig }) => {
-  const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
-    chartConfig;
+  const { historicalRange, priceDecimal, setHistoricalRange } = chartConfig;
+  const hoverPrice = useHoverPrice(chartConfig);
 
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
 
@@ -358,9 +373,9 @@ const ChartHeader: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
   position: UserPosition;
-}> = observer(({ chartConfig, position: { isFullRange } }) => {
+}> = ({ chartConfig, position: { isFullRange } }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     chartConfig;
 
@@ -379,4 +394,4 @@ const Chart: FunctionComponent<{
       }
     />
   );
-});
+};

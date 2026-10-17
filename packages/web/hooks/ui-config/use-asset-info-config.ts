@@ -3,72 +3,176 @@ import {
   type TokenHistoricalPrice,
 } from "@osmosis-labs/server";
 import { PricePretty } from "@osmosis-labs/unit";
-import dayjs from "dayjs";
 import { Time } from "lightweight-charts";
-import { action, computed, makeObservable, observable } from "mobx";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { timepointToString } from "~/components/chart/light-weight-charts/utils";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { api } from "~/utils/trpc";
+
+import {
+  type AssetChartDataType,
+  type AssetChartMode,
+  type ChartTick,
+  type CoingeckoHistoricalPrices,
+  filterFutureData,
+  getCustomTimeFrame,
+  isHistoricalChartStale,
+  type PriceRange,
+  toCoingeckoHistoricalData,
+} from "./asset-info-utils";
+import {
+  createValueStore,
+  INITIAL_ZOOM,
+  useNowOnChange,
+  useValueStore,
+  type ValueStore,
+  zoomedIn,
+  zoomedOut,
+} from "./chart-state";
+
+export {
+  AvailablePriceRanges,
+  type PriceRange,
+  toCoingeckoHistoricalData,
+} from "./asset-info-utils";
+
+/** Tagged with the asset key so a hover from another asset is ignored. */
+interface HoverState {
+  key: string;
+  price?: number;
+  time?: Time;
+}
+
+const EMPTY_HOVER: Pick<HoverState, "price" | "time"> = {};
+
+const isHoverEqual = (a: HoverState, b: HoverState) =>
+  a.key === b.key && a.price === b.price && a.time === b.time;
+
+/** Chart state that resets whenever the asset changes. */
+interface ChartUiState {
+  key: string;
+  historicalRange: PriceRange;
+  dataType: AssetChartDataType;
+  mode: AssetChartMode;
+  zoom: number;
+}
+
+const initialUiState = (key: string): ChartUiState => ({
+  key,
+  historicalRange: "7d",
+  dataType: "price",
+  mode: "simple",
+  zoom: INITIAL_ZOOM,
+});
+
+export interface AssetInfoConfig {
+  denom: string;
+  coinMinimalDenom?: string;
+  historicalRange: PriceRange;
+  dataType: AssetChartDataType;
+  mode: AssetChartMode;
+  historicalChartData: TokenHistoricalPrice[];
+  historicalChartUnavailable: boolean;
+  isHistoricalDataLoading: boolean;
+  historicalChartStale: boolean;
+  lastChartData: ChartTick | undefined;
+  lastChartTimestampMs: number | undefined;
+  /**
+   * Pointer-hover values live in an external store so hovering the chart
+   * does not re-render everything that reads this config. Read them with
+   * `useAssetInfoHover`.
+   */
+  hoverStore: ValueStore<HoverState>;
+  hoverKey: string;
+  setHoverData: (data?: number, time?: Time) => void;
+  setZoom: (zoom: number) => void;
+  resetZoom: () => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  setHistoricalRange: (range: PriceRange) => void;
+  setDataType: (data: AssetChartDataType) => void;
+  setMode: (mode: AssetChartMode) => void;
+}
+
+/** Hovered price and formatted date; subscribes to hover changes only. */
+export function useAssetInfoHover(
+  config: Pick<AssetInfoConfig, "hoverStore" | "hoverKey">
+) {
+  const hover = useValueStore(config.hoverStore);
+  const { price, time } = hover.key === config.hoverKey ? hover : EMPTY_HOVER;
+
+  const hoverData = useMemo(() => {
+    const fiat = DEFAULT_VS_CURRENCY;
+    if (!fiat || price === undefined) return undefined;
+    return new PricePretty(fiat, price);
+  }, [price]);
+
+  const hoverDate = useMemo(() => {
+    if (!time) return null;
+
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+
+    return timepointToString(time, formatOptions, "en-US");
+  }, [time]);
+
+  return { hoverData, hoverDate };
+}
 
 export const useAssetInfoConfig = (
   denom: string,
   coinMinimalDenom?: string,
   coingeckoId?: string,
   realtime?: boolean
-) => {
-  const config = useMemo(
-    () => new ObservableAssetInfoConfig(denom, coinMinimalDenom),
-    [denom, coinMinimalDenom]
+): AssetInfoConfig => {
+  const key = `${denom}|${coinMinimalDenom ?? ""}`;
+
+  const [storedUi, setStoredUi] = useState(() => initialUiState(key));
+  // A different asset starts from defaults, as a fresh config used to.
+  const ui = useMemo(
+    () => (storedUi.key === key ? storedUi : initialUiState(key)),
+    [storedUi, key]
+  );
+  // Store the reset too (adjusting state during render), so returning to an
+  // asset doesn't bring back the settings it had before switching away.
+  if (storedUi.key !== key) setStoredUi(initialUiState(key));
+  const updateUi = useCallback(
+    (patch: (current: ChartUiState) => Partial<ChartUiState>) =>
+      setStoredUi((prev) => {
+        const current = prev.key === key ? prev : initialUiState(key);
+        return { ...current, ...patch(current) };
+      }),
+    [key]
   );
 
-  useEffect(
-    () => () => {
-      if (process.env.NODE_ENV === "production") {
-        config.dispose();
-      }
-    },
-    [config]
+  const [hoverStore] = useState(() =>
+    createValueStore<HoverState>({ key }, isHoverEqual)
+  );
+  // Readers already ignore hover tagged with another key (no stale frame);
+  // this also clears it so it cannot resurface when returning to that asset.
+  useEffect(() => {
+    hoverStore.set({ key });
+  }, [hoverStore, key]);
+  const setHoverData = useCallback(
+    (price?: number, time?: Time) => hoverStore.set({ key, price, time }),
+    [hoverStore, key]
   );
 
-  const customTimeFrame = useMemo(() => {
-    let frame = 60;
-    let numRecentFrames: number | undefined = undefined;
+  const { historicalRange, dataType } = ui;
 
-    switch (config.historicalRange) {
-      case "1h":
-        frame = 5;
-        numRecentFrames = 14;
-        break;
-      case "1d":
-        frame = 15;
-        numRecentFrames = 97;
-        break;
-      case "7d":
-        frame = config.dataType === "price" ? 60 : 720;
-        numRecentFrames = config.dataType === "price" ? 168 : 15;
-        break;
-      case "1mo":
-        frame = config.dataType === "price" ? 240 : 1440;
-        numRecentFrames = config.dataType === "price" ? 180 : 30;
-        break;
-      case "1y":
-        frame = config.dataType === "price" ? 1440 : 10080;
-        numRecentFrames = config.dataType === "price" ? 365 : 54;
-        break;
-      case "all":
-        frame = config.dataType === "price" ? 10080 : 43800;
-        break;
-    }
-
-    return {
-      timeFrame: frame,
-      numRecentFrames,
-    };
-  }, [config.historicalRange, config.dataType]);
+  const customTimeFrame = useMemo(
+    () => getCustomTimeFrame(historicalRange, dataType),
+    [historicalRange, dataType]
+  );
 
   const {
     data: historicalPriceData,
+    dataUpdatedAt: historicalUpdatedAt,
     isLoading,
     isError,
   } = api.edge.assets.getAssetHistoricalPrice.useQuery(
@@ -101,9 +205,7 @@ export const useAssetInfoConfig = (
     historicalPriceData.length === 0 &&
     !isLoading;
 
-  // Stable so React Query keeps the selected array between renders; a new
-  // array each render would rewrite the config in the effect below.
-  const historicalRange = config.historicalRange;
+  // Stable so React Query keeps the selected array between renders.
   const selectCoingeckoData = useCallback(
     (data: CoingeckoHistoricalPrices) =>
       toCoingeckoHistoricalData(data, historicalRange),
@@ -112,6 +214,7 @@ export const useAssetInfoConfig = (
 
   const {
     data: coingeckoHistoricalPriceData,
+    dataUpdatedAt: coingeckoUpdatedAt,
     isLoading: isLoadingCoingecko,
     isError: isErrorCoingecko,
   } = api.edge.assets.getCoingeckoAssetHistoricalPrice.useQuery(
@@ -122,7 +225,7 @@ export const useAssetInfoConfig = (
        * the query if the id is undefined
        */
       id: coingeckoId ?? "",
-      timeFrame: config.historicalRange,
+      timeFrame: historicalRange,
     },
     {
       select: selectCoingeckoData,
@@ -137,32 +240,15 @@ export const useAssetInfoConfig = (
     }
   );
 
-  // Sync query results into the config after commit. Writing observables
-  // during render invalidates observers that read them, which makes
-  // mobx-react-lite 4 schedule another render and loop.
-  useEffect(() => {
-    if (enableCoinGecko) {
-      config.setHistoricalData(
-        coingeckoHistoricalPriceData ?? historicalPriceData ?? []
-      );
-      config.setIsHistoricalDataLoading(isLoadingCoingecko);
-      config.setHistoricalDataError(isErrorCoingecko);
-    } else {
-      if (historicalPriceData) config.setHistoricalData(historicalPriceData);
-      config.setIsHistoricalDataLoading(isLoading);
-      config.setHistoricalDataError(isError);
-    }
-    config.setUsingCoingeckoFallback(enableCoinGecko);
-  }, [
-    config,
-    enableCoinGecko,
-    historicalPriceData,
-    isLoading,
-    isError,
-    coingeckoHistoricalPriceData,
-    isLoadingCoingecko,
-    isErrorCoingecko,
-  ]);
+  const historicalData =
+    (enableCoinGecko
+      ? (coingeckoHistoricalPriceData ?? historicalPriceData)
+      : historicalPriceData) ?? EMPTY_DATA;
+
+  const isHistoricalDataLoading = enableCoinGecko
+    ? isLoadingCoingecko
+    : isLoading;
+  const historicalDataError = enableCoinGecko ? isErrorCoingecko : isError;
 
   // Independent query for the single most recent price point at the finest
   // available bucket. Used so the stale-data pill shows a consistent
@@ -180,7 +266,7 @@ export const useAssetInfoConfig = (
   // window + 30min cache so timeframe switches don't refetch and a
   // transitioning asset still recovers within minutes. The pill copy is
   // day-precision anyway, so 5min lag isn't user-visible.
-  const { data: latestPricePoint } =
+  const { data: latestPricePoint, dataUpdatedAt: latestUpdatedAt } =
     api.edge.assets.getAssetLatestPricePoint.useQuery(
       {
         coinMinimalDenom: coinMinimalDenom ?? denom,
@@ -194,322 +280,119 @@ export const useAssetInfoConfig = (
       }
     );
 
-  // Only write when the query has a defined response (a real point or a
-  // settled `null` meaning the cascade found no data). On the initial load
-  // before any cache is populated, `data` is `undefined` and we leave the
-  // freshly-constructed observable empty rather than write `undefined`
-  // through (which would also clear a cached value during a remount).
-  useEffect(() => {
-    if (latestPricePoint !== undefined) {
-      config.setLatestPricePointTimeSec(latestPricePoint?.time);
-    }
-  }, [config, latestPricePoint]);
+  // A settled `null` (cascade found no data) and `undefined` (not loaded)
+  // both mean there is no timestamp.
+  const latestPricePointTimeSec = latestPricePoint?.time;
 
-  return config;
-};
-
-type CoingeckoHistoricalPrices =
-  RouterOutputs["edge"]["assets"]["getCoingeckoAssetHistoricalPrice"];
-
-/** Converts CoinGecko prices to chart points within the selected range. */
-function toCoingeckoHistoricalData(
-  data: CoingeckoHistoricalPrices,
-  historicalRange: PriceRange
-): TokenHistoricalPrice[] | undefined {
-  const historicalData = data?.prices.map(([timestamp, price]) => ({
-    time: timestamp / 1000,
-    close: price,
-    high: price,
-    low: price,
-    open: price,
-    volume: 0,
-  }));
-
-  if (historicalRange === "all") {
-    return historicalData;
-  }
-
-  let min = dayjs(new Date());
-  const max = dayjs(Date.now());
-  const maxTime = max.unix();
-
-  switch (historicalRange) {
-    case "1h":
-      min = min.subtract(1, "hour");
-      break;
-    case "1d":
-      min = min.subtract(1, "day");
-      break;
-    case "7d":
-      min = min.subtract(1, "week");
-      break;
-    case "1mo":
-      min = min.subtract(1, "month");
-      break;
-    case "1y":
-      min = min.subtract(1, "year");
-      break;
-  }
-
-  const minTime = min.unix();
-
-  return historicalData?.filter(
-    (price) => price.time <= maxTime && price.time >= minTime
+  // "Now" is sampled when the inputs change, not ticked on a timer. It is
+  // taken in an effect because the clock is impure.
+  const nowMs = useNowOnChange(
+    `${key}|${historicalRange}|${historicalUpdatedAt}|${coingeckoUpdatedAt}|${latestUpdatedAt}`
   );
-}
 
-export const AvailablePriceRanges = {
-  "1h": "1h",
-  "1d": "1d",
-  "7d": "7d",
-  "1mo": "1mo",
-  "1y": "1y",
-  all: "all",
-} as const;
+  const historicalChartData = useMemo(
+    () => filterFutureData(historicalData, nowMs),
+    [historicalData, nowMs]
+  );
 
-export type PriceRange =
-  (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
+  const historicalChartUnavailable =
+    historicalDataError ||
+    (!isHistoricalDataLoading && historicalChartData.length === 0);
 
-const DEFAULT_STALE_THRESHOLD_MS = 60 * 60 * 1000;
-const STALE_THRESHOLD_MS_BY_RANGE: Partial<Record<PriceRange, number>> = {
-  "1h": 15 * 60 * 1000,
+  const lastChartData: ChartTick | undefined =
+    historicalChartData[historicalChartData.length - 1];
+
+  const historicalChartStale = isHistoricalChartStale({
+    isLoading: isHistoricalDataLoading,
+    isUnavailable: historicalChartUnavailable,
+    usingCoingeckoFallback: enableCoinGecko,
+    latestPricePointTimeSec,
+    range: historicalRange,
+    nowMs,
+  });
+
+  const lastChartTimestampMs =
+    latestPricePointTimeSec !== undefined
+      ? latestPricePointTimeSec * 1000
+      : undefined;
+
+  const setZoom = useCallback(
+    (zoom: number) => updateUi(() => ({ zoom })),
+    [updateUi]
+  );
+  const resetZoom = useCallback(
+    () => updateUi(() => ({ zoom: INITIAL_ZOOM })),
+    [updateUi]
+  );
+  const zoomIn = useCallback(
+    () => updateUi((s) => ({ zoom: zoomedIn(s.zoom) })),
+    [updateUi]
+  );
+  const zoomOut = useCallback(
+    () => updateUi((s) => ({ zoom: zoomedOut(s.zoom) })),
+    [updateUi]
+  );
+  const setHistoricalRange = useCallback(
+    (range: PriceRange) => updateUi(() => ({ historicalRange: range })),
+    [updateUi]
+  );
+  const setDataType = useCallback(
+    (data: AssetChartDataType) => updateUi(() => ({ dataType: data })),
+    [updateUi]
+  );
+  const setMode = useCallback(
+    (mode: AssetChartMode) => updateUi(() => ({ mode })),
+    [updateUi]
+  );
+
+  return useMemo(
+    () => ({
+      denom,
+      coinMinimalDenom,
+      historicalRange,
+      dataType,
+      mode: ui.mode,
+      historicalChartData,
+      historicalChartUnavailable,
+      isHistoricalDataLoading,
+      historicalChartStale,
+      lastChartData,
+      lastChartTimestampMs,
+      hoverStore,
+      hoverKey: key,
+      setHoverData,
+      setZoom,
+      resetZoom,
+      zoomIn,
+      zoomOut,
+      setHistoricalRange,
+      setDataType,
+      setMode,
+    }),
+    [
+      denom,
+      coinMinimalDenom,
+      historicalRange,
+      dataType,
+      ui.mode,
+      historicalChartData,
+      historicalChartUnavailable,
+      isHistoricalDataLoading,
+      historicalChartStale,
+      lastChartData,
+      lastChartTimestampMs,
+      hoverStore,
+      key,
+      setHoverData,
+      setZoom,
+      resetZoom,
+      zoomIn,
+      zoomOut,
+      setHistoricalRange,
+      setDataType,
+      setMode,
+    ]
+  );
 };
 
-const AssetChartAvailableDataTypes = ["price", "volume"] as const;
-
-type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
-
-const AssetChartModes = {
-  advanced: "advanced",
-  simple: "simple",
-} as const;
-
-type AssetChartMode = (typeof AssetChartModes)[keyof typeof AssetChartModes];
-
-const INITIAL_ZOOM = 1.05;
-const ZOOM_STEP = 0.05;
-
-interface ChartTick {
-  time: number;
-  close: number;
-}
-
-export class ObservableAssetInfoConfig {
-  @observable
-  protected _historicalRange: PriceRange = "7d";
-
-  @observable
-  protected _dataType: AssetChartDataType = "price";
-
-  @observable
-  protected _mode: AssetChartMode = "simple";
-
-  @observable
-  protected _zoom: number = INITIAL_ZOOM;
-
-  @observable
-  protected _hoverData?: number = undefined;
-
-  @observable
-  protected _hoverDate?: Time = undefined;
-
-  // Query results are immutable; a deep observable would copy every point.
-  @observable.ref
-  protected _historicalData: TokenHistoricalPrice[] = [];
-
-  @observable
-  protected _historicalDataError: boolean = false;
-
-  // Nothing has loaded until the hook's effect syncs the first query state.
-  @observable
-  protected _isHistoricalDataLoading: boolean = true;
-
-  @observable
-  protected _latestPricePointTimeSec?: number = undefined;
-
-  @observable
-  protected _usingCoingeckoFallback: boolean = false;
-
-  protected _disposers: (() => void)[] = [];
-
-  denom: string;
-
-  coinMinimalDenom?: string;
-
-  @action
-  readonly setHistoricalData = (data: TokenHistoricalPrice[]) => {
-    this._historicalData = data;
-  };
-
-  @action
-  readonly setLatestPricePointTimeSec = (timeSec?: number) => {
-    this._latestPricePointTimeSec = timeSec;
-  };
-
-  @action
-  readonly setUsingCoingeckoFallback = (usingFallback: boolean) => {
-    this._usingCoingeckoFallback = usingFallback;
-  };
-
-  @computed
-  get historicalChartData() {
-    const currentTime = new Date().getTime();
-
-    return this._historicalData.filter(
-      (data) => data.time * 1000 <= currentTime
-    );
-  }
-
-  @computed
-  get historicalChartUnavailable(): boolean {
-    return (
-      this._historicalDataError ||
-      (!this.isHistoricalDataLoading && this.historicalChartData.length === 0)
-    );
-  }
-
-  @computed
-  get isHistoricalDataLoading(): boolean {
-    return this._isHistoricalDataLoading;
-  }
-
-  @computed
-  get hoverData(): PricePretty | undefined {
-    const fiat = DEFAULT_VS_CURRENCY;
-
-    if (!fiat || this._hoverData === undefined) {
-      return undefined;
-    }
-
-    return new PricePretty(fiat, this._hoverData);
-  }
-
-  @computed
-  get hoverDate(): string | null {
-    if (!this._hoverDate) {
-      return null;
-    }
-
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-    };
-
-    return timepointToString(this._hoverDate, formatOptions, "en-US");
-  }
-
-  @computed
-  get lastChartData(): ChartTick | undefined {
-    const data: ChartTick[] = [...this.historicalChartData];
-
-    return data.pop();
-  }
-
-  @computed
-  get lastChartTimestampMs(): number | undefined {
-    return this._latestPricePointTimeSec !== undefined
-      ? this._latestPricePointTimeSec * 1000
-      : undefined;
-  }
-
-  // Reactivity note: reads Date.now() but is recomputed when
-  // _latestPricePointTimeSec or _historicalRange changes, which is sufficient
-  // since the chart rerenders on those triggers. Do not wrap in setInterval.
-  @computed
-  get historicalChartStale(): boolean {
-    if (this.isHistoricalDataLoading || this.historicalChartUnavailable) {
-      return false;
-    }
-    // The latest-price-point query is an on-chain cascade. When the chart
-    // is rendering CoinGecko data (on-chain history was empty for the
-    // range), an old on-chain timestamp is not meaningful for what the
-    // user is looking at, so suppress the pill in that case.
-    if (this._usingCoingeckoFallback) return false;
-    if (this._latestPricePointTimeSec === undefined) return false;
-    const threshold =
-      STALE_THRESHOLD_MS_BY_RANGE[this._historicalRange] ??
-      DEFAULT_STALE_THRESHOLD_MS;
-    const ageMs = Date.now() - this._latestPricePointTimeSec * 1000;
-    return ageMs > threshold;
-  }
-
-  @computed
-  get historicalRange(): PriceRange {
-    return this._historicalRange;
-  }
-
-  @computed
-  get dataType(): AssetChartDataType {
-    return this._dataType;
-  }
-
-  @computed
-  get mode(): AssetChartMode {
-    return this._mode;
-  }
-
-  constructor(denom: string, coinMinimalDenom?: string) {
-    makeObservable(this);
-
-    this.denom = denom;
-    this.coinMinimalDenom = coinMinimalDenom;
-  }
-
-  @action
-  readonly setHistoricalDataError = (error: boolean) => {
-    this._historicalDataError = error;
-  };
-
-  @action
-  readonly setIsHistoricalDataLoading = (isLoading: boolean) => {
-    this._isHistoricalDataLoading = isLoading;
-  };
-
-  @action
-  readonly setHoverData = (data?: number, time?: Time) => {
-    this._hoverData = data;
-    this._hoverDate = time;
-  };
-
-  @action
-  readonly setZoom = (zoom: number) => {
-    this._zoom = zoom;
-  };
-
-  @action
-  readonly resetZoom = () => {
-    this._zoom = INITIAL_ZOOM;
-  };
-
-  @action
-  readonly zoomIn = () => {
-    this._zoom = Math.max(1, this._zoom - ZOOM_STEP);
-  };
-
-  @action
-  readonly zoomOut = () => {
-    this._zoom = this._zoom + ZOOM_STEP;
-  };
-
-  @action
-  setHistoricalRange = (range: PriceRange) => {
-    this._historicalRange = range;
-  };
-
-  @action
-  setDataType = (data: AssetChartDataType) => {
-    this._dataType = data;
-  };
-
-  @action
-  setMode = (mode: AssetChartMode) => {
-    this._mode = mode;
-  };
-
-  dispose() {
-    this._disposers.forEach((dispose) => dispose());
-  }
-}
+const EMPTY_DATA: TokenHistoricalPrice[] = [];

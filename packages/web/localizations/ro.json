@@ -1020,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Transferurile vor dura probabil mai mult decât de obicei sau pot eșua complet. Procedați pe propriul risc.",
     "ibcConnectionDown": "Conexiunea IBC nativă este indisponibilă",
     "ibcConnectionDownDescription": "Ruta IBC directă pentru {asset} este momentan inactivă. Opțiunile de mai jos pot oferi o cale alternativă, dar pot fi și ele afectate.",
+    "balanceUnavailable": "Soldul tău {chain} nu a putut fi încărcat",
+    "balanceUnavailableDescription": "Nu am putut accesa {chain} pentru a verifica soldul, așa că poate apărea ca 0. Fondurile tale nu sunt afectate. Încearcă din nou sau folosește opțiunile de mai jos.",
+    "retryBalance": "Încearcă din nou",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Transferurile native sunt indisponibile pentru {asset}",
@@ -1273,7 +1276,7 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
-    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "launchAlert": "Sunt afișate swap-urile, depunerile și retragerile tale.",
     "history": "Istorie",
     "orders": "Comenzi",
     "historyTable": {
@@ -1291,7 +1294,17 @@
       "providerFee": "Taxa de furnizor",
       "provider": "Furnizor",
       "networkFee": "Taxa de retea"
-    }
+    },
+    "filter": {
+      "type": "Tipuri de tranzacții",
+      "swap": "Swap-uri",
+      "deposit": "Depuneri",
+      "withdraw": "Retrageri",
+      "search": "Caută activ, rețea, sumă sau adresă",
+      "noMatches": "Nicio tranzacție potrivită",
+      "pageHint": "Filtrele se aplică doar tranzacțiilor de pe această pagină. Încearcă pagina următoare sau ajustează filtrele."
+    },
+    "unknownAddressTooltip": "Nu am putut determina această adresă din datele bridge-ului. Poate apărea mai târziu; o poți găsi și în explorer."
   },
   "date": {
     "earlierToday": "Mai devreme astazi",

@@ -1020,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Les transferts prendront probablement plus de temps que d’habitude ou pourraient échouer complètement. Procédez à vos propres risques.",
     "ibcConnectionDown": "Connexion IBC native indisponible",
     "ibcConnectionDownDescription": "La route IBC directe pour {asset} est actuellement indisponible. Les options ci-dessous peuvent offrir un chemin alternatif, mais peuvent également être affectées.",
+    "balanceUnavailable": "Impossible de charger votre solde {chain}",
+    "balanceUnavailableDescription": "Nous n'avons pas pu joindre {chain} pour vérifier votre solde, il peut donc s'afficher à 0. Vos fonds ne sont pas affectés. Réessayez ou utilisez les options ci-dessous.",
+    "retryBalance": "Réessayer",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Transferts natifs indisponibles pour {asset}",
@@ -1273,7 +1276,7 @@
     "totalFees": "Total des frais",
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
-    "launchAlert": "Actuellement, seul l'historique des transactions et des transferts est affiché. D'autres types de transactions seront bientôt disponibles.",
+    "launchAlert": "Vos swaps, dépôts et retraits sont affichés.",
     "history": "Histoire",
     "orders": "Ordres",
     "historyTable": {
@@ -1291,7 +1294,17 @@
       "providerFee": "Frais de prestataire",
       "provider": "Fournisseur",
       "networkFee": "Frais de réseau"
-    }
+    },
+    "filter": {
+      "type": "Types de transaction",
+      "swap": "Swaps",
+      "deposit": "Dépôts",
+      "withdraw": "Retraits",
+      "search": "Rechercher un actif, une chaîne, un montant ou une adresse",
+      "noMatches": "Aucune transaction correspondante",
+      "pageHint": "Les filtres ne s'appliquent qu'aux transactions de cette page. Essayez la page suivante ou modifiez vos filtres."
+    },
+    "unknownAddressTooltip": "Impossible de déterminer cette adresse à partir des données du pont. Elle pourra apparaître plus tard ; vous pouvez aussi la trouver dans l'explorateur."
   },
   "date": {
     "earlierToday": "Plus tôt aujourd'hui",
