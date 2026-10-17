@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as fs from "node:fs";
 import path from "node:path";
 
