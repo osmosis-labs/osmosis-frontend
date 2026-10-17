@@ -272,8 +272,6 @@ module.exports = {
         10: "2.5rem",
         "rewards-container": "332px",
         "multi-radio": "290px",
-        "dropdown-with-label": "200px",
-        "strategy-buttons": "186px",
       },
       keyframes: {
         loading: {
