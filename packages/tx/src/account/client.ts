@@ -21,6 +21,7 @@ import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Optional } from "utility-types";
 
 import { encodeAnyBase64 } from "../codec";
+import { TxStatusUnknownError } from "../error";
 import { type QuoteStdFee, SimulateNotAvailableError } from "../gas";
 import { TxTracer } from "../tracer";
 import { getAminoConverters } from "./amino-converters";
@@ -43,6 +44,10 @@ import {
   removeLastSlash,
   runBroadcastedCallbacks,
 } from "./utils";
+
+/** How long to wait for an accepted tx to be included before reporting its
+ *  status as unknown. */
+export const TX_TRACE_TIMEOUT_MS = 60_000;
 
 export type SignerData = {
   accountNumber: string;
@@ -324,34 +329,43 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
           perCall: onBroadcasted,
         });
 
-        // Pass all RPC endpoints to TxTracer for WebSocket failover.
-        const rpcUrls = service.getChainRpcUrls(wallet);
-        let sortedRpcUrls: string[] =
-          rpcUrls.length > 0
-            ? rpcUrls
-            : [getEndpointString(await wallet.getRpcEndpoint(true))];
-        if (rpcUrls.length > 1) {
-          try {
-            const client = new MultiEndpointClient(
-              rpcUrls.map((url) => ({ address: url }))
-            );
-            const { endpointAddress } =
-              await client.fetchWithEndpoint("/status");
-            sortedRpcUrls = [
-              endpointAddress,
-              ...rpcUrls.filter((u) => u !== endpointAddress),
-            ];
-          } catch {
-            // Pre-probe failed; use default order
+        // From here on the tx is accepted, so failing to learn its result
+        // must not report it as failed: it may still be included.
+        const traceTx = async () => {
+          // Pass all RPC endpoints to TxTracer for WebSocket failover.
+          const rpcUrls = service.getChainRpcUrls(wallet);
+          let sortedRpcUrls: string[] =
+            rpcUrls.length > 0
+              ? rpcUrls
+              : [getEndpointString(await wallet.getRpcEndpoint(true))];
+          if (rpcUrls.length > 1) {
+            try {
+              const client = new MultiEndpointClient(
+                rpcUrls.map((url) => ({ address: url }))
+              );
+              const { endpointAddress } =
+                await client.fetchWithEndpoint("/status");
+              sortedRpcUrls = [
+                endpointAddress,
+                ...rpcUrls.filter((u) => u !== endpointAddress),
+              ];
+            } catch {
+              // Pre-probe failed; use default order
+            }
           }
-        }
 
-        const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
-          wsObject: deps.options?.wsObject,
-        });
+          const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
+            wsObject: deps.options?.wsObject,
+          });
+          return txTracer
+            .traceTx(txHashBuffer, { timeoutMs: TX_TRACE_TIMEOUT_MS })
+            .finally(() => txTracer.close());
+        };
 
-        const tx = await txTracer
-          .traceTx(txHashBuffer)
+        const tx = await traceTx()
+          .catch((e: unknown) => {
+            throw new TxStatusUnknownError(broadcasted.txhash, e);
+          })
           .then(
             (tx: {
               data?: string;
@@ -384,8 +398,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
                 gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
               };
             }
-          )
-          .finally(() => txTracer.close());
+          );
 
         deps.setTxTypeInProgress?.(chainNameOrId, "");
 

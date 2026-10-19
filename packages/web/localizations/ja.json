@@ -855,6 +855,8 @@
   "swapFailed": "交換に失敗しました。流動性が十分ではない可能性があります。許容される滑り量を調整してみてください。",
   "transactionBroadcasting": "トランザクションブロードキャスト",
   "transactionFailed": "処理に失敗しました",
+  "transactionStatusUnknown": "トランザクションの状態が不明です",
+  "transactionStatusUnknownCaption": "送信されましたが、確認できませんでした。再試行する前にエクスプローラーを確認してください。",
   "transactionSuccessful": "トランザクションが成功しました",
   "transfer": {
     "deposit": "デポジット",

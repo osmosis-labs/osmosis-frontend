@@ -855,6 +855,8 @@
   "swapFailed": "Der Tausch ist fehlgeschlagen. Möglicherweise reicht die Liquidität nicht aus. Versuchen Sie, den zulässigen Schlupf anzupassen.",
   "transactionBroadcasting": "Transaktionsübertragung",
   "transactionFailed": "Transaktion fehlgeschlagen",
+  "transactionStatusUnknown": "Transaktionsstatus unbekannt",
+  "transactionStatusUnknownCaption": "Übermittelt, aber wir konnten sie nicht bestätigen. Prüfe den Explorer, bevor du es erneut versuchst.",
   "transactionSuccessful": "Transaktion Erfolgreich",
   "transfer": {
     "deposit": "Kaution",

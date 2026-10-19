@@ -855,6 +855,8 @@
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
   "transactionFailed": "Transaction Failed",
+  "transactionStatusUnknown": "Transaction Status Unknown",
+  "transactionStatusUnknownCaption": "Submitted, but we couldn't confirm it. Check the explorer before trying again.",
   "transactionSuccessful": "Transaction Successful",
   "transfer": {
     "deposit": "Deposit",

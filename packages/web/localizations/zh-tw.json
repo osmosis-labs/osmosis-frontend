@@ -855,6 +855,8 @@
   "swapFailed": "兌換失敗。流動性可能不夠。嘗試調整允許的滑點。",
   "transactionBroadcasting": "交易正在被廣播",
   "transactionFailed": "交易失敗",
+  "transactionStatusUnknown": "交易狀態未知",
+  "transactionStatusUnknownCaption": "已提交，但我們無法確認。請先查看瀏覽器，再重試。",
   "transactionSuccessful": "交易成功",
   "transfer": {
     "deposit": "訂金",
