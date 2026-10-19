@@ -4,7 +4,7 @@ import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  DATA_SERVICES_STALE_WHILE_REVALIDATE,
+  DATA_SERVICES_MARKET_STALE_WHILE_REVALIDATE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
@@ -263,7 +263,7 @@ function getTokenData() {
   return cachified({
     cache: assetMarketCache,
     ttl: TOKEN_DATA_TTL,
-    staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
+    staleWhileRevalidate: DATA_SERVICES_MARKET_STALE_WHILE_REVALIDATE,
     key: "allTokenData",
     getFreshValue: async () => {
       const allTokenData = await queryAllTokenData();

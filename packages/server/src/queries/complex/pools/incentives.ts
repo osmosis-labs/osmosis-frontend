@@ -10,7 +10,7 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import {
-  DATA_SERVICES_STALE_WHILE_REVALIDATE,
+  DATA_SERVICES_APR_STALE_WHILE_REVALIDATE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
 import {
@@ -74,7 +74,7 @@ export function getCachedPoolIncentivesMap(): Promise<
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
-    staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
+    staleWhileRevalidate: DATA_SERVICES_APR_STALE_WHILE_REVALIDATE,
     getFreshValue: async () => {
       const aprs = await queryPoolAprsRange();
 
@@ -184,7 +184,7 @@ export function getConcentratedRangePoolApr({
     cache: aprCache,
     key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
     ttl: 30 * 1000, // 30 seconds
-    staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
+    staleWhileRevalidate: DATA_SERVICES_APR_STALE_WHILE_REVALIDATE,
     getFreshValue: async () => {
       const { APR } = await queryPriceRangeApr({
         lowerTickIndex: lowerTick,

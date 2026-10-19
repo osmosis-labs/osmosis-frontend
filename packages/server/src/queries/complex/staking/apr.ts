@@ -4,7 +4,7 @@ import { LRUCache } from "lru-cache";
 
 import { queryStakingApr } from "../../../queries/data-services/staking-apr";
 import {
-  DATA_SERVICES_STALE_WHILE_REVALIDATE,
+  DATA_SERVICES_APR_STALE_WHILE_REVALIDATE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
 
@@ -23,7 +23,7 @@ export async function getAverageStakingApr({
   return await cachified({
     cache: averageStakingAprCache,
     ttl: 1000 * 60 * 30, // 30 minutes since APR changes once a day at an unkown time
-    staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
+    staleWhileRevalidate: DATA_SERVICES_APR_STALE_WHILE_REVALIDATE,
     key: `average-staking-apr-${startDate}-${endDate}`,
     // Errors are thrown, not returned as 0: an unknown APR must not show as 0% or be cached.
     getFreshValue: async () => {
