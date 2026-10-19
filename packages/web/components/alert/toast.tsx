@@ -152,7 +152,8 @@ const LoadingToast: FunctionComponent<Alert> = ({
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
-          target="__blank"
+          target="_blank"
+          rel="noopener noreferrer"
           href={learnMoreUrl}
           className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
         >
@@ -189,7 +190,8 @@ const ErrorToast: FunctionComponent<Alert> = ({
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
-          target="__blank"
+          target="_blank"
+          rel="noopener noreferrer"
           href={learnMoreUrl}
           className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
         >
@@ -226,7 +228,8 @@ const SuccessToast: FunctionComponent<Alert> = ({
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
-          target="__blank"
+          target="_blank"
+          rel="noopener noreferrer"
           href={learnMoreUrl}
           className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
         >
