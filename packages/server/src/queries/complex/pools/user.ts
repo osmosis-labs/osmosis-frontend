@@ -3,18 +3,17 @@ import type {
   WeightedPoolRawResponse,
 } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {
+  calcAssetValue,
   calcSumCoinsValue,
+  isHoldingValueUnknown,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
-import {
-  getCachedPoolIncentivesMap,
-  PoolIncentives,
-} from "../../../queries/complex/pools/incentives";
+import { getCachedPoolIncentivesMap } from "../../../queries/complex/pools/incentives";
 import { queryBalances } from "../../../queries/cosmos";
 import {
   LiquidityPosition,
@@ -44,14 +43,12 @@ export async function getUserPools(params: {
         10_000, // 10 seconds
         "queryCLPositions"
       )().catch(() => [] as LiquidityPosition[]),
+      // Undefined when the APRs are unavailable, so they aren't shown as 0%.
       timeout(
-        () =>
-          getCachedPoolIncentivesMap().catch(
-            () => new Map<string, PoolIncentives>()
-          ),
+        () => getCachedPoolIncentivesMap().catch(() => undefined),
         10_000, // 10 seconds
         "getCachedPoolIncentivesMap"
-      )().catch(() => new Map<string, PoolIncentives>()),
+      )().catch(() => undefined),
       timeout(
         () => getSuperfluidPoolIds(params).catch(() => [] as string[]),
         10_000, // 10 seconds
@@ -73,11 +70,14 @@ export async function getUserPools(params: {
 
   return await Promise.all(
     pools.items?.map(async (pool) => {
-      const { id, reserveCoins, totalFiatValueLocked, type } = pool;
+      const { id, reserveCoins, totalFiatValueLocked, type, tvlUnknown } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,
         new Dec(0)
       );
+      // Set when a price behind the user's value is unavailable, so the value isn't
+      // understated (or hidden as dust) as if the funds were missing.
+      let userValueUnknown = false;
 
       if (type === "concentrated") {
         const positions = accountPositions.filter(
@@ -98,9 +98,34 @@ export async function getUserPools(params: {
           aggregatedRawCoins
         );
 
+        const coinValues = await Promise.all(
+          coinsToCalculateValue
+            .filter((coin) => coin.toDec().isPositive())
+            .map((coin) => {
+              const { denom, amount } = coin.toCoin();
+              return calcAssetValue({
+                ...params,
+                anyDenom: denom,
+                amount,
+              }).catch(() => {
+                // Only an asset that should have a price makes the value unknown;
+                // spam, sunset and halted assets count as zero, as before.
+                if (
+                  isHoldingValueUnknown({
+                    assetLists,
+                    coinMinimalDenom: denom,
+                    amount,
+                  })
+                ) {
+                  userValueUnknown = true;
+                }
+                return new Dec(0);
+              });
+            })
+        );
         userValue = new PricePretty(
           DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue({ ...params, coins: coinsToCalculateValue })
+          coinValues.reduce<Dec>((sum, value) => sum.add(value), new Dec(0))
         );
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
@@ -130,8 +155,19 @@ export async function getUserPools(params: {
         id,
         type,
         reserveCoins,
-        apr: poolIncentives.get(id)?.aprBreakdown?.total,
-        poolLiquidity: totalFiatValueLocked,
+        // A pool missing from a loaded map has no APR; an unavailable map means unknown.
+        apr: poolIncentives
+          ? (poolIncentives.get(id)?.aprBreakdown?.total ?? {
+              lower: new RatePretty(0),
+              upper: new RatePretty(0),
+            })
+          : undefined,
+        // Undefined when a reserve has no price: the TVL is unknown, not the partial sum.
+        poolLiquidity: tvlUnknown ? undefined : totalFiatValueLocked,
+        /** True when the user's value can't be priced: a coin's price or the pool TVL is unavailable. */
+        userValueUnknown:
+          userValueUnknown ||
+          Boolean(tvlUnknown && (type === "weighted" || type === "stable")),
         isSuperfluid: superfluidPoolIds.some(
           (superfluidPoolId) => superfluidPoolId === id
         ),

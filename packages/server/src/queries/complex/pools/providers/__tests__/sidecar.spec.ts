@@ -5,7 +5,12 @@ import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";
 import { calcAssetValue, calcSumCoinsValue, getAsset } from "../../../assets";
-import { getPoolTypeFromChainPool, makePoolFromChainPool } from "../sidecar";
+import {
+  getPoolsFromSidecar,
+  getPoolTypeFromChainPool,
+  hasUnpricedReserves,
+  makePoolFromChainPool,
+} from "../sidecar";
 
 export const server = setupServer();
 
@@ -75,6 +80,113 @@ describe("getPoolsFromSidecar", () => {
     const pool = mockSidecarResponse[4];
     const poolType = getPoolTypeFromChainPool(pool.chain_model as any);
     expect(poolType).toBe("cosmwasm");
+  });
+});
+
+describe("getPoolsFromSidecar market data", () => {
+  beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+  afterAll(() => server.close());
+
+  beforeEach(() => {
+    (getAsset as jest.Mock).mockImplementation(() => mockAsset);
+  });
+
+  /** Serves the weighted mock pool with the given fees data under a unique pool ID. */
+  const getPoolWithFeesData = async (poolId: number, feesData?: object) => {
+    server.use(
+      http.get(new URL("/pools", SIDECAR_BASE_URL).toString(), () =>
+        HttpResponse.json({
+          data: [
+            {
+              ...mockSidecarResponse[0],
+              chain_model: {
+                ...mockSidecarResponse[0].chain_model,
+                id: poolId,
+              },
+              liquidity_cap: "1000",
+              fees_data: feesData,
+            },
+          ],
+          meta: { total_items: 1, next_cursor: -1 },
+        })
+      )
+    );
+
+    const { data } = await getPoolsFromSidecar({
+      assetLists: [],
+      chainList: [],
+      poolIds: [poolId.toString()],
+    });
+    return data[0];
+  };
+
+  it("leaves volume and fees unknown when fees data is missing or failed", async () => {
+    const missing = await getPoolWithFeesData(20001);
+    const failed = await getPoolWithFeesData(20002, {
+      volume_24h: 0,
+      volume_7d: 0,
+      fees_spent_24h: 0,
+      fees_spent_7d: 0,
+      is_error: true,
+    });
+
+    for (const pool of [missing, failed]) {
+      expect(pool.market?.volume24hUsd).toBeUndefined();
+      expect(pool.market?.volume7dUsd).toBeUndefined();
+      expect(pool.market?.feesSpent24hUsd).toBeUndefined();
+      expect(pool.market?.feesSpent7dUsd).toBeUndefined();
+      expect(pool.totalFiatValueLocked.toDec().toString()).toBe(
+        "1000.000000000000000000"
+      );
+    }
+  });
+
+  it("keeps known volume and fees, including a known zero", async () => {
+    const pool = await getPoolWithFeesData(20003, {
+      volume_24h: 0,
+      volume_7d: 700,
+      fees_spent_24h: 0,
+      fees_spent_7d: 2,
+    });
+
+    expect(pool.market?.volume24hUsd?.toDec().isZero()).toBe(true);
+    expect(pool.market?.volume7dUsd?.toDec().toString()).toBe(
+      "700.000000000000000000"
+    );
+    expect(pool.market?.feesSpent7dUsd?.toDec().toString()).toBe(
+      "2.000000000000000000"
+    );
+  });
+});
+
+describe("hasUnpricedReserves", () => {
+  const usdc =
+    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+  const sol =
+    "ibc/1E43D59E565D41FB4E54CA639B838FFD5BCFC20003D330A56CB1396231AA1CBA";
+
+  it("is unknown when a held reserve has no price", () => {
+    expect(
+      hasUnpricedReserves({
+        liquidity_cap_error: `zero cap for denom (${sol})`,
+        balances: [
+          { denom: sol, amount: "1832630768" },
+          { denom: usdc, amount: "1184090395" },
+        ],
+      })
+    ).toBe(true);
+  });
+
+  it("is known when the flagged reserve is drained", () => {
+    expect(
+      hasUnpricedReserves({
+        liquidity_cap_error: `zero cap for denom (${usdc})`,
+        balances: [
+          { denom: usdc, amount: "0" },
+          { denom: sol, amount: "941235682501176" },
+        ],
+      })
+    ).toBe(false);
   });
 });
 

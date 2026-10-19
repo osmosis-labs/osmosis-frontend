@@ -1262,6 +1262,7 @@
     "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。",
     "noTransactions": "取引なし",
     "pastShownHere": "Osmosis での過去の取引がここに表示されます。",
+    "historyLoadError": "履歴をすべて読み込めませんでした。しばらくしてからもう一度お試しください。",
     "connectToSee": "取引履歴を表示するには接続してください",
     "connectWallet": "ウォレットを接続する",
     "title": "取引",
@@ -1329,6 +1330,10 @@
         "subtitle": "取引注文履歴がここに表示されます。",
         "connectTitle": "ウォレットを接続すると注文履歴が表示されます",
         "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
+      },
+      "errorState": {
+        "title": "注文を読み込めませんでした",
+        "subtitle": "しばらくしてからもう一度お試しください。"
       }
     },
     "aboveMarket": {

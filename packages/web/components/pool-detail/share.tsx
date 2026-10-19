@@ -345,23 +345,23 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                 </div>
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
-                {pool.market?.volume24hUsd && (
-                  <div className="space-y-2">
-                    <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.24hrTradingVolume")}
-                    </span>
-                    <h4 className="text-osmoverse-100">
-                      {pool.market.volume24hUsd.toString()}
-                    </h4>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <span className="body2 gap-2 text-osmoverse-400">
+                    {t("pool.24hrTradingVolume")}
+                  </span>
+                  <h4 className="text-osmoverse-100">
+                    {pool.market?.volume24hUsd?.toString() ?? "–"}
+                  </h4>
+                </div>
 
                 <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.liquidity")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {pool.totalFiatValueLocked.toString()}
+                    {pool.tvlUnknown
+                      ? "–"
+                      : pool.totalFiatValueLocked.toString()}
                   </h4>
                 </div>
                 <div className="space-y-2">

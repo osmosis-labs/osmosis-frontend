@@ -106,7 +106,7 @@ export const BasePoolDetails: FunctionComponent<{
                     {t("pool.liquidity")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {poolValue?.toString() ?? ""}
+                    {pool.tvlUnknown ? "–" : (poolValue?.toString() ?? "")}
                   </h4>
                 </div>
                 <div className="space-y-2">

@@ -190,6 +190,17 @@ describe("useAddConcentratedLiquidityState", () => {
     expect(result.current.fullRange).toBe(true);
   });
 
+  it("waits for real prices when the price history is unavailable", () => {
+    // The price history endpoint returns no-data bounds when it fails.
+    const { result, rerender } = setup(
+      inputs({ historicalPriceMinMax: { min: Infinity, max: -Infinity } })
+    );
+    expect(result.current.rangeRaw).toEqual(["0", "0"]);
+
+    rerender(inputs({ historicalPriceMinMax: { min: 0.9, max: 1.1 } }));
+    expect(result.current.currentStrategy).toBe("moderate");
+  });
+
   it("does not initialize the range for inactive pools", () => {
     const { result } = setup(
       inputs({

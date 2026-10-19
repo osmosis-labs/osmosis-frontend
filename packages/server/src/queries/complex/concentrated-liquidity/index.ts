@@ -338,19 +338,18 @@ export async function mapGetUserPositionDetails({
       ]);
 
       // the APR range query involves a lot of calculation and can timeout the gateway
-      // instead, let's timeout the query and return undefined if it takes too long
-      const rangeApr = await timeout(
+      // instead, let's timeout the query and return undefined if it takes too long.
+      // Undefined means unknown, so it isn't shown as 0%.
+      const rangeApr: RatePretty | undefined = await timeout(
         () =>
           getConcentratedRangePoolApr({
             lowerTick: lowerTick.toString(),
             upperTick: upperTick.toString(),
             poolId: position.pool_id,
-          })
-            .then((rate) => rate ?? new RatePretty(0))
-            .catch(() => new RatePretty(0)),
+          }),
         4_000, // 4 seconds
         "getConcentratedRangePoolApr"
-      )().catch(() => new RatePretty(0));
+      )().catch(() => undefined);
 
       const pool = pools.items.find((pool) => pool.id === position.pool_id);
       if (!pool) {
@@ -488,7 +487,7 @@ export async function mapGetUserPositionDetails({
       }
 
       const totalRangeApr =
-        isSuperfluidStaked || isSuperfluidUnstaking
+        rangeApr && (isSuperfluidStaked || isSuperfluidUnstaking)
           ? rangeApr.add(superfluidApr ?? new Dec(0))
           : rangeApr;
 

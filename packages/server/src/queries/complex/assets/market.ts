@@ -3,7 +3,10 @@ import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import {
+  DATA_SERVICES_STALE_WHILE_REVALIDATE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   type CoingeckoVsCurrencies,
@@ -43,11 +46,14 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 60, // 1 minute
-    getFreshValue: async () => {
+    getFreshValue: async ({ metadata }) => {
       const [assetMarketActivity, totalSupply] = await Promise.all([
-        getAssetMarketActivity(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        ),
+        getAssetMarketActivity(asset).catch((e) => {
+          // Market data is unavailable, not absent: retry soon instead of
+          // holding the asset without it for the full ttl.
+          metadata.ttl = 1000 * 5; // 5 seconds
+          return captureErrorAndReturn(e, undefined);
+        }),
         includeTotalSupply
           ? querySupplyTotal({
               ...params,
@@ -221,17 +227,39 @@ export async function getAssetCoingeckoCoin({
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
+/** How long token data, which includes prices, counts as fresh. */
+const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
+
+/** Fields that are prices or derived from prices. They are dropped when the token data is
+ *  served stale during a data-services outage: a last-known price can be badly wrong in a
+ *  volatile market, so it's shown as unknown instead. */
+const PRICE_DERIVED_FIELDS = [
+  "price",
+  "price1hChange",
+  "price24hChange",
+  "price7dChange",
+  "marketCap",
+  "liquidity",
+  "liquidity24hChange",
+] as const;
+
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
  *  configured outside of our asset list (from data services).
- *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
+ *  Returns `undefined` for a given coin denom if there was an error or it's not available.
+ *  While a data-services outage keeps the data past its ttl, price-derived fields are undefined. */
 export async function getAssetMarketActivity({
   coinMinimalDenom,
 }: {
   coinMinimalDenom: string;
-}) {
-  const assetMarketMap = await cachified({
+}): Promise<
+  | (Omit<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]> &
+      Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>)
+  | undefined
+> {
+  const { tokenInfoMap, fetchedAt } = await cachified({
     cache: assetMarketCache,
-    ttl: 1000 * 60 * 5, // 5 minutes since there's price data
+    ttl: TOKEN_DATA_TTL,
+    staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
     key: "allTokenData",
     getFreshValue: async () => {
       const allTokenData = await queryAllTokenData();
@@ -241,11 +269,19 @@ export async function getAssetMarketActivity({
         const activity = makeMarketActivityFromTokenData(tokenData);
         tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
       });
-      return tokenInfoMap;
+      return { tokenInfoMap, fetchedAt: Date.now() };
     },
   });
 
-  return assetMarketMap.get(coinMinimalDenom.toUpperCase());
+  const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
+  if (!activity || Date.now() - fetchedAt <= TOKEN_DATA_TTL) return activity;
+
+  const staleActivity: Partial<MarketActivity> = { ...activity };
+  PRICE_DERIVED_FIELDS.forEach((field) => delete staleActivity[field]);
+  return staleActivity as Omit<
+    MarketActivity,
+    (typeof PRICE_DERIVED_FIELDS)[number]
+  >;
 }
 
 type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;

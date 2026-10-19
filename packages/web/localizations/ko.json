@@ -1262,6 +1262,7 @@
     "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다.",
     "noTransactions": "거래 없음",
     "pastShownHere": "Osmosis에서의 과거 거래가 여기에 표시됩니다.",
+    "historyLoadError": "전체 기록을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.",
     "connectToSee": "거래 내역을 보려면 연결하세요.",
     "connectWallet": "지갑 연결",
     "title": "업무",
@@ -1329,6 +1330,10 @@
         "subtitle": "귀하의 거래 주문 내역이 여기에 표시됩니다.",
         "connectTitle": "지갑을 연결하여 주문 내역을 확인하세요",
         "connectSubtitle": "Osmosis의 과거 지정가 주문이 여기에 표시됩니다."
+      },
+      "errorState": {
+        "title": "주문을 불러올 수 없습니다",
+        "subtitle": "잠시 후 다시 시도해 주세요."
       }
     },
     "aboveMarket": {

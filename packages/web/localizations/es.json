@@ -1262,6 +1262,7 @@
     "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí.",
     "noTransactions": "Sin transacciones",
     "pastShownHere": "Tus operaciones anteriores en Osmosis aparecerán aquí.",
+    "historyLoadError": "No se pudo cargar tu historial completo. Inténtalo de nuevo en un momento.",
     "connectToSee": "Conéctese para ver su historial de transacciones",
     "connectWallet": "Conectar billetera",
     "title": "Actas",
@@ -1329,6 +1330,10 @@
         "subtitle": "Su historial de órdenes comerciales aparecerá aquí.",
         "connectTitle": "Conecte su billetera para ver su historial de pedidos",
         "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
+      },
+      "errorState": {
+        "title": "No se pudieron cargar tus órdenes",
+        "subtitle": "Inténtalo de nuevo en un momento."
       }
     },
     "aboveMarket": {

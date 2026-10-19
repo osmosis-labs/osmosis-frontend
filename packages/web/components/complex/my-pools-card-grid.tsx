@@ -1,4 +1,3 @@
-import { RatePretty } from "@osmosis-labs/unit";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { PoolCard } from "~/components/cards";
@@ -47,7 +46,11 @@ export const MyPoolsCardsGrid = () => {
   // with real pools never shows a false "no pools found".
   const dustFilteredPools = useHideDustUserSetting(
     allMyPoolDetails ?? [],
-    useCallback((myPool) => myPool.userValue, [])
+    // An unknown value is kept: hiding it as dust would look like missing funds.
+    useCallback(
+      (myPool) => (myPool.userValueUnknown ? undefined : myPool.userValue),
+      []
+    )
   );
 
   const visiblePools = useMemo(
@@ -102,24 +105,24 @@ export const MyPoolsCardsGrid = () => {
               ({
                 id,
                 type,
-                apr = {
-                  lower: new RatePretty(0),
-                  upper: new RatePretty(0),
-                },
+                apr,
                 poolLiquidity,
                 userValue,
+                userValueUnknown,
                 reserveCoins,
                 isSuperfluid,
               }) => {
-                const poolLiqudity_ = formatPretty(poolLiquidity);
+                const poolLiqudity_ = poolLiquidity
+                  ? formatPretty(poolLiquidity)
+                  : "–";
 
                 const myPoolMetrics = [
                   {
                     label: t("pools.APR"),
                     value: isMobile ? (
-                      (apr.upper?.maxDecimals(0).toString() ?? "")
+                      (apr?.upper?.maxDecimals(0).toString() ?? "–")
                     ) : (
-                      <h6>{apr.upper?.maxDecimals(2).toString()}</h6>
+                      <h6>{apr?.upper?.maxDecimals(2).toString() ?? "–"}</h6>
                     ),
                   },
                   {
@@ -131,7 +134,9 @@ export const MyPoolsCardsGrid = () => {
                       type === "concentrated"
                         ? t("pools.myLiquidity")
                         : t("pools.bonded"),
-                    value: isMobile ? (
+                    value: userValueUnknown ? (
+                      "–"
+                    ) : isMobile ? (
                       userValue.toString()
                     ) : (
                       <h6>{formatPretty(userValue)}</h6>

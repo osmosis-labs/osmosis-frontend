@@ -121,6 +121,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       totalRewardCoins,
       totalEarnedValue,
     } = positionPerformance ?? {};
+    // Performance comes from the data services. While it's unavailable the rewards are
+    // unknown, so the reward panels stay blank instead of saying there are none.
 
     const { t } = useTranslation();
     const router = useRouter();
@@ -310,7 +312,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               title={t("clPositions.totalRewardsEarned")}
               assets={totalRewardCoins}
               totalValue={totalEarnedValue}
-              emptyText={t("clPositions.noRewards")}
+              emptyText={
+                positionPerformance ? t("clPositions.noRewards") : undefined
+              }
             />
           </div>
           <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
@@ -328,7 +332,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               title={t("clPositions.unclaimedRewards")}
               assets={claimableRewardCoins}
               totalValue={claimableRewardsValue}
-              emptyText={t("clPositions.noRewards")}
+              emptyText={
+                positionPerformance ? t("clPositions.noRewards") : undefined
+              }
             />
           </div>
           {unbondEndTime && !superfluidData && (

@@ -15,8 +15,10 @@ import { useRouter } from "next/router";
 import {
   FunctionComponent,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -132,7 +134,34 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     children,
   } = props;
 
-  const sortKey = sortParams.allPoolsSort;
+  // When SQS has no volume data (e.g. its fees source is down), every pool's volume is
+  // unknown and a volume sort is meaningless, so sort by liquidity in the same direction.
+  // Latched per filter set, so a sort that has fallen back doesn't flip back and forth.
+  const filtersKey = JSON.stringify([filters, minLiquidityUsd]);
+  const [volumeUnavailableFiltersKey, setVolumeUnavailableFiltersKey] =
+    useState<string>();
+  const isVolumeSortUnavailable =
+    sortParams.allPoolsSort === "market.volume24hUsd" &&
+    volumeUnavailableFiltersKey === filtersKey;
+  const sortKey: MarketIncentivePoolsSortKey = isVolumeSortUnavailable
+    ? "totalFiatValueLocked"
+    : sortParams.allPoolsSort;
+
+  // Choosing a sort clears the fallback, so a volume sort is re-checked once data recovers.
+  const selectSortKey = useCallback(
+    (key?: MarketIncentivePoolsSortKey) => {
+      setVolumeUnavailableFiltersKey(undefined);
+      setSortKey(key);
+    },
+    [setSortKey]
+  );
+  const selectSortDirection = useCallback(
+    (dir: SortDirection) => {
+      setVolumeUnavailableFiltersKey(undefined);
+      setSortDirection(dir);
+    },
+    [setSortDirection]
+  );
 
   const {
     data: poolsPagesData,
@@ -199,6 +228,20 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     }
   );
 
+  const firstPage = poolsPagesData?.pages[0];
+  useEffect(() => {
+    if (
+      sortKey !== "market.volume24hUsd" ||
+      isPlaceholderData ||
+      !firstPage?.items.length
+    ) {
+      return;
+    }
+    if (firstPage.items.every((pool) => !pool.market?.volume24hUsd)) {
+      setVolumeUnavailableFiltersKey(filtersKey);
+    }
+  }, [sortKey, isPlaceholderData, firstPage, filtersKey]);
+
   const poolsData = useMemo(() => {
     const allItems =
       poolsPagesData?.pages.flatMap((page) => {
@@ -208,25 +251,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     return allItems;
   }, [poolsPagesData]);
 
-  // If more than half of the pools have volume and fees data, we should format their respective columns.
-  // Otherwise, we should not display them.
-  const { shouldDisplayVolumeData, shouldDisplayFeesData } = useMemo(() => {
-    let volumePresenceCount = 0;
-    let feesPresenceCount = 0;
-    poolsData.forEach((pool) => {
-      if (pool.market?.volume24hUsd) {
-        volumePresenceCount++;
-      }
-
-      if (pool.market?.feesSpent7dUsd) {
-        feesPresenceCount++;
-      }
-    });
-    return {
-      shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
-      shouldDisplayFeesData: false, // never show fees in the table
-    };
-  }, [poolsData]);
+  // Volume is always shown, with "–" where it's unknown. Fees are never shown in the table.
+  const shouldDisplayFeesData = false;
 
   // Define columns
   const columns = useMemo(() => {
@@ -240,32 +266,30 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       }),
     ];
 
-    // Only show volume if more than half of the pools have volume data.
-    if (shouldDisplayVolumeData) {
-      allColumns.push(
-        columnHelper.accessor(
-          (row) => row.market?.volume24hUsd?.toString() ?? "N/A",
-          {
-            id: "market.volume24hUsd",
-            header: () => (
-              <SortHeader<MarketIncentivePoolsSortKey>
-                label={t("pools.allPools.sort.volume24h")}
-                sortKey="market.volume24hUsd"
-                disabled={isLoading}
-                currentSortKey={sortKey}
-                currentDirection={sortParams.allPoolsSortDir}
-                setSortDirection={setSortDirection}
-                setSortKey={setSortKey}
-              />
-            ),
-          }
-        ) as unknown as (typeof allColumns)[number]
-      );
-    }
+    allColumns.push(
+      columnHelper.accessor(
+        (row) => row.market?.volume24hUsd?.toString() ?? "–",
+        {
+          id: "market.volume24hUsd",
+          header: () => (
+            <SortHeader<MarketIncentivePoolsSortKey>
+              label={t("pools.allPools.sort.volume24h")}
+              sortKey="market.volume24hUsd"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={selectSortDirection}
+              setSortKey={selectSortKey}
+            />
+          ),
+        }
+      ) as unknown as (typeof allColumns)[number]
+    );
 
     allColumns.push(
       columnHelper.accessor(
-        (row) => row.totalFiatValueLocked?.toString() ?? "0",
+        (row) =>
+          row.tvlUnknown ? "–" : (row.totalFiatValueLocked?.toString() ?? "0"),
         {
           id: "totalFiatValueLocked",
           header: () => (
@@ -275,8 +299,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               disabled={isLoading}
               currentSortKey={sortKey}
               currentDirection={sortParams.allPoolsSortDir}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
+              setSortDirection={selectSortDirection}
+              setSortKey={selectSortKey}
             />
           ),
         }
@@ -297,8 +321,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                 disabled={isLoading}
                 currentSortKey={sortKey}
                 currentDirection={sortParams.allPoolsSortDir}
-                setSortDirection={setSortDirection}
-                setSortKey={setSortKey}
+                setSortDirection={selectSortDirection}
+                setSortKey={selectSortKey}
               />
             ),
           }
@@ -316,8 +340,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortParams.allPoolsSortDir}
-            setSortDirection={setSortDirection}
-            setSortKey={setSortKey}
+            setSortDirection={selectSortDirection}
+            setSortKey={selectSortKey}
           >
             <AprDisclaimerTooltip />
           </SortHeader>
@@ -353,10 +377,9 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     isLoading,
     sortKey,
     sortParams.allPoolsSortDir,
-    setSortDirection,
-    setSortKey,
+    selectSortDirection,
+    selectSortKey,
     quickAddLiquidity,
-    shouldDisplayVolumeData,
     shouldDisplayFeesData,
   ]);
 
@@ -368,11 +391,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     if (width < Breakpoint.xlhalf && width > Breakpoint.xl)
       collapsedColIds.push("aprBreakdown.total");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
-    if (width < Breakpoint.lg && shouldDisplayVolumeData)
-      collapsedColIds.push("market.volume24hUsd");
+    if (width < Breakpoint.lg) collapsedColIds.push("market.volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
-  }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
+  }, [columns, width, shouldDisplayFeesData]);
 
   const table = useReactTable({
     data: poolsData,

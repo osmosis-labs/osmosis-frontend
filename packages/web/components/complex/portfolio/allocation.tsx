@@ -77,8 +77,12 @@ export const Allocation: FunctionComponent<{
 
   const dustFilteredList = useHideDustUserSetting(
     selectedList,
-    (item) => item.fiatValue
+    // An unknown value is kept: hiding it as dust would look like missing funds.
+    (item) => (item.fiatValueUnknown ? undefined : item.fiatValue)
   );
+
+  // A holding that can't be priced makes every share of the total unknown.
+  const hasUnknownValue = selectedList.some((item) => item.fiatValueUnknown);
 
   if (!assets) return null;
 
@@ -109,50 +113,61 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {dustFilteredList.map(({ key, percentage }, index) => {
-              const colorClass =
-                COLORS[selectedOption][index % COLORS[selectedOption].length];
+            {!hasUnknownValue &&
+              dustFilteredList.map(({ key, percentage }, index) => {
+                const colorClass =
+                  COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
+                const isNegligiblePercent = percentage
+                  .toDec()
+                  .lt(new Dec(0.01));
 
-              const width = isNegligiblePercent
-                ? "0.1%"
-                : percentage.toString();
+                const width = isNegligiblePercent
+                  ? "0.1%"
+                  : percentage.toString();
 
-              return (
-                <div
-                  key={key}
-                  className={classNames("h-full rounded-[4px]", colorClass)}
-                  style={{ width }}
-                />
-              );
-            })}
+                return (
+                  <div
+                    key={key}
+                    className={classNames("h-full rounded-[4px]", colorClass)}
+                    style={{ width }}
+                  />
+                );
+              })}
           </div>
           <div className="flex flex-col space-y-3">
-            {dustFilteredList.map(({ key, percentage, fiatValue }, index) => {
-              const colorClass =
-                COLORS[selectedOption][index % COLORS[selectedOption].length];
+            {dustFilteredList.map(
+              ({ key, percentage, fiatValue, fiatValueUnknown }, index) => {
+                const colorClass =
+                  COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              return (
-                <div key={key} className="body2 flex w-full justify-between">
-                  <div className="flex items-center space-x-1">
-                    <div
-                      className={classNames(
-                        "my-auto inline-block h-3 w-3 rounded-[4px]",
-                        colorClass
-                      )}
-                    />
-                    <span>{getTranslation(key, t)}</span>
-                    <span className="text-osmoverse-400">
-                      {percentage.maxDecimals(0).toString()}
-                    </span>
+                return (
+                  <div key={key} className="body2 flex w-full justify-between">
+                    <div className="flex items-center space-x-1">
+                      <div
+                        className={classNames(
+                          "my-auto inline-block h-3 w-3 rounded-[4px]",
+                          colorClass
+                        )}
+                      />
+                      <span>{getTranslation(key, t)}</span>
+                      <span className="text-osmoverse-400">
+                        {hasUnknownValue
+                          ? "–"
+                          : percentage.maxDecimals(0).toString()}
+                      </span>
+                    </div>
+                    <div>
+                      <PrivateText
+                        text={
+                          fiatValueUnknown ? "–" : formatFiatPrice(fiatValue)
+                        }
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <PrivateText text={formatFiatPrice(fiatValue)} />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </div>
         </>
       )}

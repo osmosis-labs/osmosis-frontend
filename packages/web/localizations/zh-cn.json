@@ -1262,6 +1262,7 @@
     "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
     "noTransactions": "没有交易",
     "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
+    "historyLoadError": "无法加载您的完整历史记录。请稍后再试。",
     "connectToSee": "连接以查看您的交易历史记录",
     "connectWallet": "连接钱包",
     "title": "交易",
@@ -1329,6 +1330,10 @@
         "subtitle": "您的交易订单历史记录将显示在这里。",
         "connectTitle": "连接您的钱包以查看您的订单历史记录",
         "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。"
+      },
+      "errorState": {
+        "title": "无法加载您的订单",
+        "subtitle": "请稍后再试。"
       }
     },
     "aboveMarket": {

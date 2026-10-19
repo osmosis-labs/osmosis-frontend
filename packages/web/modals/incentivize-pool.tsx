@@ -202,7 +202,8 @@ export const IncentivizePoolModal: FunctionComponent<
     [osmoCurrency]
   );
   const { fiatValue: minDistrFiat } = useCoinFiatValue(minDistrCoin);
-  const poolTvl = pool?.totalFiatValueLocked;
+  // An unknown TVL (a reserve has no price) would overstate the APR estimate.
+  const poolTvl = pool?.tvlUnknown ? undefined : pool?.totalFiatValueLocked;
   const estApr = useMemo(() => {
     if (!perDayValue || !poolTvl || !poolTvl.toDec().isPositive())
       return undefined;
