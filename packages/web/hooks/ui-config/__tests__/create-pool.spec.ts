@@ -147,6 +147,10 @@ describe("useCreatePoolConfig", () => {
     expect(result.current.scalingFactorError?.message).toBe(
       "Scaling factor too low"
     );
+    act(() => result.current.setScalingFactorAt(0, "1.5"));
+    expect(result.current.scalingFactorError?.message).toBe(
+      "Scaling factor not an integer"
+    );
     act(() => result.current.setScalingFactorAt(0, "100"));
     expect(result.current.scalingFactorError).toBeUndefined();
   });

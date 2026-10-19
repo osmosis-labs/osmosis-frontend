@@ -297,6 +297,7 @@
     "notInitialized": "加载中...",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
+    "scalingFactorNotInteger": "比例因子必须是整数",
     "zeroAmount": "数量为零",
     "invalidRange": "价格范围无效",
     "fallbackText1": "发生错误",

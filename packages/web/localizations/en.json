@@ -297,6 +297,7 @@
     "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
+    "scalingFactorNotInteger": "Scaling factor must be a whole number",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
     "fallbackText1": "An error occurred",

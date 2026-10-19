@@ -39,6 +39,11 @@ export const useAssetAlerts = () => {
   const isWalletConnected =
     !isWalletLoading && isOsmosisWalletConnected && Boolean(address);
 
+  // The flag is undefined until LaunchDarkly initialises, and React Query only
+  // treats `enabled: false` as disabled, so `Boolean` keeps the queries below
+  // from fetching with an empty address in the meantime.
+  const isEnabled = Boolean(assetAlerts) && isWalletConnected;
+
   const { data: alertsData } = useQuery({
     queryKey: ["osmosis-asset-alerts"],
     queryFn: () =>
@@ -47,7 +52,7 @@ export const useAssetAlerts = () => {
       }),
     staleTime: 1000 * 60 * 3, // 3 minutes
     gcTime: 1000 * 60 * 3, // 3 minutes
-    enabled: assetAlerts && isWalletConnected,
+    enabled: isEnabled,
   });
 
   const { data: portfolioAssets } =
@@ -56,10 +61,7 @@ export const useAssetAlerts = () => {
         address: address ?? "",
       },
       {
-        enabled:
-          assetAlerts &&
-          isWalletConnected &&
-          (alertsData?.alerts?.length ?? 0) > 0,
+        enabled: isEnabled && (alertsData?.alerts?.length ?? 0) > 0,
         refetchOnWindowFocus: false,
       }
     );
@@ -103,13 +105,12 @@ export const useAssetAlerts = () => {
   // and cached query data is ignored the moment the kill switch flips off or
   // the wallet disconnects (react-query's `enabled` stops fetching but keeps
   // cached data).
-  const activeAlerts =
-    assetAlerts && isWalletConnected
-      ? getActiveAssetAlerts({
-          alerts: alertsData?.alerts,
-          heldAssets: portfolioAssets?.heldAssets ?? [],
-        })
-      : [];
+  const activeAlerts = isEnabled
+    ? getActiveAssetAlerts({
+        alerts: alertsData?.alerts,
+        heldAssets: portfolioAssets?.heldAssets ?? [],
+      })
+    : [];
 
   const visibleAlerts = activeAlerts.filter(
     (alert) => !isAlertDismissed(alert.banner.localStorageKey)

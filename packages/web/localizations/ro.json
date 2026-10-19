@@ -297,6 +297,7 @@
     "notInitialized": "Se încarcă...",
     "percentageSum": "Suma procentelor nu este 100",
     "scalingFactorTooLow": "Factorul de scalare este prea mic",
+    "scalingFactorNotInteger": "Factorul de scalare trebuie să fie un număr întreg",
     "zeroAmount": "Suma este 0",
     "invalidRange": "Interval de preț nevalid",
     "fallbackText1": "A aparut o eroare",

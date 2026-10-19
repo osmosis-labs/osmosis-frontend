@@ -297,6 +297,7 @@
     "notInitialized": "بارگذاری...",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
+    "scalingFactorNotInteger": "فاکتور تبدیل باید یک عدد صحیح باشد",
     "zeroAmount": "مقدار صفر است",
     "invalidRange": "محدوده قیمت نامعتبر است",
     "fallbackText1": "خطایی رخ داد",
