@@ -26,6 +26,18 @@ describe("DonutChart", () => {
     expect(d.match(/ 0 1 [01] /g)).toHaveLength(2);
   });
 
+  it("keeps a segment thinner than the gap visible", () => {
+    const { container } = render(<DonutChart size={200} values={[1000, 1]} />);
+    const d = container.querySelectorAll("path")[1]?.getAttribute("d") ?? "";
+    const [x1, y1, x2, y2] = (
+      d.match(/^M (\S+) (\S+) A \S+ \S+ 0 [01] 1 (\S+) (\S+)/) ?? []
+    )
+      .slice(1)
+      .map(Number);
+    // 1/1001 of a 100px-radius ring is an arc of about 0.63px.
+    expect(Math.hypot(x2 - x1, y2 - y1)).toBeGreaterThan(0.5);
+  });
+
   it("renders nothing when there is no positive total", () => {
     const { container } = render(<DonutChart size={100} values={[0, 0]} />);
     expect(container.firstChild).toBeNull();

@@ -58,8 +58,10 @@ export const DonutChart: FunctionComponent<{
   let angle = 0;
   for (const { value, index } of segments) {
     const sweep = Math.min((value / total) * 2 * Math.PI, MAX_SWEEP);
-    const start = angle + Math.min(pad, sweep) / 2;
-    const end = angle + sweep - Math.min(pad, sweep) / 2;
+    // Segments too thin to afford the gap are drawn without it so they stay visible.
+    const gap = sweep > 2 * pad ? pad : 0;
+    const start = angle + gap / 2;
+    const end = angle + sweep - gap / 2;
     arcs.push({ index, d: segmentPath(size, start, end) });
     angle += sweep;
   }
