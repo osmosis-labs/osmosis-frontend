@@ -3,7 +3,6 @@ import { Dec, PricePretty } from "@osmosis-labs/unit";
 import {
   apiClient,
   EthereumChainInfo,
-  getEvmRpcTransport,
   getSolanaExplorerUrl,
   shorten,
 } from "@osmosis-labs/utils";
@@ -25,6 +24,7 @@ import { mainnet } from "viem/chains";
 import { Spinner } from "~/components/loaders";
 import { type MultiLanguageT, t, useTranslation } from "~/hooks/language";
 import { getPhantomProvider } from "~/hooks/use-phantom-wallet";
+import { getClientEvmRpcTransport } from "~/utils/evm-rpc";
 import { formatPretty } from "~/utils/formatter";
 
 import {
@@ -830,7 +830,7 @@ export async function checkGuardianSet(
     if (!ethereum) return "unknown";
     const client = createPublicClient({
       chain: ethereum,
-      transport: getEvmRpcTransport(ethereum, {
+      transport: getClientEvmRpcTransport(ethereum, {
         timeout: FETCH_TIMEOUT_MS,
         retryCount: 0,
       }),

@@ -6,6 +6,7 @@ import { TransactionSwapRow } from "~/components/transactions/transaction-types/
 import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
 import { useTranslation } from "~/hooks";
 import { HistoryTransaction } from "~/hooks/use-transaction-history";
+import { transferKey } from "~/stores/transfer-history";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -118,14 +119,14 @@ export const TransactionRows = ({
 
                 if (transaction.__type === "recentTransfer") {
                   const isSelected =
-                    selectedTransactionHash === transaction.sendTxHash;
+                    selectedTransactionHash === transferKey(transaction);
                   return (
                     <TransactionTransferRow
-                      key={transaction.sendTxHash}
+                      key={transferKey(transaction)}
                       size="lg"
                       transaction={transaction}
                       onClick={() => {
-                        setSelectedTransactionHash(transaction.sendTxHash);
+                        setSelectedTransactionHash(transferKey(transaction));
 
                         // delay to ensure the slide over transitions smoothly
                         if (!open) {

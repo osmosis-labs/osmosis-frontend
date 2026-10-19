@@ -3,6 +3,11 @@ import type {
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
+import {
+  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock,
+  prepareCollectAllPositionsRewardsMsgs,
+  prepareStakeExistingPositionMsg,
+} from "@osmosis-labs/tx";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
@@ -28,16 +33,17 @@ import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { usePositionMigrationForPosition } from "~/hooks/use-position-migration-for-position";
+import { useWallet } from "~/hooks/use-wallet";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import { useStore } from "~/stores";
 import {
   formatPretty,
   formatPriceWithUserPrecision,
@@ -81,13 +87,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     hasPositionDetailsError,
   }) => {
     const {
-      chainStore: {
-        osmosis: { chainId },
-      },
-      accountStore,
-    } = useStore();
-
-    const account = accountStore.getWallet(chainId);
+      wallet: account,
+      txTypeInProgress,
+      signAndBroadcast,
+      transactionContext,
+    } = useWallet();
 
     const {
       position: rawPosition,
@@ -187,14 +191,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const sendCollectAllRewardsMsg = useCallback(() => {
       const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
       const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          hasSpreadRewards ? [rawPosition.position.position_id] : [],
-          hasIncentiveRewards ? [rawPosition.position.position_id] : [],
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        hasSpreadRewards ? [rawPosition.position.position_id] : [],
+        hasIncentiveRewards ? [rawPosition.position.position_id] : [],
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
-    }, [account, rawPosition]);
+    }, [
+      rawPosition.claimable_incentives.length,
+      rawPosition.claimable_spread_rewards.length,
+      rawPosition.position.position_id,
+      signAndBroadcast,
+      transactionContext,
+    ]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
@@ -368,11 +379,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isOpen={selectSfValidatorAddress}
                     onRequestClose={() => setSelectSfValidatorAddress(false)}
                     onSelectValidator={(validatorAddress) => {
-                      account.osmosis
-                        .sendStakeExistingPositionMsg(
-                          position.id,
-                          validatorAddress
-                        )
+                      prepareStakeExistingPositionMsg(
+                        transactionContext,
+                        position.id,
+                        validatorAddress
+                      )
+                        .then((prepared) => signAndBroadcast(...prepared))
                         .catch(console.error);
                       setSelectSfValidatorAddress(false);
                     }}
@@ -383,7 +395,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           <PositionButton
             disabled={
               claimableRewardCoins?.length === 0 ||
-              Boolean(account?.txTypeInProgress) ||
+              Boolean(txTypeInProgress) ||
               !Boolean(account)
             }
             onClick={sendCollectAllRewardsMsg}
@@ -398,25 +410,30 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               disabled={
                 !status ||
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 Boolean(superfluidData?.undelegationEndTime) ||
                 status === "unbonding" ||
                 !Boolean(account)
               }
               onClick={useCallback(() => {
                 if (superfluidData?.delegationLockId) {
-                  account!.osmosis
-                    .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                      [
-                        {
-                          lockId: superfluidData.delegationLockId,
-                          isSynthetic: true,
-                        },
-                      ]
-                    )
+                  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                    transactionContext,
+                    [
+                      {
+                        lockId: superfluidData.delegationLockId,
+                        isSynthetic: true,
+                      },
+                    ]
+                  )
+                    .then((prepared) => signAndBroadcast(...prepared))
                     .catch(console.error);
                 } else setActiveModal("remove");
-              }, [account, superfluidData])}
+              }, [
+                signAndBroadcast,
+                superfluidData?.delegationLockId,
+                transactionContext,
+              ])}
               isLoading={isLoadingPositionDetails}
             >
               {Boolean(superfluidData?.delegationLockId)
@@ -432,7 +449,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               disabled={
                 !status ||
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 Boolean(superfluidData?.undelegationEndTime) ||
                 status === "unbonding"
               }
@@ -450,7 +467,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               // action cannot be taken on an eligibility that is about to
               // change.
               disabled={
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 !Boolean(account) ||
                 isPoolDataRefetching
               }
@@ -529,7 +546,7 @@ export const AssetsInfo: FunctionComponent<
     totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(({ className, title, assets = [], totalValue, emptyText }) => {
+> = ({ className, title, assets = [], totalValue, emptyText }) => {
   const { t } = useTranslation();
 
   return (
@@ -573,7 +590,7 @@ export const AssetsInfo: FunctionComponent<
       ) : null}
     </div>
   );
-});
+};
 
 const PriceBox: FunctionComponent<{
   label: string;
@@ -607,16 +624,16 @@ const PriceBox: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -634,15 +651,15 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
+  config: HistoricalAndLiquidityData;
   position: UserPosition;
-}> = observer(({ config, position: { isFullRange } }) => {
+}> = ({ config, position: { isFullRange } }) => {
   const {
     historicalChartData,
     yRange,
@@ -669,7 +686,7 @@ const Chart: FunctionComponent<{
       }
     />
   );
-});
+};
 
 const SuperfluidPositionInfo: FunctionComponent<
   NonNullable<

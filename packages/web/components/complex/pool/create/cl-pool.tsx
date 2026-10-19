@@ -1,15 +1,14 @@
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { AppCurrency } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { AddInitialLiquidity } from "~/components/complex/pool/create/cl/add-initial-liquidity";
 import { SetBaseInfos } from "~/components/complex/pool/create/cl/set-base-info";
 import { MultiLanguageT, useTranslation } from "~/hooks";
+import type { CreatePoolConfig } from "~/hooks/ui-config/use-create-pool-config";
 
 interface CreateCLPoolProps {
-  config: ObservableCreatePoolConfig;
+  config: CreatePoolConfig;
   onClose?: () => void;
   onBack?: () => void;
   currentStep?: 1 | 2 | 3 | 0;
@@ -38,94 +37,90 @@ const USDC_ASSET: SelectionToken = {
   },
 };
 
-export const CreateCLPool = observer(
-  ({
+export const CreateCLPool = ({
+  config,
+  onBack,
+  onClose,
+  currentStep,
+  advanceStep,
+  fullClose,
+  onUseExistingPool,
+}: CreateCLPoolProps) => {
+  const { t } = useTranslation();
+  const [selectedBase, setSelectedBase] = useState<SelectionToken>();
+  const [selectedQuote, setSelectedQuote] =
+    useState<SelectionToken>(USDC_ASSET);
+  const [poolId, setPoolId] = useState<string>();
+
+  const content = useMemo(() => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <SetBaseInfos
+            config={config}
+            advanceStep={advanceStep}
+            selectedBase={selectedBase}
+            selectedQuote={selectedQuote}
+            setSelectedBase={setSelectedBase}
+            setSelectedQuote={setSelectedQuote}
+            setPoolId={setPoolId}
+            onUseExistingPool={onUseExistingPool}
+          />
+        );
+      case 2:
+        return (
+          <AddInitialLiquidity
+            selectedBase={selectedBase}
+            selectedQuote={selectedQuote}
+            poolId={poolId ?? ""}
+            onClose={fullClose}
+          />
+        );
+    }
+  }, [
     config,
-    onBack,
-    onClose,
-    currentStep,
     advanceStep,
+    currentStep,
     fullClose,
+    poolId,
+    selectedBase,
+    selectedQuote,
     onUseExistingPool,
-  }: CreateCLPoolProps) => {
-    const { t } = useTranslation();
-    const [selectedBase, setSelectedBase] = useState<SelectionToken>();
-    const [selectedQuote, setSelectedQuote] =
-      useState<SelectionToken>(USDC_ASSET);
-    const [poolId, setPoolId] = useState<string>();
+  ]);
 
-    const content = useMemo(() => {
-      switch (currentStep) {
-        case 1:
-          return (
-            <SetBaseInfos
-              config={config}
-              advanceStep={advanceStep}
-              selectedBase={selectedBase}
-              selectedQuote={selectedQuote}
-              setSelectedBase={setSelectedBase}
-              setSelectedQuote={setSelectedQuote}
-              setPoolId={setPoolId}
-              onUseExistingPool={onUseExistingPool}
-            />
-          );
-        case 2:
-          return (
-            <AddInitialLiquidity
-              selectedBase={selectedBase}
-              selectedQuote={selectedQuote}
-              poolId={poolId ?? ""}
-              onClose={fullClose}
-            />
-          );
-      }
-    }, [
-      config,
-      advanceStep,
-      currentStep,
-      fullClose,
-      poolId,
-      selectedBase,
-      selectedQuote,
-      onUseExistingPool,
-    ]);
-
-    return (
-      <div className="flex w-fit flex-col items-center justify-center gap-[38px] rounded-5xl bg-osmoverse-850 p-10">
-        <div className="flex w-[641px] items-center justify-between lg:w-full">
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex h-6 w-6 items-center justify-center"
-          >
-            <Icon
-              id="chevron-left"
-              width={12}
-              height={24}
-              className="text-osmoverse-400"
-            />
-          </button>
-          <h6 className="text-white">
-            {getStepHeader(t, currentStep, poolId)}
-          </h6>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex w-fit items-center justify-center"
-          >
-            <Icon
-              id="close-button-icon"
-              width={24}
-              height={24}
-              className="text-osmoverse-400"
-            />
-          </button>
-        </div>
-        {content}
+  return (
+    <div className="flex w-fit flex-col items-center justify-center gap-[38px] rounded-5xl bg-osmoverse-850 p-10">
+      <div className="flex w-[641px] items-center justify-between lg:w-full">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex h-6 w-6 items-center justify-center"
+        >
+          <Icon
+            id="chevron-left"
+            width={12}
+            height={24}
+            className="text-osmoverse-400"
+          />
+        </button>
+        <h6 className="text-white">{getStepHeader(t, currentStep, poolId)}</h6>
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex w-fit items-center justify-center"
+        >
+          <Icon
+            id="close-button-icon"
+            width={24}
+            height={24}
+            className="text-osmoverse-400"
+          />
+        </button>
       </div>
-    );
-  }
-);
+      {content}
+    </div>
+  );
+};
 
 function getStepHeader(
   t: MultiLanguageT,

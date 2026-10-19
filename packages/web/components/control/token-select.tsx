@@ -1,17 +1,17 @@
-import { AppCurrency, CoinPretty } from "@osmosis-labs/unit";
+import { AppCurrency, CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef } from "react";
 
 import { Icon } from "~/components/assets";
 import { EntityImage } from "~/components/ui/entity-image";
+import { getChainInfoFromCurrency } from "~/config/chain";
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
   useWindowSize,
 } from "~/hooks";
+import { useBatchedPrices } from "~/hooks/queries/assets/use-prices";
 import { TokenSelectModal } from "~/modals";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are
@@ -26,183 +26,182 @@ export const TokenSelect: FunctionComponent<{
   keyByMinimalDenom?: boolean;
   dropdownOpen?: boolean;
   setDropdownState?: (isOpen: boolean) => void;
-}> = observer(
-  ({
-    selectedTokenDenom,
-    tokens,
-    onSelect,
-    sortByBalances = false,
-    keyByMinimalDenom = false,
-    dropdownOpen,
-    setDropdownState,
-  }) => {
-    const { chainStore, priceStore } = useStore();
-    const { isMobile } = useWindowSize();
+}> = ({
+  selectedTokenDenom,
+  tokens,
+  onSelect,
+  sortByBalances = false,
+  keyByMinimalDenom = false,
+  dropdownOpen,
+  setDropdownState,
+}) => {
+  const { isMobile } = useWindowSize();
 
-    // The unique key a token is matched/selected by. Display denom by default;
-    // minimal denom when the caller needs same-symbol assets disambiguated.
-    const tokenKey = (token: CoinPretty | AppCurrency) =>
-      keyByMinimalDenom
-        ? token instanceof CoinPretty
-          ? token.currency.coinMinimalDenom
-          : token.coinMinimalDenom
-        : token instanceof CoinPretty
-          ? token.denom
-          : token.coinDenom;
+  // The unique key a token is matched/selected by. Display denom by default;
+  // minimal denom when the caller needs same-symbol assets disambiguated.
+  const tokenKey = (token: CoinPretty | AppCurrency) =>
+    keyByMinimalDenom
+      ? token instanceof CoinPretty
+        ? token.currency.coinMinimalDenom
+        : token.coinMinimalDenom
+      : token instanceof CoinPretty
+        ? token.denom
+        : token.coinDenom;
 
-    // parent overrideable state
-    const [isSelectOpenLocal, setIsSelectOpenLocal] =
-      useBooleanWithWindowEvent(false);
-    const isSelectOpen =
-      dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
-    const setIsSelectOpen =
-      setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
+  // parent overrideable state
+  const [isSelectOpenLocal, setIsSelectOpenLocal] =
+    useBooleanWithWindowEvent(false);
+  const isSelectOpen =
+    dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
+  const setIsSelectOpen =
+    setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
-    const inputRef = useRef<HTMLInputElement | null>(null);
-    const selectedToken = tokens.find(
-      (token) => tokenKey(token) === selectedTokenDenom
-    );
+  // Prices for the whole list are needed at once to sort by fiat value.
+  const { prices } = useBatchedPrices(
+    tokens.map((token) =>
+      token instanceof CoinPretty
+        ? token.currency.coinMinimalDenom
+        : token.coinMinimalDenom
+    ),
+    { enabled: sortByBalances }
+  );
 
-    const dropdownTokens = tokens
-      .filter((token) => tokenKey(token) !== selectedTokenDenom)
-      .map((token) => ({
-        token,
-        // filter by chain name
-        chainName:
-          chainStore.getChainFromCurrency(
-            token instanceof CoinPretty ? token.denom : token.coinDenom
-          )?.prettyChainName ?? "",
-      }))
-      .sort((a, b) => {
-        if (
-          !(a.token instanceof CoinPretty) ||
-          !(b.token instanceof CoinPretty)
-        )
-          return 0;
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const selectedToken = tokens.find(
+    (token) => tokenKey(token) === selectedTokenDenom
+  );
 
-        const aFiatValue = priceStore.calculatePrice(a.token);
-        const bFiatValue = priceStore.calculatePrice(b.token);
-
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.toDec().gt(bFiatValue.toDec()) &&
-          sortByBalances
-        )
-          return -1;
-        if (
-          aFiatValue &&
-          bFiatValue &&
-          aFiatValue.toDec().lt(bFiatValue.toDec()) &&
-          sortByBalances
-        )
-          return 1;
+  const dropdownTokens = tokens
+    .filter((token) => tokenKey(token) !== selectedTokenDenom)
+    .map((token) => ({
+      token,
+      // filter by chain name
+      chainName:
+        getChainInfoFromCurrency(
+          token instanceof CoinPretty ? token.denom : token.coinDenom
+        )?.prettyChainName ?? "",
+    }))
+    .sort((a, b) => {
+      if (!(a.token instanceof CoinPretty) || !(b.token instanceof CoinPretty))
         return 0;
-      });
 
-    const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
-      dropdownTokens,
-      [
-        "token.denom",
-        "token.currency.originCurrency.coinMinimalDenom",
-        "token.originCurrency.coinMinimalDenom",
-        "chainName",
-        "token.currency.originCurrency.pegMechanism",
-      ]
-    );
-    const selectedCurrency =
-      selectedToken instanceof CoinPretty
-        ? selectedToken.currency
-        : selectedToken;
-    const selectedDenom =
-      selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
+      const aPrice = prices?.[a.token.currency.coinMinimalDenom];
+      const bPrice = prices?.[b.token.currency.coinMinimalDenom];
+      // unpriced tokens sort as zero value so the comparator stays consistent
+      const aFiatValue = aPrice
+        ? a.token.toDec().mul(aPrice.toDec())
+        : new Dec(0);
+      const bFiatValue = bPrice
+        ? b.token.toDec().mul(bPrice.toDec())
+        : new Dec(0);
 
-    const canSelectTokens = tokens.length > 1;
+      if (aFiatValue.gt(bFiatValue) && sortByBalances) return -1;
+      if (aFiatValue.lt(bFiatValue) && sortByBalances) return 1;
+      return 0;
+    });
 
-    useEffect(() => {
-      if (isSelectOpen && inputRef.current) {
-        inputRef.current.focus();
+  const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
+    dropdownTokens,
+    [
+      "token.denom",
+      "token.currency.originCurrency.coinMinimalDenom",
+      "token.originCurrency.coinMinimalDenom",
+      "chainName",
+      "token.currency.originCurrency.pegMechanism",
+    ]
+  );
+  const selectedCurrency =
+    selectedToken instanceof CoinPretty
+      ? selectedToken.currency
+      : selectedToken;
+  const selectedDenom =
+    selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
+
+  const canSelectTokens = tokens.length > 1;
+
+  useEffect(() => {
+    if (isSelectOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSelectOpen]);
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsSelectOpen(false);
       }
-    }, [isSelectOpen]);
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", listener);
+      return () => document.removeEventListener("keydown", listener);
+    }
+  }, [setIsSelectOpen]);
 
-    useEffect(() => {
-      const listener = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          setIsSelectOpen(false);
-        }
-      };
-      if (typeof document !== "undefined") {
-        document.addEventListener("keydown", listener);
-        return () => document.removeEventListener("keydown", listener);
-      }
-    }, [setIsSelectOpen]);
-
-    return (
-      <div className="relative flex items-center justify-center md:justify-start">
-        {selectedCurrency && (
-          <button
-            className={classNames(
-              "flex items-center gap-2 text-left",
-              canSelectTokens ? "cursor-pointer" : "cursor-default"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (canSelectTokens) {
-                setIsSelectOpen(!isSelectOpen);
-              }
-            }}
-          >
-            <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-[30px] md:w-[30px]">
-              <EntityImage
-                logoURIs={getLogoURIs(selectedCurrency.coinImageUrl)}
-                name={selectedCurrency.coinDenom}
-                symbol={selectedCurrency.coinDenom}
-                width={isMobile ? 30 : 50}
-                height={isMobile ? 30 : 50}
-                className="h-[50px] md:h-[30px]"
-              />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center">
-                {isMobile ? (
-                  <span className="subtitle1">{selectedDenom}</span>
-                ) : (
-                  <h5>{selectedDenom}</h5>
-                )}
-                {canSelectTokens && (
-                  <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
-                    <Icon
-                      id="chevron-down"
-                      width={20}
-                      height={8}
-                      className={`text-osmoverse-400 opacity-40 transition-transform duration-100 group-hover:opacity-100 ${
-                        isSelectOpen ? "rotate-180" : "rotate-0"
-                      }`}
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="subtitle2 md:caption w-24 text-osmoverse-400">
-                {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-                  ?.prettyChainName ?? ""}
-              </div>
-            </div>
-          </button>
-        )}
-
-        <TokenSelectModal
-          isOpen={isSelectOpen}
-          onRequestClose={() => {
-            setTokenSearch("");
-            setIsSelectOpen(false);
+  return (
+    <div className="relative flex items-center justify-center md:justify-start">
+      {selectedCurrency && (
+        <button
+          className={classNames(
+            "flex items-center gap-2 text-left",
+            canSelectTokens ? "cursor-pointer" : "cursor-default"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (canSelectTokens) {
+              setIsSelectOpen(!isSelectOpen);
+            }
           }}
-          currentValue={searchValue}
-          onInput={(v) => setTokenSearch(v)}
-          tokens={searchedTokens}
-          onSelect={onSelect}
-          keyByMinimalDenom={keyByMinimalDenom}
-        />
-      </div>
-    );
-  }
-);
+        >
+          <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-[30px] md:w-[30px]">
+            <EntityImage
+              logoURIs={getLogoURIs(selectedCurrency.coinImageUrl)}
+              name={selectedCurrency.coinDenom}
+              symbol={selectedCurrency.coinDenom}
+              width={isMobile ? 30 : 50}
+              height={isMobile ? 30 : 50}
+              className="h-[50px] md:h-[30px]"
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              {isMobile ? (
+                <span className="subtitle1">{selectedDenom}</span>
+              ) : (
+                <h5>{selectedDenom}</h5>
+              )}
+              {canSelectTokens && (
+                <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
+                  <Icon
+                    id="chevron-down"
+                    width={20}
+                    height={8}
+                    className={`text-osmoverse-400 opacity-40 transition-transform duration-100 group-hover:opacity-100 ${
+                      isSelectOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="subtitle2 md:caption w-24 text-osmoverse-400">
+              {getChainInfoFromCurrency(selectedCurrency.coinDenom)
+                ?.prettyChainName ?? ""}
+            </div>
+          </div>
+        </button>
+      )}
+
+      <TokenSelectModal
+        isOpen={isSelectOpen}
+        onRequestClose={() => {
+          setTokenSearch("");
+          setIsSelectOpen(false);
+        }}
+        currentValue={searchValue}
+        onInput={(v) => setTokenSearch(v)}
+        tokens={searchedTokens}
+        onSelect={onSelect}
+        keyByMinimalDenom={keyByMinimalDenom}
+      />
+    </div>
+  );
+};

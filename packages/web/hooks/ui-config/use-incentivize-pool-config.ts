@@ -1,9 +1,9 @@
+import { prepareCreateGaugeMsg } from "@osmosis-labs/tx";
 import { AppCurrency } from "@osmosis-labs/unit";
 import { useCallback, useState } from "react";
 
-import { useStore } from "~/stores";
-
 import { useAmountInput } from "../input/use-amount-input";
+import { useWallet } from "../use-wallet";
 
 /** UI config for funding a new external incentive gauge on a pool: a reward
  *  amount for a selectable currency, plus a create sender that resolves when
@@ -21,9 +21,7 @@ export function useIncentivizePoolConfig(): {
     isPerpetual?: boolean;
   }) => Promise<void>;
 } {
-  const { chainStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
 
   const [selectedCurrency, setSelectedCurrency] = useState<AppCurrency>();
   const config = useAmountInput({ currency: selectedCurrency });
@@ -45,7 +43,8 @@ export function useIncentivizePoolConfig(): {
           // the promise never settles, hanging the caller.
           if (!account) return reject("No connected account");
 
-          await account.osmosis.sendCreateGaugeMsg(
+          await prepareCreateGaugeMsg(
+            transactionContext,
             params.distributeTo,
             [
               {
@@ -53,7 +52,6 @@ export function useIncentivizePoolConfig(): {
                 amount: config.amount.toCoin().amount,
               },
             ],
-            // Emissions begin at the first epoch after this time.
             params.startTime ?? new Date(),
             params.numEpochs,
             params.isPerpetual ?? false,
@@ -62,14 +60,20 @@ export function useIncentivizePoolConfig(): {
               if (tx.code) reject(tx.rawLog);
               else resolve();
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e) {
           console.error(e);
           reject(e instanceof Error ? e.message : e);
         }
       });
     },
-    [account, selectedCurrency, config.amount]
+    [
+      selectedCurrency,
+      config.amount,
+      account,
+      transactionContext,
+      signAndBroadcast,
+    ]
   );
 
   return {

@@ -1,5 +1,4 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
-import { BondStatus } from "@osmosis-labs/types";
+import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -15,9 +14,10 @@ import {
 } from "~/components/stake/inactive-delegations-warning";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
+import { api } from "~/utils/trpc";
 
 export const ValidatorSquadCard: React.FC<{
   hasInsufficientBalance: boolean;
@@ -37,19 +37,34 @@ export const ValidatorSquadCard: React.FC<{
   }) => {
     const { t } = useTranslation();
     const statusLabel = useInactiveStatusLabel();
-    const { chainStore, queriesStore } = useStore();
-    const { chainId } = chainStore.osmosis;
-    const queries = queriesStore.get(chainId);
 
     const { width } = useWindowSize();
 
     const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
 
-    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Bonded
+    const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({
+      status: "Bonded",
+    });
+    const thumbnailByOperator = useMemo(
+      () =>
+        new Map(
+          bondedValidators?.map((validator) => [
+            validator.operator_address,
+            validator.validatorImgSrc,
+          ])
+        ),
+      [bondedValidators]
     );
 
-    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+    const { data: stakingPool } = api.edge.staking.getStakingPool.useQuery();
+    const totalStakePool = useMemo(
+      () =>
+        new CoinPretty(
+          OsmosisChainInfo.stakeCurrency,
+          stakingPool?.bondedTokens ?? 0
+        ),
+      [stakingPool?.bondedTokens]
+    );
 
     let validatorBlock = (
       <div className="flex flex-row space-x-2">
@@ -147,7 +162,7 @@ export const ValidatorSquadCard: React.FC<{
               Math.max(0, maxVisibleValidators - inactiveDelegations.length)
             )
             .map((validator) => {
-              const imageUrl = queryValidators.getValidatorThumbnail(
+              const imageUrl = thumbnailByOperator.get(
                 validator.operator_address
               );
               const myStake = getFormattedMyStake(validator);

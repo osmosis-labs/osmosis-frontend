@@ -771,9 +771,21 @@ const txSnapshotSchema = z.object({
   toAsset: bridgeAssetSchema.extend({
     amount: z.string().optional(),
     imageUrl: z.string().optional(),
+    /**
+     * On imported deposits: the alloyed asset (minimal denom) the arriving
+     * asset is a variant of, which a deposit made in this browser may have
+     * recorded as received (converted on arrival).
+     */
+    alloy: z.string().optional(),
   }),
   status: transferStatusSchema,
   sendTxHash: z.string(),
+  /**
+   * On imported deposits: the IBC packet it arrived in
+   * (`<destination channel>/<sequence>`). A relayer tx can deliver several
+   * packets to the same user, so these are keyed by `sendTxHash` and packet.
+   */
+  packetId: z.string().optional(),
   fromChain: bridgeChainSchema.and(
     z.object({
       prettyName: z.string(),
@@ -832,6 +844,24 @@ const txSnapshotSchema = z.object({
    * when checking whether another session already signed the next step.
    */
   firstStepTxHash: z.string().optional(),
+  /**
+   * Provider whose status provider tracks this transfer, when it differs
+   * from `provider`. Set on transfers imported from the transaction index,
+   * whose originating provider's status API can't look them up (e.g. Squid
+   * needs the original quote id); Skip can trace any route by tx hash.
+   */
+  statusProvider: z.string().optional(),
+  /**
+   * Imported from the transaction index rather than made in this browser.
+   * Status changes on imported transfers update history silently (no toasts).
+   */
+  imported: z.boolean().optional(),
+  /**
+   * Explorer link, when the status provider can't build one from
+   * `sendTxHash` and `fromChain` (imported deposits are keyed on the Osmosis
+   * arrival tx, not a tx on the source chain).
+   */
+  explorerUrl: z.string().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

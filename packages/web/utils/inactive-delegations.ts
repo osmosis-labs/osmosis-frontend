@@ -1,4 +1,4 @@
-import type { Staking } from "@osmosis-labs/keplr-stores";
+import type * as Staking from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 
 /** Why a delegation has stopped earning rewards, or "active" if it hasn't. */

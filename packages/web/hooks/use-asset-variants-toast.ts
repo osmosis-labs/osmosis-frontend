@@ -9,13 +9,12 @@ import {
 } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAlloyedAssetsToastSession } from "~/hooks/use-alloyed-assets-toast-session";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 export const useAssetVariantsToast = () => {
   // #region hooks & store
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
@@ -41,13 +40,13 @@ export const useAssetVariantsToast = () => {
     alloyedAssets &&
     !hasSeenToastThisSession &&
     !isWalletLoading &&
-    Boolean(wallet?.isWalletConnected) &&
-    Boolean(wallet?.address);
+    isWalletConnected &&
+    Boolean(address);
 
   const { data, error, isFetchedAfterMount, isSuccess, isFetching } =
     api.local.portfolio.getPortfolioAssets.useQuery(
       {
-        address: wallet?.address ?? "",
+        address: address ?? "",
       },
       {
         enabled,

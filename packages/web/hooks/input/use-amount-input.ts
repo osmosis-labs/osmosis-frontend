@@ -1,48 +1,68 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+} from "@osmosis-labs/utils";
 import {
   InsufficientBalanceError,
   InsufficientBalanceForFeeError,
-} from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
-import { isNil, isValidNumericalRawInput } from "@osmosis-labs/utils";
+  isNil,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user’s currency balance as input. Includes support for debounce on input.
  *  If provided a gas amount and it is the same as the input currency,
  *  the gas fee will be subtracted if the user is inputting the max amount.
+ *  `balanceOverride` replaces the wallet balance (e.g. a staked amount).
  */
 export function useAmountInput({
   currency,
   inputDebounceMs = 200,
   gasAmount,
+  balanceOverride,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
+  balanceOverride?: {
+    /** Base units; undefined while loading. */
+    amount: string | undefined;
+    isFetched: boolean;
+  };
 }) {
   // query user balance for currency
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances, isFetched: isBalancesFetched } =
+  const { address } = useWallet();
+  const { data: walletBalances, isFetched: isWalletBalancesFetched } =
     api.local.balances.getUserBalances.useQuery(
       {
-        bech32Address: account?.address ?? "",
+        bech32Address: address ?? "",
       },
-      { enabled: Boolean(account?.address) }
+      { enabled: Boolean(address) && !balanceOverride }
     );
+  const isBalancesFetched = balanceOverride
+    ? balanceOverride.isFetched
+    : isWalletBalancesFetched;
+  const overrideAmount = balanceOverride?.amount;
+  const overrideBalances = useMemo(
+    () => [{ denom: currency?.coinMinimalDenom, amount: overrideAmount }],
+    [currency?.coinMinimalDenom, overrideAmount]
+  );
+  const balances = balanceOverride
+    ? balanceOverride.isFetched
+      ? overrideBalances
+      : undefined
+    : walletBalances;
   const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;

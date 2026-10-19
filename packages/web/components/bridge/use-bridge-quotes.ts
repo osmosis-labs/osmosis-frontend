@@ -8,13 +8,9 @@ import {
   SolanaBridgeTransactionRequest,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import {
-  getEvmRpcTransport,
-  getNomicRelayerUrl,
-  isNil,
-} from "@osmosis-labs/utils";
+import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -49,10 +45,12 @@ import {
   getPhantomProvider,
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
+import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
+import { getClientEvmRpcTransport } from "~/utils/evm-rpc";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import {
   classifySolanaSimulation,
@@ -193,7 +191,7 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore, transferHistoryStore, queriesStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const {
     connector: evmConnector,
     address: evmAddress,
@@ -246,6 +244,17 @@ export const useBridgeQuotes = ({
    * intermediate chain at signing time.
    */
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
+  // falls back to Osmosis when the chain isn't cosmos; ignored in that case
+  const { isWalletConnected: isCosmosSideWalletConnected, getChainWallet } =
+    useWallet(
+      cosmosSideChain?.chainType === "cosmos"
+        ? cosmosSideChain.chainId
+        : undefined
+    );
+  const { isWalletConnected: isFromCosmosWalletConnected, txTypeInProgress } =
+    useWallet(
+      fromChain?.chainType === "cosmos" ? fromChain.chainId : undefined
+    );
   const allowMultiTx =
     featureFlags.multiTxBridgeRoutes === true &&
     // deposits only: the executor supports exactly an EVM or Solana first tx
@@ -253,7 +262,7 @@ export const useBridgeQuotes = ({
     // render its steps badge) only to be refused at Confirm
     !isWithdraw &&
     cosmosSideChain?.chainType === "cosmos" &&
-    Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
+    isCosmosSideWalletConnected;
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
@@ -340,9 +349,7 @@ export const useBridgeQuotes = ({
   const isTxPending = (() => {
     if (!fromChain) return false;
     if (fromChain.chainType === "cosmos") {
-      return Boolean(
-        accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
-      );
+      return Boolean(txTypeInProgress);
     } else if (fromChain.chainType === "evm") {
       return isEthTxPending || isBroadcastingTx;
     } else if (fromChain.chainType === "solana") {
@@ -901,7 +908,7 @@ export const useBridgeQuotes = ({
       throw new Error("No EVM chain selected or chain is unsupported");
 
     const publicClient = createPublicClient({
-      transport: getEvmRpcTransport(currentEvmChain),
+      transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
 
@@ -1473,8 +1480,7 @@ export const useBridgeQuotes = ({
     // already ensured the basis is fresh for the quote being signed.
     const memoFlags = deriveBridgeMemoFlags(acknowledgedBasis);
 
-    return accountStore.signAndBroadcast(
-      fromChain.chainId,
+    return getChainWallet(fromChain.chainId).signAndBroadcast(
       `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
       transactionRequest.msgs,
       "",
@@ -1520,30 +1526,6 @@ export const useBridgeQuotes = ({
 
         onFulfill: (tx: DeliverTxResponse) => {
           if (tx.code == null || tx.code === 0) {
-            const queries = queriesStore.get(fromChain.chainId);
-
-            // After succeeding to send token, refresh the balance. Best
-            // effort: `balances` throws on a currency no balance registry
-            // handles (e.g. an `erc20:` currency on Injective), and that must
-            // not stop the transfer from being tracked below.
-            try {
-              const queryBalance = queries.queryBalances
-                // If we get here destination address is defined
-                .getQueryBech32Address(toAddress!)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom ===
-                    availableBalance?.currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
-              }
-            } catch (e) {
-              console.warn("Failed to refresh balance after transfer:", e);
-            }
-
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
@@ -1797,10 +1779,7 @@ export const useBridgeQuotes = ({
     chainType: fromChain?.chainType,
     isEvmWalletConnected,
     isCosmosWalletConnected:
-      fromChain?.chainType === "cosmos"
-        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
-          false)
-        : false,
+      fromChain?.chainType === "cosmos" ? isFromCosmosWalletConnected : false,
     phantomAddress,
   });
   const isDepositReady = isDeposit && isFromWalletConnected;

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 import { HistoryTransaction } from "~/hooks/use-transaction-history";
+import { transferKey } from "~/stores/transfer-history";
 
 export const useTransactionModal = ({
   transactions,
@@ -31,7 +32,7 @@ export const useTransactionModal = ({
     () =>
       transactions.find(
         (tx) =>
-          (tx.__type === "recentTransfer" ? tx.sendTxHash : tx.hash) ===
+          (tx.__type === "recentTransfer" ? transferKey(tx) : tx.hash) ===
           selectedTransactionHash
       ),
     [transactions, selectedTransactionHash]

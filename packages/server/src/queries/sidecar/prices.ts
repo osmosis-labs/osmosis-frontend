@@ -45,10 +45,13 @@ export type PriceMap = {
   [baseCoinMinimalDenom: string]: Record<string, string>;
 };
 
-export async function queryPrices(coinMinimalDenoms: string[]) {
+export async function queryPrices(
+  coinMinimalDenoms: string[],
+  { signal }: { signal?: AbortSignal } = {}
+) {
   const url = new URL("/tokens/prices", SIDECAR_BASE_URL);
 
   url.searchParams.append("base", coinMinimalDenoms.join(","));
 
-  return await apiClient<PriceMap>(url.toString());
+  return await apiClient<PriceMap>(url.toString(), { signal });
 }
