@@ -146,20 +146,18 @@ export function slippageRequiredByFeeError({
 /**
  * Resolves the slippage the swap submits, in priority order: a value the
  * user typed, a tier a fee simulation error requires, the auto tier, then
- * {@link DefaultSlippage}. Exact-out quotes take no auto tier: their impact
- * and fee data come from an inverted exact-in quote and can't be trusted for
- * tier selection.
+ * {@link DefaultSlippage}. Exact-out quotes take the auto tier too: SQS routes
+ * them as true exact-out quotes, so their impact and route liquidity are as
+ * trustworthy as exact-in's.
  */
 export function resolveSwapSlippage({
   userSlippage,
   feeErrorSlippage,
   autoSlippage,
-  quoteType,
 }: {
   userSlippage: string | undefined;
   feeErrorSlippage: string | undefined;
   autoSlippage: string;
-  quoteType: QuoteDirection;
 }): { slippage: string; source: SlippageSource } {
   if (userSlippage !== undefined) {
     return { slippage: userSlippage, source: "user" };
@@ -167,7 +165,7 @@ export function resolveSwapSlippage({
   if (feeErrorSlippage !== undefined) {
     return { slippage: feeErrorSlippage, source: "fee-error" };
   }
-  if (quoteType === "out-given-in" && autoSlippage !== DefaultSlippage) {
+  if (autoSlippage !== DefaultSlippage) {
     return { slippage: autoSlippage, source: "auto" };
   }
   return { slippage: DefaultSlippage, source: "default" };
