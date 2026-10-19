@@ -1,4 +1,4 @@
-import { TxTracer } from "../tracer";
+import { TxTracer, TxTraceTimeoutError } from "../tracer";
 
 it("accepts an already indexed transaction while handling a failed subscription", async () => {
   const tracer = Object.create(TxTracer.prototype) as TxTracer;
@@ -47,6 +47,69 @@ it("accepts a live transaction without waiting for the query", async () => {
     height: 123,
   });
   rejectQuery(new Error("query failed after live success"));
+});
+
+describe("when the subscription fails", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  it("keeps looking the tx up until it is indexed", async () => {
+    const tracer = Object.create(TxTracer.prototype) as TxTracer;
+    const result = { code: 0, height: 123 };
+    const queryTx = jest
+      .spyOn(tracer, "queryTx")
+      .mockRejectedValueOnce(new Error("tx not found"))
+      .mockResolvedValueOnce(result);
+    jest
+      .spyOn(tracer, "subscribeTx")
+      .mockRejectedValue(new Error("subscription failed"));
+    const pending = tracer.traceTx(Uint8Array.from([1]));
+    await jest.advanceTimersByTimeAsync(3000);
+    await expect(pending).resolves.toEqual(result);
+    expect(queryTx).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects with a timeout error when the tx is not found in time", async () => {
+    const tracer = Object.create(TxTracer.prototype) as TxTracer;
+    jest.spyOn(tracer, "queryTx").mockRejectedValue(new Error("tx not found"));
+    jest
+      .spyOn(tracer, "subscribeTx")
+      .mockRejectedValue(new Error("subscription failed"));
+    const pending = tracer.traceTx(Uint8Array.from([1]), { timeoutMs: 10000 });
+    const assertion =
+      expect(pending).rejects.toBeInstanceOf(TxTraceTimeoutError);
+    await jest.advanceTimersByTimeAsync(10000);
+    await assertion;
+  });
+
+  it("rejects once every endpoint has failed", async () => {
+    const tracer = Object.create(TxTracer.prototype) as TxTracer;
+    const error = new Error("all RPC endpoints failed");
+    jest.spyOn(tracer, "queryTx").mockRejectedValue(error);
+    jest.spyOn(tracer, "subscribeTx").mockImplementation(() => {
+      Object.assign(tracer, { giveUpError: error });
+      return Promise.reject(error);
+    });
+    await expect(tracer.traceTx(Uint8Array.from([1]))).rejects.toBe(error);
+  });
+});
+
+it("times out while waiting on a live subscription", async () => {
+  jest.useFakeTimers();
+  try {
+    const tracer = Object.create(TxTracer.prototype) as TxTracer;
+    jest.spyOn(tracer, "queryTx").mockRejectedValue(new Error("tx not found"));
+    jest
+      .spyOn(tracer, "subscribeTx")
+      .mockImplementation(() => new Promise(() => {}));
+    const pending = tracer.traceTx(Uint8Array.from([1]), { timeoutMs: 10000 });
+    const assertion =
+      expect(pending).rejects.toBeInstanceOf(TxTraceTimeoutError);
+    await jest.advanceTimersByTimeAsync(10000);
+    await assertion;
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 class FakeSocket {
@@ -102,5 +165,14 @@ it("preserves the inclusion height from live transaction subscriptions", async (
     code: 0,
     gas_used: "10",
   });
+  tracer.close();
+});
+
+it("rejects new lookups and subscriptions once every endpoint has failed", async () => {
+  const tracer = new TestTracer();
+  const error = new Error("all RPC endpoints failed");
+  Object.assign(tracer, { giveUpError: error });
+  await expect(tracer.queryTx(Uint8Array.from([1]))).rejects.toBe(error);
+  await expect(tracer.subscribeTx(Uint8Array.from([1]))).rejects.toBe(error);
   tracer.close();
 });

@@ -20,6 +20,20 @@ type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
 };
 
+/** How often {@link TxTracer.traceTx} looks the tx up while it has no live
+ *  subscription. */
+const TRACE_POLL_INTERVAL_MS = 3000;
+
+/** Thrown by {@link TxTracer.traceTx} when the tx is not found in time. The
+ *  tx may still be included later. */
+export class TxTraceTimeoutError extends Error {
+  constructor(readonly timeoutMs: number) {
+    super(`Transaction not found within ${timeoutMs}ms`);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, TxTraceTimeoutError.prototype);
+  }
+}
+
 /**
  * Subscribes to new blocks and transactions by attaching a WebSocket connection to the
  * chain's RPC endpoint. This allows for real-time updates on the chain's state.
@@ -68,6 +82,9 @@ export class TxTracer {
   /** Total number of full endpoint cycles completed. Stops reconnecting after maxCycles. */
   protected cycleCount: number = 0;
   protected readonly maxCycles: number = 3;
+  /** Set once every endpoint has failed: no query or subscription can
+   *  succeed after that, so new ones reject with it instead of queueing. */
+  protected giveUpError?: Error;
 
   /**
    * @param url - Single RPC URL or array of RPC URLs for multi-endpoint failover.
@@ -173,6 +190,7 @@ export class TxTracer {
           const error = new Error(
             `TxTracer: all ${this.urls.length} RPC endpoints failed after ${this.maxCycles} cycle(s)`
           );
+          this.giveUpError = error;
           for (const [, tx] of this.txSubscribes) tx.rejector(error);
           for (const [, q] of this.pendingQueries) q.rejector(error);
           this.txSubscribes.clear();
@@ -403,34 +421,70 @@ export class TxTracer {
     }
   }
 
-  /** Query and subscribe to tx with the given event query */
+  /**
+   * Query and subscribe to tx with the given event query.
+   *
+   * Rejects with {@link TxTraceTimeoutError} if `timeoutMs` passes first, or
+   * with the tracer's error once every endpoint has failed. Without a
+   * timeout, it waits for as long as an endpoint is reachable.
+   */
   traceTx(
-    query: Uint8Array | Record<string, string | number | boolean>
+    query: Uint8Array | Record<string, string | number | boolean>,
+    { timeoutMs }: { timeoutMs?: number } = {}
   ): Promise<any> {
-    return new Promise<any>((resolve) => {
+    return new Promise<any>((resolve, reject) => {
+      let settled = false;
+      let pollTimeoutId: ReturnType<typeof setTimeout> | undefined;
+      let traceTimeoutId: ReturnType<typeof setTimeout> | undefined;
+      const settle = (finish: () => void) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(pollTimeoutId);
+        clearTimeout(traceTimeoutId);
+        finish();
+      };
+
+      // Lookup errors are ignored: the tx may not be indexed yet.
+      const lookUp = () =>
+        this.queryTx(query)
+          .then((result) => {
+            if (query instanceof Uint8Array || result?.total_count !== "0") {
+              settle(() => resolve(result));
+            }
+          })
+          .catch(() => {
+            // noop
+          });
+      const poll = () => {
+        if (settled) return;
+        if (this.giveUpError) {
+          const error = this.giveUpError;
+          settle(() => reject(error));
+          return;
+        }
+        pollTimeoutId = setTimeout(
+          () => lookUp().then(poll),
+          TRACE_POLL_INTERVAL_MS
+        );
+      };
+
+      if (timeoutMs !== undefined) {
+        traceTimeoutId = setTimeout(
+          () => settle(() => reject(new TxTraceTimeoutError(timeoutMs))),
+          timeoutMs
+        );
+      }
+
       // At first, try to query the tx at the same time of subscribing the tx.
-      // But, the querying's error will be ignored.
-      this.queryTx(query)
-        .then((result) => {
-          if (query instanceof Uint8Array) {
-            resolve(result);
-            return;
-          }
+      lookUp();
 
-          if (result?.total_count !== "0") {
-            resolve(result);
-            return;
-          }
-        })
-        .catch(() => {
-          // noop
-        });
-
-      this.subscribeTx(query).then(resolve, () => {
+      this.subscribeTx(query).then(
+        (result) => settle(() => resolve(result)),
         // The tx was already accepted by the node, so a failed subscription
-        // must not report it as failed: it can still be included. The lookup
-        // above can still resolve the trace if the tx is indexed.
-      });
+        // must not report it as failed: it can still be included. Keep
+        // looking it up until it is indexed instead.
+        poll
+      );
     });
   }
 
@@ -447,6 +501,7 @@ export class TxTracer {
       };
 
       return new Promise<unknown>((resolve, reject) => {
+        if (this.giveUpError) return reject(this.giveUpError);
         this.txSubscribes.set(id, {
           params,
           resolver: resolve,
@@ -480,6 +535,7 @@ export class TxTracer {
       };
 
       return new Promise<unknown>((resolve, reject) => {
+        if (this.giveUpError) return reject(this.giveUpError);
         this.txSubscribes.set(id, {
           params,
           resolver: resolve,
@@ -546,6 +602,7 @@ export class TxTracer {
     const id = this.createRandomId();
 
     return new Promise<unknown>((resolve, reject) => {
+      if (this.giveUpError) return reject(this.giveUpError);
       this.pendingQueries.set(id, {
         method,
         params,
