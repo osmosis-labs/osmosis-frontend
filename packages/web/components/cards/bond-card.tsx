@@ -129,7 +129,7 @@ export const BondCard: FunctionComponent<
             <div className="w-full rounded-md bg-osmoverse-800 p-3 md:p-2">
               <span className="text-superfluid-gradient">
                 {t("pool.superfluidEarnMore", {
-                  rate: superfluid.apr.maxDecimals(0).toString(),
+                  rate: superfluid.apr?.maxDecimals(0).toString() ?? "–",
                 })}
               </span>
             </div>
@@ -163,8 +163,9 @@ export const BondCard: FunctionComponent<
 
 const Drawer: FunctionComponent<{
   duration: Duration;
-  aggregateApr: RatePretty;
-  swapFeeApr: RatePretty;
+  /** Undefined while pool APRs are unavailable. */
+  aggregateApr?: RatePretty;
+  swapFeeApr?: RatePretty;
   userShares: CoinPretty;
   incentivesBreakdown: BondDuration["incentivesBreakdown"];
   superfluid: BondDuration["superfluid"];
@@ -207,7 +208,8 @@ const Drawer: FunctionComponent<{
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
-              {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
+              {aggregateApr ? formatPretty(aggregateApr.maxDecimals(0)) : "–"}{" "}
+              {t("pool.APR")}
             </h5>
           </div>
         </div>
@@ -251,7 +253,7 @@ const Drawer: FunctionComponent<{
           {incentivesBreakdown.map((breakdown, index) => (
             <IncentiveBreakdownRow key={index} {...breakdown} />
           ))}
-          <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
+          {swapFeeApr && <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />}
         </div>
         <DrawerRewardCaption />
       </div>
@@ -286,7 +288,7 @@ const SuperfluidBreakdownRow = ({
       <div className="flex place-content-between items-start text-right">
         <div className="flex items-center gap-2">
           <span className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
-            +{apr.maxDecimals(0).toString()}
+            +{apr?.maxDecimals(0).toString() ?? "–"}
           </span>
           <FallbackImg
             className="rounded-full"

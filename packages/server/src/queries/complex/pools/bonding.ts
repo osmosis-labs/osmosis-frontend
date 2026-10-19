@@ -50,8 +50,9 @@ export type BondDuration = {
     isSynthetic: boolean;
   }[];
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
-  aggregateApr: RatePretty;
-  swapFeeApr: RatePretty;
+  /** Undefined when pool APRs are unavailable (data-services outage), so they aren't shown as 0%. */
+  aggregateApr?: RatePretty;
+  swapFeeApr?: RatePretty;
   incentivesBreakdown: {
     apr: RatePretty;
     type: "osmosis" | "boost";
@@ -60,7 +61,8 @@ export type BondDuration = {
   superfluid?: {
     /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
     duration: Duration;
-    apr: RatePretty;
+    /** Undefined when pool APRs are unavailable. */
+    apr?: RatePretty;
   } & UserDurationSuperfluidDelegation;
 };
 
@@ -81,9 +83,15 @@ export async function getSharePoolBondDurations({
         getShareDenomPoolId(gauge.distribute_to.denom) === poolId
     )
   );
-  const poolIncentivesPromise = getCachedPoolIncentivesMap().then((map) =>
-    map.get(poolId)
-  );
+  // Pool APRs come from the data services. When they're unavailable the durations are
+  // still returned, with their APRs unknown rather than 0%.
+  let aprsUnavailable = false;
+  const poolIncentivesPromise = getCachedPoolIncentivesMap()
+    .then((map) => map.get(poolId))
+    .catch((e) => {
+      aprsUnavailable = true;
+      return captureErrorAndReturn(e, undefined);
+    });
   const isSuperfluidPromise = getSuperfluidPoolIds(params).then((ids) =>
     ids.includes(poolId)
   );
@@ -234,22 +242,26 @@ export async function getSharePoolBondDurations({
             });
           }
         }
-        let aggregateApr = incentivesBreakdown.reduce(
-          (sum, { apr }) => sum.add(apr),
-          new RatePretty(0)
-        );
-        const swapFeeApr =
-          poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0);
-        aggregateApr = aggregateApr.add(swapFeeApr);
+        const swapFeeApr = aprsUnavailable
+          ? undefined
+          : (poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0));
+        let aggregateApr = swapFeeApr
+          ? incentivesBreakdown
+              .reduce((sum, { apr }) => sum.add(apr), new RatePretty(0))
+              .add(swapFeeApr)
+          : undefined;
 
         // get superfluid info for this duration
         let superfluid: BondDuration["superfluid"] | undefined = undefined;
         const userSyntheticLockIds: string[] = [];
         if (isSuperfluidDuration) {
-          const superfluidApr =
-            poolIncentives?.aprBreakdown?.superfluid?.upper ??
-            new RatePretty(0);
-          aggregateApr = aggregateApr.add(superfluidApr);
+          const superfluidApr = aprsUnavailable
+            ? undefined
+            : (poolIncentives?.aprBreakdown?.superfluid?.upper ??
+              new RatePretty(0));
+          if (aggregateApr && superfluidApr) {
+            aggregateApr = aggregateApr.add(superfluidApr);
+          }
 
           const userDelegations = bech32Address
             ? await querySuperfluidDelegations({ ...params, bech32Address })

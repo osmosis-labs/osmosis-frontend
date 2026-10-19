@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Dane rynkowe są obecnie niedostępne. Spróbuj ponownie za chwilę.",
       "depositButton": "Wpłać",
       "search": "Szukaj",
       "withdrawButton": "Wypłać",

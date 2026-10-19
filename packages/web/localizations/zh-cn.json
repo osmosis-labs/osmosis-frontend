@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "市场数据暂时不可用。请稍后再试。",
       "depositButton": "存入",
       "search": "搜索",
       "withdrawButton": "提币",

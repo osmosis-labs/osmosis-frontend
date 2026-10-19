@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Datele de piață nu sunt disponibile momentan. Te rugăm să încerci din nou în câteva momente.",
       "depositButton": "Depoziteaza",
       "search": "Filtreaza dupa simbol",
       "withdrawButton": "Retrage",

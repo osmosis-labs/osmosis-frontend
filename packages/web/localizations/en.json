@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",

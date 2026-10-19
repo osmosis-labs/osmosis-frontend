@@ -193,6 +193,7 @@ export const AssetsInfoTable: FunctionComponent<{
     data: assetPagesData,
     hasNextPage,
     isLoading,
+    isError,
     isFetching,
     isPlaceholderData,
     isFetchingNextPage,
@@ -246,6 +247,8 @@ export const AssetsInfoTable: FunctionComponent<{
     } else return { topGainers: [] };
   }, [assetsData, selectedCategory]);
   const noSearchResults = Boolean(searchQuery) && !assetsData.length;
+  // The query fails while market data is unavailable; say so rather than show an empty table.
+  const isMarketDataUnavailable = isError && !assetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -627,7 +630,12 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {noSearchResults && searchQuery?.query && (
+      {isMarketDataUnavailable && (
+        <p className="body2 py-8 text-center text-osmoverse-300">
+          {t("assets.table.marketDataUnavailable")}
+        </p>
+      )}
+      {!isMarketDataUnavailable && noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
           query={searchQuery.query}

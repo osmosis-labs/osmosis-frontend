@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "داده‌های بازار در حال حاضر در دسترس نیست. لطفاً چند لحظه دیگر دوباره تلاش کنید.",
       "depositButton": "واریز",
       "search": "جستجو",
       "withdrawButton": "برداشت",

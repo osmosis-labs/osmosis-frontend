@@ -105,6 +105,12 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   /** Maximum 24h price change in percent. If provided, assets with priceChange24h above this are excluded (sanity cap for stale data / shallow-pool blips). */
   maxPriceChange24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
+  // Without market data every asset would be filtered out below, which would read
+  // as an empty list rather than an outage.
+  if (!(await isMarketDataAvailable())) {
+    throw new Error("Market data is unavailable");
+  }
+
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
   // Apply variant filtering if requested
@@ -243,20 +249,9 @@ const PRICE_DERIVED_FIELDS = [
   "liquidity24hChange",
 ] as const;
 
-/** Fetches general asset info such as price and price change, liquidity, volume, and name
- *  configured outside of our asset list (from data services).
- *  Returns `undefined` for a given coin denom if there was an error or it's not available.
- *  While a data-services outage keeps the data past its ttl, price-derived fields are undefined. */
-export async function getAssetMarketActivity({
-  coinMinimalDenom,
-}: {
-  coinMinimalDenom: string;
-}): Promise<
-  | (Omit<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]> &
-      Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>)
-  | undefined
-> {
-  const { tokenInfoMap, fetchedAt } = await cachified({
+/** All token data from the data services, keyed by upper-cased denom, with when it was fetched. */
+function getTokenData() {
+  return cachified({
     cache: assetMarketCache,
     ttl: TOKEN_DATA_TTL,
     staleWhileRevalidate: DATA_SERVICES_STALE_WHILE_REVALIDATE,
@@ -272,6 +267,31 @@ export async function getAssetMarketActivity({
       return { tokenInfoMap, fetchedAt: Date.now() };
     },
   });
+}
+
+/** False while a data-services outage leaves no fresh token data: prices, liquidity and
+ *  market caps are then unknown for every asset, not missing for some. */
+export async function isMarketDataAvailable(): Promise<boolean> {
+  return getTokenData().then(
+    ({ fetchedAt }) => Date.now() - fetchedAt <= TOKEN_DATA_TTL,
+    () => false
+  );
+}
+
+/** Fetches general asset info such as price and price change, liquidity, volume, and name
+ *  configured outside of our asset list (from data services).
+ *  Returns `undefined` for a given coin denom if there was an error or it's not available.
+ *  While a data-services outage keeps the data past its ttl, price-derived fields are undefined. */
+export async function getAssetMarketActivity({
+  coinMinimalDenom,
+}: {
+  coinMinimalDenom: string;
+}): Promise<
+  | (Omit<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]> &
+      Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>)
+  | undefined
+> {
+  const { tokenInfoMap, fetchedAt } = await getTokenData();
 
   const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
   if (!activity || Date.now() - fetchedAt <= TOKEN_DATA_TTL) return activity;

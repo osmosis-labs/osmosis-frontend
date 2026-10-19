@@ -79,6 +79,9 @@ const TopGainers = () => {
       topN: 4,
     });
 
+  // Hidden when it has nothing to show, e.g. while market data is unavailable.
+  if (!isTopGainerAssetsLoading && !topGainerAssets?.length) return null;
+
   return (
     <AssetHighlights
       className="bg-osmoverse-1000/40 px-2"

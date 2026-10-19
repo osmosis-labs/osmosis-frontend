@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Рыночные данные сейчас недоступны. Пожалуйста, повторите попытку через минуту.",
       "depositButton": "Депозит",
       "search": "Поиск",
       "withdrawButton": "Вывод",

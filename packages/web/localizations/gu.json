@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "બજાર ડેટા હાલમાં ઉપલબ્ધ નથી. કૃપા કરીને થોડી વારમાં ફરી પ્રયાસ કરો.",
       "depositButton": "જમા",
       "search": "શોધો",
       "withdrawButton": "ઉપાડો",

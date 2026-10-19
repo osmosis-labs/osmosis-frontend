@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "現在、マーケットデータを利用できません。しばらくしてからもう一度お試しください。",
       "depositButton": "デポジット",
       "search": "検索",
       "withdrawButton": "撤回する",

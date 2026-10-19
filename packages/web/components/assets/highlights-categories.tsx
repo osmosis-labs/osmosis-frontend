@@ -99,13 +99,8 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   const hasQualifyingUpcomingAssets =
     !isTopUpcomingAssetsLoading && qualifyingUpcomingAssets.length > 0;
 
-  // Top Gainers always renders; New and Upcoming are conditional. Drive the
-  // grid layout off the count of visible tiles so the row reflows to fill the
-  // freed space instead of leaving a gap.
-  const visibleTileCount =
-    1 + (hasNewAssets ? 1 : 0) + (hasQualifyingUpcomingAssets ? 1 : 0);
-
-  const isGainersOnly = visibleTileCount === 1;
+  // Top Gainers is the only tile next to the conditional New and Upcoming ones.
+  const isGainersOnly = !hasNewAssets && !hasQualifyingUpcomingAssets;
 
   // Top Gainers row count by its own layout (New/Upcoming always fetch 3):
   //  - gainers-only: full width, 6 rows across two columns (3 per column)
@@ -124,6 +119,17 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
     api.edge.assets.getTopGainerAssets.useQuery({
       topN: topGainerCount,
     });
+  // Hidden when it has nothing to show, e.g. while market data is unavailable.
+  const hasTopGainers =
+    isTopGainerAssetsLoading || (topGainerAssets ?? []).length > 0;
+
+  // Drive the grid layout off the count of visible tiles so the row reflows to
+  // fill the freed space instead of leaving a gap.
+  const visibleTileCount =
+    (hasTopGainers ? 1 : 0) +
+    (hasNewAssets ? 1 : 0) +
+    (hasQualifyingUpcomingAssets ? 1 : 0);
+  if (visibleTileCount === 0) return null;
 
   return (
     <div
@@ -148,22 +154,24 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
           assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
         />
       )}
-      <AssetHighlights
-        className={classNames({
-          // Multi-tile: 80% width snap card; span 2 rows on xl to share the
-          // second row with New / Upcoming.
-          "lg:w-[80%] lg:shrink-0 lg:snap-center": !isGainersOnly,
-          "xl:row-span-2 lg:row-auto": visibleTileCount > 1,
-          // Gainers-only: full width, rows flow into two columns.
-          "w-full": isGainersOnly,
-        })}
-        title={t("assets.highlights.topGainers")}
-        subtitle="24h"
-        isLoading={isTopGainerAssetsLoading}
-        assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
-        onClickSeeAll={onSelectAllTopGainers}
-        columns={isGainersOnly ? 2 : 1}
-      />
+      {hasTopGainers && (
+        <AssetHighlights
+          className={classNames({
+            // Multi-tile: 80% width snap card; span 2 rows on xl to share the
+            // second row with New / Upcoming.
+            "lg:w-[80%] lg:shrink-0 lg:snap-center": !isGainersOnly,
+            "xl:row-span-2 lg:row-auto": visibleTileCount > 1,
+            // Gainers-only: full width, rows flow into two columns.
+            "w-full": isGainersOnly,
+          })}
+          title={t("assets.highlights.topGainers")}
+          subtitle="24h"
+          isLoading={isTopGainerAssetsLoading}
+          assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
+          onClickSeeAll={onSelectAllTopGainers}
+          columns={isGainersOnly ? 2 : 1}
+        />
+      )}
       {hasQualifyingUpcomingAssets && (
         <AssetHighlights
           className="lg:w-[80%] lg:shrink-0 lg:snap-center"
