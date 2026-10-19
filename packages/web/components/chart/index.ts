@@ -1,6 +1,4 @@
 export * from "./asset-breakdown";
-export * from "./generate-series";
-export * from "./gradients";
-export * from "./pie-chart";
+export * from "./donut-chart";
 export * from "./price-breakdown";
 export * from "./price-historical";
