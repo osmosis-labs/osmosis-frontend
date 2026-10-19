@@ -170,6 +170,8 @@ const ErrorToast: FunctionComponent<Alert> = ({
   titleTranslationKey,
   captionTranslationKey,
   captionElement,
+  learnMoreUrl,
+  learnMoreUrlCaption,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
@@ -184,6 +186,18 @@ const ErrorToast: FunctionComponent<Alert> = ({
             ? t(captionTranslationKey)
             : t(...captionTranslationKey)}
         </p>
+      )}
+      {learnMoreUrl && learnMoreUrlCaption && (
+        <a
+          target="__blank"
+          href={learnMoreUrl}
+          className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
+        >
+          {t(learnMoreUrlCaption ?? "Learn more")}
+          <div className="mb-0.75 ml-2 inline-block">
+            <Icon aria-label="link" id="external-link" height={12} width={12} />
+          </div>
+        </a>
       )}
     </div>
   </div>
