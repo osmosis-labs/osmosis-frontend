@@ -36,9 +36,16 @@ describe("getAssetMarketActivity", () => {
     const fresh = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
     expect(fresh?.price?.toDec().toString()).toBe("2.000000000000000000");
 
-    // Past the ttl the data services fail; the cached data is served stale.
+    // Just past the ttl the entry is served while it refreshes; it still counts as fresh.
     (queryAllTokenData as jest.Mock).mockRejectedValue(new Error("500"));
     jest.setSystemTime(new Date("2026-10-19T10:06:00Z"));
+    const refreshing = await getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    expect(refreshing?.price?.toDec().toString()).toBe("2.000000000000000000");
+
+    // Past the refresh grace the data services are still failing; prices are dropped.
+    jest.setSystemTime(new Date("2026-10-19T10:08:00Z"));
 
     const stale = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
     expect(stale?.price).toBeUndefined();

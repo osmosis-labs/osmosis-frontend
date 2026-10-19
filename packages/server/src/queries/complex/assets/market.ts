@@ -236,6 +236,15 @@ const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** How long token data, which includes prices, counts as fresh. */
 const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
 
+/** How long past its ttl token data still counts as fresh. Right after the ttl, cachified
+ *  serves the cached entry while it refreshes in the background, which normally takes
+ *  seconds; only data older than this is treated as an outage. */
+const TOKEN_DATA_REFRESH_GRACE = 1000 * 60 * 2; // 2 minutes
+
+function isTokenDataFresh(fetchedAt: number): boolean {
+  return Date.now() - fetchedAt <= TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE;
+}
+
 /** Fields that are prices or derived from prices. They are dropped when the token data is
  *  served stale during a data-services outage: a last-known price can be badly wrong in a
  *  volatile market, so it's shown as unknown instead. */
@@ -273,7 +282,7 @@ function getTokenData() {
  *  market caps are then unknown for every asset, not missing for some. */
 export async function isMarketDataAvailable(): Promise<boolean> {
   return getTokenData().then(
-    ({ fetchedAt }) => Date.now() - fetchedAt <= TOKEN_DATA_TTL,
+    ({ fetchedAt }) => isTokenDataFresh(fetchedAt),
     () => false
   );
 }
@@ -281,7 +290,8 @@ export async function isMarketDataAvailable(): Promise<boolean> {
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
  *  configured outside of our asset list (from data services).
  *  Returns `undefined` for a given coin denom if there was an error or it's not available.
- *  While a data-services outage keeps the data past its ttl, price-derived fields are undefined. */
+ *  While a data-services outage keeps the data past its ttl and refresh grace, price-derived
+ *  fields are undefined. */
 export async function getAssetMarketActivity({
   coinMinimalDenom,
 }: {
@@ -294,7 +304,7 @@ export async function getAssetMarketActivity({
   const { tokenInfoMap, fetchedAt } = await getTokenData();
 
   const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
-  if (!activity || Date.now() - fetchedAt <= TOKEN_DATA_TTL) return activity;
+  if (!activity || isTokenDataFresh(fetchedAt)) return activity;
 
   const staleActivity: Partial<MarketActivity> = { ...activity };
   PRICE_DERIVED_FIELDS.forEach((field) => delete staleActivity[field]);
