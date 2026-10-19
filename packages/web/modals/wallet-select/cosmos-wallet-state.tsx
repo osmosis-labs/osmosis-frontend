@@ -1,8 +1,12 @@
 import { WalletRepo } from "@cosmos-kit/core";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { WalletConnectionInProgressError } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import React, { Dispatch, FunctionComponent, SetStateAction } from "react";
+import React, {
+  Dispatch,
+  FunctionComponent,
+  memo,
+  SetStateAction,
+} from "react";
 
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import { OneClickTradingConnectToContinue } from "~/components/one-click-trading/one-click-trading-connect-to-continue";
@@ -53,7 +57,7 @@ export const CosmosWalletState: FunctionComponent<
     setShow1CTEditParams: Dispatch<SetStateAction<boolean>>;
     walletOptions: WalletSelectOption[];
   }
-> = observer(
+> = memo(
   ({
     walletRepo,
     onRequestClose,

@@ -8463,9 +8463,6 @@ __metadata:
     lint-staged: "npm:^17.6.0"
     lottie-react: "npm:^3.1.2"
     lru-cache: "npm:^10.0.1"
-    mobx: "npm:^6.3.10"
-    mobx-react-lite: "npm:^4.1.1"
-    mobx-utils: "npm:^6.0.4"
     next: "npm:15.5.27"
     next-seo: "npm:^6.6.0"
     next-sitemap: "npm:^4.2.3"
@@ -25374,33 +25371,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "mobx-react-lite@npm:4.1.1"
-  dependencies:
-    use-sync-external-store: "npm:^1.4.0"
-  peerDependencies:
-    mobx: ^6.9.0
-    react: ^16.8.0 || ^17 || ^18 || ^19
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 10c0/296b29487dc9fae7b7dd8eb39454d980fcfe59bf4c160ac911faa55469f9ebe2953661efca588f6d7929a2b071f234c7c4d717beaf5819d548be9b58c39874f1
-  languageName: node
-  linkType: hard
-
-"mobx-utils@npm:^6.0.4":
-  version: 6.0.4
-  resolution: "mobx-utils@npm:6.0.4"
-  peerDependencies:
-    mobx: ^6.0.0
-  checksum: 10c0/826da416bd57ec76381d8ab28423c73cf5befe64cded91b1f177f0e942fddd3df00c56f2b01438ba9354a9383dbe2b74bb61d609afa4e2e56aa12757b9a562e9
-  languageName: node
-  linkType: hard
-
-"mobx@npm:^6.1.7, mobx@npm:^6.3.10":
+"mobx@npm:^6.1.7":
   version: 6.16.1
   resolution: "mobx@npm:6.16.1"
   checksum: 10c0/8450dab51fa133c9dde9f6c9b42cdc9f16c70cf2b989acc25b2cf2c66948def053ad3f1fdfc3bc256ece394e607e9c15dbfe88792ffa81a041e2ec92ae268cdb

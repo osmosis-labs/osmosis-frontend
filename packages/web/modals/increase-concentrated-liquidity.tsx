@@ -1,10 +1,10 @@
 import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -58,7 +58,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     position: UserPosition;
     status: UserPositionDetails["status"];
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const { poolId, position, status } = props;
   const { t } = useTranslation();
 
@@ -345,7 +345,7 @@ const PriceBox: FunctionComponent<{
 const ChartHeader: FunctionComponent<{
   addLiquidityConfig: AddConcentratedLiquidityConfig;
   chartConfig: HistoricalAndLiquidityData;
-}> = observer(({ chartConfig, addLiquidityConfig }) => {
+}> = memo(({ chartConfig, addLiquidityConfig }) => {
   const { historicalRange, priceDecimal, setHistoricalRange } = chartConfig;
   const hoverPrice = useHoverPrice(chartConfig);
 
