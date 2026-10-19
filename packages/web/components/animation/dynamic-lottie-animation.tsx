@@ -53,7 +53,10 @@ export const DynamicLottieAnimation: FunctionComponent<
     loadLottie(globalLottieFileKey, importFn)
       .then((data) => {
         if (!cancelled && data) {
-          setLottie({ key: globalLottieFileKey, data });
+          // lottie-web mutates animation data while loading it, so each mount
+          // gets its own copy rather than the cached object. Sharing it left
+          // step1's text blurred on later mounts.
+          setLottie({ key: globalLottieFileKey, data: structuredClone(data) });
         }
       })
       .catch(console.error);
