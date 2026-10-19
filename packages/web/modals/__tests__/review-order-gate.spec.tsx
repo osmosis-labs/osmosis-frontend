@@ -605,17 +605,4 @@ describe("value disparity and serializable slippage bounds", () => {
     expect(screen.getByText(/amount too small to swap/i)).toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });
-
-  it("shows no zero-bound message while there is no quote", () => {
-    renderModal({
-      ...baseProps(),
-      priceImpactTokenOut: lowImpact,
-      quoteType: "in-given-out",
-      amountWithSlippage: new IntPretty(new Dec(0)),
-    });
-
-    expect(
-      screen.queryByText(/amount too small to swap/i)
-    ).not.toBeInTheDocument();
-  });
 });

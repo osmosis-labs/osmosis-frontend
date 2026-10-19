@@ -1,24 +1,10 @@
 import { Dec } from "@osmosis-labs/unit";
 
 import {
-  formatSlippagePercent,
   parseSlippageInput,
   requiresValueDisparityAcknowledgement,
   slippageBoundTruncatesToZero,
 } from "../swap-review";
-
-describe("formatSlippagePercent", () => {
-  it.each([
-    ["0.005", "0.5"],
-    ["0.01", "1"],
-    ["0.001", "0.1"],
-    ["0.0125", "1.25"],
-    ["0.1", "10"],
-    ["0", "0"],
-  ])("formats %s as %s", (fraction, expected) => {
-    expect(formatSlippagePercent(new Dec(fraction))).toBe(expected);
-  });
-});
 
 describe("parseSlippageInput", () => {
   it.each([

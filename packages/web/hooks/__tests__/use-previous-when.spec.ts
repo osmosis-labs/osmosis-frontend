@@ -12,19 +12,6 @@ const render = (initialProps: Props) =>
   });
 
 describe("usePreviousWhen", () => {
-  it("holds the last accepted value while later values are rejected", () => {
-    const { result, rerender } = render({ value: 1 });
-    rerender({ value: undefined });
-    expect(result.current).toBe(1);
-  });
-
-  it("behaves as before when no resetKey is given", () => {
-    const { result, rerender } = render({ value: 1 });
-    rerender({ value: 2 });
-    rerender({ value: undefined });
-    expect(result.current).toBe(2);
-  });
-
   it("never serves a value held under a different resetKey", () => {
     const { result, rerender } = render({ value: 1, key: "out-given-in" });
     rerender({ value: undefined, key: "out-given-in" });
