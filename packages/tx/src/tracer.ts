@@ -265,6 +265,15 @@ export class TxTracer {
     this.listeners[type]!.push(listener);
   }
 
+  removeEventListener<T extends keyof TxEventMap>(
+    type: T,
+    listener: TxEventMap[T]
+  ) {
+    this.listeners[type] = this.listeners[type]?.filter(
+      (l) => l !== listener
+    ) as Listeners[T];
+  }
+
   protected readonly onOpen = (e: Event) => {
     if (process.env.NODE_ENV !== "production") {
       console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
@@ -441,6 +450,7 @@ export class TxTracer {
         settled = true;
         clearTimeout(pollTimeoutId);
         clearTimeout(traceTimeoutId);
+        this.removeEventListener("open", onReconnect);
         finish();
       };
 
@@ -467,6 +477,9 @@ export class TxTracer {
           TRACE_POLL_INTERVAL_MS
         );
       };
+      const onReconnect = () => {
+        lookUp();
+      };
 
       if (timeoutMs !== undefined) {
         traceTimeoutId = setTimeout(
@@ -475,13 +488,11 @@ export class TxTracer {
         );
       }
 
-      // At first, try to query the tx at the same time of subscribing the tx.
-      lookUp();
       // A reconnect resubscribes, but the node does not replay events missed
       // while disconnected, so look the tx up again in case it landed then.
-      this.addEventListener("open", () => {
-        if (!settled) lookUp();
-      });
+      this.addEventListener("open", onReconnect);
+      // At first, try to query the tx at the same time of subscribing the tx.
+      lookUp();
 
       this.subscribeTx(query).then(
         (result) => settle(() => resolve(result)),

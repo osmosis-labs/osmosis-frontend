@@ -153,6 +153,9 @@ it("looks the tx up again after a reconnect", async () => {
   tracer.reopen();
   await expect(pending).resolves.toEqual(result);
   expect(queryTx).toHaveBeenCalledTimes(2);
+  // Settled traces stop listening, so a reused tracer doesn't accumulate them.
+  tracer.reopen();
+  expect(queryTx).toHaveBeenCalledTimes(2);
   tracer.close();
 });
 
