@@ -93,7 +93,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => increaseLiquidity(id).then(() => props.onRequestClose()),
+      onClick: () =>
+        increaseLiquidity(id)
+          .then(() => props.onRequestClose())
+          // Broadcast failures are toasted by the tx client; keep the modal open.
+          .catch(() => {}),
       children: config.error
         ? t(...tError(config.error))
         : t("clPositions.addMoreLiquidity"),

@@ -92,6 +92,9 @@ export const AddLiquidityModal: FunctionComponent<
 
         if (!isConcentrated && props.onAddLiquidity) {
           props.onAddLiquidity(addLiquidityResult);
+        } else {
+          // Broadcast failures are toasted by the tx client; keep the modal open.
+          addLiquidityResult.catch(() => {});
         }
       },
       isLoading: config.error && config.error instanceof NotInitializedError,
@@ -216,7 +219,10 @@ export const AddLiquidityModal: FunctionComponent<
               isOpen={true}
               onRequestClose={() => setShowSuperfluidValidatorModal(false)}
               onSelectValidator={(address) =>
-                addConLiquidity(address).then(() => props.onRequestClose())
+                addConLiquidity(address)
+                  .then(() => props.onRequestClose())
+                  // Broadcast failures are toasted by the tx client.
+                  .catch(() => {})
               }
               ctaLabel={t("addConcentratedLiquidity.buttonCreateAndStake")}
             />
