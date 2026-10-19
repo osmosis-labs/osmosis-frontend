@@ -55,8 +55,13 @@ export const DynamicLottieAnimation: FunctionComponent<
         if (!cancelled && data) {
           // lottie-web mutates animation data while loading it, so each mount
           // gets its own copy rather than the cached object. Sharing it left
-          // step1's text blurred on later mounts.
-          setLottie({ key: globalLottieFileKey, data: structuredClone(data) });
+          // step1's text blurred on later mounts. The data is plain JSON, so
+          // a JSON round trip covers browsers without structuredClone.
+          const copy =
+            typeof structuredClone === "function"
+              ? structuredClone(data)
+              : JSON.parse(JSON.stringify(data));
+          setLottie({ key: globalLottieFileKey, data: copy });
         }
       })
       .catch(console.error);
