@@ -12,7 +12,7 @@ interface ScaledCurrencyInputProps {
   onChange?: (value: string) => void;
   classes?: Partial<Record<"input" | "ticker", string>>;
   placeholder?: string;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 export function ScaledCurrencyInput({

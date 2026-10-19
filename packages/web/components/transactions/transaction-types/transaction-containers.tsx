@@ -12,7 +12,7 @@ const TransactionTitle = ({
   children,
 }: {
   tooltip?: ReactNode;
-  children: JSX.Element;
+  children: React.JSX.Element;
 }) =>
   tooltip ? (
     // let clicks through so the row still opens its details
@@ -36,8 +36,8 @@ export const SmallTransactionContainer = ({
   title: { [key in "pending" | "failed" | "success"]: string };
   /** Shown on hovering the title, e.g. the bridge provider. */
   titleTooltip?: ReactNode;
-  leftComponent: JSX.Element | null;
-  rightComponent: JSX.Element | null;
+  leftComponent: React.JSX.Element | null;
+  rightComponent: React.JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
 }) => (
@@ -88,7 +88,7 @@ export const LargeTransactionContainer = ({
   title: { [key in "pending" | "failed" | "success"]: string };
   /** Shown on hovering the title, e.g. the bridge provider. */
   titleTooltip?: ReactNode;
-  rightComponent: JSX.Element | null;
+  rightComponent: React.JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
   hash?: string;
