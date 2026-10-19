@@ -20,9 +20,11 @@ on:
 # deployment_status fires once per state change (pending, success, ...), so
 # collapse repeats for the same commit and state. Newer PR runs cancel older
 # ones on the same branch per job, via the job-level groups keyed on the
-# resolved branch.
+# resolved branch. The event name keeps a push to stage apart from the
+# stage -> master release PR, whose head_ref is also "stage": sharing a group
+# let the release PR cancel the post-merge run for the stage head commit.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.deployment.sha || github.head_ref || github.ref_name }}-${{ github.event.deployment_status.state }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.deployment.sha || github.head_ref || github.ref_name }}-${{ github.event.deployment_status.state }}
   cancel-in-progress: true
 
 # Every other job needs resolve-deployment and checks its `run` output (the
@@ -34,7 +36,9 @@ jobs:
       || (github.event_name == 'deployment_status'
         && github.event.deployment_status.state == 'success'
         && github.event.deployment.environment == 'Preview – osmosis-frontend')
-      || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
+      || (github.event_name == 'pull_request'
+        && github.event.pull_request.head.repo.fork == false
+        && github.event.pull_request.head.ref != 'stage')
     runs-on: ubuntu-latest
     permissions:
       # To cancel runs for superseded commits of the same PR.
