@@ -82,14 +82,14 @@ describe("useSwapSlippage", () => {
     expect(pct(result.current.slippageConfig)).toBe("0.1");
   });
 
-  it("pins exact-out to the default", () => {
+  it("applies the auto tier to exact-out quotes", () => {
     const { result } = render({
       quote: quote("-0.2", "100"),
       quoteType: "in-given-out",
     });
 
-    expect(result.current.source).toBe("default");
-    expect(pct(result.current.slippageConfig)).toBe("0.1");
+    expect(result.current.source).toBe("auto");
+    expect(pct(result.current.slippageConfig)).toBe("5.0");
   });
 
   it("never overwrites a value the user typed", () => {
@@ -211,7 +211,7 @@ describe("useSwapSlippage", () => {
     });
   });
 
-  it("reports unknown route liquidity only for exact-in quotes", () => {
+  it("reports unknown route liquidity in both directions", () => {
     const { result, rerender } = render({
       quote: quote("-0.001", "0"),
       quoteType: "out-given-in",
@@ -222,7 +222,7 @@ describe("useSwapSlippage", () => {
     );
 
     rerender({ quote: quote("-0.001", "0"), quoteType: "in-given-out" });
-    expect(result.current.liquidityUnknown).toBe(false);
+    expect(result.current.liquidityUnknown).toBe(true);
   });
 
   describe("while the review is open", () => {
