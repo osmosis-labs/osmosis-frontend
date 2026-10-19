@@ -170,15 +170,12 @@ export function hasUnpricedReserves({
 }: Pick<SidecarPool, "liquidity_cap_error" | "balances">): boolean {
   if (!liquidity_cap_error) return false;
 
-  const zeroCapDenoms = Array.from(
-    liquidity_cap_error.matchAll(/zero cap for denom \(([^)]+)\)/g),
-    (match) => match[1]
-  );
-  return zeroCapDenoms.some((denom) =>
-    balances.some(
-      (balance) =>
-        balance.denom === denom && new Dec(balance.amount).isPositive()
-    )
+  // SQS lists each zero-cap reserve as "zero cap for denom (<denom>)". Look up each held
+  // reserve's exact entry rather than parsing the string.
+  return balances.some(
+    ({ denom, amount }) =>
+      new Dec(amount).isPositive() &&
+      liquidity_cap_error.includes(`zero cap for denom (${denom})`)
   );
 }
 
