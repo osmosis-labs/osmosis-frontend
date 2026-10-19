@@ -100,6 +100,16 @@ interface ReviewOrderProps {
    * included). Optional because this modal is shared by all three tabs.
    */
   priceImpactTokenOut?: RatePretty;
+  /**
+   * The quote's amount in display units, before slippage: the output for
+   * exact-in, the input for exact-out. Undefined while there is no quote.
+   */
+  quoteAmount?: Dec;
+  /**
+   * The output asset's own price. Prices the exact-in minimum received
+   * independently of the router's price impact.
+   */
+  outAssetPrice?: PricePretty;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
@@ -131,6 +141,8 @@ export function ReviewOrder({
   fromAsset,
   isBeyondOppositePrice = false,
   priceImpactTokenOut,
+  quoteAmount,
+  outAssetPrice,
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
@@ -236,6 +248,49 @@ export function ReviewOrder({
       quoteType,
     });
 
+  const resolvedQuoteType = quoteType ?? "out-given-in";
+
+  // A market trade whose minimum received is worth far less than what is sent
+  // joins the loss acknowledgement below as one more warning reason. Each side
+  // is priced from its own asset's price, so a mispriced pool whose quoted
+  // impact looks fine is still caught.
+  const usdNum = (value?: Dec) =>
+    value === undefined ? undefined : Number(value.toString());
+  const isExtremeValueDisparity =
+    orderType === "market" &&
+    requiresValueDisparityAcknowledgement({
+      quoteType: resolvedQuoteType,
+      inputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(fiatAmountWithSlippage?.toDec())
+          : usdNum(inAmountFiat?.toDec()),
+      minimumOutputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(expectedOutputFiat?.toDec())
+          : amountWithSlippage && outAssetPrice
+            ? usdNum(amountWithSlippage.toDec().mul(outAssetPrice.toDec()))
+            : undefined,
+    });
+
+  // The chain rejects a slippage bound (exact-in's minimum output, exact-out's
+  // maximum input) that serializes to zero, and acknowledging cannot make that
+  // transaction valid, so confirmation is disabled outright. Market orders
+  // only: limit orders serialize differently.
+  const slippageBoundAsset =
+    resolvedQuoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    orderType === "market" &&
+    quoteAmount !== undefined &&
+    quoteAmount.isPositive() &&
+    slippageConfig !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero({
+      quoteAmount,
+      slippage: slippageConfig.slippage.toDec(),
+      coinDecimals: slippageBoundAsset.coinDecimals,
+      quoteType: resolvedQuoteType,
+    });
+
   /**
    * Live loss figures for the trade being reviewed (MTN-150).
    *
@@ -249,48 +304,6 @@ export function ReviewOrder({
    * the output: the input is the quoted figure, rewritten on every requote, so
    * keying on it would re-arm the checkbox whenever it moved by one base unit.
    */
-  const resolvedQuoteType = quoteType ?? "out-given-in";
-
-  // A market trade whose minimum received is worth far less than what is sent
-  // joins the loss acknowledgement below as one more warning reason. It
-  // catches a bad price that the router's price impact does not show.
-  const usdNum = (value?: PricePretty) =>
-    value === undefined ? undefined : Number(value.toDec().toString());
-  const isExtremeValueDisparity =
-    orderType === "market" &&
-    requiresValueDisparityAcknowledgement({
-      quoteType: resolvedQuoteType,
-      inputUsd:
-        resolvedQuoteType === "in-given-out"
-          ? usdNum(fiatAmountWithSlippage)
-          : usdNum(inAmountFiat),
-      minimumOutputUsd:
-        resolvedQuoteType === "in-given-out"
-          ? usdNum(expectedOutputFiat)
-          : usdNum(fiatAmountWithSlippage),
-      minimumOutputTokenIsZero:
-        resolvedQuoteType === "out-given-in" &&
-        amountWithSlippage !== undefined &&
-        amountWithSlippage.toDec().isZero(),
-    });
-
-  // The transaction scales the slippage bound (exact-in's minimum output,
-  // exact-out's maximum input) to chain units and truncates, so a display
-  // amount that looks nonzero can still serialize to zero, which the chain
-  // rejects. Acknowledging cannot make that transaction valid, so
-  // confirmation is disabled outright. Market orders only: limit orders
-  // serialize differently.
-  const slippageBoundAsset =
-    resolvedQuoteType === "in-given-out" ? fromAsset : toAsset;
-  const isSlippageBoundZeroOnChain =
-    orderType === "market" &&
-    amountWithSlippage !== undefined &&
-    slippageBoundAsset !== undefined &&
-    slippageBoundTruncatesToZero(
-      amountWithSlippage.toDec(),
-      slippageBoundAsset.coinDecimals
-    );
-
   const fixedAmount =
     orderType !== "limit" && quoteType === "in-given-out"
       ? expectedOutput

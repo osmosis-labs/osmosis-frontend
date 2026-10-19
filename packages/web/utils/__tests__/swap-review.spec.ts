@@ -61,30 +61,48 @@ describe("parseSlippageInput", () => {
 });
 
 describe("slippageBoundTruncatesToZero", () => {
-  it("is true when the bound is below one base unit", () => {
-    // 0.000000009 BTC is under one satoshi at 8 decimals.
-    expect(slippageBoundTruncatesToZero(new Dec("0.000000009"), 8)).toBe(true);
+  const bound = (
+    quoteAmount: string,
+    slippage: string,
+    coinDecimals: number,
+    quoteType: "out-given-in" | "in-given-out" = "out-given-in"
+  ) =>
+    slippageBoundTruncatesToZero({
+      quoteAmount: new Dec(quoteAmount),
+      slippage: new Dec(slippage),
+      coinDecimals,
+      quoteType,
+    });
+
+  it("is true when the minimum output is below one base unit", () => {
+    // 0.00000001 BTC (one satoshi) less 10% is under one satoshi.
+    expect(bound("0.00000001", "0.1", 8)).toBe(true);
   });
 
-  it("is false at exactly one base unit", () => {
-    expect(slippageBoundTruncatesToZero(new Dec("0.00000001"), 8)).toBe(false);
+  it("is false while the minimum output keeps a base unit", () => {
+    expect(bound("0.00000002", "0.1", 8)).toBe(false);
   });
 
   it("uses the asset's own decimals", () => {
-    const amount = new Dec("0.0000005");
-    expect(slippageBoundTruncatesToZero(amount, 6)).toBe(true);
-    expect(slippageBoundTruncatesToZero(amount, 18)).toBe(false);
+    expect(bound("0.0000005", "0.01", 6)).toBe(true);
+    expect(bound("0.0000005", "0.01", 18)).toBe(false);
   });
 
-  it("is true for zero", () => {
-    expect(slippageBoundTruncatesToZero(new Dec(0), 6)).toBe(true);
+  // Scaling first, as the transaction does: one base unit times 0.6 truncates
+  // to zero. Applying the slippage to the display amount first rounds it back
+  // up to one unit at 18 decimals and would have passed.
+  it("matches the transaction's order for an 18-decimal asset", () => {
+    expect(bound("0.000000000000000001", "0.4", 18)).toBe(true);
+  });
+
+  it("applies exact-out slippage as a maximum input", () => {
+    expect(bound("0.00000001", "0.1", 8, "in-given-out")).toBe(false);
   });
 });
 
 describe("requiresValueDisparityAcknowledgement", () => {
   const base = {
     quoteType: "out-given-in" as const,
-    minimumOutputTokenIsZero: false,
   };
 
   it("requires acknowledgement below 75% of the input value", () => {
@@ -105,17 +123,6 @@ describe("requiresValueDisparityAcknowledgement", () => {
         minimumOutputUsd: 75,
       })
     ).toBe(false);
-  });
-
-  it("gates a zero minimum output even without fiat prices", () => {
-    expect(
-      requiresValueDisparityAcknowledgement({
-        ...base,
-        inputUsd: undefined,
-        minimumOutputUsd: undefined,
-        minimumOutputTokenIsZero: true,
-      })
-    ).toBe(true);
   });
 
   it("skips the value comparison when either side is unpriced", () => {
@@ -142,7 +149,6 @@ describe("requiresValueDisparityAcknowledgement", () => {
     expect(
       requiresValueDisparityAcknowledgement({
         quoteType: "in-given-out",
-        minimumOutputTokenIsZero: false,
         inputUsd: 100,
         minimumOutputUsd: 0,
       })
@@ -153,7 +159,6 @@ describe("requiresValueDisparityAcknowledgement", () => {
     expect(
       requiresValueDisparityAcknowledgement({
         quoteType: "in-given-out",
-        minimumOutputTokenIsZero: false,
         inputUsd: 100,
         minimumOutputUsd: 50,
       })

@@ -52,17 +52,35 @@ export function parseSlippageInput(
   return { display, commit: isComplete ? display : undefined };
 }
 
-/** Mirrors getSwapTxParameters' chain-unit serialization: scales a display
- *  amount by the asset's decimals and truncates. A true result means the
- *  transaction's slippage bound (exact-in's minimum output, exact-out's
- *  maximum input) would serialize to zero, which chain-side ValidateBasic
- *  rejects as non-positive, so the transaction could only fail. */
-export function slippageBoundTruncatesToZero(
-  displayAmount: Dec,
-  coinDecimals: number
-): boolean {
-  return displayAmount
+/** Whether the transaction's slippage bound (exact-in's minimum output,
+ *  exact-out's maximum input) serializes to zero, which chain-side
+ *  ValidateBasic rejects as non-positive, so the transaction could only fail.
+ *
+ *  Computed in getSwapTxParameters' order: the quote amount scaled to chain
+ *  units first, then the slippage applied, then truncated. Applying the
+ *  slippage to the display amount first rounds differently, so for an
+ *  18-decimal asset one base unit could pass here and still fail onchain. */
+export function slippageBoundTruncatesToZero({
+  quoteAmount,
+  slippage,
+  coinDecimals,
+  quoteType,
+}: {
+  /** The quote's amount in display units: the output for exact-in, the
+   *  input for exact-out. */
+  quoteAmount: Dec;
+  /** Tolerance as a fraction, e.g. 0.01 for 1%. */
+  slippage: Dec;
+  coinDecimals: number;
+  quoteType: "out-given-in" | "in-given-out";
+}): boolean {
+  const factor =
+    quoteType === "in-given-out"
+      ? new Dec(1).add(slippage)
+      : new Dec(1).sub(slippage);
+  return quoteAmount
     .mul(DecUtils.getTenExponentNInPrecisionRange(coinDecimals))
+    .mul(factor)
     .truncate()
     .isZero();
 }
@@ -71,16 +89,15 @@ export function slippageBoundTruncatesToZero(
  * Whether a market swap's review must demand an explicit high-loss
  * acknowledgement before confirmation is enabled.
  *
- * The output value is not an independent price: for exact-in it is derived
- * from the input's fiat value and the router's price impact and fees. A
- * missing or out-of-range impact therefore reads as a zero output value and
- * fails safe by requiring the acknowledgement.
+ * Both values must come from each asset's own price. Pricing the output from
+ * the input's value and the router's price impact would only restate the
+ * price-impact gate, and could never catch a mispriced pool whose quoted
+ * impact looks fine. A missing price on either side skips the check.
  */
 export function requiresValueDisparityAcknowledgement({
   quoteType,
   inputUsd,
   minimumOutputUsd,
-  minimumOutputTokenIsZero,
 }: {
   quoteType: "out-given-in" | "in-given-out";
   /** USD value sent (exact-in) or maximum paid (exact-out); undefined when
@@ -89,13 +106,7 @@ export function requiresValueDisparityAcknowledgement({
   /** USD value of the minimum received (exact-in) or of the fixed output
    *  (exact-out); undefined when unpriced or there is no quote yet. */
   minimumOutputUsd: number | undefined;
-  /** True when the exact-in minimum output token amount is exactly zero. */
-  minimumOutputTokenIsZero: boolean;
 }): boolean {
-  // A zero minimum output offers no protection at all, so it is gated
-  // whether or not fiat prices are available.
-  if (quoteType === "out-given-in" && minimumOutputTokenIsZero) return true;
-
   if (inputUsd === undefined || minimumOutputUsd === undefined) return false;
 
   // Sub-$1 trades are exempt.

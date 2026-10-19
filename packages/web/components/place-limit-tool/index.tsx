@@ -1095,6 +1095,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
           quoteType={swapState.marketState.quoteType}
           priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
+          quoteAmount={swapState.marketState.quote?.amount.toDec()}
+          outAssetPrice={swapState.marketState.outAmountInput.price}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
