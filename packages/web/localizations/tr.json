@@ -297,6 +297,7 @@
     "notInitialized": "Yükleniyor...",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
+    "scalingFactorNotInteger": "Ölçeklendirme faktörü tam sayı olmalıdır",
     "zeroAmount": "Miktar sıfır",
     "invalidRange": "Geçersiz fiyat aralığı",
     "fallbackText1": "Bir hata oluştu",

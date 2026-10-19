@@ -297,6 +297,7 @@
     "notInitialized": "Chargement...",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
+    "scalingFactorNotInteger": "Le facteur d'échelle doit être un nombre entier",
     "zeroAmount": "Le montant est zéro",
     "invalidRange": "Fourchette de prix invalide",
     "fallbackText1": "Une erreur s'est produite",

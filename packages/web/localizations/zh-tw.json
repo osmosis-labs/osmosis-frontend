@@ -297,6 +297,7 @@
     "notInitialized": "載入中...",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
+    "scalingFactorNotInteger": "縮放因數必須是整數",
     "zeroAmount": "未提供幣額",
     "invalidRange": "價格範圍無效",
     "fallbackText1": "發生錯誤",

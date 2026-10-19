@@ -297,6 +297,7 @@
     "notInitialized": "Carregando...",
     "percentageSum": "A soma das porcentagens não é 100",
     "scalingFactorTooLow": "Fator de escalonamento muito baixo",
+    "scalingFactorNotInteger": "O fator de escalonamento deve ser um número inteiro",
     "zeroAmount": "Quantia é zero",
     "invalidRange": "Faixa de preço inválida",
     "fallbackText1": "Um erro ocorreu",

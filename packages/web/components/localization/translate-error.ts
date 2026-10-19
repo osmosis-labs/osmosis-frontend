@@ -28,6 +28,7 @@ import {
   NoSendCurrencyError,
   NotInitializedError,
   PercentageSumError,
+  ScalingFactorNotIntegerError,
   ScalingFactorTooLowError,
 } from "@osmosis-labs/utils";
 
@@ -61,6 +62,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.negativePercentage"];
   } else if (e instanceof ScalingFactorTooLowError) {
     return ["errors.scalingFactorTooLow"];
+  } else if (e instanceof ScalingFactorNotIntegerError) {
+    return ["errors.scalingFactorNotInteger"];
   } else if (e instanceof PercentageSumError) {
     return ["errors.percentageSum"];
   } else if (e instanceof DepositNoBalanceError) {

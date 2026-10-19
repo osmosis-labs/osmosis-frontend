@@ -297,6 +297,7 @@
     "notInitialized": "Загрузка...",
     "percentageSum": "Сумма процентов не равна 100",
     "scalingFactorTooLow": "Коэффициент масштабирования слишком низкий",
+    "scalingFactorNotInteger": "Коэффициент масштабирования должен быть целым числом",
     "zeroAmount": "Сумма равна нулю",
     "invalidRange": "Неверный ценовой диапазон",
     "fallbackText1": "Произошла ошибка",

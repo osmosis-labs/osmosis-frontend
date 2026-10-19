@@ -297,6 +297,7 @@
     "notInitialized": "लोड हो रहा है...",
     "percentageSum": "प्रतिशतों का योग 100 नहीं है",
     "scalingFactorTooLow": "स्केलिंग कारक बहुत कम है",
+    "scalingFactorNotInteger": "स्केलिंग कारक एक पूर्ण संख्या होना चाहिए",
     "zeroAmount": "राशि शून्य है",
     "invalidRange": "अमान्य मूल्य सीमा",
     "fallbackText1": "एक त्रुटि पाई गई",
