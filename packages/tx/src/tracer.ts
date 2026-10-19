@@ -477,6 +477,11 @@ export class TxTracer {
 
       // At first, try to query the tx at the same time of subscribing the tx.
       lookUp();
+      // A reconnect resubscribes, but the node does not replay events missed
+      // while disconnected, so look the tx up again in case it landed then.
+      this.addEventListener("open", () => {
+        if (!settled) lookUp();
+      });
 
       this.subscribeTx(query).then(
         (result) => settle(() => resolve(result)),
