@@ -45,7 +45,7 @@ export const DonutChart: FunctionComponent<{
   size: number;
   values: number[];
 }> = ({ size, values }) => {
-  const idPrefix = useId().replace(/:/g, "");
+  const idPrefix = useId();
 
   const segments = values
     .map((value, index) => ({ value, index }))
