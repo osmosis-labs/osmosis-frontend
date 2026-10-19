@@ -46,8 +46,9 @@ import {
 } from "./utils";
 
 /** How long to wait for an accepted tx to be included before reporting its
- *  status as unknown. */
-export const TX_TRACE_TIMEOUT_MS = 60_000;
+ *  status as unknown. Generous for the ~6s blocks of some Cosmos chains we
+ *  sign bridge deposits on; nothing is cancelled when it passes. */
+export const TX_TRACE_TIMEOUT_MS = 120_000;
 
 export type SignerData = {
   accountNumber: string;

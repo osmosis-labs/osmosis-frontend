@@ -8,7 +8,7 @@ import {
   SolanaBridgeTransactionRequest,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import type { DeliverTxResponse } from "@osmosis-labs/tx";
+import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
@@ -1271,6 +1271,14 @@ export const useBridgeQuotes = ({
         },
       });
     } catch (e) {
+      // The final step was accepted, and its entry advanced at broadcast, but
+      // its result couldn't be confirmed. The tx client already showed the
+      // status-unknown toast, and the entry's tracker settles it.
+      if (e instanceof TxStatusUnknownError) {
+        onTransferProp?.();
+        setTransferInitiated(true);
+        return;
+      }
       // A first tx that definitively failed (an EVM revert, or a Solana tx
       // that errored or expired before landing) moved nothing: the entry
       // persisted at broadcast must not stay "pending" with a Continue that
@@ -1524,7 +1532,23 @@ export const useBridgeQuotes = ({
           /** Add one since the current transfer is not included in the current index */
           nomicCheckpointIndex = index + 1;
         },
-        onBroadcastFailed: () => setIsBroadcastingTx(false),
+        onBroadcastFailed: (e?: Error) => {
+          // Accepted, but its result couldn't be confirmed: the funds may be
+          // en route, so record the transfer as onFulfill would and let its
+          // status tracker settle it.
+          if (e instanceof TxStatusUnknownError) {
+            trackTransferStatus({
+              // onFulfill's hashes are lowercase too.
+              sendTxHash: e.txHash.toLowerCase(),
+              quote,
+              nomicCheckpointIndex,
+            });
+            onTransferProp?.();
+            setTransferInitiated(true);
+            return;
+          }
+          setIsBroadcastingTx(false);
+        },
         onBroadcasted: () => setIsBroadcastingTx(true),
 
         onFulfill: (tx: DeliverTxResponse) => {
