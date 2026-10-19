@@ -228,12 +228,15 @@ export const AssetsInfoTable: FunctionComponent<{
     }
   );
   const assetsData = useMemo(() => {
+    // The query only fails while market data is unavailable. Rows kept from an
+    // earlier load (including the persisted cache) would show last-known prices.
+    if (isError) return [];
     const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
     if (selectedCategory === "topGainers") {
       return assets.slice(undefined, 10);
     }
     return assets;
-  }, [selectedCategory, assetPagesData]);
+  }, [isError, selectedCategory, assetPagesData]);
   const clientCategoryImageSamples = useMemo(() => {
     if (selectedCategory === "topGainers") {
       const topGainers = assetsData
@@ -247,8 +250,8 @@ export const AssetsInfoTable: FunctionComponent<{
     } else return { topGainers: [] };
   }, [assetsData, selectedCategory]);
   const noSearchResults = Boolean(searchQuery) && !assetsData.length;
-  // The query fails while market data is unavailable; say so rather than show an empty table.
-  const isMarketDataUnavailable = isError && !assetsData.length;
+  // Say the market data is unavailable rather than show an empty table.
+  const isMarketDataUnavailable = isError;
 
   // Define columns
   const columns = useMemo(() => {
