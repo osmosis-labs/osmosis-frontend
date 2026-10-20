@@ -36,7 +36,8 @@ describe("getAssetMarketActivity", () => {
     const fresh = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
     expect(fresh?.price?.toDec().toString()).toBe("2.000000000000000000");
 
-    // Just past the ttl the entry is served while it refreshes; it still counts as fresh.
+    // Just past the ttl the entry is served while it refreshes in the background (which
+    // fails here); it still counts as fresh.
     (queryAllTokenData as jest.Mock).mockRejectedValue(new Error("500"));
     jest.setSystemTime(new Date("2026-10-19T10:06:00Z"));
     const refreshing = await getAssetMarketActivity({
