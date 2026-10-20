@@ -49,7 +49,7 @@ const config = {
       },
     ];
   },
-  webpack(config, { webpack }) {
+  webpack(config, { webpack, isServer }) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
@@ -119,6 +119,17 @@ const config = {
         path.resolve(__dirname, "etc", "noop", "index.js")
       )
     );
+
+    // The EVM wallet connector SDKs are browser-only; server builds get an empty connector list.
+    // See config/wagmi-connectors.ts.
+    if (isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /config[\\/]wagmi-connectors$/,
+          path.resolve(__dirname, "config", "wagmi-connectors.server.ts")
+        )
+      );
+    }
 
     return config;
   },
