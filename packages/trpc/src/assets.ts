@@ -895,15 +895,14 @@ export const assetsRouter = createTRPCRouter({
 
             // rank search results the same way as other asset searches
             if (search)
-              return (
-                await sortAssetSearchResults(marketAssets, {
-                  search,
-                  watchListDenoms,
-                })
-              ).filter(({ liquidity, isVerified }) =>
-                liquidity instanceof PricePretty
-                  ? liquidity.toDec().isPositive()
-                  : liquidity > 0 || isVerified
+              return sortAssetSearchResults(
+                marketAssets.filter(
+                  ({ liquidity, isVerified }) =>
+                    (liquidity instanceof PricePretty
+                      ? liquidity.toDec().isPositive()
+                      : liquidity > 0) || isVerified
+                ),
+                { search, watchListDenoms }
               );
 
             // Sort by volume 24h desc

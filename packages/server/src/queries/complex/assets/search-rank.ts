@@ -1,5 +1,6 @@
 import type { MinimalAsset } from "@osmosis-labs/types";
-import { compareCommon } from "@osmosis-labs/utils";
+import type { PricePretty } from "@osmosis-labs/unit";
+import { compareCommon, isNil } from "@osmosis-labs/utils";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import type { Search } from "../../../utils/search";
@@ -16,10 +17,13 @@ const MIN_EXACT_MATCH_QUERY_LENGTH = 2;
  *  3. Everything else the fuzzy search matched.
  *  Within each tier, watchlisted assets come first, then 24h volume descending.
  *
- *  The sort is stable, so ties keep the incoming fuzzy-match order. Volume is
- *  read from the cached market activity map, so this adds no new requests.
+ *  The sort is stable, so ties keep the incoming fuzzy-match order. Volume
+ *  already attached to an asset is used as is; otherwise it's read from the
+ *  cached market activity map, so this adds no new requests.
  *  Watchlist entries are symbols (`coinDenom`), matching how the client stores them. */
-export async function sortAssetSearchResults<TAsset extends MinimalAsset>(
+export async function sortAssetSearchResults<
+  TAsset extends MinimalAsset & { volume24h?: PricePretty | number },
+>(
   assets: TAsset[],
   {
     search,
@@ -43,11 +47,13 @@ export async function sortAssetSearchResults<TAsset extends MinimalAsset>(
       asset,
       matchTier: getMatchTier(asset.coinDenom.toUpperCase()),
       isWatched: watchListDenoms.includes(asset.coinDenom),
-      volume24h: (
-        await getAssetMarketActivity(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        )
-      )?.volume24h,
+      volume24h: !isNil(asset.volume24h)
+        ? asset.volume24h
+        : (
+            await getAssetMarketActivity(asset).catch((e) =>
+              captureErrorAndReturn(e, undefined)
+            )
+          )?.volume24h,
     }))
   );
 
