@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import cases from "jest-in-case";
 
 import { humanizeTime } from "~/utils/date";
@@ -9,6 +10,7 @@ jest.mock("dayjs", () => {
   return (...args: dayjs.ConfigType[]) =>
     args.length ? originalDayjs(...args) : specificTime;
 });
+jest.requireActual("dayjs").extend(utc);
 
 cases(
   "humanizeTime",
@@ -100,3 +102,20 @@ cases(
     },
   ]
 );
+
+it("counts days and hours from elapsed time across a DST change", () => {
+  // A 7-day session created just before the clocks go back lasts 169 hours.
+  // The end date sits an hour behind in UTC offset, as it would after the change.
+  const now = dayjs();
+  const end = now
+    .add(169 * 60 * 60 - 10, "second")
+    .utcOffset(now.utcOffset() - 60);
+
+  const result = humanizeTime(end);
+
+  expect(result[0]).toEqual({ value: 7, unitTranslationKey: "timeUnits.days" });
+  expect(result[1]).toEqual({
+    value: 0,
+    unitTranslationKey: "timeUnits.hours",
+  });
+});
