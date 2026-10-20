@@ -9,10 +9,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import {
-  InsufficientBalanceForFeeError,
-  isValidNumericalRawInput,
-} from "@osmosis-labs/utils";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -60,6 +57,12 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import {
+  formatSlippagePercent,
+  parseSlippageInput,
+  requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
+} from "~/utils/swap-review";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -97,6 +100,16 @@ interface ReviewOrderProps {
    * included). Optional because this modal is shared by all three tabs.
    */
   priceImpactTokenOut?: RatePretty;
+  /**
+   * The quote's amount in display units, before slippage: the output for
+   * exact-in, the input for exact-out. Undefined while there is no quote.
+   */
+  quoteAmount?: Dec;
+  /**
+   * The output asset's own price. Prices the exact-in minimum received
+   * independently of the router's price impact.
+   */
+  outAssetPrice?: PricePretty;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
@@ -128,6 +141,8 @@ export function ReviewOrder({
   fromAsset,
   isBeyondOppositePrice = false,
   priceImpactTokenOut,
+  quoteAmount,
+  outAssetPrice,
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
@@ -233,6 +248,49 @@ export function ReviewOrder({
       quoteType,
     });
 
+  const resolvedQuoteType = quoteType ?? "out-given-in";
+
+  // A market trade whose minimum received is worth far less than what is sent
+  // joins the loss acknowledgement below as one more warning reason. Each side
+  // is priced from its own asset's price, so a mispriced pool whose quoted
+  // impact looks fine is still caught.
+  const usdNum = (value?: Dec) =>
+    value === undefined ? undefined : Number(value.toString());
+  const isExtremeValueDisparity =
+    orderType === "market" &&
+    requiresValueDisparityAcknowledgement({
+      quoteType: resolvedQuoteType,
+      inputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(fiatAmountWithSlippage?.toDec())
+          : usdNum(inAmountFiat?.toDec()),
+      minimumOutputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(expectedOutputFiat?.toDec())
+          : amountWithSlippage && outAssetPrice
+            ? usdNum(amountWithSlippage.toDec().mul(outAssetPrice.toDec()))
+            : undefined,
+    });
+
+  // The chain rejects a slippage bound (exact-in's minimum output, exact-out's
+  // maximum input) that serializes to zero, and acknowledging cannot make that
+  // transaction valid, so confirmation is disabled outright. Market orders
+  // only: limit orders serialize differently.
+  const slippageBoundAsset =
+    resolvedQuoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    orderType === "market" &&
+    quoteAmount !== undefined &&
+    quoteAmount.isPositive() &&
+    slippageConfig !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero({
+      quoteAmount,
+      slippage: slippageConfig.slippage.toDec(),
+      coinDecimals: slippageBoundAsset.coinDecimals,
+      quoteType: resolvedQuoteType,
+    });
+
   /**
    * Live loss figures for the trade being reviewed (MTN-150).
    *
@@ -265,6 +323,7 @@ export function ReviewOrder({
         slippage: slippageConfig?.slippage.toDec(),
         isBeyondOppositePrice,
         percentAdjusted,
+        isExtremeValueDisparity,
         orderType: orderType === "limit" ? "limit" : "market",
       }),
     }),
@@ -279,6 +338,7 @@ export function ReviewOrder({
       slippageConfig?.slippage,
       isBeyondOppositePrice,
       percentAdjusted,
+      isExtremeValueDisparity,
     ]
   );
 
@@ -322,25 +382,38 @@ export function ReviewOrder({
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
-      if (value.length > 3) return;
+      const parsed = parseSlippageInput(value);
+      if (!parsed) return;
 
-      if (value === "") {
-        setManualSlippage("");
-        slippageConfig?.setManualSlippage(
-          slippageConfig?.defaultManualSlippage
-        );
-        return;
+      setManualSlippage(parsed.display);
+      if (parsed.display === "") {
+        // Clearing hands control back to the tool's own slippage (its preset,
+        // or one the fee-error path selected), shown as the placeholder.
+        slippageConfig?.setIsManualSlippage(false);
+      } else if (parsed.commit !== undefined) {
+        slippageConfig?.setManualSlippage(parsed.commit);
       }
-
-      if (!isValidNumericalRawInput(value)) {
-        return;
-      }
-
-      setManualSlippage(value);
-      slippageConfig?.setManualSlippage(new Dec(+value).toString());
     },
     [slippageConfig]
   );
+
+  // Leaving the field with an incomplete value ("1.", "0", "0.") must not
+  // leave the display out of step with the submitted tolerance: complete a
+  // positive value, otherwise clear it.
+  const handleManualSlippageBlur = useCallback(() => {
+    setIsEditingSlippage(false);
+    if (manualSlippage === "") return;
+    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
+
+    const value = Number(manualSlippage);
+    if (value > 0) {
+      setManualSlippage(String(value));
+      slippageConfig?.setManualSlippage(String(value));
+    } else {
+      setManualSlippage("");
+      slippageConfig?.setIsManualSlippage(false);
+    }
+  }, [manualSlippage, slippageConfig]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -725,7 +798,11 @@ export function ReviewOrder({
                               inputMode="decimal"
                               minWidth={30}
                               placeholder={
-                                slippageConfig?.defaultManualSlippage + "%"
+                                // The tolerance that will be submitted, not a
+                                // nominal default.
+                                formatSlippagePercent(
+                                  slippageConfig.slippage.toDec()
+                                ) + "%"
                               }
                               className="sm:caption w-fit bg-transparent px-0"
                               inputClassName={classNames(
@@ -736,21 +813,8 @@ export function ReviewOrder({
                                 }
                               )}
                               value={manualSlippage}
-                              onFocus={() => {
-                                slippageConfig?.setIsManualSlippage(true);
-                                setIsEditingSlippage(true);
-                              }}
-                              onBlur={() => {
-                                if (
-                                  isManualSlippageTooHigh &&
-                                  +manualSlippage > 50
-                                ) {
-                                  handleManualSlippageChange(
-                                    (+manualSlippage).toString().split("")[0]
-                                  );
-                                }
-                                setIsEditingSlippage(false);
-                              }}
+                              onFocus={() => setIsEditingSlippage(true)}
+                              onBlur={handleManualSlippageBlur}
                               onChange={(e) => {
                                 handleManualSlippageChange(e.target.value);
                               }}
@@ -948,6 +1012,11 @@ export function ReviewOrder({
               */}
               {!diffGteSlippage && (
                 <>
+                  {isSlippageBoundZeroOnChain && (
+                    <p className="body2 sm:caption mt-3 text-rust-400">
+                      {t("swap.amountTooSmallForSlippage")}
+                    </p>
+                  )}
                   {hasActiveWarning(currentLossFigures) && (
                     <LossAcknowledgementCheckbox
                       label={t("limitOrders.lossAcknowledgement")}
@@ -983,6 +1052,7 @@ export function ReviewOrder({
                         isConfirmationDisabled ||
                         wouldExceedSpendLimit ||
                         hasInsufficientFeeTokens ||
+                        isSlippageBoundZeroOnChain ||
                         warningNeedsAcknowledgement
                       }
                       className="body2 sm:caption !rounded-2xl"
