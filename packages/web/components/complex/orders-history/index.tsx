@@ -63,10 +63,16 @@ export const OrderHistory = () => {
   const { t } = useTranslation();
   const { address, isWalletConnected } = useWallet();
   const [scrollMargin, setScrollMargin] = useState(0);
-  const listRef = useCallback(
-    (el: HTMLTableElement | null) => setScrollMargin(el?.offsetTop ?? 0),
-    []
-  );
+  // Re-measured when the page layout resizes, e.g. a banner above the table loads.
+  const listRef = useCallback((el: HTMLTableElement | null) => {
+    if (!el) return;
+    const measure = () => setScrollMargin(el.offsetTop);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);

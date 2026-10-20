@@ -126,7 +126,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     useEffect(() => {
       if (openCreatePosition === "true") {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot deep link: opens the modal and strips the query param together
         setActiveModal("add-liquidity");
         removeQueryParam(OpenCreatePositionSearchParam);
       }

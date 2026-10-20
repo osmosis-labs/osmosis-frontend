@@ -64,8 +64,11 @@ export const Allocation: FunctionComponent<{
   const [isOpen, setIsOpen] = useState(true);
   const { t } = useTranslation();
 
-  if (width > Breakpoint.xl && !isOpen) {
-    setIsOpen(true);
+  // Reopen only when the width changes, so the header can still collapse it.
+  const [prevWidth, setPrevWidth] = useState(width);
+  if (width !== prevWidth) {
+    setPrevWidth(width);
+    if (width > Breakpoint.xl) setIsOpen(true);
   }
 
   const selectedList = useMemo(

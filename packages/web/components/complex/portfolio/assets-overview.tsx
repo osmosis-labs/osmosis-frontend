@@ -201,7 +201,7 @@ export const AssetsOverview: FunctionComponent<
   useEffect(() => {
     // Set the data point to the last data point of the portfolio over time data
     if (portfolioOverTimeData && portfolioOverTimeData.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- moves the chart cursor to the latest point when data arrives; hovering moves it afterwards
       setDataPoint(getLastDataPoint(portfolioOverTimeData));
     }
 

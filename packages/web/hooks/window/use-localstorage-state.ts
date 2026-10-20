@@ -12,6 +12,15 @@ function subscribe(listener: () => void) {
   };
 }
 
+/** Storage access throws when the user blocks site data; treat that as empty. */
+function readItem(key: string) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
 /** Stores and syncs to a value in `localStorage` at `key`.
  *  Will `JSON.stringify` and `JSON.parse` value of type `T`.
  *  Use `null` over `undefined` state.
@@ -23,19 +32,22 @@ export function useLocalStorageState<T>(
 ): [T, (value: T) => void] {
   const rawItem = useSyncExternalStore(
     subscribe,
-    () => window.localStorage.getItem(key),
+    () => readItem(key),
     () => null
   );
 
-  const storedValue = useMemo(() => {
-    if (!rawItem) return initialValue;
+  // Parsed only when the raw item changes, so an inline `initialValue` doesn't
+  // give the stored value a new identity on every render.
+  const parsed = useMemo((): { ok: true; value: T } | { ok: false } => {
+    if (!rawItem) return { ok: false };
     try {
-      return JSON.parse(rawItem) as T;
+      return { ok: true, value: JSON.parse(rawItem) as T };
     } catch {
       console.error("Problem parsing localStorage item at key: ", key);
-      return initialValue;
+      return { ok: false };
     }
-  }, [rawItem, initialValue, key]);
+  }, [rawItem, key]);
+  const storedValue = parsed.ok ? parsed.value : initialValue;
 
   const setValue = useCallback(
     (value: T) => {

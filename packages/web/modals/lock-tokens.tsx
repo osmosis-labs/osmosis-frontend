@@ -85,7 +85,7 @@ export const LockShares: FunctionComponent<
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
     if (isSuperfluid) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- pre-selects superfluid once the pool turns out to be superfluid; the user can opt out
       setElectSuperfluid(true);
     }
   }, [isSuperfluid]);
@@ -134,7 +134,7 @@ export const LockShares: FunctionComponent<
 
   // auto select the gauge if there's one
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-selects the duration when only one loads; the selection stays user state
     if (bondDurations.length === 1) setSelectedDurationIndex(0);
   }, [bondDurations]);
 
