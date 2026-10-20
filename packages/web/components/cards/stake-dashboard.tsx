@@ -235,6 +235,7 @@ const StakeBalances: React.FC<{
 
   useEffect(() => {
     if (dollarAmount) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- starts a timed flash when the amount changes; the timeout below clears it
       setFlashDollar(true);
       setTimeout(() => setFlashDollar(false), 1000);
     }
@@ -242,6 +243,7 @@ const StakeBalances: React.FC<{
 
   useEffect(() => {
     if (osmoAmount) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- starts a timed flash when the amount changes; the timeout below clears it
       setFlashOsmo(true);
       setTimeout(() => setFlashOsmo(false), 1000);
     }

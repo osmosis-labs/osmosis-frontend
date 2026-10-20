@@ -5,7 +5,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
@@ -62,7 +62,17 @@ export const OrderHistory = () => {
   const featureFlags = useFeatureFlags();
   const { t } = useTranslation();
   const { address, isWalletConnected } = useWallet();
-  const listRef = useRef<HTMLTableElement>(null);
+  const [scrollMargin, setScrollMargin] = useState(0);
+  // Re-measured when the page layout resizes, e.g. a banner above the table loads.
+  const listRef = useCallback((el: HTMLTableElement | null) => {
+    if (!el) return;
+    const measure = () => setScrollMargin(el.offsetTop);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
@@ -107,7 +117,7 @@ export const OrderHistory = () => {
     estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
+    scrollMargin,
     paddingStart: 45,
   });
   const filledOrdersInDisplay = useMemo(() => {
