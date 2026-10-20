@@ -94,6 +94,14 @@ describe("getAssetMarketActivity", () => {
     await expect(
       getAssetMarketActivity({ coinMinimalDenom: "uosmo" })
     ).rejects.toThrow();
+    const callsAfterExpiry = query.mock.calls.length;
+
+    // With no entry, the retry delay still applies: no fetch on the next request.
+    jest.setSystemTime(new Date("2026-10-19T11:31:10Z"));
+    await expect(
+      getAssetMarketActivity({ coinMinimalDenom: "uosmo" })
+    ).rejects.toThrow();
+    expect(query.mock.calls.length).toBe(callsAfterExpiry);
   });
 });
 

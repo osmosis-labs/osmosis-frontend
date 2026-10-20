@@ -302,6 +302,21 @@ function getCachedTokenData(forceFresh = false) {
   });
 }
 
+type TokenDataEntry = Awaited<ReturnType<typeof getCachedTokenData>>;
+
+/** The cached token data entry if it's within its maximum age, without fetching. */
+function readCachedTokenData(): TokenDataEntry | undefined {
+  const entry = assetMarketCache.get("allTokenData") as
+    CacheEntry<TokenDataEntry> | undefined;
+  if (
+    !entry ||
+    Date.now() - entry.value.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE
+  ) {
+    return undefined;
+  }
+  return entry.value;
+}
+
 /** Fetches token data fresh into the cache, recording a failure for the retry delay. */
 function refreshTokenData() {
   return getCachedTokenData(true).catch((e) => {
@@ -317,13 +332,19 @@ function refreshTokenData() {
  *  A failed refresh falls back to the cached entry, which is then treated as stale once past
  *  the grace, and no refresh is tried again for `TOKEN_DATA_REFRESH_RETRY_DELAY`. */
 async function getTokenData() {
-  const tokenData = await getCachedTokenData();
-  if (
-    Date.now() - tokenData.fetchedAt <= TOKEN_DATA_TTL ||
-    Date.now() - tokenDataRefreshFailedAt < TOKEN_DATA_REFRESH_RETRY_DELAY
-  ) {
-    return tokenData;
+  // Within the retry delay after a failed fetch, don't call the data services at all,
+  // including for a cold or expired cache.
+  if (Date.now() - tokenDataRefreshFailedAt < TOKEN_DATA_REFRESH_RETRY_DELAY) {
+    const cached = readCachedTokenData();
+    if (cached) return cached;
+    throw new Error("Token data is unavailable");
   }
+
+  const tokenData = await getCachedTokenData().catch((e) => {
+    tokenDataRefreshFailedAt = Date.now();
+    throw e;
+  });
+  if (Date.now() - tokenData.fetchedAt <= TOKEN_DATA_TTL) return tokenData;
 
   if (isTokenDataFresh(tokenData.fetchedAt)) {
     refreshTokenData().catch(() => undefined);
