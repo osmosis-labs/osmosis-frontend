@@ -771,11 +771,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
               } else {
                 swapState.setFromAssetDenom(tokenDenom);
               }
+              resetSlippage();
 
               closeTokenSelectModals();
               fromAmountInputEl.current?.focus();
             },
-            [swapState, closeTokenSelectModals]
+            [swapState, closeTokenSelectModals, resetSlippage]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           setAssetQueryInput={swapState.setAssetsQueryInput}
@@ -798,10 +799,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
               } else {
                 swapState.setToAssetDenom(tokenDenom);
               }
+              resetSlippage();
 
               closeTokenSelectModals();
             },
-            [swapState, closeTokenSelectModals]
+            [swapState, closeTokenSelectModals, resetSlippage]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           setAssetQueryInput={swapState.setAssetsQueryInput}
