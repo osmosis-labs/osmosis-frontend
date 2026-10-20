@@ -15,7 +15,7 @@ import {
   MainnetAssetSymbols,
   TestnetAssetSymbols,
 } from "~/config/generated/asset-lists";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation, useUserWatchlist, useWindowSize } from "~/hooks";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
@@ -65,6 +65,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> = ({
   );
 
   const { address } = useWallet();
+  const { watchListDenoms } = useUserWatchlist();
 
   const [search, setSearch] = useState("");
   const [assetToActivate, setAssetToActivate] = useState<MinimalAsset | null>(
@@ -80,6 +81,8 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> = ({
             query: search,
           }
         : undefined,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: Boolean(search) ? watchListDenoms : undefined,
       userOsmoAddress: address,
       includePreview: showPreviewAssets,
       variantsNotToBeExcluded,
@@ -87,7 +90,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> = ({
       deprioritizedDenoms,
       limit: 100, // items per page
     }),
-    [type, search, address, showPreviewAssets]
+    [type, search, watchListDenoms, address, showPreviewAssets]
   );
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =

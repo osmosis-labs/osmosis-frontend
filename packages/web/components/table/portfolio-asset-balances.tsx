@@ -136,6 +136,8 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       userOsmoAddress: address,
       limit: 50,
       search: searchQuery,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: searchQuery ? watchListDenoms : undefined,
       onlyVerified: !searchQuery && showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
       sort,
