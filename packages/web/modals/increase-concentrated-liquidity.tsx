@@ -1,10 +1,10 @@
 import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -58,7 +58,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     position: UserPosition;
     status: UserPositionDetails["status"];
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const { poolId, position, status } = props;
   const { t } = useTranslation();
 
@@ -93,7 +93,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
-      onClick: () => increaseLiquidity(id).then(() => props.onRequestClose()),
+      onClick: () =>
+        increaseLiquidity(id)
+          .then(() => props.onRequestClose())
+          // Broadcast failures are toasted by the tx client; keep the modal open.
+          .catch(() => {}),
       children: config.error
         ? t(...tError(config.error))
         : t("clPositions.addMoreLiquidity"),
@@ -341,7 +345,7 @@ const PriceBox: FunctionComponent<{
 const ChartHeader: FunctionComponent<{
   addLiquidityConfig: AddConcentratedLiquidityConfig;
   chartConfig: HistoricalAndLiquidityData;
-}> = observer(({ chartConfig, addLiquidityConfig }) => {
+}> = memo(({ chartConfig, addLiquidityConfig }) => {
   const { historicalRange, priceDecimal, setHistoricalRange } = chartConfig;
   const hoverPrice = useHoverPrice(chartConfig);
 

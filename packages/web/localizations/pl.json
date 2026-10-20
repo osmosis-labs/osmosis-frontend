@@ -297,6 +297,7 @@
     "notInitialized": "Ładowanie...",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
+    "scalingFactorNotInteger": "Współczynnik skalowania musi być liczbą całkowitą",
     "zeroAmount": "Ilość jest zerowa",
     "invalidRange": "Nieprawidłowy zakres cen",
     "fallbackText1": "Wystąpił błąd",

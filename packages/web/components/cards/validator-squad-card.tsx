@@ -1,9 +1,7 @@
 import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import React from "react";
-import { useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
@@ -26,7 +24,7 @@ export const ValidatorSquadCard: React.FC<{
   usersValidatorsMap: Map<string, Staking.Delegation>;
   inactiveDelegations?: InactiveDelegation[];
   onRedelegate?: () => void;
-}> = observer(
+}> = memo(
   ({
     hasInsufficientBalance,
     setShowValidatorModal,

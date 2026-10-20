@@ -3,8 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { EmptyAmountError } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
@@ -37,7 +36,7 @@ interface TradeDetailsProps {
   tab?: "buy" | "sell";
 }
 
-export const TradeDetails = observer(
+export const TradeDetails = memo(
   ({
     swapState,
     inPriceFetching,

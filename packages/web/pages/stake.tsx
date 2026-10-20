@@ -8,8 +8,7 @@ import {
 } from "@osmosis-labs/tx";
 import type * as StakingType from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
@@ -37,7 +36,7 @@ const NO_VALIDATOR_PREFERENCES: { val_oper_address: string; weight: string }[] =
 const NO_DELEGATIONS: StakingType.Delegation[] = [];
 const NO_VALIDATORS: StakingType.Validator[] = [];
 
-export const Staking: React.FC = observer(() => {
+export const Staking: React.FC = memo(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   // only the stake flow also delegates the entered amount; every other entry
@@ -331,7 +330,7 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
-  // zero until the balance loads, like the MobX configs
+  // Use zero until the balance loads.
   const activeBalance = activeAmountConfig.balance ?? new CoinPretty(osmo, 0);
   const stakedBalance =
     unstakeTabAmountConfig.balance ?? new CoinPretty(osmo, 0);

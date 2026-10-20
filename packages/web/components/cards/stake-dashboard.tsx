@@ -235,6 +235,7 @@ const StakeBalances: React.FC<{
 
   useEffect(() => {
     if (dollarAmount) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
       setFlashDollar(true);
       setTimeout(() => setFlashDollar(false), 1000);
     }
@@ -242,6 +243,7 @@ const StakeBalances: React.FC<{
 
   useEffect(() => {
     if (osmoAmount) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
       setFlashOsmo(true);
       setTimeout(() => setFlashOsmo(false), 1000);
     }

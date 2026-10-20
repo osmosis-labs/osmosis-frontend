@@ -118,6 +118,7 @@ export const AssetVariantsConversionModal = () => {
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
     if (!isOpen) setInsufficientFeeByDenom({});
   }, [isOpen]);
 

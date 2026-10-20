@@ -30,11 +30,8 @@ export const Step1SetRatios: FunctionComponent<Step1Props> = (props) => {
   // Returns null until the inputs are valid enough to compare against
   // existing pools (all percentages set / scaling factors set, valid fee).
   // Build a primitive signature of the inputs that affect duplicate matching.
-  // `config.assets` is a MobX observable.shallow array; when the user swaps a
-  // token within an existing slot, the array reference doesn't change, only
-  // the inner `sendCurrency` does. Depending on the array reference alone
-  // would miss those swaps, so we read the relevant primitives eagerly
-  // (within the observer's tracked render) and key the memo off them.
+  // Include each slot's token, percentage, and scaling factor so changes to
+  // those values invalidate the proposed-pool memo.
   const assetSignature = config.assets
     .map(
       (a) =>

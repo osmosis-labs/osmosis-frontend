@@ -28,7 +28,6 @@
     "viem": "~2.41.2"
   },
   "devDependencies": {
-    "@types/bs58check": "^2.1.2",
     "@types/jest-in-case": "^1.0.6",
     "@types/sha.js": "^2.4.0",
     "eslint": "^9.39.5",

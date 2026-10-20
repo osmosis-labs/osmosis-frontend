@@ -7,7 +7,6 @@ import {
 import { Dec, Int } from "@osmosis-labs/unit";
 import { makeLocalStorageKVStore } from "@osmosis-labs/utils";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { runInAction } from "mobx";
 import { createElement, PropsWithChildren } from "react";
 
 import {
@@ -73,7 +72,7 @@ describe("useWallet", () => {
     }
   );
 
-  it("re-renders a non-observer component when the wallet connects", async () => {
+  it("re-renders when the wallet connects", async () => {
     let renders = 0;
     const { result, rootStore } = renderHookWithProviders(() => {
       renders++;
@@ -119,16 +118,12 @@ describe("useWallet", () => {
     );
 
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap");
     });
     await waitFor(() => expect(result.current.txTypeInProgress).toBe("swap"));
 
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "");
     });
     await waitFor(() => expect(result.current.txTypeInProgress).toBe(""));
   });
@@ -177,21 +172,17 @@ describe("useWallet", () => {
 
     first.unmount();
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap");
     });
     expect(second.result.current.txTypeInProgress).toBe("swap");
 
     second.unmount();
-    runInAction(() => rootStore.walletRuntime.setTxTypeInProgress(chainId, ""));
+    rootStore.walletRuntime.setTxTypeInProgress(chainId, "");
     const remounted = renderHook(() => useWallet(chainId), { wrapper });
     expect(remounted.result.current.txTypeInProgress).toBe("");
 
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "join")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "join");
     });
     expect(remounted.result.current.txTypeInProgress).toBe("join");
   });
@@ -214,10 +205,8 @@ describe("useWallet", () => {
         .connect(testWalletInfo.name, true);
     });
     act(() => {
-      runInAction(() => {
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap");
-        rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "join");
-      });
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "swap");
+      rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "join");
     });
     expect(result.current.txTypeInProgress).toBe("swap");
 
@@ -227,16 +216,12 @@ describe("useWallet", () => {
     const snapshot = result.current;
 
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(chainId, "")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(chainId, "");
     });
     expect(result.current).toBe(snapshot);
 
     act(() => {
-      runInAction(() =>
-        rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "")
-      );
+      rootStore.walletRuntime.setTxTypeInProgress(otherChainId, "");
     });
     expect(result.current.txTypeInProgress).toBe("");
   });

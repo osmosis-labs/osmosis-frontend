@@ -297,6 +297,7 @@
     "notInitialized": "로드 중...",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
+    "scalingFactorNotInteger": "단위조정인수는 정수여야 합니다",
     "zeroAmount": "수량이 0입니다.",
     "invalidRange": "잘못된 가격 범위",
     "fallbackText1": "에러 발생됨",

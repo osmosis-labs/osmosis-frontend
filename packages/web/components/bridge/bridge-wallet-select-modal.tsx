@@ -12,9 +12,9 @@ import {
   shorten,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import React, {
   FunctionComponent,
+  memo,
   ReactNode,
   useEffect,
   useState,
@@ -128,7 +128,7 @@ const BridgeWalletSelectScreens: FunctionComponent<
     onClose: () => void;
     setRemoveMinHeight?: (nextValue: boolean) => void;
   }
-> = observer(
+> = memo(
   ({
     direction,
     cosmosChain,

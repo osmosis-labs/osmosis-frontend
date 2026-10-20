@@ -1,8 +1,7 @@
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, ReactNode, useMemo } from "react";
+import { FunctionComponent, memo, ReactNode, useMemo } from "react";
 
 import { Token } from "~/components/assets";
 import { MenuToggle } from "~/components/control";
@@ -133,7 +132,7 @@ const AmountInput: FunctionComponent<{
   currency: Currency;
   weightFraction: RatePretty;
   index: number;
-}> = observer(({ addLiquidityConfig, weightFraction, currency, index }) => {
+}> = memo(({ addLiquidityConfig, weightFraction, currency, index }) => {
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 

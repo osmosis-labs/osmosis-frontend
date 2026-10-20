@@ -1,7 +1,6 @@
 import { CoinPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent, memo, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
@@ -22,7 +21,6 @@ export const inactiveStatusTranslationKey = (
  * The status line for a delegation. A validator outside the active set (not
  * jailed) shows how much more stake it needs to rejoin, since it can return
  * at any time; otherwise, or until the data loads, the plain status.
- * Call from an observer component.
  */
 export function useInactiveStatusLabel() {
   const { t } = useTranslation();
@@ -64,7 +62,7 @@ export const inactiveWarningToneClasses = (hasJailed: boolean) =>
 export const InactiveDelegationsList: FunctionComponent<{
   inactiveDelegations: InactiveDelegation[];
   className?: string;
-}> = observer(({ inactiveDelegations, className }) => {
+}> = memo(({ inactiveDelegations, className }) => {
   const osmo = OsmosisChainInfo.stakeCurrency;
   const statusLabel = useInactiveStatusLabel();
 

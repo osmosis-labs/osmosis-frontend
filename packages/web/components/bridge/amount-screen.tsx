@@ -8,10 +8,10 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   Dispatch,
   FunctionComponent,
+  memo,
   ReactNode,
   SetStateAction,
   useCallback,
@@ -122,7 +122,7 @@ interface AmountScreenProps {
   onConfirm: () => void;
 }
 
-export const AmountScreen = observer(
+export const AmountScreen = memo(
   ({
     direction,
     selectedDenom,
@@ -318,6 +318,7 @@ export const AmountScreen = observer(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
         setInputUnit("crypto");
       }
     }, [
@@ -841,9 +842,10 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
+    const fromDecimals = fromAsset?.decimals;
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
-        if (isNil(fromAsset?.decimals)) return;
+        if (isNil(fromDecimals)) return;
 
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -851,16 +853,17 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(fromAsset.decimals)
+                .maxDecimals(fromDecimals)
                 .toString()
         );
       },
-      [fromAsset?.decimals, setCryptoAmount]
+      [fromDecimals, setCryptoAmount]
     );
 
+    const fiatMaxDecimals = canonicalAssetPrice?.fiatCurrency.maxDecimals;
     const onChangeFiatInput = useCallback(
       (amount: string) => {
-        if (isNil(canonicalAssetPrice?.fiatCurrency.maxDecimals)) return;
+        if (isNil(fiatMaxDecimals)) return;
 
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -868,11 +871,11 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(canonicalAssetPrice.fiatCurrency.maxDecimals)
+                .maxDecimals(fiatMaxDecimals)
                 .toString()
         );
       },
-      [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+      [fiatMaxDecimals, setFiatAmount]
     );
 
     const isLoading =

@@ -51,6 +51,7 @@ const ClaimAndCloseButton = ({
    * and the button will be disabled even when the order_id has changed.
    */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
     setClaiming(false);
   }, [order.order_id]);
 
@@ -135,6 +136,7 @@ const CancelButton = ({
    * and the button will be disabled even when the order_id has changed.
    */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
     setCancelling(false);
   }, [order.order_id]);
 

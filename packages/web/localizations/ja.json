@@ -297,6 +297,7 @@
     "notInitialized": "読み込み中...",
     "percentageSum": "パーセンテージの合計が 100 にならない",
     "scalingFactorTooLow": "倍率が低すぎる",
+    "scalingFactorNotInteger": "倍率は整数である必要があります",
     "zeroAmount": "金額はゼロです",
     "invalidRange": "無効な価格帯",
     "fallbackText1": "エラーが発生しました",

@@ -85,6 +85,7 @@ export const LockShares: FunctionComponent<
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
     if (isSuperfluid) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
       setElectSuperfluid(true);
     }
   }, [isSuperfluid]);
@@ -133,6 +134,7 @@ export const LockShares: FunctionComponent<
 
   // auto select the gauge if there's one
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
     if (bondDurations.length === 1) setSelectedDurationIndex(0);
   }, [bondDurations]);
 
