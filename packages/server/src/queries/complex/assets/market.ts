@@ -350,7 +350,12 @@ async function getTokenData() {
     refreshTokenData().catch(() => undefined);
     return tokenData;
   }
-  return refreshTokenData().catch(() => tokenData);
+  return refreshTokenData().catch((e) => {
+    // The refresh may have taken the entry past its maximum age.
+    if (Date.now() - tokenData.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE)
+      throw e;
+    return tokenData;
+  });
 }
 
 /** False while a data-services outage leaves no fresh token data: prices, liquidity and
