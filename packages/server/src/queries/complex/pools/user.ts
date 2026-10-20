@@ -7,9 +7,7 @@ import { Dec, IntPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {
-  calcAssetValue,
-  calcSumCoinsValue,
-  isHoldingValueUnknown,
+  calcSumCoinsValueOrUnknown,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
@@ -98,35 +96,12 @@ export async function getUserPools(params: {
           aggregatedRawCoins
         );
 
-        const coinValues = await Promise.all(
-          coinsToCalculateValue
-            .filter((coin) => coin.toDec().isPositive())
-            .map((coin) => {
-              const { denom, amount } = coin.toCoin();
-              return calcAssetValue({
-                ...params,
-                anyDenom: denom,
-                amount,
-              }).catch(() => {
-                // Only an asset that should have a price makes the value unknown;
-                // spam, sunset and halted assets count as zero, as before.
-                if (
-                  isHoldingValueUnknown({
-                    assetLists,
-                    coinMinimalDenom: denom,
-                    amount,
-                  })
-                ) {
-                  userValueUnknown = true;
-                }
-                return new Dec(0);
-              });
-            })
-        );
-        userValue = new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          coinValues.reduce<Dec>((sum, value) => sum.add(value), new Dec(0))
-        );
+        const value = await calcSumCoinsValueOrUnknown({
+          ...params,
+          coins: coinsToCalculateValue,
+        });
+        userValueUnknown = value === undefined;
+        userValue = new PricePretty(DEFAULT_VS_CURRENCY, value ?? new Dec(0));
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
           (pool.raw as WeightedPoolRawResponse | StablePoolRawResponse)
@@ -263,26 +238,32 @@ export async function getUserSharePools(params: {
         : Promise.resolve([]),
     ]);
 
-    // value of all shares
+    // value of all shares; undefined when a coin that should have a price has none
     const [availableValue, lockedValue, unlockingValue, totalValue] =
       await Promise.all([
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingAvailableCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingLockedCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingUnlockingCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: totalCoins,
         }),
       ]);
+    const valueUnknown = [
+      availableValue,
+      lockedValue,
+      unlockingValue,
+      totalValue,
+    ].some((value) => value === undefined);
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(
@@ -324,6 +305,8 @@ export async function getUserSharePools(params: {
       totalShares,
       totalCoins,
       totalValue: new PricePretty(DEFAULT_VS_CURRENCY, totalValue ?? 0),
+      /** True when a share value couldn't be priced; the values above are then unknown. */
+      valueUnknown,
     };
   });
 

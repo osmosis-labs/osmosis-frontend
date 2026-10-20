@@ -14,7 +14,7 @@ import {
 } from "../../../../queries/complex/pools";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import { getAsset } from "../../assets";
+import { getAsset, isHoldingValueUnknown } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolIncentiveType, PoolType } from "../index";
@@ -104,6 +104,7 @@ export function getPoolsFromSidecar({
       const pools = sidecarPools.data
         .map((sidecarPool, index) =>
           makePoolFromSidecarPool({
+            assetLists,
             sidecarPool,
             reserveCoins: reserveCoins[index] ?? null,
           })
@@ -130,9 +131,11 @@ export function getPoolsFromSidecar({
 
 /** Converts a single SQS pool model response to the standard and more useful Pool type. */
 function makePoolFromSidecarPool({
+  assetLists,
   sidecarPool,
   reserveCoins,
 }: {
+  assetLists: AssetList[];
   sidecarPool: SidecarPool;
   reserveCoins: CoinPretty[] | null;
 }): Pool | undefined {
@@ -156,26 +159,30 @@ function makePoolFromSidecarPool({
       DEFAULT_VS_CURRENCY,
       sidecarPool.liquidity_cap
     ),
-    tvlUnknown: hasUnpricedReserves(sidecarPool),
+    tvlUnknown: hasUnpricedReserves(assetLists, sidecarPool),
     ...data,
   };
 }
 
-/** True when a reserve the pool holds has no price, so `liquidity_cap` only covers the
- *  priced reserves and the pool's TVL is unknown. SQS also flags reserves with a zero
- *  balance, whose zero capitalization is correct, so those are ignored. */
-export function hasUnpricedReserves({
-  liquidity_cap_error,
-  balances,
-}: Pick<SidecarPool, "liquidity_cap_error" | "balances">): boolean {
+/** True when a reserve that should have a price has none, so `liquidity_cap` only covers
+ *  the priced reserves and the pool's TVL is unknown. SQS flags every zero-cap reserve,
+ *  which also covers zero balances, dust and assets never priced (unverified, preview,
+ *  unstable); `isHoldingValueUnknown` leaves those out. */
+export function hasUnpricedReserves(
+  assetLists: AssetList[],
+  {
+    liquidity_cap_error,
+    balances,
+  }: Pick<SidecarPool, "liquidity_cap_error" | "balances">
+): boolean {
   if (!liquidity_cap_error) return false;
 
   // SQS lists each zero-cap reserve as "zero cap for denom (<denom>)". Look up each held
   // reserve's exact entry rather than parsing the string.
   return balances.some(
     ({ denom, amount }) =>
-      new Dec(amount).isPositive() &&
-      liquidity_cap_error.includes(`zero cap for denom (${denom})`)
+      liquidity_cap_error.includes(`zero cap for denom (${denom})`) &&
+      isHoldingValueUnknown({ assetLists, coinMinimalDenom: denom, amount })
   );
 }
 

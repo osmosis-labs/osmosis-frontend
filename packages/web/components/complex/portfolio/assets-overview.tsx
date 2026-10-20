@@ -147,9 +147,11 @@ function getLastDataPoint(data: ChartPortfolioOverTimeResponse[] | undefined) {
 export const AssetsOverview: FunctionComponent<
   {
     totalValue?: PricePretty;
+    /** A held coin couldn't be priced, so the total is unknown rather than its sum. */
+    isTotalValueUnknown?: boolean;
     isTotalValueFetched?: boolean;
   } & CustomClasses
-> = ({ totalValue, isTotalValueFetched }) => {
+> = ({ totalValue, isTotalValueUnknown = false, isTotalValueFetched }) => {
   const { t } = useTranslation();
   const { startBridge, fiatRampSelection } = useBridgeStore(
     useShallow((state) => ({
@@ -190,7 +192,7 @@ export const AssetsOverview: FunctionComponent<
     {
       enabled: Boolean(isWalletConnected && walletAddress),
       select: (data) => {
-        if (totalValue) {
+        if (totalValue && !isTotalValueUnknown) {
           data[data.length - 1].value = +totalValue.toDec().toString();
         }
         return data;
@@ -222,10 +224,13 @@ export const AssetsOverview: FunctionComponent<
         )
       : undefined;
 
+  // While not hovering a past point, an unknown total shows as unknown.
   const totalDisplayValue =
-    dataPoint.value !== undefined
-      ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
-      : totalValue?.toString();
+    isTotalValueUnknown && !showDate
+      ? "–"
+      : dataPoint.value !== undefined
+        ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
+        : totalValue?.toString();
 
   const [isChartMinimized_, setIsChartMinimized] = useLocalStorage(
     "is-portfolio-chart-minimized",
@@ -336,7 +341,7 @@ export const AssetsOverview: FunctionComponent<
               className="flex h-[48px] items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:!bg-osmoverse-800 md:gap-1"
               size={isMobile ? "xsm" : undefined}
               onClick={() => startBridge({ direction: "withdraw" })}
-              disabled={totalValue && totalValue?.toDec()?.isZero()}
+              disabled={!isTotalValueUnknown && totalValue?.toDec()?.isZero()}
             >
               <Icon
                 id="withdraw"

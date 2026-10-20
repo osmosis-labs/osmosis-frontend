@@ -75,9 +75,11 @@ const TopGainers = () => {
   const router = useRouter();
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({
-      topN: 4,
-    });
+    api.edge.assets.getTopGainerAssets.useQuery(
+      { topN: 4 },
+      // A failing server times out after about 12 s; one retry is enough.
+      { retry: 1 }
+    );
 
   // Hidden when it has nothing to show, e.g. while market data is unavailable.
   if (!isTopGainerAssetsLoading && !topGainerAssets?.length) return null;

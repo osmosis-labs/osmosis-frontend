@@ -116,9 +116,11 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   const topGainerCount =
     isLargeTablet || (isHighlightLayoutSettled && isGainersOnly) ? 6 : 3;
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({
-      topN: topGainerCount,
-    });
+    api.edge.assets.getTopGainerAssets.useQuery(
+      { topN: topGainerCount },
+      // A failing server times out after about 12 s; one retry is enough.
+      { retry: 1 }
+    );
   // Hidden when it has nothing to show, e.g. while market data is unavailable.
   const hasTopGainers =
     isTopGainerAssetsLoading || (topGainerAssets ?? []).length > 0;

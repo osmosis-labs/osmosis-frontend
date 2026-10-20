@@ -247,7 +247,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
             onRequestClose={setShowModal(setShowRemoveLiquidityModal, false)}
             onRemoveLiquidity={onRemoveLiquidity}
             shares={userSharePool.availableShares}
-            shareValue={userSharePool.availableValue}
+            shareValue={
+              userSharePool.valueUnknown
+                ? undefined
+                : userSharePool.availableValue
+            }
             underlyingCoins={userSharePool.underlyingAvailableCoins}
           />
         )}
@@ -427,54 +431,68 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
             </div>
           </Button>
         </div>
-        {userSharePool && userSharePool.totalValue.toDec().isPositive() && (
-          <div className="flex w-full gap-4 1.5lg:flex-col">
-            <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-900 px-8 py-7">
-              <span className="body2 text-osmoverse-300">
-                {t("pool.yourStats")}
-              </span>
-              <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
-                <div className="flex shrink-0 flex-col gap-1">
-                  <h4 className="text-osmoverse-100">
-                    <PrivateText text={userSharePool.totalValue.toString()} />
-                  </h4>
-                  <h6 className="subtitle1 text-osmoverse-300">
-                    <PrivateText
-                      text={t("pool.sharesAmount", {
-                        shares: userSharePool
-                          .totalShares!.maxDecimals(6)
-                          .hideDenom(true)
-                          .toString(),
-                      })}
-                    />
-                  </h6>
+        {/* An unknown value (unpriced coins) still shows the user's position. */}
+        {userSharePool &&
+          (userSharePool.valueUnknown
+            ? userSharePool.totalShares?.toDec().isPositive()
+            : userSharePool.totalValue.toDec().isPositive()) && (
+            <div className="flex w-full gap-4 1.5lg:flex-col">
+              <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-900 px-8 py-7">
+                <span className="body2 text-osmoverse-300">
+                  {t("pool.yourStats")}
+                </span>
+                <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
+                  <div className="flex shrink-0 flex-col gap-1">
+                    <h4 className="text-osmoverse-100">
+                      <PrivateText
+                        text={
+                          userSharePool.valueUnknown
+                            ? "–"
+                            : userSharePool.totalValue.toString()
+                        }
+                      />
+                    </h4>
+                    <h6 className="subtitle1 text-osmoverse-300">
+                      <PrivateText
+                        text={t("pool.sharesAmount", {
+                          shares: userSharePool
+                            .totalShares!.maxDecimals(6)
+                            .hideDenom(true)
+                            .toString(),
+                        })}
+                      />
+                    </h6>
+                  </div>
+
+                  <PoolComposition assets={userSharePool.totalCoins} />
                 </div>
+              </div>
 
-                <PoolComposition assets={userSharePool.totalCoins} />
+              <div className="flex flex-1 gap-4 1.5md:flex-col">
+                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
+                  {!userSharePool.valueUnknown && (
+                    <PriceBreakdownChart
+                      prices={[
+                        {
+                          label: t("pool.bonded"),
+                          price: userSharePool.lockedValue,
+                        },
+                        {
+                          label: t("pool.available"),
+                          price: userSharePool.availableValue,
+                        },
+                      ]}
+                    />
+                  )}
+                  {(userSharePool.valueUnknown
+                    ? userSharePool.lockedShares?.toDec().isPositive()
+                    : userSharePool.lockedValue.toDec().isPositive()) && (
+                    <NextRewardLine />
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="flex flex-1 gap-4 1.5md:flex-col">
-              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
-                <PriceBreakdownChart
-                  prices={[
-                    {
-                      label: t("pool.bonded"),
-                      price: userSharePool.lockedValue,
-                    },
-                    {
-                      label: t("pool.available"),
-                      price: userSharePool.availableValue,
-                    },
-                  ]}
-                />
-                {userSharePool.lockedValue.toDec().isPositive() && (
-                  <NextRewardLine />
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+          )}
       </section>
       <section className="flex flex-col gap-4 md:gap-4">
         <div className="flex flex-col flex-wrap px-8 md:gap-3">
@@ -522,7 +540,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                   {userSharePool && (
                     <div className="hidden flex-col items-end lg:flex">
                       <h4 className="text-osmoverse-100">
-                        {userSharePool.availableValue.toString()}
+                        {userSharePool.valueUnknown
+                          ? "–"
+                          : userSharePool.availableValue.toString()}
                       </h4>
                       {userSharePool.availableShares && (
                         <h6 className="subtitle1 text-osmoverse-300">
@@ -571,7 +591,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                 ) : userSharePool ? (
                   <>
                     <h4 className="text-osmoverse-100">
-                      {userSharePool.availableValue.toString()}
+                      {userSharePool.valueUnknown
+                        ? "–"
+                        : userSharePool.availableValue.toString()}
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {

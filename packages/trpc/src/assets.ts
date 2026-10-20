@@ -22,6 +22,7 @@ import {
   getUpcomingAssets,
   getUserAssetsTotal,
   IS_TESTNET,
+  isMarketDataAvailable,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
@@ -36,6 +37,7 @@ import {
   isNil,
   sort,
 } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -321,6 +323,15 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
+            // Without market data the list would come back empty; report an outage with
+            // its own code so the client can tell it apart from other errors.
+            if (!(await isMarketDataAvailable())) {
+              throw new TRPCError({
+                code: "SERVICE_UNAVAILABLE",
+                message: "Market data is unavailable",
+              });
+            }
+
             const assets = await mapGetMarketAssets({
               ...ctx,
               search,

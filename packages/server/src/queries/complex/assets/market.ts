@@ -4,7 +4,7 @@ import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  DATA_SERVICES_MARKET_STALE_WHILE_REVALIDATE,
+  DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
@@ -47,8 +47,8 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
     key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 60, // 1 minute
     getFreshValue: async ({ metadata }) => {
-      const [assetMarketActivity, totalSupply] = await Promise.all([
-        getAssetMarketActivity(asset).catch((e) => {
+      const [marketActivity, totalSupply] = await Promise.all([
+        getAssetMarketActivityWithFreshness(asset).catch((e) => {
           // Market data is unavailable, not absent: retry soon instead of
           // holding the asset without it for the full ttl.
           metadata.ttl = 1000 * 5; // 5 seconds
@@ -61,6 +61,15 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
             }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined,
       ]);
+      const assetMarketActivity = marketActivity?.activity;
+
+      // Never hold a price past the token data's freshness, and retry soon when
+      // there's no price (it may be unavailable rather than absent).
+      if (marketActivity) {
+        metadata.ttl = assetMarketActivity?.price
+          ? Math.min(1000 * 60, marketActivity.freshForMs)
+          : 1000 * 5;
+      }
 
       return {
         currentPrice: assetMarketActivity?.price,
@@ -258,12 +267,13 @@ const PRICE_DERIVED_FIELDS = [
   "liquidity24hChange",
 ] as const;
 
-/** All token data from the data services, keyed by upper-cased denom, with when it was fetched. */
-function getTokenData() {
+/** Cached token data from the data services, keyed by upper-cased denom, with when it was fetched. */
+function getCachedTokenData(forceFresh = false) {
   return cachified({
     cache: assetMarketCache,
     ttl: TOKEN_DATA_TTL,
-    staleWhileRevalidate: DATA_SERVICES_MARKET_STALE_WHILE_REVALIDATE,
+    staleWhileRevalidate: DATA_SERVICES_MARKET_MAX_AGE - TOKEN_DATA_TTL,
+    forceFresh,
     key: "allTokenData",
     getFreshValue: async () => {
       const allTokenData = await queryAllTokenData();
@@ -276,6 +286,16 @@ function getTokenData() {
       return { tokenInfoMap, fetchedAt: Date.now() };
     },
   });
+}
+
+/** Token data, fetched fresh when the cached entry is past its ttl and refresh grace.
+ *  cachified serves an old entry first and refreshes in the background, so on an instance
+ *  that sat idle the entry it returns can be old although the data services are healthy.
+ *  A failed fresh fetch falls back to the cached entry, which is then treated as stale. */
+async function getTokenData() {
+  const tokenData = await getCachedTokenData();
+  if (isTokenDataFresh(tokenData.fetchedAt)) return tokenData;
+  return getCachedTokenData(true);
 }
 
 /** False while a data-services outage leaves no fresh token data: prices, liquidity and
@@ -296,22 +316,39 @@ export async function getAssetMarketActivity({
   coinMinimalDenom,
 }: {
   coinMinimalDenom: string;
-}): Promise<
-  | (Omit<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]> &
-      Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>)
-  | undefined
-> {
+}): Promise<AssetMarketActivity | undefined> {
+  return (await getAssetMarketActivityWithFreshness({ coinMinimalDenom }))
+    .activity;
+}
+
+/** Market activity whose price-derived fields may be missing (stale data). */
+type AssetMarketActivity = Omit<
+  MarketActivity,
+  (typeof PRICE_DERIVED_FIELDS)[number]
+> &
+  Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>;
+
+/** `getAssetMarketActivity`, plus how much longer its prices stay fresh. */
+async function getAssetMarketActivityWithFreshness({
+  coinMinimalDenom,
+}: {
+  coinMinimalDenom: string;
+}): Promise<{
+  activity: AssetMarketActivity | undefined;
+  freshForMs: number;
+}> {
   const { tokenInfoMap, fetchedAt } = await getTokenData();
+  const freshForMs = Math.max(
+    0,
+    fetchedAt + TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE - Date.now()
+  );
 
   const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
-  if (!activity || isTokenDataFresh(fetchedAt)) return activity;
+  if (!activity || freshForMs > 0) return { activity, freshForMs };
 
   const staleActivity: Partial<MarketActivity> = { ...activity };
   PRICE_DERIVED_FIELDS.forEach((field) => delete staleActivity[field]);
-  return staleActivity as Omit<
-    MarketActivity,
-    (typeof PRICE_DERIVED_FIELDS)[number]
-  >;
+  return { activity: staleActivity as AssetMarketActivity, freshForMs };
 }
 
 type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;

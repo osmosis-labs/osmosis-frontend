@@ -169,6 +169,42 @@ export function isHoldingValueUnknown({
     .gte(MIN_PRICEABLE_AMOUNT);
 }
 
+/** Sums the value of the given coins, or returns `undefined` when a coin that should have
+ *  a price (see `isHoldingValueUnknown`) can't be priced. Unlike `calcSumCoinsValue`, that
+ *  coin isn't counted as zero, which would understate the value. */
+export async function calcSumCoinsValueOrUnknown({
+  coins,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  coins: CoinPretty[];
+}): Promise<Dec | undefined> {
+  const values = await Promise.all(
+    coins
+      .filter((coin) => coin.toDec().isPositive())
+      .map((coin) => {
+        const { denom, amount } = coin.toCoin();
+        return calcAssetValue({ ...params, anyDenom: denom, amount }).catch(
+          () =>
+            isHoldingValueUnknown({
+              assetLists: params.assetLists,
+              coinMinimalDenom: denom,
+              amount,
+            })
+              ? undefined
+              : new Dec(0)
+        );
+      })
+  );
+  let sum = new Dec(0);
+  for (const value of values) {
+    if (value === undefined) return undefined;
+    sum = sum.add(value);
+  }
+  return sum;
+}
+
 /** Calculate and sum the value of multiple coins.
  *  Will only include listed assets with prices as part of sum. */
 export function calcSumCoinsValue({

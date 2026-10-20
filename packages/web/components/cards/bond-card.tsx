@@ -76,7 +76,7 @@ export const BondCard: FunctionComponent<
             </span>
             <div className="flex grow flex-col text-osmoverse-100">
               <h4 className="text-osmoverse-100">
-                {userLockedShareValue.toString()}
+                {userLockedShareValue?.toString() ?? "–"}
               </h4>
               <span className="subtitle1 text-osmoverse-300">
                 {t("pool.sharesAmount", {

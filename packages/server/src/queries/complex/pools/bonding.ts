@@ -9,7 +9,7 @@ import {
   querySuperfluidDelegations,
   querySuperfluidUnelegations,
 } from "../../osmosis/superfluid";
-import { calcSumCoinsValue } from "../assets";
+import { calcSumCoinsValueOrUnknown } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getUserLocks } from "../osmosis";
 import { getValidatorInfo } from "../staking/validator";
@@ -43,7 +43,8 @@ export type BondDuration = {
   bondable: boolean;
   /** User locked shares. */
   userShares: CoinPretty;
-  userLockedShareValue: PricePretty;
+  /** Undefined when a coin behind the shares that should have a price has none. */
+  userLockedShareValue?: PricePretty;
   userLocks: {
     lockId: string;
     /** AKA is superfluid lock */
@@ -184,22 +185,22 @@ export async function getSharePoolBondDurations({
             userLockedLockIds.push(userDurationLock.ID);
           });
         }
-        let userLockedShareValue = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+        let userLockedShareValue: PricePretty | undefined = new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          0
+        );
         if (userShares.toDec().isPositive()) {
           const underlyingCoins = await getGammShareUnderlyingCoins({
             ...params,
             ...userShares.toCoin(),
           }).catch((e) => captureErrorAndReturn(e, []));
-          const userSharesValue = await calcSumCoinsValue({
+          const userSharesValue = await calcSumCoinsValueOrUnknown({
             ...params,
             coins: underlyingCoins,
           });
-          if (userSharesValue) {
-            userLockedShareValue = new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              userSharesValue
-            );
-          }
+          userLockedShareValue = userSharesValue
+            ? new PricePretty(DEFAULT_VS_CURRENCY, userSharesValue)
+            : undefined;
         }
 
         // get user unlocking shares

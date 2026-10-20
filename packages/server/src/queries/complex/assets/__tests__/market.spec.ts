@@ -56,6 +56,20 @@ describe("getAssetMarketActivity", () => {
       "50000.000000000000000000"
     );
   });
+
+  it("fetches fresh data instead of dropping prices after an idle period", async () => {
+    // Same cache as above: its entry was fetched at 10:00. A quiet instance's next request
+    // is long past the refresh grace while the data services are healthy.
+    jest.useFakeTimers({ now: new Date("2026-10-19T10:30:00Z") });
+    (queryAllTokenData as jest.Mock).mockResolvedValue([
+      { ...tokenData, price: 3 },
+    ]);
+
+    const activity = await getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    expect(activity?.price?.toDec().toString()).toBe("3.000000000000000000");
+  });
 });
 
 describe("isHoldingValueUnknown", () => {

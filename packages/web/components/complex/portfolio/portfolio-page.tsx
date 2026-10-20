@@ -40,7 +40,10 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const totalCap = allocation?.totalCap;
 
-  const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
+  // An unknown total (a held coin couldn't be priced) is not "no assets".
+  const userHasNoAssets = Boolean(
+    allocation && !allocation.totalCapUnknown && totalCap?.toDec()?.isZero()
+  );
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -58,6 +61,7 @@ export const PortfolioPage: FunctionComponent = () => {
             <section className="flex py-3" ref={overviewRef}>
               <AssetsOverview
                 totalValue={totalCap}
+                isTotalValueUnknown={allocation?.totalCapUnknown}
                 isTotalValueFetched={isFetchedAllocation}
               />
             </section>

@@ -230,17 +230,30 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
 
   const firstPage = poolsPagesData?.pages[0];
   useEffect(() => {
+    // Wait for in-flight fetches: cached pages from an earlier outage would latch the
+    // fallback before fresh data lands.
     if (
       sortKey !== "market.volume24hUsd" ||
       isPlaceholderData ||
+      isFetching ||
       !firstPage?.items.length
     ) {
       return;
     }
     if (firstPage.items.every((pool) => !pool.market?.volume24hUsd)) {
       setVolumeUnavailableFiltersKey(filtersKey);
+      // Where the sort is URL state, make liquidity the sort, so the highlighted
+      // Liquidity header toggles its own direction.
+      setSortKey("totalFiatValueLocked");
     }
-  }, [sortKey, isPlaceholderData, firstPage, filtersKey]);
+  }, [
+    sortKey,
+    isPlaceholderData,
+    isFetching,
+    firstPage,
+    filtersKey,
+    setSortKey,
+  ]);
 
   const poolsData = useMemo(() => {
     const allItems =

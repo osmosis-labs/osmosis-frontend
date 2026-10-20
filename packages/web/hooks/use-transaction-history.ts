@@ -43,7 +43,9 @@ export const useTransactionHistory = ({
   const {
     data: transactionsData,
     isLoading,
-    isError,
+    // Only a failed first load: a failed background refetch (e.g. the Axelar sender
+    // poll) keeps the history already loaded.
+    isLoadingError: isError,
   } = api.edge.transactions.getTransactions.useQuery(
     {
       address: address || "",

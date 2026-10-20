@@ -4,6 +4,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";
+import { AssetLists as MockAssetLists } from "../../../../__tests__/mock-asset-lists";
 import { calcAssetValue, calcSumCoinsValue, getAsset } from "../../../assets";
 import {
   getPoolsFromSidecar,
@@ -28,6 +29,8 @@ jest.mock("../../../assets", () => ({
   getAsset: jest.fn(),
   calcAssetValue: jest.fn(),
   calcSumCoinsValue: jest.fn(),
+  isHoldingValueUnknown: jest.requireActual("../../../assets/price")
+    .isHoldingValueUnknown,
 }));
 
 describe("getPoolsFromSidecar", () => {
@@ -160,30 +163,31 @@ describe("getPoolsFromSidecar market data", () => {
 });
 
 describe("hasUnpricedReserves", () => {
-  const usdc =
-    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  const sol =
-    "ibc/1E43D59E565D41FB4E54CA639B838FFD5BCFC20003D330A56CB1396231AA1CBA";
+  // Listed, verified and stable in the mock asset lists.
+  const sail =
+    "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail";
+  const spam = "factory/osmo1spam/test";
 
-  it("is unknown when a held reserve has no price", () => {
+  it("is unknown when a held reserve that should have a price has none", () => {
     expect(
-      hasUnpricedReserves({
-        liquidity_cap_error: `zero cap for denom (${sol})`,
+      hasUnpricedReserves(MockAssetLists, {
+        liquidity_cap_error: `zero cap for denom (${sail})`,
         balances: [
-          { denom: sol, amount: "1832630768" },
-          { denom: usdc, amount: "1184090395" },
+          { denom: sail, amount: "1832630768" },
+          { denom: "uosmo", amount: "1184090395" },
         ],
       })
     ).toBe(true);
   });
 
-  it("is known when the flagged reserve is drained", () => {
+  it("is known when the flagged reserve is drained or was never priced", () => {
     expect(
-      hasUnpricedReserves({
-        liquidity_cap_error: `zero cap for denom (${usdc})`,
+      hasUnpricedReserves(MockAssetLists, {
+        liquidity_cap_error: `zero cap for denom (${sail}); zero cap for denom (${spam})`,
         balances: [
-          { denom: usdc, amount: "0" },
-          { denom: sol, amount: "941235682501176" },
+          { denom: sail, amount: "0" },
+          { denom: spam, amount: "941235682501176" },
+          { denom: "uosmo", amount: "1184090395" },
         ],
       })
     ).toBe(false);

@@ -209,6 +209,8 @@ export type PortfolioAssets = {
   assets: Allocation[];
   available: Allocation[];
   totalCap: PricePretty;
+  /** A held coin couldn't be priced (or a source failed), so `totalCap` is unknown. */
+  totalCapUnknown: boolean;
   assetVariants: AssetVariant[];
   /**
    * Assets the user holds across all categories (bank balances, staked,
@@ -275,6 +277,10 @@ export async function getPortfolioAssets({
     assets,
     available,
     totalCap,
+    totalCapUnknown: isCategoryValueUnknown(
+      assetLists,
+      categories["total-assets"]
+    ),
     assetVariants,
     heldAssets,
   };
