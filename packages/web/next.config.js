@@ -6,6 +6,14 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  // Bundle these on the server too, instead of loading them from node_modules: the
+  // browser-only stubs in `webpack()` below (starknet, bip39, CosmJS libsodium) then apply there as
+  // well (nothing server-side uses the stubbed key types), and the icon set tree-shakes.
+  transpilePackages: [
+    "@keplr-wallet/crypto",
+    "@cosmjs/crypto",
+    "@radix-ui/react-icons",
+  ],
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
