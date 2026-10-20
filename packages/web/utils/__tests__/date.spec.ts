@@ -119,3 +119,21 @@ it("counts days and hours from elapsed time across a DST change", () => {
     unitTranslationKey: "timeUnits.hours",
   });
 });
+
+it("keeps counting down a 30-day span that gained an hour across a DST change", () => {
+  const now = dayjs();
+  const end = now
+    .add(721 * 60 * 60 - 10, "second")
+    .utcOffset(now.utcOffset() - 60);
+
+  const result = humanizeTime(end);
+
+  expect(result[0]).toEqual({
+    value: 30,
+    unitTranslationKey: "timeUnits.days",
+  });
+  expect(result[1]).toEqual({
+    value: 0,
+    unitTranslationKey: "timeUnits.hours",
+  });
+});

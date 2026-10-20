@@ -76,7 +76,9 @@ export function humanizeTime(
   }
 
   const daysDiff = Math.floor(hoursDiff / 24);
-  if (daysDiff < 30) {
+  // The cutoff uses calendar days so a 30-day span that gained an hour across a
+  // DST change still counts down instead of switching to a date.
+  if (Math.abs(date.diff(dayjs(), "days")) < 30) {
     const hours = hoursDiff % 24;
     return [
       {
