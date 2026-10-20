@@ -800,7 +800,8 @@
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
     "routes": "itinéraires",
-    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages"
+    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages",
+    "amountTooSmallForSlippage": "Montant trop faible pour un échange avec ce slippage. Augmentez le montant ou réduisez le slippage."
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

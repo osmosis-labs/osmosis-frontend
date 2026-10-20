@@ -839,6 +839,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
           priceImpactTokenOut={swapState.quote?.priceImpactTokenOut}
+          quoteAmount={swapState.quote?.amount.toDec()}
+          outAssetPrice={swapState.outAmountInput.price}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
