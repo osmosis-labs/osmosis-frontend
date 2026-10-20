@@ -47,6 +47,12 @@ export const useConnectWallet = ({
   isOneClickEnabled?: boolean;
   onCreate1CTSession?: () => Promise<void>;
 }) => {
+  // Opt out of the React Compiler: `getWalletRepo` reads the runtime's current
+  // wallet manager, which `installWallet` replaces when a wallet is lazily
+  // installed. Memoized on `walletRuntime` and `cosmosChainId` (neither
+  // changes), the modal would keep the old manager's repo after an install.
+  "use no memo";
+
   const { walletRuntime } = useStore();
 
   const { connectAsync: connectEvmWallet, ...connectEvmWalletUtils } =

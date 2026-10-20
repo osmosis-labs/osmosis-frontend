@@ -279,6 +279,8 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
                   {...props}
                   onRequestClose={onClose}
                   modalView={modalView}
+                  qrState={qrState}
+                  qrMessage={qrMessage}
                   onConnect={onConnectWallet}
                   lazyWalletInfo={lazyWalletInfo}
                   transaction1CTParams={transaction1CTParams}
