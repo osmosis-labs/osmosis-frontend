@@ -800,7 +800,8 @@
     "noRoutes": "ルートが見つかりません",
     "route": "ルート",
     "routes": "ルート",
-    "slippageOverBalance": "スリッページをカバーするための資金が不足している"
+    "slippageOverBalance": "スリッページをカバーするための資金が不足している",
+    "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

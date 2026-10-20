@@ -318,7 +318,7 @@ export const AmountScreen = memo(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
         setInputUnit("crypto");
       }
     }, [

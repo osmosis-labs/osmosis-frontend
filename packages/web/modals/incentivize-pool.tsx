@@ -126,7 +126,7 @@ export const IncentivizePoolModal: FunctionComponent<
       authorizedUptimes.length > 0 &&
       !authorizedUptimes.includes(uptimeSeconds)
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- snaps to an authorized uptime once the params load; the user can still pick another
       setUptimeSeconds(
         authorizedUptimes.includes(3600)
           ? 3600

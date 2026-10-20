@@ -118,7 +118,7 @@ export const AssetVariantsConversionModal = () => {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional state reset/sync on input change; deriving it during render would change behavior
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the per-denom fee errors that children reported once the modal closes
     if (!isOpen) setInsufficientFeeByDenom({});
   }, [isOpen]);
 

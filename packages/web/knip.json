@@ -5,7 +5,8 @@
     "**/tradingview/**",
     "**/light-weight-charts/**",
     "**/generated/**",
-    "*.spec.*"
+    "*.spec.*",
+    "config/wagmi-connectors.server.ts"
   ],
   "ignoreDependencies": ["chokidar-cli", "concurrently", "dotenv-cli"]
 }
