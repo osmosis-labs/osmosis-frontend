@@ -45,17 +45,16 @@ function isUnpricedCoin(
   );
 }
 
-/** A category total is unknown when SQS couldn't price a coin in it or a source failed. */
+/** A category total is unknown when SQS couldn't price a coin in it that should have a
+ *  price. `is_best_effort` isn't used: SQS also sets it for coins expected to have no
+ *  price (e.g. sunset assets), which would leave many wallets' totals unknown. */
 function isCategoryValueUnknown(
   assetLists: AssetList[],
   category: Category
 ): boolean {
-  return (
-    category.is_best_effort ||
-    Boolean(
-      category.account_coins_result?.some((coin) =>
-        isUnpricedCoin(assetLists, coin)
-      )
+  return Boolean(
+    category.account_coins_result?.some((coin) =>
+      isUnpricedCoin(assetLists, coin)
     )
   );
 }
@@ -209,7 +208,7 @@ export type PortfolioAssets = {
   assets: Allocation[];
   available: Allocation[];
   totalCap: PricePretty;
-  /** A held coin couldn't be priced (or a source failed), so `totalCap` is unknown. */
+  /** A held coin that should have a price couldn't be priced, so `totalCap` is unknown. */
   totalCapUnknown: boolean;
   assetVariants: AssetVariant[];
   /**

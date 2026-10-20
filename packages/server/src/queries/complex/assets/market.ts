@@ -250,6 +250,15 @@ const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
  *  seconds; only data older than this is treated as an outage. */
 const TOKEN_DATA_REFRESH_GRACE = 1000 * 60 * 2; // 2 minutes
 
+/** A request that waits for token data gives up after this long. The data services have
+ *  no timeout of their own, and a hanging one would otherwise hold every caller. */
+const TOKEN_DATA_FETCH_TIMEOUT = 1000 * 4; // 4 seconds
+
+/** After a failed fresh fetch, wait this long before trying again on a request path. */
+const TOKEN_DATA_FRESH_FETCH_RETRY_DELAY = 1000 * 30; // 30 seconds
+
+let tokenDataFreshFetchFailedAt = 0;
+
 function isTokenDataFresh(fetchedAt: number): boolean {
   return Date.now() - fetchedAt <= TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE;
 }
@@ -274,9 +283,17 @@ function getCachedTokenData(forceFresh = false) {
     ttl: TOKEN_DATA_TTL,
     staleWhileRevalidate: DATA_SERVICES_MARKET_MAX_AGE - TOKEN_DATA_TTL,
     forceFresh,
+    // A failed fresh fetch must not write the old entry back: that would renew it and
+    // keep it past its maximum age. `getTokenData` falls back to it instead.
+    fallbackToCache: false,
     key: "allTokenData",
-    getFreshValue: async () => {
-      const allTokenData = await queryAllTokenData();
+    getFreshValue: async ({ background }) => {
+      // Background refreshes don't block a caller; anything that waits is bounded.
+      const allTokenData = await queryAllTokenData(
+        background
+          ? undefined
+          : { signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT) }
+      );
 
       const tokenInfoMap = new Map<string, MarketActivity>();
       allTokenData.forEach((tokenData) => {
@@ -291,11 +308,24 @@ function getCachedTokenData(forceFresh = false) {
 /** Token data, fetched fresh when the cached entry is past its ttl and refresh grace.
  *  cachified serves an old entry first and refreshes in the background, so on an instance
  *  that sat idle the entry it returns can be old although the data services are healthy.
- *  A failed fresh fetch falls back to the cached entry, which is then treated as stale. */
+ *  A failed fresh fetch falls back to the cached entry, which is then treated as stale,
+ *  and the next fresh fetch waits `TOKEN_DATA_FRESH_FETCH_RETRY_DELAY`. */
 async function getTokenData() {
   const tokenData = await getCachedTokenData();
-  if (isTokenDataFresh(tokenData.fetchedAt)) return tokenData;
-  return getCachedTokenData(true);
+  if (
+    isTokenDataFresh(tokenData.fetchedAt) ||
+    Date.now() - tokenDataFreshFetchFailedAt <
+      TOKEN_DATA_FRESH_FETCH_RETRY_DELAY
+  ) {
+    return tokenData;
+  }
+
+  try {
+    return await getCachedTokenData(true);
+  } catch {
+    tokenDataFreshFetchFailedAt = Date.now();
+    return tokenData;
+  }
 }
 
 /** False while a data-services outage leaves no fresh token data: prices, liquidity and

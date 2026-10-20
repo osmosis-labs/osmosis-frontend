@@ -305,7 +305,8 @@ export async function getUserSharePools(params: {
       totalShares,
       totalCoins,
       totalValue: new PricePretty(DEFAULT_VS_CURRENCY, totalValue ?? 0),
-      /** True when a share value couldn't be priced; the values above are then unknown. */
+      /** True when a share value couldn't be priced; the values above are then unknown,
+       *  not zero. Check it before showing, summing or sorting them. */
       valueUnknown,
     };
   });

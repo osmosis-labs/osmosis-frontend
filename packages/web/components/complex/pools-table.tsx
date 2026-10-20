@@ -162,6 +162,15 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     },
     [setSortDirection]
   );
+  // While the fallback is active the Liquidity header is highlighted but the sort is
+  // still volume; clicking it makes liquidity the sort before toggling its direction.
+  const selectLiquiditySortDirection = useCallback(
+    (dir: SortDirection) => {
+      if (isVolumeSortUnavailable) setSortKey("totalFiatValueLocked");
+      selectSortDirection(dir);
+    },
+    [isVolumeSortUnavailable, setSortKey, selectSortDirection]
+  );
 
   const {
     data: poolsPagesData,
@@ -242,18 +251,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     }
     if (firstPage.items.every((pool) => !pool.market?.volume24hUsd)) {
       setVolumeUnavailableFiltersKey(filtersKey);
-      // Where the sort is URL state, make liquidity the sort, so the highlighted
-      // Liquidity header toggles its own direction.
-      setSortKey("totalFiatValueLocked");
     }
-  }, [
-    sortKey,
-    isPlaceholderData,
-    isFetching,
-    firstPage,
-    filtersKey,
-    setSortKey,
-  ]);
+  }, [sortKey, isPlaceholderData, isFetching, firstPage, filtersKey]);
 
   const poolsData = useMemo(() => {
     const allItems =
@@ -312,7 +311,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               disabled={isLoading}
               currentSortKey={sortKey}
               currentDirection={sortParams.allPoolsSortDir}
-              setSortDirection={selectSortDirection}
+              setSortDirection={selectLiquiditySortDirection}
               setSortKey={selectSortKey}
             />
           ),
@@ -391,6 +390,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     sortKey,
     sortParams.allPoolsSortDir,
     selectSortDirection,
+    selectLiquiditySortDirection,
     selectSortKey,
     quickAddLiquidity,
     shouldDisplayFeesData,

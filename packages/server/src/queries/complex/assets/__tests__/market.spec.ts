@@ -70,6 +70,30 @@ describe("getAssetMarketActivity", () => {
     });
     expect(activity?.price?.toDec().toString()).toBe("3.000000000000000000");
   });
+
+  it("falls back without retrying or renewing the entry when a fresh fetch fails", async () => {
+    // The entry above was fetched at 10:30; by 10:40 it needs a fresh fetch, which fails.
+    jest.useFakeTimers({ now: new Date("2026-10-19T10:40:00Z") });
+    const query = queryAllTokenData as jest.Mock;
+    query.mockRejectedValue(new Error("500"));
+    const callsBefore = query.mock.calls.length;
+
+    const stale = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+    expect(stale?.price).toBeUndefined();
+    expect(stale?.volume24h).toBeDefined();
+    expect(query.mock.calls.length).toBe(callsBefore + 1);
+
+    // Within the retry delay, no new fresh fetch.
+    jest.setSystemTime(new Date("2026-10-19T10:40:10Z"));
+    await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+    expect(query.mock.calls.length).toBe(callsBefore + 1);
+
+    // The failed fetches didn't renew the entry: past its 1 h maximum age it's gone.
+    jest.setSystemTime(new Date("2026-10-19T11:31:00Z"));
+    await expect(
+      getAssetMarketActivity({ coinMinimalDenom: "uosmo" })
+    ).rejects.toThrow();
+  });
 });
 
 describe("isHoldingValueUnknown", () => {

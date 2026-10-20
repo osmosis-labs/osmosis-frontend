@@ -15,7 +15,8 @@ const averageStakingAprCache = new LRUCache<string, CacheEntry>(
 const STAKING_APR_TTL = 1000 * 60 * 30; // 30 minutes since APR changes once a day at an unkown time
 
 /** Last APR fetched for any date range. The cache key changes at UTC midnight, so a
- *  data-services outage spanning midnight would otherwise lose the stale fallback. */
+ *  data-services outage spanning midnight would otherwise lose the stale fallback.
+ *  It ignores the range, which is fine while the only caller asks for the trailing 30 days. */
 let lastStakingApr: { apr: Dec; fetchedAt: number } | undefined;
 
 /** Average staking APR over the given dates, from the data services.
