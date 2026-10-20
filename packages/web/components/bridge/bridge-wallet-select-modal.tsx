@@ -12,9 +12,9 @@ import {
   shorten,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import React, {
   FunctionComponent,
+  memo,
   ReactNode,
   useEffect,
   useState,
@@ -45,12 +45,12 @@ import {
   getPhantomProvider,
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
 import { checkSolanaRecipient } from "~/utils/solana";
 
 interface BridgeWalletSelectProps {
@@ -128,7 +128,7 @@ const BridgeWalletSelectScreens: FunctionComponent<
     onClose: () => void;
     setRemoveMinHeight?: (nextValue: boolean) => void;
   }
-> = observer(
+> = memo(
   ({
     direction,
     cosmosChain,
@@ -141,13 +141,11 @@ const BridgeWalletSelectScreens: FunctionComponent<
     onConfirmManualAddress,
     setRemoveMinHeight,
   }) => {
-    const { accountStore } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
-    const cosmosAccount = cosmosChain
-      ? accountStore.getWallet(accountStore.osmosisChainId)
-      : undefined;
+    const { wallet: osmosisWallet } = useWallet();
+    const cosmosAccount = cosmosChain ? osmosisWallet : undefined;
 
     const [search, setSearch] = useState("");
     const [isManaging, setIsManaging] = useState(false);

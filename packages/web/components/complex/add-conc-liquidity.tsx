@@ -2,11 +2,11 @@ import type { Pool } from "@osmosis-labs/server";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   FunctionComponent,
+  memo,
   ReactNode,
   useCallback,
   useEffect,
@@ -26,13 +26,11 @@ import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { AddConcentratedLiquidityConfig, useTranslation } from "~/hooks";
 import {
-  ObservableAddConcentratedLiquidityConfig,
-  useTranslation,
-} from "~/hooks";
-import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -57,11 +55,11 @@ const HistoricalPriceChart = dynamic(
 
 export const AddConcLiquidity: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ className, addLiquidityConfig, actionButton }) => {
+> = memo(({ className, addLiquidityConfig, actionButton }) => {
   const { poolId } = addLiquidityConfig;
 
   const { data: pool } = api.local.pools.getPool.useQuery({
@@ -82,11 +80,11 @@ export const AddConcLiquidity: FunctionComponent<
 const AddConcLiqView: FunctionComponent<
   {
     pool?: Pool;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
+> = memo(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -135,7 +133,7 @@ const AddConcLiqView: FunctionComponent<
     { enabled: isSuperfluidPool }
   );
 
-  const { yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData, setPriceRange } = chartConfig;
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
@@ -151,8 +149,8 @@ const AddConcLiqView: FunctionComponent<
   // TODO: this is a code smell. the chart config should observe the add liq config
   //        this may be acieved by using an interface
   useEffect(() => {
-    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, rangeWithCurrencyDecimals]);
+    setPriceRange(rangeWithCurrencyDecimals);
+  }, [setPriceRange, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -383,13 +381,13 @@ const AddConcLiqView: FunctionComponent<
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
 
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
-  const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
-    chartConfig;
+  const { historicalRange, setHistoricalRange, priceDecimal } = chartConfig;
+  const hoverPrice = useHoverPrice(chartConfig);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -413,9 +411,9 @@ const ChartHeader: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  chartConfig: HistoricalAndLiquidityData;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
@@ -439,11 +437,11 @@ const Chart: FunctionComponent<{
 
 const StrategySelectorGroup: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer((props) => {
+> = memo((props) => {
   const { t } = useTranslation();
   const { currentStrategy } = props.addLiquidityConfig;
 
@@ -518,14 +516,14 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
     highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
     disabledForInactivePool?: boolean;
   } & CustomClasses
-> = observer(
+> = memo(
   ({
     type,
     src,
@@ -649,9 +647,9 @@ const PresetStrategyCard: FunctionComponent<
 const PriceInputBox: FunctionComponent<{
   label: string;
   forPriceIndex: 0 | 1;
-  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addConcLiquidityConfig: AddConcentratedLiquidityConfig;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
-}> = observer(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
+}> = memo(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const isFullRange =

@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "agentGuidance": false,
   "tasks": {
     "build": {
       "outputs": [
@@ -57,6 +58,7 @@
     "NEXT_PUBLIC_HISTORICAL_DATA_URL",
     "NEXT_PUBLIC_TRPC_LOGS",
     "SKIP_API_KEY",
-    "SOLANA_RPC_URL"
+    "SOLANA_RPC_URL",
+    "EVM_RPC_URL_*"
   ]
 }

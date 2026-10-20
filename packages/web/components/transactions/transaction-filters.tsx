@@ -1,0 +1,328 @@
+import Fuse from "fuse.js";
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryState,
+  useQueryStates,
+} from "nuqs";
+import { ReactNode, useCallback, useMemo } from "react";
+
+import { CheckboxSelect } from "~/components/control";
+import { SearchBox } from "~/components/input";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { DataFilter } from "~/hooks/data/data-filter";
+import { HistoryTransaction } from "~/hooks/use-transaction-history";
+
+export const TRANSACTION_KINDS = ["swap", "deposit", "withdraw"] as const;
+export type TransactionKind = (typeof TRANSACTION_KINDS)[number];
+
+/** Whether every kind is selected (a URL can repeat kinds, so not by length). */
+export function isAllKinds(kinds: readonly TransactionKind[]) {
+  return TRANSACTION_KINDS.every((kind) => kinds.includes(kind));
+}
+
+export function getTransactionKind(tx: HistoryTransaction): TransactionKind {
+  return tx.__type === "transaction" ? "swap" : tx.direction;
+}
+
+/** What a search query matches: asset symbols, chain names and provider. */
+const SEARCH_KEYS: Fuse.FuseOptionKey<HistoryTransaction>[] = [
+  {
+    name: "assets",
+    getFn: (tx) => {
+      if (tx.__type === "transaction") {
+        const info = tx.metadata?.[0]?.value?.[0]?.txInfo;
+        return [
+          info?.tokenIn?.token?.denom ?? "",
+          info?.tokenOut?.token?.denom ?? "",
+        ];
+      }
+      return [tx.fromAsset.denom, tx.toAsset.denom];
+    },
+  },
+  {
+    name: "chains",
+    getFn: (tx) =>
+      tx.__type === "transaction"
+        ? []
+        : [
+            tx.fromChain.prettyName,
+            tx.toChain.prettyName,
+            tx.fromChain.chainName ?? "",
+            tx.toChain.chainName ?? "",
+          ],
+  },
+  {
+    name: "provider",
+    getFn: (tx) =>
+      tx.__type === "transaction" ? [] : [tx.provider, tx.providerName ?? ""],
+  },
+];
+
+/**
+ * Shortest word matched against addresses, so short words don't hit by
+ * chance: a given 3 characters appear in ~1% of random EVM addresses (2 would
+ * be ~1 in 7, and would match whole chains by their address prefix).
+ */
+const MIN_ADDRESS_TERM_LENGTH = 3;
+
+/**
+ * Filter by transaction kind, then search. Every word of the query must
+ * match the transaction:
+ * - numbers match amounts as a substring ("5.5" finds 5.505156 and 15.5)
+ * - other words fuzzy match assets, chains and provider, or match a
+ *   transfer's from/to address as a substring (case-insensitive, 3+
+ *   characters; a shortened `0xc8E4...A487` must match at both ends)
+ * - `0x` alone matches transfers to or from an EVM address
+ */
+export function filterTransactions(
+  transactions: HistoryTransaction[],
+  { kinds, query }: { kinds: readonly TransactionKind[]; query: string | null }
+): HistoryTransaction[] {
+  const byKind = isAllKinds(kinds)
+    ? transactions
+    : transactions.filter((tx) => kinds.includes(getTransactionKind(tx)));
+
+  const terms = query?.trim().split(/\s+/).filter(Boolean) ?? [];
+  if (terms.length === 0) return byKind;
+
+  const searcher = new DataFilter(byKind, SEARCH_KEYS);
+  const termMatchers = terms.map(
+    (term): ((tx: HistoryTransaction) => boolean) => {
+      // only digits and separators: an amount, never an address or name
+      if (/^[$\d.,]+$/.test(term)) {
+        if (!/\d/.test(term)) return () => false;
+        const n = isNumberTerm(term)
+          ? normalizeNumberTerm(term)
+          : term.replace(/[$,]/g, "");
+        return (tx) => getAmounts(tx).some((amount) => amount.includes(n));
+      }
+
+      if (term.toLowerCase() === "0x") {
+        return (tx) =>
+          getAddresses(tx).some((address) => address.startsWith("0x"));
+      }
+
+      const fuzzyMatches = new Set(searcher.process(term));
+      const fragments = term
+        .toLowerCase()
+        .split(/\.{2,}|…/)
+        .filter(Boolean);
+      const isAddressTerm =
+        fragments.length > 0 &&
+        fragments.every((f) => f.length >= MIN_ADDRESS_TERM_LENGTH);
+
+      return (tx) =>
+        fuzzyMatches.has(tx) ||
+        (isAddressTerm &&
+          getAddresses(tx).some((address) =>
+            fragments.every((f) => address.includes(f))
+          ));
+    }
+  );
+
+  // keeps the date order of the history (fuse returns by relevance)
+  return byKind.filter((tx) => termMatchers.every((matches) => matches(tx)));
+}
+
+/** Counterparty addresses of a transfer, lowercased. Swaps have none. */
+function getAddresses(tx: HistoryTransaction): string[] {
+  if (tx.__type === "transaction") return [];
+  return [tx.fromAddress, tx.toAddress]
+    .filter(Boolean)
+    .map((address) => address.toLowerCase());
+}
+
+/** e.g. `5.5`, `.5`, `1,000`, `5,5`, `$5.5`, `1.000,50` */
+const EUROPEAN_NUMBER = /^\d{1,3}(\.\d{3})+,\d+$/;
+
+function isNumberTerm(term: string) {
+  const n = term.replace(/^\$/, "");
+  return /^(\d[\d,]*(\.\d*)?|\.\d+)$/.test(n) || EUROPEAN_NUMBER.test(n);
+}
+
+/**
+ * To the plain decimal form amounts are matched in (no grouping, `.` as the
+ * decimal point, no trailing zeros, e.g. `1000.5`).
+ */
+function normalizeNumberTerm(term: string) {
+  const n = term.replace(/^\$/, "");
+  if (EUROPEAN_NUMBER.test(n)) {
+    return trimDecimal(n.replace(/\./g, "").replace(",", "."));
+  }
+  if (n.includes(".")) return trimDecimal(n.replace(/,/g, ""));
+  // thousands separators (1,000 / 1,000,000), otherwise a decimal comma
+  return trimDecimal(
+    /^\d{1,3}(,\d{3})+$/.test(n) ? n.replace(/,/g, "") : n.replace(",", ".")
+  );
+}
+
+/** The amounts shown for a transaction, as plain decimals (e.g. "5.505156"). */
+function getAmounts(tx: HistoryTransaction): string[] {
+  if (tx.__type === "transaction") {
+    const info = tx.metadata?.[0]?.value?.[0]?.txInfo;
+    return [info?.tokenIn?.token, info?.tokenOut?.token].flatMap((token) =>
+      token && typeof token.toDec === "function"
+        ? [trimDecimal(token.toDec().toString())]
+        : []
+    );
+  }
+  return [tx.fromAsset, tx.toAsset].flatMap((asset) =>
+    asset.amount ? [baseUnitsToDecimal(asset.amount, asset.decimals)] : []
+  );
+}
+
+function baseUnitsToDecimal(amount: string, decimals: number) {
+  if (!/^\d+$/.test(amount)) return amount;
+  if (decimals <= 0) return amount;
+  const padded = amount.padStart(decimals + 1, "0");
+  return trimDecimal(
+    `${padded.slice(0, -decimals)}.${padded.slice(-decimals)}`
+  );
+}
+
+function trimDecimal(value: string) {
+  return value.includes(".") ? value.replace(/\.?0+$/, "") : value;
+}
+
+/**
+ * Filter state, kept in the URL like the pools table filters.
+ *
+ * Types are filtered by the API (as message types), across all pages.
+ *
+ * TODO: search via the API. The search is client-side, so it only covers
+ * the transactions on the current page (`getTransactions` pages 100 index
+ * records): the historical data service can't filter by denom, amount,
+ * address or date yet.
+ */
+export function useTransactionFilters() {
+  const [filters, setFilters] = useQueryStates(
+    {
+      txSearch: parseAsString,
+      txTypes: parseAsArrayOf(
+        parseAsStringLiteral<TransactionKind>(TRANSACTION_KINDS)
+      ).withDefault([...TRANSACTION_KINDS]),
+    },
+    { history: "push" }
+  );
+  // the URL can repeat kinds (`txTypes=swap,swap`): use each once, in order
+  const txTypes = useMemo(
+    () => TRANSACTION_KINDS.filter((kind) => filters.txTypes.includes(kind)),
+    [filters.txTypes]
+  );
+  return [{ ...filters, txTypes }, setFilters] as const;
+}
+
+export function useFilteredTransactions(transactions: HistoryTransaction[]) {
+  const [filters] = useTransactionFilters();
+  const filtered = useMemo(
+    () =>
+      filterTransactions(transactions, {
+        kinds: filters.txTypes,
+        query: filters.txSearch,
+      }),
+    [transactions, filters.txTypes, filters.txSearch]
+  );
+  const isFiltering =
+    Boolean(filters.txSearch?.trim()) || !isAllKinds(filters.txTypes);
+  return { filtered, isFiltering, query: filters.txSearch };
+}
+
+/**
+ * Filter controls laid out like the pools table controls: the heading (here,
+ * the History/Orders tabs) on the left with search and type select on the
+ * right; on narrower screens the search box drops to its own full-width row.
+ */
+export const TransactionFilters = ({
+  heading,
+  showControls,
+}: {
+  heading: ReactNode;
+  showControls: boolean;
+}) => {
+  const { t } = useTranslation();
+  const { width } = useWindowSize();
+  // width === 0 during SSR; default to the wide layout to avoid a flash of the compact layout on hydration.
+  const isWide = width === 0 || width >= Breakpoint.xl;
+  const [filters, setFilters] = useTransactionFilters();
+  // a type change refetches from the API: start again from the first page
+  const [, setPage] = useQueryState("page");
+
+  const onSearchInput = useCallback(
+    (data: string) => {
+      setFilters((state) => ({
+        ...state,
+        txSearch: data.length === 0 ? null : data,
+      }));
+    },
+    [setFilters]
+  );
+
+  if (!showControls) {
+    return <div className="flex w-full items-center gap-5">{heading}</div>;
+  }
+
+  const searchBox = (
+    <SearchBox
+      size="small"
+      placeholder={t("transactions.filter.search")}
+      debounce={500}
+      currentValue={filters.txSearch ?? undefined}
+      onInput={onSearchInput}
+      // wide enough for the placeholder ("Search asset, chain, amount or
+      // address"); the pools table's content-sized box would truncate it
+      className={isWide ? "!w-[28rem]" : "!w-full"}
+    />
+  );
+
+  const typeSelect = (
+    <div className="flex flex-none items-center gap-3">
+      <CheckboxSelect
+        label={t("transactions.filter.type")}
+        selectedOptionIds={filters.txTypes}
+        buttonClassName="!h-9 md:!w-auto"
+        atLeastOneSelected
+        options={[
+          { id: "swap", display: t("transactions.filter.swap") },
+          { id: "deposit", display: t("transactions.filter.deposit") },
+          { id: "withdraw", display: t("transactions.filter.withdraw") },
+        ]}
+        onSelect={(kind) => {
+          void setPage(null);
+          if (filters.txTypes.includes(kind as TransactionKind)) {
+            setFilters((state) => ({
+              ...state,
+              txTypes: state.txTypes.filter((type) => type !== kind),
+            }));
+          } else {
+            setFilters((state) => ({
+              ...state,
+              txTypes: [...state.txTypes, kind as TransactionKind],
+            }));
+          }
+        }}
+      />
+    </div>
+  );
+
+  if (isWide) {
+    return (
+      <div className="flex w-full items-center gap-5">
+        {heading}
+        {searchBox}
+        {typeSelect}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex w-full items-center gap-5">
+        {heading}
+        {typeSelect}
+      </div>
+      {searchBox}
+    </div>
+  );
+};

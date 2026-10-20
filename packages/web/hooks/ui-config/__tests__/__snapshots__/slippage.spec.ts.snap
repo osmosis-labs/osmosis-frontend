@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`useSlippageConfig handles manual input "" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": false,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input ".5" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "-1" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": false,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "0" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "0",
+  "slippage": "0.000000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "0.5" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "1" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "1",
+  "slippage": "0.010000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "1e2" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": false,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "3." 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "3.",
+  "slippage": "0.030000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "99.99" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": true,
+  "manualSlippageStr": "99.99",
+  "slippage": "0.999900000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "100" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": false,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;
+
+exports[`useSlippageConfig handles manual input "abc" 1`] = `
+{
+  "error": undefined,
+  "isManualSlippage": false,
+  "manualSlippageStr": "0.5",
+  "slippage": "0.005000000000000000",
+}
+`;

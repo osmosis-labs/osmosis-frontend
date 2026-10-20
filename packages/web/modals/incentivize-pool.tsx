@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -9,6 +8,7 @@ import { TokenSelect } from "~/components/control/token-select";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Checkbox } from "~/components/ui/checkbox";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   CREATE_GAUGE_FEE_LABEL,
   CREATE_GAUGE_FEE_OSMO,
@@ -22,8 +22,8 @@ import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useIncentivizePoolConfig } from "~/hooks/ui-config/use-incentivize-pool-config";
 import { useDailyEpochCountdown } from "~/hooks/use-daily-epoch-countdown";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -39,13 +39,12 @@ const DEFAULT_NUM_EPOCHS = "30";
  *  would compose the wrong Msg for a CL pool while its data loads. */
 export const IncentivizePoolModal: FunctionComponent<
   { poolId: string; isConcentrated: boolean } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const { poolId, isConcentrated } = props;
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const address = account?.address ?? "";
+  const { chainId } = OsmosisChainInfo;
+  const { address: walletAddress, txTypeInProgress } = useWallet(chainId);
+  const address = walletAddress ?? "";
 
   // Only used for the (non-critical) APR-against-TVL stat, which falls back to
   // a dash when absent. The message-shaping `isConcentrated` is a prop above.
@@ -191,7 +190,7 @@ export const IncentivizePoolModal: FunctionComponent<
   // Fiat value of the chain's 0.01 OSMO per-recipient dust floor, tracking
   // the live OSMO price rather than a fixed dollar figure. Undefined while
   // the OSMO price hasn't loaded, in which case the dust warning is skipped.
-  const osmoCurrency = chainStore.osmosis.stakeCurrency;
+  const osmoCurrency = OsmosisChainInfo.stakeCurrency;
   const minDistrCoin = useMemo(
     () =>
       new CoinPretty(
@@ -220,7 +219,7 @@ export const IncentivizePoolModal: FunctionComponent<
   // against its own balance, so validate the OSMO fee here and block the
   // button; otherwise a user with just enough OSMO for the reward signs a tx
   // that fails on the fee.
-  const osmoCurrencyForFee = chainStore.osmosis.stakeCurrency;
+  const osmoCurrencyForFee = OsmosisChainInfo.stakeCurrency;
   const osmoBalance = new CoinPretty(
     osmoCurrencyForFee,
     userBalances?.find(
@@ -262,7 +261,7 @@ export const IncentivizePoolModal: FunctionComponent<
         insufficientOsmoForFee ||
         !acknowledgeNoRecovery ||
         !acknowledgeFee ||
-        Boolean(account?.txTypeInProgress),
+        Boolean(txTypeInProgress),
       onClick: () => {
         createGauge({
           distributeTo: isConcentrated
@@ -533,4 +532,4 @@ export const IncentivizePoolModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};

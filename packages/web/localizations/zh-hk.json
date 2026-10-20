@@ -297,6 +297,7 @@
     "notInitialized": "載入中...",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
+    "scalingFactorNotInteger": "縮放因數必須是整數",
     "zeroAmount": "未提供幣額",
     "invalidRange": "價格範圍無效",
     "fallbackText1": "發生錯誤",
@@ -1020,6 +1021,9 @@
     "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。",
     "ibcConnectionDown": "原生IBC連接不可用",
     "ibcConnectionDownDescription": "{asset}的直接IBC路線目前已中斷。以下選項可能提供替代路徑，但也可能受到影響。",
+    "balanceUnavailable": "無法載入您的 {chain} 餘額",
+    "balanceUnavailableDescription": "我們無法連接 {chain} 查詢您的餘額，因此可能顯示為 0。您的資金不受影響。請重試，或使用下方的選項。",
+    "retryBalance": "重試",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset}的原生轉帳不可用",
@@ -1273,7 +1277,7 @@
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
-    "launchAlert": "目前僅顯示交易和轉帳歷史記錄。即將支援更多交易類型。",
+    "launchAlert": "顯示您的兌換、存入及提取記錄。",
     "history": "歷史",
     "orders": "命令",
     "historyTable": {
@@ -1291,7 +1295,17 @@
       "providerFee": "提供者費用",
       "provider": "提供者",
       "networkFee": "網路費"
-    }
+    },
+    "filter": {
+      "type": "交易類型",
+      "swap": "兌換",
+      "deposit": "存入",
+      "withdraw": "提取",
+      "search": "搜尋資產、鏈、金額或地址",
+      "noMatches": "沒有符合的交易",
+      "pageHint": "篩選只適用於本頁的交易。請查看下一頁或調整篩選條件。"
+    },
+    "unknownAddressTooltip": "無法從跨鏈橋資料中確定此地址。稍後可能會顯示；您亦可在瀏覽器中查看。"
   },
   "date": {
     "earlierToday": "今天早些時候",

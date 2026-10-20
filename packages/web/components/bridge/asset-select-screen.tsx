@@ -2,7 +2,6 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -19,8 +18,8 @@ import {
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverified-token-confirmation";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
@@ -53,228 +52,224 @@ interface AssetSelectScreenProps {
   onSelectAsset: (asset: Asset) => void;
 }
 
-export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
-  observer(({ type, onSelectAsset }) => {
-    const { accountStore } = useStore();
-    const { showPreviewAssets } = useShowPreviewAssets();
-    const { t } = useTranslation();
-    const { isMobile } = useWindowSize();
-    const searchBoxRef = useRef<HTMLInputElement>(null);
-    const shouldShowUnverifiedAssets = useUserSettingsStore(
-      (state) => state.showUnverifiedAssets
-    );
+export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> = ({
+  type,
+  onSelectAsset,
+}) => {
+  const { showPreviewAssets } = useShowPreviewAssets();
+  const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
+  const searchBoxRef = useRef<HTMLInputElement>(null);
+  const shouldShowUnverifiedAssets = useUserSettingsStore(
+    (state) => state.showUnverifiedAssets
+  );
 
-    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
-    const [search, setSearch] = useState("");
-    const [assetToActivate, setAssetToActivate] = useState<MinimalAsset | null>(
-      null
-    );
+  const [search, setSearch] = useState("");
+  const [assetToActivate, setAssetToActivate] = useState<MinimalAsset | null>(
+    null
+  );
 
-    // for some reason, redundant queries would be sent without this memo
-    const queryParameters = useMemo(
-      () => ({
-        type,
-        search: Boolean(search)
-          ? {
-              query: search,
-            }
-          : undefined,
-        userOsmoAddress: wallet?.address,
-        includePreview: showPreviewAssets,
-        variantsNotToBeExcluded,
-        prioritizedDenoms,
-        deprioritizedDenoms,
-        limit: 100, // items per page
-      }),
-      [type, search, wallet?.address, showPreviewAssets]
-    );
+  // for some reason, redundant queries would be sent without this memo
+  const queryParameters = useMemo(
+    () => ({
+      type,
+      search: Boolean(search)
+        ? {
+            query: search,
+          }
+        : undefined,
+      userOsmoAddress: address,
+      includePreview: showPreviewAssets,
+      variantsNotToBeExcluded,
+      prioritizedDenoms,
+      deprioritizedDenoms,
+      limit: 100, // items per page
+    }),
+    [type, search, address, showPreviewAssets]
+  );
 
-    const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-      api.edge.assets.getImmersiveBridgeAssets.useInfiniteQuery(
-        queryParameters,
-        {
-          getNextPageParam: (lastPage) => lastPage.nextCursor,
-          initialCursor: 0,
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    api.edge.assets.getImmersiveBridgeAssets.useInfiniteQuery(queryParameters, {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
 
-          // avoid blocking
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
-          },
-        }
-      );
-
-    const assets = useMemo(
-      () => data?.pages.flatMap((page) => page?.items) ?? [],
-      [data?.pages]
-    );
-    const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
-    const noSearchResults = Boolean(search) && !isLoading && !assets.length;
-
-    const {
-      selectedIndex: keyboardSelectedIndex,
-      setSelectedIndex: setKeyboardSelectedIndex,
-      itemContainerKeyDown,
-      searchBarKeyDown,
-      setItemAttribute,
-    } = useKeyboardNavigation({
-      items: assets,
-      onSelectItem: onSelectAsset,
-      searchBoxRef,
+      // avoid blocking
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     });
 
-    return (
-      <div onKeyDown={itemContainerKeyDown}>
-        <ActivateUnverifiedTokenConfirmation
-          coinDenom={assetToActivate?.coinDenom}
-          coinImageUrl={assetToActivate?.coinImageUrl}
-          isOpen={Boolean(assetToActivate)}
-          onConfirm={() => {
-            if (!assetToActivate) return;
-            useUserSettingsStore.setState({
-              showUnverifiedAssets: true,
-            });
-            onSelectAsset(assetToActivate);
-          }}
-          onRequestClose={() => {
-            setAssetToActivate(null);
-          }}
-        />
+  const assets = useMemo(
+    () => data?.pages.flatMap((page) => page?.items) ?? [],
+    [data?.pages]
+  );
+  const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+  const noSearchResults = Boolean(search) && !isLoading && !assets.length;
 
-        <div className="text-center text-h5 font-h5 md:text-h6 md:font-h6">
-          {t(
-            type === "deposit"
-              ? "transfer.assetSelectScreen.titleDeposit"
-              : "transfer.assetSelectScreen.titleWithdraw"
-          )}
-        </div>
-
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="sticky top-28 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3 md:top-24"
-        >
-          <SearchBox
-            ref={searchBoxRef}
-            onInput={debounce((nextValue) => {
-              setKeyboardSelectedIndex(0);
-              setSearch(nextValue);
-            }, 300)}
-            className="md:w-full"
-            placeholder={t("transfer.assetSelectScreen.searchAssets")}
-            size={isMobile ? "small" : "full"}
-            onKeyDown={searchBarKeyDown}
-            autoFocus={!isMobile}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          {noSearchResults ? (
-            <NoSearchResultsSplash className="pt-3" query={search} />
-          ) : isLoading ? (
-            <div className="self-center pt-3">
-              <Spinner />
-            </div>
-          ) : (
-            <>
-              {assets.map((asset, index) => (
-                <button
-                  key={asset.coinMinimalDenom}
-                  className={classNames(
-                    "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-1",
-                    {
-                      "bg-osmoverse-700/50": keyboardSelectedIndex === index,
-                    }
-                  )}
-                  onMouseOver={() => setKeyboardSelectedIndex(index)}
-                  onFocus={() => setKeyboardSelectedIndex(index)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!shouldShowUnverifiedAssets && !asset.isVerified) {
-                      return setAssetToActivate(asset);
-                    }
-                    onSelectAsset(asset);
-                  }}
-                  {...setItemAttribute(index)}
-                >
-                  <div
-                    className={classNames("flex items-center gap-3", {
-                      "opacity-40":
-                        !shouldShowUnverifiedAssets && !asset.isVerified,
-                    })}
-                  >
-                    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
-                      <EntityImage
-                        logoURIs={getLogoURIs(asset.coinImageUrl)}
-                        width={isMobile ? 32 : 48}
-                        height={isMobile ? 32 : 48}
-                        name={asset.coinName}
-                        symbol={asset.coinDenom}
-                      />
-                    </div>
-                    <span className="flex flex-col text-left">
-                      <div className="flex items-center gap-1">
-                        <span className="subtitle1 md:body2">
-                          {truncate(asset.coinName, 22)}
-                        </span>
-                        {!asset.isVerified && shouldShowUnverifiedAssets && (
-                          <Tooltip
-                            content={t(
-                              "components.selectToken.unverifiedAsset"
-                            )}
-                          >
-                            <Icon
-                              id="alert-triangle"
-                              className="h-4 w-4 text-osmoverse-400"
-                            />
-                          </Tooltip>
-                        )}
-                      </div>
-
-                      <span className="body2 md:caption text-osmoverse-300">
-                        {asset.coinDenom}
-                      </span>
-                    </span>
-                  </div>
-
-                  {!shouldShowUnverifiedAssets && !asset.isVerified && (
-                    <p className="caption whitespace-nowrap text-wosmongton-200">
-                      {t("components.selectToken.clickToActivate")}
-                    </p>
-                  )}
-                  {asset.amount &&
-                    (shouldShowUnverifiedAssets || asset.isVerified) &&
-                    asset.usdValue &&
-                    asset.amount.toDec().isPositive() && (
-                      <div className="flex flex-col text-right">
-                        <p className="body1">
-                          <PrivateText
-                            text={formatPretty(asset.amount.hideDenom(true), {
-                              maxDecimals: 6,
-                            })}
-                          />
-                        </p>
-                        <span className="body2 font-medium text-osmoverse-400">
-                          <PrivateText text={asset.usdValue.toString()} />
-                        </span>
-                      </div>
-                    )}
-                </button>
-              ))}
-              <Intersection
-                onVisible={() => {
-                  if (canLoadMore) fetchNextPage();
-                }}
-              />
-              {isFetchingNextPage && (
-                <div className="self-center pt-3">
-                  <Spinner />
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    );
+  const {
+    selectedIndex: keyboardSelectedIndex,
+    setSelectedIndex: setKeyboardSelectedIndex,
+    itemContainerKeyDown,
+    searchBarKeyDown,
+    setItemAttribute,
+  } = useKeyboardNavigation({
+    items: assets,
+    onSelectItem: onSelectAsset,
+    searchBoxRef,
   });
+
+  return (
+    <div onKeyDown={itemContainerKeyDown}>
+      <ActivateUnverifiedTokenConfirmation
+        coinDenom={assetToActivate?.coinDenom}
+        coinImageUrl={assetToActivate?.coinImageUrl}
+        isOpen={Boolean(assetToActivate)}
+        onConfirm={() => {
+          if (!assetToActivate) return;
+          useUserSettingsStore.setState({
+            showUnverifiedAssets: true,
+          });
+          onSelectAsset(assetToActivate);
+        }}
+        onRequestClose={() => {
+          setAssetToActivate(null);
+        }}
+      />
+
+      <div className="text-center text-h5 font-h5 md:text-h6 md:font-h6">
+        {t(
+          type === "deposit"
+            ? "transfer.assetSelectScreen.titleDeposit"
+            : "transfer.assetSelectScreen.titleWithdraw"
+        )}
+      </div>
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="sticky top-28 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3 md:top-24"
+      >
+        <SearchBox
+          ref={searchBoxRef}
+          onInput={debounce((nextValue) => {
+            setKeyboardSelectedIndex(0);
+            setSearch(nextValue);
+          }, 300)}
+          className="md:w-full"
+          placeholder={t("transfer.assetSelectScreen.searchAssets")}
+          size={isMobile ? "small" : "full"}
+          onKeyDown={searchBarKeyDown}
+          autoFocus={!isMobile}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        {noSearchResults ? (
+          <NoSearchResultsSplash className="pt-3" query={search} />
+        ) : isLoading ? (
+          <div className="self-center pt-3">
+            <Spinner />
+          </div>
+        ) : (
+          <>
+            {assets.map((asset, index) => (
+              <button
+                key={asset.coinMinimalDenom}
+                className={classNames(
+                  "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-1",
+                  {
+                    "bg-osmoverse-700/50": keyboardSelectedIndex === index,
+                  }
+                )}
+                onMouseOver={() => setKeyboardSelectedIndex(index)}
+                onFocus={() => setKeyboardSelectedIndex(index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!shouldShowUnverifiedAssets && !asset.isVerified) {
+                    return setAssetToActivate(asset);
+                  }
+                  onSelectAsset(asset);
+                }}
+                {...setItemAttribute(index)}
+              >
+                <div
+                  className={classNames("flex items-center gap-3", {
+                    "opacity-40":
+                      !shouldShowUnverifiedAssets && !asset.isVerified,
+                  })}
+                >
+                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
+                    <EntityImage
+                      logoURIs={getLogoURIs(asset.coinImageUrl)}
+                      width={isMobile ? 32 : 48}
+                      height={isMobile ? 32 : 48}
+                      name={asset.coinName}
+                      symbol={asset.coinDenom}
+                    />
+                  </div>
+                  <span className="flex flex-col text-left">
+                    <div className="flex items-center gap-1">
+                      <span className="subtitle1 md:body2">
+                        {truncate(asset.coinName, 22)}
+                      </span>
+                      {!asset.isVerified && shouldShowUnverifiedAssets && (
+                        <Tooltip
+                          content={t("components.selectToken.unverifiedAsset")}
+                        >
+                          <Icon
+                            id="alert-triangle"
+                            className="h-4 w-4 text-osmoverse-400"
+                          />
+                        </Tooltip>
+                      )}
+                    </div>
+
+                    <span className="body2 md:caption text-osmoverse-300">
+                      {asset.coinDenom}
+                    </span>
+                  </span>
+                </div>
+
+                {!shouldShowUnverifiedAssets && !asset.isVerified && (
+                  <p className="caption whitespace-nowrap text-wosmongton-200">
+                    {t("components.selectToken.clickToActivate")}
+                  </p>
+                )}
+                {asset.amount &&
+                  (shouldShowUnverifiedAssets || asset.isVerified) &&
+                  asset.usdValue &&
+                  asset.amount.toDec().isPositive() && (
+                    <div className="flex flex-col text-right">
+                      <p className="body1">
+                        <PrivateText
+                          text={formatPretty(asset.amount.hideDenom(true), {
+                            maxDecimals: 6,
+                          })}
+                        />
+                      </p>
+                      <span className="body2 font-medium text-osmoverse-400">
+                        <PrivateText text={asset.usdValue.toString()} />
+                      </span>
+                    </div>
+                  )}
+              </button>
+            ))}
+            <Intersection
+              onVisible={() => {
+                if (canLoadMore) fetchNextPage();
+              }}
+            />
+            {isFetchingNextPage && (
+              <div className="self-center pt-3">
+                <Spinner />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};

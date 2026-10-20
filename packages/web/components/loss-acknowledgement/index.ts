@@ -1,4 +1,4 @@
-import type { TxFeMemoFlags } from "@osmosis-labs/stores";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 
 import { AckReArmTolerance } from "~/config/trade-warnings";

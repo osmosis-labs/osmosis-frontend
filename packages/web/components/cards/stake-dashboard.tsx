@@ -1,18 +1,22 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  prepareWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs,
+  prepareWithdrawDelegationRewardsMsg,
+} from "@osmosis-labs/tx";
+import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Currency, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { formatCoinBalance } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
@@ -33,161 +37,167 @@ export const StakeDashboard: React.FC<{
   balance: CoinPretty;
   inactiveDelegations?: InactiveDelegation[];
   onRedelegate?: () => void;
-}> = observer(
-  ({
-    hasInsufficientBalance,
-    setShowValidatorModal,
-    validators,
-    usersValidatorsMap,
-    balance,
-    setShowStakeLearnMoreModal,
-    inactiveDelegations,
-    onRedelegate,
-  }) => {
-    const { t } = useTranslation();
-    const { chainStore, accountStore } = useStore();
+}> = ({
+  hasInsufficientBalance,
+  setShowValidatorModal,
+  validators,
+  usersValidatorsMap,
+  balance,
+  setShowStakeLearnMoreModal,
+  inactiveDelegations,
+  onRedelegate,
+}) => {
+  const { t } = useTranslation();
+  const {
+    isReadyToSendTx,
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
+  const address = walletAddress ?? "";
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
-    const osmosisChainId = chainStore.osmosis.chainId;
-    const account = accountStore.getWallet(osmosisChainId);
-    const address = account?.address ?? "";
-    const osmo = chainStore.osmosis.stakeCurrency;
-
-    const { data: delegationRewards } =
-      api.edge.staking.getUserDelegationRewards.useQuery(
-        { userOsmoAddress: address },
-        { enabled: Boolean(address) }
-      );
-
-    const summedStakeRewards = useMemo(() => {
-      const amount = delegationRewards?.total.find(
-        ({ denom }) => denom === osmo.coinMinimalDenom
-      )?.amount;
-      return new CoinPretty(osmo, new Dec(amount ?? 0));
-    }, [delegationRewards, osmo]);
-
-    const { fiatValue: rewardsFiatValue } =
-      useCoinFiatValue(summedStakeRewards);
-    const fiatRewards =
-      rewardsFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
-
-    const { fiatValue: fiatBalance } = useCoinFiatValue(balance);
-
-    const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
-
-    const LearnMoreIconText = (
-      <div className="flex cursor-pointer items-center justify-center text-wosmongton-300">
-        <div className="mr-2 flex self-center">
-          <Icon
-            id="open-book"
-            height="14px"
-            width="14px"
-            className="text-wosmongton-300"
-          />
-        </div>
-        <span className="caption text-sm">{t("stake.learn")}</span>
-      </div>
+  const { data: delegationRewards } =
+    api.edge.staking.getUserDelegationRewards.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
     );
 
-    const collectRewards = useCallback(() => {
-      if (account?.osmosis) {
-        account.osmosis
-          .sendWithdrawDelegationRewardsMsg("")
-          .catch(console.error);
-      }
-    }, [account]);
+  const summedStakeRewards = useMemo(() => {
+    const amount = delegationRewards?.total.find(
+      ({ denom }) => denom === osmo.coinMinimalDenom
+    )?.amount;
+    return new CoinPretty(osmo, new Dec(amount ?? 0));
+  }, [delegationRewards, osmo]);
 
-    const { price: osmoPrice } = usePrice(osmo);
+  const { fiatValue: rewardsFiatValue } = useCoinFiatValue(summedStakeRewards);
+  const fiatRewards =
+    rewardsFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
 
-    const collectRewardsMinimumOsmo =
-      !osmoPrice || osmoPrice.toDec().isZero()
-        ? new Dec(0)
-        : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice.toDec());
+  const { fiatValue: fiatBalance } = useCoinFiatValue(balance);
 
-    const rewardsCardDisabled = summedStakeRewards
-      .toDec()
-      .lte(collectRewardsMinimumOsmo);
+  const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
-    const collectAndReinvestRewards = useCallback(() => {
-      const collectAndReinvestCoin: { amount: string; denom: Currency } = {
-        amount: osmoRewardsAmount,
-        denom: osmo,
-      };
-
-      if (account?.osmosis) {
-        account.osmosis
-          .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-            collectAndReinvestCoin,
-            ""
-          )
-          .catch(console.error);
-      }
-    }, [account, osmo, osmoRewardsAmount]);
-
-    const isCompact =
-      Boolean(fiatBalance?.toDec().gte(new Dec(COMPACT_STAKED_BALANCE_USD))) ||
-      fiatRewards.toDec().gte(new Dec(COMPACT_REWARDS_USD));
-
-    return (
-      <GenericMainCard
-        title={t("stake.dashboard")}
-        titleIcon={LearnMoreIconText}
-        titleIconAction={() => setShowStakeLearnMoreModal(true)}
-      >
-        <div className="flex w-full flex-row gap-2 py-10 xl:flex-col xl:gap-6 xl:py-4">
-          <StakeBalances
-            compact={isCompact}
-            title={t("stake.stakeBalanceTitle")}
-            dollarAmount={fiatBalance}
-            osmoAmount={balance}
-          />
-          <StakeBalances
-            compact={isCompact}
-            title={t("stake.rewardsTitle")}
-            dollarAmount={fiatRewards}
-            osmoAmount={summedStakeRewards}
-          />
-          {balance.toDec().isPositive() && (
-            <NextRewardCountdown compact={isCompact} />
-          )}
-        </div>
-        <ValidatorSquadCard
-          hasInsufficientBalance={hasInsufficientBalance}
-          setShowValidatorModal={setShowValidatorModal}
-          validators={validators}
-          usersValidatorsMap={usersValidatorsMap}
-          inactiveDelegations={inactiveDelegations}
-          onRedelegate={onRedelegate}
+  const LearnMoreIconText = (
+    <div className="flex cursor-pointer items-center justify-center text-wosmongton-300">
+      <div className="mr-2 flex self-center">
+        <Icon
+          id="open-book"
+          height="14px"
+          width="14px"
+          className="text-wosmongton-300"
         />
-        <div className="flex flex-row items-center gap-2 xl:flex-col">
-          <RewardsCard
-            disabled={rewardsCardDisabled}
-            title={t("stake.collectRewards")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
-              collectRewardsMinimumOsmo: Number(
-                collectRewardsMinimumOsmo.toString()
-              ).toFixed(2),
-            })}
-            onClick={collectRewards}
-            globalLottieFileKey="collect"
-            position="left"
-          />
-          <RewardsCard
-            disabled={rewardsCardDisabled}
-            title={t("stake.investRewards")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
-              collectRewardsMinimumOsmo: Number(
-                collectRewardsMinimumOsmo.toString()
-              ).toFixed(2),
-            })}
-            onClick={collectAndReinvestRewards}
-            globalLottieFileKey="reinvest"
-            position="right"
-          />
-        </div>
-      </GenericMainCard>
-    );
-  }
-);
+      </div>
+      <span className="caption text-sm">{t("stake.learn")}</span>
+    </div>
+  );
+
+  const collectRewards = useCallback(() => {
+    if (isReadyToSendTx) {
+      prepareWithdrawDelegationRewardsMsg(transactionContext, "")
+        .then((prepared) => signAndBroadcast(...prepared))
+        .catch(console.error);
+    }
+  }, [isReadyToSendTx, signAndBroadcast, transactionContext]);
+
+  const { price: osmoPrice } = usePrice(osmo);
+
+  const collectRewardsMinimumOsmo =
+    !osmoPrice || osmoPrice.toDec().isZero()
+      ? new Dec(0)
+      : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice.toDec());
+
+  const rewardsCardDisabled = summedStakeRewards
+    .toDec()
+    .lte(collectRewardsMinimumOsmo);
+
+  const collectAndReinvestRewards = useCallback(() => {
+    const collectAndReinvestCoin: { amount: string; denom: Currency } = {
+      amount: osmoRewardsAmount,
+      denom: osmo,
+    };
+
+    if (isReadyToSendTx) {
+      prepareWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+        transactionContext,
+        collectAndReinvestCoin,
+        ""
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
+        .catch(console.error);
+    }
+  }, [
+    isReadyToSendTx,
+    osmo,
+    osmoRewardsAmount,
+    signAndBroadcast,
+    transactionContext,
+  ]);
+
+  const isCompact =
+    Boolean(fiatBalance?.toDec().gte(new Dec(COMPACT_STAKED_BALANCE_USD))) ||
+    fiatRewards.toDec().gte(new Dec(COMPACT_REWARDS_USD));
+
+  return (
+    <GenericMainCard
+      title={t("stake.dashboard")}
+      titleIcon={LearnMoreIconText}
+      titleIconAction={() => setShowStakeLearnMoreModal(true)}
+    >
+      <div className="flex w-full flex-row gap-2 py-10 xl:flex-col xl:gap-6 xl:py-4">
+        <StakeBalances
+          compact={isCompact}
+          title={t("stake.stakeBalanceTitle")}
+          dollarAmount={fiatBalance}
+          osmoAmount={balance}
+        />
+        <StakeBalances
+          compact={isCompact}
+          title={t("stake.rewardsTitle")}
+          dollarAmount={fiatRewards}
+          osmoAmount={summedStakeRewards}
+        />
+        {balance.toDec().isPositive() && (
+          <NextRewardCountdown compact={isCompact} />
+        )}
+      </div>
+      <ValidatorSquadCard
+        hasInsufficientBalance={hasInsufficientBalance}
+        setShowValidatorModal={setShowValidatorModal}
+        validators={validators}
+        usersValidatorsMap={usersValidatorsMap}
+        inactiveDelegations={inactiveDelegations}
+        onRedelegate={onRedelegate}
+      />
+      <div className="flex flex-row items-center gap-2 xl:flex-col">
+        <RewardsCard
+          disabled={rewardsCardDisabled}
+          title={t("stake.collectRewards")}
+          disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+            collectRewardsMinimumOsmo: Number(
+              collectRewardsMinimumOsmo.toString()
+            ).toFixed(2),
+          })}
+          onClick={collectRewards}
+          globalLottieFileKey="collect"
+          position="left"
+        />
+        <RewardsCard
+          disabled={rewardsCardDisabled}
+          title={t("stake.investRewards")}
+          disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+            collectRewardsMinimumOsmo: Number(
+              collectRewardsMinimumOsmo.toString()
+            ).toFixed(2),
+          })}
+          onClick={collectAndReinvestRewards}
+          globalLottieFileKey="reinvest"
+          position="right"
+        />
+      </div>
+    </GenericMainCard>
+  );
+};
 
 const NextRewardCountdown: React.FC<{ compact: boolean }> = ({ compact }) => {
   const { t } = useTranslation();
@@ -219,7 +229,7 @@ const StakeBalances: React.FC<{
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
   compact: boolean;
-}> = observer(({ title, dollarAmount, osmoAmount, compact }) => {
+}> = ({ title, dollarAmount, osmoAmount, compact }) => {
   const [flashDollar, setFlashDollar] = useState(false);
   const [flashOsmo, setFlashOsmo] = useState(false);
 
@@ -263,4 +273,4 @@ const StakeBalances: React.FC<{
       </span>
     </div>
   );
-});
+};

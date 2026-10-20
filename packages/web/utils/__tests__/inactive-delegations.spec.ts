@@ -1,4 +1,4 @@
-import type { Staking } from "@osmosis-labs/keplr-stores";
+import type * as Staking from "@osmosis-labs/types";
 import { Int } from "@osmosis-labs/unit";
 
 import {

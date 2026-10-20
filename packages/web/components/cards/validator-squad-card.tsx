@@ -1,9 +1,7 @@
-import { Staking } from "@osmosis-labs/keplr-stores";
+import type * as Staking from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import React from "react";
-import { useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
@@ -14,8 +12,8 @@ import {
 } from "~/components/stake/inactive-delegations-warning";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 import { api } from "~/utils/trpc";
 
@@ -26,7 +24,7 @@ export const ValidatorSquadCard: React.FC<{
   usersValidatorsMap: Map<string, Staking.Delegation>;
   inactiveDelegations?: InactiveDelegation[];
   onRedelegate?: () => void;
-}> = observer(
+}> = memo(
   ({
     hasInsufficientBalance,
     setShowValidatorModal,
@@ -37,7 +35,6 @@ export const ValidatorSquadCard: React.FC<{
   }) => {
     const { t } = useTranslation();
     const statusLabel = useInactiveStatusLabel();
-    const { chainStore } = useStore();
 
     const { width } = useWindowSize();
 
@@ -61,10 +58,10 @@ export const ValidatorSquadCard: React.FC<{
     const totalStakePool = useMemo(
       () =>
         new CoinPretty(
-          chainStore.osmosis.stakeCurrency,
+          OsmosisChainInfo.stakeCurrency,
           stakingPool?.bondedTokens ?? 0
         ),
-      [chainStore.osmosis.stakeCurrency, stakingPool?.bondedTokens]
+      [stakingPool?.bondedTokens]
     );
 
     let validatorBlock = (

@@ -1,6 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   ChangeEventHandler,
   forwardRef,
@@ -18,8 +17,8 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
-import { useStore } from "~/stores";
 import { calcFontSize } from "~/utils/formatter";
 
 const AssetFieldset = ({ children }: PropsWithChildren<unknown>) => (
@@ -35,75 +34,72 @@ const AssetFieldsetHeader = ({ children }: PropsWithChildren<unknown>) => (
 const AssetFieldsetHeaderLabel = ({ children }: PropsWithChildren<unknown>) =>
   children;
 
-const AssetFieldsetHeaderBalance = observer(
-  ({
-    onMax,
-    availableBalance,
-    className,
-    showAddFundsButton,
-    openAddFundsModal,
-    isMaxButtonDisabled,
-    isLoadingMaxButton,
-  }: {
-    onMax?: () => void;
-    availableBalance?: ReactNode;
-    className?: string;
-    showAddFundsButton?: boolean;
-    openAddFundsModal?: () => void;
-    isMaxButtonDisabled?: boolean;
-    isLoadingMaxButton?: boolean;
-  }) => {
-    const { t } = useTranslation();
-    const { accountStore } = useStore();
-    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+const AssetFieldsetHeaderBalance = ({
+  onMax,
+  availableBalance,
+  className,
+  showAddFundsButton,
+  openAddFundsModal,
+  isMaxButtonDisabled,
+  isLoadingMaxButton,
+}: {
+  onMax?: () => void;
+  availableBalance?: ReactNode;
+  className?: string;
+  showAddFundsButton?: boolean;
+  openAddFundsModal?: () => void;
+  isMaxButtonDisabled?: boolean;
+  isLoadingMaxButton?: boolean;
+}) => {
+  const { t } = useTranslation();
+  const { isWalletConnected } = useWallet();
 
-    const onClickAddFunds = useCallback(() => {
-      openAddFundsModal?.();
-    }, [openAddFundsModal]);
+  const onClickAddFunds = useCallback(() => {
+    openAddFundsModal?.();
+  }, [openAddFundsModal]);
 
-    return (
-      <div
-        className={classNames(
-          "flex items-center gap-2 transition-opacity",
-          className
-        )}
-      >
-        {wallet?.isWalletConnected ? (
-          showAddFundsButton ? (
-            <button
-              type="button"
-              onClick={onClickAddFunds}
-              className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
-            >
-              {t("limitOrders.addFunds")}
-            </button>
-          ) : (
-            <>
-              <span className="body2 sm:caption text-right text-osmoverse-300">
-                {availableBalance} {t("pool.available").toLowerCase()}
-              </span>
-              {onMax && (
-                <button
-                  type="button"
-                  className="flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1 px-3 disabled:pointer-events-none disabled:opacity-50"
-                  onClick={onMax}
-                  disabled={isMaxButtonDisabled}
-                >
-                  {isLoadingMaxButton && (
-                    <Spinner className="!h-2.5 !w-2.5 text-wosmongton-300" />
-                  )}
-                  <span className="body2 sm:caption text-wosmongton-300">
-                    Max
-                  </span>
-                </button>
-              )}
-            </>
-          )
-        ) : null}
-      </div>
-    );
-  }
-);
+  return (
+    <div
+      className={classNames(
+        "flex items-center gap-2 transition-opacity",
+        className
+      )}
+    >
+      {isWalletConnected ? (
+        showAddFundsButton ? (
+          <button
+            type="button"
+            onClick={onClickAddFunds}
+            className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
+          >
+            {t("limitOrders.addFunds")}
+          </button>
+        ) : (
+          <>
+            <span className="body2 sm:caption text-right text-osmoverse-300">
+              {availableBalance} {t("pool.available").toLowerCase()}
+            </span>
+            {onMax && (
+              <button
+                type="button"
+                className="flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1 px-3 disabled:pointer-events-none disabled:opacity-50"
+                onClick={onMax}
+                disabled={isMaxButtonDisabled}
+              >
+                {isLoadingMaxButton && (
+                  <Spinner className="!h-2.5 !w-2.5 text-wosmongton-300" />
+                )}
+                <span className="body2 sm:caption text-wosmongton-300">
+                  Max
+                </span>
+              </button>
+            )}
+          </>
+        )
+      ) : null}
+    </div>
+  );
+};
 
 interface AssetFieldsetInputProps {
   inputPrefix?: ReactNode;

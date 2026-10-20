@@ -1,3 +1,8 @@
+import type {
+  ConcentratedPoolRawResponse,
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
@@ -12,11 +17,6 @@ import {
   queryOsmosisMintParams,
   querySuperfluidParams,
 } from "../../../queries/osmosis";
-import {
-  ConcentratedPoolRawResponse,
-  StablePoolRawResponse,
-  WeightedPoolRawResponse,
-} from "../../../queries/osmosis/poolmanager";
 import { queryAllSuperfluidAssets } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { getEpochs } from "../osmosis";

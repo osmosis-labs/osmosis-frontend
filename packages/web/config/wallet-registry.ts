@@ -1,8 +1,5 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import {
-  CosmosRegistryWallet,
-  WalletConnectionInProgressError,
-} from "@osmosis-labs/stores";
+import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
+import { WalletConnectionInProgressError } from "@osmosis-labs/utils";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";

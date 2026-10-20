@@ -15,10 +15,12 @@ export const PERSIST_EXCLUDED_KEYS = [
  * results persisted before the Skip counterparty mutation fix.
  * v4: TanStack Query v5 cache format; v4 caches hold a "loading" status that v5
  * cannot restore.
- * v5: discard plain unit-class field dumps cached before the OpenNext
- * SuperJSON registry/constructor-identity fix.
+ * v5: `edge.transactions.getTransactions` gained `transfers`.
+ * v6: discard plain unit-class field dumps cached before the OpenNext
+ * SuperJSON registry/constructor-identity fix (stage-cf shipped this as its
+ * own v5, so both v5 lineages are dropped).
  */
-export const PERSIST_BUSTER = "v5";
+export const PERSIST_BUSTER = "v6";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

@@ -297,6 +297,7 @@
     "notInitialized": "加载中...",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
+    "scalingFactorNotInteger": "比例因子必须是整数",
     "zeroAmount": "数量为零",
     "invalidRange": "价格范围无效",
     "fallbackText1": "发生错误",
@@ -1020,6 +1021,9 @@
     "transferWillLikelyTakeLonger": "转账可能比平时耗时更长，甚至可能完全失败。请自行承担风险。",
     "ibcConnectionDown": "原生IBC连接不可用",
     "ibcConnectionDownDescription": "{asset}的直接IBC路线目前已中断。以下选项可能提供替代路径，但也可能受到影响。",
+    "balanceUnavailable": "无法加载您的 {chain} 余额",
+    "balanceUnavailableDescription": "我们无法连接 {chain} 来查询您的余额，因此可能显示为 0。您的资金不受影响。请重试，或使用下方的选项。",
+    "retryBalance": "重试",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset}的原生转账不可用",
@@ -1273,7 +1277,7 @@
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
-    "launchAlert": "目前仅显示交易和转账历史记录。即将支持更多交易类型。",
+    "launchAlert": "显示您的兑换、存入和提取记录。",
     "history": "历史",
     "orders": "命令",
     "historyTable": {
@@ -1291,7 +1295,17 @@
       "providerFee": "供应商费用",
       "provider": "提供者",
       "networkFee": "网络费"
-    }
+    },
+    "filter": {
+      "type": "交易类型",
+      "swap": "兑换",
+      "deposit": "存入",
+      "withdraw": "提取",
+      "search": "搜索资产、链、金额或地址",
+      "noMatches": "没有匹配的交易",
+      "pageHint": "筛选仅适用于本页的交易。请查看下一页或调整筛选条件。"
+    },
+    "unknownAddressTooltip": "无法从跨链桥数据中确定此地址。稍后可能会显示；您也可以在浏览器中查看。"
   },
   "date": {
     "earlierToday": "今天早些时候",

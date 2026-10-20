@@ -5,9 +5,7 @@ import {
   getWeightedRaw,
   type Pool,
 } from "@osmosis-labs/server";
-import type { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec } from "@osmosis-labs/unit";
-import { runInAction } from "mobx";
 import { useEffect, useMemo } from "react";
 
 import { api } from "~/utils/trpc";
@@ -416,19 +414,20 @@ export function useDuplicatePoolCheck({
   ]);
 }
 
-/** Wraps the gate-flag writes onto `ObservableCreatePoolConfig`. Sets
- *  `duplicateBlocking` while the duplicate check is loading or has an exact
- *  match, and resets `duplicateAcknowledged` when the matched-pool identity
- *  changes (or when there's no exact match). Both writes go through a single
- *  `runInAction` per change to keep mobx semantics clean and avoid the
- *  side-effect-from-component-effect pattern. */
+/** Drives the create-pool gate flags. Sets `duplicateBlocking` while the
+ *  duplicate check is loading or has an exact match, and resets
+ *  `duplicateAcknowledged` when the matched-pool identity changes (or when
+ *  there's no exact match). Takes the config's stable setters rather than the
+ *  config itself, which changes identity on every update. */
 export function useDuplicateGate({
-  config,
+  setDuplicateBlocking,
+  setDuplicateAcknowledged,
   status,
   exactMatches,
   proposed,
 }: {
-  config: ObservableCreatePoolConfig;
+  setDuplicateBlocking: (blocking: boolean) => void;
+  setDuplicateAcknowledged: (acknowledged: boolean) => void;
   status: DuplicatePoolCheckResult["status"];
   exactMatches: ExistingPoolSummary[];
   proposed: ProposedPool | null;
@@ -444,29 +443,23 @@ export function useDuplicateGate({
   const hasExact = exactMatches.length > 0;
 
   useEffect(() => {
-    runInAction(() => {
-      config.duplicateBlocking = isPending || hasExact;
-      if (!hasExact) config.duplicateAcknowledged = false;
-    });
-  }, [config, isPending, hasExact]);
+    setDuplicateBlocking(isPending || hasExact);
+    if (!hasExact) setDuplicateAcknowledged(false);
+  }, [setDuplicateBlocking, setDuplicateAcknowledged, isPending, hasExact]);
 
-  // Reset blocking flags on unmount only. The create-pool config is a
-  // singleton owned by the parent modal, so without this cleanup a stale
-  // `duplicateBlocking = true` from a previous pool-type's flow would leak
-  // into the next mount and briefly disable the new flow's button until
-  // the first paint's effect corrects it.
+  // Reset blocking flags on unmount only. The create-pool state is owned by
+  // the parent page, so without this cleanup a stale `duplicateBlocking = true`
+  // from a previous pool-type's flow would leak into the next mount and
+  // briefly disable the new flow's button until the first paint's effect
+  // corrects it.
   useEffect(() => {
     return () => {
-      runInAction(() => {
-        config.duplicateBlocking = false;
-        config.duplicateAcknowledged = false;
-      });
+      setDuplicateBlocking(false);
+      setDuplicateAcknowledged(false);
     };
-  }, [config]);
+  }, [setDuplicateBlocking, setDuplicateAcknowledged]);
 
   useEffect(() => {
-    runInAction(() => {
-      config.duplicateAcknowledged = false;
-    });
-  }, [config, exactMatchKey]);
+    setDuplicateAcknowledged(false);
+  }, [setDuplicateAcknowledged, exactMatchKey]);
 }

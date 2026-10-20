@@ -297,6 +297,7 @@
     "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
+    "scalingFactorNotInteger": "Scaling factor must be a whole number",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
     "fallbackText1": "An error occurred",
@@ -1020,6 +1021,9 @@
     "transferWillLikelyTakeLonger": "Transfers will likely take longer than usual or may fail entirely. Proceed at your own risk.",
     "ibcConnectionDown": "Native IBC connection unavailable",
     "ibcConnectionDownDescription": "The direct IBC route for {asset} is currently down. The options below may offer an alternative path, but may also be affected.",
+    "balanceUnavailable": "Couldn't load your {chain} balance",
+    "balanceUnavailableDescription": "We couldn't reach {chain} to check your balance, so it may show as 0. Your funds are not affected. Retry, or use the options below.",
+    "retryBalance": "Retry",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native transfers unavailable for {asset}",
@@ -1273,7 +1277,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Showing your swaps, deposits and withdrawals.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
@@ -1291,7 +1295,17 @@
       "providerFee": "Provider fee",
       "provider": "Provider",
       "networkFee": "Network fee"
-    }
+    },
+    "filter": {
+      "type": "Transaction types",
+      "swap": "Swaps",
+      "deposit": "Deposits",
+      "withdraw": "Withdrawals",
+      "search": "Search asset, chain, amount or address",
+      "noMatches": "No matching transactions",
+      "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
+    },
+    "unknownAddressTooltip": "We couldn't determine this address from the bridge's data. It may appear later; you can also find it in the explorer."
   },
   "date": {
     "earlierToday": "Earlier today",

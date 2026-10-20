@@ -1,13 +1,11 @@
-import {
-  type ConcentratedPoolRawResponse,
-  DEFAULT_VS_CURRENCY,
-} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, memo, useEffect, useMemo, useState } from "react";
 import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -22,12 +20,13 @@ import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -53,12 +52,11 @@ const HistoricalPriceChart = dynamic(
 const OpenCreatePositionSearchParam = "open_create_position";
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
-  observer(({ poolId }) => {
-    const { chainStore, accountStore } = useStore();
+  memo(({ poolId }) => {
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
+    const { address, signAndBroadcast, transactionContext } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -75,11 +73,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { data: userPositions, isFetched: isUserPositionsFetched } =
       api.local.concentratedLiquidity.getUserPositions.useQuery(
         {
-          userOsmoAddress: account?.address ?? "",
+          userOsmoAddress: address ?? "",
           forPoolId: poolId,
         },
         {
-          enabled: !isWalletLoading && Boolean(account?.address),
+          enabled: !isWalletLoading && Boolean(address),
         }
       );
 
@@ -116,12 +114,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const onClickCollectAllRewards = () => {
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          claimableSpreadRewardPositions.map(({ id }) => id),
-          claimableIncentivePositions.map(({ id }) => id),
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        claimableSpreadRewardPositions.map(({ id }) => id),
+        claimableIncentivePositions.map(({ id }) => id),
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     };
 
@@ -456,16 +455,16 @@ const PoolDataGroup: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -487,14 +486,14 @@ const ChartHeader: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalChartData,
     yRange,
@@ -516,17 +515,16 @@ const Chart: FunctionComponent<{
       }}
     />
   );
-});
+};
 
 const UserAssetsAndExternalIncentives: FunctionComponent<{
   poolId: string;
   onIncentivize: () => void;
-}> = observer(({ poolId, onIncentivize }) => {
-  const { chainStore, accountStore } = useStore();
+}> = ({ poolId, onIncentivize }) => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
 
   const { data: poolGaugeIncentives } =
     api.edge.pools.getPoolGaugeIncentives.useQuery({ poolId });
@@ -536,11 +534,11 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
   const { data: userPositions } =
     api.local.concentratedLiquidity.getUserPositions.useQuery(
       {
-        userOsmoAddress: account?.address ?? "",
+        userOsmoAddress: address ?? "",
         forPoolId: poolId,
       },
       {
-        enabled: !isWalletLoading && Boolean(account?.address),
+        enabled: !isWalletLoading && Boolean(address),
       }
     );
 
@@ -694,4 +692,4 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
       )}
     </div>
   );
-});
+};

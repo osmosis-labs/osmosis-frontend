@@ -21,9 +21,11 @@ import {
   UserEvmAddressSchema,
 } from "@osmosis-labs/trpc";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import { EthereumChainInfo } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { getClientEvmRpcUrls } from "~/utils/evm-rpc";
 import { clientSolanaRpc } from "~/utils/solana";
 
 /**
@@ -160,11 +162,22 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               if (!evmAddress) return emptyBalance;
 
+              const evmChain = EthereumChainInfo.find(
+                (chain) => chain.id === asset.chainId
+              );
+              // This router runs in the browser (localLink), where keyed
+              // RPC env vars don't exist: go through the app's RPC route
+              // for chains with a keyed provider, then public endpoints.
+              // No catch: an unknown balance must fail the query, so React
+              // Query retries and the UI shows a balance error rather than a
+              // false zero that can hide a funded asset. A token with no
+              // contract on this chain already comes back as a real 0.
               const balance = await getEvmBalance({
                 address: getAddress(asset.address),
                 userAddress: evmAddress,
                 chainId: asset.chainId,
-              }).catch(() => undefined);
+                rpcUrls: evmChain ? getClientEvmRpcUrls(evmChain) : undefined,
+              });
 
               if (!balance) return emptyBalance;
 

@@ -470,6 +470,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
       const nomicWithdrawEnabled = await getLaunchDarklyFlagValue({
         key: "nomicWithdrawAmount",
+        defaultValue: false,
       });
 
       if (bitcoinCounterparty || isNomicBtc) {

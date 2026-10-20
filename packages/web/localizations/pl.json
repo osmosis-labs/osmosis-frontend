@@ -297,6 +297,7 @@
     "notInitialized": "Ładowanie...",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
+    "scalingFactorNotInteger": "Współczynnik skalowania musi być liczbą całkowitą",
     "zeroAmount": "Ilość jest zerowa",
     "invalidRange": "Nieprawidłowy zakres cen",
     "fallbackText1": "Wystąpił błąd",
@@ -1020,6 +1021,9 @@
     "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko.",
     "ibcConnectionDown": "Natywne połączenie IBC niedostępne",
     "ibcConnectionDownDescription": "Bezpośrednia trasa IBC dla {asset} jest obecnie niedostępna. Poniższe opcje mogą oferować alternatywną ścieżkę, ale mogą być również dotknięte problemem.",
+    "balanceUnavailable": "Nie udało się wczytać salda {chain}",
+    "balanceUnavailableDescription": "Nie udało się połączyć z {chain}, aby sprawdzić saldo, więc może być wyświetlane jako 0. Twoje środki nie są zagrożone. Spróbuj ponownie lub skorzystaj z opcji poniżej.",
+    "retryBalance": "Spróbuj ponownie",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Natywne przelewy niedostępne dla {asset}",
@@ -1273,7 +1277,7 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
-    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji i transferów. Obsługa większej liczby typów transakcji wkrótce.",
+    "launchAlert": "Wyświetlane są Twoje swapy, wpłaty i wypłaty.",
     "history": "Historia",
     "orders": "Zamówienia",
     "historyTable": {
@@ -1291,7 +1295,17 @@
       "providerFee": "Opłata dostawcy",
       "provider": "Dostawca",
       "networkFee": "Opłata sieciowa"
-    }
+    },
+    "filter": {
+      "type": "Typy transakcji",
+      "swap": "Swapy",
+      "deposit": "Wpłaty",
+      "withdraw": "Wypłaty",
+      "search": "Szukaj aktywa, sieci, kwoty lub adresu",
+      "noMatches": "Brak pasujących transakcji",
+      "pageHint": "Filtry dotyczą tylko transakcji na tej stronie. Sprawdź następną stronę lub zmień filtry."
+    },
+    "unknownAddressTooltip": "Nie udało się ustalić tego adresu na podstawie danych mostu. Może pojawić się później; możesz go też znaleźć w eksploratorze."
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
