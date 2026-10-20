@@ -192,7 +192,8 @@ export function getConcentratedRangePoolApr({
         poolId: poolId,
       });
       const apr = APR / 100;
-      if (isNaN(apr)) return;
+      // Throw rather than cache an unknown APR, so a bad response keeps the last good one.
+      if (isNaN(apr)) throw new Error(`Invalid range APR for pool ${poolId}`);
       return new RatePretty(apr);
     },
   });

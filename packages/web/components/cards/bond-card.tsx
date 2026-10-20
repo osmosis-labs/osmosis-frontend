@@ -288,7 +288,7 @@ const SuperfluidBreakdownRow = ({
       <div className="flex place-content-between items-start text-right">
         <div className="flex items-center gap-2">
           <span className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
-            +{apr?.maxDecimals(0).toString() ?? "–"}
+            {apr ? `+${apr.maxDecimals(0).toString()}` : "–"}
           </span>
           <FallbackImg
             className="rounded-full"
