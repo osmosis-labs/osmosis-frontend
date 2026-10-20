@@ -120,13 +120,22 @@ const config = {
       )
     );
 
-    // The EVM wallet connector SDKs are browser-only; server builds get an empty connector list.
-    // See config/wagmi-connectors.ts.
+    // Wallet SDKs are browser-only. Server builds swap these modules for their `.server.ts`
+    // stand-ins (no EVM connectors, Cosmos wallet installers that reject), which keeps the SDKs
+    // and their dependencies out of the server bundle. See config/wagmi-connectors.ts and
+    // config/wallet-installers.ts.
     if (isServer) {
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(
-          /config[\\/]wagmi-connectors$/,
-          path.resolve(__dirname, "config", "wagmi-connectors.server.ts")
+          /config[\\/](wagmi-connectors|wallet-installers)$/,
+          (resource) => {
+            const name = path.basename(resource.request);
+            resource.request = path.resolve(
+              __dirname,
+              "config",
+              `${name}.server.ts`
+            );
+          }
         )
       );
     }
