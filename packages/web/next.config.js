@@ -6,6 +6,9 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  experimental: {
+    reactCompiler: true,
+  },
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
