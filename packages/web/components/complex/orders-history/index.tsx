@@ -59,6 +59,12 @@ const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
 export const OrderHistory = () => {
+  // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
+  // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
+  // memoized reads would keep stale rows. The compiler only flags
+  // `useVirtualizer` as incompatible, not the window variant.
+  "use no memo";
+
   const featureFlags = useFeatureFlags();
   const { t } = useTranslation();
   const { address, isWalletConnected } = useWallet();
