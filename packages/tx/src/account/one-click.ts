@@ -112,6 +112,7 @@ export async function signOneClick(
     fee,
     memo,
     signerData: { accountNumber, sequence, chainId },
+    accountPubKey,
     memoFlags,
   }: SessionSignRequest,
   deps: {
@@ -141,15 +142,9 @@ export async function signOneClick(
       throw new Error("One click trading network fee limit exceeded");
   };
   assertSession();
-  if (!wallet.offlineSigner) {
-    throw new Error("offlineSigner is not available in wallet");
-  }
-
-  const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
-    (account) => account.address === signerAddress
-  );
-  if (!accountFromSigner) {
-    throw new Error("Failed to retrieve account from signer");
+  // Creating the session was a signed tx, so the chain has the pubkey.
+  if (!accountPubKey) {
+    throw new Error("Account public key is not available onchain");
   }
 
   const oneClickTradingInfo = deps.oneClickTradingInfo;
@@ -177,15 +172,22 @@ export async function signOneClick(
     import("cosmjs-types/cosmos/tx/v1beta1/tx"),
   ]);
 
-  const pubkey = encodePubkey(encodeSecp256k1Pubkey(accountFromSigner.pubkey));
-
   const pubKeyTypeUrl = getPublicKeyTypeUrl({
     chainId: wallet.chain.chain_id,
     coinType:
       deps.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
         ?.slip44 ?? 118,
   });
+  // A different key type would put the wrong pubkey in the signer info.
+  if (accountPubKey.typeUrl !== pubKeyTypeUrl) {
+    throw new Error(
+      `Unsupported account public key type: ${accountPubKey.typeUrl}`
+    );
+  }
 
+  const pubkey = encodePubkey(
+    encodeSecp256k1Pubkey(fromBase64(accountPubKey.key))
+  );
   pubkey.typeUrl = pubKeyTypeUrl;
 
   const registry = deps.registry;

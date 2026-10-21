@@ -82,11 +82,19 @@ export class BaseAccount {
       address = defaultBech32Address;
     }
 
+    // Unset until the account's first signed tx.
+    const rawPubKey = value.pub_key || value.pubKey;
+    const pubKey =
+      rawPubKey?.["@type"] && rawPubKey?.key
+        ? { typeUrl: String(rawPubKey["@type"]), key: String(rawPubKey.key) }
+        : undefined;
+
     return new BaseAccount(
       type,
       address,
       new Int(value.account_number || "0"),
-      new Int(value.sequence || "0")
+      new Int(value.sequence || "0"),
+      pubKey
     );
   }
 
@@ -94,7 +102,9 @@ export class BaseAccount {
     protected readonly type: string,
     protected readonly address: string,
     protected readonly accountNumber: Int,
-    protected readonly sequence: Int
+    protected readonly sequence: Int,
+    /** Base64 `key` of a single-key pubkey; multisig keys have no `key` and stay unset. */
+    protected readonly pubKey?: { typeUrl: string; key: string }
   ) {}
 
   getType(): string {
@@ -111,5 +121,9 @@ export class BaseAccount {
 
   getSequence(): Int {
     return this.sequence;
+  }
+
+  getPubKey(): { typeUrl: string; key: string } | undefined {
+    return this.pubKey;
   }
 }
