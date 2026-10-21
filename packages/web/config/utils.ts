@@ -58,6 +58,7 @@ export function writeCurrentAssetListHash(hash: string): void {
 const FETCH_ATTEMPTS = 4;
 const FETCH_BASE_DELAY_MS = 1_000;
 const FETCH_MAX_DELAY_MS = 30_000;
+const FETCH_ATTEMPT_TIMEOUT_MS = 30_000;
 
 /**
  * Runs `run` over `groups` with `concurrency` workers. One worker takes a
@@ -116,7 +117,10 @@ function parseRetryAfterMs(header: string | null): number | undefined {
  * Fetch a build-time resource (asset list JSON, asset image), retrying rate
  * limits (429), server errors (5xx) and network errors with exponential
  * backoff, honouring `Retry-After` (delay-seconds or HTTP-date) when the host
- * sends one, capped so one slow host cannot stall a build. Other statuses
+ * sends one, capped so one slow host cannot stall a build. Each attempt,
+ * including reading its body, is aborted after `FETCH_ATTEMPT_TIMEOUT_MS`, so
+ * a stalled connection is retried (and a caller can move on to a mirror)
+ * instead of hanging until undici's own minutes-long timeouts. Other statuses
  * (e.g. a dead logo URL's 404) fail at once.
  * @throws When the resource could not be fetched.
  */
@@ -125,7 +129,9 @@ export async function fetchWithRetry(url: string): Promise<Response> {
   for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++) {
     let retryAfterMs: number | undefined;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_ATTEMPT_TIMEOUT_MS),
+      });
       if (response.ok) return response;
 
       lastError = `${response.status} ${response.statusText}`;
