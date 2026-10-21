@@ -48,6 +48,9 @@ yarn cf:dry-run
 yarn cf:preview
 ```
 
+`yarn cf:build:profile` builds with Next.js server minification off, so Cloudflare
+CPU and heap profiles show readable function names.
+
 `cf:preview` populates the local R2 cache before starting the Worker. Asset detail
 pages revalidate after two hours and `/apps` after one day. R2 stores generated
 pages; the Durable Object queue coordinates background regeneration.

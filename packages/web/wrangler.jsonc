@@ -38,4 +38,7 @@
     "enabled": true,
   },
   "upload_source_maps": true,
+  // Mangles identifiers on top of OpenNext's whitespace/syntax minification (~760KB gzip).
+  // Function and class names are kept (Wrangler's keep_names default), so profiles stay readable.
+  "minify": true,
 }

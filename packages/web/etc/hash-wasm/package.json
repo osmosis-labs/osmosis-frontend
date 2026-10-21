@@ -1,0 +1,8 @@
+{
+  "name": "hash-wasm",
+  "version": "4.12.0-stub",
+  "main": "index.js",
+  "private": true,
+  "scripts": {},
+  "dependencies": {}
+}
