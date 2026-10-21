@@ -262,6 +262,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: filteredAssetsData,
     columns: collapsedColumns,

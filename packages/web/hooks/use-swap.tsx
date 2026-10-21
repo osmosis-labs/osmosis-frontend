@@ -74,7 +74,7 @@ import { api, RouterInputs } from "~/utils/trpc";
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
+import { useLatestWhen } from "./use-latest-when";
 import { useWalletSelect } from "./use-wallet-select";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -762,7 +762,7 @@ export function useSwap(
 
   // Held per quote direction, so a quote from the other direction is never
   // shown while the new direction's first quote loads.
-  const positivePrevQuote = usePreviousWhen(
+  const positivePrevQuote = useLatestWhen(
     quote,
     useCallback(
       () =>
@@ -1247,13 +1247,18 @@ function useSwapAmountInput({
     [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
-  useEffect(() => {
-    if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
-
-    setGasAmount(
-      currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
-    );
-  }, [currentBalanceNetworkFee?.gasAmount]);
+  // gasAmount feeds the input above, which feeds this fee query, so it has to
+  // live in state; sync it during render whenever the fee result changes.
+  const latestFeeGasAmount = currentBalanceNetworkFee?.gasAmount;
+  // Seeded undefined so a fee already cached on mount still syncs.
+  const [prevFeeGasAmount, setPrevFeeGasAmount] =
+    useState<typeof latestFeeGasAmount>(undefined);
+  if (latestFeeGasAmount !== prevFeeGasAmount) {
+    setPrevFeeGasAmount(latestFeeGasAmount);
+    if (!isNil(latestFeeGasAmount)) {
+      setGasAmount(latestFeeGasAmount.mul(new Dec(1.02))); // Add 2% buffer
+    }
+  }
 
   const returnValue = useDeepMemo(() => {
     return {
@@ -1314,10 +1319,18 @@ function useToFromDenoms({
     initialToDenom
   );
 
-  useEffect(() => {
+  const [prevInitialDenoms, setPrevInitialDenoms] = useState({
+    initialFromDenom,
+    initialToDenom,
+  });
+  if (
+    prevInitialDenoms.initialFromDenom !== initialFromDenom ||
+    prevInitialDenoms.initialToDenom !== initialToDenom
+  ) {
+    setPrevInitialDenoms({ initialFromDenom, initialToDenom });
     setToAssetState(initialToDenom);
     setFromAssetState(initialFromDenom);
-  }, [initialFromDenom, initialToDenom]);
+  }
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks

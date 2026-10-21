@@ -954,6 +954,8 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             variantsToBeExcluded: variantsNotToBeExcluded,
             prioritizedDenoms,
+            deprioritizedDenoms,
+            type,
             // only affects ordering while searching
             watchListDenoms: search ? watchListDenoms : undefined,
           }),

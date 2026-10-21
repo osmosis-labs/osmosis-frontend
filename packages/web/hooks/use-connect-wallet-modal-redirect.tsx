@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { ComponentProps, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
@@ -38,11 +38,13 @@ export function useConnectWalletModalRedirect(
   );
   const [showSelf, setShowSelf] = useState(true);
 
-  useEffect(() => {
-    if (!walletInitiallyConnected && walletStatus === WalletStatus.Connected) {
-      setShowSelf(true);
-    }
-  }, [walletStatus, walletInitiallyConnected]);
+  if (
+    !showSelf &&
+    !walletInitiallyConnected &&
+    walletStatus === WalletStatus.Connected
+  ) {
+    setShowSelf(true);
+  }
 
   const resetState = useCallback(() => {
     setShowSelf(false);

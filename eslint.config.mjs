@@ -140,7 +140,7 @@ const webConfig = [
     rules: {
       ...sharedRules,
       ...Object.fromEntries(
-        reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "warn"])
+        reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "error"])
       ),
       "import/no-extraneous-dependencies": [
         "error",

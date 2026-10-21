@@ -86,23 +86,20 @@ export function useControllableState<T = boolean>(
   const controlled = valueProp !== undefined;
   const value = controlled ? valueProp : uncontrolledState;
 
-  const setValue = useCallbackRef(
-    (next: React.SetStateAction<T>) => {
-      const setter = next as (prevState?: T) => T;
-      const nextValue = typeof next === "function" ? setter(value) : next;
+  const setValue = useCallbackRef((next: React.SetStateAction<T>) => {
+    const setter = next as (prevState?: T) => T;
+    const nextValue = typeof next === "function" ? setter(value) : next;
 
-      if (!shouldUpdateProp(value, nextValue)) {
-        return;
-      }
+    if (!shouldUpdateProp(value, nextValue)) {
+      return;
+    }
 
-      if (!controlled) {
-        setUncontrolledState(nextValue);
-      }
+    if (!controlled) {
+      setUncontrolledState(nextValue);
+    }
 
-      onChangeProp(nextValue);
-    },
-    [controlled, onChangeProp, value, shouldUpdateProp]
-  );
+    onChangeProp(nextValue);
+  });
 
   return [value, setValue] as [T, React.Dispatch<React.SetStateAction<T>>];
 }

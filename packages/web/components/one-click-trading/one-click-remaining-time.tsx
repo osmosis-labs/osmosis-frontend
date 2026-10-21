@@ -1,9 +1,10 @@
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent } from "react";
 
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
+import { useNow } from "~/hooks/use-now";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 
 export const OneClickTradingRemainingTime: FunctionComponent<{
@@ -14,34 +15,17 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
     useOneClickTradingSession();
   const { t } = useTranslation();
 
-  const [humanizedTime, setHumanizedTime] =
-    useState<ReturnType<typeof humanizeTime>>();
-
-  useEffect(() => {
-    if (!oneClickTradingInfo) return setHumanizedTime(undefined);
-
-    const updateTime = () => {
-      setHumanizedTime(
-        humanizeTime(
+  const now = useNow();
+  const humanizedTime =
+    oneClickTradingInfo && now !== null
+      ? humanizeTime(
           dayjs.unix(
             unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
           ),
-          useShortTimeUnits
+          useShortTimeUnits,
+          dayjs(now)
         )
-      );
-    };
-
-    updateTime();
-
-    const intervalId = setInterval(
-      () => {
-        updateTime();
-      },
-      1_000 // Update every second
-    );
-
-    return () => clearInterval(intervalId);
-  }, [oneClickTradingInfo, useShortTimeUnits]);
+      : undefined;
 
   if (isOneClickTradingExpired) {
     return (

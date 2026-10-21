@@ -1,4 +1,4 @@
-import { WalletRepo } from "@cosmos-kit/core";
+import { State, WalletRepo } from "@cosmos-kit/core";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { WalletConnectionInProgressError } from "@osmosis-labs/utils";
 import React, {
@@ -48,6 +48,8 @@ export const CosmosWalletState: FunctionComponent<
     >;
     isLoading1CTParams?: boolean;
     modalView: ModalView;
+    qrState: State;
+    qrMessage: string;
     lazyWalletInfo?: (typeof CosmosWalletRegistry)[number];
     onConnect: OnConnectWallet;
     onCreate1CTSession: () => void;
@@ -62,6 +64,8 @@ export const CosmosWalletState: FunctionComponent<
     walletRepo,
     onRequestClose,
     modalView,
+    qrState,
+    qrMessage,
     onConnect,
     lazyWalletInfo,
     transaction1CTParams,
@@ -269,7 +273,13 @@ export const CosmosWalletState: FunctionComponent<
     }
 
     if (modalView === "qrCode") {
-      return <QRCodeView wallet={currentWallet!} />;
+      return (
+        <QRCodeView
+          wallet={currentWallet!}
+          qrState={qrState}
+          qrMessage={qrMessage}
+        />
+      );
     }
 
     const isReturningUser = previousConnectedCosmosAccount && hasFunds;
