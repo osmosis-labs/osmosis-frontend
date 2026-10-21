@@ -804,7 +804,8 @@
     "amountTooSmallForSlippage": "Suma este prea mică pentru un schimb cu acest slippage. Măriți suma sau reduceți slippage-ul.",
     "slippageAutoAdjustedTitle": "Slippage ajustat automat",
     "slippageAutoAdjustedBody": "Slippage-ul implicit al acestei tranzacții a fost mărit din cauza impactului mare asupra prețului sau a lichidității scăzute.",
-    "routeLiquidityUnknown": "Lichiditatea acestei rute nu a putut fi verificată. Verifică suma minimă primită înainte de a confirma."
+    "routeLiquidityUnknown": "Lichiditatea acestei rute nu a putut fi verificată. Verifică suma minimă primită înainte de a confirma.",
+    "slippageAutoAdjustedHigh": "Slippage-ul a fost mărit automat din cauza impactului mare asupra prețului sau a lichidității scăzute a acestei tranzacții. Verifică suma minimă primită înainte de a confirma."
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",

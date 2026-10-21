@@ -885,7 +885,7 @@ export function ReviewOrder({
                       </p>
                     )}
                     {isManualSlippageTooHigh && (
-                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
+                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 px-5 py-2.5">
                         <Icon
                           id="alert-triangle"
                           width={24}
@@ -899,7 +899,11 @@ export function ReviewOrder({
                             )}
                           </span>
                           <span className="body2 sm:caption text-osmoverse-300">
-                            {t("limitOrders.lowerSlippageToleranceRecommended")}
+                            {showAutoAdjusted
+                              ? t("swap.slippageAutoAdjustedHigh")
+                              : t(
+                                  "limitOrders.lowerSlippageToleranceRecommended"
+                                )}
                           </span>
                         </div>
                       </div>
