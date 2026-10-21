@@ -48,6 +48,10 @@ yarn cf:dry-run
 yarn cf:preview
 ```
 
+`cf:build` passes `--dangerouslyUseUnsupportedNextVersion`: OpenNext refuses Next.js majors more
+than two years past release, which Next 15 reached on 2026-10-21. Remove it once the app is on
+Next 16.
+
 `yarn cf:build:profile` builds with Next.js server minification off, so Cloudflare
 CPU and heap profiles show readable function names.
 
