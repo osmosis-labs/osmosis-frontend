@@ -21,6 +21,18 @@ import {
 } from "~/utils/halt-reasons";
 import { api } from "~/utils/trpc";
 
+const ConditionalTooltip = ({
+  children,
+  content,
+}: PropsWithChildren<{ content: string | undefined }>) =>
+  content ? (
+    <Tooltip content={content} className="h-full flex-1">
+      {children as ReactElement}
+    </Tooltip>
+  ) : (
+    <div className="flex h-full flex-1">{children}</div>
+  );
+
 export const AssetBalance = ({ className }: CustomClasses) => {
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
   const { asset } = useAssetInfo();
@@ -72,18 +84,6 @@ export const AssetBalance = ({ className }: CustomClasses) => {
       ? (asset.tooltipMessage ??
         t(withdrawalHaltReasonKey(asset.withdrawalHaltReason)))
       : undefined;
-
-  const ConditionalTooltip = ({
-    children,
-    content,
-  }: PropsWithChildren<{ content: string | undefined }>) =>
-    content ? (
-      <Tooltip content={content} className="h-full flex-1">
-        {children as ReactElement}
-      </Tooltip>
-    ) : (
-      <div className="flex h-full flex-1">{children}</div>
-    );
 
   return (
     <section

@@ -26,6 +26,16 @@ export const getPhantomProvider = (): PhantomProvider | undefined =>
       (window as unknown as { solana?: PhantomProvider }).solana ??
       undefined);
 
+const subscribeToNothing = () => () => {};
+
+/** Whether the Phantom extension is injected. `false` during SSR and hydration. */
+export const usePhantomDetected = () =>
+  useSyncExternalStore(
+    subscribeToNothing,
+    () => Boolean(getPhantomProvider()),
+    () => false
+  );
+
 // Module-level connection state so every consumer (amount screen, wallet
 // select modal, quote flow) observes the same Phantom session.
 let phantomAddress: string | undefined;

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
+
+import { useIsClient } from "~/hooks/use-is-client";
 
 export const AlloyedAssetsToastSeenThisSessionKey =
   "seen-alloyed-assets-toast-this-session";
@@ -22,23 +24,26 @@ const writeHasSeenToastThisSession = () => {
   }
 };
 
+const subscribeToNothing = () => () => {};
+
 /** Keeps the proactive toast to at most once per browser-tab session. */
 export const useAlloyedAssetsToastSession = () => {
-  const [hasSeenToastThisSession, setHasSeenToastThisSession] = useState(false);
-  const [isSessionHydrated, setIsSessionHydrated] = useState(false);
-
-  useEffect(() => {
-    setHasSeenToastThisSession(readHasSeenToastThisSession());
-    setIsSessionHydrated(true);
-  }, []);
+  const isSessionHydrated = useIsClient();
+  const hasSeenInStorage = useSyncExternalStore(
+    subscribeToNothing,
+    readHasSeenToastThisSession,
+    () => false
+  );
+  // Covers the case where session storage is unavailable for writes.
+  const [hasSeenInState, setHasSeenInState] = useState(false);
 
   const markToastSeenThisSession = useCallback(() => {
     writeHasSeenToastThisSession();
-    setHasSeenToastThisSession(true);
+    setHasSeenInState(true);
   }, []);
 
   return {
-    hasSeenToastThisSession,
+    hasSeenToastThisSession: hasSeenInState || hasSeenInStorage,
     isSessionHydrated,
     markToastSeenThisSession,
   };

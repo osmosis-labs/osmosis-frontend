@@ -6,7 +6,6 @@ import {
   forwardRef,
   FunctionComponent,
   type SyntheticEvent,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -18,6 +17,7 @@ import { useMount } from "react-use";
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useTranslation } from "~/hooks";
+import { useCallbackRef } from "~/hooks/use-callback-ref";
 
 const searchBoxClasses = cva(
   "flex flex-nowrap items-center group justify-between gap-3 bg-osmoverse-825 transition-colors ease-out duration-200 group-focus-within:bg-osmoverse-800",
@@ -93,14 +93,11 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
      *  input echoing back from an external change. */
     const syncedValueRef = useRef(currentValue ?? "");
 
-    const _onInput = useCallback(
-      (e: SyntheticEvent<HTMLInputElement>) => {
-        const value = (e.target as HTMLInputElement).value;
-        syncedValueRef.current = value;
-        onInput(value);
-      },
-      [onInput]
-    );
+    const _onInput = useCallbackRef((e: SyntheticEvent<HTMLInputElement>) => {
+      const value = (e.target as HTMLInputElement).value;
+      syncedValueRef.current = value;
+      onInput(value);
+    });
 
     const _debouncedOnInput = useMemo(
       () => (!_debounce ? _onInput : debounce(_onInput, _debounce)),

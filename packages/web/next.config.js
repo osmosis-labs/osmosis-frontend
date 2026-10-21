@@ -6,6 +6,9 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  experimental: {
+    reactCompiler: true,
+  },
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
@@ -154,6 +157,17 @@ const config = {
         path.resolve(__dirname, "etc", "noop", "index.js")
       )
     );
+
+    // The EVM wallet connector SDKs are browser-only; server builds get an empty connector list.
+    // See config/wagmi-connectors.ts.
+    if (isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /config[\\/]wagmi-connectors$/,
+          path.resolve(__dirname, "config", "wagmi-connectors.server.ts")
+        )
+      );
+    }
 
     return config;
   },
