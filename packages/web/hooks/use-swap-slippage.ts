@@ -113,18 +113,20 @@ export function useSwapSlippage({
     slippageConfig.setManualSlippage(resolved.slippage);
   });
 
+  const { clearUserOverride } = slippageConfig;
+
   /** Call when the review closes: a value typed during one review does not
    *  carry into the next. Clearing on close rather than on open means the
    *  next review's first render already shows the app's value. */
   const resetForReview = useCallback(() => {
-    slippageConfig.clearUserOverride();
-  }, [slippageConfig]);
+    clearUserOverride();
+  }, [clearUserOverride]);
 
   /** Full reset after a trade. */
   const reset = useCallback(() => {
-    slippageConfig.clearUserOverride();
+    clearUserOverride();
     setFeeErrorState((prev) => ({ ...prev, slippage: undefined }));
-  }, [slippageConfig]);
+  }, [clearUserOverride]);
 
   return {
     source: resolved.source,
