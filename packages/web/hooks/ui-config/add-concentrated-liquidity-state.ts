@@ -555,7 +555,9 @@ function planInactivePoolCounterparty({
 }
 
 /** Plan the update of the non-anchor deposit input from the anchor one (given the range and pool price).
- *  Does nothing (keeps the other amount) while the anchor amount is not positive. */
+ *  Does nothing on a single-sided range, since only one side is deposited.
+ *  Does nothing (keeps the other amount) while the anchor amount is not positive,
+ *  unless the anchor is on max: then the other side follows it to zero. */
 export function planCounterpartyUpdate({
   anchor,
   base,
@@ -563,6 +565,8 @@ export function planCounterpartyUpdate({
   pool,
   isInactivePool,
   tickRange,
+  baseDepositOnly,
+  quoteDepositOnly,
   baseDepositPrice,
   quoteDepositPrice,
 }: {
@@ -572,16 +576,29 @@ export function planCounterpartyUpdate({
   pool: ConcentratedPoolParams | null;
   isInactivePool: boolean;
   tickRange: [Int, Int];
+  baseDepositOnly: boolean;
+  quoteDepositOnly: boolean;
   baseDepositPrice: PricePretty | null;
   quoteDepositPrice: PricePretty | null;
 }): CounterpartyPlan {
+  // The counterparty amount is neither deposited nor validated, so it must
+  // not cap the deposited side (e.g. by flipping max to a zero balance).
+  if (baseDepositOnly || quoteDepositOnly) return { type: "none" };
+
   const anchorSide = anchor === "base" ? base : quote;
   const otherSide = anchor === "base" ? quote : base;
   const otherSideName: DepositSide = anchor === "base" ? "quote" : "base";
 
   const anchorAmount = new Int(anchorSide.getAmountPrimitive().amount);
   // TODO: check counterparty balance and subtract to not exceed that
-  if (anchorAmount.lte(new Int(0))) return { type: "none" };
+  if (anchorAmount.lte(new Int(0))) {
+    // Max of a zero balance (or a balance below the fee): the other side can't
+    // be deposited either, so don't leave its previously typed amount behind.
+    if (anchorSide.isMax) {
+      return { type: "setAmount", side: otherSideName, amount: "0" };
+    }
+    return { type: "none" };
+  }
 
   // Special handling for inactive pools when Max is clicked
   if (isInactivePool && anchorSide.isMax) {
