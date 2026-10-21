@@ -1,61 +1,515 @@
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
+import { BigDec } from "@osmosis-labs/math";
+import type { Pool } from "@osmosis-labs/server";
 import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@osmosis-labs/keplr-stores";
+  prepareAddToConcentratedLiquidityPositionMsg,
+  prepareCreateConcentratedLiquidityPositionMsg,
+} from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
-  BigDec,
-  calcAmount0,
-  calcAmount1,
-  maxSpotPrice,
-  maxTick,
-  minSpotPrice,
-  minTick,
-  priceToTick,
-  roundPriceToNearestTick,
-  roundToNearestDivisible,
-} from "@osmosis-labs/math";
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
-import {
-  FakeFeeConfig,
-  IPriceStore,
-  OsmosisQueries,
-  PriceConfig,
-} from "@osmosis-labs/stores";
-import {
+  AppCurrency,
   CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
-import { useStore } from "~/stores";
+import { getChainInfo } from "~/config/chain";
 import { api } from "~/utils/trpc";
 
-/** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
- *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
- *
- *  Provides memoized callbacks for sending common messages associated with adding concentrated liquidity.
+import { useWallet } from "../use-wallet";
+import {
+  AddConcentratedLiquidityAction,
+  addConcentratedLiquidityReducer,
+  calcDepositPercentages,
+  ConcentratedPoolParams,
+  counterpartyPlanToActions,
+  DepositSide,
+  deriveRangeView,
+  getQuoteOverBaseMultiplier,
+  INITIAL_ADD_CL_STATE,
+  InvalidRangeError,
+  isInactiveConcentratedPool,
+  planCounterpartyUpdate,
+  RangeView,
+} from "./add-concentrated-liquidity-state";
+import {
+  calcHighGasFee,
+  CL_CREATE_POSITION_GAS,
+  ConcentratedDepositAmount,
+  createConcentratedDepositAmount,
+} from "./concentrated-deposit-amount";
+
+export { InvalidRangeError };
+
+/** Drops the non-serializable `coin` so React Query's structural sharing keeps
+ *  the array reference stable across refetches with unchanged balances. */
+const selectRawBalances = (
+  balances: { denom: string; amount: string }[]
+): { denom: string; amount: string }[] =>
+  balances.map(({ denom, amount }) => ({ denom, amount }));
+
+/** User input config for eventually sending a valid add concentrated liquidity msg.
+ *  A snapshot: it changes identity whenever any value in it changes. Setters are stable.
+ */
+export interface AddConcentratedLiquidityConfig extends Omit<
+  RangeView,
+  "range"
+> {
+  readonly poolId: string;
+  /** Concentrated pool info (tick spacing, current sqrt price, currencies) from the pools query. Null until loaded. */
+  readonly pool: ConcentratedPoolParams | null;
+  /** True when the pool has TVL but no in-range liquidity at the current price. */
+  readonly isInactivePool: boolean;
+  readonly baseDenom: string;
+  readonly quoteDenom: string;
+  readonly fullRange: boolean;
+  /** Flag indicating that the user prefers superfluid staking for this full range position. */
+  readonly shouldBeSuperfluidStaked: boolean;
+  readonly depositPercentages: [RatePretty, RatePretty];
+  readonly baseDepositAmountIn: ConcentratedDepositAmount;
+  readonly quoteDepositAmountIn: ConcentratedDepositAmount;
+  readonly error: Error | undefined;
+  readonly setMinRange: (min: string) => void;
+  readonly setMaxRange: (max: string) => void;
+  readonly setFullRange: (isFullRange: boolean) => void;
+  readonly setAnchorAsset: (anchor: DepositSide) => void;
+  readonly setBaseDepositAmountMax: () => void;
+  readonly setQuoteDepositAmountMax: () => void;
+  readonly setElectSuperfluidStaking: (elected: boolean) => void;
+}
+
+/** Returns the previous currency object while its identity (denom, decimals, display) is unchanged,
+ *  since pool refetches hand out new currency objects every time. */
+function useStableCurrency(
+  currency: AppCurrency | undefined
+): AppCurrency | undefined {
+  /* eslint-disable react-hooks/exhaustive-deps */
+  return useMemo(
+    () => currency,
+    [
+      currency?.coinMinimalDenom,
+      currency?.coinDenom,
+      currency?.coinDecimals,
+      currency?.coinImageUrl,
+    ]
+  );
+  /* eslint-enable react-hooks/exhaustive-deps */
+}
+
+export interface AddConcentratedLiquidityInputs {
+  poolId: string;
+  /** Currency used until the pool is loaded, and the chain's fee and stake currencies. */
+  chain: {
+    placeholderCurrency: AppCurrency;
+    feeCurrency: Parameters<typeof calcHighGasFee>[0];
+    stakeCurrency: AppCurrency;
+  };
+  pool: Pool | undefined;
+  /** Raw user balances (base units). Undefined (loading or no account) reads as zero balances. */
+  balances: readonly { denom: string; amount: string }[] | undefined;
+  baseDepositPrice: PricePretty | undefined;
+  quoteDepositPrice: PricePretty | undefined;
+  /** Historical prices with currency decimals; `Infinity` means no data. */
+  historicalPriceMinMax: { min: number; max: number } | undefined;
+}
+
+/** State and derived values of the add concentrated liquidity config, with no queries or tx sending. */
+export function useAddConcentratedLiquidityState({
+  poolId,
+  chain,
+  pool,
+  balances,
+  baseDepositPrice,
+  quoteDepositPrice,
+  historicalPriceMinMax,
+}: AddConcentratedLiquidityInputs): AddConcentratedLiquidityConfig {
+  const [state, dispatch] = useReducer(
+    addConcentratedLiquidityReducer,
+    INITIAL_ADD_CL_STATE
+  );
+
+  // pool
+  const concentratedPool = pool?.type === "concentrated" ? pool : null;
+  const rawPool = concentratedPool?.raw as
+    ConcentratedPoolRawResponse | undefined;
+  const currentSqrtPriceStr = rawPool?.current_sqrt_price;
+  const tickSpacing = rawPool ? Number(rawPool.tick_spacing) : undefined;
+  const poolBaseCurrency = useStableCurrency(
+    concentratedPool?.reserveCoins[0].currency
+  );
+  const poolQuoteCurrency = useStableCurrency(
+    concentratedPool?.reserveCoins[1].currency
+  );
+  const isInactivePool = isInactiveConcentratedPool(pool);
+
+  const poolParams = useMemo<ConcentratedPoolParams | null>(() => {
+    if (
+      currentSqrtPriceStr === undefined ||
+      tickSpacing === undefined ||
+      !poolBaseCurrency ||
+      !poolQuoteCurrency
+    )
+      return null;
+    return {
+      baseCurrency: poolBaseCurrency,
+      quoteCurrency: poolQuoteCurrency,
+      currentSqrtPrice: new BigDec(currentSqrtPriceStr),
+      tickSpacing,
+    };
+  }, [currentSqrtPriceStr, tickSpacing, poolBaseCurrency, poolQuoteCurrency]);
+
+  // setters of the range are no-ops until the pool is available
+  const hasPoolRef = useRef(false);
+  useEffect(() => {
+    hasPoolRef.current = poolParams !== null;
+  }, [poolParams]);
+
+  const baseCurrency = poolParams?.baseCurrency ?? chain.placeholderCurrency;
+  const quoteCurrency = poolParams?.quoteCurrency ?? chain.placeholderCurrency;
+
+  // historical prices
+  const minHistoricalPrice =
+    historicalPriceMinMax && historicalPriceMinMax.min !== Infinity
+      ? historicalPriceMinMax.min
+      : null;
+  const maxHistoricalPrice =
+    historicalPriceMinMax && historicalPriceMinMax.max !== Infinity
+      ? historicalPriceMinMax.max
+      : null;
+
+  const prices = useMemo(
+    () =>
+      baseDepositPrice && quoteDepositPrice
+        ? { base: baseDepositPrice, quote: quoteDepositPrice }
+        : null,
+    [baseDepositPrice, quoteDepositPrice]
+  );
+
+  const rangeView = useMemo(
+    () =>
+      deriveRangeView({
+        fullRange: state.fullRange,
+        minInput: state.minInput,
+        maxInput: state.maxInput,
+        baseCurrency,
+        quoteCurrency,
+        pool: poolParams,
+        minHistoricalPrice,
+        maxHistoricalPrice,
+      }),
+    [
+      state.fullRange,
+      state.minInput,
+      state.maxInput,
+      baseCurrency,
+      quoteCurrency,
+      poolParams,
+      minHistoricalPrice,
+      maxHistoricalPrice,
+    ]
+  );
+
+  // stable setters
+  const setMinRange = useCallback((value: string) => {
+    if (!hasPoolRef.current) return;
+    dispatch({ type: "setMinRange", value });
+  }, []);
+  const setMaxRange = useCallback((value: string) => {
+    if (!hasPoolRef.current) return;
+    dispatch({ type: "setMaxRange", value });
+  }, []);
+  const setFullRange = useCallback(
+    (value: boolean) => dispatch({ type: "setFullRange", value }),
+    []
+  );
+  const setAnchorAsset = useCallback(
+    (anchor: DepositSide) => dispatch({ type: "setAnchor", anchor }),
+    []
+  );
+  const setBaseDepositAmountMax = useCallback(
+    () => dispatch({ type: "setMax", side: "base" }),
+    []
+  );
+  const setQuoteDepositAmountMax = useCallback(
+    () => dispatch({ type: "setMax", side: "quote" }),
+    []
+  );
+  const setElectSuperfluidStaking = useCallback(
+    (elected: boolean) => dispatch({ type: "setSuperfluid", elected }),
+    []
+  );
+  const setBaseAmount = useCallback(
+    (amount: string) => dispatch({ type: "setAmount", side: "base", amount }),
+    []
+  );
+  const setQuoteAmount = useCallback(
+    (amount: string) => dispatch({ type: "setAmount", side: "quote", amount }),
+    []
+  );
+  const setBaseFraction = useCallback(
+    (fraction: number | undefined) =>
+      dispatch({ type: "setFraction", side: "base", fraction }),
+    []
+  );
+  const setQuoteFraction = useCallback(
+    (fraction: number | undefined) =>
+      dispatch({ type: "setFraction", side: "quote", fraction }),
+    []
+  );
+
+  // deposit inputs
+  const rawBalances = useMemo(
+    () =>
+      new Map<string, string>(
+        (balances ?? []).map(({ denom, amount }) => [denom, amount])
+      ),
+    [balances]
+  );
+
+  /** Fee deducted from the max amount of the stake currency, for the create position tx. */
+  const createPositionFee = useMemo(
+    () => calcHighGasFee(chain.feeCurrency, CL_CREATE_POSITION_GAS),
+    [chain.feeCurrency]
+  );
+  const stakeDenom = chain.stakeCurrency.coinMinimalDenom;
+  let baseFee: CoinPretty | undefined;
+  let quoteFee: CoinPretty | undefined;
+  if (poolParams) {
+    if (stakeDenom === baseCurrency.coinMinimalDenom) {
+      baseFee = createPositionFee;
+    } else if (stakeDenom === quoteCurrency.coinMinimalDenom) {
+      quoteFee = createPositionFee;
+    }
+  }
+
+  const baseRawBalance = rawBalances.get(baseCurrency.coinMinimalDenom);
+  const quoteRawBalance = rawBalances.get(quoteCurrency.coinMinimalDenom);
+
+  const baseDepositAmountIn = useMemo(
+    () =>
+      createConcentratedDepositAmount({
+        currency: baseCurrency,
+        rawBalance: baseRawBalance,
+        state: state.base,
+        fee: baseFee,
+        setAmount: setBaseAmount,
+        setFraction: setBaseFraction,
+      }),
+    [
+      baseCurrency,
+      baseRawBalance,
+      state.base,
+      baseFee,
+      setBaseAmount,
+      setBaseFraction,
+    ]
+  );
+  const quoteDepositAmountIn = useMemo(
+    () =>
+      createConcentratedDepositAmount({
+        currency: quoteCurrency,
+        rawBalance: quoteRawBalance,
+        state: state.quote,
+        fee: quoteFee,
+        setAmount: setQuoteAmount,
+        setFraction: setQuoteFraction,
+      }),
+    [
+      quoteCurrency,
+      quoteRawBalance,
+      state.quote,
+      quoteFee,
+      setQuoteAmount,
+      setQuoteFraction,
+    ]
+  );
+
+  const { tickRange, baseDepositOnly, quoteDepositOnly, moderatePriceRange } =
+    rangeView;
+
+  const depositPercentages = useMemo(
+    () =>
+      calcDepositPercentages({
+        pool: poolParams,
+        baseCurrency,
+        quoteCurrency,
+        baseDepositPrice: prices?.base ?? null,
+        quoteDepositPrice: prices?.quote ?? null,
+        tickRange,
+        baseDepositOnly,
+        quoteDepositOnly,
+      }),
+    [
+      poolParams,
+      baseCurrency,
+      quoteCurrency,
+      prices,
+      tickRange,
+      baseDepositOnly,
+      quoteDepositOnly,
+    ]
+  );
+
+  // Set the initial range to the moderate range, once, when historical prices load.
+  const { rangeInitialized } = state;
+  useEffect(() => {
+    if (
+      rangeInitialized ||
+      !poolParams ||
+      isInactivePool ||
+      minHistoricalPrice === null ||
+      maxHistoricalPrice === null
+    )
+      return;
+
+    const multiplicationQuoteOverBase = getQuoteOverBaseMultiplier(
+      baseCurrency,
+      quoteCurrency
+    );
+    dispatch({
+      type: "initRange",
+      min: moderatePriceRange[0].mul(multiplicationQuoteOverBase).toString(),
+      max: moderatePriceRange[1].mul(multiplicationQuoteOverBase).toString(),
+    });
+  }, [
+    rangeInitialized,
+    poolParams,
+    isInactivePool,
+    minHistoricalPrice,
+    maxHistoricalPrice,
+    moderatePriceRange,
+    baseCurrency,
+    quoteCurrency,
+  ]);
+
+  // The non-anchor deposit amount follows the anchor one.
+  const counterpartyPlan = useMemo(
+    () =>
+      planCounterpartyUpdate({
+        anchor: state.anchor,
+        base: baseDepositAmountIn,
+        quote: quoteDepositAmountIn,
+        pool: poolParams,
+        isInactivePool,
+        tickRange,
+        baseDepositPrice: prices?.base ?? null,
+        quoteDepositPrice: prices?.quote ?? null,
+      }),
+    [
+      state.anchor,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      poolParams,
+      isInactivePool,
+      tickRange,
+      prices,
+    ]
+  );
+  useEffect(() => {
+    if (counterpartyPlan.type === "none" && counterpartyPlan.warning) {
+      console.warn(counterpartyPlan.warning);
+    }
+    counterpartyPlanToActions(counterpartyPlan).forEach(
+      (action: AddConcentratedLiquidityAction) => dispatch(action)
+    );
+  }, [counterpartyPlan]);
+
+  const { fullRange } = state;
+  const error = useMemo<Error | undefined>(() => {
+    if (!fullRange && rangeView.range[0].gte(rangeView.range[1])) {
+      return new InvalidRangeError(
+        "lower range must be less than upper range."
+      );
+    }
+    if (quoteDepositOnly) return quoteDepositAmountIn.error;
+    if (baseDepositOnly) return baseDepositAmountIn.error;
+    return baseDepositAmountIn.error || quoteDepositAmountIn.error;
+  }, [
+    fullRange,
+    rangeView.range,
+    baseDepositOnly,
+    quoteDepositOnly,
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
+  ]);
+
+  const shouldBeSuperfluidStaked = state.superfluidStakingElected && fullRange;
+
+  return useMemo(
+    () => ({
+      ...rangeView,
+      poolId,
+      pool: poolParams,
+      isInactivePool,
+      baseDenom: poolParams?.baseCurrency.coinDenom ?? "",
+      quoteDenom: poolParams?.quoteCurrency.coinDenom ?? "",
+      fullRange,
+      shouldBeSuperfluidStaked,
+      depositPercentages,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      error,
+      setMinRange,
+      setMaxRange,
+      setFullRange,
+      setAnchorAsset,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+      setElectSuperfluidStaking,
+    }),
+    [
+      rangeView,
+      poolId,
+      isInactivePool,
+      poolParams,
+      fullRange,
+      shouldBeSuperfluidStaked,
+      depositPercentages,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      error,
+      setMinRange,
+      setMaxRange,
+      setFullRange,
+      setAnchorAsset,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+      setElectSuperfluidStaking,
+    ]
+  );
+}
+
+/** Provides the add concentrated liquidity config for a React view, plus memoized callbacks
+ *  for sending common messages associated with adding concentrated liquidity.
  */
 export function useAddConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string
 ): {
-  config: ObservableAddConcentratedLiquidityConfig;
+  config: AddConcentratedLiquidityConfig;
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const {
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
+
+  const chain = useMemo(() => {
+    const chainInfo = getChainInfo(osmosisChainId);
+    if (chainInfo.currencies.length === 0) {
+      throw new Error("Chain doesn't have the sendable currency informations");
+    }
+    return {
+      placeholderCurrency: chainInfo.currencies[0],
+      feeCurrency: chainInfo.feeCurrencies[0],
+      stakeCurrency: chainInfo.stakeCurrency,
+    };
+  }, [osmosisChainId]);
 
   const { data: pool, isFetched: isPoolFetched } =
     api.local.pools.getPool.useQuery(
@@ -65,30 +519,10 @@ export function useAddConcentratedLiquidityConfig(
       }
     );
 
-  const [config] = useState(
-    () =>
-      new ObservableAddConcentratedLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        address,
-        queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        priceStore
-      )
+  const { data: balances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: address },
+    { enabled: Boolean(address), select: selectRawBalances }
   );
-  // react dev tools will unmount the component so only dispose if
-  // in production environment, where the component will only unmount once
-  useEffect(
-    () => () => {
-      if (process.env.NODE_ENV === "production") {
-        config.dispose();
-      }
-    },
-    [config]
-  );
-
-  if (pool && pool.type === "concentrated") config.setPool(pool);
 
   const { data: baseDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
@@ -97,10 +531,6 @@ export function useAddConcentratedLiquidityConfig(
   const { data: quoteDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
   });
-
-  if (baseDepositPrice && quoteDepositPrice) {
-    config.setPrices(baseDepositPrice, quoteDepositPrice);
-  }
 
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
@@ -114,39 +544,58 @@ export function useAddConcentratedLiquidityConfig(
       },
       { enabled: isPoolFetched }
     );
-  if (historicalPriceData)
-    config.setHistoricalPriceMinMax(
-      historicalPriceData.min,
-      historicalPriceData.max
-    );
+
+  const config = useAddConcentratedLiquidityState({
+    poolId,
+    chain,
+    pool,
+    balances,
+    baseDepositPrice,
+    quoteDepositPrice,
+    historicalPriceMinMax: historicalPriceData,
+  });
+
+  const {
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
+    baseDepositOnly,
+    quoteDepositOnly,
+    tickRange,
+    pool: clPoolParams,
+  } = config;
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
           const quoteCoin = {
-            currency: config.quoteDepositAmountIn.sendCurrency,
-            amount: config.quoteDepositAmountIn.amount,
+            currency: quoteDepositAmountIn.sendCurrency,
+            amount: quoteDepositAmountIn.amount,
           };
           const baseCoin = {
-            currency: config.baseDepositAmountIn.sendCurrency,
-            amount: config.baseDepositAmountIn.amount,
+            currency: baseDepositAmountIn.sendCurrency,
+            amount: baseDepositAmountIn.amount,
           };
           let quoteDepositValue = undefined;
           let baseDepositValue = undefined;
-          if (config.baseDepositOnly) {
+          if (baseDepositOnly) {
             baseDepositValue = baseCoin;
-          } else if (config.quoteDepositOnly) {
+          } else if (quoteDepositOnly) {
             quoteDepositValue = quoteCoin;
           } else {
             quoteDepositValue = quoteCoin;
             baseDepositValue = baseCoin;
           }
 
-          await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
-            config.poolId,
-            config.tickRange[0],
-            config.tickRange[1],
+          const clPool = clPoolParams;
+          if (!clPool) throw new Error(`Pool #${poolId} not found`);
+
+          await prepareCreateConcentratedLiquidityPositionMsg(
+            transactionContext,
+            poolId,
+            clPool,
+            tickRange[0],
+            tickRange[1],
             superfluidValidatorAddress,
             baseDepositValue,
             quoteDepositValue,
@@ -166,7 +615,7 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
@@ -174,39 +623,41 @@ export function useAddConcentratedLiquidityConfig(
       });
     },
     [
+      quoteDepositAmountIn.sendCurrency,
+      quoteDepositAmountIn.amount,
+      baseDepositAmountIn.sendCurrency,
+      baseDepositAmountIn.amount,
+      baseDepositOnly,
+      quoteDepositOnly,
+      clPoolParams,
       poolId,
-      account?.osmosis,
+      transactionContext,
+      tickRange,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      config.baseDepositAmountIn.sendCurrency,
-      config.baseDepositAmountIn.amount,
-      config.quoteDepositAmountIn.sendCurrency,
-      config.quoteDepositAmountIn.amount,
-      config.baseDepositOnly,
-      config.quoteDepositOnly,
-      config.tickRange,
-      config.poolId,
+      signAndBroadcast,
     ]
   );
 
   const increaseLiquidity = useCallback(
     (positionId: string) =>
       new Promise<void>(async (resolve, reject) => {
-        const coin0 = config.quoteDepositOnly
+        const coin0 = quoteDepositOnly
           ? {
-              denom: config.baseDepositAmountIn.sendCurrency.coinMinimalDenom,
+              denom: baseDepositAmountIn.sendCurrency.coinMinimalDenom,
               amount: "0",
             }
-          : config.baseDepositAmountIn.getAmountPrimitive();
-        const coin1 = config.baseDepositOnly
+          : baseDepositAmountIn.getAmountPrimitive();
+        const coin1 = baseDepositOnly
           ? {
-              denom: config.quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
+              denom: quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
               amount: "0",
             }
-          : config.quoteDepositAmountIn.getAmountPrimitive();
+          : quoteDepositAmountIn.getAmountPrimitive();
 
         try {
-          await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await prepareAddToConcentratedLiquidityPositionMsg(
+            transactionContext,
             positionId,
             coin0,
             coin1,
@@ -226,1008 +677,24 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
         }
       }),
     [
-      poolId,
+      quoteDepositOnly,
+      baseDepositAmountIn,
+      baseDepositOnly,
+      quoteDepositAmountIn,
+      transactionContext,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      config.baseDepositAmountIn,
-      config.quoteDepositAmountIn,
-      config.baseDepositOnly,
-      config.quoteDepositOnly,
-      account,
+      poolId,
+      signAndBroadcast,
     ]
   );
 
   return { config, addLiquidity, increaseLiquidity };
-}
-
-const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
-
-/** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
- */
-export class ObservableAddConcentratedLiquidityConfig {
-  @observable
-  protected _sender: string;
-
-  @observable.ref
-  protected _pool: Pool | null = null;
-
-  /*
-	 Used to get current view type of AddConcLiquidity modal
-	 */
-  @observable
-  protected _modalView: "add_manual" = "add_manual";
-
-  /*
-   Used to get min and max range for adding concentrated liquidity
-   */
-  @observable
-  protected _priceRangeInput: [PriceConfig, PriceConfig];
-
-  @observable
-  protected _fullRange: boolean = false;
-
-  /*
-   Used to get base and quote asset deposit for adding concentrated liquidity
-   */
-  @observable
-  protected _baseDepositAmountIn: AmountConfig;
-
-  @observable
-  protected _quoteDepositAmountIn: AmountConfig;
-
-  @observable
-  protected _baseDepositPrice: PricePretty | null = null;
-
-  @observable
-  protected _quoteDepositPrice: PricePretty | null = null;
-
-  @observable
-  protected _anchorAsset: "base" | "quote" = "base";
-
-  @observable
-  protected _superfluidStakingElected = false;
-
-  @observable
-  protected chainId: string;
-
-  @observable
-  protected _minHistoricalPrice: number | null = null;
-
-  @observable
-  protected _maxHistoricalPrice: number | null = null;
-
-  @computed
-  get pool() {
-    if (this._pool?.type !== "concentrated") return null;
-
-    const [base, quote] = this._pool.reserveCoins;
-    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-      (base.currency.coinDecimals ?? 0) - (quote.currency.coinDecimals ?? 0)
-    );
-
-    const pool = {
-      ...this._pool,
-      type: "concentrated",
-      raw: this._pool.raw as ConcentratedPoolRawResponse,
-    };
-
-    const currentSqrtPrice = new BigDec(pool.raw.current_sqrt_price);
-
-    return {
-      ...pool,
-      poolAssetDenoms: [base.currency.coinDenom, quote.currency.coinDenom],
-      currentSqrtPrice,
-      currentPrice: currentSqrtPrice
-        .mul(currentSqrtPrice)
-        .toDec()
-        .mul(multiplicationQuoteOverBase),
-      tickSpacing: Number(pool.raw.tick_spacing),
-    };
-  }
-
-  @computed
-  get isInactivePool(): boolean {
-    if (!this._pool || this._pool.type !== "concentrated") return false;
-
-    // Inactive pool: has TVL but no in-range liquidity at current price
-    // This happens when all liquidity positions are out of range
-    const poolRaw = this._pool.raw as ConcentratedPoolRawResponse;
-    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const isTickLiquidityZero = currentTickLiquidity
-      ? parseFloat(currentTickLiquidity) === 0
-      : false;
-    const hasTVL =
-      this._pool.tvlUnknown ||
-      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
-
-    return isTickLiquidityZero && hasTVL;
-  }
-
-  get sender(): string {
-    return this._sender;
-  }
-
-  get modalView(): "add_manual" {
-    return this._modalView;
-  }
-
-  /** Flag indicating that the user prefers superfluid staking for this full range position. */
-  get shouldBeSuperfluidStaked() {
-    return this._superfluidStakingElected && this.fullRange;
-  }
-
-  /** Current price adjusted with base and quote token decimals. */
-  @computed
-  get currentPriceWithDecimals(): Dec {
-    return this.pool?.currentPrice ?? new Dec(0);
-  }
-
-  /** Current price, without currency decimals. */
-  @computed
-  get currentPrice(): Dec {
-    const currentSqrtPrice = this.pool?.currentSqrtPrice;
-    if (!currentSqrtPrice) return new Dec(0);
-    return currentSqrtPrice.mul(currentSqrtPrice).toDec();
-  }
-
-  /** Moderate price range, without currency decimals. */
-  @computed
-  get moderatePriceRange(): [Dec, Dec] {
-    if (
-      !this.pool ||
-      this._minHistoricalPrice === null ||
-      this._maxHistoricalPrice === null
-    )
-      return [new Dec(0.1), new Dec(100)];
-
-    const min = this._minHistoricalPrice;
-    const max = this._maxHistoricalPrice;
-
-    // query returns prices with decimals for display
-    const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice7d = this._priceRangeInput[1].removeCurrencyDecimals(max);
-    const priceDiff = maxPrice7d
-      .sub(minPrice7d)
-      .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
-
-    return [
-      roundPriceToNearestTick(
-        minPrice7d.sub(priceDiff).abs(),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        maxPrice7d.add(priceDiff).abs(),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get moderateTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.moderatePriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.moderatePriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Initial custom price range, without currency decimals. */
-  @computed
-  get initialCustomPriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0.1), new Dec(100)];
-
-    return [
-      roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.45)),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.55)),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get initialCustomTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.initialCustomPriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.initialCustomPriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Aggressive price range, without currency decimals. */
-  @computed
-  get aggressivePriceRange(): [Dec, Dec] {
-    if (
-      !this.pool ||
-      this._minHistoricalPrice === null ||
-      this._maxHistoricalPrice === null
-    )
-      return [new Dec(0.1), new Dec(100)];
-
-    const min = this._minHistoricalPrice;
-    const max = this._maxHistoricalPrice;
-
-    // query returns prices with decimals for display
-    const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice1Mo = this._priceRangeInput[1].removeCurrencyDecimals(max);
-    const priceDiff = maxPrice1Mo
-      .sub(minPrice1Mo)
-      .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
-
-    return [
-      roundPriceToNearestTick(
-        minPrice1Mo.sub(priceDiff).abs(),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        maxPrice1Mo.add(priceDiff).abs(),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get aggressiveTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.aggressivePriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.aggressivePriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Used to ensure ticks are cleanly divisible by. */
-  protected get tickDivisor() {
-    return new Int(this.pool?.tickSpacing ?? 100);
-  }
-
-  @computed
-  get depositPercentages(): [RatePretty, RatePretty] {
-    if (!this.pool) return [new RatePretty(0), new RatePretty(0)];
-    if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
-    if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
-
-    // Safety check: if pool has no liquidity (currentSqrtPrice is zero), return equal percentages
-    if (this.pool.currentSqrtPrice.isZero()) {
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-
-    // Safety check: if prices are not loaded yet, return equal percentages
-    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-
-    try {
-      const amount1 = new Int(1)
-        .toDec()
-        .mul(
-          DecUtils.getTenExponentN(
-            this._quoteDepositAmountIn.sendCurrency.coinDecimals
-          )
-        )
-        .truncate();
-
-      const [lowerTick, upperTick] = this.tickRange;
-
-      // calculate proportional amount of other amount
-      const amount0 = calcAmount0(
-        amount1,
-        lowerTick,
-        upperTick,
-        this.pool.currentSqrtPrice
-      );
-
-      const amount0Value = this._baseDepositPrice.mul(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      );
-      const amount1Value = this._quoteDepositPrice.mul(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      );
-
-      const totalValue = amount0Value.toDec().add(amount1Value.toDec());
-
-      if (totalValue.isZero())
-        return [new RatePretty(0.5), new RatePretty(0.5)];
-
-      return [
-        new RatePretty(amount0Value.toDec().quo(totalValue)),
-        new RatePretty(amount1Value.toDec().quo(totalValue)),
-      ];
-    } catch (error) {
-      // Fallback to equal percentages if calculation fails
-      console.error("Error calculating deposit percentages:", error);
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-  }
-
-  get baseDenom(): string {
-    return this.pool?.poolAssetDenoms[0] ?? "";
-  }
-
-  get quoteDenom(): string {
-    return this.pool?.poolAssetDenoms[1] ?? "";
-  }
-
-  get fullRange(): boolean {
-    return this._fullRange;
-  }
-
-  get baseDepositAmountIn(): AmountConfig {
-    return this._baseDepositAmountIn;
-  }
-
-  get quoteDepositAmountIn(): AmountConfig {
-    return this._quoteDepositAmountIn;
-  }
-
-  @computed
-  get baseDepositOnly(): boolean {
-    // can be 0 if no positions in pool
-    if (this.currentPrice.isZero()) return false;
-
-    const range0 = this.range[0];
-    const range1 = this.range[1];
-    if (typeof range0 === "string" || typeof range1 === "string") return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.lt(range0) &&
-      this.currentPrice.lt(range1)
-    );
-  }
-
-  @computed
-  get quoteDepositOnly(): boolean {
-    // can be 0 if no positions in pool
-    if (this.currentPrice.isZero()) return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.gt(this.range[0]) &&
-      this.currentPrice.gt(this.range[1])
-    );
-  }
-
-  @computed
-  get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
-    const isRangePassive = this.fullRange;
-    const isRangeAggressive =
-      !isRangePassive &&
-      this.tickRange[0].equals(this.aggressiveTickRange[0]) &&
-      this.tickRange[1].equals(this.aggressiveTickRange[1]);
-    const isRangeModerate =
-      !isRangePassive &&
-      this.tickRange[0].equals(this.moderateTickRange[0]) &&
-      this.tickRange[1].equals(this.moderateTickRange[1]);
-
-    if (isRangePassive) return "passive";
-    if (isRangeModerate) return "moderate";
-    if (isRangeAggressive) return "aggressive";
-    return null;
-  }
-
-  @computed
-  get error(): Error | undefined {
-    if (!this.fullRange && this.range[0].gte(this.range[1])) {
-      return new InvalidRangeError(
-        "lower range must be less than upper range."
-      );
-    }
-
-    if (this.quoteDepositOnly) {
-      return this._quoteDepositAmountIn.error;
-    }
-
-    if (this.baseDepositOnly) {
-      return this._baseDepositAmountIn.error;
-    }
-
-    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
-  }
-
-  /** User-selected price range without currency decimals, rounded to nearest tick. Within +/-50x of current tick. */
-  @computed
-  protected get range(): [Dec, Dec] {
-    const input0 = this._priceRangeInput[0].toDec();
-    const input1 = this._priceRangeInput[1].toDec();
-    if (this.fullRange || !this.pool) return [minSpotPrice, maxSpotPrice];
-
-    const inputMinPrice = roundPriceToNearestTick(
-      input0,
-      this.pool.tickSpacing,
-      true
-    );
-    const inputMaxPrice = roundPriceToNearestTick(
-      input1,
-      this.pool.tickSpacing,
-      true
-    );
-
-    const minPrice50x = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec()
-      .quo(new Dec(50));
-    const maxPrice50x = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec()
-      .mul(new Dec(50));
-
-    return [
-      inputMinPrice.lt(minPrice50x) ? minPrice50x : inputMinPrice,
-      inputMaxPrice.gt(maxPrice50x) ? maxPrice50x : inputMaxPrice,
-    ];
-  }
-
-  /** Price range with decimals adjusted based on currencies. */
-  @computed
-  get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    if (this.fullRange) {
-      return [
-        this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
-        // for display, avoid using max spot price since the price chart would get flattened
-        this.currentPriceWithDecimals.mul(new Dec(2)),
-      ];
-    }
-
-    return [
-      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
-      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
-    ];
-  }
-
-  /** Warning: not adjusted to nearest valid tick or adjusted and **does include** currency decimals. */
-  @computed
-  get rangeRaw(): [string, string] {
-    return [
-      this._priceRangeInput[0].toString(),
-      this._priceRangeInput[1].toString(),
-    ];
-  }
-
-  @computed
-  get tickRange(): [Int, Int] {
-    if (this.fullRange || !this.pool) return [minTick, maxTick];
-    try {
-      // account for precision issues from price <> tick conversion
-      const lowerTick = priceToTick(this.range[0]);
-      const upperTick = priceToTick(this.range[1]);
-
-      let lowerTickRounded = roundToNearestDivisible(
-        lowerTick,
-        this.tickDivisor
-      );
-      let upperTickRounded = roundToNearestDivisible(
-        upperTick,
-        this.tickDivisor
-      );
-
-      // If they rounded to the same value, pad both to respect the
-      // user's desired range.
-      if (lowerTickRounded.equals(upperTickRounded)) {
-        lowerTickRounded = lowerTickRounded.sub(this.tickDivisor);
-        upperTickRounded = upperTickRounded.add(this.tickDivisor);
-      }
-
-      return [
-        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
-        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
-      ];
-    } catch (e) {
-      console.error(e);
-      return [minTick, maxTick];
-    }
-  }
-
-  protected _disposers: (() => void)[] = [];
-
-  constructor(
-    protected readonly chainGetter: ChainGetter,
-    initialChainId: string,
-    readonly poolId: string,
-    sender: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly priceStore: IPriceStore
-  ) {
-    this.chainId = initialChainId;
-
-    this._sender = sender;
-
-    this._baseDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._quoteDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._baseDepositAmountIn.setAmount("0");
-    this._quoteDepositAmountIn.setAmount("0");
-
-    this._priceRangeInput = [
-      new PriceConfig(
-        this._baseDepositAmountIn.sendCurrency,
-        this._quoteDepositAmountIn.sendCurrency
-      ),
-      new PriceConfig(
-        this._baseDepositAmountIn.sendCurrency,
-        this._quoteDepositAmountIn.sendCurrency
-      ),
-    ];
-
-    const queryAccountBalances =
-      this.queryBalances.getQueryBech32Address(sender);
-
-    let initialized = false;
-
-    // Set the initial range to be the initial custom range
-    this._disposers.push(
-      autorun(() => {
-        if (
-          this.pool &&
-          !this.isInactivePool &&
-          this._baseDepositAmountIn.sendCurrency &&
-          this._quoteDepositAmountIn.sendCurrency &&
-          this._minHistoricalPrice !== null &&
-          this._maxHistoricalPrice !== null &&
-          !initialized
-        ) {
-          const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-            (this._baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
-              (this._quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
-          );
-
-          // Set the initial range to be the moderate range
-          this.setMinRange(
-            this.moderatePriceRange[0]
-              .mul(multiplicationQuoteOverBase)
-              .toString()
-          );
-          this.setMaxRange(
-            this.moderatePriceRange[1]
-              .mul(multiplicationQuoteOverBase)
-              .toString()
-          );
-
-          initialized = true;
-        }
-      })
-    );
-
-    // Calculate quote amount when base amount is input and anchor is base
-    // Calculate an amount1 given an amount0
-    this._disposers.push(
-      autorun(() => {
-        const baseAmountRaw =
-          this.baseDepositAmountIn.getAmountPrimitive().amount;
-        const amount0 = new Int(baseAmountRaw);
-        const anchor = this._anchorAsset;
-
-        // TODO: check counterparty balance and subtract to not exceed that
-        // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
-
-        if (anchor !== "base" || amount0.lte(new Int(0))) return;
-
-        // Special handling for inactive pools when Max is clicked
-        if (this.isInactivePool && this._baseDepositAmountIn.isMax) {
-          this.calculateInactivePoolCounterpartyAmount("base");
-          return;
-        }
-
-        // special case: inactive pools (no in-range liquidity) are handled above
-        // for active pools with no liquidity, return early - cannot calculate proportional amounts
-        if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-          return;
-        }
-
-        if (amount0.isZero()) this._quoteDepositAmountIn.setAmount("0");
-
-        const [lowerTick, upperTick] = this.tickRange;
-
-        // calculate proportional amount of other amount
-        const amount1 = calcAmount1(
-          amount0,
-          lowerTick,
-          upperTick,
-          this.pool.currentSqrtPrice
-        );
-        // include decimals, as is displayed to user
-        const quoteCoin = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          amount1
-        );
-
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
-
-        // set max: if quote coin higher than quote balance, set to quote balance
-        if (
-          this._baseDepositAmountIn.isMax &&
-          quoteCoin.toDec().gt(quoteBalance.toDec())
-        ) {
-          this.setQuoteDepositAmountMax();
-        } else {
-          this._quoteDepositAmountIn.setAmount(
-            quoteCoin.hideDenom(true).locale(false).trim(true).toString()
-          );
-        }
-      })
-    );
-
-    // Calculate base amount when quote amount is input and anchor is quote
-    // calculate amount0 given an amount1
-    this._disposers.push(
-      autorun(() => {
-        const quoteAmountRaw =
-          this.quoteDepositAmountIn.getAmountPrimitive().amount;
-        const amount1 = new Int(quoteAmountRaw);
-        const anchor = this._anchorAsset;
-
-        if (anchor !== "quote" || amount1.lte(new Int(0))) return;
-
-        // Special handling for inactive pools when Max is clicked
-        if (this.isInactivePool && this._quoteDepositAmountIn.isMax) {
-          this.calculateInactivePoolCounterpartyAmount("quote");
-          return;
-        }
-
-        // special case: inactive pools (no in-range liquidity) are handled above
-        // for active pools with no liquidity, return early - cannot calculate proportional amounts
-        if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-          return;
-        }
-
-        if (amount1.isZero()) this._baseDepositAmountIn.setAmount("0");
-
-        const [lowerTick, upperTick] = this.tickRange;
-
-        // calculate proportional amount of other amount
-        const amount0 = calcAmount0(
-          amount1,
-          lowerTick,
-          upperTick,
-          this.pool.currentSqrtPrice
-        );
-        // include decimals, as is displayed to user
-        const baseCoin = new CoinPretty(
-          this._baseDepositAmountIn.sendCurrency,
-          amount0
-        );
-
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
-
-        // set max: if base coin higher than base balance, set to base balance
-        if (
-          this._quoteDepositAmountIn.isMax &&
-          baseCoin.toDec().gt(baseBalance.toDec())
-        ) {
-          this.setBaseDepositAmountMax();
-        } else {
-          this._baseDepositAmountIn.setAmount(
-            baseCoin.hideDenom(true).locale(false).trim(true).toString()
-          );
-        }
-      })
-    );
-
-    makeObservable(this);
-  }
-
-  dispose() {
-    this._disposers.forEach((dispose) => dispose());
-  }
-
-  @action
-  setPool(pool: Pool) {
-    if (pool.type !== "concentrated") throw new Error("Wrong pool type");
-
-    this._pool = pool;
-
-    const [baseCurrency, quoteCurrency] = pool.reserveCoins.map(
-      (coin) => coin.currency
-    );
-
-    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
-    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
-    this._priceRangeInput[0].setBaseCurrency(baseCurrency);
-    this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
-    this._priceRangeInput[1].setBaseCurrency(baseCurrency);
-    this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
-
-    // subtract CL create pos tx gas when setting max amount of stake currency
-    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-    const createPosGasConfig = new FakeFeeConfig(
-      this.chainGetter,
-      this.chainId,
-      3_000_000 //osmosisMsgOpts.clCreatePosition.gas
-    );
-    if (stakeCurrency.coinMinimalDenom === baseCurrency.coinMinimalDenom) {
-      this._baseDepositAmountIn.setFeeConfig(createPosGasConfig);
-    } else if (
-      stakeCurrency.coinMinimalDenom === quoteCurrency.coinMinimalDenom
-    ) {
-      this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
-    }
-  }
-
-  @action
-  readonly setElectSuperfluidStaking = (elected: boolean) => {
-    this._superfluidStakingElected = elected;
-  };
-
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
-
-  @action
-  readonly setModalView = (viewType: "add_manual") => {
-    this._modalView = viewType;
-  };
-
-  @action
-  readonly setAnchorAsset = (anchor: "base" | "quote") => {
-    this._anchorAsset = anchor;
-  };
-
-  @action
-  readonly setBaseDepositAmountMax = () => {
-    this.setAnchorAsset("base");
-    this.quoteDepositAmountIn.setIsMax(false);
-    this.baseDepositAmountIn.setIsMax(true);
-  };
-
-  @action
-  readonly setQuoteDepositAmountMax = () => {
-    this.setAnchorAsset("quote");
-    this.baseDepositAmountIn.setIsMax(false);
-    this.quoteDepositAmountIn.setIsMax(true);
-  };
-
-  @action
-  protected calculateInactivePoolCounterpartyAmount(
-    anchorAsset: "base" | "quote"
-  ) {
-    // Safety check: ensure prices are loaded and valid
-    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
-      console.warn("Prices not loaded for inactive pool calculation");
-      return;
-    }
-
-    // Safety check: ensure prices are not zero (cannot calculate dollar value)
-    if (
-      this._baseDepositPrice.toDec().isZero() ||
-      this._quoteDepositPrice.toDec().isZero()
-    ) {
-      console.warn(
-        "One or both asset prices are zero - cannot calculate equal dollar value"
-      );
-      return;
-    }
-
-    const queryAccountBalances = this.queryBalances.getQueryBech32Address(
-      this.sender
-    );
-
-    if (anchorAsset === "base") {
-      // Base is max — calculate the quote amount that matches its dollar value.
-      const baseAmountRaw =
-        this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const baseCoin = new CoinPretty(
-        this._baseDepositAmountIn.sendCurrency,
-        new Int(baseAmountRaw)
-      );
-
-      const baseValue = this._baseDepositPrice.mul(baseCoin);
-      const quoteAmount = baseValue
-        .toDec()
-        .quo(this._quoteDepositPrice.toDec());
-
-      const quoteCoin = new CoinPretty(
-        this._quoteDepositAmountIn.sendCurrency,
-        quoteAmount
-          .mul(
-            DecUtils.getTenExponentN(
-              this._quoteDepositAmountIn.sendCurrency.coinDecimals
-            )
-          )
-          .truncate()
-      );
-
-      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._quoteDepositAmountIn.sendCurrency
-      );
-
-      if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
-        // Quote overflows. Pre-check whether flipping to quote-as-anchor would also overflow
-        // base. MobX defers autorun reactions until after the current @action completes, so a
-        // simple boolean flag reset in `finally` cannot guard against the re-entrant call —
-        // the flag is always false by the time the deferred reaction fires. Instead, resolve
-        // the both-overflow case entirely within this action without flipping the anchor.
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
-        const baseValueFromQuoteMax = this._quoteDepositPrice.mul(quoteBalance);
-        const baseCoinFromQuoteMax = new CoinPretty(
-          this._baseDepositAmountIn.sendCurrency,
-          baseValueFromQuoteMax
-            .toDec()
-            .quo(this._baseDepositPrice.toDec())
-            .mul(
-              DecUtils.getTenExponentN(
-                this._baseDepositAmountIn.sendCurrency.coinDecimals
-              )
-            )
-            .truncate()
-        );
-
-        if (baseCoinFromQuoteMax.toDec().gt(baseBalance.toDec())) {
-          // Both assets overflow each other — cap both to their balances in one action.
-          this._baseDepositAmountIn.setAmount(
-            baseBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-          this._quoteDepositAmountIn.setAmount(
-            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-        } else {
-          // Only quote overflows — flip anchor to quote; the autorun will correctly
-          // calculate the reduced base amount from the quote max balance.
-          this.setQuoteDepositAmountMax();
-        }
-      } else {
-        this._quoteDepositAmountIn.setAmount(
-          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
-        );
-      }
-    } else {
-      // Quote is max — calculate the base amount that matches its dollar value.
-      const quoteAmountRaw =
-        this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const quoteCoin = new CoinPretty(
-        this._quoteDepositAmountIn.sendCurrency,
-        new Int(quoteAmountRaw)
-      );
-
-      const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
-      const baseAmount = quoteValue.toDec().quo(this._baseDepositPrice.toDec());
-
-      const baseCoin = new CoinPretty(
-        this._baseDepositAmountIn.sendCurrency,
-        baseAmount
-          .mul(
-            DecUtils.getTenExponentN(
-              this._baseDepositAmountIn.sendCurrency.coinDecimals
-            )
-          )
-          .truncate()
-      );
-
-      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._baseDepositAmountIn.sendCurrency
-      );
-
-      if (baseCoin.toDec().gt(baseBalance.toDec())) {
-        // Base overflows. Same pre-check as above for the symmetric case.
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
-        const quoteValueFromBaseMax = this._baseDepositPrice.mul(baseBalance);
-        const quoteCoinFromBaseMax = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          quoteValueFromBaseMax
-            .toDec()
-            .quo(this._quoteDepositPrice.toDec())
-            .mul(
-              DecUtils.getTenExponentN(
-                this._quoteDepositAmountIn.sendCurrency.coinDecimals
-              )
-            )
-            .truncate()
-        );
-
-        if (quoteCoinFromBaseMax.toDec().gt(quoteBalance.toDec())) {
-          // Both assets overflow each other — cap both to their balances in one action.
-          this._quoteDepositAmountIn.setAmount(
-            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-          this._baseDepositAmountIn.setAmount(
-            baseBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-        } else {
-          // Only base overflows — flip anchor to base; the autorun will correctly
-          // calculate the reduced quote amount from the base max balance.
-          this.setBaseDepositAmountMax();
-        }
-      } else {
-        this._baseDepositAmountIn.setAmount(
-          baseCoin.hideDenom(true).locale(false).trim(true).toString()
-        );
-      }
-    }
-  }
-
-  @action
-  readonly setHistoricalPriceMinMax = (min: number, max: number) => {
-    if (min !== Infinity) this._minHistoricalPrice = min;
-    if (max !== Infinity) this._maxHistoricalPrice = max;
-  };
-
-  @action
-  readonly setPrices = (
-    baseDepositPrice: PricePretty,
-    quoteDepositPrice: PricePretty
-  ) => {
-    this._baseDepositPrice = baseDepositPrice;
-    this._quoteDepositPrice = quoteDepositPrice;
-  };
-
-  @action
-  readonly setMinRange = (min: string) => {
-    if (!this.pool) return;
-
-    this._fullRange = false;
-    this._priceRangeInput[0].input(min);
-  };
-
-  @action
-  readonly setMaxRange = (max: string) => {
-    if (!this.pool) return;
-
-    this._fullRange = false;
-    this._priceRangeInput[1].input(max);
-  };
-
-  @action
-  readonly setFullRange = (isFullRange: boolean) => {
-    this._fullRange = isFullRange;
-  };
-}
-
-export class InvalidRangeError extends Error {
-  constructor(m: string) {
-    super(m);
-    Object.setPrototypeOf(this, InvalidRangeError.prototype);
-  }
 }

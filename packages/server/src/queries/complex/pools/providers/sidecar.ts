@@ -1,3 +1,4 @@
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
@@ -11,7 +12,6 @@ import {
   SearchType,
   SortType,
 } from "../../../../queries/complex/pools";
-import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
@@ -377,7 +377,7 @@ function makePoolRawResponseFromChainPool(
  *  Note: Defaults to 6 decimals (standard for most Cosmos tokens). This may cause
  *  display precision issues for tokens with different decimal places, but functionality
  *  remains intact as the chain handles actual token amounts correctly. */
-function makeUnlistedAssetCurrency(denom: string) {
+export function makeUnlistedAssetCurrency(denom: string) {
   return {
     coinDenom: denom,
     coinMinimalDenom: denom,

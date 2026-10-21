@@ -15,7 +15,7 @@ import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
 import { FunctionComponent, useEffect, useMemo } from "react";
-import { useLocalStorage, useUnmount } from "react-use";
+import { useLocalStorage } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
@@ -139,12 +139,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       ctas: [],
     });
 
-    useUnmount(() => {
-      if (process.env.NODE_ENV === "production") {
-        assetInfoConfig.dispose();
-      }
-    });
-
     const contextValue = useMemo(
       () => ({
         assetInfoConfig,
@@ -166,8 +160,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       previousTrade.quoteDenom !== asset.coinMinimalDenom
         ? previousTrade.quoteDenom
         : asset.coinMinimalDenom === USDC_BASE_DENOM
-        ? USDT_BASE_DENOM
-        : USDC_BASE_DENOM;
+          ? USDT_BASE_DENOM
+          : USDC_BASE_DENOM;
 
     const tradeToolProps = {
       swapToolProps,

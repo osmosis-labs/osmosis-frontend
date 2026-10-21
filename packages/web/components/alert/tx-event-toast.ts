@@ -1,5 +1,4 @@
-import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { isSlippageError } from "@osmosis-labs/tx";
 import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { toast } from "react-toastify";
@@ -15,8 +14,12 @@ const txTimeoutHeightReachedErrorCode = 30;
 
 const BROADCASTING_TOAST_ID = "broadcast";
 
+type ToastChainInfo = Pick<ChainInfoWithExplorer, "currencies"> & {
+  raw: Pick<ChainInfoWithExplorer, "explorerUrlToTx">;
+};
+
 export function toastOnBroadcastFailed(
-  getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
+  getChain: (chainId: string) => ToastChainInfo
 ) {
   return (chainId: string, e?: Error) => {
     let caption: string = "unknownError";
@@ -52,9 +55,7 @@ export function toastOnBroadcast() {
   };
 }
 
-export function toastOnFulfill(
-  getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
-) {
+export function toastOnFulfill(getChain: (chainId: string) => ToastChainInfo) {
   return (chainId: string, tx: DeliverTxResponse) => {
     const chainInfo = getChain(chainId);
     toast.dismiss(BROADCASTING_TOAST_ID);
@@ -90,5 +91,5 @@ const getErrorMessage = (tx: DeliverTxResponse, currencies: AppCurrency[]) => {
 
   return isSlippageError(tx)
     ? "swapFailed"
-    : prettifyTxError(tx.rawLog ?? "", currencies) ?? tx.rawLog;
+    : (prettifyTxError(tx.rawLog ?? "", currencies) ?? tx.rawLog);
 };

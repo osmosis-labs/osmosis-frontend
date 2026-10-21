@@ -17,6 +17,9 @@ class JSDOMEnvironmentExtended extends JSDOMEnvironment {
     this.global.TransformStream = TransformStream;
     this.global.TextDecoder = TextDecoder;
     this.global.TextEncoder = TextEncoder;
+    // Node's Buffer and TextEncoder return Node-realm bytes. Keep byte checks in
+    // crypto dependencies consistent with those globals.
+    this.global.Uint8Array = Uint8Array;
 
     this.global.Blob = Blob;
     this.global.File = File;

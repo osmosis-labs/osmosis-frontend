@@ -1,28 +1,332 @@
+import { Readable, Writable } from "node:stream";
+
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import { server } from "~/__tests__/msw";
-import { solanaRpcHandler } from "~/pages/api/solana-rpc";
+import nodeSolanaRpcHandler, {
+  config,
+  solanaRpcHandler,
+} from "~/pages/api/solana-rpc";
+import { resetServerFlagCache } from "~/utils/server-flags";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 const KEYED_RPC = "https://solana-provider.test/?api-key=secret";
+const APP_HOST = "app.test";
+const LD_CLIENT_ID = "ld-client-id";
+const LD_EVALX = `https://clientsdk.launchdarkly.com/sdk/evalx/${LD_CLIENT_ID}/contexts/:context`;
 
-function post(body: unknown, headers: Record<string, string> = {}) {
+/** A same-origin browser POST, as the app's pages send it. */
+function post(
+  body: unknown,
+  headers: Record<string, string> = {},
+  { origin = `https://${APP_HOST}` }: { origin?: string | null } = {}
+) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
   return {
     method: "POST",
-    headers: new Headers(headers),
+    url: `https://${APP_HOST}/api/solana-rpc`,
+    headers: new Headers({
+      host: APP_HOST,
+      ...(origin ? { origin } : {}),
+      ...headers,
+    }),
     text: () => Promise.resolve(text),
   } as unknown as Request;
 }
 
+const allowedRequest = {
+  jsonrpc: "2.0",
+  id: 7,
+  method: "getSignatureStatuses",
+  params: [["sig"]],
+};
+
+/** Captures whether anything reached the public RPC. */
+function spyOnPublicRpc() {
+  const calls: unknown[] = [];
+  server.use(
+    http.post(PUBLIC_RPC, async ({ request }) => {
+      calls.push(await request.json());
+      return HttpResponse.json({ jsonrpc: "2.0", id: 7, result: { ok: true } });
+    })
+  );
+  return calls;
+}
+
+function launchDarklyServes(flags: Record<string, unknown>) {
+  server.use(
+    http.get(LD_EVALX, () =>
+      HttpResponse.json(
+        Object.fromEntries(
+          Object.entries(flags).map(([key, value]) => [key, { value }])
+        )
+      )
+    )
+  );
+}
+
+beforeEach(() => {
+  resetServerFlagCache();
+  // The route fails closed without a client-side id outside development, so
+  // every test runs as a deployed build with the flag on unless it says
+  // otherwise.
+  process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID = LD_CLIENT_ID;
+  launchDarklyServes({ "solana-skip-routes": true });
+});
+
 afterEach(() => {
   delete process.env.SOLANA_RPC_URL;
+  delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+});
+
+describe("Node API route", () => {
+  async function callNodeRoute(body: string, origin = `https://${APP_HOST}`) {
+    const req = Object.assign(Readable.from([Buffer.from(body)]), {
+      method: "POST",
+      url: "/api/solana-rpc",
+      headers: {
+        host: APP_HOST,
+        "x-forwarded-proto": "https",
+        "content-type": "application/json",
+        origin,
+      },
+    });
+    const chunks: Uint8Array[] = [];
+    const res = Object.assign(
+      new Writable({
+        write(chunk, _encoding, callback) {
+          chunks.push(new Uint8Array(chunk));
+          callback();
+        },
+      }),
+      { statusCode: 200, setHeader: jest.fn() }
+    );
+
+    await nodeSolanaRpcHandler(
+      req as unknown as NextApiRequest,
+      res as unknown as NextApiResponse
+    );
+
+    return {
+      status: res.statusCode,
+      headers: res.setHeader,
+      body: JSON.parse(Buffer.concat(chunks).toString("utf8")),
+    };
+  }
+
+  it("disables Next's body parser to preserve the raw request stream", () => {
+    expect(config).toEqual({ api: { bodyParser: false } });
+  });
+
+  it("forwards a streamed request and writes the Fetch response to Node", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await callNodeRoute(JSON.stringify(allowedRequest));
+
+    expect(result.status).toBe(200);
+    expect(result.headers).toHaveBeenCalledWith(
+      "content-type",
+      "application/json"
+    );
+    expect(result.body).toEqual({
+      jsonrpc: "2.0",
+      id: 7,
+      result: { ok: true },
+    });
+    expect(calls).toEqual([allowedRequest]);
+  });
+
+  it("preserves the same-origin check through the Node adapter", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await callNodeRoute(
+      JSON.stringify(allowedRequest),
+      "https://evil.test"
+    );
+
+    expect(result.status).toBe(403);
+    expect(result.body).toEqual({ error: "Forbidden" });
+    expect(calls).toHaveLength(0);
+  });
+
+  it("returns invalid JSON errors from a raw request stream", async () => {
+    const result = await callNodeRoute("{not json");
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ error: "Invalid JSON" });
+  });
 });
 
 it("rejects non-POST requests", async () => {
   const result = await solanaRpcHandler({ method: "GET" } as Request);
   expect(result.status).toBe(405);
+});
+
+describe("solana-skip-routes flag gate", () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID = LD_CLIENT_ID;
+  });
+
+  it("answers 404 and never contacts the RPC while the flag is off", async () => {
+    launchDarklyServes({ "solana-skip-routes": false });
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("forwards once the flag is on", async () => {
+    launchDarklyServes({ "solana-skip-routes": true });
+    spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(200);
+  });
+
+  it("reuses the flag read instead of asking LaunchDarkly per request", async () => {
+    let reads = 0;
+    server.use(
+      http.get(LD_EVALX, () => {
+        reads++;
+        return HttpResponse.json({ "solana-skip-routes": { value: true } });
+      })
+    );
+    spyOnPublicRpc();
+
+    await solanaRpcHandler(post(allowedRequest));
+    await solanaRpcHandler(post(allowedRequest));
+
+    expect(reads).toBe(1);
+  });
+
+  it("falls back to the stale value when LaunchDarkly hangs", async () => {
+    // first read: flag on, cached
+    launchDarklyServes({ "solana-skip-routes": true });
+    spyOnPublicRpc();
+    expect((await solanaRpcHandler(post(allowedRequest))).status).toBe(200);
+
+    // the fresh window expires and LaunchDarkly stops answering
+    const now = Date.now();
+    const nowSpy = jest.spyOn(Date, "now").mockReturnValue(now + 61_000);
+    server.use(http.get(LD_EVALX, async () => delay("infinite")));
+    try {
+      const result = await solanaRpcHandler(post(allowedRequest));
+      expect(result.status).toBe(200);
+    } finally {
+      nowSpy.mockRestore();
+    }
+  }, 10_000);
+
+  it("fails closed when LaunchDarkly hangs and nothing is cached", async () => {
+    server.use(http.get(LD_EVALX, async () => delay("infinite")));
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
+  }, 10_000);
+
+  it("fails closed when LaunchDarkly is unreachable and nothing is cached", async () => {
+    server.use(http.get(LD_EVALX, () => HttpResponse.error()));
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("stays open without a client-side id in local development only", async () => {
+    delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+    spyOnPublicRpc();
+    const nodeEnv = process.env.NODE_ENV;
+    try {
+      (process.env as Record<string, string>).NODE_ENV = "development";
+      expect((await solanaRpcHandler(post(allowedRequest))).status).toBe(200);
+    } finally {
+      (process.env as Record<string, string>).NODE_ENV = nodeEnv ?? "test";
+    }
+  });
+
+  it("fails closed without a client-side id in any deployed build", async () => {
+    delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+    const calls = spyOnPublicRpc();
+
+    // Jest runs with NODE_ENV=test, which is not development
+    const result = await solanaRpcHandler(post(allowedRequest));
+
+    expect(result.status).toBe(404);
+    expect(calls).toHaveLength(0);
+  });
+});
+
+describe("same-origin check", () => {
+  it("refuses a request without an Origin", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(allowedRequest, {}, { origin: null })
+    );
+
+    expect(result.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("refuses the same host over another scheme", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(allowedRequest, {}, { origin: `http://${APP_HOST}` })
+    );
+
+    expect(result.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("refuses a request from another site", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(allowedRequest, {}, { origin: "https://evil.test" })
+    );
+
+    expect(result.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("accepts the public host forwarded by the CDN", async () => {
+    spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(
+        allowedRequest,
+        { "x-forwarded-host": "app.osmosis.zone", host: "deployment.internal" },
+        { origin: "https://app.osmosis.zone" }
+      )
+    );
+
+    expect(result.status).toBe(200);
+  });
+
+  it("falls back to a same-origin Referer", async () => {
+    spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(
+        allowedRequest,
+        { referer: `https://${APP_HOST}/?tab=deposit` },
+        { origin: null }
+      )
+    );
+
+    expect(result.status).toBe(200);
+  });
 });
 
 it("rejects a method outside the allowlist", async () => {
@@ -51,7 +355,12 @@ it("rejects a declared oversize body without reading it", async () => {
   const text = jest.fn(() => Promise.resolve("{}"));
   const request = {
     method: "POST",
-    headers: new Headers({ "content-length": String(17 * 1024) }),
+    url: `https://${APP_HOST}/api/solana-rpc`,
+    headers: new Headers({
+      host: APP_HOST,
+      origin: `https://${APP_HOST}`,
+      "content-length": String(17 * 1024),
+    }),
     text,
   } as unknown as Request;
   expect((await solanaRpcHandler(request)).status).toBe(413);
@@ -65,22 +374,9 @@ it("measures the body limit in bytes, not UTF-16 code units", async () => {
 });
 
 it("forwards an allowed request to the public RPC when no provider is configured", async () => {
-  let forwarded: unknown;
-  server.use(
-    http.post(PUBLIC_RPC, async ({ request }) => {
-      forwarded = await request.json();
-      return HttpResponse.json({ jsonrpc: "2.0", id: 7, result: { ok: true } });
-    })
-  );
+  const calls = spyOnPublicRpc();
 
-  const result = await solanaRpcHandler(
-    post({
-      jsonrpc: "2.0",
-      id: 7,
-      method: "getSignatureStatuses",
-      params: [["sig"]],
-    })
-  );
+  const result = await solanaRpcHandler(post(allowedRequest));
 
   expect(result.status).toBe(200);
   expect(await result.json()).toEqual({
@@ -88,12 +384,7 @@ it("forwards an allowed request to the public RPC when no provider is configured
     id: 7,
     result: { ok: true },
   });
-  expect(forwarded).toEqual({
-    jsonrpc: "2.0",
-    id: 7,
-    method: "getSignatureStatuses",
-    params: [["sig"]],
-  });
+  expect(calls).toEqual([allowedRequest]);
 });
 
 it("uses SOLANA_RPC_URL when set and never echoes it on failure", async () => {

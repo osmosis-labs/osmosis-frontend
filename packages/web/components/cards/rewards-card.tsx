@@ -1,5 +1,12 @@
 import classNames from "classnames";
-import React, { PropsWithChildren, ReactElement, useState } from "react";
+import type { LottieHandle } from "lottie-react";
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
 import { Tooltip } from "~/components/tooltip";
@@ -42,6 +49,14 @@ export const RewardsCard: React.FC<{
       : `[mask-image:url('/images/folder-left-tab.svg')] bg-[url('/images/grid-left-tab.svg')]`;
 
   const [hover, setHover] = useState(false);
+  const lottieRef = useRef<LottieHandle>(null);
+
+  // lottie-react v3 reads `autoplay` only at load, so drive hover playback
+  // through the handle once the animation exists.
+  useEffect(() => {
+    if (hover) lottieRef.current?.play();
+    else lottieRef.current?.pause();
+  }, [hover]);
 
   return (
     <Button
@@ -70,6 +85,8 @@ export const RewardsCard: React.FC<{
           globalLottieFileKey={globalLottieFileKey}
           importFn={() => import(`./${globalLottieFileKey}.json`)}
           loop={true}
+          lottieRef={lottieRef}
+          // Starts playing if the hover began while the animation was loading.
           autoplay={hover}
         />
         <div

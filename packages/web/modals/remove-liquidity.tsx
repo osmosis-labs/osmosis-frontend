@@ -1,7 +1,7 @@
-import { WeightedPoolRawResponse } from "@osmosis-labs/server";
-import { NoAvailableSharesError } from "@osmosis-labs/stores";
+import { prepareExitPoolMsg } from "@osmosis-labs/tx";
+import type { WeightedPoolRawResponse } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
+import { NoAvailableSharesError } from "@osmosis-labs/utils";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import {
@@ -9,10 +9,9 @@ import {
   RemoveLiquidity,
 } from "~/components/complex/remove-liquidity";
 import { tError } from "~/components/localization";
-import { useTranslation } from "~/hooks";
-import { useConnectWalletModalRedirect } from "~/hooks";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const RemoveLiquidityModal: FunctionComponent<
@@ -21,13 +20,17 @@ export const RemoveLiquidityModal: FunctionComponent<
     onRemoveLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps &
     RemovableShareLiquidity
-> = observer((props) => {
+> = (props) => {
   const { poolId } = props;
-  const { accountStore } = useStore();
   const { t } = useTranslation();
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const {
+    wallet: account,
+    txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
+  const isSendingMsg = !account || txTypeInProgress !== "";
 
   const [percentage, setPercentage] = useState("50");
 
@@ -47,26 +50,35 @@ export const RemoveLiquidityModal: FunctionComponent<
             ? (pool.raw as WeightedPoolRawResponse).pool_params.exit_fee
             : "0";
 
-        account.osmosis
-          .sendExitPoolMsg(
-            poolId,
-            props.shares
-              .mul(new Dec(percentage).quo(new Dec(100)))
-              .toDec()
-              .toString(),
-            new Int(pool.raw.total_shares.amount),
-            pool.reserveCoins.map((coin) => coin.toCoin()),
-            new Dec(exitFee),
-            undefined,
-            undefined,
-            (tx) => {
-              if (Boolean(tx.code)) reject();
-              else resolve();
-            }
-          )
+        prepareExitPoolMsg(
+          transactionContext,
+          poolId,
+          props.shares
+            .mul(new Dec(percentage).quo(new Dec(100)))
+            .toDec()
+            .toString(),
+          new Int(pool.raw.total_shares.amount),
+          pool.reserveCoins.map((coin) => coin.toCoin()),
+          new Dec(exitFee),
+          undefined,
+          undefined,
+          (tx) => {
+            if (Boolean(tx.code)) reject();
+            else resolve();
+          }
+        )
+          .then((prepared) => signAndBroadcast(...prepared))
           .catch(reject);
       }),
-    [account, pool, poolId, percentage, props.shares]
+    [
+      account,
+      pool,
+      poolId,
+      transactionContext,
+      props.shares,
+      percentage,
+      signAndBroadcast,
+    ]
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -100,4 +112,4 @@ export const RemoveLiquidityModal: FunctionComponent<
       />
     </ModalBase>
   );
-});
+};

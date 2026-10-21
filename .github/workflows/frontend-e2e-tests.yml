@@ -111,9 +111,12 @@ jobs:
 
             # Only test the latest commit of an open PR. Deployments of
             # superseded commits that finish late are skipped, as are stage
-            # deployments, which the push trigger above handles.
+            # deployments, which the push trigger above handles. The head.ref
+            # filter is what excludes stage explicitly: deployment.ref is the
+            # SHA, not the branch, and this endpoint only leaves out the open
+            # stage -> master release PR while stage is the default branch.
             PR=$(gh api "repos/$REPO/commits/$SHA/pulls" \
-              --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0] // empty")
+              --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\" and .head.ref != \"stage\")][0] // empty")
             [ -n "$PR" ] || skip "$SHA is not the head of an open PR."
             [ "$(jq -r '.draft' <<< "$PR")" = "false" ] || skip "PR is a draft."
             # Fork PRs have no access to the E2E secrets.
@@ -222,15 +225,9 @@ jobs:
                 }
               ]
             }
-      # Auto-dispatch a topup when the preview account is low (restored in
-      # MTN-110). Phase A (MTN-97) removed this and delegated funding to the
-      # hourly monitoring-limit-geo topup-dispatch job, but that job only gates
-      # on the US/EU/SG preflight balances — it never checks the preview
-      # account. The preview workflow runs on every dev push and burns OSMO
-      # fastest, so when US/EU/SG stay healthy the preview account drains to
-      # critical and is never refilled. The shared cooldown guard below (same as
-      # prod-frontend-e2e / monitoring-limit-geo, keyed off the "E2E: Topup Test
-      # Accounts" recent runs) means this does NOT reintroduce per-push bursts.
+      # Auto-dispatch a topup when the preview account is low. The cooldown
+      # guard below is keyed off recent "E2E: Topup Test Accounts" runs so
+      # repeated preview pushes do not each broadcast a topup.
       - name: Trigger automatic topup
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -343,6 +340,9 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Check E2E tooling
+        working-directory: packages/e2e
+        run: yarn typecheck && yarn test:tooling
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -527,7 +527,12 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [resolve-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
+      [
+        resolve-deployment,
+        preview-swap-osmo-tests,
+        preview-swap-usdc-tests,
+        check-balances,
+      ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6

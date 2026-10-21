@@ -75,6 +75,17 @@ const legacyButtonVariants = cva(
           "disabled:bg-osmoverse-500",
           "disabled:text-osmoverse-100",
         ],
+        "primary-warning": [
+          "border-0",
+          "bg-rust-700",
+          "rounded-xl",
+          "disabled:border-2",
+          "disabled:border-osmoverse-500",
+          "disabled:bg-osmoverse-500",
+          "disabled:text-osmoverse-100",
+          "disabled:hover:border-unset",
+          "disabled:hover:bg-unset",
+        ],
         secondary: [
           "border-2",
           "bg-transparent",
@@ -121,7 +132,8 @@ const modeToDefaultSize: Partial<
 };
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     Omit<VariantProps<typeof buttonVariants>, "size"> {
   asChild?: boolean;
   isLoading?: boolean;

@@ -572,11 +572,12 @@ export interface BridgeQuote {
   expectedOutput: BridgeCoin & {
     /**
      * Price impact of any swap bundled into the quote, as a stringified
-     * fraction (e.g. "0.1" = 10%), NOT a percentage. Sign convention varies
-     * by provider: Nomic bundles an Osmosis swap and reports negative
-     * fractions, Squid reports positive (its API's percentage is divided by
-     * 100 at the provider) — consumers must compare magnitudes, not raw
-     * values. "0" when the quote involves no swap — except Skip, which
+     * fraction (e.g. "-0.1" = a 10% loss), NOT a percentage. Negative is a
+     * loss and positive is in the user's favour, matching the Osmosis swap
+     * router; a provider whose API uses another convention converts at its
+     * boundary (Squid reports a loss as a positive percentage, so its
+     * provider divides by 100 and negates). "0" when the quote involves no
+     * swap — except Skip, which
      * reports "0" even when its route swaps internally (known gap; the
      * fiat-loss check is its only defense).
      */
@@ -600,6 +601,12 @@ export interface BridgeQuote {
      *  transaction requires `amount + fee` from the user's balance — rather
      *  than being deducted from the transferred amount in transit. */
     isAdditive?: boolean;
+    /** When true, `amount` is not the whole provider fee: either a placeholder
+     *  zero for a fee that could not be quantified, or only the part charged
+     *  in the source asset while other parts are charged in assets this coin
+     *  can't carry. It must not be shown as the fee or summed into a total
+     *  used to rank quotes; `amount` is still what a Max input must reserve. */
+    isUnknown?: boolean;
   };
   /**
    * The estimated time to execute the transfer, represented in seconds.
@@ -609,6 +616,12 @@ export interface BridgeQuote {
    * The estimated gas fee for the transfer.
    */
   estimatedGasFee?: BridgeCoin;
+
+  /**
+   * Provider-issued ID of this quote. Squid requires it on status requests to
+   * find the transfer, so it is persisted on the transfer's history snapshot.
+   */
+  quoteId?: string;
 
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
@@ -747,6 +760,8 @@ const txSnapshotSchema = z.object({
     .extend({
       amount: z.string(),
       imageUrl: z.string().optional(),
+      /** The amount is not the whole fee (see `BridgeQuote.transferFee.isUnknown`). */
+      isUnknown: z.boolean().optional(),
     })
     .optional(),
   fromAsset: bridgeAssetSchema.extend({
@@ -756,9 +771,21 @@ const txSnapshotSchema = z.object({
   toAsset: bridgeAssetSchema.extend({
     amount: z.string().optional(),
     imageUrl: z.string().optional(),
+    /**
+     * On imported deposits: the alloyed asset (minimal denom) the arriving
+     * asset is a variant of, which a deposit made in this browser may have
+     * recorded as received (converted on arrival).
+     */
+    alloy: z.string().optional(),
   }),
   status: transferStatusSchema,
   sendTxHash: z.string(),
+  /**
+   * On imported deposits: the IBC packet it arrived in
+   * (`<destination channel>/<sequence>`). A relayer tx can deliver several
+   * packets to the same user, so these are keyed by `sendTxHash` and packet.
+   */
+  packetId: z.string().optional(),
   fromChain: bridgeChainSchema.and(
     z.object({
       prettyName: z.string(),
@@ -771,6 +798,8 @@ const txSnapshotSchema = z.object({
   ),
   estimatedArrivalUnix: z.number(),
   nomicCheckpointIndex: z.number().optional(),
+  /** The quote's `quoteId`, sent with Squid status requests. */
+  quoteId: z.string().optional(),
   /**
    * Chain to poll the status provider on when it differs from `fromChain` —
    * set when `sendTxHash` is a later step of a multi-tx route, signed on an
@@ -815,6 +844,24 @@ const txSnapshotSchema = z.object({
    * when checking whether another session already signed the next step.
    */
   firstStepTxHash: z.string().optional(),
+  /**
+   * Provider whose status provider tracks this transfer, when it differs
+   * from `provider`. Set on transfers imported from the transaction index,
+   * whose originating provider's status API can't look them up (e.g. Squid
+   * needs the original quote id); Skip can trace any route by tx hash.
+   */
+  statusProvider: z.string().optional(),
+  /**
+   * Imported from the transaction index rather than made in this browser.
+   * Status changes on imported transfers update history silently (no toasts).
+   */
+  imported: z.boolean().optional(),
+  /**
+   * Explorer link, when the status provider can't build one from
+   * `sendTxHash` and `fromChain` (imported deposits are keyed on the Osmosis
+   * arrival tx, not a tx on the source chain).
+   */
+  explorerUrl: z.string().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;

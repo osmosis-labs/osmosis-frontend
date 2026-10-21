@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
   deepContained,

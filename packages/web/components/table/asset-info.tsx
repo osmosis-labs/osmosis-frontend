@@ -1,5 +1,6 @@
 import { type Search } from "@osmosis-labs/server";
 import { type SortDirection } from "@osmosis-labs/utils";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   CellContext,
   createColumnHelper,
@@ -9,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -82,7 +82,7 @@ export function getCategoryFilters(selectedCategory: string | undefined): {
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+}> = ({ tableTopPadding = 0 }) => {
   const showUnverifiedAssets = useUserSettingsStore(
     (state) => state.showUnverifiedAssets
   );
@@ -194,7 +194,7 @@ export const AssetsInfoTable: FunctionComponent<{
     hasNextPage,
     isLoading,
     isFetching,
-    isPreviousData,
+    isPlaceholderData,
     isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
@@ -216,7 +216,7 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
 
       // expensive query
       trpc: {
@@ -527,7 +527,7 @@ export const AssetsInfoTable: FunctionComponent<{
       <table
         className={classNames(
           "mt-3",
-          isPreviousData &&
+          isPlaceholderData &&
             isFetching &&
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
@@ -635,7 +635,7 @@ export const AssetsInfoTable: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 // table cells
 

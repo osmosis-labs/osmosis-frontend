@@ -168,7 +168,7 @@ export async function getCoinGeckoCoinMarketChart({
   }
 
   const fromTimestamp =
-    typeof timeFrame === "string" ? from?.unix() ?? 0 : timeFrame.from;
+    typeof timeFrame === "string" ? (from?.unix() ?? 0) : timeFrame.from;
   const toTimestamp = typeof timeFrame === "string" ? to?.unix() : timeFrame.to;
 
   return cachified({

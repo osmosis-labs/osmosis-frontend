@@ -36,10 +36,17 @@ yarn build && yarn start
 
 ### Cloudflare production candidate (`master-cf`)
 
-`master-cf` starts from production `master` (`951fade04`), with Cloudflare
-compatibility changes ported from `stage-cf` (`74bbbc0c1`). It does not include
-unreleased stage features. Next.js, its bundle analyzer and ESLint config are
-updated together to 15.5.27 to satisfy OpenNext's >=15.5.26 peer requirement.
+`master-cf` tracks production `master` (last merged at `6c75a6d26`), with Cloudflare
+compatibility changes ported from `stage-cf`. It does not include unreleased stage
+features. Next.js and its bundle analyzer are on 15.5.28 to satisfy OpenNext's
+
+> =15.5.28 peer requirement.
+
+`cf:build` passes `--dangerouslyUseUnsupportedNextVersion`: OpenNext refuses Next.js
+majors more than two years past release, which Next 15 reached on 2026-10-21.
+`yarn cf:build:profile` builds with Next.js server minification off, so Cloudflare
+CPU and heap profiles show readable function names.
+
 Vercel Speed Insights is removed from this Cloudflare branch.
 
 Deployment resources are separate from staging:

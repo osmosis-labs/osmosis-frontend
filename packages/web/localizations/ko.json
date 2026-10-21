@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "락업된 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
-    "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
+    "inactiveValidators": {
+      "title": "비활성 검증인 감지됨",
+      "squadDescription": "이 검증인들은 활성 세트에서 빠져 더 이상 보상을 받지 못합니다. 활성 검증인에게 재위임하면 다시 보상을 받을 수 있습니다. 재위임은 즉시 적용되며 언본딩 기간이 없습니다.",
+      "statusInactive": "활성 세트 밖",
+      "statusInactiveShortfall": "비활성: 활성 세트까지 약 {amount} 부족",
+      "statusJailed": "감옥: 보상 없음",
+      "redelegate": "재위임",
+      "stakeWarning": "스테이킹 스쿼드에 비활성 검증인이 포함되어 있습니다. 새로 스테이킹하는 금액의 일부가 이들에게 가서 보상을 받지 못합니다.",
+      "editSquad": "스테이킹 스쿼드 편집",
+      "redelegateDescription": "{amount}을(를) 재위임할 검증인을 선택하세요. 균등하게 나뉘며, 나머지 스테이킹은 그대로 유지됩니다.",
+      "topThirdHidden": "Osmosis의 탈중앙화를 돕기 위해, 합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들은 기본적으로 숨겨져 있습니다.",
+      "topThirdShown": "합쳐서 전체 스테이킹의 3분의 1을 보유한 가장 큰 검증인들입니다. 더 작은 검증인을 선택하면 Osmosis의 탈중앙화에 도움이 됩니다.",
+      "alertDescription": "일부 검증인이 활성 세트에서 빠져서, 이들에게 스테이킹된 OSMO는 보상을 받지 못하고 있습니다. 스테이킹 페이지에서 재위임하면 다시 보상을 받을 수 있습니다.",
+      "dismiss": "닫기",
+      "goToStake": "스테이킹으로 이동"
+    },
     "learnMore": {
       "step1": {
         "title": "스테이킹이란 무엇인가요?",
@@ -720,7 +735,7 @@
       "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 밸리데이터 세트를 편집할 수 있습니다.",
       "searchPlaceholder": "밸리데이터 검색",
       "button": "스쿼드 설정",
-      "button2": "스쿼드 및 스테이킹 설정",
+      "button2": "스쿼드 및 스테이킹 설정 {amount}",
       "noResults": "검색 결과가 없습니다",
       "column": {
         "validator": "밸리데이터",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "철회 검토",
     "moreDepositOptions": "더 많은 입금 옵션",
     "moreWithdrawOptions": "더 많은 인출 옵션",
-    "convertTo": "로 변환하다",
     "depositAs": "다음으로 입금",
     "withdrawAs": "다음으로 인출",
     "withdrawViaRoute": "{route} 경유",
@@ -1006,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "전송이 평소보다 오래 걸리거나 완전히 실패할 수 있습니다. 자신의 책임하에 진행하십시오.",
     "ibcConnectionDown": "기본 IBC 연결을 사용할 수 없습니다",
     "ibcConnectionDownDescription": "{asset}에 대한 직접 IBC 경로가 현재 중단되었습니다. 아래 옵션이 대체 경로를 제공할 수 있지만, 마찬가지로 영향을 받을 수 있습니다.",
+    "balanceUnavailable": "{chain} 잔액을 불러올 수 없습니다",
+    "balanceUnavailableDescription": "잔액을 확인하기 위해 {chain}에 연결할 수 없어 0으로 표시될 수 있습니다. 자금에는 영향이 없습니다. 다시 시도하거나 아래 옵션을 이용하세요.",
+    "retryBalance": "다시 시도",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset}에 대한 기본 전송을 사용할 수 없습니다",
@@ -1063,6 +1080,9 @@
       "date": "날짜",
       "wormchainReceive": "Wormchain 수신",
       "checkingSolana": "Solana에서 청구 상태를 확인하는 중...",
+      "checkingGuardians": "Wormhole에서 이 전송을 확인하는 중입니다. 잠시 기다려 주세요...",
+      "guardianSetExpired": "이 전송은 Wormhole 가디언 세트 {index}에 의해 서명되었으나 해당 세트가 만료되어 현재 상태로는 청구할 수 없습니다. Wormhole 가디언이 원래 트랜잭션을 다시 관측하고 재서명해야 합니다. 트랜잭션 해시와 함께 Wormhole에 문의해 주세요.",
+      "guardianCheckUnavailable": "지금은 Wormhole에서 이 전송을 확인할 수 없습니다. 그래도 청구를 시도할 수 있으며, 실패하더라도 네트워크 수수료만 잃게 됩니다.",
       "dailyLimitExceeded": "일일 한도 초과",
       "governorBodyEnqueued": "Wormhole이 {chain}의 일일 전송 한도에 도달했기 때문에 이 전송을 완료하는 데 최대 {hours}시간이 걸립니다. 이는 Wormhole 네트워크의 정상적이고 일시적인 보안 기능입니다.",
       "governorBodyLikelyEnqueued": "이 전송의 가치(~{amount})가 {chain}의 사용 가능한 여유(~{available} 남음)를 초과합니다. Wormhole 가디언이 최대 {hours}시간 동안 대기열에 넣을 가능성이 높습니다.",
@@ -1256,7 +1276,7 @@
     "totalFees": "총 수수료",
     "transactionHash": "거래 해시",
     "viewOnExplorer": "탐색기에서 보기",
-    "launchAlert": "현재는 거래 및 이체 내역만 표시됩니다. 더 많은 거래 유형에 대한 지원이 곧 제공됩니다.",
+    "launchAlert": "스왑, 입금 및 출금 내역이 표시됩니다.",
     "history": "역사",
     "orders": "명령",
     "historyTable": {
@@ -1274,7 +1294,17 @@
       "providerFee": "제공자 수수료",
       "provider": "공급자",
       "networkFee": "네트워크 수수료"
-    }
+    },
+    "filter": {
+      "type": "거래 유형",
+      "swap": "스왑",
+      "deposit": "입금",
+      "withdraw": "출금",
+      "search": "자산, 체인, 금액 또는 주소 검색",
+      "noMatches": "일치하는 거래가 없습니다",
+      "pageHint": "필터는 이 페이지의 거래에만 적용됩니다. 다음 페이지를 확인하거나 필터를 조정하세요."
+    },
+    "unknownAddressTooltip": "브리지 데이터에서 이 주소를 확인할 수 없습니다. 나중에 표시될 수 있으며, 익스플로러에서도 확인할 수 있습니다."
   },
   "date": {
     "earlierToday": "오늘 일찍",
@@ -1348,6 +1378,11 @@
     "lowerSlippageToleranceRecommended": "낮은 미끄러짐 허용 오차를 권장합니다.",
     "tryHigherSlippage": "최대 미끄러짐 허용 오차를 더 높이십시오.",
     "reviewTrade": "거래 검토",
+    "highPriceImpact": {
+      "title": "가격 영향이 큽니다",
+      "description": "이 거래는 시장 가격을 {impact} 변동시키므로 표시된 금액보다 훨씬 적게 받을 수 있습니다."
+    },
+    "lossAcknowledgement": "네, 이 거래로 인해 상당한 가치 손실이 발생할 수 있음을 이해하며 계속 진행하겠습니다.",
     "errors": {
       "noAssetAvailable": "Osmosis에 거래할 수 {coinName} 자금이 없습니다. 계속하려면 옵션을 선택하세요.",
       "tradeMayResultInLossOfValue": "귀하의 거래로 인해 상당한 가치 손실이 발생할 수 있습니다",
@@ -1394,7 +1429,14 @@
       "filled": "주문이 채워져서 청구됩니다"
     },
     "priceReaches": "{denom} 가격 {price} 도달하면",
-    "belowMinimumAmount": "{amount} 최소"
+    "belowMinimumAmount": "{amount} 최소",
+    "noOrderbookForPair": "{base}/{quote}에 대한 orderbook이 없습니다. 이 쌍의 limit orders를 활성화하려면 하나를 만드세요.",
+    "createOrderbook": "Orderbook 만들기",
+    "noOrderbookExists": "{denom}에 대한 orderbook 없음",
+    "clickToCreateOrderbook": "클릭하여 이 쌍의 orderbook을 만드세요.",
+    "creationInProgress": "이 페어의 오더북 생성이 다른 탭에서 이미 진행 중입니다",
+    "creationAwaitingConfirmation": "이 페어에 대한 이전 오더북 생성이 아직 온체인 확인을 기다리고 있습니다. 몇 분 후에 다시 시도하세요.",
+    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다."
   },
   "tradeDetails": {
     "priceImpact": {

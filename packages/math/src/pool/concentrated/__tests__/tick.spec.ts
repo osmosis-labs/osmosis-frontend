@@ -1,5 +1,4 @@
 import { Dec, Int } from "@osmosis-labs/unit";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import cases from "jest-in-case";
 
 import { approxSqrt } from "../../../utils";

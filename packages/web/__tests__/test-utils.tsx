@@ -1,57 +1,74 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
 import { AccountStore } from "@osmosis-labs/stores";
 import type { AvailableFlags } from "@osmosis-labs/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
-import { createTRPCReact, httpLink } from "@trpc/react-query";
+import { httpLink } from "@trpc/react-query";
 import { mockFlags } from "jest-launchdarkly-mock";
 import { when } from "mobx";
 import { ReactNode } from "react";
 
+import { registerTestCleanup } from "~/__tests__/setup-tests";
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
+import { trpcReact } from "~/__tests__/trpc-react";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
-import { AppRouter } from "~/server/api/root-router";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
 
-const trpcReact = createTRPCReact<AppRouter>();
 let testRootStore: RootStore;
+const testRootStores = new Set<RootStore>();
+// AccountStore.addWallet replaces its WalletManager, so track every manager a
+// test touched, not only the one current at teardown.
+const testWalletManagers = new Set<WalletManager>();
 
 const queryClient = new QueryClient();
+const trpcClient = trpcReact.createClient({
+  links: [
+    httpLink({
+      transformer: superjson,
+      url: "http://localhost:3000/trpc",
+    }),
+  ],
+});
+registerTestCleanup(async () => {
+  await queryClient.cancelQueries();
+  queryClient.clear();
+  for (const rootStore of testRootStores) {
+    testWalletManagers.add(rootStore.accountStore.walletManager);
+  }
+  for (const manager of testWalletManagers) {
+    manager.onUnmounted();
+    // Cosmos Kit exposes the session timer but has no session disposal method.
+    if (manager.session.timeoutId !== undefined) {
+      clearTimeout(manager.session.timeoutId as ReturnType<typeof setTimeout>);
+    }
+  }
+  testWalletManagers.clear();
+  testRootStores.clear();
+  localStorage.clear();
+});
+
 const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
-    <MultiLanguageProvider defaultLanguage="en">
-      <StoreProvider>
-        <storeContext.Consumer>
-          {(rootStore) => {
-            testRootStore = rootStore!;
-            return (
-              <WalletSelectProvider>
-                <trpcReact.Provider
-                  client={trpcReact.createClient({
-                    transformer: superjson,
-                    links: [
-                      httpLink({
-                        url: "http://localhost:3000/trpc",
-                      }),
-                    ],
-                  })}
-                  queryClient={queryClient}
-                >
-                  <QueryClientProvider client={queryClient}>
-                    {children}
-                  </QueryClientProvider>
-                </trpcReact.Provider>
-              </WalletSelectProvider>
-            );
-          }}
-        </storeContext.Consumer>
-      </StoreProvider>
-    </MultiLanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <trpcReact.Provider client={trpcClient} queryClient={queryClient}>
+        <MultiLanguageProvider defaultLanguage="en">
+          <StoreProvider>
+            <storeContext.Consumer>
+              {(rootStore) => {
+                testRootStore = rootStore!;
+                testRootStores.add(testRootStore);
+                return <WalletSelectProvider>{children}</WalletSelectProvider>;
+              }}
+            </storeContext.Consumer>
+          </StoreProvider>
+        </MultiLanguageProvider>
+      </trpcReact.Provider>
+    </QueryClientProvider>
   );
 };
 
@@ -67,7 +84,7 @@ export function renderHookWithProviders<
   Props,
   Q extends Queries,
   Container extends Element | DocumentFragment = HTMLElement,
-  BaseElement extends Element | DocumentFragment = Container
+  BaseElement extends Element | DocumentFragment = Container,
 >(
   render: (initialProps: Props) => Result,
   options?: RenderHookOptions<Props, Q, Container, BaseElement>
@@ -93,29 +110,17 @@ async function waitTestAccountLoaded(
   account: ReturnType<AccountStore["getWallet"]>
 ) {
   if (!account) {
-    console.error("Test account does not exist");
-    return;
+    throw new Error("Test account does not exist");
   }
-  if (account?.isReadyToSendTx) {
-    return;
-  }
-
-  const resolution = when(
+  // MobX owns/cancels both the reaction and timeout on resolution or rejection.
+  // Keep the timeout below Jest's default 5s test timeout so this descriptive
+  // rejection, not a generic test timeout, reports a wallet that never connects.
+  await when(
     () =>
-      account.isReadyToSendTx && account.walletStatus === WalletStatus.Connected
+      account.isReadyToSendTx &&
+      account.walletStatus === WalletStatus.Connected,
+    { timeout: 4_000 }
   );
-
-  return new Promise<void>((resolve, reject) => {
-    setTimeout(() => {
-      resolution.cancel();
-      reject(new Error("Timeout waitAccountLoaded"));
-    }, 10_000);
-
-    resolution.then(() => {
-      console.log("!");
-      resolve();
-    });
-  });
 }
 
 export async function connectTestWallet({
@@ -125,15 +130,13 @@ export async function connectTestWallet({
   accountStore: AccountStore<any>;
   chainId: string;
 }) {
+  testWalletManagers.add(accountStore.walletManager);
   const walletManager = await accountStore.addWallet(
     new TestWallet(testWalletInfo)
   );
+  testWalletManagers.add(walletManager);
   await walletManager.onMounted();
   await accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
   const account = accountStore.getWallet(chainId);
   await waitTestAccountLoaded(account);
-}
-
-export async function cleanupTestWallets() {
-  localStorage.clear();
 }

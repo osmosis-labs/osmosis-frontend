@@ -7,8 +7,10 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 
 type ClassVariants = "label" | "textarea" | "trailingSymbol";
 
-interface TextareaBoxProps
-  extends Optional<InputProps<string>, "currentValue"> {
+interface TextareaBoxProps extends Optional<
+  InputProps<string>,
+  "currentValue"
+> {
   textareaKey?: string;
   /** Style of the component, see Figma. */
   style?: "no-border" | "enabled" | "active" | "error";

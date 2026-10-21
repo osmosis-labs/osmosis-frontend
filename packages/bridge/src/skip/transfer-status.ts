@@ -9,7 +9,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { SkipBridgeProvider } from "./index";
+import { SkipProviderId } from "./constants";
 import { SkipTxStatusResponse } from "./types";
 
 type Transaction = {
@@ -56,7 +56,7 @@ export type SolanaSignatureCheck = (params: {
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
-  readonly providerId = SkipBridgeProvider.ID;
+  readonly providerId = SkipProviderId;
   readonly sourceDisplayName = "Skip Bridge";
 
   statusReceiverDelegate?: TransferStatusReceiver | undefined;

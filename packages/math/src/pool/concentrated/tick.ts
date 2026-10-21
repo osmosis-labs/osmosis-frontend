@@ -288,8 +288,8 @@ export function estimateInitialTickBound({
     boundTickIndex: boundTick.gt(maxTick)
       ? maxTick
       : boundTick.lt(minTick)
-      ? minTick
-      : boundTick,
+        ? minTick
+        : boundTick,
   };
 }
 

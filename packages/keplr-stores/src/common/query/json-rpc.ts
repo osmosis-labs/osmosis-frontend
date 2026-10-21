@@ -1,17 +1,18 @@
-import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
-import { KVStore } from "../kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
 import { AxiosInstance } from "axios";
+import { Buffer } from "buffer/";
 import { action, makeObservable, observable } from "mobx";
 import { sha256 } from "sha.js";
-import { Buffer } from "buffer/";
+
 import { HasMapStore } from "../map";
+import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
 
 /**
  * Experimental implementation for json rpc.
  */
 export class ObservableJsonRPCQuery<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends ObservableQuery<T, E> {
   @observable.ref
   protected _params: readonly any[];
@@ -99,7 +100,7 @@ const sha256_fn = (data: Uint8Array): Uint8Array => {
 
 export class ObservableJsonRPCQueryMap<
   T = unknown,
-  E = unknown
+  E = unknown,
 > extends HasMapStore<ObservableJsonRPCQuery<T, E>> {
   constructor(creater: (key: string) => ObservableJsonRPCQuery<T, E>) {
     super(creater);

@@ -1,18 +1,16 @@
 /**
  * @file tx-confirm.ts
- * @description Proxy-safe transaction confirmation helpers for the E2E layer.
+ * @description Transaction confirmation helpers for the E2E layer.
  *
  * Why this exists:
  * The in-app "Transaction Successful" toast is driven by the app's WebSocket
- * `TxTracer` (see packages/tx/src/tracer.ts). The EU/SG monitoring suites run
- * the browser through an HTTP CONNECT proxy, over which long-lived WebSockets
- * frequently stall or disconnect. When that happens the toast never renders
- * even though the transaction was broadcast and included on-chain — producing
- * false test failures.
+ * `TxTracer` (see packages/tx/src/tracer.ts). That WebSocket can stall or
+ * disconnect, so the toast never renders even though the transaction was
+ * broadcast and included on-chain — producing false test failures.
  *
  * These helpers let a test confirm a transaction by polling the Osmosis LCD
- * REST API directly from the Node test process. That fetch does NOT go through
- * the browser proxy, so it is reliable regardless of WebSocket health.
+ * REST API directly from the Node test process, which does not depend on the
+ * browser WebSocket.
  */
 
 import { REST_ENDPOINT } from "./config";

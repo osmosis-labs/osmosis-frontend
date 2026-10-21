@@ -20,7 +20,7 @@ export function useHideDustUserSetting<DustableItem>(
     () =>
       items.filter((item) =>
         hideDust
-          ? getValueOfItem(item)?.toDec().gte(DUST_THRESHOLD) ?? true
+          ? (getValueOfItem(item)?.toDec().gte(DUST_THRESHOLD) ?? true)
           : true
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps

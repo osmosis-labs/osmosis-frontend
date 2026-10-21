@@ -120,8 +120,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     let swapMessages: Awaited<ReturnType<typeof getSwapMessages>>;
     let swapRoute:
-      | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
-      | undefined;
+      Awaited<ReturnType<typeof getRouteTokenOutGivenIn>> | undefined;
 
     if (
       fromAsset.address.toLowerCase() === this.allBtcMinimalDenom?.toLowerCase()
@@ -471,6 +470,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
       const nomicWithdrawEnabled = await getLaunchDarklyFlagValue({
         key: "nomicWithdrawAmount",
+        defaultValue: false,
       });
 
       if (bitcoinCounterparty || isNomicBtc) {

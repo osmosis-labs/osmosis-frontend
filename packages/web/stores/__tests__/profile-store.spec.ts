@@ -28,16 +28,6 @@ describe("ProfileStore (Zustand)", () => {
   });
 
   describe("setCurrentAvatar", () => {
-    it("should update avatar to ammelia", () => {
-      const { result } = renderHook(() => useProfileStore());
-
-      act(() => {
-        result.current.setCurrentAvatar("ammelia");
-      });
-
-      expect(result.current.currentAvatar).toBe("ammelia");
-    });
-
     it("should update avatar back to wosmongton", () => {
       const { result } = renderHook(() => useProfileStore());
 
@@ -190,24 +180,6 @@ describe("ProfileStore (Zustand)", () => {
       } finally {
         getItemSpy.mockRestore();
       }
-    });
-  });
-
-  describe("Type Safety", () => {
-    it("should only accept valid avatar values", () => {
-      const { result } = renderHook(() => useProfileStore());
-
-      // TypeScript should enforce this at compile time,
-      // but we can verify the store only has valid values
-      act(() => {
-        result.current.setCurrentAvatar("wosmongton");
-      });
-      expect(["wosmongton", "ammelia"]).toContain(result.current.currentAvatar);
-
-      act(() => {
-        result.current.setCurrentAvatar("ammelia");
-      });
-      expect(["wosmongton", "ammelia"]).toContain(result.current.currentAvatar);
     });
   });
 

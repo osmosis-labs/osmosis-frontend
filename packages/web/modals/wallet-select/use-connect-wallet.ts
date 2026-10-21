@@ -1,17 +1,19 @@
 import { ChainWalletBase, WalletRepo, WalletStatus } from "@cosmos-kit/core";
+import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
-  CosmosRegistryWallet,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 import { noop } from "@osmosis-labs/utils";
 import { useState } from "react";
 import { Connector } from "wagmi";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { EthereumChainIds } from "~/config/wagmi";
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 import { CreateOneClickSessionError } from "~/hooks/mutations/one-click-trading";
+import { useWallet } from "~/hooks/use-wallet";
 import { WalletSelectOption } from "~/hooks/use-wallet-select";
 import { WagmiWalletConnectType } from "~/modals/wallet-select/use-selectable-wallets";
 import { useStore } from "~/stores";
@@ -45,7 +47,7 @@ export const useConnectWallet = ({
   isOneClickEnabled?: boolean;
   onCreate1CTSession?: () => Promise<void>;
 }) => {
-  const { accountStore, chainStore } = useStore();
+  const { walletRuntime } = useStore();
 
   const { connectAsync: connectEvmWallet, ...connectEvmWalletUtils } =
     useConnectEvmWallet();
@@ -59,10 +61,11 @@ export const useConnectWallet = ({
   );
 
   const cosmosChainId = cosmosOption?.chainId;
+  const snapshot = useWallet(cosmosChainId);
   const rootWalletRepo = cosmosChainId
-    ? accountStore.getWalletRepo(cosmosChainId)
+    ? walletRuntime.getWalletRepo(cosmosChainId)
     : undefined;
-  const current = rootWalletRepo?.current;
+  const current = cosmosOption ? snapshot.wallet : undefined;
   const cosmosChainName = rootWalletRepo?.chainRecord.chain?.chain_name!;
 
   const onConnectCosmosWallet = async ({
@@ -109,10 +112,10 @@ export const useConnectWallet = ({
       const walletInfo = wallet;
       const WalletClass = await wallet.lazyInstall();
 
-      const walletManager = await accountStore.addWallet(
+      const walletManager = await walletRuntime.installWallet(
         new WalletClass(walletInfo)
       );
-      await walletManager.onMounted().catch(handleConnectError);
+      await walletRuntime.mount().catch(handleConnectError);
       setLazyWalletInfo(undefined);
 
       walletRepo = walletManager.getWalletRepo(cosmosChainName!);
@@ -120,10 +123,9 @@ export const useConnectWallet = ({
       walletRepo = walletRepoParam;
     }
 
-    const isOsmosisConnection =
-      chainStore.osmosis.chainName === cosmosChainName!;
-    const osmosisWalletRepo = accountStore.getWalletRepo(
-      chainStore.osmosis.chainName
+    const isOsmosisConnection = OsmosisChainInfo.chainName === cosmosChainName!;
+    const osmosisWalletRepo = walletRuntime.getWalletRepo(
+      OsmosisChainInfo.chainName
     );
 
     if (
@@ -212,6 +214,8 @@ export const useConnectWallet = ({
     cosmos: {
       lazyWalletInfo,
       walletRepo: rootWalletRepo,
+      wallet: current,
+      walletStatus: cosmosOption ? snapshot.walletStatus : undefined,
     },
     onConnect,
   };

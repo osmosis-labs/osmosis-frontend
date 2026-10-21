@@ -3,6 +3,12 @@ import {
   getAverageStakingApr,
   getValidatorsWithInfos,
   queryDelegations,
+  queryDelegatorRewards,
+  queryDelegatorValidators,
+  queryStakingParams,
+  queryStakingPool,
+  queryUndelegations,
+  queryUserValidatorPreferences,
 } from "@osmosis-labs/server";
 import { BondStatus } from "@osmosis-labs/types";
 import { z } from "zod";
@@ -35,6 +41,55 @@ export const stakingRouter = createTRPCRouter({
         chainList: ctx.chainList,
         bech32Address: input.userOsmoAddress,
       }).then(({ delegation_responses }) => delegation_responses)
+    ),
+  getUserUnbondingDelegations: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      queryUndelegations({
+        chainList: ctx.chainList,
+        bech32Address: input.userOsmoAddress,
+      }).then(({ unbonding_responses }) => unbonding_responses)
+    ),
+  getUserDelegationRewards: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      queryDelegatorRewards({
+        chainList: ctx.chainList,
+        bech32Address: input.userOsmoAddress,
+      }).then(({ rewards, total }) => ({ rewards: rewards ?? [], total }))
+    ),
+  getUserDelegatorValidators: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      queryDelegatorValidators({
+        chainList: ctx.chainList,
+        bech32Address: input.userOsmoAddress,
+      }).then(({ validators }) => validators)
+    ),
+  getStakingParams: publicProcedure.query(({ ctx }) =>
+    queryStakingParams({ chainList: ctx.chainList }).then(({ params }) => ({
+      maxValidators: Number(params.max_validators),
+      // e.g. "1209600s"
+      unbondingTimeSeconds: Number.parseInt(params.unbonding_time, 10),
+    }))
+  ),
+  getStakingPool: publicProcedure.query(({ ctx }) =>
+    queryStakingPool({ chainList: ctx.chainList }).then(({ pool }) => ({
+      bondedTokens: pool.bonded_tokens,
+      notBondedTokens: pool.not_bonded_tokens,
+    }))
+  ),
+  getUserValidatorPreferences: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      queryUserValidatorPreferences({
+        chainList: ctx.chainList,
+        bech32Address: input.userOsmoAddress,
+      })
+        .then(({ preferences }) => preferences)
+        // The chain errors when the user has not set any preferences, which
+        // the UI treats the same as an empty list.
+        .catch(() => [])
     ),
   getOsmoEquivalent: publicProcedure
     .input(

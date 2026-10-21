@@ -1,14 +1,13 @@
 import {
   ChainGetter,
-  KVStore,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
+import type { AccountUnlockingCoins } from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computed, makeObservable } from "mobx";
-
-import { AccountUnlockingCoins } from "./types";
 
 export class ObservableQueryAccountUnlockingCoinsInner extends ObservableChainQuery<AccountUnlockingCoins> {
   constructor(

@@ -1,0 +1,152 @@
+import { superjson } from "@osmosis-labs/server";
+import { PricePretty } from "@osmosis-labs/unit";
+import { makeIndexedKVStore } from "@osmosis-labs/utils";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import {
+  persistQueryClientRestore,
+  persistQueryClientSave,
+} from "@tanstack/react-query-persist-client";
+
+import { PERSIST_BUSTER, shouldPersistQuery } from "~/utils/trpc-persist";
+
+/** The persister utils/trpc.ts builds: IndexedDB KV store + superjson. */
+function makePersister(name: string) {
+  const storage = makeIndexedKVStore(name);
+  return createAsyncStoragePersister({
+    storage: {
+      getItem: async (key) =>
+        ((await storage.get(key)) as string | undefined) ?? null,
+      setItem: (key, value) => storage.set(key, value),
+      removeItem: (key) => storage.set(key, undefined),
+    },
+    serialize: (client) => superjson.stringify(client),
+    deserialize: (cachedString) => superjson.parse(cachedString),
+    throttleTime: 0,
+  });
+}
+
+function save(
+  queryClient: QueryClient,
+  persister: ReturnType<typeof makePersister>,
+  buster = PERSIST_BUSTER
+) {
+  return persistQueryClientSave({
+    queryClient,
+    persister,
+    buster,
+    dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
+  });
+}
+
+async function restore(persister: ReturnType<typeof makePersister>) {
+  const queryClient = new QueryClient();
+  await persistQueryClientRestore({
+    queryClient,
+    persister,
+    buster: PERSIST_BUSTER,
+  });
+  return queryClient;
+}
+
+const ASSET_KEY = [["edge", "assets", "getUserAsset"]];
+const QUOTE_KEY = [["edge", "quoteRouter", "routeTokenOutGivenIn"]];
+
+describe("persisted query cache", () => {
+  it("restores a cache saved while a query was in flight", async () => {
+    const persister = makePersister("persist-spec-in-flight");
+    const source = new QueryClient();
+    source.setQueryData(ASSET_KEY, { denom: "uosmo" });
+    // Never resolves: stays pending, as a query does when the tab closes.
+    void source.prefetchQuery({
+      queryKey: QUOTE_KEY,
+      queryFn: () => new Promise(() => {}),
+    });
+    await save(source, persister);
+
+    const target = await restore(persister);
+    expect(target.getQueryData(ASSET_KEY)).toEqual({ denom: "uosmo" });
+    expect(target.getQueryState(QUOTE_KEY)).toBeUndefined();
+    // A failed restore removes the stored cache; this one must survive.
+    expect(await persister.restoreClient()).toBeDefined();
+  });
+
+  it("does not persist excluded procedures", async () => {
+    const persister = makePersister("persist-spec-excluded");
+    const source = new QueryClient();
+    source.setQueryData([["bridgeTransfer", "getDepositAddress"]], {
+      depositAddress: "addr",
+    });
+    await save(source, persister);
+
+    const target = await restore(persister);
+    expect(
+      target.getQueryData([["bridgeTransfer", "getDepositAddress"]])
+    ).toBeUndefined();
+  });
+
+  it("does not persist errored queries", async () => {
+    const persister = makePersister("persist-spec-errored");
+    const source = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    await source.prefetchQuery({
+      queryKey: [["edge", "assets", "getAssetPrice"]],
+      queryFn: () => Promise.reject(new Error("down")),
+    });
+    await save(source, persister);
+
+    const target = await restore(persister);
+    expect(
+      target.getQueryState([["edge", "assets", "getAssetPrice"]])
+    ).toBeUndefined();
+  });
+
+  it("restores market prices as live unit objects", async () => {
+    const persister = makePersister("persist-spec-market-price");
+    const source = new QueryClient();
+    const key = [["edge", "assets", "getMarketAsset"]];
+    const price = new PricePretty(
+      { currency: "usd", symbol: "$", maxDecimals: 2, locale: "en-US" },
+      "0.03423563438382369"
+    );
+    source.setQueryData(key, { currentPrice: price });
+    await save(source, persister);
+
+    const target = await restore(persister);
+    const restored = target.getQueryData<{ currentPrice: PricePretty }>(key);
+    expect(restored?.currentPrice).toBeInstanceOf(PricePretty);
+    expect(restored?.currentPrice.toDec().toString()).toBe(
+      price.toDec().toString()
+    );
+  });
+
+  it("discards v4 caches containing plain market-price field dumps", async () => {
+    const persister = makePersister("persist-spec-field-dump");
+    const source = new QueryClient();
+    const key = [["edge", "assets", "getMarketAsset"]];
+    source.setQueryData(key, {
+      currentPrice: {
+        _fiatCurrency: { currency: "usd", symbol: "$" },
+        amount: 0.034,
+        intPretty: { dec: "0.034" },
+      },
+    });
+    await save(source, persister, "v4");
+
+    const target = await restore(persister);
+    expect(target.getQueryData(key)).toBeUndefined();
+    expect(await persister.restoreClient()).toBeUndefined();
+  });
+
+  it("drops a cache saved under an older buster", async () => {
+    const persister = makePersister("persist-spec-buster");
+    const source = new QueryClient();
+    source.setQueryData(ASSET_KEY, { denom: "uosmo" });
+    await save(source, persister, "v3");
+
+    const target = await restore(persister);
+    expect(target.getQueryData(ASSET_KEY)).toBeUndefined();
+    expect(await persister.restoreClient()).toBeUndefined();
+  });
+});

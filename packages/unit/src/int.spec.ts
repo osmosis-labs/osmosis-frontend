@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-loss-of-precision */
 import { Dec } from "./decimal";
 import { Int, Uint } from "./int";
 
@@ -175,6 +174,57 @@ describe("Test Int/Uint", () => {
 
     expect(uint1.equals(uint2)).toBe(false);
     expect(uint1.equals(uint1)).toBe(true);
+  });
+
+  it("Test Int div/mod with negative operands", () => {
+    // bigint `/` truncates toward zero and `%` takes the dividend's sign,
+    // matching Go's integer semantics that the chain's sdk.Int follows.
+    const seven = new Int(7);
+    const negSeven = new Int(-7);
+    const two = new Int(2);
+    const negTwo = new Int(-2);
+
+    expect(negSeven.div(two).toString()).toBe("-3");
+    expect(negSeven.mod(two).toString()).toBe("-1");
+
+    expect(seven.div(negTwo).toString()).toBe("-3");
+    expect(seven.mod(negTwo).toString()).toBe("1");
+
+    expect(negSeven.div(negTwo).toString()).toBe("3");
+    expect(negSeven.mod(negTwo).toString()).toBe("-1");
+
+    // Sanity: (a div b) * b + (a mod b) === a for every sign combination.
+    for (const [a, b] of [
+      [negSeven, two],
+      [seven, negTwo],
+      [negSeven, negTwo],
+      [seven, two],
+    ] as const) {
+      expect(a.div(b).mul(b).add(a.mod(b)).equals(a)).toBe(true);
+    }
+  });
+
+  it("Test Int/Uint zero to the power of zero is one", () => {
+    expect(new Int(0).pow(new Uint(0)).toString()).toBe("1");
+    expect(new Uint(0).pow(new Uint(0)).toString()).toBe("1");
+
+    expect(new Int(0).pow(new Uint(3)).toString()).toBe("0");
+    expect(new Int(-2).pow(new Uint(3)).toString()).toBe("-8");
+    expect(new Int(-2).pow(new Uint(2)).toString()).toBe("4");
+  });
+
+  it("Test Int/Uint/Dec bigint constructor args", () => {
+    expect(new Int(BigInt(123)).toString()).toBe("123");
+    expect(new Int(BigInt(123)).equals(new Int("123"))).toBe(true);
+    expect(new Int(BigInt(-123)).equals(new Int("-123"))).toBe(true);
+
+    expect(new Uint(BigInt(123)).equals(new Uint("123"))).toBe(true);
+    expect(() => new Uint(BigInt(-1))).toThrow();
+
+    expect(new Dec(BigInt(123), 2).toString()).toBe("1.230000000000000000");
+    expect(new Dec(BigInt(123), 2).equals(new Dec("1.23"))).toBe(true);
+    expect(new Dec(BigInt(123)).equals(new Dec("123"))).toBe(true);
+    expect(new Dec(BigInt(-123), 2).equals(new Dec("-1.23"))).toBe(true);
   });
 
   it("Test Int/Uint from exponent number", () => {

@@ -4,8 +4,10 @@ import { Icon } from "~/components/assets";
 import { PoolCompositionCell } from "~/components/table/cells/pool-composition";
 import { useTranslation } from "~/hooks";
 
-export interface PoolQuickActionCell
-  extends Pick<PoolCompositionCell, "poolId"> {
+export interface PoolQuickActionCell extends Pick<
+  PoolCompositionCell,
+  "poolId"
+> {
   onAddLiquidity?: () => void;
 }
 

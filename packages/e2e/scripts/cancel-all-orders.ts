@@ -18,7 +18,7 @@
  * Retries up to 3 rounds to handle cases where transactions partially fail.
  *
  * @requires PRIVATE_KEY   - Hex-encoded secp256k1 private key (with or without 0x prefix).
- * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "Monitoring EU").
+ * @requires ACCOUNT_LABEL - (optional) Human-readable label for log output (e.g. "E2E Test Account").
  * @requires DRY_RUN       - (optional) Set to "true" to skip sending transactions.
  * @requires MIN_ORDER_AGE_MINUTES - (optional) Leave orders younger than this alone. CI sets it
  *           for the pre-test cleanup so one run can't cancel another run's in-flight test orders

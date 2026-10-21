@@ -5,7 +5,8 @@ dist
 prod
 build
 yarn-error.log
-.yarn
+.yarn/*
+!.yarn/patches
 
 src/styles/index.scss
 .vercel

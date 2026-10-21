@@ -1,4 +1,5 @@
-import { getPools, PoolRawResponse, queryNumPools } from "@osmosis-labs/server";
+import { getPools, queryNumPools } from "@osmosis-labs/server";
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 

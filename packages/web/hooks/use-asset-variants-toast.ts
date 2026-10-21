@@ -9,13 +9,12 @@ import {
 } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAlloyedAssetsToastSession } from "~/hooks/use-alloyed-assets-toast-session";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 export const useAssetVariantsToast = () => {
   // #region hooks & store
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
@@ -41,52 +40,72 @@ export const useAssetVariantsToast = () => {
     alloyedAssets &&
     !hasSeenToastThisSession &&
     !isWalletLoading &&
-    Boolean(wallet?.isWalletConnected) &&
-    Boolean(wallet?.address);
+    isWalletConnected &&
+    Boolean(address);
 
-  api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: wallet?.address ?? "",
-    },
-    {
-      enabled,
-      onSuccess: (data) => {
-        if (hasSeenToastThisSession) return;
+  const { data, error, isFetchedAfterMount, isSuccess, isFetching } =
+    api.local.portfolio.getPortfolioAssets.useQuery(
+      {
+        address: address ?? "",
+      },
+      {
+        enabled,
+        refetchOnWindowFocus: false,
+      }
+    );
 
-        // Eligibility and visibility live in alloyed-assets-toast-policy so the
-        // release-critical rules are assertable without a component or a tRPC
-        // client. Keep this callback to wiring only.
-        const variantGroupKeys = getToastEligibleVariantGroupKeys(
-          data?.assetVariants
-        );
+  useEffect(() => {
+    // Only a settled, successful fetch this mount made while the gate was open
+    // counts. The query can expose cached or persisted data while disabled,
+    // keeps old data when a refetch fails, and a late cache restore can mark
+    // it fetched mid-fetch; any of those would toast for a stale portfolio.
+    if (!enabled || !isSuccess || isFetching || !isFetchedAfterMount || !data)
+      return;
+    if (hasSeenToastThisSession) return;
 
-        if (
-          shouldDisplayAlloyedAssetsToast({
-            variantGroupKeys,
-            isAlloyedAssetsEnabled: alloyedAssets,
-            isMobile,
-            areAllGroupsDismissed,
-          })
-        ) {
-          displayToast(
-            {
-              titleTranslationKey: "alloyedAssets.title",
-              captionTranslationKey: "alloyedAssets.caption",
-              variantGroupKeys,
-            },
-            ToastType.ALLOYED_ASSETS,
-            {
-              position: "bottom-right",
-            }
-          );
+    // Eligibility and visibility live in alloyed-assets-toast-policy so the
+    // release-critical rules are assertable without a component or a tRPC
+    // client. Keep this callback to wiring only.
+    const variantGroupKeys = getToastEligibleVariantGroupKeys(
+      data?.assetVariants
+    );
 
-          markToastSeenThisSession();
+    if (
+      shouldDisplayAlloyedAssetsToast({
+        variantGroupKeys,
+        isAlloyedAssetsEnabled: alloyedAssets,
+        isMobile,
+        areAllGroupsDismissed,
+      })
+    ) {
+      displayToast(
+        {
+          titleTranslationKey: "alloyedAssets.title",
+          captionTranslationKey: "alloyedAssets.caption",
+          variantGroupKeys,
+        },
+        ToastType.ALLOYED_ASSETS,
+        {
+          position: "bottom-right",
         }
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-      refetchOnWindowFocus: false,
+      );
+
+      markToastSeenThisSession();
     }
-  );
+  }, [
+    enabled,
+    isSuccess,
+    isFetching,
+    isFetchedAfterMount,
+    data,
+    hasSeenToastThisSession,
+    alloyedAssets,
+    isMobile,
+    areAllGroupsDismissed,
+    markToastSeenThisSession,
+  ]);
+
+  useEffect(() => {
+    if (error) console.error(error);
+  }, [error]);
 };

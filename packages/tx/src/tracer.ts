@@ -243,9 +243,7 @@ export class TxTracer {
       this.listeners[type] = [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.listeners[type]!.push(listener);
   }
 
@@ -288,17 +286,22 @@ export class TxTracer {
         if (obj?.id) {
           if (this.pendingQueries.has(obj.id)) {
             if (obj.error) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               this.pendingQueries
                 .get(obj.id)!
                 .rejector(new Error(obj.error.data || obj.error.message));
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               this.pendingQueries.get(obj.id)!.resolver(obj.result);
             }
 
             this.pendingQueries.delete(obj.id);
           }
+        }
+
+        if (obj?.id && obj.error && this.txSubscribes.has(obj.id)) {
+          this.txSubscribes
+            .get(obj.id)!
+            .rejector(new Error(obj.error.data || obj.error.message));
+          this.txSubscribes.delete(obj.id);
         }
 
         if (obj?.result?.data?.type === "tendermint/event/NewBlock") {
@@ -311,15 +314,14 @@ export class TxTracer {
           if (obj?.id) {
             if (this.txSubscribes.has(obj.id)) {
               if (obj.error) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.txSubscribes
                   .get(obj.id)!
                   .rejector(new Error(obj.error.data || obj.error.message));
               } else {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.txSubscribes
-                  .get(obj.id)!
-                  .resolver(obj.result.data.value.TxResult.result);
+                this.txSubscribes.get(obj.id)!.resolver({
+                  ...obj.result.data.value.TxResult.result,
+                  height: Number(obj.result.data.value.TxResult.height),
+                });
               }
 
               this.txSubscribes.delete(obj.id);
@@ -424,7 +426,11 @@ export class TxTracer {
           // noop
         });
 
-      this.subscribeTx(query).then(resolve);
+      this.subscribeTx(query).then(resolve, () => {
+        // The tx was already accepted by the node, so a failed subscription
+        // must not report it as failed: it can still be included. The lookup
+        // above can still resolve the trace if the tx is indexed.
+      });
     });
   }
 

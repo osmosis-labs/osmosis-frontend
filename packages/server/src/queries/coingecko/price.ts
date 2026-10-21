@@ -28,20 +28,3 @@ export async function querySimplePrice(
 
   return apiClient<SimplePriceResponse>(url.toString());
 }
-
-export async function querySimpleTokenPrice(
-  id: string,
-  contractAddresses: string,
-  vsCurrencies: CoingeckoVsCurrencies[] = ["usd"],
-  includeVolume: boolean = true
-): Promise<SimplePriceResponse> {
-  const url = new URL(`/api/v3/simple/token_price/${id}`, PRICES_API_URL);
-
-  const vsCurrenciesString = vsCurrencies.join(",");
-
-  url.searchParams.append("vs_currencies", vsCurrenciesString);
-  url.searchParams.append("include_24hr_vol", includeVolume ? "true" : "false");
-  url.searchParams.append("contract_addresses", contractAddresses);
-
-  return apiClient<SimplePriceResponse>(url.toString());
-}

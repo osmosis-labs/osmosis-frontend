@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
 
@@ -6,7 +5,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
-import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
+import { FiatRampDisplayInfos } from "~/integrations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const Options = (
@@ -30,9 +29,9 @@ const Options = (
 ];
 
 /** Selection of fiat on/off ramp to use. */
-export const FiatOnrampSelectionModal: FunctionComponent<
-  { onSelectRamp?: (ramp: FiatRampKey) => void } & ModalBaseProps
-> = observer(({ onSelectRamp, ...modalProps }) => {
+export const FiatOnrampSelectionModal: FunctionComponent<ModalBaseProps> = (
+  modalProps
+) => {
   const flags = useFeatureFlags();
   const toggleFiatRamp = useBridgeStore((state) => state.toggleFiatRamp);
   const { t } = useTranslation();
@@ -62,7 +61,6 @@ export const FiatOnrampSelectionModal: FunctionComponent<
                 key={rampKey}
                 className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 px-5 py-5 transition-colors hover:!bg-osmoverse-700"
                 onClick={() => {
-                  onSelectRamp?.(rampKey);
                   toggleFiatRamp({
                     fiatRampKey: rampKey,
                     assetKey: initialAsset,
@@ -91,4 +89,4 @@ export const FiatOnrampSelectionModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};

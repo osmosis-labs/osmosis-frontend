@@ -4,13 +4,5 @@
     "incremental": false,
     "moduleResolution": "bundler"
   },
-  "exclude": [
-    "node_modules",
-    "**/__tests__/**",
-    "**/__mocks__/**",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules"]
 }

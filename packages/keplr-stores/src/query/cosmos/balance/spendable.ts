@@ -1,12 +1,13 @@
-import { SpendableBalances } from "./types";
-import { KVStore } from "../../../common/kv-store";
+import { CoinPretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed } from "mobx";
+
+import { ChainGetter } from "../../../common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
-import { CoinPretty } from "@osmosis-labs/unit";
-import { computed } from "mobx";
+import { SpendableBalances } from "./types";
 
 export class ObservableChainQuerySpendableBalances extends ObservableChainQuery<SpendableBalances> {
   constructor(

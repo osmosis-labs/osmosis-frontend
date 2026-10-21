@@ -1,7 +1,6 @@
 import { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { InputBox } from "~/components/input";
@@ -10,8 +9,8 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const LockShares: FunctionComponent<
@@ -22,7 +21,7 @@ export const LockShares: FunctionComponent<
     onLockToken: (duration: Duration, electSuperfluid?: boolean) => void;
     bondDurations?: BondDuration[];
   } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const {
     poolId,
     amountConfig: config,
@@ -31,10 +30,8 @@ export const LockShares: FunctionComponent<
   } = props;
   const { t } = useTranslation();
 
-  const { accountStore } = useStore();
-
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const address = account?.address ?? "";
+  const { address: walletAddress, txTypeInProgress } = useWallet();
+  const address = walletAddress ?? "";
 
   const { data: bondDurations_ } =
     api.edge.pools.getSharePoolBondDurations.useQuery(
@@ -112,9 +109,7 @@ export const LockShares: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
-        Boolean(config.error) ||
-        !selectedDuration ||
-        Boolean(account?.txTypeInProgress),
+        Boolean(config.error) || !selectedDuration || Boolean(txTypeInProgress),
       onClick: () => {
         if (selectedDuration) {
           onLockToken(
@@ -130,8 +125,8 @@ export const LockShares: FunctionComponent<
         (superfluidInEffect && !hasSuperfluidValidator
           ? t("lockToken.buttonNext")
           : superfluidInEffect
-          ? t("lockToken.buttonBondStake")
-          : t("lockToken.buttonBond") || undefined),
+            ? t("lockToken.buttonBondStake")
+            : t("lockToken.buttonBond") || undefined),
     },
     props.onRequestClose
   );
@@ -234,7 +229,7 @@ export const LockShares: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};
 
 const LockupItem: FunctionComponent<{
   duration: string;

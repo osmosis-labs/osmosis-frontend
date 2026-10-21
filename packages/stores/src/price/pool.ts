@@ -1,14 +1,11 @@
-import {
-  ChainGetter,
-  CoinGeckoPriceStore,
-  KVStore,
-} from "@osmosis-labs/keplr-stores";
+import { ChainGetter, CoinGeckoPriceStore } from "@osmosis-labs/keplr-stores";
+import type { IPriceStore } from "@osmosis-labs/types";
 import { Asset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, FiatCurrency, PricePretty } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries-external/pools";
-import { IPriceStore } from "./types";
 
 /**
  * PoolFallbackPriceStore permits the some currencies that are not listed on CoinGecko
@@ -169,10 +166,13 @@ export class PoolFallbackPriceStore
     const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
     if (!fiat) return;
 
-    return coins.reduce((sum, coin) => {
-      const coinPrice = this.calculatePrice(coin, vsCurrency);
-      if (coinPrice) return sum.add(coinPrice);
-      return sum;
-    }, new PricePretty(fiat, 0));
+    return coins.reduce(
+      (sum, coin) => {
+        const coinPrice = this.calculatePrice(coin, vsCurrency);
+        if (coinPrice) return sum.add(coinPrice);
+        return sum;
+      },
+      new PricePretty(fiat, 0)
+    );
   };
 }

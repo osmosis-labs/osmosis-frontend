@@ -1,5 +1,5 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import React from "react";
+import React, { ReactNode } from "react";
 import { useMemo } from "react";
 
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
@@ -28,6 +28,8 @@ export const StakeTool: React.FC<{
   onStakeButtonClick: () => void;
   disabled: boolean;
   stakingAPR: Dec;
+  /** Shown above the button on the Stake tab. */
+  stakeWarning?: ReactNode;
 }> = ({
   hasInsufficientBalance,
   inputAmount,
@@ -44,6 +46,7 @@ export const StakeTool: React.FC<{
   onStakeButtonClick,
   disabled,
   stakingAPR,
+  stakeWarning,
 }) => {
   const { t } = useTranslation();
 
@@ -97,6 +100,7 @@ export const StakeTool: React.FC<{
       ) : (
         <UnbondingCard />
       )}
+      {activeTab === "Stake" && stakeWarning}
       <Button
         variant="success"
         onClick={onStakeButtonClick}

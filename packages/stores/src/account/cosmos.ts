@@ -1,41 +1,26 @@
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import {
-  ChainGetter,
-  ChainIdHelper,
-  CosmosQueries,
-  IQueriesStore,
-  txEventsWithPreOnFulfill,
-} from "@osmosis-labs/keplr-stores";
-import { makeIBCTransferMsg } from "@osmosis-labs/tx";
-import { AppCurrency, Dec, DecUtils, Int } from "@osmosis-labs/unit";
+  prepareIBCTransferMsg,
+  type TransactionPreparationContext,
+} from "@osmosis-labs/tx";
+import { AppCurrency } from "@osmosis-labs/unit";
 
-import {
-  AccountStore,
-  CosmwasmAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
-import { OsmosisQueries } from "../queries";
+import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;
 }
 
 export const CosmosAccount = {
-  use(options: {
-    queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
-  }): (
+  use(): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
     chainId: string
   ) => CosmosAccount {
     return (base, chainGetter, chainId) => {
       return {
-        cosmos: new CosmosAccountImpl(
-          base,
-          chainGetter,
-          chainId,
-          options.queriesStore
-        ),
+        cosmos: new CosmosAccountImpl(base, chainGetter, chainId),
       };
     };
   },
@@ -47,11 +32,25 @@ export class CosmosAccountImpl {
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
-    protected readonly queriesStore: IQueriesStore<
-      CosmosQueries & OsmosisQueries
-    >
+    protected readonly chainId: string
   ) {}
+
+  private get preparationContext(): TransactionPreparationContext {
+    const getAddress = () => this.address;
+    return {
+      get address() {
+        return getAddress();
+      },
+      chainId: this.chainId,
+      chains: this.base.chains,
+      findCurrency: (denom) =>
+        this.chainGetter.getChain(this.chainId).findCurrency(denom),
+      stakeCurrency: () =>
+        this.chainGetter.getChain(this.chainId).stakeCurrency,
+      simulatePositionMigration: (input) =>
+        this.base.simulatePositionMigration(input),
+    };
+  }
 
   private get address() {
     return this.base.getWallet(this.chainId)?.address ?? "";
@@ -84,81 +83,17 @@ export class CosmosAccountImpl {
         },
     memo?: string
   ) {
-    const actualAmount = (() => {
-      let dec = new Dec(amount);
-      dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
-      return dec.truncate().toString();
-    })();
-
-    const destinationInfo = this.queriesStore.get(channel.counterpartyChainId)
-      .cosmos.queryRPCStatus;
-
-    await destinationInfo.waitFreshResponse();
-
-    if (!destinationInfo.network) {
-      throw new Error(
-        `Failed to fetch the network chain id of ${channel.counterpartyChainId}`
-      );
-    }
-
-    if (
-      !destinationInfo.latestBlockHeight ||
-      destinationInfo.latestBlockHeight.equals(new Int("0"))
-    ) {
-      throw new Error(
-        `Failed to fetch the latest block of ${channel.counterpartyChainId}`
-      );
-    }
-
-    const revisionNumber = ChainIdHelper.parse(
-      destinationInfo.network
-    ).version.toString();
-
-    const msg = await makeIBCTransferMsg({
-      sourcePort: channel.portId,
-      sourceChannel: channel.channelId,
-      token: {
-        denom: currency.coinMinimalDenom,
-        amount: actualAmount,
-      },
-      receiver: recipient,
-      sender: this.address,
-      timeoutHeight: {
-        revisionNumber:
-          revisionNumber !== "0" ? BigInt(revisionNumber) : undefined,
-        revisionHeight: BigInt(
-          destinationInfo.latestBlockHeight.add(new Int("150")).toString()
-        ),
-      },
-      timeoutTimestamp: BigInt(0),
-      memo: memo ? memo : "",
-    });
-
     await this.base.signAndBroadcast(
       this.chainId,
-      "sendIbcTransfer",
-      [msg],
-      "",
-      undefined,
-      undefined,
-      txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          const queries = this.queriesStore.get(this.chainId);
-
-          // After succeeding to send token, refresh the balance.
-          const queryBalance = queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.find((bal) => {
-              return (
-                bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-              );
-            });
-
-          if (queryBalance) {
-            queryBalance.fetch();
-          }
-        }
-      })
+      ...(await prepareIBCTransferMsg(
+        this.preparationContext,
+        channel,
+        amount,
+        currency,
+        recipient,
+        onTxEvents,
+        memo
+      ))
     );
   }
 }

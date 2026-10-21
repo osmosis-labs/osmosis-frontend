@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "This is a validator with high voting power, consider selecting a different validator to help promote decentralization.",
+    "inactiveValidators": {
+      "title": "Inactive Validators Detected",
+      "squadDescription": "These validators have left the active set and no longer earn rewards. Redelegate to active validators to start earning again. Redelegation is instant, with no unbonding period.",
+      "statusInactive": "Outside the active set",
+      "statusInactiveShortfall": "Inactive: ~{amount} short of the active set",
+      "statusJailed": "Jailed: not earning rewards",
+      "redelegate": "Redelegate",
+      "stakeWarning": "Your stake squad includes inactive validators. Part of any new stake would go to them and earn nothing.",
+      "editSquad": "Edit stake squad",
+      "redelegateDescription": "Select validators to redelegate {amount} to. It's split evenly between them; the rest of your stake is unchanged.",
+      "topThirdHidden": "The largest validators, together holding a third of all stake, are hidden by default to help keep Osmosis decentralized.",
+      "topThirdShown": "These are the largest validators, together holding a third of all stake. Choosing smaller validators helps keep Osmosis decentralized.",
+      "alertDescription": "Some of your validators have left the active set, so the OSMO staked with them isn't earning rewards. Redelegate from the Stake page to start earning again.",
+      "dismiss": "Dismiss",
+      "goToStake": "Go to Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "What is staking?",
@@ -720,7 +735,7 @@
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
-      "button2": "Set Squad and Stake",
+      "button2": "Set Squad and Stake {amount}",
       "noResults": "No results found",
       "column": {
         "validator": "Validator",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "Review withdraw",
     "moreDepositOptions": "More deposit options",
     "moreWithdrawOptions": "More withdraw options",
-    "convertTo": "Convert to",
     "depositAs": "Deposit as",
     "withdrawAs": "Withdraw as",
     "withdrawViaRoute": "via {route}",
@@ -1006,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Transfers will likely take longer than usual or may fail entirely. Proceed at your own risk.",
     "ibcConnectionDown": "Native IBC connection unavailable",
     "ibcConnectionDownDescription": "The direct IBC route for {asset} is currently down. The options below may offer an alternative path, but may also be affected.",
+    "balanceUnavailable": "Couldn't load your {chain} balance",
+    "balanceUnavailableDescription": "We couldn't reach {chain} to check your balance, so it may show as 0. Your funds are not affected. Retry, or use the options below.",
+    "retryBalance": "Retry",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native transfers unavailable for {asset}",
@@ -1063,6 +1080,9 @@
       "date": "Date",
       "wormchainReceive": "Wormchain receive",
       "checkingSolana": "Checking Solana for redemption status...",
+      "checkingGuardians": "Checking this transfer with Wormhole, please wait...",
+      "guardianSetExpired": "This transfer was signed by Wormhole guardian set {index}, which has since expired, so it can't be redeemed as-is. Wormhole's guardians need to re-observe the original transaction and sign it again. Please contact Wormhole with your transaction hash.",
+      "guardianCheckUnavailable": "We couldn't confirm this transfer with Wormhole right now. You can still try to redeem it; if it fails, you only lose the network fee.",
       "dailyLimitExceeded": "Daily limit exceeded",
       "governorBodyEnqueued": "This transfer will take up to {hours} hours to complete as Wormhole has reached the daily transfer limit for {chain}. This is a normal and temporary security feature of the Wormhole network.",
       "governorBodyLikelyEnqueued": "This transfer's value (~{amount}) exceeds the available headroom on {chain} (~{available} remaining). The Wormhole guardians will likely queue it for up to {hours} hours.",
@@ -1256,7 +1276,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Showing your swaps, deposits and withdrawals.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
@@ -1274,7 +1294,17 @@
       "providerFee": "Provider fee",
       "provider": "Provider",
       "networkFee": "Network fee"
-    }
+    },
+    "filter": {
+      "type": "Transaction types",
+      "swap": "Swaps",
+      "deposit": "Deposits",
+      "withdraw": "Withdrawals",
+      "search": "Search asset, chain, amount or address",
+      "noMatches": "No matching transactions",
+      "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
+    },
+    "unknownAddressTooltip": "We couldn't determine this address from the bridge's data. It may appear later; you can also find it in the explorer."
   },
   "date": {
     "earlierToday": "Earlier today",
@@ -1348,6 +1378,11 @@
     "lowerSlippageToleranceRecommended": "A lower slippage tolerance is recommended.",
     "tryHigherSlippage": "Try a higher maximum slippage tolerance.",
     "reviewTrade": "Review trade",
+    "highPriceImpact": {
+      "title": "Price impact is high",
+      "description": "This trade moves the market price by {impact}, so you may receive far less than the amount shown."
+    },
+    "lossAcknowledgement": "Yes, I understand this trade may lose a significant amount of value and I wish to proceed.",
     "errors": {
       "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue.",
       "tradeMayResultInLossOfValue": "Your trade may result in significant loss of value",
@@ -1394,7 +1429,14 @@
       "filled": "Filled orders to claim"
     },
     "priceReaches": "If {denom} price reaches {price}",
-    "belowMinimumAmount": "{amount} minimum"
+    "belowMinimumAmount": "{amount} minimum",
+    "noOrderbookForPair": "No orderbook exists for {base}/{quote}. Create one to enable limit orders for this pair.",
+    "createOrderbook": "Create Orderbook",
+    "noOrderbookExists": "No orderbook for {denom}",
+    "clickToCreateOrderbook": "Click to create an orderbook for this pair.",
+    "creationInProgress": "An orderbook creation for this pair is already in progress in another tab",
+    "creationAwaitingConfirmation": "A previous orderbook creation for this pair is still awaiting confirmation onchain. Try again in a few minutes.",
+    "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

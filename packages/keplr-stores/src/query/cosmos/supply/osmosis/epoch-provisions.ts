@@ -1,10 +1,11 @@
+import { CoinPretty, Int } from "@osmosis-labs/unit";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, makeObservable } from "mobx";
+
 import { ChainGetter } from "../../../../common";
 import { ObservableChainQuery } from "../../../chain-query";
-import { EpochProvisions } from "./types";
-import { KVStore } from "../../../../common/kv-store";
-import { computed, makeObservable } from "mobx";
-import { CoinPretty, Int } from "@osmosis-labs/unit";
 import { ObservableQueryOsmosisMintParmas } from "./params";
+import { EpochProvisions } from "./types";
 
 export class ObservableQueryOsmosisEpochProvisions extends ObservableChainQuery<EpochProvisions> {
   constructor(

@@ -37,14 +37,33 @@ function loadHook() {
   return hook;
 }
 
+/** Loads a fresh hook module once per test, then renders it. (Loading it
+ *  inside the render callback would reset the module state every render.) */
+function renderPhantom(options?: { restoreSession?: boolean }) {
+  const usePhantomWallet = loadHook();
+  return renderHook(() => usePhantomWallet(options));
+}
+
 afterEach(() => {
   delete (window as unknown as { phantom?: unknown }).phantom;
 });
 
 describe("usePhantomWallet eager reconnect", () => {
+  it("does not touch Phantom unless the caller asks to restore the session", async () => {
+    installProvider();
+    const provider = (
+      window as unknown as { phantom: { solana: PhantomProvider } }
+    ).phantom.solana;
+    const { result } = renderPhantom();
+
+    await act(async () => undefined);
+    expect(provider.connect).not.toHaveBeenCalled();
+    expect(result.current.address).toBeUndefined();
+  });
+
   it("restores a trusted session when nothing else happened", async () => {
     const { resolveEager } = installProvider();
-    const { result } = renderHook(loadHook());
+    const { result } = renderPhantom({ restoreSession: true });
 
     await act(async () => resolveEager("TRUSTED"));
     await waitFor(() => expect(result.current.address).toBe("TRUSTED"));
@@ -52,7 +71,7 @@ describe("usePhantomWallet eager reconnect", () => {
 
   it("doesn't let a late silent reconnect overwrite a manual connect", async () => {
     const { resolveEager } = installProvider("MANUAL");
-    const { result } = renderHook(loadHook());
+    const { result } = renderPhantom({ restoreSession: true });
 
     await act(async () => {
       await result.current.connect();
@@ -65,7 +84,7 @@ describe("usePhantomWallet eager reconnect", () => {
 
   it("doesn't let a late silent reconnect undo a disconnect", async () => {
     const { resolveEager } = installProvider();
-    const { result } = renderHook(loadHook());
+    const { result } = renderPhantom({ restoreSession: true });
 
     await act(async () => {
       await result.current.disconnect();

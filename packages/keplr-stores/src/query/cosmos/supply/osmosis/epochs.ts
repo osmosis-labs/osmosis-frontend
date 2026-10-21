@@ -1,8 +1,9 @@
-import { KVStore } from "../../../../common/kv-store";
+import type { KVStore } from "@osmosis-labs/utils";
+import { computed, observable } from "mobx";
+
 import { ChainGetter } from "../../../../common";
 import { ObservableChainQuery } from "../../../chain-query";
 import { Epochs } from "./types";
-import { computed, observable } from "mobx";
 
 export class ObservableQueryOsmosisEpochsInner {
   constructor(
@@ -61,7 +62,6 @@ export class ObservableQueryOsmosisEpochs extends ObservableChainQuery<Epochs> {
       this.map.set(identifier, inner);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.map.get(identifier)!;
   }
 }

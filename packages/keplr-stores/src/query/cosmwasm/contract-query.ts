@@ -1,13 +1,12 @@
-import { ObservableChainQuery } from "../chain-query";
-import { KVStore } from "../../common/kv-store";
-import { ChainGetter } from "../../common";
-import { QueryResponse } from "../../common";
-
+import type { KVStore } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import { autorun } from "mobx";
 
+import { ChainGetter, QueryResponse } from "../../common";
+import { ObservableChainQuery } from "../chain-query";
+
 export class ObservableCosmwasmContractChainQuery<
-  T
+  T,
 > extends ObservableChainQuery<T> {
   protected disposer?: () => void;
 
@@ -16,7 +15,6 @@ export class ObservableCosmwasmContractChainQuery<
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
     protected obj: object
   ) {
     super(
@@ -56,7 +54,6 @@ export class ObservableCosmwasmContractChainQuery<
     super.onStop();
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   protected static getUrlFromObj(contractAddress: string, obj: object): string {
     const msg = JSON.stringify(obj);
     const query = Buffer.from(msg).toString("base64");

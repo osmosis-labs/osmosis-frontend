@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import cases from "jest-in-case";
 
 import { getDeepValue } from "../object";

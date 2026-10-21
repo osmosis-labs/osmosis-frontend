@@ -13,11 +13,10 @@ import {
 } from "~/hooks/use-duplicate-pool-check";
 import { formatPretty } from "~/utils/formatter";
 
-interface DuplicatePoolCalloutProps
-  extends Pick<
-    DuplicatePoolCheckResult,
-    "status" | "exactMatches" | "similarMatches"
-  > {
+interface DuplicatePoolCalloutProps extends Pick<
+  DuplicatePoolCheckResult,
+  "status" | "exactMatches" | "similarMatches"
+> {
   acknowledged: boolean;
   onToggleAcknowledged: () => void;
   onUseExistingPool?: (poolId: string) => void;

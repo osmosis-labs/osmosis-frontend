@@ -6,37 +6,40 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "osmosis-frontend-production"
-    }
+      "service": "osmosis-frontend-production",
+    },
   ],
   "r2_buckets": [
     {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "osmosis-frontend-production-cache"
-    }
+      "bucket_name": "osmosis-frontend-production-cache",
+    },
   ],
   "durable_objects": {
     "bindings": [
       {
         "name": "NEXT_CACHE_DO_QUEUE",
-        "class_name": "DOQueueHandler"
-      }
-    ]
+        "class_name": "DOQueueHandler",
+      },
+    ],
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["DOQueueHandler"]
-    }
+      "new_sqlite_classes": ["DOQueueHandler"],
+    },
   ],
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "upload_source_maps": true,
-  "workers_dev": true
+  "workers_dev": true,
+  // Mangles identifiers on top of OpenNext's whitespace/syntax minification (~760KB gzip).
+  // Function and class names are kept (Wrangler's keep_names default), so profiles stay readable.
+  "minify": true,
 }

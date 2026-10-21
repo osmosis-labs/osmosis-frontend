@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "agentGuidance": false,
   "tasks": {
     "build": {
       "outputs": [
@@ -37,8 +38,6 @@
     "NODE_ENV",
     "VERCEL_URL",
     "PORT",
-    "GITHUB_URL",
-    "CMS_REPOSITORY_PATH",
     "NEXT_PUBLIC_SQUID_INTEGRATOR_ID",
     "NEXT_PUBLIC_SIDECAR_BASE_URL",
     "NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS",
@@ -58,6 +57,8 @@
     "NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS",
     "NEXT_PUBLIC_HISTORICAL_DATA_URL",
     "NEXT_PUBLIC_TRPC_LOGS",
-    "SKIP_API_KEY"
+    "SKIP_API_KEY",
+    "SOLANA_RPC_URL",
+    "EVM_RPC_URL_*"
   ]
 }

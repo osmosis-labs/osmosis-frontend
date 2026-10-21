@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { BigDec } from "@osmosis-labs/math/src/big-dec";
 import {
@@ -453,6 +452,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       account!.osmosis
         .sendCreateConcentratedLiquidityPositionMsg(
           queryPool!.id,
+          queryPool!.concentratedLiquidityPoolInfo!,
           minTick_,
           maxTick_,
           undefined,

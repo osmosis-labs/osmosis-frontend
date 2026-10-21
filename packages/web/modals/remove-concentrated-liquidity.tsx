@@ -14,11 +14,12 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Slider } from "~/components/ui/slider";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
@@ -39,14 +40,12 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props;
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { chainId } = OsmosisChainInfo;
+  const { wallet: account, txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = !account || txTypeInProgress !== "";
 
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
-    chainStore,
     chainId,
     poolId,
     props.position

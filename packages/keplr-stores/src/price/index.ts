@@ -1,19 +1,20 @@
-import { ObservableQuery, QueryResponse } from "../common";
-import { CoinGeckoSimplePrice } from "./types";
-import Axios from "axios";
-import { KVStore } from "../common/kv-store";
-import { toGenerator } from "../common/mobx";
+import type { AppCurrency } from "@osmosis-labs/types";
 import {
-  Dec,
   CoinPretty,
+  Dec,
+  FiatCurrency,
   Int,
   PricePretty,
-  FiatCurrency,
 } from "@osmosis-labs/unit";
-import { DeepReadonly } from "utility-types";
+import type { KVStore } from "@osmosis-labs/utils";
+import Axios from "axios";
 import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
-import type { AppCurrency } from "@osmosis-labs/types";
+import { DeepReadonly } from "utility-types";
+
+import { ObservableQuery, QueryResponse } from "../common";
+import { toGenerator } from "../common/mobx";
+import { CoinGeckoSimplePrice } from "./types";
 
 class Throttler {
   protected fns: (() => void)[] = [];

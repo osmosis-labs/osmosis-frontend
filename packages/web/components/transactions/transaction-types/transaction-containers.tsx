@@ -1,13 +1,32 @@
 import classNames from "classnames";
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip";
 import { SpriteIconId } from "~/config";
 import { theme } from "~/tailwind.config";
+
+/** The row title, with an optional tooltip (e.g. the bridge provider). */
+const TransactionTitle = ({
+  tooltip,
+  children,
+}: {
+  tooltip?: ReactNode;
+  children: JSX.Element;
+}) =>
+  tooltip ? (
+    // let clicks through so the row still opens its details
+    <Tooltip content={tooltip} className="w-fit" enablePropagation>
+      {children}
+    </Tooltip>
+  ) : (
+    children
+  );
 
 export const SmallTransactionContainer = ({
   status,
   title,
+  titleTooltip,
   leftComponent,
   rightComponent,
   isSelected,
@@ -15,6 +34,8 @@ export const SmallTransactionContainer = ({
 }: {
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
+  /** Shown on hovering the title, e.g. the bridge provider. */
+  titleTooltip?: ReactNode;
   leftComponent: JSX.Element | null;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
@@ -36,14 +57,16 @@ export const SmallTransactionContainer = ({
     onClick={() => onClick?.()}
   >
     <div className="flex flex-col">
-      <p
-        className={classNames(
-          "body2",
-          status === "failed" ? "text-rust-400" : "text-white-full"
-        )}
-      >
-        {title[status]}
-      </p>
+      <TransactionTitle tooltip={titleTooltip}>
+        <p
+          className={classNames(
+            "body2",
+            status === "failed" ? "text-rust-400" : "text-white-full"
+          )}
+        >
+          {title[status]}
+        </p>
+      </TransactionTitle>
       {leftComponent}
     </div>
     <div className="flex items-center justify-end">{rightComponent}</div>
@@ -54,6 +77,7 @@ export const LargeTransactionContainer = ({
   iconId,
   status,
   title,
+  titleTooltip,
   rightComponent,
   isSelected,
   onClick,
@@ -62,6 +86,8 @@ export const LargeTransactionContainer = ({
   iconId: SpriteIconId;
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
+  /** Shown on hovering the title, e.g. the bridge provider. */
+  titleTooltip?: ReactNode;
   rightComponent: JSX.Element | null;
   isSelected?: boolean;
   onClick?: () => void;
@@ -103,14 +129,16 @@ export const LargeTransactionContainer = ({
       </div>
 
       <div>
-        <p
-          className={classNames(
-            "subtitle1 md:body2 text-osmoverse-100",
-            status === "failed" ? "text-rust-400" : "text-white-full"
-          )}
-        >
-          {title[status]}
-        </p>
+        <TransactionTitle tooltip={titleTooltip}>
+          <p
+            className={classNames(
+              "subtitle1 md:body2 text-osmoverse-100",
+              status === "failed" ? "text-rust-400" : "text-white-full"
+            )}
+          >
+            {title[status]}
+          </p>
+        </TransactionTitle>
       </div>
     </div>
 

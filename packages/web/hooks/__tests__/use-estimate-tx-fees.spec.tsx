@@ -1,10 +1,10 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import {
   getFallbackFeeAmountFromBalances,
   InsufficientFeeError,
 } from "@osmosis-labs/tx";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import React, { PropsWithChildren } from "react";
@@ -33,10 +33,22 @@ jest.mock("~/stores", () => ({
       getWallet: mockGetWallet,
       estimateFee: mockEstimateFee,
     },
-    chainStore: {
-      getChain: mockGetChain,
-    },
   }),
+}));
+
+jest.mock("~/config/chain", () => ({
+  getChainInfo: (chainId: string) => mockGetChain(chainId),
+}));
+
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: (chainId?: string) => {
+    const wallet = mockGetWallet(chainId);
+    return {
+      wallet,
+      address: wallet?.address,
+      estimateFee: (input: object) => mockEstimateFee({ ...input, wallet }),
+    };
+  },
 }));
 
 jest.mock("~/utils/trpc", () => ({

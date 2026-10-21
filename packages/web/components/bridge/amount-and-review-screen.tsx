@@ -8,7 +8,9 @@ import { getAddress } from "viem";
 import { Screen, useScreenManager } from "~/components/screen-manager";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -59,36 +61,55 @@ export const AmountAndReviewScreen = observer(
     const { address: evmAddress, connector: evmConnector } =
       useEvmWalletAccount();
 
-    const fromChainCosmosAccount =
+    const fromCosmosChainId =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)
+        ? fromChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: fromCosmosWallet, address: fromCosmosWalletAddress } =
+      useWallet(fromCosmosChainId);
+    const fromChainCosmosAccount = fromCosmosChainId
+      ? fromCosmosWallet
+      : undefined;
+    const fromChainCosmosAddress = fromCosmosChainId
+      ? fromCosmosWalletAddress
+      : undefined;
 
-    const toChainCosmosAccount =
+    const toCosmosChainId =
       !isNil(toChain) && toChain.chainType === "cosmos"
-        ? accountStore.getWallet(toChain.chainId)
+        ? toChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: toCosmosWallet, address: toCosmosWalletAddress } =
+      useWallet(toCosmosChainId);
+    const toChainCosmosAccount = toCosmosChainId ? toCosmosWallet : undefined;
+    const toChainCosmosAddress = toCosmosChainId
+      ? toCosmosWalletAddress
+      : undefined;
 
-    const { address: phantomAddress } = usePhantomWallet();
+    const featureFlags = useFeatureFlags();
+    const { address: phantomAddress } = usePhantomWallet({
+      restoreSession: featureFlags.solanaSkipRoutes === true,
+    });
 
     const fromAddress =
       fromChain?.chainType === "evm"
         ? evmAddress
         : fromChain?.chainType === "solana"
-        ? phantomAddress
-        : fromChainCosmosAccount?.address;
+          ? phantomAddress
+          : fromChainCosmosAddress;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
-      ? evmAddress
-      : toChainCosmosAccount?.address;
+        ? evmAddress
+        : toChainCosmosAddress;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
         ? evmConnector?.icon
         : fromChain?.chainType === "solana"
-        ? undefined
-        : fromChainCosmosAccount?.walletInfo.logo;
+          ? undefined
+          : fromChainCosmosAccount?.walletInfo.logo;
     const toWalletIcon =
       toChain?.chainType === "evm"
         ? evmConnector?.icon
@@ -101,9 +122,9 @@ export const AmountAndReviewScreen = observer(
         },
         {
           enabled: !isNil(selectedAssetDenom),
-          cacheTime: 10 * 60 * 1000, // 10 minutes
+          gcTime: 10 * 60 * 1000, // 10 minutes
           staleTime: 10 * 60 * 1000, // 10 minutes
-          useErrorBoundary: true,
+          throwOnError: true,
         }
       );
 

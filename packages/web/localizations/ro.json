@@ -692,7 +692,22 @@
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
     "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
+    "inactiveValidators": {
+      "title": "Validatori inactivi detectați",
+      "squadDescription": "Acești validatori au ieșit din setul activ și nu mai câștigă recompense. Redelegă către validatori activi pentru a câștiga din nou. Redelegarea este instantanee, fără perioadă de deblocare.",
+      "statusInactive": "În afara setului activ",
+      "statusInactiveShortfall": "Inactiv: lipsesc ~{amount} pentru setul activ",
+      "statusJailed": "Încarcerat: fără recompense",
+      "redelegate": "Redelegă",
+      "stakeWarning": "Echipa ta de staking include validatori inactivi. O parte din orice stake nou ar ajunge la ei și nu ar câștiga nimic.",
+      "editSquad": "Editează echipa de staking",
+      "redelegateDescription": "Selectează validatorii către care să redelegi {amount}. Suma se împarte în mod egal; restul stake-ului tău rămâne neschimbat.",
+      "topThirdHidden": "Cei mai mari validatori, care împreună dețin o treime din tot stake-ul, sunt ascunși implicit pentru a ajuta la menținerea descentralizării Osmosis.",
+      "topThirdShown": "Aceștia sunt cei mai mari validatori, care împreună dețin o treime din tot stake-ul. Alegerea unor validatori mai mici ajută la menținerea descentralizării Osmosis.",
+      "alertDescription": "Unii dintre validatorii tăi au ieșit din setul activ, așa că OSMO delegat la ei nu câștigă recompense. Redelegă din pagina Stake pentru a câștiga din nou.",
+      "dismiss": "Închide",
+      "goToStake": "Mergi la Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Ce este miza?",
@@ -720,7 +735,7 @@
       "description": "Selectați validatorii cărora doriți să le delegați. Odată terminat, continuați să mizați. Puteți edita oricând setul de validator.",
       "searchPlaceholder": "Căutați un validator",
       "button": "Set Squad",
-      "button2": "Setați echipa și miza",
+      "button2": "Setați echipa și miza {amount}",
       "noResults": "Nici un rezultat gasit",
       "column": {
         "validator": "Validator",
@@ -870,7 +885,6 @@
     "reviewWithdraw": "Retragerea recenziei",
     "moreDepositOptions": "Mai multe opțiuni de depunere",
     "moreWithdrawOptions": "Mai multe opțiuni de retragere",
-    "convertTo": "Schimba in",
     "depositAs": "Depozit ca",
     "withdrawAs": "Retrage ca",
     "withdrawViaRoute": "prin {route}",
@@ -1006,6 +1020,9 @@
     "transferWillLikelyTakeLonger": "Transferurile vor dura probabil mai mult decât de obicei sau pot eșua complet. Procedați pe propriul risc.",
     "ibcConnectionDown": "Conexiunea IBC nativă este indisponibilă",
     "ibcConnectionDownDescription": "Ruta IBC directă pentru {asset} este momentan inactivă. Opțiunile de mai jos pot oferi o cale alternativă, dar pot fi și ele afectate.",
+    "balanceUnavailable": "Soldul tău {chain} nu a putut fi încărcat",
+    "balanceUnavailableDescription": "Nu am putut accesa {chain} pentru a verifica soldul, așa că poate apărea ca 0. Fondurile tale nu sunt afectate. Încearcă din nou sau folosește opțiunile de mai jos.",
+    "retryBalance": "Încearcă din nou",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Transferurile native sunt indisponibile pentru {asset}",
@@ -1063,6 +1080,9 @@
       "date": "Data",
       "wormchainReceive": "Recepție Wormchain",
       "checkingSolana": "Se verifică starea revendicării pe Solana...",
+      "checkingGuardians": "Se verifică acest transfer cu Wormhole, vă rugăm așteptați...",
+      "guardianSetExpired": "Acest transfer a fost semnat de setul de gardieni Wormhole {index}, care a expirat între timp, așa că nu poate fi revendicat în forma actuală. Gardienii Wormhole trebuie să re-observe tranzacția inițială și să o semneze din nou. Vă rugăm să contactați Wormhole cu hash-ul tranzacției.",
+      "guardianCheckUnavailable": "Nu am putut confirma acum acest transfer cu Wormhole. Puteți încerca totuși să îl revendicați; dacă eșuează, pierdeți doar taxa de rețea.",
       "dailyLimitExceeded": "Limita zilnică depășită",
       "governorBodyEnqueued": "Acest transfer va dura până la {hours} ore, deoarece Wormhole a atins limita zilnică de transfer pentru {chain}. Aceasta este o funcție de securitate normală și temporară a rețelei Wormhole.",
       "governorBodyLikelyEnqueued": "Valoarea acestui transfer (~{amount}) depășește marja disponibilă pe {chain} (~{available} rămase). Gardienii Wormhole îl vor pune probabil în coadă pentru până la {hours} ore.",
@@ -1256,7 +1276,7 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
-    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "launchAlert": "Sunt afișate swap-urile, depunerile și retragerile tale.",
     "history": "Istorie",
     "orders": "Comenzi",
     "historyTable": {
@@ -1274,7 +1294,17 @@
       "providerFee": "Taxa de furnizor",
       "provider": "Furnizor",
       "networkFee": "Taxa de retea"
-    }
+    },
+    "filter": {
+      "type": "Tipuri de tranzacții",
+      "swap": "Swap-uri",
+      "deposit": "Depuneri",
+      "withdraw": "Retrageri",
+      "search": "Caută activ, rețea, sumă sau adresă",
+      "noMatches": "Nicio tranzacție potrivită",
+      "pageHint": "Filtrele se aplică doar tranzacțiilor de pe această pagină. Încearcă pagina următoare sau ajustează filtrele."
+    },
+    "unknownAddressTooltip": "Nu am putut determina această adresă din datele bridge-ului. Poate apărea mai târziu; o poți găsi și în explorer."
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
@@ -1348,6 +1378,11 @@
     "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
     "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
     "reviewTrade": "Examinați comerțul",
+    "highPriceImpact": {
+      "title": "Impactul asupra prețului este ridicat",
+      "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
+    },
+    "lossAcknowledgement": "Da, înțeleg că această tranzacție ar putea cauza pierderi semnificative de valoare și doresc să continui.",
     "errors": {
       "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
       "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",
@@ -1394,7 +1429,14 @@
       "filled": "Comenzi completate pentru revendicare"
     },
     "priceReaches": "Dacă prețul {denom} atinge {price}",
-    "belowMinimumAmount": "{amount} minim"
+    "belowMinimumAmount": "{amount} minim",
+    "noOrderbookForPair": "Nu există niciun orderbook pentru {base}/{quote}. Creați unul pentru a activa limit orders pentru această pereche.",
+    "createOrderbook": "Creați Orderbook",
+    "noOrderbookExists": "Niciun orderbook pentru {denom}",
+    "clickToCreateOrderbook": "Faceți clic pentru a crea un orderbook pentru această pereche.",
+    "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
+    "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
+    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

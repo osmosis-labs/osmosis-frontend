@@ -1,7 +1,8 @@
-import { CoinGeckoPriceStore } from "./index";
-import { MemoryKVStore } from "../common/kv-store";
-import { autorun } from "mobx";
+import { MemoryKVStore } from "@osmosis-labs/utils";
 import Http from "http";
+import { autorun } from "mobx";
+
+import { CoinGeckoPriceStore } from "./index";
 
 describe("Test coin gecko price store", () => {
   const createMockCoingeckoServer = (delay: number = 50) => {
@@ -212,7 +213,7 @@ describe("Test coin gecko price store", () => {
       );
 
       expect(getServerRespCount()).toBe(1);
-      expect(abortSpy).toBeCalledTimes(0);
+      expect(abortSpy).toHaveBeenCalledTimes(0);
 
       await new Promise((resolve) => {
         setTimeout(resolve, 10);
@@ -273,7 +274,7 @@ describe("Test coin gecko price store", () => {
       });
 
       expect(getServerRespCount()).toBe(1);
-      expect(abortSpy).toBeCalledTimes(0);
+      expect(abortSpy).toHaveBeenCalledTimes(0);
 
       disposer();
 
@@ -329,7 +330,7 @@ describe("Test coin gecko price store", () => {
       });
 
       expect(getServerRespCount()).toBe(1);
-      expect(abortSpy).toBeCalledTimes(0);
+      expect(abortSpy).toHaveBeenCalledTimes(0);
 
       disposer();
 
@@ -409,7 +410,7 @@ describe("Test coin gecko price store", () => {
     });
 
     expect(getServerRespCount()).toBe(2);
-    expect(abortSpy).toBeCalledTimes(0);
+    expect(abortSpy).toHaveBeenCalledTimes(0);
 
     disposer();
 

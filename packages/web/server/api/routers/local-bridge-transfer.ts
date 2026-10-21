@@ -4,6 +4,7 @@ import {
   BridgeSupportedAsset,
   bridgeSupportedAssetSchema,
 } from "@osmosis-labs/bridge/build/interface";
+import { SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID } from "@osmosis-labs/bridge/build/utils/solana";
 import {
   calcAssetValue,
   captureErrorAndReturn,
@@ -20,9 +21,11 @@ import {
   UserEvmAddressSchema,
 } from "@osmosis-labs/trpc";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import { EthereumChainInfo } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { getClientEvmRpcUrls } from "~/utils/evm-rpc";
 import { clientSolanaRpc } from "~/utils/solana";
 
 /**
@@ -159,11 +162,22 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               if (!evmAddress) return emptyBalance;
 
+              const evmChain = EthereumChainInfo.find(
+                (chain) => chain.id === asset.chainId
+              );
+              // This router runs in the browser (localLink), where keyed
+              // RPC env vars don't exist: go through the app's RPC route
+              // for chains with a keyed provider, then public endpoints.
+              // No catch: an unknown balance must fail the query, so React
+              // Query retries and the UI shows a balance error rather than a
+              // false zero that can hide a funded asset. A token with no
+              // contract on this chain already comes back as a real 0.
               const balance = await getEvmBalance({
                 address: getAddress(asset.address),
                 userAddress: evmAddress,
                 chainId: asset.chainId,
-              }).catch(() => undefined);
+                rpcUrls: evmChain ? getClientEvmRpcUrls(evmChain) : undefined,
+              });
 
               if (!balance) return emptyBalance;
 
@@ -234,11 +248,24 @@ export const localBridgeTransferRouter = createTRPCRouter({
               });
 
               const decAmount = new Dec(balance.toString());
-              // Price via the Osmosis-side variant, mirroring the EVM branch
-              const usdValue = await calcAssetValue({
+              // Price via the Osmosis-side variant. The SPL amount is in the
+              // SPL mint's decimals, so scale it to the variant's before
+              // pricing (equal for USDC, but never assume it).
+              const representativeAsset = getAsset({
                 ...ctx,
                 anyDenom: Object.keys(asset.supportedVariants)[0],
-                amount: decAmount,
+              });
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: representativeAsset.coinMinimalDenom,
+                amount:
+                  asset.decimals === representativeAsset.coinDecimals
+                    ? decAmount
+                    : normalizeDecimals({
+                        amount: balance.toString(),
+                        fromDecimals: asset.decimals,
+                        toDecimals: representativeAsset.coinDecimals,
+                      }),
               }).catch((e) => captureErrorAndReturn(e, undefined));
 
               return {
@@ -393,9 +420,6 @@ export const localBridgeTransferRouter = createTRPCRouter({
     }),
 });
 
-/** The associated token account program. */
-const SOLANA_ATA_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
-
 /**
  * SPL token balance (minimal units) of `mint` in `owner`'s associated token
  * account. Only that account counts: Skip's burn spends from it, so a Max
@@ -429,7 +453,7 @@ async function getSolanaTokenBalance({
   const { PublicKey } = await import("@solana/web3.js");
   const ownerKey = new PublicKey(owner);
   const mintKey = new PublicKey(mint);
-  const ataProgram = new PublicKey(SOLANA_ATA_PROGRAM_ID);
+  const ataProgram = new PublicKey(SOLANA_ASSOCIATED_TOKEN_PROGRAM_ID);
   const associatedAddress = (tokenProgram: string) =>
     PublicKey.findProgramAddressSync(
       [

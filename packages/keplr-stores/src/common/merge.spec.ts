@@ -16,7 +16,7 @@ describe("Test merge stores function", () => {
         },
         {
           test3: string;
-        }
+        },
       ]
     >(
       {

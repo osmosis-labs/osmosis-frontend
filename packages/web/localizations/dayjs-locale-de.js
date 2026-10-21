@@ -2,11 +2,11 @@
   "object" == typeof exports && "undefined" != typeof module
     ? (module.exports = n())
     : "function" == typeof define && define.amd
-    ? define(n)
-    : ((e =
-        "undefined" != typeof globalThis
-          ? globalThis
-          : e || self).dayjs_locale_en = n());
+      ? define(n)
+      : ((e =
+          "undefined" != typeof globalThis
+            ? globalThis
+            : e || self).dayjs_locale_en = n());
 })(this, function () {
   "use strict";
 

@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import dynamic, { DynamicOptionsLoadingProps } from "next/dynamic";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useMount, useSearchParam } from "react-use";
@@ -12,11 +11,14 @@ import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { ErrorBoundary } from "~/components/error/error-boundary";
-import { GeneralErrorScreen } from "~/components/error/general-error-screen";
+import {
+  ErrorScreenBody,
+  GeneralErrorScreen,
+} from "~/components/error/general-error-screen";
 import { Spinner } from "~/components/loaders";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
-import { Button, IconButton } from "~/components/ui/button";
+import { IconButton } from "~/components/ui/button";
 import { useTranslation, useWindowKeyActions } from "~/hooks";
 import { FiatRampKey } from "~/integrations";
 import { ModalBase } from "~/modals/base";
@@ -38,24 +40,14 @@ const ChunkLoadFallback = ({
   const { t } = useTranslation();
 
   if (error) {
-    // Mirrors GeneralErrorScreen, which handles render-time errors for these
-    // same screens; the bridge frame already provides the close button.
+    // Same body as GeneralErrorScreen, which handles render-time errors for
+    // these screens; the bridge frame already provides the close button.
     return (
-      <div className="text-white flex flex-col items-center gap-6 py-20">
-        <Image
-          src="/images/leaking-beaker.svg"
-          alt="Leaking beaker"
-          width={224}
-          height={168}
-        />
-        <h1 className="text-2xl font-bold leading-9">
-          {t("errors.uhOhSomethingWentWrong")}
-        </h1>
-        <p className="text-center">{t("errors.sorryForTheInconvenience")}</p>
-        <Button variant="secondary" onClick={retry}>
-          {t("walletSelect.retry")}
-        </Button>
-      </div>
+      <ErrorScreenBody
+        className="text-white py-20"
+        actionLabel={t("walletSelect.retry")}
+        onAction={retry ?? (() => undefined)}
+      />
     );
   }
 

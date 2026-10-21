@@ -1,6 +1,7 @@
 export * from "./activate-unverified-token-confirmation";
 export * from "./add-liquidity";
 export * from "./base";
+export * from "./create-orderbook";
 export * from "./create-pool";
 export * from "./external-links-modal";
 export * from "./fiat-on-ramp-selection";

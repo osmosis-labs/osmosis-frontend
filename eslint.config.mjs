@@ -1,5 +1,5 @@
-import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 import { FlatCompat } from "@eslint/eslintrc";
 
@@ -70,6 +70,23 @@ const webRules = {
       },
     ],
     "import/no-default-export": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: [
+              "@osmosis-labs/keplr-hooks",
+              "@osmosis-labs/keplr-hooks/**",
+              "@osmosis-labs/keplr-stores",
+              "@osmosis-labs/keplr-stores/**",
+            ],
+            message:
+              "Use the standalone types, utils, or tx packages; the legacy Keplr packages are being retired.",
+          },
+        ],
+      },
+    ],
   },
 };
 
@@ -84,6 +101,7 @@ const protoCodecsConfig = {
   },
 };
 
+// eslint-disable-next-line import/no-default-export -- ESLint loads its flat config through the default export.
 export default [
   {
     ignores: [
