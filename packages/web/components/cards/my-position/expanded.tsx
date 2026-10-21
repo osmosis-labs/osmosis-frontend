@@ -415,7 +415,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 status === "unbonding" ||
                 !Boolean(account)
               }
-              onClick={useCallback(() => {
+              onClick={() => {
                 if (superfluidData?.delegationLockId) {
                   prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                     transactionContext,
@@ -429,11 +429,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     .then((prepared) => signAndBroadcast(...prepared))
                     .catch(console.error);
                 } else setActiveModal("remove");
-              }, [
-                signAndBroadcast,
-                superfluidData?.delegationLockId,
-                transactionContext,
-              ])}
+              }}
               isLoading={isLoadingPositionDetails}
             >
               {Boolean(superfluidData?.delegationLockId)
@@ -453,7 +449,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 Boolean(superfluidData?.undelegationEndTime) ||
                 status === "unbonding"
               }
-              onClick={useCallback(() => setActiveModal("increase"), [])}
+              onClick={() => setActiveModal("increase")}
               isLoading={isLoadingPositionDetails}
             >
               {t("clPositions.increaseLiquidity")}

@@ -262,12 +262,15 @@ interface WormholeConnectConfig {
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  // Which reload the bundle finished loading for; a bump of reloadKey below
+  // makes this stale, which shows the spinner on that same render.
+  const [loadedReloadKey, setLoadedReloadKey] = useState<number | null>(null);
   // The Connect widget mounts once on script execution and exposes no balance
   // refresh API, so after the user converts their alloy to the `.wh` variant it
   // keeps showing the stale balance. Bumping this re-mounts the widget div and
   // re-injects (cache-busted) the bundle so it re-reads balances from scratch.
   const [reloadKey, setReloadKey] = useState(0);
+  const scriptLoaded = loadedReloadKey === reloadKey;
 
   const fromNetwork = router.query.from as string;
   const toNetwork = router.query.to as string;
@@ -416,9 +419,6 @@ const Wormhole: FunctionComponent = () => {
     // direction/token are lost.
     if (!router.isReady) return;
 
-    // Each reload needs the spinner back until the re-injected bundle re-mounts.
-    setScriptLoaded(false);
-
     // Removing the <script> node on cleanup does not abort an in-flight load, so
     // a superseded reload's onload could still fire and flip scriptLoaded for a
     // bundle that is no longer mounted. Guard the callbacks against a stale run.
@@ -443,13 +443,13 @@ const Wormhole: FunctionComponent = () => {
       "sha384-zGJnnw0Y8umaoMLkKqntkswRCTpYwMyu960bF3J77xySwmusndSEX9d4xUN/JXCl";
     script.crossOrigin = "anonymous";
     script.onload = () => {
-      if (!cancelled) setScriptLoaded(true);
+      if (!cancelled) setLoadedReloadKey(reloadKey);
     };
     // A failed integrity check or network error would otherwise leave the
     // spinner up and the refresh button disabled forever with no recovery.
     // Surface the bridge again so the user can retry via the refresh button.
     script.onerror = () => {
-      if (!cancelled) setScriptLoaded(true);
+      if (!cancelled) setLoadedReloadKey(reloadKey);
     };
     document.body.appendChild(script);
 
@@ -498,10 +498,6 @@ const Wormhole: FunctionComponent = () => {
             <button
               type="button"
               onClick={() => {
-                // Show the spinner on this same render — without it the re-keyed
-                // (empty) container would flash visible for a frame before the
-                // effect resets scriptLoaded.
-                setScriptLoaded(false);
                 setReloadKey((k) => k + 1);
               }}
               disabled={!scriptLoaded}

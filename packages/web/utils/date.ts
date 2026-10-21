@@ -2,7 +2,8 @@ import dayjs from "dayjs";
 
 export function humanizeTime(
   date: dayjs.Dayjs,
-  useShortTimeUnits = false
+  useShortTimeUnits = false,
+  now: dayjs.Dayjs = dayjs()
 ): {
   value: number | string;
   unitTranslationKey: string;
@@ -12,7 +13,7 @@ export function humanizeTime(
   // Every unit derives from one elapsed duration: dayjs's day diff adjusts for
   // UTC-offset changes while its hour diff doesn't, so mixing them across a DST
   // change gives e.g. "6 days 0 hours" for 169 hours.
-  const secondsDiff = Math.abs(date.diff(dayjs(), "seconds"));
+  const secondsDiff = Math.abs(date.diff(now, "seconds"));
   if (secondsDiff < 60) {
     return [
       {
@@ -78,7 +79,7 @@ export function humanizeTime(
   const daysDiff = Math.floor(hoursDiff / 24);
   // The cutoff uses calendar days so a 30-day span that gained an hour across a
   // DST change still counts down instead of switching to a date.
-  if (Math.abs(date.diff(dayjs(), "days")) < 30) {
+  if (Math.abs(date.diff(now, "days")) < 30) {
     const hours = hoursDiff % 24;
     return [
       {
