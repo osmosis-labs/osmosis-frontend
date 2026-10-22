@@ -11,7 +11,7 @@
  *  1. We need to determine all the available asset symbols for added type safety.
  */
 
-import { queryGithubFile, queryLatestCommitHash } from "@osmosis-labs/server";
+import { queryLatestCommitHash } from "@osmosis-labs/server";
 import type {
   Asset,
   AssetList,
@@ -34,6 +34,7 @@ import {
 import { getImageRelativeFilePath } from "./keplr-chain";
 import {
   codegenDir,
+  fetchWithRetry,
   getChainList,
   getOsmosisChainId,
   runWithFailureLimit,
@@ -47,6 +48,28 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
+
+/**
+ * Where to read asset list files from at a pinned commit, in order. GitHub
+ * raw rate-limits the shared egress IPs of build hosts (429s from Fastly), so
+ * jsDelivr's GitHub mirror is the fallback. Both serve the same bytes for a
+ * commit hash, so the generated output doesn't depend on which one answered.
+ */
+const ASSET_LIST_SOURCES: {
+  name: string;
+  getUrl: (commitHash: string, filePath: string) => string;
+}[] = [
+  {
+    name: "GitHub raw",
+    getUrl: (commitHash, filePath) =>
+      `https://raw.githubusercontent.com/${repo}/${commitHash}/${filePath}`,
+  },
+  {
+    name: "jsDelivr",
+    getUrl: (commitHash, filePath) =>
+      `https://cdn.jsdelivr.net/gh/${repo}@${commitHash}/${filePath}`,
+  },
+];
 
 const IMAGE_DOWNLOAD_CONCURRENCY = 16;
 const IMAGE_DOWNLOAD_MAX_FAILURES = 10;
@@ -65,6 +88,34 @@ function getFilePath({
   // }
 
   return `${chainId}/generated/frontend/${fileType}.json`;
+}
+
+/**
+ * Fetch an asset list file at `commitHash`, retrying each source in
+ * `ASSET_LIST_SOURCES` before moving on to the next.
+ * @throws When every source failed.
+ */
+async function queryAssetListFile<T>({
+  filePath,
+  commitHash,
+}: {
+  filePath: string;
+  commitHash: string;
+}): Promise<T> {
+  const errors: string[] = [];
+  for (const { name, getUrl } of ASSET_LIST_SOURCES) {
+    try {
+      const response = await fetchWithRetry(getUrl(commitHash, filePath));
+      return (await response.json()) as T;
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.warn(`Failed to fetch ${filePath} from ${name}: ${message}`);
+      errors.push(`${name}: ${message}`);
+    }
+  }
+  throw new Error(
+    `Failed to fetch ${filePath} at ${commitHash} from every source. ${errors.join("; ")}`
+  );
 }
 
 async function generateChainListFile({
@@ -466,32 +517,28 @@ async function main() {
     mainnetResponseAssetList,
     testnetResponseAssetList,
   ] = await Promise.all([
-    queryGithubFile<ChainList>({
-      repo,
+    queryAssetListFile<ChainList>({
       filePath: getFilePath({
         chainId: mainnetOsmosisChainId,
         fileType: "chainlist",
       }),
       commitHash: mainLatestCommitHash,
     }),
-    queryGithubFile<ChainList>({
-      repo,
+    queryAssetListFile<ChainList>({
       filePath: getFilePath({
         chainId: testnetOsmosisChainId,
         fileType: "chainlist",
       }),
       commitHash: mainLatestCommitHash,
     }),
-    queryGithubFile<ResponseAssetList>({
-      repo,
+    queryAssetListFile<ResponseAssetList>({
       filePath: getFilePath({
         chainId: mainnetOsmosisChainId,
         fileType: "assetlist",
       }),
       commitHash: mainLatestCommitHash,
     }),
-    queryGithubFile<ResponseAssetList>({
-      repo,
+    queryAssetListFile<ResponseAssetList>({
       filePath: getFilePath({
         chainId: testnetOsmosisChainId,
         fileType: "assetlist",

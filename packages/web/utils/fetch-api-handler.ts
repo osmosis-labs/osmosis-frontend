@@ -15,7 +15,13 @@ export function toNodeApiHandler(handler: (req: Request) => Promise<Response>) {
     const response = await handler(toFetchRequest(req));
 
     res.statusCode = response.status;
-    response.headers.forEach((value, key) => res.setHeader(key, value));
+    // `forEach` yields each Set-Cookie separately and `setHeader` replaces, so
+    // cookies are set together as a list.
+    response.headers.forEach((value, key) => {
+      if (key !== "set-cookie") res.setHeader(key, value);
+    });
+    const cookies = response.headers.getSetCookie();
+    if (cookies.length > 0) res.setHeader("set-cookie", cookies);
 
     if (!response.body) {
       res.end();

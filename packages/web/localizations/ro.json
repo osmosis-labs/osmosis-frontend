@@ -857,6 +857,8 @@
   "swapFailed": "Schimbarea a eșuat. Este posibil ca lichiditatea să nu fie suficientă. Încercați să reglați alunecarea permisă.",
   "transactionBroadcasting": "Transmitere tranzactie",
   "transactionFailed": "Tranzactie Esuata",
+  "transactionStatusUnknown": "Starea tranzacției este necunoscută",
+  "transactionStatusUnknownCaption": "Trimisă, dar nu am putut-o confirma. Verifică exploratorul înainte de a încerca din nou.",
   "transactionSuccessful": "Tranzactie Finalizata",
   "transfer": {
     "deposit": "Depozit",

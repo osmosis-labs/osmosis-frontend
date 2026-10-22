@@ -857,6 +857,8 @@
   "swapFailed": "સ્વેપ નિષ્ફળ. લિક્વિડિટી પૂરતી ન હોઈ શકે. મંજૂર સ્લિપેજને સમાયોજિત કરવાનો પ્રયાસ કરો.",
   "transactionBroadcasting": "ટ્રાન્ઝેક્શન બ્રોડકાસ્ટિંગ",
   "transactionFailed": "વ્યવહાર નિષ્ફળ થયો",
+  "transactionStatusUnknown": "વ્યવહારની સ્થિતિ અજ્ઞાત",
+  "transactionStatusUnknownCaption": "સબમિટ થયું, પરંતુ અમે તેની પુષ્ટિ કરી શક્યા નહીં. ફરી પ્રયાસ કરતા પહેલા એક્સપ્લોરર તપાસો.",
   "transactionSuccessful": "વ્યવહાર સફળ",
   "transfer": {
     "deposit": "જમા",

@@ -857,6 +857,8 @@
   "swapFailed": "स्वैप विफल. तरलता पर्याप्त नहीं हो सकती. अनुमत फिसलन को समायोजित करने का प्रयास करें।",
   "transactionBroadcasting": "लेन-देन प्रसारण",
   "transactionFailed": "लेन - देन विफल",
+  "transactionStatusUnknown": "लेनदेन की स्थिति अज्ञात",
+  "transactionStatusUnknownCaption": "सबमिट हो गया, लेकिन हम इसकी पुष्टि नहीं कर सके। दोबारा प्रयास करने से पहले एक्सप्लोरर देखें।",
   "transactionSuccessful": "लेनदेन सफल",
   "transfer": {
     "deposit": "जमा",

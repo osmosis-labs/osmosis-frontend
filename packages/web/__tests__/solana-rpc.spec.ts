@@ -5,10 +5,8 @@ import { delay, http, HttpResponse } from "msw";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { server } from "~/__tests__/msw";
-import nodeSolanaRpcHandler, {
-  config,
-  solanaRpcHandler,
-} from "~/pages/api/solana-rpc";
+import nodeSolanaRpcHandler, { config } from "~/pages/api/solana-rpc";
+import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
@@ -24,16 +22,15 @@ function post(
   { origin = `https://${APP_HOST}` }: { origin?: string | null } = {}
 ) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
-  return {
+  return new Request(`https://${APP_HOST}/api/solana-rpc`, {
     method: "POST",
-    url: `https://${APP_HOST}/api/solana-rpc`,
-    headers: new Headers({
+    headers: {
       host: APP_HOST,
       ...(origin ? { origin } : {}),
       ...headers,
-    }),
-    text: () => Promise.resolve(text),
-  } as unknown as Request;
+    },
+    body: text,
+  });
 }
 
 const allowedRequest = {
@@ -79,6 +76,11 @@ beforeEach(() => {
 afterEach(() => {
   delete process.env.SOLANA_RPC_URL;
   delete process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+});
+
+it("rejects non-POST requests", async () => {
+  const result = await solanaRpcHandler({ method: "GET" } as Request);
+  expect(result.status).toBe(405);
 });
 
 describe("Node API route", () => {
@@ -157,11 +159,6 @@ describe("Node API route", () => {
     expect(result.status).toBe(400);
     expect(result.body).toEqual({ error: "Invalid JSON" });
   });
-});
-
-it("rejects non-POST requests", async () => {
-  const result = await solanaRpcHandler({ method: "GET" } as Request);
-  expect(result.status).toBe(405);
 });
 
 describe("solana-skip-routes flag gate", () => {
@@ -352,19 +349,9 @@ it("rejects invalid JSON and oversized bodies", async () => {
 });
 
 it("rejects a declared oversize body without reading it", async () => {
-  const text = jest.fn(() => Promise.resolve("{}"));
-  const request = {
-    method: "POST",
-    url: `https://${APP_HOST}/api/solana-rpc`,
-    headers: new Headers({
-      host: APP_HOST,
-      origin: `https://${APP_HOST}`,
-      "content-length": String(17 * 1024),
-    }),
-    text,
-  } as unknown as Request;
+  const request = post("{}", { "content-length": String(17 * 1024) });
   expect((await solanaRpcHandler(request)).status).toBe(413);
-  expect(text).not.toHaveBeenCalled();
+  expect(request.bodyUsed).toBe(false);
 });
 
 it("measures the body limit in bytes, not UTF-16 code units", async () => {

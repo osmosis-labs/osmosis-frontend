@@ -1,5 +1,5 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
-import type { DeliverTxResponse } from "@osmosis-labs/tx";
+import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
 
@@ -450,6 +450,9 @@ export const useMultiTxResume = () => {
         });
       } catch (e) {
         console.error("Failed to resume multi-tx transfer", e);
+        // Accepted, with the entry advanced at broadcast: the tx client
+        // already showed the status-unknown toast.
+        if (e instanceof TxStatusUnknownError) return;
         // Named failures get specific recovery copy (route expired, fee
         // shortfall); everything else falls back to the generic error.
         displayToast(

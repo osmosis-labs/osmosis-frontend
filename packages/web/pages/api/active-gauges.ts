@@ -1,31 +1,9 @@
-import { type Gauge, getActiveGauges } from "@osmosis-labs/server";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { activeGaugesHandler } from "~/server/api-handlers/active-gauges";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-import { ChainList } from "~/config/generated/chain-list";
+export default toNodeApiHandler(activeGaugesHandler);
 
-type ExternalIncentiveGaugesResponse = {
-  data: Gauge[];
+// The handler reads the raw request, so Next must leave the body unparsed.
+export const config = {
+  api: { bodyParser: false },
 };
-
-/** Filters for active external gauges from chain query.
- *
- *  See rationale here: https://github.com/osmosis-labs/osmosis-frontend/issues/1182
- */
-export default async function activeGauges(
-  _req: NextApiRequest,
-  res: NextApiResponse<ExternalIncentiveGaugesResponse>
-) {
-  const gauges = await getActiveGauges({ chainList: ChainList });
-
-  res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate"); // 15 minute cache
-  res.status(200).json({
-    data: gauges.map((gauge) => ({
-      ...gauge,
-      start_time: gauge.start_time.toISOString(),
-      distribute_to: {
-        ...gauge.distribute_to,
-        duration: gauge.distribute_to.duration.asSeconds() + "s",
-      },
-    })),
-  });
-}

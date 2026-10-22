@@ -28,7 +28,6 @@ import {
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { act, renderHook } from "@testing-library/react";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { createElement, type PropsWithChildren } from "react";
 import WebSocket from "ws";
 
@@ -36,9 +35,9 @@ import { ChainList } from "~/config/generated/chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
 import { getAuthenticatorIdFromTx } from "~/hooks/mutations/one-click-trading/use-create-one-click-trading-session";
 import { useWallet } from "~/hooks/use-wallet";
-import { broadcastTransactionHandler as broadcastHandler } from "~/pages/api/broadcast-transaction";
-import estimateHandler from "~/pages/api/estimate-gas-fee";
-import migrationHandler from "~/pages/api/simulate-position-migration";
+import { broadcastTransactionHandler as broadcastHandler } from "~/server/api-handlers/broadcast-transaction";
+import { estimateGasFeeHandler as estimateHandler } from "~/server/api-handlers/estimate-gas-fee";
+import { simulatePositionMigrationHandler as migrationHandler } from "~/server/api-handlers/simulate-position-migration";
 import { storeContext } from "~/stores";
 import type { RootStore } from "~/stores/root";
 import { WalletRuntime } from "~/stores/wallet-runtime";
@@ -116,24 +115,16 @@ const transport: WalletTxTransport = {
     url: string,
     options: { data: Record<string, unknown> }
   ) => {
-    let status = 200;
-    let data: unknown;
-    const res = {
-      status: (code: number) => {
-        status = code;
-        return res;
-      },
-      json: (body: unknown) => {
-        data = body;
-        return res;
-      },
-    };
     const handler =
       url === "/api/estimate-gas-fee" ? estimateHandler : migrationHandler;
-    await handler(
-      { method: "POST", body: options.data } as NextApiRequest,
-      res as unknown as NextApiResponse
+    const response = await handler(
+      new Request(`http://wallet-ci${url}`, {
+        method: "POST",
+        body: JSON.stringify(options.data),
+      })
     );
+    const status = response.status;
+    const data: unknown = await response.json();
     if (status >= 400)
       throw new ApiClientError({
         message: `Handler returned ${status}`,
