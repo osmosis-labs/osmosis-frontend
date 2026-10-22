@@ -141,6 +141,35 @@ application changes. Record the production base commit and deployed Worker
 version for each candidate. Worker rollback does not revert R2 or Durable Object
 state.
 
+### Traffic router (`router/`)
+
+`osmosis-frontend-router` splits `app.osmosis.zone` between Vercel and the
+`osmosis-frontend-production` Worker without changing the URL. Vercel traffic is a
+plain `fetch` to the zone's origin; Cloudflare traffic goes over a service binding.
+Every response carries `x-osmosis-backend: cf|vercel`.
+
+- A browser's bucket (0-9999) comes from the `osmo_bucket` cookie, or a hash of IP
+  and user agent until a page load sets it. Buckets below `CF_PERCENT`% go to
+  Cloudflare, so ramping up or down only moves browsers at the margin.
+- Crawlers stay on Vercel. `?osmo_backend=cf|vercel` pins a session for QA (even at
+  0%); `?osmo_backend=auto` clears it.
+- A 404 for `/_next/static/*` is retried on the other platform, for pages loaded
+  before a ramp change. Nothing else is ever retried across platforms.
+
+`CF_PERCENT` lives in `router/wrangler.jsonc`, and a deploy resets dashboard edits:
+in an emergency set it to `0` in the dashboard, then commit the same value.
+
+```bash
+yarn cf:router:dev     # router + production Worker locally; add
+                       # --var VERCEL_ORIGIN:https://app.osmosis.zone
+yarn cf:router:deploy  # deploys the router only; attaching it to a route is separate
+```
+
+`VERCEL_ORIGIN` sends Vercel traffic to another host, for testing the router on a
+hostname other than `app.osmosis.zone`; leave it unset on the production route. The
+upstream exception for `sqsprod`/`rpc.app`/`lcd.app` must allow the `osmosis.zone`
+zone before the production Worker serves traffic through the router.
+
 ### Analyze
 
 View the size of the various webpack bundles on both the server and the client.

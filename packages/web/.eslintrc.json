@@ -43,7 +43,8 @@
         "pages/**/*",
         "playwright.config.ts",
         "open-next.config.ts",
-        "worker.ts"
+        "worker.ts",
+        "router/worker.ts"
       ],
       "rules": {
         "import/no-default-export": "off"

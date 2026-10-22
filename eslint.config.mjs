@@ -139,6 +139,7 @@ export default [
         "packages/web/playwright.config.ts",
         "packages/web/open-next.config.ts",
         "packages/web/worker.ts",
+        "packages/web/router/worker.ts",
       ],
     })),
   ...compat
