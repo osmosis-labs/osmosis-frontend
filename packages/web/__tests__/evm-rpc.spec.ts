@@ -17,12 +17,11 @@ function post(
   { origin = `https://${APP_HOST}`, chainId = "137" } = {}
 ) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
-  return {
+  return new Request(`https://${APP_HOST}/api/evm-rpc?chainId=${chainId}`, {
     method: "POST",
-    url: `https://${APP_HOST}/api/evm-rpc?chainId=${chainId}`,
-    headers: new Headers({ host: APP_HOST, origin }),
-    text: () => Promise.resolve(text),
-  } as unknown as Request;
+    headers: { host: APP_HOST, origin },
+    body: text,
+  });
 }
 
 const balanceOf = {

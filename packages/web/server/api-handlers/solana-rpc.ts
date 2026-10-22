@@ -18,6 +18,7 @@
 
 import { SOLANA_PUBLIC_RPC_URL } from "@osmosis-labs/bridge/build/utils/solana";
 
+import { readBodyText } from "~/server/api-handlers/request-body";
 import { isSameOrigin } from "~/utils/same-origin";
 import { isServerFlagEnabled } from "~/utils/server-flags";
 
@@ -65,15 +66,8 @@ export async function solanaRpcHandler(req: Request) {
     return json({ error: "Forbidden" }, 403);
   }
 
-  // Refuse a declared oversize body before reading it into memory, then
-  // measure the body actually read in UTF-8 bytes (string length counts
-  // UTF-16 code units, which undercounts multi-byte characters).
-  const declaredLength = Number(req.headers.get("content-length"));
-  if (declaredLength > MAX_BODY_BYTES) {
-    return json({ error: "Request too large" }, 413);
-  }
-  const text = await req.text();
-  if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) {
+  const text = await readBodyText(req, MAX_BODY_BYTES);
+  if (text === undefined) {
     return json({ error: "Request too large" }, 413);
   }
 
