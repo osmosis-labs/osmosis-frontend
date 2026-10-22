@@ -857,6 +857,8 @@
   "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
   "transactionFailed": "Échec de la transaction",
+  "transactionStatusUnknown": "Statut de la transaction inconnu",
+  "transactionStatusUnknownCaption": "Envoyée, mais nous n'avons pas pu la confirmer. Vérifiez l'explorateur avant de réessayer.",
   "transactionSuccessful": "Succès de la transaction",
   "transfer": {
     "deposit": "Dépôt",

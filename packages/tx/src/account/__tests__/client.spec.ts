@@ -7,8 +7,13 @@ import {
 } from "@osmosis-labs/utils";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
+import { TxStatusUnknownError } from "../../error";
 import { SimulateNotAvailableError } from "../../gas";
-import { createWalletTxClient, type WalletTxDependencies } from "../client";
+import {
+  createWalletTxClient,
+  TX_TRACE_TIMEOUT_MS,
+  type WalletTxDependencies,
+} from "../client";
 import type { AccountStoreWallet } from "../types";
 
 const mockTrace = jest.fn();
@@ -208,15 +213,42 @@ it("retains the pre-broadcast hash on ambiguous POST failures", async () => {
 });
 
 it("records acceptance before tracing errors and closes the tracer", async () => {
-  const { client } = fixture();
-  mockTrace.mockRejectedValueOnce(new Error("trace failed"));
-  const onBroadcasted = jest.fn();
-  await expect(
-    client.signAndBroadcast(chainId, "send", [message], "", fee, undefined, {
-      onBroadcasted,
-    })
-  ).rejects.toThrow("trace failed");
+  const { client, deps, setTxTypeInProgress } = fixture();
+  const traceError = new Error("trace failed");
+  mockTrace.mockRejectedValueOnce(traceError);
+  const globalBroadcastFailed = jest.fn();
+  deps.options = { preTxEvents: { onBroadcastFailed: globalBroadcastFailed } };
+  const onBroadcasted = jest.fn(),
+    onBroadcastFailed = jest.fn(),
+    onFulfill = jest.fn();
+  const pending = client.signAndBroadcast(
+    chainId,
+    "send",
+    [message],
+    "",
+    fee,
+    undefined,
+    { onBroadcasted, onBroadcastFailed, onFulfill }
+  );
+  // Accepted, so a failed trace is reported as unknown, not as failed.
+  await expect(pending).rejects.toBeInstanceOf(TxStatusUnknownError);
+  await expect(pending).rejects.toMatchObject({
+    txHash: "abcd",
+    reason: traceError,
+  });
+  expect(mockTrace).toHaveBeenCalledWith(Buffer.from("abcd", "hex"), {
+    timeoutMs: TX_TRACE_TIMEOUT_MS,
+  });
   expect(onBroadcasted).toHaveBeenCalledWith(Buffer.from("abcd", "hex"));
+  expect(globalBroadcastFailed).toHaveBeenCalledWith(
+    chainId,
+    expect.any(TxStatusUnknownError)
+  );
+  expect(onBroadcastFailed).toHaveBeenCalledWith(
+    expect.any(TxStatusUnknownError)
+  );
+  expect(onFulfill).not.toHaveBeenCalled();
+  expect(setTxTypeInProgress).toHaveBeenLastCalledWith(chainId, "");
   expect(mockClose).toHaveBeenCalledTimes(1);
 });
 
