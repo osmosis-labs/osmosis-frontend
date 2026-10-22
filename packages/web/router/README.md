@@ -35,10 +35,11 @@ yarn workspace @osmosis-labs/web cf:router:dry-run  # bundle and bindings, no up
 yarn workspace @osmosis-labs/web cf:router:deploy   # uploads the router; no route
 ```
 
-CI deploys the router on pushes to `master` that change `packages/web/router/`
-(`.github/workflows/deploy-cf-router.yml`, also runnable by hand from `master`). It
-needs `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` in the
-`cloudflare-production` GitHub environment.
+Cloudflare Workers Builds deploys the router on pushes to `master` that change
+`packages/web/router/`. It is configured on the Worker in the Cloudflare dashboard
+(Settings → Builds), not in this repository: root directory `packages/web`, deploy
+command `npx wrangler deploy -c router/wrangler.jsonc`, build watch path
+`packages/web/router/*`, and non-production branch builds off.
 
 Deploying does not attach a route; that is a separate, deliberate step in Cloudflare.
 `VERCEL_ORIGIN` sends Vercel traffic to another host, for running the router on a test
