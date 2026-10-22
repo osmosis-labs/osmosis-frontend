@@ -51,7 +51,7 @@
     "rimraf": "^5.0.0",
     "ts-jest": "^29.4.14",
     "tsx": "^4.22.4",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "dependencies": {
     "@cosmjs/amino": "0.36.2",
