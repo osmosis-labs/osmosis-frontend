@@ -2,6 +2,8 @@ export type Backend = "cf" | "vercel";
 
 /** Response header naming the platform that served a request. */
 export const BACKEND_HEADER = "x-osmosis-backend";
+/** Set when Vercel served a page load the production Worker failed: `cf-<status>` or `cf-error`. */
+export const FALLBACK_HEADER = "x-osmosis-fallback";
 /** Pins a browser's traffic bucket (0-9999) across IP and user-agent changes. */
 export const BUCKET_COOKIE = "osmo_bucket";
 /** Session pin to one platform for QA, set through `?osmo_backend=cf|vercel|auto`. */
@@ -94,7 +96,8 @@ export function otherBackend(backend: Backend): Backend {
   return backend === "cf" ? "vercel" : "cf";
 }
 
-function isPageLoad(request: Request): boolean {
+/** A top-level document GET: safe to send twice, and the request that sets the bucket cookie. */
+export function isPageLoad(request: Request): boolean {
   if (request.method !== "GET") return false;
   const dest = request.headers.get("sec-fetch-dest");
   if (dest) return dest === "document";

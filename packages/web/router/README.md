@@ -21,8 +21,18 @@ never changes, and every response carries `x-osmosis-backend: cf|vercel`.
 
 The two platforms serve different builds, so a page and its JavaScript must come from
 the same one. A 404 for `/_next/static/*` is retried on the other platform, for pages
-loaded before a ramp change. Nothing else is retried across platforms: a failed swap or
-broadcast must never run twice.
+loaded before a ramp change.
+
+A page load (a document GET) that the production Worker fails, by throwing (including
+the CPU limit) or answering 5xx, is served by Vercel instead, with
+`x-osmosis-fallback: cf-<status>` or `cf-error`. A bad deploy then shows up as slower
+pages and that header rather than error pages. Nothing else is retried across platforms:
+API calls stay where they were routed, so a failed swap or broadcast never runs twice.
+
+After a ramp change, a browser at the margin with an open tab asks the other platform
+for `/_next/data/<buildId>/...`, which has a different build ID and answers 404. Next
+handles that with a full reload that lands on the new platform, so expect a short bump
+in `/_next/data` 404s per `x-osmosis-backend` after each step.
 
 ## Operating it
 
@@ -57,4 +67,6 @@ exception for `sqsprod.osmosis.zone`, `rpc.app.osmosis.zone` and
 2. Attach it to `app.osmosis.zone/*` at `CF_PERCENT: "0"`: a pure pass-through, to
    measure the router's own overhead.
 3. Raise to 1%, then 5%, comparing 5xx and API error rates, latency, chunk-load and
-   Worker CPU-limit errors per `x-osmosis-backend` before each step.
+   Worker CPU-limit errors per `x-osmosis-backend` before each step. Fallbacks hide
+   page failures from users, so count responses with `x-osmosis-fallback` (and the
+   router's "threw on a page load" logs) as Cloudflare errors when comparing.
