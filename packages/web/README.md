@@ -42,6 +42,11 @@ features. Next.js and its bundle analyzer are on 15.5.28 to satisfy OpenNext's
 
 > =15.5.28 peer requirement.
 
+`cf:build` loads `.env.production.local`, `.env.local`, `.env.production` and `.env`
+(shell variables take precedence) for the whole build, so `yarn generate:lists`
+sees the same values as `next build`. The RPC/REST overwrites reach the app only
+through the generated chain list.
+
 `cf:build` passes `--dangerouslyUseUnsupportedNextVersion`: OpenNext refuses Next.js
 majors more than two years past release, which Next 15 reached on 2026-10-21.
 `yarn cf:build:profile` builds with Next.js server minification off, so Cloudflare
