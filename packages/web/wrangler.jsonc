@@ -34,6 +34,10 @@
       "new_sqlite_classes": ["DOQueueHandler"],
     },
   ],
+  // Cloudflare Images resizes /_next/image; without it OpenNext serves the originals.
+  "images": {
+    "binding": "IMAGES",
+  },
   "observability": {
     "enabled": true,
   },

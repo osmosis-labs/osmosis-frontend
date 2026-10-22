@@ -130,11 +130,16 @@ contents or Durable Object state; do not delete those resources as a rollback
 step. On a first deployment, stop testing or remove its staging route if needed;
 production remains untouched.
 
-`worker.ts` wraps OpenNext's Worker with the shared API cache Vercel's CDN provided:
-GET `/api/*` responses that send `Cache-Control: s-maxage` (`/api/pools`,
-`/api/active-gauges`, public `edge-trpc-assets` queries) are kept in the Workers cache
-for that long, per Cloudflare location. `x-api-cache: HIT|MISS` shows the result. The
-Cache API does nothing on `workers.dev`, so measure it on a custom domain.
+`worker.ts` wraps OpenNext's Worker with the shared cache Vercel's CDN provided, per
+Cloudflare location (`x-edge-cache: HIT|MISS` shows the result):
+
+- GET `/api/*` responses that send `Cache-Control: s-maxage` (`/api/pools`,
+  `/api/active-gauges`, public `edge-trpc-assets` queries) are kept for that long.
+- `/_next/image` results are kept for seven days (browsers: one day), keyed by the
+  formats the browser accepts. The `IMAGES` binding (Cloudflare Images) does the
+  resizing; without it OpenNext serves originals. Cloudflare bills unique
+  transformations per month beyond the free 5,000, and the Images product must be
+  enabled on the account.
 
 `public/_headers` gives versioned Next assets a one-year immutable browser cache
 and the favicon a ten-day cache. Files with stable names, including token images,

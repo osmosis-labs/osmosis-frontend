@@ -2,10 +2,13 @@
  * @jest-environment node
  */
 import {
-  API_CACHE_STATUS_HEADER,
+  EDGE_CACHE_STATUS_HEADER,
+  IMAGE_BROWSER_TTL_SECONDS,
+  IMAGE_EDGE_TTL_SECONDS,
+  imageCacheKey,
   sharedMaxAge,
-  withApiEdgeCache,
-} from "~/utils/api-edge-cache";
+  withEdgeCache,
+} from "~/utils/edge-cache";
 
 const POOLS_URL = "https://app.test/api/pools";
 
@@ -31,13 +34,9 @@ function setup(
   const cache = new MemoryCache();
   const pending: Promise<unknown>[] = [];
   const handler = jest.fn(async (request: Request) => respond(request));
-  const fetch = withApiEdgeCache(
-    handler,
-    cache as unknown as Cache,
-    (promise) => {
-      pending.push(promise);
-    }
-  );
+  const fetch = withEdgeCache(handler, cache as unknown as Cache, (promise) => {
+    pending.push(promise);
+  });
   return {
     cache,
     handler,
@@ -49,16 +48,16 @@ function setup(
   };
 }
 
-describe("withApiEdgeCache", () => {
+describe("withEdgeCache: API routes", () => {
   it("serves repeat GETs of a shared API response from the cache", async () => {
     const { fetch, handler } = setup();
 
     const miss = await fetch(POOLS_URL);
-    expect(miss.headers.get(API_CACHE_STATUS_HEADER)).toBe("MISS");
+    expect(miss.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("MISS");
     expect(await miss.text()).toBe("pools");
 
     const hit = await fetch(POOLS_URL);
-    expect(hit.headers.get(API_CACHE_STATUS_HEADER)).toBe("HIT");
+    expect(hit.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("HIT");
     expect(await hit.text()).toBe("pools");
     expect(handler).toHaveBeenCalledTimes(1);
   });
@@ -80,7 +79,7 @@ describe("withApiEdgeCache", () => {
       cache.entries
         .get("https://app.test/api/active-gauges")
         ?.headers.get("cache-control")
-    ).toBe("public, s-maxage=900, stale-while-revalidate");
+    ).toBe("public, s-maxage=900");
   });
 
   it("keys on the full URL, query included", async () => {
@@ -98,7 +97,7 @@ describe("withApiEdgeCache", () => {
     await fetch(POOLS_URL);
     const head = await fetch(POOLS_URL, { method: "HEAD" });
 
-    expect(head.headers.get(API_CACHE_STATUS_HEADER)).toBe("HIT");
+    expect(head.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("HIT");
     expect(head.body).toBeNull();
     expect(handler).toHaveBeenCalledTimes(1);
   });
@@ -119,7 +118,7 @@ describe("withApiEdgeCache", () => {
     const second = await fetch(url, init);
 
     expect(handler).toHaveBeenCalledTimes(2);
-    expect(second.headers.has(API_CACHE_STATUS_HEADER)).toBe(false);
+    expect(second.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
     expect(cache.entries.size).toBe(0);
   });
 
@@ -152,8 +151,96 @@ describe("withApiEdgeCache", () => {
     const response = await fetch(POOLS_URL);
 
     expect(response.headers.get("cache-control")).toBe("private, max-age=10");
-    expect(response.headers.has(API_CACHE_STATUS_HEADER)).toBe(false);
+    expect(response.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
     expect(cache.entries.size).toBe(0);
+  });
+});
+
+const IMAGE_URL =
+  "https://app.test/_next/image?url=https%3A%2F%2Fcdn.test%2Fosmo.png&w=64&q=75";
+const WEBP = { headers: { accept: "image/avif,image/webp,*/*" } };
+
+function image(contentType = "image/webp", status = 200) {
+  return new Response("pixels", {
+    status,
+    headers: { "content-type": contentType, vary: "Accept" },
+  });
+}
+
+describe("withEdgeCache: optimized images", () => {
+  it("keeps a transformed image for repeat requests", async () => {
+    const { fetch, handler, cache } = setup(() => image());
+
+    const miss = await fetch(IMAGE_URL, WEBP);
+    const hit = await fetch(IMAGE_URL, WEBP);
+
+    expect(miss.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("MISS");
+    expect(hit.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("HIT");
+    expect(await hit.text()).toBe("pixels");
+    expect(handler).toHaveBeenCalledTimes(1);
+    const [stored] = cache.entries.values();
+    expect(stored.headers.get("cache-control")).toBe(
+      `public, s-maxage=${IMAGE_EDGE_TTL_SECONDS}`
+    );
+    expect(stored.headers.has("vary")).toBe(false);
+  });
+
+  it("tells browsers to cache it and that it varies by Accept", async () => {
+    const { fetch } = setup(() => image());
+
+    for (const response of [
+      await fetch(IMAGE_URL, WEBP),
+      await fetch(IMAGE_URL, WEBP),
+    ]) {
+      expect(response.headers.get("cache-control")).toBe(
+        `public, max-age=${IMAGE_BROWSER_TTL_SECONDS}`
+      );
+      expect(response.headers.get("vary")).toBe("Accept");
+    }
+  });
+
+  it("keeps formats negotiated from Accept apart", async () => {
+    const { fetch, handler } = setup((request) =>
+      image(
+        request.headers.get("accept")?.includes("image/webp")
+          ? "image/webp"
+          : "image/png"
+      )
+    );
+
+    await fetch(IMAGE_URL, WEBP);
+    const png = await fetch(IMAGE_URL, { headers: { accept: "*/*" } });
+
+    expect(png.headers.get("content-type")).toBe("image/png");
+    expect(handler).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ["an error", () => image("image/png", 400)],
+    ["a non-image body", () => new Response("nope", { status: 200 })],
+  ])("does not keep %s", async (_, respond) => {
+    const { fetch, handler, cache } = setup(respond);
+
+    await fetch(IMAGE_URL, WEBP);
+    await fetch(IMAGE_URL, WEBP);
+
+    expect(handler).toHaveBeenCalledTimes(2);
+    expect(cache.entries.size).toBe(0);
+  });
+});
+
+describe("imageCacheKey", () => {
+  const url = new URL(IMAGE_URL);
+
+  it.each([
+    ["image/avif,image/webp,*/*", "image/avif,image/webp"],
+    ["image/webp,*/*", "image/webp"],
+    ["*/*", "none"],
+    [null, "none"],
+  ])("keys Accept %s by %s", (accept, formats) => {
+    expect(
+      new URL(imageCacheKey(url, accept)).searchParams.get("__accept")
+    ).toBe(formats);
   });
 });
 
