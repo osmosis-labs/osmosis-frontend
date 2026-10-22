@@ -119,6 +119,17 @@ available. Do not replay failed mutation requests against the other provider.
 Compare errors, API failures, chunk errors, latency and wallet/transaction flows
 by provider before raising traffic. Keep Vercel running through the soak period.
 
+`worker.ts` wraps OpenNext's Worker with the shared cache Vercel's CDN provided, per
+Cloudflare location (`x-edge-cache: HIT|MISS` shows the result):
+
+- GET `/api/*` responses that send `Cache-Control: s-maxage` (`/api/pools`,
+  `/api/active-gauges`, public `edge-trpc-assets` queries) are kept for that long.
+- `/_next/image` results are kept for seven days (browsers: one day), keyed by the
+  formats the browser accepts. The `IMAGES` binding (Cloudflare Images) does the
+  resizing; without it OpenNext serves originals. Cloudflare bills unique
+  transformations per month beyond the free 5,000, and the Images product must be
+  enabled on the account.
+
 For future production releases, merge `origin/master` into `master-cf`; port
 Cloudflare fixes individually from `stage-cf` rather than merging its unreleased
 application changes. Record the production base commit and deployed Worker

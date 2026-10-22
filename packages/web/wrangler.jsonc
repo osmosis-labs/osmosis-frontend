@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "osmosis-frontend-production",
-  "main": ".open-next/worker.js",
+  "main": "worker.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
@@ -34,6 +34,10 @@
       "new_sqlite_classes": ["DOQueueHandler"],
     },
   ],
+  // Cloudflare Images resizes /_next/image; without it OpenNext serves the originals.
+  "images": {
+    "binding": "IMAGES",
+  },
   "observability": {
     "enabled": true,
   },

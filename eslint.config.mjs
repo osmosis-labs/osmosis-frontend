@@ -107,6 +107,8 @@ export default [
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/.open-next/**",
+      "**/.wrangler/**",
       "**/build/**",
       "**/dist/**",
       "packages/web/e2e/keplr-extension/**",
@@ -136,6 +138,7 @@ export default [
         "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
         "packages/web/playwright.config.ts",
         "packages/web/open-next.config.ts",
+        "packages/web/worker.ts",
       ],
     })),
   ...compat
