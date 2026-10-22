@@ -1,9 +1,10 @@
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { useStore } from "~/stores";
+import { OsmosisChainInfo } from "~/config/chain";
+import { useWallet } from "~/hooks/use-wallet";
 
 type UseRemoveOneClickTradingMutationOptions = Omit<
   UseMutationOptions<void, unknown, { authenticatorId: string }, unknown>,
@@ -11,17 +12,22 @@ type UseRemoveOneClickTradingMutationOptions = Omit<
 >;
 
 export async function onEnd1CTSession({
-  accountStore,
+  walletApi,
   authenticatorId,
 }: {
-  accountStore: ReturnType<typeof useStore>["accountStore"];
+  walletApi: Pick<
+    ReturnType<typeof useWallet>,
+    | "getOneClickTradingInfo"
+    | "setOneClickTradingInfo"
+    | "setShouldUseOneClickTrading"
+  >;
   authenticatorId: string;
 }) {
-  const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+  const oneClickTradingInfo = await walletApi.getOneClickTradingInfo();
 
   if (oneClickTradingInfo?.authenticatorId === authenticatorId) {
-    accountStore.setOneClickTradingInfo(undefined);
-    accountStore.setShouldUseOneClickTrading({ nextValue: false });
+    await walletApi.setOneClickTradingInfo(undefined);
+    await walletApi.setShouldUseOneClickTrading({ nextValue: false });
     displayToast(
       {
         titleTranslationKey: "oneClickTrading.toast.oneClickTradingDisabled",
@@ -37,14 +43,13 @@ export const useRemoveOneClickTradingSession = ({
 }: {
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
+  const { signAndBroadcast, getChainWallet } = walletApi;
 
   return useMutation({
     ...queryOptions,
     mutationFn: async ({ authenticatorId }: { authenticatorId: string }) => {
-      const userOsmoAddress = accountStore.getWallet(
-        accountStore.osmosisChainId
-      )?.address;
+      const userOsmoAddress = getChainWallet(OsmosisChainInfo.chainId).address;
 
       if (!userOsmoAddress) {
         throw new Error("User Osmo address not found");
@@ -56,30 +61,27 @@ export const useRemoveOneClickTradingSession = ({
       });
 
       await new Promise<DeliverTxResponse>((resolve, reject) => {
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            "addOrRemoveAuthenticators",
-            [msg],
-            "",
-            undefined,
-            { preferNoSetFee: true },
-            {
-              onFulfill: (tx) => {
-                if (tx.code === 0) {
-                  resolve(tx);
-                } else {
-                  reject(new Error("Transaction failed"));
-                }
-              },
-            }
-          )
-          .catch((error) => {
-            reject(error);
-          });
+        signAndBroadcast(
+          "addOrRemoveAuthenticators",
+          [msg],
+          "",
+          undefined,
+          { preferNoSetFee: true },
+          {
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          }
+        ).catch((error) => {
+          reject(error);
+        });
       });
 
-      onEnd1CTSession({ accountStore, authenticatorId });
+      await onEnd1CTSession({ walletApi, authenticatorId });
     },
   });
 };

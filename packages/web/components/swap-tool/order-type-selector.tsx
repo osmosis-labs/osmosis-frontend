@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import {
   ATOM_BASE_DENOM,
   deferQueryCorrection,
+  getAllowedQuoteDenom,
   TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
@@ -57,6 +58,7 @@ export const OrderTypeSelector = ({
       .withDefault(initialQuoteDenom)
       .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
+  const [tab] = useQueryState("tab");
 
   // The "from"/"quote" URL params hold either a symbol (?from=ATOM) or a
   // minimal denom (?from=ibc/...). Every orderbook decision must key on
@@ -86,28 +88,33 @@ export const OrderTypeSelector = ({
   const baseMinimalDenom = baseListAsset?.coinMinimalDenom;
   const quoteMinimalDenom = quoteListAsset?.coinMinimalDenom;
 
-  const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
-    useOrderbookSelectableDenoms();
+  const { selectableQuoteDenoms, isLoading } = useOrderbookSelectableDenoms();
 
-  const hasOrderbook = useMemo(
-    () =>
-      selectableBaseAssets.some(
-        (asset) => asset.coinMinimalDenom === baseMinimalDenom
-      ),
-    [baseMinimalDenom, selectableBaseAssets]
-  );
-
+  // Only orderbooks quoted in an allowlisted quote can be picked here, so
+  // switching to limit never lands on a quote the quote picker would refuse.
   const selectableQuotes = useMemo(() => {
     return baseMinimalDenom
-      ? (selectableQuoteDenoms[baseMinimalDenom] ?? [])
+      ? (selectableQuoteDenoms[baseMinimalDenom] ?? []).filter(
+          (asset) => !!getAllowedQuoteDenom(asset.coinMinimalDenom, tab)
+        )
       : [];
-  }, [baseMinimalDenom, selectableQuoteDenoms]);
+  }, [baseMinimalDenom, selectableQuoteDenoms, tab]);
+  // A base whose only orderbooks use quotes off the allowlist counts as
+  // having none, so limit falls back to market or offers creation instead of
+  // staying on a pair it cannot place.
+  const hasOrderbook = selectableQuotes.length > 0;
 
   // Registry entries and creation messages are keyed on resolved minimal
   // denoms; the empty-string fallback matches nothing and the creation hook
   // refuses it, so an unresolvable pair fails closed everywhere.
   const resolvedBase = baseMinimalDenom ?? "";
   const resolvedQuote = quoteMinimalDenom ?? "";
+
+  // Prevents the !hasOrderbook reset effect from firing immediately after
+  // creation while the getPools cache is still catching up. Holds the pair
+  // it was created for — a plain boolean would leak the suppression onto
+  // other bases if the user switches tokens before the cache refreshes.
+  const justCreatedPairRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (
@@ -254,12 +261,6 @@ export const OrderTypeSelector = ({
     // verification data is still catching up, or the UI would invite a
     // duplicate pool-creation tx.
     !wasOrderbookJustCreated(resolvedBase, resolvedQuote);
-
-  // Prevents the !hasOrderbook reset effect from firing immediately after
-  // creation while the getPools cache is still catching up. Holds the pair
-  // it was created for — a plain boolean would leak the suppression onto
-  // other bases if the user switches tokens before the cache refreshes.
-  const justCreatedPairRef = useRef<string | null>(null);
 
   const creationFlow = useOrderbookCreationFlow({
     baseDenom: resolvedBase,

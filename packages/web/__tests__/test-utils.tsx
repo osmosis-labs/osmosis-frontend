@@ -1,24 +1,28 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
-import { AccountStore } from "@osmosis-labs/stores";
 import type { AvailableFlags } from "@osmosis-labs/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
 import { httpLink } from "@trpc/react-query";
 import { mockFlags } from "jest-launchdarkly-mock";
-import { when } from "mobx";
 import { ReactNode } from "react";
 
+import { registerTestCleanup } from "~/__tests__/setup-tests";
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { trpcReact } from "~/__tests__/trpc-react";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
+import type { WalletRuntime } from "~/stores/wallet-runtime";
 
 let testRootStore: RootStore;
+const testRootStores = new Set<RootStore>();
+// AccountStore.addWallet replaces its WalletManager, so track every manager a
+// test touched, not only the one current at teardown.
+const testWalletManagers = new Set<WalletManager>();
 
 const queryClient = new QueryClient();
 const trpcClient = trpcReact.createClient({
@@ -29,6 +33,25 @@ const trpcClient = trpcReact.createClient({
     }),
   ],
 });
+registerTestCleanup(async () => {
+  await queryClient.cancelQueries();
+  queryClient.clear();
+  for (const rootStore of testRootStores) {
+    await rootStore.walletRuntime.unmount();
+    testWalletManagers.add(rootStore.walletRuntime.walletManager);
+  }
+  for (const manager of testWalletManagers) {
+    manager.onUnmounted();
+    // Cosmos Kit exposes the session timer but has no session disposal method.
+    if (manager.session.timeoutId !== undefined) {
+      clearTimeout(manager.session.timeoutId as ReturnType<typeof setTimeout>);
+    }
+  }
+  testWalletManagers.clear();
+  testRootStores.clear();
+  localStorage.clear();
+});
+
 const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -38,6 +61,7 @@ const withTRPC = ({ children }: { children?: ReactNode }) => {
             <storeContext.Consumer>
               {(rootStore) => {
                 testRootStore = rootStore!;
+                testRootStores.add(testRootStore);
                 return <WalletSelectProvider>{children}</WalletSelectProvider>;
               }}
             </storeContext.Consumer>
@@ -83,50 +107,33 @@ export function mockFeatureFlags(
 }
 
 async function waitTestAccountLoaded(
-  account: ReturnType<AccountStore["getWallet"]>
+  account: ReturnType<WalletRuntime["getWallet"]>
 ) {
   if (!account) {
-    console.error("Test account does not exist");
-    return;
+    throw new Error("Test account does not exist");
   }
-  if (account?.isReadyToSendTx) {
-    return;
+  const deadline = Date.now() + 4_000;
+  while (account.walletStatus !== WalletStatus.Connected || !account.address) {
+    if (Date.now() >= deadline)
+      throw new Error("Test wallet did not connect within 4s");
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
-
-  const resolution = when(
-    () =>
-      account.isReadyToSendTx && account.walletStatus === WalletStatus.Connected
-  );
-
-  return new Promise<void>((resolve, reject) => {
-    setTimeout(() => {
-      resolution.cancel();
-      reject(new Error("Timeout waitAccountLoaded"));
-    }, 10_000);
-
-    resolution.then(() => {
-      console.log("!");
-      resolve();
-    });
-  });
 }
 
 export async function connectTestWallet({
-  accountStore,
+  walletRuntime,
   chainId,
 }: {
-  accountStore: AccountStore<any>;
+  walletRuntime: WalletRuntime;
   chainId: string;
 }) {
-  const walletManager = await accountStore.addWallet(
+  testWalletManagers.add(walletRuntime.walletManager);
+  const walletManager = await walletRuntime.installWallet(
     new TestWallet(testWalletInfo)
   );
-  await walletManager.onMounted();
-  await accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
-  const account = accountStore.getWallet(chainId);
+  testWalletManagers.add(walletManager);
+  await walletRuntime.mount();
+  await walletRuntime.getWalletRepo(chainId).connect(testWalletInfo.name, true);
+  const account = walletRuntime.getWallet(chainId);
   await waitTestAccountLoaded(account);
-}
-
-export async function cleanupTestWallets() {
-  localStorage.clear();
 }

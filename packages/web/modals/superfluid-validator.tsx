@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   useCallback,
@@ -27,8 +26,8 @@ import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
@@ -50,7 +49,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
     onSelectValidator: (address: string) => void;
     ctaLabel?: string;
   } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const {
     isSuperfluid = true,
     showDelegated = true,
@@ -59,12 +58,11 @@ export const SuperfluidValidatorModal: FunctionComponent<
     ctaLabel,
   } = props;
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const { isMobile } = useWindowSize();
 
   const tableScrollReference = useRef<HTMLDivElement>(null);
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet, address, txTypeInProgress } = useWallet();
 
   const { data: validators, isLoading: isLoadingAllValidators } =
     api.edge.staking.getValidators.useQuery({
@@ -77,10 +75,10 @@ export const SuperfluidValidatorModal: FunctionComponent<
     isPlaceholderData,
   } = api.edge.staking.getUserDelegations.useQuery(
     {
-      userOsmoAddress: account?.address ?? "",
+      userOsmoAddress: address ?? "",
     },
     {
-      enabled: !!account?.address,
+      enabled: !!address,
     }
   );
 
@@ -194,6 +192,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
     ];
   }, [sortKey, sortDirection, setSortDirection, setSortKey, t]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: searchedValidators,
     columns: columns,
@@ -363,7 +362,8 @@ export const SuperfluidValidatorModal: FunctionComponent<
         <Button
           disabled={
             selectedValidatorAddress === null ||
-            account?.txTypeInProgress !== "" ||
+            !wallet ||
+            txTypeInProgress !== "" ||
             isLoadingAllValidators ||
             isLoadingUserValidators
           }
@@ -378,4 +378,4 @@ export const SuperfluidValidatorModal: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};

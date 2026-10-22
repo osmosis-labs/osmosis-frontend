@@ -250,11 +250,6 @@
   }
 }
 
-/** CHARTS */
-.highcharts-background {
-  fill-opacity: 0;
-}
-
 .pulse {
   animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -325,10 +320,6 @@
   to {
     transform: translateY(0);
   }
-}
-
-.tippy-box[data-animation="fade"][data-state="hidden"] {
-  opacity: 0;
 }
 
 .visx-tooltip {

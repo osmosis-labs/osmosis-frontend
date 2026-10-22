@@ -8,10 +8,9 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
+import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, memo, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
@@ -21,20 +20,21 @@ import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { CL_POOL_CREATION_TICK_SPACING } from "~/config";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import type { CreatePoolConfig } from "~/hooks/ui-config/use-create-pool-config";
 import {
   useDuplicateGate,
   useDuplicatePoolCheck,
 } from "~/hooks/use-duplicate-pool-check";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import { TokenSelectModal } from "~/modals";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
-  config: ObservableCreatePoolConfig;
+  config: CreatePoolConfig;
   advanceStep?: () => void;
   selectedBase?: SelectionToken;
   selectedQuote: SelectionToken;
@@ -44,7 +44,7 @@ interface SetBaseInfosProps {
   onUseExistingPool?: (poolId: string) => void;
 }
 
-export const SetBaseInfos = observer(
+export const SetBaseInfos = memo(
   ({
     config,
     advanceStep,
@@ -57,12 +57,11 @@ export const SetBaseInfos = observer(
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
-    const { accountStore } = useStore();
     const showUnverifiedAssets = useUserSettingsStore(
       (state) => state.showUnverifiedAssets
     );
 
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { signAndBroadcast, transactionContext } = useWallet();
     const { showPreviewAssets } = useShowPreviewAssets();
 
     const { data: tokens, isLoading: isLoadingTokens } =
@@ -111,7 +110,8 @@ export const SetBaseInfos = observer(
       enabled: Boolean(baseDenom && quoteDenom),
     });
     useDuplicateGate({
-      config,
+      setDuplicateBlocking: config.setDuplicateBlocking,
+      setDuplicateAcknowledged: config.setDuplicateAcknowledged,
       status: duplicateCheck.status,
       exactMatches: duplicateCheck.exactMatches,
       proposed: duplicateProposed,
@@ -205,7 +205,7 @@ export const SetBaseInfos = observer(
                 similarMatches={duplicateCheck.similarMatches}
                 acknowledged={config.duplicateAcknowledged}
                 onToggleAcknowledged={() =>
-                  (config.duplicateAcknowledged = !config.duplicateAcknowledged)
+                  config.setDuplicateAcknowledged(!config.duplicateAcknowledged)
                 }
                 onUseExistingPool={onUseExistingPool}
               />
@@ -261,31 +261,30 @@ export const SetBaseInfos = observer(
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
               setIsTxLoading(true);
-              account?.osmosis
-                .sendCreateConcentratedPoolMsg(
-                  selectedBase?.token.coinMinimalDenom!,
-                  selectedQuote?.token.coinMinimalDenom!,
-                  CL_POOL_CREATION_TICK_SPACING,
-                  +selectedSpread,
-                  undefined,
-                  (res) => {
-                    if (res.code === 0) {
-                      setIsTxLoading(false);
-                      if (!res.events) return;
+              prepareCreateConcentratedPoolMsg(
+                transactionContext,
+                selectedBase?.token.coinMinimalDenom!,
+                selectedQuote?.token.coinMinimalDenom!,
+                CL_POOL_CREATION_TICK_SPACING,
+                +selectedSpread,
+                undefined,
+                (res) => {
+                  if (res.code === 0) {
+                    setIsTxLoading(false);
+                    if (!res.events) return;
 
-                      const poolId = res.events
-                        .find(({ type }) => type === "pool_created")
-                        ?.attributes.find(
-                          ({ key }) => key === "pool_id"
-                        )?.value;
+                    const poolId = res.events
+                      .find(({ type }) => type === "pool_created")
+                      ?.attributes.find(({ key }) => key === "pool_id")?.value;
 
-                      if (!poolId) return;
+                    if (!poolId) return;
 
-                      setPoolId(poolId);
-                      advanceStep?.();
-                    }
+                    setPoolId(poolId);
+                    advanceStep?.();
                   }
-                )
+                }
+              )
+                .then((prepared) => signAndBroadcast(...prepared))
                 .finally(() => setIsTxLoading(false));
             }}
           >
@@ -305,72 +304,74 @@ export interface TokenSelectorProps {
   selectedAsset?: SelectionToken;
 }
 
-const TokenSelector = observer(
-  ({ selectedAsset, assets, setSelectedAsset }: TokenSelectorProps) => {
-    const { t } = useTranslation();
-    const { isOpen, onClose, onOpen } = useDisclosure();
+const TokenSelector = ({
+  selectedAsset,
+  assets,
+  setSelectedAsset,
+}: TokenSelectorProps) => {
+  const { t } = useTranslation();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
-    const [query, setQuery, results] = useFilteredData(assets, [
-      "token.coinDenom",
-    ]);
+  const [query, setQuery, results] = useFilteredData(assets, [
+    "token.coinDenom",
+  ]);
 
-    return (
-      <>
-        <button
-          onClick={onOpen}
-          className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
-        >
-          <div className="flex items-center gap-3">
-            {selectedAsset ? (
-              <>
-                <EntityImage
-                  logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
-                  name={selectedAsset.token.coinDenom}
-                  symbol={selectedAsset.token.coinDenom}
-                  width={52}
-                  height={52}
-                  className="overflow-hidden rounded-full"
-                />
-                <h5 className="max-w-[130px] truncate">
-                  {selectedAsset.token.coinDenom}
-                </h5>
-              </>
-            ) : (
-              <>
-                <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
-                  <Icon id="close-button-icon" className="rotate-45" />
-                </div>
-                <h6>{t("pools.createSupercharged.buttonAddToken")}</h6>
-              </>
-            )}
-          </div>
-          {selectedAsset && (
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-left"
-                width={12}
-                height={24}
-                className="-rotate-90 text-osmoverse-400"
+  return (
+    <>
+      <button
+        onClick={onOpen}
+        className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
+      >
+        <div className="flex items-center gap-3">
+          {selectedAsset ? (
+            <>
+              <EntityImage
+                logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
+                name={selectedAsset.token.coinDenom}
+                symbol={selectedAsset.token.coinDenom}
+                width={52}
+                height={52}
+                className="overflow-hidden rounded-full"
               />
-            </div>
+              <h5 className="max-w-[130px] truncate">
+                {selectedAsset.token.coinDenom}
+              </h5>
+            </>
+          ) : (
+            <>
+              <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
+                <Icon id="close-button-icon" className="rotate-45" />
+              </div>
+              <h6>{t("pools.createSupercharged.buttonAddToken")}</h6>
+            </>
           )}
-        </button>
-        <TokenSelectModal
-          isOpen={isOpen}
-          tokens={results}
-          currentValue={query}
-          onInput={setQuery}
-          onRequestClose={onClose}
-          onSelect={(selectedDenom) =>
-            setSelectedAsset(
-              assets.find((value) => value.token.coinDenom === selectedDenom)!
-            )
-          }
-        />
-      </>
-    );
-  }
-);
+        </div>
+        {selectedAsset && (
+          <div className="flex h-6 w-6 items-center justify-center">
+            <Icon
+              id="chevron-left"
+              width={12}
+              height={24}
+              className="-rotate-90 text-osmoverse-400"
+            />
+          </div>
+        )}
+      </button>
+      <TokenSelectModal
+        isOpen={isOpen}
+        tokens={results}
+        currentValue={query}
+        onInput={setQuery}
+        onRequestClose={onClose}
+        onSelect={(selectedDenom) =>
+          setSelectedAsset(
+            assets.find((value) => value.token.coinDenom === selectedDenom)!
+          )
+        }
+      />
+    </>
+  );
+};
 
 interface SpreadSelectorProps {
   options: string[];

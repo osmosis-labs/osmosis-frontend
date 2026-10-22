@@ -1,6 +1,5 @@
-import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { isSlippageError } from "@osmosis-labs/tx";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
+import { isSlippageError, TxStatusUnknownError } from "@osmosis-labs/tx";
 import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { toast } from "react-toastify";
 
@@ -15,10 +14,33 @@ const txTimeoutHeightReachedErrorCode = 30;
 
 const BROADCASTING_TOAST_ID = "broadcast";
 
+type ToastChainInfo = Pick<ChainInfoWithExplorer, "currencies"> & {
+  raw: Pick<ChainInfoWithExplorer, "explorerUrlToTx">;
+};
+
 export function toastOnBroadcastFailed(
-  getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
+  getChain: (chainId: string) => ToastChainInfo
 ) {
   return (chainId: string, e?: Error) => {
+    // Accepted by the node, but its result couldn't be confirmed: it may still
+    // be included, so point to the explorer rather than report a failure.
+    if (e instanceof TxStatusUnknownError) {
+      toast.dismiss(BROADCASTING_TOAST_ID);
+      displayToast(
+        {
+          titleTranslationKey: "transactionStatusUnknown",
+          captionTranslationKey: "transactionStatusUnknownCaption",
+          learnMoreUrl: getChain(chainId).raw.explorerUrlToTx.replace(
+            "{txHash}",
+            e.txHash.toUpperCase()
+          ),
+          learnMoreUrlCaption: "viewExplorer",
+        },
+        ToastType.ERROR
+      );
+      return;
+    }
+
     let caption: string = "unknownError";
     if (typeof e === "string") {
       caption = e;
@@ -52,9 +74,7 @@ export function toastOnBroadcast() {
   };
 }
 
-export function toastOnFulfill(
-  getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
-) {
+export function toastOnFulfill(getChain: (chainId: string) => ToastChainInfo) {
   return (chainId: string, tx: DeliverTxResponse) => {
     const chainInfo = getChain(chainId);
     toast.dismiss(BROADCASTING_TOAST_ID);

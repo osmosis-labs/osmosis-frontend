@@ -297,6 +297,7 @@
     "notInitialized": "載入中...",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
+    "scalingFactorNotInteger": "縮放因數必須是整數",
     "zeroAmount": "未提供幣額",
     "invalidRange": "價格範圍無效",
     "fallbackText1": "發生錯誤",
@@ -692,7 +693,22 @@
     "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
     "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
     "collectRewardsTooltipDisabled": "您的獎勵太少，無法領取，請在您的無人認領餘額達到{collectRewardsMinimumOsmo} OSMO 的最低閾值後重試。",
-    "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
+    "inactiveValidators": {
+      "title": "偵測到非活躍驗證者",
+      "squadDescription": "這些驗證者已離開活躍集，不再獲得獎勵。重新委託給活躍驗證者即可重新獲得獎勵。重新委託立即生效，無需解綁期。",
+      "statusInactive": "不在活躍集中",
+      "statusInactiveShortfall": "非活躍：距活躍集還差約 {amount}",
+      "statusJailed": "已監禁：無獎勵",
+      "redelegate": "重新委託",
+      "stakeWarning": "您的質押小隊包含非活躍驗證者。任何新質押的一部分將流向他們，沒有任何收益。",
+      "editSquad": "編輯質押小隊",
+      "redelegateDescription": "選擇要將 {amount} 重新委託到的驗證者。金額將在他們之間平均分配；您的其餘質押保持不變。",
+      "topThirdHidden": "合計持有全部質押三分之一的最大驗證者預設隱藏，以協助保持 Osmosis 的去中心化。",
+      "topThirdShown": "這些是合計持有全部質押三分之一的最大驗證者。選擇規模較小的驗證者有助於保持 Osmosis 的去中心化。",
+      "alertDescription": "您的部分驗證者已離開活躍集，因此質押在他們那裡的 OSMO 沒有獲得獎勵。請在質押頁面重新委託，以重新獲得獎勵。",
+      "dismiss": "關閉",
+      "goToStake": "前往質押"
+    },
     "learnMore": {
       "step1": {
         "title": "什麼是質押？",
@@ -720,7 +736,7 @@
       "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
       "searchPlaceholder": "搜索驗證器",
       "button": "設置小隊",
-      "button2": "設定小隊和賭注",
+      "button2": "設定小隊和賭注 {amount}",
       "noResults": "未找到結果",
       "column": {
         "validator": "驗證器",
@@ -784,7 +800,8 @@
     "noRoutes": "沒有找到路線",
     "route": "路線",
     "routes": "路線",
-    "slippageOverBalance": "資金不足以彌補滑點"
+    "slippageOverBalance": "資金不足以彌補滑點",
+    "amountTooSmallForSlippage": "金額太小，無法以此滑點進行兌換。請增加金額或降低滑點。"
   },
   "walletSelect": {
     "gettingStarted": "入門",
@@ -840,6 +857,8 @@
   "swapFailed": "兌換失敗。流動性可能不夠。嘗試調整允許的滑點。",
   "transactionBroadcasting": "交易正在被廣播",
   "transactionFailed": "交易失敗",
+  "transactionStatusUnknown": "交易狀態未知",
+  "transactionStatusUnknownCaption": "已提交，但我們無法確認。請先查看瀏覽器，再重試。",
   "transactionSuccessful": "交易成功",
   "transfer": {
     "deposit": "訂金",
@@ -1005,6 +1024,9 @@
     "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。",
     "ibcConnectionDown": "原生IBC連接不可用",
     "ibcConnectionDownDescription": "{asset}的直接IBC路線目前已中斷。以下選項可能提供替代路徑，但也可能受到影響。",
+    "balanceUnavailable": "無法載入您的 {chain} 餘額",
+    "balanceUnavailableDescription": "我們無法連接 {chain} 查詢您的餘額，因此可能顯示為 0。您的資金不受影響。請重試，或使用下方的選項。",
+    "retryBalance": "重試",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset}的原生轉帳不可用",
@@ -1258,7 +1280,7 @@
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
-    "launchAlert": "目前僅顯示交易和轉帳歷史記錄。即將支援更多交易類型。",
+    "launchAlert": "顯示您的兌換、存入與提領紀錄。",
     "history": "歷史",
     "orders": "命令",
     "historyTable": {
@@ -1276,7 +1298,17 @@
       "providerFee": "提供者費用",
       "provider": "提供者",
       "networkFee": "網路費"
-    }
+    },
+    "filter": {
+      "type": "交易類型",
+      "swap": "兌換",
+      "deposit": "存入",
+      "withdraw": "提領",
+      "search": "搜尋資產、鏈、金額或地址",
+      "noMatches": "沒有符合的交易",
+      "pageHint": "篩選僅適用於本頁的交易。請查看下一頁或調整篩選條件。"
+    },
+    "unknownAddressTooltip": "無法從跨鏈橋資料中確定此地址。稍後可能會顯示；您也可以在瀏覽器中查看。"
   },
   "date": {
     "earlierToday": "今天早些時候",
@@ -1350,6 +1382,11 @@
     "lowerSlippageToleranceRecommended": "建議採用較低的滑移容差。",
     "tryHigherSlippage": "嘗試更高的最大滑動容差。",
     "reviewTrade": "審查交易",
+    "highPriceImpact": {
+      "title": "價格影響較高",
+      "description": "此交易將使市場價格變動{impact}，因此您收到的金額可能遠低於顯示的金額。"
+    },
+    "lossAcknowledgement": "是的，我明白此交易可能導致重大價值損失，我仍希望繼續。",
     "errors": {
       "noAssetAvailable": "您在 Osmosis 上沒有任何可用於交易的{coinName}資金。選擇一個選項繼續。",
       "tradeMayResultInLossOfValue": "您的交易可能會導致重大價值損失",

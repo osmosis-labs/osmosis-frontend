@@ -297,6 +297,7 @@
     "notInitialized": "Ładowanie...",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
+    "scalingFactorNotInteger": "Współczynnik skalowania musi być liczbą całkowitą",
     "zeroAmount": "Ilość jest zerowa",
     "invalidRange": "Nieprawidłowy zakres cen",
     "fallbackText1": "Wystąpił błąd",
@@ -692,7 +693,22 @@
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
     "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
+    "inactiveValidators": {
+      "title": "Wykryto nieaktywnych walidatorów",
+      "squadDescription": "Ci walidatorzy opuścili aktywny zestaw i nie zarabiają już nagród. Przedeleguj do aktywnych walidatorów, aby znów zarabiać. Redelegacja jest natychmiastowa, bez okresu odblokowania.",
+      "statusInactive": "Poza aktywnym zestawem",
+      "statusInactiveShortfall": "Nieaktywny: brakuje ~{amount} do aktywnego zestawu",
+      "statusJailed": "Uwięziony: brak nagród",
+      "redelegate": "Przedeleguj",
+      "stakeWarning": "Twój skład stakingowy zawiera nieaktywnych walidatorów. Część każdego nowego stake'u trafiłaby do nich i nic nie zarobiła.",
+      "editSquad": "Edytuj skład stakingowy",
+      "redelegateDescription": "Wybierz walidatorów, do których przedelegować {amount}. Kwota zostanie podzielona po równo; reszta Twojego stake'u się nie zmieni.",
+      "topThirdHidden": "Najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u, są domyślnie ukryci, aby pomóc utrzymać decentralizację Osmosis.",
+      "topThirdShown": "To najwięksi walidatorzy, którzy razem mają jedną trzecią całego stake'u. Wybieranie mniejszych walidatorów pomaga utrzymać decentralizację Osmosis.",
+      "alertDescription": "Część Twoich walidatorów opuściła aktywny zestaw, więc OSMO u nich stakowane nie zarabia nagród. Przedeleguj je na stronie Stake, aby znów zarabiać.",
+      "dismiss": "Zamknij",
+      "goToStake": "Przejdź do Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "Co to jest stawkowanie?",
@@ -720,7 +736,7 @@
       "description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
       "searchPlaceholder": "Szukaj walidatora",
       "button": "Ustaw skład",
-      "button2": "Ustaw skład i stawkę",
+      "button2": "Ustaw skład i stawkę {amount}",
       "noResults": "Nie znaleziono wyników",
       "column": {
         "validator": "Walidator",
@@ -784,7 +800,8 @@
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
     "routes": "trasy",
-    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu",
+    "amountTooSmallForSlippage": "Kwota zbyt mała, aby dokonać wymiany przy tym poślizgu. Zwiększ kwotę lub zmniejsz poślizg."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
@@ -840,6 +857,8 @@
   "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
+  "transactionStatusUnknown": "Status transakcji nieznany",
+  "transactionStatusUnknownCaption": "Wysłano, ale nie udało się jej potwierdzić. Sprawdź eksplorator, zanim spróbujesz ponownie.",
   "transactionSuccessful": "Transakcja Udana",
   "transfer": {
     "deposit": "Depozyt",
@@ -1005,6 +1024,9 @@
     "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko.",
     "ibcConnectionDown": "Natywne połączenie IBC niedostępne",
     "ibcConnectionDownDescription": "Bezpośrednia trasa IBC dla {asset} jest obecnie niedostępna. Poniższe opcje mogą oferować alternatywną ścieżkę, ale mogą być również dotknięte problemem.",
+    "balanceUnavailable": "Nie udało się wczytać salda {chain}",
+    "balanceUnavailableDescription": "Nie udało się połączyć z {chain}, aby sprawdzić saldo, więc może być wyświetlane jako 0. Twoje środki nie są zagrożone. Spróbuj ponownie lub skorzystaj z opcji poniżej.",
+    "retryBalance": "Spróbuj ponownie",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Natywne przelewy niedostępne dla {asset}",
@@ -1258,7 +1280,7 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
-    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji i transferów. Obsługa większej liczby typów transakcji wkrótce.",
+    "launchAlert": "Wyświetlane są Twoje swapy, wpłaty i wypłaty.",
     "history": "Historia",
     "orders": "Zamówienia",
     "historyTable": {
@@ -1276,7 +1298,17 @@
       "providerFee": "Opłata dostawcy",
       "provider": "Dostawca",
       "networkFee": "Opłata sieciowa"
-    }
+    },
+    "filter": {
+      "type": "Typy transakcji",
+      "swap": "Swapy",
+      "deposit": "Wpłaty",
+      "withdraw": "Wypłaty",
+      "search": "Szukaj aktywa, sieci, kwoty lub adresu",
+      "noMatches": "Brak pasujących transakcji",
+      "pageHint": "Filtry dotyczą tylko transakcji na tej stronie. Sprawdź następną stronę lub zmień filtry."
+    },
+    "unknownAddressTooltip": "Nie udało się ustalić tego adresu na podstawie danych mostu. Może pojawić się później; możesz go też znaleźć w eksploratorze."
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
@@ -1350,6 +1382,11 @@
     "lowerSlippageToleranceRecommended": "Zalecana jest niższa tolerancja poślizgu.",
     "tryHigherSlippage": "Wypróbuj wyższą maksymalną tolerancję poślizgu.",
     "reviewTrade": "Przejrzyj handel",
+    "highPriceImpact": {
+      "title": "Wpływ na cenę jest wysoki",
+      "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
+    },
+    "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",

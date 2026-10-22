@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -83,7 +82,7 @@ export function getCategoryFilters(selectedCategory: string | undefined): {
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+}> = ({ tableTopPadding = 0 }) => {
   const showUnverifiedAssets = useUserSettingsStore(
     (state) => state.showUnverifiedAssets
   );
@@ -427,6 +426,7 @@ export const AssetsInfoTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: assetsData,
     columns: collapsedColumns,
@@ -636,7 +636,7 @@ export const AssetsInfoTable: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 // table cells
 

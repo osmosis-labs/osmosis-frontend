@@ -38,7 +38,6 @@ const esmModules = [
   "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
   "uuid",
   "@keplr-wallet/unit",
-  "@osmosis-labs/stores",
   "@osmosis-labs/utils",
   "wagmi",
   "@wagmi",
@@ -55,6 +54,27 @@ const esmModules = [
   "msw",
   "@mswjs",
   "@open-draft",
+  // react-markdown 10 and its unified pipeline publish ESM only.
+  "react-markdown",
+  "(remark|rehype|mdast|hast|micromark|unist)(-.*)?",
+  "unified",
+  "vfile(-.*)?",
+  "devlop",
+  "bail",
+  "trough",
+  "is-plain-obj",
+  "zwitch",
+  "(comma|space)-separated-tokens",
+  "(decode-named-character-reference|character-entities.*)",
+  "(parse|stringify)-entities",
+  "character-reference-invalid",
+  "is-(alphanumerical|alphabetical|decimal|hexadecimal)",
+  "estree-util-is-identifier-name",
+  "property-information",
+  "html-url-attributes",
+  "ccount",
+  "longest-streak",
+  "trim-lines",
 ];
 
 module.exports = async () => ({

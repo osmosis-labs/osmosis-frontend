@@ -297,6 +297,7 @@
     "notInitialized": "Yükleniyor...",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
+    "scalingFactorNotInteger": "Ölçeklendirme faktörü tam sayı olmalıdır",
     "zeroAmount": "Miktar sıfır",
     "invalidRange": "Geçersiz fiyat aralığı",
     "fallbackText1": "Bir hata oluştu",
@@ -692,7 +693,22 @@
     "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
     "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
     "collectRewardsTooltipDisabled": "Ödülleriniz toplanamayacak kadar düşük. Lütfen talep edilmemiş bakiyeniz {collectRewardsMinimumOsmo} OSMO minimum eşiğine ulaştığında tekrar deneyin.",
-    "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
+    "inactiveValidators": {
+      "title": "Pasif doğrulayıcılar tespit edildi",
+      "squadDescription": "Bu doğrulayıcılar aktif setten çıktı ve artık ödül kazanmıyor. Yeniden kazanmaya başlamak için aktif doğrulayıcılara yeniden delege edin. Yeniden delegasyon anında gerçekleşir, kilit açma süresi yoktur.",
+      "statusInactive": "Aktif setin dışında",
+      "statusInactiveShortfall": "Pasif: aktif sete ~{amount} eksik",
+      "statusJailed": "Hapiste: ödül kazanmıyor",
+      "redelegate": "Yeniden delege et",
+      "stakeWarning": "Stake ekibiniz pasif doğrulayıcılar içeriyor. Yeni stake'in bir kısmı onlara gider ve hiçbir şey kazanmaz.",
+      "editSquad": "Stake ekibini düzenle",
+      "redelegateDescription": "{amount} miktarını yeniden delege edeceğiniz doğrulayıcıları seçin. Miktar aralarında eşit bölünür; stake'inizin geri kalanı değişmez.",
+      "topThirdHidden": "Tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılar, Osmosis'in merkeziyetsiz kalmasına yardımcı olmak için varsayılan olarak gizlenir.",
+      "topThirdShown": "Bunlar, tüm stake'in üçte birine birlikte sahip olan en büyük doğrulayıcılardır. Daha küçük doğrulayıcıları seçmek Osmosis'in merkeziyetsiz kalmasına yardımcı olur.",
+      "alertDescription": "Bazı doğrulayıcılarınız aktif setten çıktı, bu yüzden onlara stake edilen OSMO ödül kazanmıyor. Yeniden kazanmaya başlamak için Stake sayfasından yeniden delege edin.",
+      "dismiss": "Kapat",
+      "goToStake": "Stake'e git"
+    },
     "learnMore": {
       "step1": {
         "title": "Staking nedir?",
@@ -720,7 +736,7 @@
       "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
       "searchPlaceholder": "Doğrulayıcı arayın",
       "button": "Kadroyu Ayarla",
-      "button2": "Kadroyu ve Hisseyi Ayarla",
+      "button2": "Kadroyu ve Hisseyi Ayarla {amount}",
       "noResults": "Sonuç bulunamadı",
       "column": {
         "validator": "Doğrulayıcı",
@@ -784,7 +800,8 @@
     "noRoutes": "Rota bulunamadı",
     "route": "rota",
     "routes": "rotalar",
-    "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok"
+    "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok",
+    "amountTooSmallForSlippage": "Bu kayma ile takas için tutar çok küçük. Tutarı artırın veya kaymayı azaltın."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
@@ -840,6 +857,8 @@
   "swapFailed": "Değiştirme başarısız oldu. Likidite yeterli olmayabilir. İzin verilen kaymayı ayarlamayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "transactionFailed": "İşlem Başarısız",
+  "transactionStatusUnknown": "İşlem durumu bilinmiyor",
+  "transactionStatusUnknownCaption": "Gönderildi, ancak doğrulayamadık. Tekrar denemeden önce gezgini kontrol edin.",
   "transactionSuccessful": "İşlem Başarılı",
   "transfer": {
     "deposit": "Depozito",
@@ -1005,6 +1024,9 @@
     "transferWillLikelyTakeLonger": "Aktarımlar muhtemelen normalden daha uzun sürecek veya tamamen başarısız olabilecektir. Riski size ait olmak üzere devam edin.",
     "ibcConnectionDown": "Yerel IBC bağlantısı kullanılamıyor",
     "ibcConnectionDownDescription": "{asset} için doğrudan IBC rotası şu anda çalışmıyor. Aşağıdaki seçenekler alternatif bir yol sunabilir, ancak bunlar da etkilenmiş olabilir.",
+    "balanceUnavailable": "{chain} bakiyeniz yüklenemedi",
+    "balanceUnavailableDescription": "Bakiyenizi kontrol etmek için {chain} ağına ulaşamadık, bu yüzden 0 olarak görünebilir. Fonlarınız etkilenmedi. Tekrar deneyin veya aşağıdaki seçenekleri kullanın.",
+    "retryBalance": "Tekrar dene",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "{asset} için yerel transferler kullanılamıyor",
@@ -1258,7 +1280,7 @@
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
-    "launchAlert": "Şu anda yalnızca işlem ve transfer geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek geliyor.",
+    "launchAlert": "Swap, yatırma ve çekme işlemleriniz gösterilir.",
     "history": "Tarih",
     "orders": "Emirler",
     "historyTable": {
@@ -1276,7 +1298,17 @@
       "providerFee": "Sağlayıcı ücreti",
       "provider": "Sağlayıcı",
       "networkFee": "Ağ ücreti"
-    }
+    },
+    "filter": {
+      "type": "İşlem türleri",
+      "swap": "Swap'lar",
+      "deposit": "Yatırmalar",
+      "withdraw": "Çekimler",
+      "search": "Varlık, zincir, tutar veya adres ara",
+      "noMatches": "Eşleşen işlem yok",
+      "pageHint": "Filtreler yalnızca bu sayfadaki işlemlere uygulanır. Sonraki sayfaya bakın veya filtrelerinizi değiştirin."
+    },
+    "unknownAddressTooltip": "Bu adres köprü verilerinden belirlenemedi. Daha sonra görünebilir; ayrıca gezginde de bulabilirsiniz."
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
@@ -1350,6 +1382,11 @@
     "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
     "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
     "reviewTrade": "Ticareti inceleyin",
+    "highPriceImpact": {
+      "title": "Fiyat etkisi yüksek",
+      "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
+    },
+    "lossAcknowledgement": "Evet, bu işlemin önemli değer kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "errors": {
       "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
       "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",

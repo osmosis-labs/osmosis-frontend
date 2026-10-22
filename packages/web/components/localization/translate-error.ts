@@ -1,15 +1,15 @@
 import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "@osmosis-labs/server";
+import {
   EmptyAmountError,
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import {
-  NoRouteError,
-  NotEnoughLiquidityError,
-  NotEnoughQuotedError,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/utils";
 import {
   CalculatingShareOutAmountError,
   DepositNoBalanceError,
@@ -28,11 +28,11 @@ import {
   NoSendCurrencyError,
   NotInitializedError,
   PercentageSumError,
+  ScalingFactorNotIntegerError,
   ScalingFactorTooLowError,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/utils";
 
-import { InvalidRangeError } from "~/hooks";
-import { t } from "~/hooks";
+import { InvalidRangeError, t } from "~/hooks";
 
 /** Returns localization key given a custom Error subclass, typically from UI configs. */
 export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
@@ -62,6 +62,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.negativePercentage"];
   } else if (e instanceof ScalingFactorTooLowError) {
     return ["errors.scalingFactorTooLow"];
+  } else if (e instanceof ScalingFactorNotIntegerError) {
+    return ["errors.scalingFactorNotInteger"];
   } else if (e instanceof PercentageSumError) {
     return ["errors.percentageSum"];
   } else if (e instanceof DepositNoBalanceError) {

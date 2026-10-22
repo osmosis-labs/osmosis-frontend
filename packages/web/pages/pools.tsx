@@ -1,28 +1,37 @@
+import {
+  prepareCreateBalancerPoolMsg,
+  prepareCreateStableswapPoolMsg,
+} from "@osmosis-labs/tx";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolType } from "~/components/complex/pools-table";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   useCreatePoolConfig,
   useDimension,
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
-import { useStore } from "~/stores";
 
-const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesStore } = useStore();
+const Pools: NextPage = memo(function () {
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { chainId } = OsmosisChainInfo;
+  const {
+    wallet: account,
+    address,
+    txTypeInProgress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
@@ -34,7 +43,7 @@ const Pools: NextPage = observer(function () {
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
   const openCreatePool = useCallback(() => {
-    if (!account?.address) {
+    if (!address) {
       onOpenWalletSelect({
         walletOptions: [{ walletType: "cosmos", chainId }],
         // Auto-open the create-pool modal once the wallet connects, so a
@@ -44,15 +53,10 @@ const Pools: NextPage = observer(function () {
       return;
     }
     setIsCreatingPool(true);
-  }, [account?.address, chainId, onOpenWalletSelect]);
+  }, [address, chainId, onOpenWalletSelect]);
   const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
-  const createPoolConfig = useCreatePoolConfig(
-    chainStore,
-    chainId,
-    account?.address ?? "",
-    queriesStore
-  );
+  const createPoolConfig = useCreatePoolConfig(address ?? "");
 
   // pool quick action modals
   const [addLiquidityModalPool, setAddLiquidityModalPool] = useState<{
@@ -72,7 +76,8 @@ const Pools: NextPage = observer(function () {
   const onCreatePool = useCallback(async () => {
     try {
       if (createPoolConfig.poolType === "weighted") {
-        await account?.osmosis.sendCreateBalancerPoolMsg(
+        await prepareCreateBalancerPoolMsg(
+          transactionContext,
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.percentage)
@@ -95,13 +100,14 @@ const Pools: NextPage = observer(function () {
           () => {
             setIsCreatingPool(false);
           }
-        );
+        ).then((prepared) => signAndBroadcast(...prepared));
       } else if (createPoolConfig.poolType === "stable") {
         const scalingFactorController =
           createPoolConfig.scalingFactorControllerAddress
             ? createPoolConfig.scalingFactorControllerAddress
             : undefined;
-        await account?.osmosis.sendCreateStableswapPoolMsg(
+        await prepareCreateStableswapPoolMsg(
+          transactionContext,
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.scalingFactor)
@@ -122,13 +128,20 @@ const Pools: NextPage = observer(function () {
           () => {
             setIsCreatingPool(false);
           }
-        );
+        ).then((prepared) => signAndBroadcast(...prepared));
       }
     } catch (e) {
       setIsCreatingPool(false);
       console.error(e);
     }
-  }, [createPoolConfig, account]);
+  }, [
+    createPoolConfig.poolType,
+    createPoolConfig.swapFee,
+    createPoolConfig.assets,
+    createPoolConfig.scalingFactorControllerAddress,
+    transactionContext,
+    signAndBroadcast,
+  ]);
 
   return (
     <main className="m-auto max-w-container px-8 pt-8 md:px-3 md:pt-4">
@@ -141,7 +154,7 @@ const Pools: NextPage = observer(function () {
         onRequestClose={closeCreatePool}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
-        isSendingMsg={account?.txTypeInProgress !== ""}
+        isSendingMsg={!account || txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
         onUseExistingPool={useCallback((poolId: string) => {
           setIsCreatingPool(false);
@@ -159,7 +172,7 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPool(null)}
         />
       )}
-      {account?.address && (
+      {address && (
         <>
           <section className="pb-[3.75rem]" ref={myPositionsRef}>
             <h5>{t("clPositions.yourPositions")}</h5>
@@ -173,7 +186,7 @@ const Pools: NextPage = observer(function () {
       )}
       <section>
         <AllPoolsTable
-          topOffset={account?.address ? myPositionsHeight + myPoolsHeight : 0}
+          topOffset={address ? myPositionsHeight + myPoolsHeight : 0}
           onCreatePool={openCreatePool}
           {...quickActionProps}
         />

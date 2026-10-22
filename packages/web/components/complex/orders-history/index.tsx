@@ -3,10 +3,9 @@ import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
@@ -17,6 +16,7 @@ import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -28,7 +28,7 @@ import {
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   formatFiatPrice,
   formatPretty,
@@ -58,12 +58,27 @@ const lgHeaders = ["order", "orderPlaced", "status"];
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
-export const OrderHistory = observer(() => {
+export const OrderHistory = () => {
+  // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
+  // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
+  // memoized reads would keep stale rows. The compiler only flags
+  // `useVirtualizer` as incompatible, not the window variant.
+  "use no memo";
+
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
   const { t } = useTranslation();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const listRef = useRef<HTMLTableElement>(null);
+  const { address, isWalletConnected } = useWallet();
+  const [scrollMargin, setScrollMargin] = useState(0);
+  // Re-measured when the page layout resizes, e.g. a banner above the table loads.
+  const listRef = useCallback((el: HTMLTableElement | null) => {
+    if (!el) return;
+    const measure = () => setScrollMargin(el.offsetTop);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
@@ -78,7 +93,7 @@ export const OrderHistory = observer(() => {
     refetch,
     isRefetching,
   } = useOrderbookOrders({
-    userAddress: wallet?.address ?? "",
+    userAddress: address ?? "",
     pageSize: 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
@@ -108,7 +123,7 @@ export const OrderHistory = observer(() => {
     estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
+    scrollMargin,
     paddingStart: 45,
   });
   const filledOrdersInDisplay = useMemo(() => {
@@ -117,7 +132,7 @@ export const OrderHistory = observer(() => {
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
-      userAddress: wallet?.address ?? "",
+      userAddress: address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     });
@@ -131,7 +146,7 @@ export const OrderHistory = observer(() => {
     }
   }, [claimAllOrders, refetch]);
 
-  const showConnectWallet = !wallet?.isWalletConnected && !isWalletLoading;
+  const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
   const onOrderSelect = useCallback(
     (order: MappedLimitOrder) => {
@@ -164,7 +179,7 @@ export const OrderHistory = observer(() => {
                 walletOptions: [
                   {
                     walletType: "cosmos",
-                    chainId: accountStore.osmosisChainId,
+                    chainId: OsmosisChainInfo.chainId,
                   },
                 ],
               })
@@ -298,7 +313,7 @@ export const OrderHistory = observer(() => {
       )}
     </div>
   );
-});
+};
 
 const TableGroupHeader = ({
   group,

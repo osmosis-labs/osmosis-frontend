@@ -297,6 +297,7 @@
     "notInitialized": "Wird geladen...",
     "percentageSum": "Die Summe der Prozentsätze beträgt nicht 100",
     "scalingFactorTooLow": "Skalierungsfaktor zu niedrig",
+    "scalingFactorNotInteger": "Skalierungsfaktor muss eine ganze Zahl sein",
     "zeroAmount": "Betrag ist Null",
     "invalidRange": "Ungültige Preisspanne",
     "fallbackText1": "Ein Fehler ist aufgetreten",
@@ -692,7 +693,22 @@
     "unbondingPeriodTooltip": "Gesperrte Token erhöhen die Stabilität der Blockchain. Wenn Sie den Einsatz Ihrer Token aufheben, stehen diese nach dem angegebenen Entbindungszeitraum zur Verfügung.",
     "estimatedEarningsTooltip": "Diese Einnahmen werden auf der Grundlage des aktuellen effektiven Jahreszinses berechnet, der sich ändern kann.",
     "collectRewardsTooltipDisabled": "Ihre Prämien sind zu niedrig zum Sammeln. Bitte versuchen Sie es erneut, sobald Ihr nicht beanspruchtes Guthaben den Mindestschwellenwert von {collectRewardsMinimumOsmo} OSMO erreicht hat.",
-    "isVotingPowerTooHighTooltip": "Dies ist ein Top-10-Validator mit hoher Stimmkraft. Erwägen Sie die Auswahl eines anderen Validators, um die Dezentralisierung zu fördern.",
+    "inactiveValidators": {
+      "title": "Inaktive Validatoren erkannt",
+      "squadDescription": "Diese Validatoren haben das aktive Set verlassen und erhalten keine Belohnungen mehr. Delegiere an aktive Validatoren um, um wieder Belohnungen zu erhalten. Die Umdelegierung erfolgt sofort, ohne Unbonding-Zeitraum.",
+      "statusInactive": "Außerhalb des aktiven Sets",
+      "statusInactiveShortfall": "Inaktiv: ~{amount} fehlen zum aktiven Set",
+      "statusJailed": "Gesperrt: keine Belohnungen",
+      "redelegate": "Umdelegieren",
+      "stakeWarning": "Dein Stake-Squad enthält inaktive Validatoren. Ein Teil jedes neuen Stakes würde an sie gehen und nichts einbringen.",
+      "editSquad": "Stake-Squad bearbeiten",
+      "redelegateDescription": "Wähle Validatoren, an die {amount} umdelegiert werden soll. Der Betrag wird gleichmäßig aufgeteilt; der Rest deines Stakes bleibt unverändert.",
+      "topThirdHidden": "Die größten Validatoren, die zusammen ein Drittel des gesamten Stakes halten, sind standardmäßig ausgeblendet, damit Osmosis dezentral bleibt.",
+      "topThirdShown": "Das sind die größten Validatoren, die zusammen ein Drittel des gesamten Stakes halten. Kleinere Validatoren zu wählen hilft, Osmosis dezentral zu halten.",
+      "alertDescription": "Einige deiner Validatoren haben das aktive Set verlassen, daher erhält das bei ihnen gestakte OSMO keine Belohnungen. Delegiere auf der Staking-Seite um, um wieder Belohnungen zu erhalten.",
+      "dismiss": "Schließen",
+      "goToStake": "Zum Staking"
+    },
     "learnMore": {
       "step1": {
         "title": "Was ist Abstecken?",
@@ -720,7 +736,7 @@
       "description": "Wählen Sie die Validatoren aus, an die Sie delegieren möchten. Wenn Sie fertig sind, setzen Sie den Einsatz fort. Sie können Ihren Validatorsatz jederzeit bearbeiten.",
       "searchPlaceholder": "Suchen Sie nach einem Validator",
       "button": "Trupp festlegen",
-      "button2": "Legen Sie Kader und Einsatz fest",
+      "button2": "Legen Sie Kader und Einsatz fest {amount}",
       "noResults": "keine Ergebnisse gefunden",
       "column": {
         "validator": "Validator",
@@ -784,7 +800,8 @@
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
     "routes": "Routen",
-    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage",
+    "amountTooSmallForSlippage": "Betrag zu klein für einen Swap mit dieser Slippage. Erhöhen Sie den Betrag oder verringern Sie die Slippage."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",
@@ -840,6 +857,8 @@
   "swapFailed": "Der Tausch ist fehlgeschlagen. Möglicherweise reicht die Liquidität nicht aus. Versuchen Sie, den zulässigen Schlupf anzupassen.",
   "transactionBroadcasting": "Transaktionsübertragung",
   "transactionFailed": "Transaktion fehlgeschlagen",
+  "transactionStatusUnknown": "Transaktionsstatus unbekannt",
+  "transactionStatusUnknownCaption": "Übermittelt, aber wir konnten sie nicht bestätigen. Prüfe den Explorer, bevor du es erneut versuchst.",
   "transactionSuccessful": "Transaktion Erfolgreich",
   "transfer": {
     "deposit": "Kaution",
@@ -1005,6 +1024,9 @@
     "transferWillLikelyTakeLonger": "Überweisungen dauern möglicherweise länger als üblich oder schlagen möglicherweise ganz fehl. Sie führen die Überweisung auf eigenes Risiko durch.",
     "ibcConnectionDown": "Native IBC-Verbindung nicht verfügbar",
     "ibcConnectionDownDescription": "Die direkte IBC-Route für {asset} ist derzeit nicht verfügbar. Die folgenden Optionen bieten möglicherweise einen alternativen Pfad, können aber ebenfalls betroffen sein.",
+    "balanceUnavailable": "Ihr {chain}-Guthaben konnte nicht geladen werden",
+    "balanceUnavailableDescription": "{chain} war nicht erreichbar, daher wird Ihr Guthaben möglicherweise als 0 angezeigt. Ihre Gelder sind nicht betroffen. Versuchen Sie es erneut oder nutzen Sie die Optionen unten.",
+    "retryBalance": "Erneut versuchen",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native Übertragungen für {asset} nicht verfügbar",
@@ -1258,7 +1280,7 @@
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
-    "launchAlert": "Derzeit wird nur der Handels- und Überweisungsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
+    "launchAlert": "Angezeigt werden deine Swaps, Einzahlungen und Auszahlungen.",
     "history": "Geschichte",
     "orders": "Aufträge",
     "historyTable": {
@@ -1276,7 +1298,17 @@
       "providerFee": "Anbietergebühr",
       "provider": "Anbieter",
       "networkFee": "Netzwerkgebühr"
-    }
+    },
+    "filter": {
+      "type": "Transaktionsarten",
+      "swap": "Swaps",
+      "deposit": "Einzahlungen",
+      "withdraw": "Auszahlungen",
+      "search": "Asset, Chain, Betrag oder Adresse suchen",
+      "noMatches": "Keine passenden Transaktionen",
+      "pageHint": "Filter gelten nur für die Transaktionen auf dieser Seite. Öffne die nächste Seite oder passe deine Filter an."
+    },
+    "unknownAddressTooltip": "Diese Adresse konnte aus den Daten der Bridge nicht ermittelt werden. Sie wird möglicherweise später angezeigt; du findest sie auch im Explorer."
   },
   "date": {
     "earlierToday": "Heute früh",
@@ -1350,6 +1382,11 @@
     "lowerSlippageToleranceRecommended": "Eine geringere Rutschtoleranz wird empfohlen.",
     "tryHigherSlippage": "Versuchen Sie es mit einer höheren maximalen Schlupftoleranz.",
     "reviewTrade": "Handel überprüfen",
+    "highPriceImpact": {
+      "title": "Preisauswirkungen sind hoch",
+      "description": "Dieser Handel verändert den Marktpreis um {impact}, sodass Sie möglicherweise deutlich weniger als den angezeigten Betrag erhalten."
+    },
+    "lossAcknowledgement": "Ja, ich verstehe, dass dieser Handel zu einem erheblichen Wertverlust führen kann, und ich möchte fortfahren.",
     "errors": {
       "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren.",
       "tradeMayResultInLossOfValue": "Ihr Handel kann zu einem erheblichen Wertverlust führen",

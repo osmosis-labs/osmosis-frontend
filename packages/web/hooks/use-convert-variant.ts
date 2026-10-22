@@ -3,10 +3,10 @@ import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
+import { useWallet } from "./use-wallet";
 
 /** Slippage tolerance for a conversion through a single fixed-ratio pool
  *  (transmuter / alloyed), as a decimal fraction: 0.01%.
@@ -28,15 +28,17 @@ export const DEFAULT_CONVERT_MAX_SLIPPAGE = "0.05";
  *
  * Takes either an AssetVariant object directly or a coin minimal denom string.
  * If a string is provided, the variant will be looked up from the user's portfolio assets.
- *
- * NOTE: wrap with observer to so account store can be accessed.
  */
 export function useConvertVariant(
   givenVariantOrCoinMinimalDenom?: AssetVariant | string,
   enabled = true
 ) {
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const {
+    wallet: account,
+    address,
+    txTypeInProgress,
+    signAndBroadcast,
+  } = useWallet();
   const transactionIdentifier = "convertVariant";
 
   // If the variant is not provided, we will fetch from user's list of variants
@@ -46,12 +48,12 @@ export function useConvertVariant(
     isLoading: isPortfolioAssetsLoading,
   } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
-      address: account?.address ?? "",
+      address: address ?? "",
     },
     {
       enabled:
         enabled &&
-        !!account?.address &&
+        !!address &&
         typeof givenVariantOrCoinMinimalDenom === "string" &&
         Boolean(givenVariantOrCoinMinimalDenom),
     }
@@ -122,28 +124,25 @@ export function useConvertVariant(
           return reject(messages);
         }
 
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            variantTransactionIdentifier,
-            messages,
-            undefined,
-            undefined,
-            undefined,
-            {
-              onFulfill: (tx) => {
-                if (tx.code) return reject(tx.code);
-                resolve();
-              },
-              onBroadcastFailed: reject,
-            }
-          )
-          .catch((e) => {
-            console.error("Error broadcasting convert variant tx", e);
-            reject(e);
-          });
+        signAndBroadcast(
+          variantTransactionIdentifier,
+          messages,
+          undefined,
+          undefined,
+          undefined,
+          {
+            onFulfill: (tx) => {
+              if (tx.code) return reject(tx.code);
+              resolve();
+            },
+            onBroadcastFailed: reject,
+          }
+        ).catch((e) => {
+          console.error("Error broadcasting convert variant tx", e);
+          reject(e);
+        });
       }),
-    [variant, account, quote, accountStore, variantTransactionIdentifier]
+    [variant, account, quote, signAndBroadcast, variantTransactionIdentifier]
   );
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
@@ -164,11 +163,10 @@ export function useConvertVariant(
     isError: isLargeAmountDiff || isQuoteError || isPortfolioAssetsError,
     /** Is any conversion in progress. */
     isConvertingVariant: Boolean(
-      account?.txTypeInProgress.startsWith(transactionIdentifier)
+      txTypeInProgress.startsWith(transactionIdentifier)
     ),
     /** Is this specific variant conversion in progress. */
-    isConvertingThisVariant:
-      account?.txTypeInProgress === variantTransactionIdentifier,
+    isConvertingThisVariant: txTypeInProgress === variantTransactionIdentifier,
   };
 }
 

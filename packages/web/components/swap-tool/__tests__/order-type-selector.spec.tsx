@@ -12,6 +12,8 @@ const USDC_NOBLE =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 const ALL_USDC =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+const USDY =
+  "ibc/23104D411A6EB6031FA92FB75F227422B84989969E91DCAD56A535DD7FF0A373";
 
 const mockQueryState: Record<string, string> = {};
 const mockSetters: Record<string, jest.Mock> = {};
@@ -29,21 +31,28 @@ jest.mock("nuqs", () => {
   return {
     parseAsString: { withDefault: parser },
     parseAsStringLiteral: () => ({ withDefault: parser }),
-    useQueryState: (
-      key: string,
-      { defaultValue }: { defaultValue: unknown }
-    ) => {
+    useQueryState: (key: string, parser?: { defaultValue: unknown }) => {
       mockSetters[key] ??= jest.fn();
-      return [mockQueryState[key] ?? defaultValue, mockSetters[key]];
+      return [
+        mockQueryState[key] ?? parser?.defaultValue ?? null,
+        mockSetters[key],
+      ];
     },
   };
 });
 
 jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
   useOrderbookSelectableDenoms: () => ({
-    // Only HASH has an orderbook, and only against USDC.noble; ATOM has none.
-    selectableBaseAssets: [{ coinMinimalDenom: HASH }],
-    selectableQuoteDenoms: { [HASH]: [{ coinMinimalDenom: USDC_NOBLE }] },
+    // HASH has an orderbook only against USDC.noble, OSMO only against USDY
+    // (not an allowed quote), and ATOM has none.
+    selectableBaseAssets: [
+      { coinMinimalDenom: HASH },
+      { coinMinimalDenom: "uosmo" },
+    ],
+    selectableQuoteDenoms: {
+      [HASH]: [{ coinMinimalDenom: USDC_NOBLE }],
+      uosmo: [{ coinMinimalDenom: USDY }],
+    },
     isLoading: false,
   }),
 }));
@@ -169,6 +178,19 @@ describe("OrderTypeSelector", () => {
 
     expect(mockOpenCreation).toHaveBeenCalledTimes(1);
     expect(mockSetters.type).not.toHaveBeenCalled();
+  });
+
+  it("treats a base whose only orderbook has a disallowed quote as having none", () => {
+    mockQueryState.from = "uosmo";
+    mockQueryState.quote = ALL_USDC;
+    mockVerification = { orderbookExists: false, endpointFunctional: true };
+    render(<OrderTypeSelector initialBaseDenom="uosmo" />);
+
+    fireEvent.click(screen.getByText("limitOrders.limit"));
+
+    expect(mockOpenCreation).toHaveBeenCalledTimes(1);
+    expect(mockSetters.type).not.toHaveBeenCalled();
+    expect(mockSetters.quote).not.toHaveBeenCalledWith(USDY);
   });
 
   it("does not offer creation when the verification endpoint is not functional", () => {

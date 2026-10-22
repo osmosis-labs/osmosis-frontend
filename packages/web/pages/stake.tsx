@@ -1,9 +1,14 @@
-import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
-import { BondStatus } from "@osmosis-labs/types";
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  prepareDelegateToValidatorSetMsg,
+  prepareUndelegateFromRebalancedValidatorSet,
+} from "@osmosis-labs/tx";
+import {
+  DefaultGasPriceStep,
+  makeDelegateToValidatorSetMsg,
+} from "@osmosis-labs/tx";
+import type * as StakingType from "@osmosis-labs/types";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
@@ -11,56 +16,60 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
+import { StakeToInactiveValidatorsWarning } from "~/components/stake/inactive-delegations-warning";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
-import {
-  useAmountConfig,
-  useFakeFeeConfig,
-  useGetApr,
-  useTranslation,
-} from "~/hooks";
-import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
+import { OsmosisChainInfo } from "~/config/chain";
+import { useGetApr, useTranslation } from "~/hooks";
+import { useAmountInput } from "~/hooks/input/use-amount-input";
+import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
+import { useWallet } from "~/hooks/use-wallet";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
-import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
-export const Staking: React.FC = observer(() => {
+/** Stable fallbacks, so the memos below keep their identity while loading. */
+const NO_VALIDATOR_PREFERENCES: { val_oper_address: string; weight: string }[] =
+  [];
+const NO_DELEGATIONS: StakingType.Delegation[] = [];
+const NO_VALIDATORS: StakingType.Validator[] = [];
+
+export const Staking: React.FC = memo(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  // only the stake flow also delegates the entered amount; every other entry
+  // point just edits the squad
+  const [squadModalOpener, setSquadModalOpener] = useState<StakeOrEdit>("edit");
+  const [isRedelegating, setIsRedelegating] = useState(false);
   const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
   const { t } = useTranslation();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
   const { onOpenWalletSelect, isLoading } = useWalletSelect();
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const osmosisChainId = OsmosisChainInfo.chainId;
+  const {
+    isReadyToSendTx,
+    address: walletAddress,
+    isWalletConnected,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet();
+  const address = walletAddress ?? "";
 
-  const osmo = chainStore.osmosis.stakeCurrency;
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
-  const userHasValPrefs =
-    osmosisQueries?.queryUsersValidatorPreferences.get(
-      address
-    ).hasValidatorPreferences;
-
-  const userValidatorPreferences = useMemo(() => {
-    return (
-      osmosisQueries?.queryUsersValidatorPreferences.get(address)
-        .validatorPreferences || []
+  const { data: validatorPreferences, isFetching: isFetchingValPrefs } =
+    api.edge.staking.getUserValidatorPreferences.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
     );
-  }, [osmosisQueries, address]);
-
-  const isFetchingValPrefs =
-    osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;
-
-  const isWalletConnected = Boolean(account?.isWalletConnected);
+  const userValidatorPreferences =
+    validatorPreferences ?? NO_VALIDATOR_PREFERENCES;
+  const userHasValPrefs = userValidatorPreferences.length > 0;
 
   useEffect(() => {
     // reset states if wallet is disconnected
@@ -70,58 +79,72 @@ export const Staking: React.FC = observer(() => {
     }
   }, [isWalletConnected]);
 
-  // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
-  const feeConfig = useFakeFeeConfig(
-    chainStore,
-    osmosisChainId,
-    makeDelegateToValidatorSetMsg.gas || 0
+  const { data: delegations, isFetched: isDelegationsFetched } =
+    api.edge.staking.getUserDelegations.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
+    );
+  const userValidatorDelegations = delegations ?? NO_DELEGATIONS;
+
+  // Max stake leaves the fee at the high gas price; delegateToValidatorSet
+  // costs the same gas as undelegating.
+  const feeCurrency = OsmosisChainInfo.feeCurrencies[0];
+  const stakeFee = useMemo(
+    () =>
+      new CoinPretty(
+        feeCurrency,
+        new Dec(feeCurrency.gasPriceStep?.high ?? DefaultGasPriceStep.high).mul(
+          new Dec(makeDelegateToValidatorSetMsg.gas || 0)
+        )
+      ),
+    [feeCurrency]
   );
 
   // wallet balance
-  const stakeTabAmountConfig = useAmountConfig(
-    chainStore,
-    queriesStore,
-    osmosisChainId,
-    address,
-    feeConfig,
-    osmo
-  );
+  const stakeTabAmountConfig = useAmountInput({
+    currency: osmo,
+    gasAmount: stakeFee,
+    inputDebounceMs: 0,
+  });
 
-  // staked amount balance
-  const unstakeTabAmountConfig = useStakedAmountConfig(
-    chainStore,
-    queriesStore,
-    osmosisChainId,
-    address,
-    feeConfig,
-    osmo
+  // staked amount balance; the fee is paid from the wallet, so max is the
+  // whole delegation
+  const totalDelegated = useMemo(
+    () =>
+      userValidatorDelegations
+        .reduce(
+          (acc, { balance }) => acc.add(new Dec(balance.amount)),
+          new Dec(0)
+        )
+        .truncate()
+        .toString(),
+    [userValidatorDelegations]
   );
+  const unstakeTabAmountConfig = useAmountInput({
+    currency: osmo,
+    inputDebounceMs: 0,
+    balanceOverride: {
+      amount: totalDelegated,
+      isFetched: isDelegationsFetched,
+    },
+  });
 
-  const stakeAmount = useMemo(() => {
-    if (stakeTabAmountConfig.amount) {
-      return new CoinPretty(osmo, stakeTabAmountConfig.amount);
-    }
-  }, [stakeTabAmountConfig.amount, osmo]);
+  const stakeAmount = stakeTabAmountConfig.amount;
 
   const activeAmountConfig =
     activeTab === "Stake" ? stakeTabAmountConfig : unstakeTabAmountConfig;
 
-  const primitiveAmount = activeAmountConfig.getAmountPrimitive();
+  const primitiveAmount = activeAmountConfig.amount?.toCoin().amount ?? "0";
 
   const coin = useMemo(() => {
-    return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
+    return { currency: osmo, amount: primitiveAmount, denom: osmo };
   }, [osmo, primitiveAmount]);
 
-  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
-    account?.address ?? ""
-  );
-
-  const unbondingDelegationsQuery =
-    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
-      account?.address ?? ""
+  const { data: unbondingDelegations } =
+    api.edge.staking.getUserUnbondingDelegations.useQuery(
+      { userOsmoAddress: address },
+      { enabled: Boolean(address) }
     );
-
-  const userValidatorDelegations = delegationQuery.delegations;
 
   const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
@@ -151,31 +174,40 @@ export const Staking: React.FC = observer(() => {
     return validatorSetPreferenceMap;
   }, [userValidatorPreferences]);
 
-  const validatorSquadModalAction: StakeOrEdit = Boolean(
-    Number(stakeTabAmountConfig.amount)
-  )
-    ? "stake"
-    : "edit";
+  const validatorSquadModalAction: StakeOrEdit =
+    squadModalOpener === "stake" && Boolean(stakeTabAmountConfig.amount)
+      ? "stake"
+      : "edit";
+
+  const openSquadModalToStake = useCallback(() => {
+    setSquadModalOpener("stake");
+    setShowValidatorModal(true);
+  }, []);
+
+  const openSquadModalToEdit = useCallback(() => {
+    setSquadModalOpener("edit");
+    setShowValidatorModal(true);
+  }, []);
 
   const stakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis
-        .sendDelegateToValidatorSetMsg(coin, "")
+    if (isReadyToSendTx && coin?.amount) {
+      prepareDelegateToValidatorSetMsg(transactionContext, coin, "")
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [account?.address, account?.osmosis, coin]);
+  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
 
   const unstakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis
-        .sendUndelegateFromRebalancedValidatorSet(coin, "")
+    if (isReadyToSendTx && coin?.amount) {
+      prepareUndelegateFromRebalancedValidatorSet(transactionContext, coin, "")
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [account?.address, account?.osmosis, coin]);
+  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 
@@ -195,7 +227,7 @@ export const Staking: React.FC = observer(() => {
         //user has not saved keepValidators in local storage
         setShowValidatorNextStepModal(true);
       } else {
-        setShowValidatorModal(true);
+        openSquadModalToStake();
       }
     } else {
       unstakeCall();
@@ -208,22 +240,64 @@ export const Staking: React.FC = observer(() => {
     isNewUser,
     stakeCall,
     unstakeCall,
+    openSquadModalToStake,
   ]);
 
   const { stakingAPR, isLoadingApr } = useGetApr();
 
-  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
-  const activeValidators = queryValidators.validators;
+  const { data: bondedValidators } = api.edge.staking.getValidators.useQuery({
+    status: "Bonded",
+  });
+  const activeValidators = bondedValidators ?? NO_VALIDATORS;
 
-  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
-    .truncate()
-    .toString()}% ${t("stake.alertTitleEnd")}`;
+  const { inactiveDelegations } = useInactiveDelegations();
+
+  const openRedelegate = useCallback(() => {
+    setIsRedelegating(true);
+    openSquadModalToEdit();
+  }, [openSquadModalToEdit]);
+
+  // New stake follows the stored preference, or the existing delegations when
+  // there is none, so either can send fresh OSMO to a validator earning nothing.
+  const stakeTargetsInactiveValidators = useMemo(() => {
+    if (!isWalletConnected) return false;
+    if (!userHasValPrefs) return inactiveDelegations.length > 0;
+    if (!bondedValidators) return false;
+
+    const bondedAddresses = new Set(
+      activeValidators.map(({ operator_address }) => operator_address)
+    );
+    return userValidatorPreferences.some(
+      ({ val_oper_address }: { val_oper_address: string }) =>
+        !bondedAddresses.has(val_oper_address)
+    );
+  }, [
+    isWalletConnected,
+    userHasValPrefs,
+    inactiveDelegations,
+    bondedValidators,
+    activeValidators,
+    userValidatorPreferences,
+  ]);
+
+  // one decimal place, truncated so the banner never overstates the APR
+  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR.toString(
+    1
+  )}% ${t("stake.alertTitleEnd")}`;
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
-  const { unbondingBalances } = unbondingDelegationsQuery;
+  const unbondingBalances = useMemo(
+    () =>
+      (unbondingDelegations ?? []).map((unbonding) => ({
+        validatorAddress: unbonding.validator_address,
+        entries: unbonding.entries.map((entry) => ({
+          completionTime: entry.completion_time,
+          balance: new CoinPretty(osmo, new Int(entry.balance)),
+        })),
+      })),
+    [unbondingDelegations, osmo]
+  );
   const unbondingInProcess = unbondingBalances.length > 0;
 
   function groupByCompletionTime(
@@ -256,23 +330,33 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
-  const hasInsufficientBalance = activeAmountConfig.balance
-    ?.toDec()
-    .lt(new Dec(activeAmountConfig.amount || "1"));
+  // Use zero until the balance loads.
+  const activeBalance = activeAmountConfig.balance ?? new CoinPretty(osmo, 0);
+  const stakedBalance =
+    unstakeTabAmountConfig.balance ?? new CoinPretty(osmo, 0);
+
+  // an empty input is compared against 1 OSMO
+  const hasInsufficientBalance = activeBalance
+    .toDec()
+    .lt(
+      activeAmountConfig.amount?.toDec() ??
+        new Dec(activeAmountConfig.isEmpty ? 1 : 0)
+    );
 
   // never disable when wallet is not connected
   const disableMainStakeCardButton = !isWalletConnected
     ? false
-    : Number(activeAmountConfig.amount) <= 0 || hasInsufficientBalance;
+    : !activeAmountConfig.amount || hasInsufficientBalance;
 
+  const setActiveAmount = activeAmountConfig.setAmount;
   const setAmount = useCallback(
     (amount: string) => {
       const isNegative = Number(amount) < 0;
       if (!isNegative) {
-        activeAmountConfig.setAmount(amount);
+        setActiveAmount(amount);
       }
     },
-    [activeAmountConfig]
+    [setActiveAmount]
   );
 
   return (
@@ -296,18 +380,14 @@ export const Staking: React.FC = observer(() => {
           </SkeletonLoader>
           <StakeTool
             hasInsufficientBalance={hasInsufficientBalance}
-            handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
-            handleHalfButtonClick={() =>
-              activeAmountConfig.fraction
-                ? activeAmountConfig.setFraction(0)
-                : activeAmountConfig.setFraction(0.5)
-            }
-            isMax={activeAmountConfig.isMax}
+            handleMaxButtonClick={activeAmountConfig.toggleMax}
+            handleHalfButtonClick={activeAmountConfig.toggleHalf}
+            isMax={activeAmountConfig.fraction === 1}
             isHalf={activeAmountConfig.fraction === 0.5}
-            inputAmount={activeAmountConfig.amount}
+            inputAmount={activeAmountConfig.inputAmount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            availableAmount={activeAmountConfig.balance}
+            availableAmount={activeBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
@@ -315,6 +395,20 @@ export const Staking: React.FC = observer(() => {
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
             stakingAPR={stakingAPR}
+            stakeWarning={
+              stakeTargetsInactiveValidators && (
+                <StakeToInactiveValidatorsWarning
+                  hasJailed={inactiveDelegations.some(
+                    ({ status }) => status === "jailed"
+                  )}
+                  onRedelegate={
+                    inactiveDelegations.length
+                      ? openRedelegate
+                      : openSquadModalToEdit
+                  }
+                />
+              )
+            }
           />
         </div>
         <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
@@ -324,19 +418,21 @@ export const Staking: React.FC = observer(() => {
             </div>
           ) : showStakeLearnMore ? (
             <StakeLearnMore
-              setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowValidatorModal={openSquadModalToEdit}
               isWalletConnected={isWalletConnected}
             />
           ) : (
             <StakeDashboard
               hasInsufficientBalance={hasInsufficientBalance}
-              setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowValidatorModal={openSquadModalToEdit}
               setShowStakeLearnMoreModal={() =>
                 setShowStakeLearnMoreModal(true)
               }
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
-              balance={unstakeTabAmountConfig.balance}
+              balance={stakedBalance}
+              inactiveDelegations={inactiveDelegations}
+              onRedelegate={openRedelegate}
             />
           )}
         </div>
@@ -348,27 +444,30 @@ export const Staking: React.FC = observer(() => {
       )}
       <ValidatorSquadModal
         isOpen={showValidatorModal}
-        onRequestClose={() => setShowValidatorModal(false)}
+        onRequestClose={() => {
+          setShowValidatorModal(false);
+          setIsRedelegating(false);
+        }}
         usersValidatorsMap={usersValidatorsMap}
         usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
         action={validatorSquadModalAction}
         coin={coin}
-        queryValidators={queryValidators}
+        isRedelegating={isRedelegating}
       />
       <ValidatorNextStepModal
         setShowStakeLearnMoreModal={() => setShowStakeLearnMoreModal(true)}
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
-        setShowValidatorModal={() => setShowValidatorModal(true)}
+        setShowValidatorModal={openSquadModalToStake}
         stakeCall={stakeCall}
       />
       <StakeLearnMoreModal
         isOpen={showStakeLearnMoreModal}
         onRequestClose={() => setShowStakeLearnMoreModal(false)}
         isWalletConnected={Boolean(isWalletConnected)}
-        setShowValidatorModal={() => setShowValidatorModal(true)}
+        setShowValidatorModal={openSquadModalToEdit}
       />
     </main>
   );

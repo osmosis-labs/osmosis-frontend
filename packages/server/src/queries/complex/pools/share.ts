@@ -1,8 +1,11 @@
 import { estimateExitSwap } from "@osmosis-labs/math";
+import type {
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { AssetList, Chain, Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int, RatePretty } from "@osmosis-labs/unit";
 
-import { StablePoolRawResponse, WeightedPoolRawResponse } from "../../osmosis";
 import { getLockableDurations } from "../pools/incentives";
 import { getPool } from ".";
 

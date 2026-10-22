@@ -6,7 +6,6 @@ import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcQuery } from "~/__tests__/msw";
 import {
-  cleanupTestWallets,
   connectTestWallet,
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
@@ -22,7 +21,6 @@ describe("useAmountInput", () => {
   };
 
   beforeEach(() => {
-    cleanupTestWallets();
     server.use(
       trpcQuery(
         "edge.assets.getAssetPrice",
@@ -116,7 +114,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -177,7 +175,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -206,7 +204,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -250,7 +248,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -293,7 +291,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -419,6 +417,51 @@ describe("useAmountInput", () => {
       expect(result.current.amount).toBeUndefined();
       expect(result.current.debouncedInAmount).toBeNull();
     });
+  });
+
+  it("uses the balance override instead of the wallet balance", async () => {
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: "40000000", isFetched: true },
+      })
+    );
+
+    await connectTestWallet({
+      walletRuntime: rootStore.walletRuntime,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.toggleMax();
+    });
+
+    await waitFor(() => {
+      expect(result.current.balance?.toCoin().amount).toBe("40000000");
+      expect(result.current.inputAmount).toBe("40");
+    });
+
+    act(() => {
+      result.current.setAmount("41");
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toEqual(new Error("Insufficient balance"));
+    });
+  });
+
+  it("has no balance while the override loads", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: undefined, isFetched: false },
+      })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+    expect(result.current.balance).toBeUndefined();
   });
 });
 

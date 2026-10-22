@@ -8,13 +8,9 @@ import {
   SolanaBridgeTransactionRequest,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import {
-  getEvmRpcTransport,
-  getNomicRelayerUrl,
-  isNil,
-} from "@osmosis-labs/utils";
+import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -25,20 +21,20 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import {
-  deriveMemoFlags,
-  LossFigures,
-  needsAcknowledgement,
-  normalizePriceImpact,
-} from "~/components/bridge/loss-acknowledgement";
 import { isSourceWalletConnected } from "~/components/bridge/source-wallet";
-import { useLossAcknowledgement } from "~/components/bridge/use-loss-acknowledgement";
 import {
   getChainBalance,
   getMultiTxErrorToastContent,
   useMultiTxFinalStep,
   waitForSkipStepArrival,
 } from "~/components/bridge/use-multi-tx-step";
+import {
+  deriveBridgeMemoFlags,
+  LossFigures,
+  needsAcknowledgement,
+  priceImpactLoss,
+} from "~/components/loss-acknowledgement";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
@@ -49,10 +45,12 @@ import {
   getPhantomProvider,
   usePhantomWallet,
 } from "~/hooks/use-phantom-wallet";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
+import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
 import { isSameCoinDenom } from "~/utils/denom";
 import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
+import { getClientEvmRpcTransport } from "~/utils/evm-rpc";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import {
   classifySolanaSimulation,
@@ -193,7 +191,7 @@ export const useBridgeQuotes = ({
   onRequestClose: () => void;
   onTransfer?: () => void;
 }) => {
-  const { accountStore, transferHistoryStore, queriesStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const {
     connector: evmConnector,
     address: evmAddress,
@@ -246,6 +244,17 @@ export const useBridgeQuotes = ({
    * intermediate chain at signing time.
    */
   const cosmosSideChain = isWithdraw ? fromChain : toChain;
+  // falls back to Osmosis when the chain isn't cosmos; ignored in that case
+  const { isWalletConnected: isCosmosSideWalletConnected, getChainWallet } =
+    useWallet(
+      cosmosSideChain?.chainType === "cosmos"
+        ? cosmosSideChain.chainId
+        : undefined
+    );
+  const { isWalletConnected: isFromCosmosWalletConnected, txTypeInProgress } =
+    useWallet(
+      fromChain?.chainType === "cosmos" ? fromChain.chainId : undefined
+    );
   const allowMultiTx =
     featureFlags.multiTxBridgeRoutes === true &&
     // deposits only: the executor supports exactly an EVM or Solana first tx
@@ -253,7 +262,7 @@ export const useBridgeQuotes = ({
     // render its steps badge) only to be refused at Confirm
     !isWithdraw &&
     cosmosSideChain?.chainType === "cosmos" &&
-    Boolean(accountStore.getWallet(cosmosSideChain.chainId)?.isWalletConnected);
+    isCosmosSideWalletConnected;
   // Kill switch for the Phantom-signed Solana routes; the provider refuses a
   // Solana quote without it.
   const allowSolana = featureFlags.solanaSkipRoutes === true;
@@ -340,9 +349,7 @@ export const useBridgeQuotes = ({
   const isTxPending = (() => {
     if (!fromChain) return false;
     if (fromChain.chainType === "cosmos") {
-      return Boolean(
-        accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
-      );
+      return Boolean(txTypeInProgress);
     } else if (fromChain.chainType === "evm") {
       return isEthTxPending || isBroadcastingTx;
     } else if (fromChain.chainType === "solana") {
@@ -411,12 +418,11 @@ export const useBridgeQuotes = ({
               (fee) => fee.amount.maxDecimals(8)
             );
 
-            // Nomic reports price impact as a negative fraction, Squid as
-            // positive. The high-impact gate and the acknowledgement re-arm
-            // check assume larger = worse, so compare magnitudes; a negative
-            // figure would silently never trip the gate.
+            // Providers report a loss as a negative fraction. The high-impact
+            // gate and the acknowledgement re-arm check assume larger = worse,
+            // so read it as a loss; a favourable impact counts as none.
             const priceImpact = new RatePretty(
-              normalizePriceImpact(new Dec(expectedOutput.priceImpact))
+              priceImpactLoss(new Dec(expectedOutput.priceImpact))
             );
 
             // Handle cases where fiat values might be undefined
@@ -529,17 +535,23 @@ export const useBridgeQuotes = ({
 
   /**
    * Live loss figures for the selected quote — the input to the frozen-basis
-   * acknowledgement model. See `loss-acknowledgement.ts`.
+   * acknowledgement model. See `~/components/loss-acknowledgement`.
+   *
+   * The identity key is every field that makes this a different transfer rather
+   * than a re-quote of the same one: change the provider, either chain, either
+   * asset or the amount and the acknowledgement re-arms with no tolerance.
    */
   const currentLossFigures: LossFigures | undefined = useMemo(() => {
     if (!selectedQuote) return undefined;
     return {
-      providerId: selectedQuote.provider.id,
-      fromChainId: fromChain?.chainId,
-      toChainId: toChain?.chainId,
-      fromAssetAddress: fromAsset?.address,
-      toAssetAddress: toAsset?.address,
-      inputAmount: inputAmount.toString(),
+      identityKey: [
+        selectedQuote.provider.id,
+        fromChain?.chainId,
+        toChain?.chainId,
+        fromAsset?.address,
+        toAsset?.address,
+        inputAmount.toString(),
+      ].join("|"),
       slippage: selectedQuote.transferSlippage,
       priceImpact: selectedQuote.priceImpact.toDec(),
       warnSlippage: selectedQuote.isSlippageTooHigh,
@@ -578,65 +590,62 @@ export const useBridgeQuotes = ({
     [isOneSuccessful, isOneErrored, quoteResults]
   );
 
-  useEffect(() => {
-    const quoteResults_ = [...quoteResults];
+  const bestQuote = useMemo(
+    () =>
+      [...quoteResults]
+        // only those that have fetched
+        .filter(
+          (quoteResult) =>
+            Boolean(quoteResult.isFetched) && !quoteResult.isError
+        )
+        // Sort by response time. The fastest and highest quality quote will be first.
+        .sort((a, b) => {
+          // This means the quote is for a basic IBC transfer:
+          // Prefer IBC provider over others since its status source provider
+          // offers a more real time UX compared to other bridge route provider's
+          // status endpoints, which rely on indexing chains and come with a delay.
+          if (a.data?.provider.id === "IBC") return -1;
 
-    const bestQuote = quoteResults_
-      // only those that have fetched
-      .filter(
-        (quoteResult) => Boolean(quoteResult.isFetched) && !quoteResult.isError
-      )
-      // Sort by response time. The fastest and highest quality quote will be first.
-      .sort((a, b) => {
-        // This means the quote is for a basic IBC transfer:
-        // Prefer IBC provider over others since its status source provider
-        // offers a more real time UX compared to other bridge route provider's
-        // status endpoints, which rely on indexing chains and come with a delay.
-        if (a.data?.provider.id === "IBC") return -1;
+          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+            return 1;
+          }
+          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+            return -1;
+          }
+          return 0;
+        })
+        // only those that have returned a result without error
+        .map(({ data }) => data)
+        // only the best quote data
+        .reduce((bestAcc, cur) => {
+          if (!bestAcc) return cur;
+          if (
+            !!cur &&
+            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+          ) {
+            return cur;
+          }
+          return bestAcc;
+        }, undefined),
+    [quoteResults]
+  );
 
-        if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
-          return 1;
-        }
-        if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
-          return -1;
-        }
-        return 0;
-      })
-      // only those that have returned a result without error
-      .map(({ data }) => data)
-      // only the best quote data
-      .reduce((bestAcc, cur) => {
-        if (!bestAcc) return cur;
-        if (
-          !!cur &&
-          bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
-        ) {
-          return cur;
-        }
-        return bestAcc;
-      }, undefined);
+  // If the selected bridge provider is not found in the results, select the best quote provider
+  const isBridgeProviderNotFound = !quoteResults.some(
+    ({ data }) => data?.provider.id === selectedBridgeProvider
+  );
 
-    // If the selected bridge provider is not found in the results, select the best quote provider
-    const isBridgeProviderNotFound = !quoteResults_.some(
-      ({ data }) => data?.provider.id === selectedBridgeProvider
-    );
-
-    if (
-      !!bestQuote &&
-      !isTxPending &&
-      ((bestQuote?.provider.id !== selectedBridgeProvider &&
-        !isBridgeProviderControlledMode) ||
-        isBridgeProviderNotFound)
-    ) {
-      setSelectedBridgeProvider(bestQuote.provider.id);
-    }
-  }, [
-    selectedQuote,
-    quoteResults,
-    selectedBridgeProvider,
-    isBridgeProviderControlledMode,
-    isTxPending,
-  ]);
+  // Selected during render; converges because the next render sees the
+  // selection equal to the best quote's provider, which is in the results.
+  if (
+    !!bestQuote &&
+    !isTxPending &&
+    ((bestQuote.provider.id !== selectedBridgeProvider &&
+      !isBridgeProviderControlledMode) ||
+      isBridgeProviderNotFound)
+  ) {
+    setSelectedBridgeProvider(bestQuote.provider.id);
+  }
 
   // Check if value loss during transfer is too high (Skip bridge specific)
   // Skip returns InsufficientAmountError when USD value difference is too large
@@ -899,7 +908,7 @@ export const useBridgeQuotes = ({
       throw new Error("No EVM chain selected or chain is unsupported");
 
     const publicClient = createPublicClient({
-      transport: getEvmRpcTransport(currentEvmChain),
+      transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
 
@@ -1259,6 +1268,14 @@ export const useBridgeQuotes = ({
         },
       });
     } catch (e) {
+      // The final step was accepted, and its entry advanced at broadcast, but
+      // its result couldn't be confirmed. The tx client already showed the
+      // status-unknown toast, and the entry's tracker settles it.
+      if (e instanceof TxStatusUnknownError) {
+        onTransferProp?.();
+        setTransferInitiated(true);
+        return;
+      }
       // A first tx that definitively failed (an EVM revert, or a Solana tx
       // that errored or expired before landing) moved nothing: the entry
       // persisted at broadcast must not stay "pending" with a Continue that
@@ -1469,10 +1486,9 @@ export const useBridgeQuotes = ({
     // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
     // frozen acknowledged basis — the sign-time guard in `onTransfer` has
     // already ensured the basis is fresh for the quote being signed.
-    const memoFlags = deriveMemoFlags(acknowledgedBasis);
+    const memoFlags = deriveBridgeMemoFlags(acknowledgedBasis);
 
-    return accountStore.signAndBroadcast(
-      fromChain.chainId,
+    return getChainWallet(fromChain.chainId).signAndBroadcast(
       `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
       transactionRequest.msgs,
       "",
@@ -1513,35 +1529,27 @@ export const useBridgeQuotes = ({
           /** Add one since the current transfer is not included in the current index */
           nomicCheckpointIndex = index + 1;
         },
-        onBroadcastFailed: () => setIsBroadcastingTx(false),
+        onBroadcastFailed: (e?: Error) => {
+          // Accepted, but its result couldn't be confirmed: the funds may be
+          // en route, so record the transfer as onFulfill would and let its
+          // status tracker settle it.
+          if (e instanceof TxStatusUnknownError) {
+            trackTransferStatus({
+              // onFulfill's hashes are lowercase too.
+              sendTxHash: e.txHash.toLowerCase(),
+              quote,
+              nomicCheckpointIndex,
+            });
+            onTransferProp?.();
+            setTransferInitiated(true);
+            return;
+          }
+          setIsBroadcastingTx(false);
+        },
         onBroadcasted: () => setIsBroadcastingTx(true),
 
         onFulfill: (tx: DeliverTxResponse) => {
           if (tx.code == null || tx.code === 0) {
-            const queries = queriesStore.get(fromChain.chainId);
-
-            // After succeeding to send token, refresh the balance. Best
-            // effort: `balances` throws on a currency no balance registry
-            // handles (e.g. an `erc20:` currency on Injective), and that must
-            // not stop the transfer from being tracked below.
-            try {
-              const queryBalance = queries.queryBalances
-                // If we get here destination address is defined
-                .getQueryBech32Address(toAddress!)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom ===
-                    availableBalance?.currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
-              }
-            } catch (e) {
-              console.warn("Failed to refresh balance after transfer:", e);
-            }
-
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
@@ -1795,10 +1803,7 @@ export const useBridgeQuotes = ({
     chainType: fromChain?.chainType,
     isEvmWalletConnected,
     isCosmosWalletConnected:
-      fromChain?.chainType === "cosmos"
-        ? (accountStore.getWallet(fromChain.chainId)?.isWalletConnected ??
-          false)
-        : false,
+      fromChain?.chainType === "cosmos" ? isFromCosmosWalletConnected : false,
     phantomAddress,
   });
   const isDepositReady = isDeposit && isFromWalletConnected;

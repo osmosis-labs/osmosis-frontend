@@ -8,9 +8,10 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
-  getEvmRpcTransport,
+  getServerEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
+  redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
@@ -226,8 +227,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           expectedOutput: {
             ...toAsset,
             amount: toAmount,
+            // Squid reports a loss as a positive percentage; the interface
+            // wants a fraction, negative for a loss.
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
+              .neg()
               .toString(),
           },
           fromChain,
@@ -477,7 +481,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: getEvmRpcTransport(evmChain, {
+        transport: getServerEvmRpcTransport(evmChain, {
           timeout: 3_000,
           retryCount: 0,
         }),
@@ -496,7 +500,9 @@ export class SquidBridgeProvider implements BridgeProvider {
       throw new BridgeQuoteError({
         bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
-        message: `Error creating approval Tx: ${e}`,
+        // viem error text includes the request URL, which for a keyed
+        // provider carries the API key.
+        message: redactConfiguredEvmRpcUrls(`Error creating approval Tx: ${e}`),
       });
     }
 

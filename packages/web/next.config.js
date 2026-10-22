@@ -6,6 +6,19 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  experimental: {
+    reactCompiler: true,
+  },
+  env: {
+    // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
+    // the browser routes those chains through /api/evm-rpc. Only the ids are
+    // exposed; the URLs carry API keys and stay server-side.
+    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: Object.keys(process.env)
+      .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
+      .filter((match) => match && process.env[match[0]]?.trim())
+      .map((match) => match?.[1])
+      .join(","),
+  },
   // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
   // so skip both here to save ~40s on each Vercel build.
   eslint: {
@@ -39,7 +52,7 @@ const config = {
       },
     ];
   },
-  webpack(config, { webpack }) {
+  webpack(config, { webpack, isServer }) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
@@ -74,6 +87,8 @@ const config = {
       ...config.resolve,
       alias: {
         ...config.resolve.alias,
+        // Keplr's Starknet key methods are unused by this app.
+        starknet$: path.resolve(__dirname, "etc", "noop", "index.js"),
         libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
         "libsodium-wrappers": path.resolve(
           __dirname,
@@ -107,6 +122,17 @@ const config = {
         path.resolve(__dirname, "etc", "noop", "index.js")
       )
     );
+
+    // The EVM wallet connector SDKs are browser-only; server builds get an empty connector list.
+    // See config/wagmi-connectors.ts.
+    if (isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /config[\\/]wagmi-connectors$/,
+          path.resolve(__dirname, "config", "wagmi-connectors.server.ts")
+        )
+      );
+    }
 
     return config;
   },

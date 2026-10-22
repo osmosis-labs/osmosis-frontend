@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 import { HistoryTransaction } from "~/hooks/use-transaction-history";
+import { transferKey } from "~/stores/transfer-history";
 
 export const useTransactionModal = ({
   transactions,
@@ -14,10 +15,12 @@ export const useTransactionModal = ({
     string | undefined
   >(undefined);
 
-  useEffect(() => {
-    // edge case - Close the slide over when the screen size changes to large desktop, reduces bugginess with transition
+  // edge case - Close the slide over when the screen size changes to large desktop, reduces bugginess with transition
+  const [prevIsLargeDesktop, setPrevIsLargeDesktop] = useState(isLargeDesktop);
+  if (isLargeDesktop !== prevIsLargeDesktop) {
+    setPrevIsLargeDesktop(isLargeDesktop);
     setOpen(false);
-  }, [isLargeDesktop]);
+  }
 
   const onRequestClose = () => {
     setOpen(false);
@@ -29,7 +32,7 @@ export const useTransactionModal = ({
     () =>
       transactions.find(
         (tx) =>
-          (tx.__type === "recentTransfer" ? tx.sendTxHash : tx.hash) ===
+          (tx.__type === "recentTransfer" ? transferKey(tx) : tx.hash) ===
           selectedTransactionHash
       ),
     [transactions, selectedTransactionHash]

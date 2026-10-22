@@ -1,7 +1,6 @@
 import { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { InputBox } from "~/components/input";
@@ -10,8 +9,8 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const LockShares: FunctionComponent<
@@ -22,7 +21,7 @@ export const LockShares: FunctionComponent<
     onLockToken: (duration: Duration, electSuperfluid?: boolean) => void;
     bondDurations?: BondDuration[];
   } & ModalBaseProps
-> = observer((props) => {
+> = (props) => {
   const {
     poolId,
     amountConfig: config,
@@ -31,10 +30,8 @@ export const LockShares: FunctionComponent<
   } = props;
   const { t } = useTranslation();
 
-  const { accountStore } = useStore();
-
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-  const address = account?.address ?? "";
+  const { address: walletAddress, txTypeInProgress } = useWallet();
+  const address = walletAddress ?? "";
 
   const { data: bondDurations_ } =
     api.edge.pools.getSharePoolBondDurations.useQuery(
@@ -88,6 +85,7 @@ export const LockShares: FunctionComponent<
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
     if (isSuperfluid) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- pre-selects superfluid once the pool turns out to be superfluid; the user can opt out
       setElectSuperfluid(true);
     }
   }, [isSuperfluid]);
@@ -112,9 +110,7 @@ export const LockShares: FunctionComponent<
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
-        Boolean(config.error) ||
-        !selectedDuration ||
-        Boolean(account?.txTypeInProgress),
+        Boolean(config.error) || !selectedDuration || Boolean(txTypeInProgress),
       onClick: () => {
         if (selectedDuration) {
           onLockToken(
@@ -138,6 +134,7 @@ export const LockShares: FunctionComponent<
 
   // auto select the gauge if there's one
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-selects the duration when only one loads; the selection stays user state
     if (bondDurations.length === 1) setSelectedDurationIndex(0);
   }, [bondDurations]);
 
@@ -234,7 +231,7 @@ export const LockShares: FunctionComponent<
       </div>
     </ModalBase>
   );
-});
+};
 
 const LockupItem: FunctionComponent<{
   duration: string;

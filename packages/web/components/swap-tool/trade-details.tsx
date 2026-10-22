@@ -1,22 +1,23 @@
 import { Disclosure } from "@headlessui/react";
-import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { EmptyAmountError } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { priceImpactLoss } from "~/components/loss-acknowledgement";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
+import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   UseDisclosureReturn,
-  usePreviousWhen,
+  useLatestWhen,
   useSlippageConfig,
   useTranslation,
 } from "~/hooks";
@@ -35,7 +36,7 @@ interface TradeDetailsProps {
   tab?: "buy" | "sell";
 }
 
-export const TradeDetails = observer(
+export const TradeDetails = memo(
   ({
     swapState,
     inPriceFetching,
@@ -64,10 +65,23 @@ export const TradeDetails = observer(
 
     const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
+    // Same constant and same comparison as the acknowledgement gate, so the red
+    // icon and the checkbox can never disagree about what counts as high impact
+    // — including at the boundary, which a `lt(gate.neg())` form would get
+    // wrong by one tick.
     const isPriceImpactHigh = useMemo(
-      () => priceImpact?.toDec().lt(new Dec(-0.1)),
+      () =>
+        priceImpact
+          ? priceImpactLoss(priceImpact.toDec()).gte(HighPriceImpactGate)
+          : undefined,
       [priceImpact]
     );
+
+    // Green is reserved for an impact genuinely in the user's favour. A
+    // negative impact under the gate is neutral, not green: colouring a loss
+    // the same as a gain reads as an endorsement of it, and did so directly
+    // beneath a rust output-difference figure describing the same trade.
+    const isPriceImpactPositive = priceImpact?.toDec().isPositive() ?? false;
 
     const limitTotalFees = useMemo(() => {
       if (!makerFee || makerFee.isZero()) return;
@@ -202,7 +216,10 @@ export const TradeDetails = observer(
                             <span
                               className={classNames({
                                 "text-rust-400": isPriceImpactHigh,
-                                "text-bullish-400": !isPriceImpactHigh,
+                                "text-bullish-400":
+                                  !isPriceImpactHigh && isPriceImpactPositive,
+                                "text-osmoverse-100":
+                                  !isPriceImpactHigh && !isPriceImpactPositive,
                               })}
                             >
                               {formatPretty(priceImpact ?? new Dec(0))}
@@ -492,7 +509,7 @@ function RoutesTaken({
   }) {
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
-  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
+  const latestSplitRef = useLatestWhen(split, (s) => s.length > 0);
 
   const displayedSplit = isLoading ? (latestSplitRef ?? split) : split;
 

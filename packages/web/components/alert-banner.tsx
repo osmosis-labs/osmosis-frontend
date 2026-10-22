@@ -5,7 +5,7 @@ import { CustomClasses } from "./types";
 
 export const AlertBanner: React.FC<
   {
-    image?: JSX.Element;
+    image?: React.JSX.Element;
     title: string;
     subtitle: string;
   } & CustomClasses

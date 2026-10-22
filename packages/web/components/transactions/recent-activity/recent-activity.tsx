@@ -1,5 +1,4 @@
-import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, memo } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
@@ -10,6 +9,7 @@ import { useTransactionModal } from "~/components/transactions/use-transaction-d
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { transferKey } from "~/stores/transfer-history";
 
 const ACTIVITY_LIMIT = 5;
 
@@ -27,7 +27,7 @@ const RecentActivitySkeleton = () => {
 };
 
 // v1 includes top 5 transactions from transaction history
-export const RecentActivity: FunctionComponent = observer(() => {
+export const RecentActivity: FunctionComponent = memo(() => {
   const { t } = useTranslation();
 
   const { transactions, isLoading } = useTransactionHistory();
@@ -105,14 +105,14 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
             if (transaction.__type === "recentTransfer") {
               const isSelected =
-                selectedTransactionHash === transaction.sendTxHash;
+                selectedTransactionHash === transferKey(transaction);
               return (
                 <TransactionTransferRow
-                  key={transaction.sendTxHash}
+                  key={transferKey(transaction)}
                   size="sm"
                   transaction={transaction}
                   onClick={() => {
-                    setSelectedTransactionHash(transaction.sendTxHash);
+                    setSelectedTransactionHash(transferKey(transaction));
 
                     // delay to ensure the slide over transitions smoothly
                     if (!open) {
