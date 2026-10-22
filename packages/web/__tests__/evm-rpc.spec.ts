@@ -2,7 +2,7 @@
 import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import evmRpcHandler from "~/pages/api/evm-rpc";
+import { evmRpcHandler } from "~/server/api-handlers/evm-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
 const LD_CLIENT_ID = "ld-client-id";

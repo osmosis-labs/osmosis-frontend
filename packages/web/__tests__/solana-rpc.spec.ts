@@ -2,7 +2,7 @@
 import { delay, http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import solanaRpcHandler from "~/pages/api/solana-rpc";
+import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
