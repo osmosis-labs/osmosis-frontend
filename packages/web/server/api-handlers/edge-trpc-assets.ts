@@ -2,7 +2,7 @@ import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { edgeRouter } from "~/server/api/edge-router";
-import { createEdgeTrpcContext } from "~/server/api/trpc";
+import { createTrpcContext } from "~/server/api/trpc";
 import { getAssetsCdnCacheControl } from "~/utils/trpc-cdn-cache";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
@@ -15,7 +15,7 @@ export async function edgeTrpcAssetsHandler(req: Request) {
     endpoint: constructEdgeUrlPathname("assets"),
     router: edgeRouter,
     req,
-    createContext: createEdgeTrpcContext,
+    createContext: createTrpcContext,
     responseMeta: ({ paths, type, errors, data, eagerGeneration }) => {
       const cacheControl = getAssetsCdnCacheControl({
         url: req.url,
