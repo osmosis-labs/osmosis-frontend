@@ -203,6 +203,7 @@ const webConfig = [
       "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
       "packages/web/playwright.config.ts",
       "packages/web/open-next.config.ts",
+      "packages/web/worker.ts",
       "packages/web/localizations/dayjs-locale-*.js",
     ],
     rules: { "import/no-default-export": "off" },
@@ -215,6 +216,8 @@ export default [
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/.open-next/**",
+      "**/.wrangler/**",
       "**/build/**",
       "**/dist/**",
       "packages/web/e2e/keplr-extension/**",
