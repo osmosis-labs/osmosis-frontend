@@ -1,0 +1,52 @@
+name: Deploy Cloudflare router
+
+# Deploys osmosis-frontend-router (packages/web/router) when a production release changes it.
+# The deploy does not attach a route and keeps CF_PERCENT from router/wrangler.jsonc.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "packages/web/router/**"
+      - ".github/workflows/deploy-cf-router.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cf-router
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    # Holds CLOUDFLARE_API_TOKEN (Workers Scripts: Edit) and CLOUDFLARE_ACCOUNT_ID; add required
+    # reviewers there to approve each deploy.
+    environment: cloudflare-production
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-24.x
+
+      - name: Install Dependencies
+        run: corepack yarn install --immutable
+
+      - name: Deploy router
+        run: corepack yarn workspace @osmosis-labs/web cf:router:deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

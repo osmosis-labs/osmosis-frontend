@@ -35,6 +35,11 @@ yarn workspace @osmosis-labs/web cf:router:dry-run  # bundle and bindings, no up
 yarn workspace @osmosis-labs/web cf:router:deploy   # uploads the router; no route
 ```
 
+CI deploys the router on pushes to `master` that change `packages/web/router/`
+(`.github/workflows/deploy-cf-router.yml`, also runnable by hand from `master`). It
+needs `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit) and `CLOUDFLARE_ACCOUNT_ID` in the
+`cloudflare-production` GitHub environment.
+
 Deploying does not attach a route; that is a separate, deliberate step in Cloudflare.
 `VERCEL_ORIGIN` sends Vercel traffic to another host, for running the router on a test
 hostname (set it to `https://app.osmosis.zone` there). Leave it unset on the
