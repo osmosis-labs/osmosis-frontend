@@ -25,6 +25,7 @@ import {
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
+  sortAssetSearchResults,
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
@@ -43,6 +44,11 @@ import { UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
   CursorPaginationSchema.merge(AssetFilterSchema);
+
+/** Symbols (`coinDenom`) the user has watchlisted; ranks them up in search results. */
+const WatchListDenomsSchema = z.object({
+  watchListDenoms: z.array(z.string()).optional(),
+});
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -69,12 +75,14 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          // Optional poolId to filter assets by pool
-          poolId: z.string().optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            // Optional poolId to filter assets by pool
+            poolId: z.string().optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       async ({
@@ -87,12 +95,13 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
           categories,
           poolId,
+          watchListDenoms,
         },
         ctx,
       }) =>
         maybeCachePaginatedItems({
-          getFreshItems: () =>
-            mapGetAssetsWithUserBalances({
+          getFreshItems: async () => {
+            const assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -101,7 +110,12 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
               categories,
               poolId,
-            }),
+            });
+
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
+              : assets;
+          },
           cacheKey: JSON.stringify({
             search,
             userOsmoAddress,
@@ -109,6 +123,8 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             categories,
             poolId,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,
@@ -339,6 +355,11 @@ export const assetsRouter = createTRPCRouter({
               // user sorting
 
               return sort(assets, sortInput.keyPath, sortInput.direction);
+            } else if (search) {
+              return sortAssetSearchResults(assets, {
+                search,
+                watchListDenoms,
+              });
             } else {
               // default sorting, maybe with watchlist
 
@@ -415,15 +436,17 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          sort: createSortSchema([
-            "currentPrice",
-            "priceChange24h",
-            "usdValue",
-          ] as const).optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            sort: createSortSchema([
+              "currentPrice",
+              "priceChange24h",
+              "usdValue",
+            ] as const).optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -436,6 +459,7 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
           includePreview,
+          watchListDenoms,
         },
         ctx,
       }) => {
@@ -481,6 +505,8 @@ export const assetsRouter = createTRPCRouter({
           sort: sortInput,
           categories,
           includePreview,
+          // only affects ordering while searching without a column sort
+          watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
         });
 
         // Sorting by a price field needs every row priced first.
@@ -507,8 +533,10 @@ export const assetsRouter = createTRPCRouter({
         return maybeCachePaginatedItems({
           getFreshItems: async () => {
             const assets = await getUserAssets();
-            return sortInput
-              ? sort(assets, sortInput.keyPath, sortInput.direction)
+            if (sortInput)
+              return sort(assets, sortInput.keyPath, sortInput.direction);
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
               : assets;
           },
           cacheKey,
@@ -794,6 +822,7 @@ export const assetsRouter = createTRPCRouter({
             type: z.union([z.literal("deposit"), z.literal("withdraw")]),
           })
         )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -807,6 +836,7 @@ export const assetsRouter = createTRPCRouter({
           prioritizedDenoms,
           deprioritizedDenoms,
           type,
+          watchListDenoms,
         },
         ctx,
       }) =>
@@ -863,12 +893,16 @@ export const assetsRouter = createTRPCRouter({
               )
             );
 
-            // avoid sorting while searching
+            // rank search results the same way as other asset searches
             if (search)
-              return marketAssets.filter(({ liquidity, isVerified }) =>
-                liquidity instanceof PricePretty
-                  ? liquidity.toDec().isPositive()
-                  : liquidity > 0 || isVerified
+              return sortAssetSearchResults(
+                marketAssets.filter(
+                  ({ liquidity, isVerified }) =>
+                    (liquidity instanceof PricePretty
+                      ? liquidity.toDec().isPositive()
+                      : liquidity > 0) || isVerified
+                ),
+                { search, watchListDenoms }
               );
 
             // Sort by volume 24h desc
@@ -922,6 +956,8 @@ export const assetsRouter = createTRPCRouter({
             prioritizedDenoms,
             deprioritizedDenoms,
             type,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,
