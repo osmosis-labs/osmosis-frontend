@@ -1,30 +1,52 @@
-import type { MainWalletBase } from "@cosmos-kit/core";
-import { WalletStatus } from "@cosmos-kit/core";
+import type {
+  AssetList as RegistryAssetList,
+  Chain as RegistryChain,
+} from "@chain-registry/types";
+import {
+  type ChainWalletBase,
+  type MainWalletBase,
+  State,
+  type WalletConnectOptions,
+  WalletManager,
+  WalletStatus,
+} from "@cosmos-kit/core";
 import { Hash } from "@keplr-wallet/crypto/build/hash";
 import {
+  type AccountStoreWallet,
+  canSignOneClick,
   type ChainBoundTxArguments,
+  CosmosKitAccountsLocalStorageKey,
+  type CosmosRegistryWallet,
   createWalletTxClient,
+  getOneClickExtensionOptions,
+  getWalletEndpoints,
+  HasUsedOneClickTradingLocalStorageKey,
+  logger,
   type OneClickTradingInfo,
+  OneClickTradingLocalStorageKey,
+  signOneClick,
   type TransactionPreparationContext,
+  UseOneClickTradingLocalStorageKey,
   type WalletTxClient,
   type WalletTxDependencies,
   type WalletTxTransport,
 } from "@osmosis-labs/tx";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { Currency } from "@osmosis-labs/unit";
-import { apiClient } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  type KVStore,
+  makeLocalStorageKVStore,
+} from "@osmosis-labs/utils";
 import axios from "axios";
-import { runInAction } from "mobx";
 import { createStore } from "zustand/vanilla";
 
 import { findOsmosisCurrency, getChainInfo } from "~/config/chain";
-import type { RootStore } from "~/stores/root";
 
-type LegacyAccountStore = RootStore["accountStore"];
-type Wallet = ReturnType<LegacyAccountStore["getWallet"]>;
-
+type Wallet = AccountStoreWallet;
 export type WalletSnapshot = {
-  /** Temporary compatibility handle for injected transaction methods. */
-  wallet: Wallet;
+  /** Cosmos Kit handle for imperative actions; read snapshot fields during render. */
+  wallet: Wallet | undefined;
   address: string | undefined;
   walletStatus: WalletStatus | undefined;
   isWalletConnected: boolean;
@@ -35,10 +57,15 @@ export type WalletSnapshot = {
   useOneClickTrading: boolean;
   hasUsedOneClickTrading: boolean;
   isStateHydrated: boolean;
-  connect: (walletName: string, force?: boolean) => Promise<void>;
+  connect: (walletName?: string, force?: boolean) => Promise<void>;
   disconnect: () => Promise<void>;
   supportsChain: (chainId: string) => Promise<boolean>;
-  matchError: LegacyAccountStore["matchError"];
+  matchError: (error: Error | string) => Error;
+  setOneClickTradingInfo: WalletRuntime["setOneClickTradingInfo"];
+  getOneClickTradingInfo: WalletRuntime["getOneClickTradingInfo"];
+  setShouldUseOneClickTrading: WalletRuntime["setShouldUseOneClickTrading"];
+  shouldBeSignedWithOneClickTrading: WalletRuntime["shouldBeSignedWithOneClickTrading"];
+
   signAndBroadcast: (
     ...args: ChainBoundTxArguments
   ) => ReturnType<WalletTxClient["signAndBroadcast"]>;
@@ -56,7 +83,22 @@ export type WalletSnapshot = {
   getChainWallet: (chainId: string) => WalletSnapshot;
 };
 
-type WalletState = { chains: Record<string, WalletSnapshot> };
+type WalletState = {
+  chains: Record<string, WalletSnapshot>;
+  progress: Record<string, string>;
+  oneClickTradingInfo: OneClickTradingInfo | null;
+  useOneClickTrading: boolean;
+  hasUsedOneClickTrading: boolean;
+  isStateHydrated: boolean;
+};
+export type WalletRuntimeConfig = {
+  chains: (Chain & { features?: string[] })[];
+  assets: AssetList[];
+  osmosisChainId: string;
+  wallets?: MainWalletBase[];
+  walletConnectOptions?: WalletConnectOptions;
+  storage?: KVStore;
+};
 
 type WalletRuntimeOptions = WalletTxDependencies["options"] & {
   /** Resolve chain currencies, including assets registered at runtime. */
@@ -69,19 +111,19 @@ function equalSnapshot(a: WalletSnapshot, b: WalletSnapshot) {
   );
 }
 
-/** Provider-owned Cosmos Kit runtime. Zustand owns the snapshots consumed by
- * React; this adapter keeps legacy signing/package state compatible until the
- * transaction and session implementations are extracted. */
+/** Provider-owned Cosmos Kit lifecycle and Zustand state. No legacy stores. */
 export class WalletRuntime {
-  readonly store = createStore<WalletState>(() => ({ chains: {} }));
-  private disposeAdapter: (() => void) | undefined;
-  private subscribers = 0;
+  readonly store = createStore<WalletState>(() => ({
+    chains: {},
+    progress: {},
+    oneClickTradingInfo: null,
+    useOneClickTrading: false,
+    hasUsedOneClickTrading: false,
+    isStateHydrated: false,
+  }));
   private publishing = false;
   private mountVersion = 0;
-  private readonly pendingMounts = new WeakMap<
-    LegacyAccountStore["walletManager"],
-    Promise<void>
-  >();
+  private readonly pendingMounts = new WeakMap<WalletManager, Promise<void>>();
   private readonly actions = new Map<
     string,
     Pick<
@@ -94,56 +136,453 @@ export class WalletRuntime {
       | "estimateFee"
       | "simulatePositionMigration"
       | "transactionContext"
+      | "setOneClickTradingInfo"
+      | "getOneClickTradingInfo"
+      | "setShouldUseOneClickTrading"
+      | "shouldBeSignedWithOneClickTrading"
     >
   >();
-
+  private manager: WalletManager;
+  private unsubscribeKeystoreChange?: () => void;
+  private wallets: MainWalletBase[];
+  private readonly storage: KVStore;
+  private sessionRevision = 0;
+  private preferenceRevision = 0;
+  private persistence = Promise.resolve();
+  private readonly hydration: Promise<void>;
   readonly transactions: WalletTxClient;
 
   constructor(
-    private readonly legacy: LegacyAccountStore,
+    readonly config: WalletRuntimeConfig,
     private readonly options?: WalletRuntimeOptions,
     transport?: WalletTxTransport
   ) {
+    this.storage = config.storage ?? makeLocalStorageKVStore("account_store");
+    this.wallets = config.wallets ?? [];
+    this.manager = this.createManager();
     this.transactions = createWalletTxClient({
-      chains: legacy.chains,
-      getWallet: (chainId) => legacy.getWallet(chainId),
+      chains: config.chains,
+      getWallet: this.getWallet,
       transport: transport ?? {
         post: (url, data) => axios.post(url, data),
         get: (url, options) => axios.get(url, options),
         request: apiClient,
       },
       hash: (bytes) => Hash.sha256(bytes),
-      setTxTypeInProgress: (chainId, type) =>
-        runInAction(() => {
-          legacy.txTypeInProgressByChain.set(chainId, type);
-        }),
-      oneClick: legacy.oneClickSigningAdapter,
+      setTxTypeInProgress: this.setTxTypeInProgress,
+      oneClick: {
+        getInfo: this.getOneClickTradingInfo,
+        shouldSign: (input) => this.shouldBeSignedWithOneClickTrading(input),
+        extensionOptions: getOneClickExtensionOptions,
+        sign: async (input) => {
+          const registry = await this.transactions.getRegistry();
+          const info = input.oneClickTradingInfo;
+          return signOneClick(input, {
+            chains: config.chains,
+            registry,
+            oneClickTradingInfo: info,
+            osmosisChainId: config.osmosisChainId,
+            isSessionCurrent: () =>
+              this.store.getState().oneClickTradingInfo === info &&
+              this.store.getState().useOneClickTrading,
+          });
+        },
+      },
       options,
+    });
+    this.hydration = this.readSession();
+  }
+
+  // Another tab may start or end the session. Read it again so this tab stops
+  // decorating or signing with a session that no longer exists.
+  private listenForOtherTabs(listen: boolean) {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("storage", this.onStorage);
+    if (listen) window.addEventListener("storage", this.onStorage);
+  }
+
+  private readonly onStorage = (event: StorageEvent) => {
+    const prefix = this.storage.prefix() + "/";
+    if (
+      event.key === null ||
+      [
+        OneClickTradingLocalStorageKey,
+        UseOneClickTradingLocalStorageKey,
+        HasUsedOneClickTradingLocalStorageKey,
+      ].some((key) => event.key === prefix + key)
+    ) {
+      void this.readSession();
+    }
+  };
+
+  private createManager() {
+    const chains = this.config.chains.map((chain) => ({
+      ...chain,
+      chain_type: "cosmos",
+      network_type: chain.networkType,
+      pretty_name: chain.prettyName,
+      bech32_prefix: chain.bech32Prefix,
+    })) as RegistryChain[];
+    const assets = this.config.assets.map((list) => ({
+      ...list,
+      assets: list.assets.map((asset) => ({
+        ...asset,
+        base: asset.sourceDenom,
+        denom_units: [
+          { denom: asset.sourceDenom, exponent: 0 },
+          { denom: asset.symbol, exponent: asset.decimals },
+        ],
+        display: asset.symbol,
+      })),
+    })) as unknown as RegistryAssetList[];
+    const names = new Set(assets.map(({ chain_name }) => chain_name));
+    for (const { chain_name } of chains)
+      if (!names.has(chain_name)) assets.push({ chain_name, assets: [] });
+    const manager = new WalletManager(
+      chains,
+      this.wallets,
+      logger,
+      true,
+      // Keystore change events are handled by `subscribeKeystoreChange`.
+      false,
+      ["https://daodao.zone", "https://dao.daodao.zone"],
+      assets,
+      "icns",
+      this.config.walletConnectOptions,
+      undefined,
+      { endpoints: getWalletEndpoints(chains) },
+      {
+        duration: 2 ** 31 - 1,
+        callback: () => {
+          if (typeof window !== "undefined")
+            window.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+          void this.setOneClickTradingInfo(undefined);
+        },
+      }
+    );
+    const refresh = () => this.publish();
+    manager.setActions({
+      viewWalletRepo: refresh,
+      data: refresh,
+      state: refresh,
+      message: refresh,
+    });
+    for (const repo of manager.walletRepos) {
+      repo.setActions({ viewWalletRepo: refresh });
+      for (const wallet of repo.wallets) {
+        wallet.updateCallbacks({
+          ...wallet.callbacks,
+          afterDisconnect: async () => {
+            // Remove the session when the Osmosis wallet disconnects. Without
+            // one there is nothing to clear, and clearing would mark one-click
+            // trading as used.
+            if (
+              wallet.chain.chain_id === this.config.osmosisChainId &&
+              (await this.getOneClickTradingInfo())
+            )
+              await this.setOneClickTradingInfo(undefined);
+          },
+        });
+        wallet.setActions({ data: refresh, state: refresh, message: refresh });
+      }
+    }
+    return manager;
+  }
+
+  /**
+   * Re-fetch the account of every connected chain wallet when the user
+   * switches accounts in the wallet extension.
+   *
+   * cosmos-kit's own handler is not used: it bails out unless the main wallet
+   * is connected, which never happens when chain wallets connect without sync
+   * (as the app does), and when it does run it connects every active chain
+   * wallet, prompting for chains the user never approved.
+   */
+  private subscribeKeystoreChange(walletManager: WalletManager) {
+    this.unsubscribeKeystoreChange?.();
+    this.unsubscribeKeystoreChange = undefined;
+    if (typeof window === "undefined") return;
+
+    let isSubscribed = true;
+    // Chain wallets with a refresh in flight, flagged when another event
+    // arrives meanwhile so the account is read again after it.
+    const refreshing = new Map<ChainWalletBase, { rerun: boolean }>();
+    // Chain wallets whose last refresh failed. They stay eligible so a later
+    // event can recover them, until a disconnect resets their state.
+    const failed = new Set<ChainWalletBase>();
+
+    const isEligible = (chainWallet: ChainWalletBase) => {
+      if (chainWallet.isWalletConnected) return true;
+      if (failed.has(chainWallet) && chainWallet.state === State.Error) {
+        return true;
+      }
+      failed.delete(chainWallet);
+      return false;
+    };
+
+    const refreshAccount = async (chainWallet: ChainWalletBase) => {
+      const inFlight = refreshing.get(chainWallet);
+      if (inFlight) {
+        inFlight.rerun = true;
+        return;
+      }
+
+      const run = { rerun: false };
+      refreshing.set(chainWallet, run);
+      try {
+        do {
+          run.rerun = false;
+          // A disconnect clears the account and a reconnect replaces it, so an
+          // unchanged object means the connection is the one this read began on.
+          const accountBefore = chainWallet.data;
+          // Drop the result if it is superseded, or the wallet was disconnected,
+          // reconnected or the manager rebuilt while it was being read.
+          const isStale = () =>
+            run.rerun ||
+            !isSubscribed ||
+            chainWallet.data !== accountBefore ||
+            !isEligible(chainWallet);
+          try {
+            if (!chainWallet.client) throw new Error("Wallet client missing");
+            const account = await chainWallet.client.getSimpleAccount(
+              chainWallet.chainId
+            );
+            if (isStale()) continue;
+            failed.delete(chainWallet);
+            chainWallet.setData(account);
+            chainWallet.setMessage(undefined);
+            chainWallet.setState(State.Done);
+          } catch (e) {
+            if (isStale()) continue;
+            logger.error(
+              `Failed to refresh ${chainWallet.walletName} account on ${chainWallet.chainName}`,
+              e
+            );
+            failed.add(chainWallet);
+            try {
+              chainWallet.setError(e instanceof Error ? e : String(e));
+            } catch {
+              // Rethrown since the manager is created with `throwErrors`.
+            }
+          }
+        } while (run.rerun && isSubscribed);
+      } finally {
+        refreshing.delete(chainWallet);
+      }
+    };
+
+    const listeners = walletManager.mainWallets.flatMap((mainWallet) => {
+      const onKeystoreChange = () => {
+        mainWallet
+          .getChainWalletList(false)
+          .filter(isEligible)
+          .forEach((chainWallet) => {
+            refreshAccount(chainWallet);
+          });
+      };
+
+      return (mainWallet.walletInfo.connectEventNamesOnWindow ?? []).map(
+        (eventName) => {
+          window.addEventListener(eventName, onKeystoreChange);
+          return () => window.removeEventListener(eventName, onKeystoreChange);
+        }
+      );
+    });
+
+    this.unsubscribeKeystoreChange = () => {
+      isSubscribed = false;
+      listeners.forEach((unsubscribe) => unsubscribe());
+    };
+  }
+
+  get walletManager() {
+    return this.manager;
+  }
+  get mainWallets() {
+    return this.manager.mainWallets;
+  }
+
+  getWalletRepo = (chainId: string) => {
+    const repo = this.manager.walletRepos.find(
+      (repo) =>
+        repo.chainName === chainId ||
+        repo.chainRecord.chain?.chain_id === chainId
+    );
+    if (!repo) throw new Error(`Chain ${chainId} is not provided.`);
+    repo.activate();
+    return repo;
+  };
+
+  /** Cosmos Kit handle for transaction dependencies and imperative UI actions. */
+  getWallet = (chainId: string): Wallet | undefined => {
+    const wallet = this.getWalletRepo(chainId).current as Wallet | undefined;
+    if (!wallet) return undefined;
+    wallet.txTypeInProgress = this.store.getState().progress[chainId] ?? "";
+    wallet.isReadyToSendTx =
+      wallet.walletStatus === WalletStatus.Connected && Boolean(wallet.address);
+    wallet.supportsChain =
+      (wallet.walletInfo as CosmosRegistryWallet)?.supportsChain ??
+      (async () => true);
+    wallet.activate();
+    return wallet;
+  };
+
+  setTxTypeInProgress = (chainId: string, type: string) => {
+    this.store.setState((state) => ({
+      progress: { ...state.progress, [chainId]: type },
+    }));
+    this.publish();
+  };
+
+  private updateSession(
+    patch: Partial<
+      Pick<
+        WalletState,
+        | "oneClickTradingInfo"
+        | "useOneClickTrading"
+        | "hasUsedOneClickTrading"
+        | "isStateHydrated"
+      >
+    >
+  ) {
+    this.store.setState(patch);
+    this.publish();
+  }
+
+  /** Never rejects: an unreadable or malformed record reads as no session. */
+  private async readSession() {
+    const sessionRevision = this.sessionRevision;
+    const preferenceRevision = this.preferenceRevision;
+    let info: OneClickTradingInfo | undefined;
+    let enabled: boolean | undefined;
+    let used: boolean | undefined;
+    try {
+      [info, enabled, used] = await Promise.all([
+        this.storage.get<OneClickTradingInfo>(OneClickTradingLocalStorageKey),
+        this.storage.get<boolean>(UseOneClickTradingLocalStorageKey),
+        this.storage.get<boolean>(HasUsedOneClickTradingLocalStorageKey),
+      ]);
+    } catch (e) {
+      // Blocked storage or corrupt JSON must not leave one-click state
+      // loading forever. The current state (the defaults on first read)
+      // stands until the next write replaces it.
+      console.error("Failed to read one-click trading state", e);
+      this.updateSession({ isStateHydrated: true });
+      return;
+    }
+    // A record without the fields the session UI reads would crash it, so it
+    // reads as no session.
+    if (info && !isWellFormedSession(info)) info = undefined;
+    // Keep the current object when the stored session is unchanged, so a
+    // re-read for another key does not invalidate a signature in progress.
+    const current = this.store.getState().oneClickTradingInfo;
+    if (current && info && JSON.stringify(current) === JSON.stringify(info)) {
+      info = current;
+    }
+    this.updateSession({
+      isStateHydrated: true,
+      ...(sessionRevision === this.sessionRevision
+        ? {
+            oneClickTradingInfo: info ?? null,
+            hasUsedOneClickTrading: Boolean(used),
+          }
+        : {}),
+      ...(preferenceRevision === this.preferenceRevision &&
+      sessionRevision === this.sessionRevision
+        ? {
+            useOneClickTrading: Boolean(
+              info && enabled && isSessionUnexpired(info)
+            ),
+          }
+        : {}),
     });
   }
 
+  private persist(write: () => Promise<void>) {
+    const pending = this.persistence.then(write);
+    this.persistence = pending.catch(() => undefined);
+    return pending;
+  }
+
+  getOneClickTradingInfo = async () => {
+    await this.hydration;
+    return this.store.getState().oneClickTradingInfo ?? undefined;
+  };
+
+  setOneClickTradingInfo = async (info: OneClickTradingInfo | undefined) => {
+    this.sessionRevision++;
+    await this.persist(async () => {
+      await this.storage.set(HasUsedOneClickTradingLocalStorageKey, true);
+      await this.storage.set(OneClickTradingLocalStorageKey, info ?? null);
+      this.updateSession({
+        oneClickTradingInfo: info ?? null,
+        hasUsedOneClickTrading: true,
+      });
+    });
+  };
+
+  setShouldUseOneClickTrading = async ({
+    nextValue,
+  }: {
+    nextValue: boolean;
+  }) => {
+    this.preferenceRevision++;
+    await this.persist(async () => {
+      await this.storage.set(UseOneClickTradingLocalStorageKey, nextValue);
+      this.updateSession({ useOneClickTrading: nextValue });
+    });
+  };
+
+  shouldBeSignedWithOneClickTrading = async ({
+    messages,
+    chainId = this.config.osmosisChainId,
+  }: {
+    messages: Parameters<typeof canSignOneClick>[0]["messages"];
+    chainId?: string;
+  }) => {
+    await this.hydration;
+    const state = this.store.getState();
+    return canSignOneClick({
+      info: state.oneClickTradingInfo,
+      enabled: state.useOneClickTrading,
+      address: this.getWallet(chainId)?.address,
+      chainId,
+      osmosisChainId: this.config.osmosisChainId,
+      messages,
+    });
+  };
   private read(chainId: string): WalletSnapshot {
-    const wallet = this.legacy.getWallet(chainId);
+    const wallet = this.getWallet(chainId);
     let actions = this.actions.get(chainId);
     if (!actions) {
       const runtime = this;
       actions = {
         connect: async (walletName, force = false) => {
-          await this.legacy.getWalletRepo(chainId).connect(walletName, force);
+          await this.getWalletRepo(chainId).connect(walletName, force);
         },
         disconnect: async () => {
-          await this.legacy.getWallet(chainId)?.disconnect(true);
+          await this.getWallet(chainId)?.disconnect(true);
         },
         supportsChain: async (targetChainId) => {
-          const connected = this.legacy.getWallet(this.legacy.osmosisChainId);
+          const connected = this.getWallet(this.config.osmosisChainId);
           if (!connected?.isWalletConnected) return false;
           return connected.supportsChain(targetChainId);
         },
-        matchError: (error) => this.legacy.matchError(error),
+        matchError: (error) => {
+          const message = typeof error === "string" ? error : error.message;
+          const info = this.getWallet(this.config.osmosisChainId)?.walletInfo;
+          const matched = info?.matchError?.(message) ?? message;
+          return typeof matched === "string" ? new Error(matched) : matched;
+        },
+        setOneClickTradingInfo: this.setOneClickTradingInfo,
+        getOneClickTradingInfo: this.getOneClickTradingInfo,
+        setShouldUseOneClickTrading: this.setShouldUseOneClickTrading,
+        shouldBeSignedWithOneClickTrading: (input) =>
+          this.shouldBeSignedWithOneClickTrading({ ...input, chainId }),
         signAndBroadcast: (...args) =>
           this.transactions.signAndBroadcast(chainId, ...args),
         estimateFee: (input) => {
-          const wallet = this.legacy.getWallet(chainId);
+          const wallet = this.getWallet(chainId);
           if (!wallet)
             throw new Error(`Wallet for chain ${chainId} is not provided.`);
           return this.transactions.estimateFee({ ...input, wallet });
@@ -153,16 +592,14 @@ export class WalletRuntime {
             ...input,
             chainId,
             bech32Address:
-              input.bech32Address ??
-              this.legacy.getWallet(chainId)?.address ??
-              "",
+              input.bech32Address ?? this.getWallet(chainId)?.address ?? "",
           }),
         transactionContext: {
           get address() {
-            return runtime.legacy.getWallet(chainId)?.address ?? "";
+            return runtime.getWallet(chainId)?.address ?? "";
           },
           chainId,
-          chains: this.legacy.chains,
+          chains: this.config.chains,
           findCurrency: (denom) =>
             this.options?.findCurrency
               ? this.options.findCurrency(chainId, denom)
@@ -182,12 +619,12 @@ export class WalletRuntime {
       walletStatus: wallet?.walletStatus,
       isWalletConnected: Boolean(wallet?.isWalletConnected),
       isReadyToSendTx: Boolean(wallet?.isReadyToSendTx),
-      txTypeInProgress: this.legacy.txTypeInProgressByChain.get(chainId) ?? "",
+      txTypeInProgress: this.store.getState().progress[chainId] ?? "",
       message: wallet?.message,
-      oneClickTradingInfo: this.legacy.oneClickTradingInfo,
-      useOneClickTrading: this.legacy.useOneClickTrading,
-      hasUsedOneClickTrading: this.legacy.hasUsedOneClickTrading,
-      isStateHydrated: this.legacy.isStateHydrated,
+      oneClickTradingInfo: this.store.getState().oneClickTradingInfo,
+      useOneClickTrading: this.store.getState().useOneClickTrading,
+      hasUsedOneClickTrading: this.store.getState().hasUsedOneClickTrading,
+      isStateHydrated: this.store.getState().isStateHydrated,
       getChainWallet: this.getSnapshot,
       ...actions,
     };
@@ -196,7 +633,7 @@ export class WalletRuntime {
   getSnapshot = (chainId: string) => {
     // Before subscription (including SSR), refresh synchronously. Subscribed
     // renders only read Zustand; Cosmos Kit events update it through the adapter.
-    if (!this.store.getState().chains[chainId] || !this.disposeAdapter) {
+    if (!this.store.getState().chains[chainId]) {
       this.publish(chainId);
     }
     return this.store.getState().chains[chainId];
@@ -222,59 +659,36 @@ export class WalletRuntime {
     }
   };
 
-  subscribe = (listener: () => void) => {
-    if (this.subscribers++ === 0) {
-      this.disposeAdapter = this.legacy.subscribeState(() => this.publish());
-    }
-    const unsubscribe = this.store.subscribe(listener);
-    // Cover events between render and subscription, and remount after cleanup.
-    this.publish();
-    return () => {
-      unsubscribe();
-      if (--this.subscribers === 0) {
-        this.disposeAdapter?.();
-        this.disposeAdapter = undefined;
-      }
-    };
-  };
-
-  /** Internal selection UI access while Cosmos Kit repositories are migrated. */
-  getWalletRepo = (chainId: string) => this.legacy.getWalletRepo(chainId);
+  subscribe = (listener: () => void) => this.store.subscribe(listener);
 
   installWallet = async (wallet: MainWalletBase) => {
-    const previous = this.legacy.walletManager;
-    const manager = await this.legacy.addWallet(wallet);
-    if (previous.session.timeoutId !== undefined) {
+    const previous = this.manager;
+    this.wallets = [...this.wallets, wallet];
+    this.unsubscribeKeystoreChange?.();
+    await previous.onUnmounted();
+    if (previous.session.timeoutId !== undefined)
       clearTimeout(previous.session.timeoutId);
-    }
+    this.manager = this.createManager();
     this.publish();
-    return manager;
+    return this.manager;
   };
 
-  get mainWallets() {
-    return this.legacy.walletManager.mainWallets;
-  }
-
   mount = () => {
+    this.listenForOtherTabs(true);
     const version = this.mountVersion;
-    const manager = this.legacy.walletManager;
+    const manager = this.manager;
     // Serialize restores of the same manager so stale cleanup cannot remove a
     // remount's listeners. A replacement must not wait for the old wallet's response.
     const previous = this.pendingMounts.get(manager) ?? Promise.resolve();
     const pending = previous.then(async () => {
-      if (
-        version !== this.mountVersion ||
-        manager !== this.legacy.walletManager
-      ) {
+      if (version !== this.mountVersion || manager !== this.manager) {
         return;
       }
       try {
+        this.subscribeKeystoreChange(manager);
         await manager.onMounted();
       } finally {
-        if (
-          version !== this.mountVersion ||
-          manager !== this.legacy.walletManager
-        ) {
+        if (version !== this.mountVersion || manager !== this.manager) {
           manager.onUnmounted();
           if (manager.session.timeoutId !== undefined) {
             clearTimeout(manager.session.timeoutId);
@@ -291,10 +705,33 @@ export class WalletRuntime {
 
   unmount = async () => {
     this.mountVersion++;
-    const manager = this.legacy.walletManager;
+    this.unsubscribeKeystoreChange?.();
+    this.listenForOtherTabs(false);
+    const manager = this.manager;
     await manager.onUnmounted();
     if (manager.session.timeoutId !== undefined) {
       clearTimeout(manager.session.timeoutId);
     }
   };
+}
+
+function isWellFormedSession(info: OneClickTradingInfo) {
+  return (
+    typeof info === "object" &&
+    typeof info.userOsmoAddress === "string" &&
+    typeof info.sessionPeriod === "object" &&
+    info.sessionPeriod !== null &&
+    /^\d+$/.test(String(info.sessionPeriod.end))
+  );
+}
+
+/** False for an expired session or one whose stored end time is malformed. */
+function isSessionUnexpired(info: OneClickTradingInfo) {
+  try {
+    return (
+      BigInt(info.sessionPeriod.end) > BigInt(Date.now()) * BigInt(1_000_000)
+    );
+  } catch {
+    return false;
+  }
 }

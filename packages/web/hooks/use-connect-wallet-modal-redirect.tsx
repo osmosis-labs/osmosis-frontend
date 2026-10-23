@@ -1,12 +1,12 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { ComponentProps, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { t } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import { useStore } from "~/stores";
 
 /** FOR USE IN MODALS
  *
@@ -27,7 +27,6 @@ export function useConnectWalletModalRedirect(
   connectWalletMessage = t("connectWallet"),
   onConnect?: () => void
 ) {
-  const { accountStore } = useStore();
   const { walletStatus } = useWallet();
 
   const { onOpenWalletSelect, isLoading: isWalletLoading_ } = useWalletSelect();
@@ -39,11 +38,13 @@ export function useConnectWalletModalRedirect(
   );
   const [showSelf, setShowSelf] = useState(true);
 
-  useEffect(() => {
-    if (!walletInitiallyConnected && walletStatus === WalletStatus.Connected) {
-      setShowSelf(true);
-    }
-  }, [walletStatus, walletInitiallyConnected]);
+  if (
+    !showSelf &&
+    !walletInitiallyConnected &&
+    walletStatus === WalletStatus.Connected
+  ) {
+    setShowSelf(true);
+  }
 
   const resetState = useCallback(() => {
     setShowSelf(false);
@@ -71,7 +72,7 @@ export function useConnectWalletModalRedirect(
           onClick={() => {
             onOpenWalletSelect({
               walletOptions: [
-                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+                { walletType: "cosmos", chainId: OsmosisChainInfo.chainId },
               ],
               onConnect,
             }); // show select connect modal

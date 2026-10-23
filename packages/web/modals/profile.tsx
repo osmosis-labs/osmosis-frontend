@@ -2,7 +2,6 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { formatICNSName, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +14,7 @@ import {
   forwardRef,
   FunctionComponent,
   HTMLAttributes,
+  memo,
   useEffect,
   useState,
 } from "react";
@@ -62,7 +62,7 @@ const QRCode = dynamic(() =>
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
-> = observer((props) => {
+> = memo((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
   const { currentAvatar, setCurrentAvatar } = useProfileStore();

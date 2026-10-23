@@ -2,8 +2,7 @@ import { State, WalletStatus } from "@cosmos-kit/core";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, memo, useEffect, useState } from "react";
 import { useUpdateEffect } from "react-use";
 import { Connector } from "wagmi";
 
@@ -34,7 +33,7 @@ export interface WalletSelectModalProps extends ModalBaseProps {
 }
 
 export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
-  observer((props) => {
+  memo((props) => {
     const {
       isOpen,
       onRequestClose,
@@ -280,6 +279,8 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
                   {...props}
                   onRequestClose={onClose}
                   modalView={modalView}
+                  qrState={qrState}
+                  qrMessage={qrMessage}
                   onConnect={onConnectWallet}
                   lazyWalletInfo={lazyWalletInfo}
                   transaction1CTParams={transaction1CTParams}

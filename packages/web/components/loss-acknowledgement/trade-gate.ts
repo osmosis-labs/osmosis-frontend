@@ -28,6 +28,11 @@ export interface TradeWarningInput {
    * Magnitude only is used; the sign just reflects the order direction.
    */
   percentAdjusted?: Dec;
+  /**
+   * Market trade whose minimum received is worth far less than what is sent;
+   * see `requiresValueDisparityAcknowledgement`. Ignored for limit orders.
+   */
+  isExtremeValueDisparity?: boolean;
   orderType?: TradeOrderType;
 }
 
@@ -57,6 +62,7 @@ export function getTradeWarnings({
   slippage,
   isBeyondOppositePrice,
   percentAdjusted,
+  isExtremeValueDisparity,
   orderType,
 }: TradeWarningInput): Omit<LossFigures, "identityKey"> {
   const isLimit = orderType === "limit";
@@ -82,6 +88,10 @@ export function getTradeWarnings({
     marketFillDistance:
       warnMarketFill && percentAdjusted ? percentAdjusted.abs() : undefined,
     warnMarketFill,
+
+    // A resting limit order fills at its own price, so the market quote's
+    // value comparison says nothing about it.
+    warnValueDisparity: !isLimit && Boolean(isExtremeValueDisparity),
   };
 }
 

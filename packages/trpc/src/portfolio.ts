@@ -7,7 +7,7 @@ export const portfolioRouter = createTRPCRouter({
   getPortfolioOverTime: publicProcedure
     .input(
       z.object({
-        address: z.string(),
+        address: z.string().startsWith("osmo"),
         range: z.enum(["1d", "7d", "1mo", "1y", "all"]),
       })
     )
@@ -20,7 +20,7 @@ export const portfolioRouter = createTRPCRouter({
   getPortfolioAssets: publicProcedure
     .input(
       z.object({
-        address: z.string(),
+        address: z.string().startsWith("osmo"),
       })
     )
     .query(({ input: { address }, ctx: { assetLists } }) =>

@@ -114,7 +114,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -175,7 +175,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -204,7 +204,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -248,7 +248,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -291,7 +291,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -428,7 +428,7 @@ describe("useAmountInput", () => {
     );
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 

@@ -297,6 +297,7 @@
     "notInitialized": "Chargement...",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
+    "scalingFactorNotInteger": "Le facteur d'échelle doit être un nombre entier",
     "zeroAmount": "Le montant est zéro",
     "invalidRange": "Fourchette de prix invalide",
     "fallbackText1": "Une erreur s'est produite",
@@ -799,7 +800,8 @@
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
     "routes": "itinéraires",
-    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages"
+    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages",
+    "amountTooSmallForSlippage": "Montant trop faible pour un échange avec ce slippage. Augmentez le montant ou réduisez le slippage."
   },
   "walletSelect": {
     "gettingStarted": "Commencer",
@@ -855,6 +857,8 @@
   "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
   "transactionFailed": "Échec de la transaction",
+  "transactionStatusUnknown": "Statut de la transaction inconnu",
+  "transactionStatusUnknownCaption": "Envoyée, mais nous n'avons pas pu la confirmer. Vérifiez l'explorateur avant de réessayer.",
   "transactionSuccessful": "Succès de la transaction",
   "transfer": {
     "deposit": "Dépôt",

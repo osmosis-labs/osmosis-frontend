@@ -1,6 +1,7 @@
 export * from "./account/amino-converters";
 export * from "./account/client";
 export * from "./account/memo";
+export * from "./account/one-click";
 export * from "./account/osmosis/join-pool";
 export * from "./account/types";
 export * from "./account/utils";

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { Secp256k1HdWallet } from "@cosmjs/amino";
+import { toBase64 } from "@cosmjs/encoding";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import {
   ChainWalletBase,
@@ -8,10 +9,12 @@ import {
   type Wallet,
   type WalletClient,
 } from "@cosmos-kit/core";
+import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import { BigDec } from "@osmosis-labs/math";
-import { AccountStore, ChainStore } from "@osmosis-labs/stores";
 import {
   type DeliverTxResponse,
+  makeAddAuthenticatorMsg,
+  makeRemoveAuthenticatorMsg,
   makeSwapExactAmountInMsg,
   prepareCollectAllPositionsRewardsMsgs,
   prepareCreateBalancerPoolMsg,
@@ -25,17 +28,16 @@ import {
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { act, renderHook } from "@testing-library/react";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { createElement, type PropsWithChildren } from "react";
 import WebSocket from "ws";
 
-import { ChainInfos } from "~/config/chain";
 import { ChainList } from "~/config/generated/chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
+import { getAuthenticatorIdFromTx } from "~/hooks/mutations/one-click-trading/use-create-one-click-trading-session";
 import { useWallet } from "~/hooks/use-wallet";
-import broadcastHandler from "~/pages/api/broadcast-transaction";
-import estimateHandler from "~/pages/api/estimate-gas-fee";
-import migrationHandler from "~/pages/api/simulate-position-migration";
+import { broadcastTransactionHandler as broadcastHandler } from "~/server/api-handlers/broadcast-transaction";
+import { estimateGasFeeHandler as estimateHandler } from "~/server/api-handlers/estimate-gas-fee";
+import { simulatePositionMigrationHandler as migrationHandler } from "~/server/api-handlers/simulate-position-migration";
 import { storeContext } from "~/stores";
 import type { RootStore } from "~/stores/root";
 import { WalletRuntime } from "~/stores/wallet-runtime";
@@ -113,24 +115,16 @@ const transport: WalletTxTransport = {
     url: string,
     options: { data: Record<string, unknown> }
   ) => {
-    let status = 200;
-    let data: unknown;
-    const res = {
-      status: (code: number) => {
-        status = code;
-        return res;
-      },
-      json: (body: unknown) => {
-        data = body;
-        return res;
-      },
-    };
     const handler =
       url === "/api/estimate-gas-fee" ? estimateHandler : migrationHandler;
-    await handler(
-      { method: "POST", body: options.data } as NextApiRequest,
-      res as unknown as NextApiResponse
+    const response = await handler(
+      new Request(`http://wallet-ci${url}`, {
+        method: "POST",
+        body: JSON.stringify(options.data),
+      })
     );
+    const status = response.status;
+    const data: unknown = await response.json();
     if (status >= 400)
       throw new ApiClientError({
         message: `Handler returned ${status}`,
@@ -196,18 +190,17 @@ it.each(["amino", "direct"] as const)(
       mode: "extension",
       mobileDisabled: true,
     };
-    const accounts = new AccountStore(
-      ChainList.map(withCosmosKitFields),
-      fixture.chainId,
-      [],
-      [new FixtureWallet(info, signer)],
-      new ChainStore(ChainInfos, fixture.chainId)
-    );
     const runtime = new WalletRuntime(
-      accounts as unknown as RootStore["accountStore"],
+      {
+        chains: ChainList.map(withCosmosKitFields),
+        osmosisChainId: fixture.chainId,
+        assets: [],
+        wallets: [new FixtureWallet(info, signer)],
+      },
       { wsObject: WebSocket as unknown as typeof globalThis.WebSocket },
       transport
     );
+
     const wrapper = ({ children }: PropsWithChildren) =>
       createElement(
         storeContext.Provider,
@@ -256,10 +249,6 @@ it.each(["amino", "direct"] as const)(
         await hook.result.current.connect(info.name, true);
       });
       expect(hook.result.current.address).toBe(fixture.accounts[mode].address);
-      // Prove the hook does not route signing back through AccountStore.
-      jest.spyOn(accounts, "signAndBroadcast").mockImplementation(() => {
-        throw new Error("Legacy signing was used");
-      });
       const context = {
         ...hook.result.current.transactionContext,
         findCurrency: (denom: string) =>
@@ -286,6 +275,74 @@ it.each(["amino", "direct"] as const)(
       await send("swap", [swap], "local-chain swap", estimated, {
         preferNoSetFee: true,
       });
+      // Exercise the SDK's native session-key authenticator without an
+      // external spend-limit contract deployment in this isolated chain.
+      const sessionKey = PrivKeySecp256k1.generateRandomKey();
+      const added = await send("addOrRemoveAuthenticators", [
+        await makeAddAuthenticatorMsg({
+          sender: context.address,
+          authenticatorType: "SignatureVerification",
+          data: sessionKey.getPubKey().toBytes(),
+        }),
+      ]);
+      const authenticatorId = await getAuthenticatorIdFromTx({
+        events: added.events,
+        userOsmoAddress: context.address,
+        publicKey: toBase64(sessionKey.getPubKey().toBytes()),
+        fallbackGetAuthenticatorId: async () => {
+          throw new Error("Authenticator id missing from included transaction");
+        },
+      });
+      await act(async () => {
+        await hook.result.current.setOneClickTradingInfo({
+          authenticatorId,
+          publicKey: toBase64(sessionKey.getPubKey().toBytes()),
+          sessionKey: toBase64(sessionKey.toBytes()),
+          userOsmoAddress: context.address,
+          allowedMessages: [swap.typeUrl],
+          sessionPeriod: {
+            end: (BigInt(Date.now() + 3600000) * BigInt(1000000)).toString(),
+          },
+          sessionStartedAtUnix: Math.floor(Date.now() / 1000),
+          networkFeeLimit: "5000000",
+          spendLimit: { amount: "10", decimals: 6 },
+          humanizedSessionPeriod: "1hour",
+          hasSeenExpiryToast: false,
+        });
+        await hook.result.current.setShouldUseOneClickTrading({
+          nextValue: true,
+        });
+      });
+      const signWithWallet = jest
+        .spyOn(signer as any, mode === "amino" ? "signAmino" : "signDirect")
+        .mockImplementation(() => {
+          throw new Error("Session transaction prompted the wallet");
+        });
+      try {
+        await send("swap", [swap], "session-signed swap", undefined, {
+          useOneClickTrading: true,
+        });
+        expect(signWithWallet).not.toHaveBeenCalled();
+      } finally {
+        signWithWallet.mockRestore();
+      }
+      await send("addOrRemoveAuthenticators", [
+        await makeRemoveAuthenticatorMsg({
+          id: BigInt(authenticatorId),
+          sender: context.address,
+        }),
+      ]);
+      await act(async () => {
+        await hook.result.current.setOneClickTradingInfo(undefined);
+        await hook.result.current.setShouldUseOneClickTrading({
+          nextValue: false,
+        });
+      });
+      expect(
+        await hook.result.current.shouldBeSignedWithOneClickTrading({
+          messages: [swap],
+        })
+      ).toBe(false);
       const pool = await (
         await fetch(`${fixture.rest}/osmosis/gamm/v1beta1/pools/${poolId}`)
       ).json();

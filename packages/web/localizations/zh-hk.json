@@ -297,6 +297,7 @@
     "notInitialized": "載入中...",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
+    "scalingFactorNotInteger": "縮放因數必須是整數",
     "zeroAmount": "未提供幣額",
     "invalidRange": "價格範圍無效",
     "fallbackText1": "發生錯誤",
@@ -799,7 +800,8 @@
     "noRoutes": "沒有找到路線",
     "route": "路線",
     "routes": "路線",
-    "slippageOverBalance": "資金不足以彌補滑點"
+    "slippageOverBalance": "資金不足以彌補滑點",
+    "amountTooSmallForSlippage": "金額太小，無法以此滑點進行兌換。請增加金額或降低滑點。"
   },
   "walletSelect": {
     "gettingStarted": "入門",
@@ -855,6 +857,8 @@
   "swapFailed": "兌換失敗。流動性可能不夠。嘗試調整允許的滑點。",
   "transactionBroadcasting": "交易正在被廣播",
   "transactionFailed": "交易失敗",
+  "transactionStatusUnknown": "交易狀態未知",
+  "transactionStatusUnknownCaption": "已提交，但我們無法確認。請先查看瀏覽器，再重試。",
   "transactionSuccessful": "交易成功",
   "transfer": {
     "deposit": "訂金",

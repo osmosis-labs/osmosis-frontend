@@ -8,10 +8,10 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   Dispatch,
   FunctionComponent,
+  memo,
   ReactNode,
   SetStateAction,
   useCallback,
@@ -34,6 +34,7 @@ import {
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
   useConnectWalletModalRedirect,
@@ -47,7 +48,6 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
 import {
   depositHaltReasonKey,
   withdrawalHaltReasonKey,
@@ -122,7 +122,7 @@ interface AmountScreenProps {
   onConfirm: () => void;
 }
 
-export const AmountScreen = observer(
+export const AmountScreen = memo(
   ({
     direction,
     selectedDenom,
@@ -163,7 +163,7 @@ export const AmountScreen = observer(
     onConfirm,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
-    const { accountStore } = useStore();
+    const walletApi = useWallet();
     const { t } = useTranslation();
     const featureFlags = useFeatureFlags();
 
@@ -200,7 +200,7 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const { wallet: osmosisAccount } = useWallet();
+    const { wallet: osmosisAccount } = walletApi;
     const {
       address: evmAddress,
       connector: evmConnector,
@@ -285,7 +285,7 @@ export const AmountScreen = observer(
 
     const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
       {
-        findChainNameOrId: accountStore.osmosisChainId,
+        findChainNameOrId: OsmosisChainInfo.chainId,
       },
       {
         throwOnError: true,
@@ -318,6 +318,7 @@ export const AmountScreen = observer(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
         setInputUnit("crypto");
       }
     }, [
@@ -381,8 +382,8 @@ export const AmountScreen = observer(
             onOpenBridgeWalletSelect();
           }
         } else if (chain.chainType === "cosmos") {
-          const account = accountStore.getWallet(chain.chainId);
-          const accountRepo = accountStore.getWalletRepo(chain.chainId);
+          const account = walletApi.getChainWallet(chain.chainId).wallet;
+          const accountRepo = walletApi.getChainWallet(chain.chainId);
 
           if (
             // If the account is already connected
@@ -407,7 +408,7 @@ export const AmountScreen = observer(
         }
       },
       [
-        accountStore,
+        walletApi,
         direction,
         evmWalletCurrentChainId,
         fromChain,
@@ -653,7 +654,7 @@ export const AmountScreen = observer(
         setToAsset({
           address: destinationAsset.coinMinimalDenom,
           decimals: destinationAsset.coinDecimals,
-          chainId: accountStore.osmosisChainId,
+          chainId: OsmosisChainInfo.chainId,
           chainType: "cosmos",
           denom: destinationAsset.coinDenom,
           // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
@@ -661,14 +662,7 @@ export const AmountScreen = observer(
           transferTypes: [],
         });
       }
-    }, [
-      accountStore.osmosisChainId,
-      assetsInOsmosis,
-      toAsset,
-      direction,
-      setToAsset,
-      fromAsset,
-    ]);
+    }, [assetsInOsmosis, toAsset, direction, setToAsset, fromAsset]);
 
     /**
      * Withdraw
@@ -848,9 +842,10 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
+    const fromDecimals = fromAsset?.decimals;
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
-        if (isNil(fromAsset?.decimals)) return;
+        if (isNil(fromDecimals)) return;
 
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -858,16 +853,17 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(fromAsset.decimals)
+                .maxDecimals(fromDecimals)
                 .toString()
         );
       },
-      [fromAsset?.decimals, setCryptoAmount]
+      [fromDecimals, setCryptoAmount]
     );
 
+    const fiatMaxDecimals = canonicalAssetPrice?.fiatCurrency.maxDecimals;
     const onChangeFiatInput = useCallback(
       (amount: string) => {
-        if (isNil(canonicalAssetPrice?.fiatCurrency.maxDecimals)) return;
+        if (isNil(fiatMaxDecimals)) return;
 
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -875,11 +871,11 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(canonicalAssetPrice.fiatCurrency.maxDecimals)
+                .maxDecimals(fiatMaxDecimals)
                 .toString()
         );
       },
-      [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+      [fiatMaxDecimals, setFiatAmount]
     );
 
     const isLoading =
@@ -1097,7 +1093,7 @@ export const AmountScreen = observer(
           }
         : undefined;
       const osmosisChainFallback: BridgeChainWithDisplayInfo = {
-        chainId: accountStore.osmosisChainId,
+        chainId: OsmosisChainInfo.chainId,
         chainType: "cosmos" as const,
         bech32Prefix: "osmo",
         prettyName: "Osmosis",

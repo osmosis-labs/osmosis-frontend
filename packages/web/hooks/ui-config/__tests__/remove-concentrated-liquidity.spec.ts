@@ -1,4 +1,3 @@
-import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { EmptyAmountError } from "@osmosis-labs/utils";
 import { act, renderHook } from "@testing-library/react";
@@ -38,41 +37,26 @@ const makeQuotePosition = () => ({
   ],
 });
 
+// Expectations captured from the legacy config before its removal.
 describe("remove concentrated liquidity calculations", () => {
   it.each([0, 0.01, 0.25, 0.33, 0.5, 0.75, 1])(
-    "matches the legacy config at %d of the position",
+    "scales liquidity and token amounts at %d of the position",
     (percentage) => {
       const position = makePosition();
-      const legacy = new ObservableRemoveConcentratedLiquidityConfig(
-        {} as any,
-        "osmosis-1",
-        "1",
-        {
-          liquidity: position.liquidity,
-          baseAsset: position.currentCoins[0],
-          quoteAsset: position.currentCoins[1],
-        },
-        percentage
-      );
       const pos = {
         liquidity: position.liquidity,
         baseAsset: position.currentCoins[0],
         quoteAsset: position.currentCoins[1],
       };
 
-      expect(getEffectiveLiquidity(pos, percentage)?.toString()).toBe(
-        legacy.effectiveLiquidity?.toString()
-      );
       const amounts = getEffectiveLiquidityAmounts(pos, percentage);
-      expect(amounts?.base.toCoin()).toEqual(
-        legacy.effectiveLiquidityAmounts?.base.toCoin()
-      );
-      expect(amounts?.quote.toCoin()).toEqual(
-        legacy.effectiveLiquidityAmounts?.quote.toCoin()
-      );
-      expect(getRemoveConcentratedLiquidityError(percentage)?.constructor).toBe(
-        legacy.error?.constructor
-      );
+      expect({
+        liquidity: getEffectiveLiquidity(pos, percentage)?.toString(),
+        base: amounts?.base.toCoin(),
+        quote: amounts?.quote.toCoin(),
+        error:
+          getRemoveConcentratedLiquidityError(percentage)?.constructor.name,
+      }).toMatchSnapshot();
     }
   );
 

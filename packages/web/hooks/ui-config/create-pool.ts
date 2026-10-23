@@ -15,6 +15,7 @@ import {
   NegativePercentageError,
   NegativeSwapFeeError,
   PercentageSumError,
+  ScalingFactorNotIntegerError,
   ScalingFactorTooLowError,
   ZeroAmountError,
 } from "@osmosis-labs/utils";
@@ -233,8 +234,14 @@ export function getScalingFactorError(
   if (state.poolType !== "stable") return;
 
   for (const asset of state.assets) {
-    if (asset.scalingFactor !== undefined && asset.scalingFactor < 1) {
+    if (asset.scalingFactor === undefined) continue;
+    if (asset.scalingFactor < 1) {
       return new ScalingFactorTooLowError("Scaling factor too low");
+    }
+    // The chain takes integer scaling factors, and building the message would
+    // throw on a fraction.
+    if (!Number.isInteger(asset.scalingFactor)) {
+      return new ScalingFactorNotIntegerError("Scaling factor not an integer");
     }
   }
   return;

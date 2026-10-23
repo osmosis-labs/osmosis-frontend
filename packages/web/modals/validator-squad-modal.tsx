@@ -527,6 +527,7 @@ export const ValidatorSquadModal: FunctionComponent<
     },
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data,
     columns,

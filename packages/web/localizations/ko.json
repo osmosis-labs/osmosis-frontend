@@ -297,6 +297,7 @@
     "notInitialized": "로드 중...",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
+    "scalingFactorNotInteger": "단위조정인수는 정수여야 합니다",
     "zeroAmount": "수량이 0입니다.",
     "invalidRange": "잘못된 가격 범위",
     "fallbackText1": "에러 발생됨",
@@ -799,7 +800,8 @@
     "noRoutes": "경로를 찾을 수 없습니다.",
     "route": "노선",
     "routes": "노선",
-    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다"
+    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다",
+    "amountTooSmallForSlippage": "이 슬리피지로 스왑하기에는 금액이 너무 적습니다. 금액을 늘리거나 슬리피지를 낮추세요."
   },
   "walletSelect": {
     "gettingStarted": "시작하기",
@@ -855,6 +857,8 @@
   "swapFailed": "교환에 실패했습니다. 유동성이 충분하지 않을 수 있습니다. 허용되는 미끄러짐을 조정해 보십시오.",
   "transactionBroadcasting": "전송 진행중",
   "transactionFailed": "전송 실패",
+  "transactionStatusUnknown": "거래 상태를 알 수 없음",
+  "transactionStatusUnknownCaption": "제출되었지만 확인하지 못했습니다. 다시 시도하기 전에 익스플로러를 확인하세요.",
   "transactionSuccessful": "전송 성공",
   "transfer": {
     "deposit": "보증금",

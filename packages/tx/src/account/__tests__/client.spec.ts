@@ -7,8 +7,13 @@ import {
 } from "@osmosis-labs/utils";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
+import { TxStatusUnknownError } from "../../error";
 import { SimulateNotAvailableError } from "../../gas";
-import { createWalletTxClient, type WalletTxDependencies } from "../client";
+import {
+  createWalletTxClient,
+  TX_TRACE_TIMEOUT_MS,
+  type WalletTxDependencies,
+} from "../client";
 import type { AccountStoreWallet } from "../types";
 
 const mockTrace = jest.fn();
@@ -208,15 +213,42 @@ it("retains the pre-broadcast hash on ambiguous POST failures", async () => {
 });
 
 it("records acceptance before tracing errors and closes the tracer", async () => {
-  const { client } = fixture();
-  mockTrace.mockRejectedValueOnce(new Error("trace failed"));
-  const onBroadcasted = jest.fn();
-  await expect(
-    client.signAndBroadcast(chainId, "send", [message], "", fee, undefined, {
-      onBroadcasted,
-    })
-  ).rejects.toThrow("trace failed");
+  const { client, deps, setTxTypeInProgress } = fixture();
+  const traceError = new Error("trace failed");
+  mockTrace.mockRejectedValueOnce(traceError);
+  const globalBroadcastFailed = jest.fn();
+  deps.options = { preTxEvents: { onBroadcastFailed: globalBroadcastFailed } };
+  const onBroadcasted = jest.fn(),
+    onBroadcastFailed = jest.fn(),
+    onFulfill = jest.fn();
+  const pending = client.signAndBroadcast(
+    chainId,
+    "send",
+    [message],
+    "",
+    fee,
+    undefined,
+    { onBroadcasted, onBroadcastFailed, onFulfill }
+  );
+  // Accepted, so a failed trace is reported as unknown, not as failed.
+  await expect(pending).rejects.toBeInstanceOf(TxStatusUnknownError);
+  await expect(pending).rejects.toMatchObject({
+    txHash: "abcd",
+    reason: traceError,
+  });
+  expect(mockTrace).toHaveBeenCalledWith(Buffer.from("abcd", "hex"), {
+    timeoutMs: TX_TRACE_TIMEOUT_MS,
+  });
   expect(onBroadcasted).toHaveBeenCalledWith(Buffer.from("abcd", "hex"));
+  expect(globalBroadcastFailed).toHaveBeenCalledWith(
+    chainId,
+    expect.any(TxStatusUnknownError)
+  );
+  expect(onBroadcastFailed).toHaveBeenCalledWith(
+    expect.any(TxStatusUnknownError)
+  );
+  expect(onFulfill).not.toHaveBeenCalled();
+  expect(setTxTypeInProgress).toHaveBeenLastCalledWith(chainId, "");
   expect(mockClose).toHaveBeenCalledTimes(1);
 });
 
@@ -257,4 +289,91 @@ it("preserves simulation errors and fee amount selection", async () => {
   await expect(
     client.estimateFee({ wallet, messages: [message] })
   ).rejects.toBeInstanceOf(SimulateNotAvailableError);
+});
+
+it("falls back to the wallet when session eligibility fails, without prompting about its fee limit", async () => {
+  const { deps, wallet, signDirect } = fixture();
+  const signSession = jest.fn();
+  const confirm = jest.fn();
+  deps.oneClick = {
+    getInfo: async () => ({ networkFeeLimit: "invalid" }) as any,
+    shouldSign: async () => false,
+    extensionOptions: async () => undefined,
+    sign: signSession,
+  };
+  deps.options = { preTxEvents: { onExceeds1CTNetworkFeeLimit: confirm } };
+  await createWalletTxClient(deps).sign({
+    wallet,
+    messages: [message],
+    fee,
+    memo: "",
+    signOptions: { useOneClickTrading: true },
+  });
+  expect(signDirect).toHaveBeenCalledTimes(1);
+  expect(signSession).not.toHaveBeenCalled();
+  expect(confirm).not.toHaveBeenCalled();
+});
+
+it.each(["continue", "finish"] as const)(
+  "honors %s when an eligible session exceeds its gas limit",
+  async (decision) => {
+    const { deps, wallet, signDirect } = fixture();
+    const signSession = jest.fn();
+    deps.oneClick = {
+      getInfo: async () =>
+        ({ networkFeeLimit: "1", userOsmoAddress: address }) as any,
+      shouldSign: async () => true,
+      extensionOptions: async () => undefined,
+      sign: signSession,
+    };
+    deps.options = {
+      preTxEvents: {
+        onExceeds1CTNetworkFeeLimit: ({ continueTx, finish }) =>
+          decision === "continue" ? continueTx() : finish(),
+      },
+    };
+    const pending = createWalletTxClient(deps).sign({
+      wallet,
+      messages: [message],
+      fee,
+      memo: "",
+      signOptions: { useOneClickTrading: true },
+    });
+    if (decision === "finish") {
+      await expect(pending).rejects.toThrow("User cancelled");
+      expect(signDirect).not.toHaveBeenCalled();
+    } else {
+      await pending;
+      expect(signDirect).toHaveBeenCalledTimes(1);
+    }
+    expect(signSession).not.toHaveBeenCalled();
+  }
+);
+
+it("passes the checked session to signing if it changes during eligibility", async () => {
+  const { deps, wallet } = fixture();
+  const checked = {
+    networkFeeLimit: "100000",
+    userOsmoAddress: address,
+  } as any;
+  const replaced = { ...checked, authenticatorId: "other" };
+  let current = checked;
+  const sign = jest.fn();
+  deps.oneClick = {
+    getInfo: async () => current,
+    shouldSign: async () => {
+      current = replaced;
+      return true;
+    },
+    extensionOptions: async () => undefined,
+    sign,
+  };
+  await createWalletTxClient(deps).sign({
+    wallet,
+    messages: [message],
+    fee,
+    memo: "",
+    signOptions: { useOneClickTrading: true },
+  });
+  expect(sign.mock.calls[0][0].oneClickTradingInfo).toBe(checked);
 });

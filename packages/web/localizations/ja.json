@@ -297,6 +297,7 @@
     "notInitialized": "読み込み中...",
     "percentageSum": "パーセンテージの合計が 100 にならない",
     "scalingFactorTooLow": "倍率が低すぎる",
+    "scalingFactorNotInteger": "倍率は整数である必要があります",
     "zeroAmount": "金額はゼロです",
     "invalidRange": "無効な価格帯",
     "fallbackText1": "エラーが発生しました",
@@ -799,7 +800,8 @@
     "noRoutes": "ルートが見つかりません",
     "route": "ルート",
     "routes": "ルート",
-    "slippageOverBalance": "スリッページをカバーするための資金が不足している"
+    "slippageOverBalance": "スリッページをカバーするための資金が不足している",
+    "amountTooSmallForSlippage": "この金額ではこのスリッページでスワップできません。金額を増やすか、スリッページを下げてください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
@@ -855,6 +857,8 @@
   "swapFailed": "交換に失敗しました。流動性が十分ではない可能性があります。許容される滑り量を調整してみてください。",
   "transactionBroadcasting": "トランザクションブロードキャスト",
   "transactionFailed": "処理に失敗しました",
+  "transactionStatusUnknown": "トランザクションの状態が不明です",
+  "transactionStatusUnknownCaption": "送信されましたが、確認できませんでした。再試行する前にエクスプローラーを確認してください。",
   "transactionSuccessful": "トランザクションが成功しました",
   "transfer": {
     "deposit": "デポジット",

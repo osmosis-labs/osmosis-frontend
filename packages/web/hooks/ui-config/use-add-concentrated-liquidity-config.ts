@@ -392,6 +392,8 @@ export function useAddConcentratedLiquidityState({
         pool: poolParams,
         isInactivePool,
         tickRange,
+        baseDepositOnly,
+        quoteDepositOnly,
         baseDepositPrice: prices?.base ?? null,
         quoteDepositPrice: prices?.quote ?? null,
       }),
@@ -402,6 +404,8 @@ export function useAddConcentratedLiquidityState({
       poolParams,
       isInactivePool,
       tickRange,
+      baseDepositOnly,
+      quoteDepositOnly,
       prices,
     ]
   );

@@ -297,6 +297,7 @@
     "notInitialized": "Cargando...",
     "percentageSum": "La suma de porcentajes no es 100",
     "scalingFactorTooLow": "Factor de escala demasiado bajo",
+    "scalingFactorNotInteger": "El factor de escala debe ser un número entero",
     "zeroAmount": "La cantidad es cero",
     "invalidRange": "Rango de precios no válido",
     "fallbackText1": "Ocurrió un error",
@@ -799,7 +800,8 @@
     "noRoutes": "No se encontraron rutas",
     "route": "ruta",
     "routes": "rutas",
-    "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento"
+    "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento",
+    "amountTooSmallForSlippage": "Cantidad demasiado pequeña para intercambiar con este deslizamiento. Aumente la cantidad o reduzca el deslizamiento."
   },
   "walletSelect": {
     "gettingStarted": "Empezando",
@@ -855,6 +857,8 @@
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "transactionBroadcasting": "Ejecutando transacción",
   "transactionFailed": "Transacción fallida",
+  "transactionStatusUnknown": "Estado de la transacción desconocido",
+  "transactionStatusUnknownCaption": "Enviada, pero no pudimos confirmarla. Revisa el explorador antes de volver a intentarlo.",
   "transactionSuccessful": "Transacción exitosa",
   "transfer": {
     "deposit": "Depósito",

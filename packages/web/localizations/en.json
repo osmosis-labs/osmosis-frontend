@@ -297,6 +297,7 @@
     "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
+    "scalingFactorNotInteger": "Scaling factor must be a whole number",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
     "fallbackText1": "An error occurred",
@@ -799,7 +800,8 @@
     "noRoutes": "No routes found",
     "route": "route",
     "routes": "routes",
-    "slippageOverBalance": "Insufficient funds to cover slippage"
+    "slippageOverBalance": "Insufficient funds to cover slippage",
+    "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",
@@ -855,6 +857,8 @@
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
   "transactionFailed": "Transaction Failed",
+  "transactionStatusUnknown": "Transaction Status Unknown",
+  "transactionStatusUnknownCaption": "Submitted, but we couldn't confirm it. Check the explorer before trying again.",
   "transactionSuccessful": "Transaction Successful",
   "transfer": {
     "deposit": "Deposit",

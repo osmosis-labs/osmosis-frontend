@@ -35,9 +35,11 @@ export const useAssetVariantsToast = () => {
   // Dismissal is now per variant group, so the query must run even for a user
   // who dismissed before: we can only tell whether they hold a *new* alloy's
   // variant by looking at what they hold.
+  // `alloyedAssets` is undefined until LaunchDarkly initialises; `Boolean`
+  // keeps `enabled` false then, as React Query fetches on anything but false.
   const enabled =
     isSessionHydrated &&
-    alloyedAssets &&
+    Boolean(alloyedAssets) &&
     !hasSeenToastThisSession &&
     !isWalletLoading &&
     isWalletConnected &&

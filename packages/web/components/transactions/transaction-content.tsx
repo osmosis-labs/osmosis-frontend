@@ -1,9 +1,4 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import {
-  CosmosAccount,
-  CosmwasmAccount,
-  OsmosisAccount,
-} from "@osmosis-labs/stores";
 import type { AccountStoreWallet } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { useRouter } from "next/router";
@@ -49,7 +44,7 @@ export const TransactionContent = ({
   isWalletConnected: boolean;
   page: string;
   hasNextPage: boolean;
-  wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  wallet?: AccountStoreWallet;
 }) => {
   const { t } = useTranslation();
 

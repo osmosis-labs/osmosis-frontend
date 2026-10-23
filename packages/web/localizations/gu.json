@@ -297,6 +297,7 @@
     "notInitialized": "લોડ કરી રહ્યું છે...",
     "percentageSum": "ટકાવારીનો સરવાળો 100 નથી",
     "scalingFactorTooLow": "સ્કેલિંગ પરિબળ ખૂબ ઓછું છે",
+    "scalingFactorNotInteger": "સ્કેલિંગ પરિબળ પૂર્ણ સંખ્યા હોવું જોઈએ",
     "zeroAmount": "રકમ શૂન્ય છે",
     "invalidRange": "અમાન્ય કિંમત શ્રેણી",
     "fallbackText1": "એક ભૂલ આવી",
@@ -799,7 +800,8 @@
     "noRoutes": "કોઈ રૂટ મળ્યા નથી",
     "route": "માર્ગ",
     "routes": "માર્ગો",
-    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ"
+    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ",
+    "amountTooSmallForSlippage": "આ સ્લિપેજ સાથે સ્વેપ કરવા માટે રકમ ખૂબ નાની છે. રકમ વધારો અથવા સ્લિપેજ ઘટાડો."
   },
   "walletSelect": {
     "gettingStarted": "શરૂઆત કરવી",
@@ -855,6 +857,8 @@
   "swapFailed": "સ્વેપ નિષ્ફળ. લિક્વિડિટી પૂરતી ન હોઈ શકે. મંજૂર સ્લિપેજને સમાયોજિત કરવાનો પ્રયાસ કરો.",
   "transactionBroadcasting": "ટ્રાન્ઝેક્શન બ્રોડકાસ્ટિંગ",
   "transactionFailed": "વ્યવહાર નિષ્ફળ થયો",
+  "transactionStatusUnknown": "વ્યવહારની સ્થિતિ અજ્ઞાત",
+  "transactionStatusUnknownCaption": "સબમિટ થયું, પરંતુ અમે તેની પુષ્ટિ કરી શક્યા નહીં. ફરી પ્રયાસ કરતા પહેલા એક્સપ્લોરર તપાસો.",
   "transactionSuccessful": "વ્યવહાર સફળ",
   "transfer": {
     "deposit": "જમા",

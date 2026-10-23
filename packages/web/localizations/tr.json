@@ -297,6 +297,7 @@
     "notInitialized": "Yükleniyor...",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
+    "scalingFactorNotInteger": "Ölçeklendirme faktörü tam sayı olmalıdır",
     "zeroAmount": "Miktar sıfır",
     "invalidRange": "Geçersiz fiyat aralığı",
     "fallbackText1": "Bir hata oluştu",
@@ -799,7 +800,8 @@
     "noRoutes": "Rota bulunamadı",
     "route": "rota",
     "routes": "rotalar",
-    "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok"
+    "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok",
+    "amountTooSmallForSlippage": "Bu kayma ile takas için tutar çok küçük. Tutarı artırın veya kaymayı azaltın."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
@@ -855,6 +857,8 @@
   "swapFailed": "Değiştirme başarısız oldu. Likidite yeterli olmayabilir. İzin verilen kaymayı ayarlamayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "transactionFailed": "İşlem Başarısız",
+  "transactionStatusUnknown": "İşlem durumu bilinmiyor",
+  "transactionStatusUnknownCaption": "Gönderildi, ancak doğrulayamadık. Tekrar denemeden önce gezgini kontrol edin.",
   "transactionSuccessful": "İşlem Başarılı",
   "transfer": {
     "deposit": "Depozito",

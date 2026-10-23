@@ -1,8 +1,7 @@
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
@@ -27,7 +26,7 @@ const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
 };
 
-const Transactions: React.FC = observer(() => {
+const Transactions: React.FC = memo(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
 
   const router = useRouter();

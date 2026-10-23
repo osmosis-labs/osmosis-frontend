@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom";
 
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 
@@ -550,5 +557,52 @@ describe("ReviewOrder acknowledgement gate", () => {
       expect(checkbox()).not.toBeInTheDocument();
       expect(confirmButton()).toBeEnabled();
     });
+  });
+});
+
+describe("value disparity and serializable slippage bounds", () => {
+  const usd = (value: string) =>
+    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(value));
+
+  // A mispriced pool: the router quotes a small impact, so the output's
+  // derived fiat value tracks the input, but the output asset's own price
+  // values the 100-unit minimum received at $50 against $100 sent.
+  const disparityProps = (): Props => ({
+    ...baseProps(),
+    priceImpactTokenOut: lowImpact,
+    inAmountFiat: usd("100"),
+    fiatAmountWithSlippage: usd("98"),
+    amountWithSlippage: new IntPretty(new Dec("100")),
+    outAssetPrice: usd("0.5"),
+  });
+
+  it("gates a minimum received worth far less than what is sent", () => {
+    renderModal(disparityProps());
+
+    expect(checkbox()).toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+
+    fireEvent.click(checkbox()!);
+    expect(confirmButton()).toBeEnabled();
+  });
+
+  it("does not gate a resting limit order on the market value comparison", () => {
+    queryState.type = "limit";
+    renderModal(disparityProps());
+
+    expect(checkbox()).not.toBeInTheDocument();
+  });
+
+  it("disables confirm when the minimum output truncates to zero onchain", () => {
+    renderModal({
+      ...baseProps(),
+      priceImpactTokenOut: lowImpact,
+      // One base unit of a 6-decimal asset, less the 0.5% tolerance.
+      quoteAmount: new Dec("0.000001"),
+      amountWithSlippage: new IntPretty(new Dec("0.000000995")),
+    });
+
+    expect(screen.getByText(/amount too small to swap/i)).toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
   });
 });

@@ -3,9 +3,9 @@ import { getOsmosisCodec } from "@osmosis-labs/tx";
 import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks/language";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /** Whether orderbook creation is supported in the current environment (code ID must be known). */
@@ -303,7 +303,7 @@ export function useCreateOrderbook({
   baseDenom: string;
   quoteDenom: string;
 }) {
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const { t } = useTranslation();
   const apiUtils = api.useUtils();
   const [isCreating, setIsCreating] = useState(false);
@@ -313,7 +313,7 @@ export function useCreateOrderbook({
    *  mounted, so callers need to drop a stale failure on close. */
   const resetError = useCallback(() => setError(undefined), []);
 
-  const { address, signAndBroadcast } = useWallet();
+  const { address, signAndBroadcast } = walletApi;
 
   /** Keep checking, in the background, until the pair is discoverable, then
    *  refetch the client caches; see DISCOVERY_RECONCILE_MAX_MS. */
@@ -532,9 +532,8 @@ export function useCreateOrderbook({
         // Read the sender from the live wallet after the awaits above: the
         // `address` snapshot is from the click, and an account switch since
         // then would sign with the new key against the old sender.
-        const sender = accountStore.getWallet(
-          accountStore.osmosisChainId
-        )?.address;
+        const sender = walletApi.getChainWallet(OsmosisChainInfo.chainId).wallet
+          ?.address;
         if (!sender || sender !== address) {
           throw new AccountStoreNoBroadcastErrorEvent(
             t("errors.uhOhSomethingWentWrong")
@@ -808,7 +807,7 @@ export function useCreateOrderbook({
     quoteDenom,
     t,
     apiUtils.edge.orderbooks.verifyOrderbookCreation,
-    accountStore,
+    walletApi,
     signAndBroadcast,
     refreshOrderbookCaches,
     settleAsAlreadyCreated,

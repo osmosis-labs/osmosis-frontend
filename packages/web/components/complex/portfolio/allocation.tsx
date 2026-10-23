@@ -1,7 +1,7 @@
 import type { PortfolioAssets } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
@@ -64,11 +64,12 @@ export const Allocation: FunctionComponent<{
   const [isOpen, setIsOpen] = useState(true);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (width > Breakpoint.xl) {
-      setIsOpen(true);
-    }
-  }, [width]);
+  // Reopen only when the width changes, so the header can still collapse it.
+  const [prevWidth, setPrevWidth] = useState(width);
+  if (width !== prevWidth) {
+    setPrevWidth(width);
+    if (width > Breakpoint.xl) setIsOpen(true);
+  }
 
   const selectedList = useMemo(
     () => assets?.[selectedOption] ?? [],

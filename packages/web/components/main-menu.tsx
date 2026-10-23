@@ -8,12 +8,12 @@ import {
   FunctionComponent,
   MouseEventHandler,
   ReactNode,
-  useEffect,
   useState,
 } from "react";
 
 import { Pill } from "~/components/indicators/pill";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { useIsClient } from "~/hooks/use-is-client";
 
 export type MainLayoutMenu = {
   label: string;
@@ -89,13 +89,10 @@ const MenuLink: FunctionComponent<{
 }> = ({ href, children, secondaryLogo, selectionTest, showMore }) => {
   const router = useRouter();
   const [showSubTitle, setShowSubTitle] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  // Needed because of NextJS SSR.
+  const isMounted = useIsClient();
 
   const { isMobile } = useWindowSize();
-
-  useEffect(() => {
-    setIsMounted(true); // component has mounted. Needed because of NextJS SSR.
-  }, []);
 
   const shouldShowHover = !!secondaryLogo;
 

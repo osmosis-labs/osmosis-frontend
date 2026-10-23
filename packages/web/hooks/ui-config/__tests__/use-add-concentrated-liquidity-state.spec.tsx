@@ -154,6 +154,45 @@ describe("useAddConcentratedLiquidityState", () => {
     ).toBe(true);
   });
 
+  it.each([
+    ["no", [{ denom: "uosmo", amount: "27750000" }]],
+    [
+      "some",
+      [
+        { denom: "uosmo", amount: "27750000" },
+        { denom: "uatom", amount: "1000000" },
+      ],
+    ],
+  ])(
+    "max on a single-sided range ignores the counterparty balance (%s quote balance)",
+    (_, balances) => {
+      const { result } = setup(inputs({ balances }));
+      // range above the current price: base only
+      act(() => {
+        result.current.setMinRange("1.5");
+        result.current.setMaxRange("2");
+      });
+      act(() => result.current.baseDepositAmountIn.setAmount("30"));
+      act(() => result.current.setBaseDepositAmountMax());
+      // 27.75 OSMO less the 0.12 OSMO high gas fee
+      expect(result.current.baseDepositAmountIn.isMax).toBe(true);
+      expect(result.current.baseDepositAmountIn.amount).toBe("27.63");
+      expect(result.current.error).toBeUndefined();
+    }
+  );
+
+  it("max with a zero counterparty balance zeroes both sides", () => {
+    const { result } = setup(
+      inputs({ balances: [{ denom: "uosmo", amount: "27750000" }] })
+    );
+    act(() => result.current.setFullRange(true));
+    act(() => result.current.baseDepositAmountIn.setAmount("1"));
+    act(() => result.current.setBaseDepositAmountMax());
+    expect(result.current.quoteDepositAmountIn.isMax).toBe(true);
+    expect(result.current.quoteDepositAmountIn.amount).toBe("0");
+    expect(result.current.baseDepositAmountIn.amount).toBe("0");
+  });
+
   it("only validates the deposited side when out of range", () => {
     const { result } = setup(inputs());
     // range above the current price: base only

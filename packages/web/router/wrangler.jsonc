@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  // Splits app.osmosis.zone between Vercel and the Cloudflare production Worker (worker.ts).
+  "name": "osmosis-frontend-router",
+  "main": "worker.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "services": [
+    {
+      "binding": "PRODUCTION",
+      "service": "osmosis-frontend-production",
+    },
+  ],
+  "vars": {
+    // Share of browsers routed to Cloudflare (0-100). This file is the source of truth: a deploy
+    // resets dashboard edits, so set it to "0" in an emergency and commit the change afterwards.
+    "CF_PERCENT": "0",
+  },
+  // Attach to app.osmosis.zone deliberately (see README), not on every deploy.
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+  },
+}
