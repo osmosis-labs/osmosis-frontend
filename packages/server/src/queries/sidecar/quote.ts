@@ -55,6 +55,8 @@ export type SplitTokenOutQuote = {
   tokenInFeeAmount?: Int;
   swapFee?: Dec;
   priceImpactTokenOut?: Dec;
+  liquidityCap?: string;
+  liquidityCapOverflow?: boolean;
   tokens?: {
     denom: string;
     liquidity_cap: string;
