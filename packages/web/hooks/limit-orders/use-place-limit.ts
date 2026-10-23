@@ -495,42 +495,30 @@ export const usePlaceLimit = ({
     ]
   );
 
-  const { data, isFetched: isBalancesFetched } =
-    api.edge.assets.getUserAssets.useQuery(
-      {
-        userOsmoAddress: address ?? "",
-      },
-      {
-        enabled: !!address,
-        select: ({ items }) =>
-          items.filter(
-            ({ coinMinimalDenom }) =>
-              coinMinimalDenom.toLowerCase() ===
-                baseAsset?.coinMinimalDenom?.toLowerCase() ||
-              coinMinimalDenom.toLowerCase() ===
-                quoteAsset?.coinMinimalDenom?.toLowerCase()
-          ),
-      }
+  // Read bank balances directly, as the swap tool does. The unpaginated
+  // `assets.getUserAssets` query maps every asset listing and times out.
+  const { data: balances, isFetched: isBalancesFetched } =
+    api.local.balances.getUserBalances.useQuery(
+      { bech32Address: address ?? "" },
+      { enabled: !!address }
     );
 
-  const baseTokenBalance = useMemo(
-    () =>
-      data?.find(
-        ({ coinMinimalDenom }) =>
-          coinMinimalDenom.toLowerCase() ===
-          baseAsset?.coinMinimalDenom.toLowerCase()
-      )?.amount,
-    [data, baseAsset]
-  );
-  const quoteTokenBalance = useMemo(
-    () =>
-      data?.find(
-        ({ coinMinimalDenom }) =>
-          coinMinimalDenom.toLowerCase() ===
-          quoteAsset?.coinMinimalDenom?.toLowerCase()
-      )?.amount,
-    [data, quoteAsset]
-  );
+  const baseTokenBalance = useMemo(() => {
+    if (!baseAsset || !balances) return;
+    const amount = balances.find(
+      ({ denom }) =>
+        denom.toLowerCase() === baseAsset.coinMinimalDenom.toLowerCase()
+    )?.amount;
+    return new CoinPretty(baseAsset, amount ?? 0);
+  }, [balances, baseAsset]);
+  const quoteTokenBalance = useMemo(() => {
+    if (!quoteAsset || !balances) return;
+    const amount = balances.find(
+      ({ denom }) =>
+        denom.toLowerCase() === quoteAsset.coinMinimalDenom.toLowerCase()
+    )?.amount;
+    return new CoinPretty(quoteAsset, amount ?? 0);
+  }, [balances, quoteAsset]);
 
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
