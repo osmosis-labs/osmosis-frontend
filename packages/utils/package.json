@@ -17,8 +17,6 @@
     "@cosmjs/encoding": "0.36.2",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "@ton/core": "^0.61.0",
-    "@ton/crypto": "^3.3.0",
     "bitcoinjs-lib": "^7.0.4",
     "bs58": "^6.0.0",
     "bs58check": "^4.0.0",

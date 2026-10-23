@@ -8031,8 +8031,6 @@ __metadata:
     "@cosmjs/encoding": "npm:0.36.2"
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
-    "@ton/core": "npm:^0.61.0"
-    "@ton/crypto": "npm:^3.3.0"
     "@types/jest-in-case": "npm:^1.0.6"
     "@types/sha.js": "npm:^2.4.0"
     bitcoinjs-lib: "npm:^7.0.4"
@@ -11340,37 +11338,6 @@ __metadata:
   version: 0.3.0
   resolution: "@tokenizer/token@npm:0.3.0"
   checksum: 10c0/7ab9a822d4b5ff3f5bca7f7d14d46bdd8432528e028db4a52be7fbf90c7f495cc1af1324691dda2813c6af8dc4b8eb29de3107d4508165f9aa5b53e7d501f155
-  languageName: node
-  linkType: hard
-
-"@ton/core@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@ton/core@npm:0.61.0"
-  dependencies:
-    symbol.inspect: "npm:1.0.1"
-  peerDependencies:
-    "@ton/crypto": ">=3.2.0"
-  checksum: 10c0/0bec288efa33c2302bf2d783a7d723a7b24b31da1bce28907036110e0979b28faeb3bbea761c32b83ea07e8352230591ad655e896b9146e4c539ff53ed327fe3
-  languageName: node
-  linkType: hard
-
-"@ton/crypto-primitives@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@ton/crypto-primitives@npm:2.1.0"
-  dependencies:
-    jssha: "npm:3.2.0"
-  checksum: 10c0/9869a393297930ae8dfd784b0c2c4f3c9eff6341b82c75b103990281855392fbf01780251e32d8afd86a82f3eaa388bfe35b9634a0b64d7f05d65c658855870b
-  languageName: node
-  linkType: hard
-
-"@ton/crypto@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "@ton/crypto@npm:3.3.0"
-  dependencies:
-    "@ton/crypto-primitives": "npm:2.1.0"
-    jssha: "npm:3.2.0"
-    tweetnacl: "npm:1.0.3"
-  checksum: 10c0/2fc008d4ada55f483ef7aba63a0690e09a307be340876ed95e7202253d8373daa1d07253dc031889067c578c95f0d08073903fdbc9cce643106d5ccd68095000
   languageName: node
   linkType: hard
 
@@ -22825,13 +22792,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jssha@npm:3.2.0":
-  version: 3.2.0
-  resolution: "jssha@npm:3.2.0"
-  checksum: 10c0/eba7fb986a6ed12238d57b959c522fae90ff25a9e427d70aeffaf698d4ffadc7a994af7cb28e121139b1a54e38e0bd9b08f2da4ea7979c72653ccba2fb558924
-  languageName: node
-  linkType: hard
-
 "jsx-ast-utils@npm:^2.4.1 || ^3.0.0, jsx-ast-utils@npm:^3.3.5":
   version: 3.3.5
   resolution: "jsx-ast-utils@npm:3.3.5"
@@ -24944,33 +24904,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.6.7":
-  version: 2.6.7
-  resolution: "node-fetch@npm:2.6.7"
-  dependencies:
-    whatwg-url: "npm:^5.0.0"
-  peerDependencies:
-    encoding: ^0.1.0
-  peerDependenciesMeta:
-    encoding:
-      optional: true
-  checksum: 10c0/fcae80f5ac52fbf5012f5e19df2bd3915e67d3b3ad51cb5942943df2238d32ba15890fecabd0e166876a9f98a581ab50f3f10eb942b09405c49ef8da36b826c7
+"node-fetch@portal:./packages/web/etc/node-fetch::locator=osmosis-frontend%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "node-fetch@portal:./packages/web/etc/node-fetch::locator=osmosis-frontend%40workspace%3A."
   languageName: node
-  linkType: hard
-
-"node-fetch@npm:^2.6.12, node-fetch@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "node-fetch@npm:2.7.0"
-  dependencies:
-    whatwg-url: "npm:^5.0.0"
-  peerDependencies:
-    encoding: ^0.1.0
-  peerDependenciesMeta:
-    encoding:
-      optional: true
-  checksum: 10c0/b55786b6028208e6fbe594ccccc213cab67a72899c9234eb59dba51062a299ea853210fcf526998eaa2867b0963ad72338824450905679ff0fa304b8c5093ae8
-  languageName: node
-  linkType: hard
+  linkType: soft
 
 "node-forge@npm:^1.3.1":
   version: 1.4.0
@@ -30256,13 +30194,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"symbol.inspect@npm:1.0.1":
-  version: 1.0.1
-  resolution: "symbol.inspect@npm:1.0.1"
-  checksum: 10c0/7ed8636838ede2740293b09175964aef7d65d4ed14b4ffa197785f9b66bd8f964a05979be3d87c021c1a90a25c01262b0528211c97b14ffe64b2acdb941ad214
-  languageName: node
-  linkType: hard
-
 "synckit@npm:^0.11.8":
   version: 0.11.13
   resolution: "synckit@npm:0.11.13"
@@ -30708,13 +30639,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tr46@npm:~0.0.3":
-  version: 0.0.3
-  resolution: "tr46@npm:0.0.3"
-  checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
-  languageName: node
-  linkType: hard
-
 "tree-kill@npm:1.2.2, tree-kill@npm:^1.2.2":
   version: 1.2.2
   resolution: "tree-kill@npm:1.2.2"
@@ -30925,13 +30849,6 @@ __metadata:
   bin:
     turbo: bin/turbo
   checksum: 10c0/51a174dbc7d65a85730c101920fa8ea393906e4afa7f68ff3210160dc8d98fec92b22ec14d0b15ab5451f03bf8b08ce6a5922f1e6bb64e40c574f3575468e6f8
-  languageName: node
-  linkType: hard
-
-"tweetnacl@npm:1.0.3":
-  version: 1.0.3
-  resolution: "tweetnacl@npm:1.0.3"
-  checksum: 10c0/069d9df51e8ad4a89fbe6f9806c68e06c65be3c7d42f0701cc43dba5f0d6064686b238bbff206c5addef8854e3ce00c643bff59432ea2f2c639feab0ee1a93f9
   languageName: node
   linkType: hard
 
@@ -32106,13 +32023,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webidl-conversions@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "webidl-conversions@npm:3.0.1"
-  checksum: 10c0/5612d5f3e54760a797052eb4927f0ddc01383550f542ccd33d5238cfd65aeed392a45ad38364970d0a0f4fea32e1f4d231b3d8dac4a3bdd385e5cf802ae097db
-  languageName: node
-  linkType: hard
-
 "webidl-conversions@npm:^7.0.0":
   version: 7.0.0
   resolution: "webidl-conversions@npm:7.0.0"
@@ -32173,16 +32083,6 @@ __metadata:
     tr46: "npm:^5.1.0"
     webidl-conversions: "npm:^7.0.0"
   checksum: 10c0/f746fc2f4c906607d09537de1227b13f9494c171141e5427ed7d2c0dd0b6a48b43d8e71abaae57d368d0c06b673fd8ec63550b32ad5ed64990c7b0266c2b4272
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "whatwg-url@npm:5.0.0"
-  dependencies:
-    tr46: "npm:~0.0.3"
-    webidl-conversions: "npm:^3.0.0"
-  checksum: 10c0/1588bed84d10b72d5eec1d0faa0722ba1962f1821e7539c535558fb5398d223b0c50d8acab950b8c488b4ba69043fd833cc2697056b167d8ad46fac3995a55d5
   languageName: node
   linkType: hard
 
