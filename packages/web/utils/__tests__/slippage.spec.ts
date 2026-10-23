@@ -179,7 +179,6 @@ describe("resolveSwapSlippage", () => {
     userSlippage: undefined,
     feeErrorSlippage: undefined,
     autoSlippage: "2",
-    quoteType: "out-given-in" as const,
   };
 
   it("prefers a typed value over everything", () => {
@@ -195,7 +194,7 @@ describe("resolveSwapSlippage", () => {
     });
   });
 
-  it("uses the auto tier for exact-in", () => {
+  it("uses the auto tier", () => {
     expect(resolveSwapSlippage(base)).toEqual({
       slippage: "2",
       source: "auto",
@@ -206,11 +205,5 @@ describe("resolveSwapSlippage", () => {
     expect(
       resolveSwapSlippage({ ...base, autoSlippage: DefaultSlippage })
     ).toEqual({ slippage: DefaultSlippage, source: "default" });
-  });
-
-  it("ignores the auto tier for exact-out", () => {
-    expect(resolveSwapSlippage({ ...base, quoteType: "in-given-out" })).toEqual(
-      { slippage: DefaultSlippage, source: "default" }
-    );
   });
 });
