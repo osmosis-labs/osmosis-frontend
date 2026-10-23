@@ -87,6 +87,7 @@ export const OrderHistory = () => {
   const {
     orders,
     isLoading,
+    isError,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -189,6 +190,17 @@ export const OrderHistory = () => {
             {t("transactions.connectWallet")}
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  if (orders.length === 0 && !isLoading && isError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6">
+        <h6>{t("limitOrders.historyTable.errorState.title")}</h6>
+        <p className="body2 text-osmoverse-300">
+          {t("limitOrders.historyTable.errorState.subtitle")}
+        </p>
       </div>
     );
   }

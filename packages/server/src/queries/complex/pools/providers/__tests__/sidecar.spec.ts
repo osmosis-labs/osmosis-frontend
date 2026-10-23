@@ -4,8 +4,14 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";
+import { AssetLists as MockAssetLists } from "../../../../__tests__/mock-asset-lists";
 import { calcAssetValue, calcSumCoinsValue, getAsset } from "../../../assets";
-import { getPoolTypeFromChainPool, makePoolFromChainPool } from "../sidecar";
+import {
+  getPoolsFromSidecar,
+  getPoolTypeFromChainPool,
+  hasUnpricedReserves,
+  makePoolFromChainPool,
+} from "../sidecar";
 
 export const server = setupServer();
 
@@ -23,6 +29,8 @@ jest.mock("../../../assets", () => ({
   getAsset: jest.fn(),
   calcAssetValue: jest.fn(),
   calcSumCoinsValue: jest.fn(),
+  isHoldingValueUnknown: jest.requireActual("../../../assets/price")
+    .isHoldingValueUnknown,
 }));
 
 describe("getPoolsFromSidecar", () => {
@@ -75,6 +83,114 @@ describe("getPoolsFromSidecar", () => {
     const pool = mockSidecarResponse[4];
     const poolType = getPoolTypeFromChainPool(pool.chain_model as any);
     expect(poolType).toBe("cosmwasm");
+  });
+});
+
+describe("getPoolsFromSidecar market data", () => {
+  beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+  afterAll(() => server.close());
+
+  beforeEach(() => {
+    (getAsset as jest.Mock).mockImplementation(() => mockAsset);
+  });
+
+  /** Serves the weighted mock pool with the given fees data under a unique pool ID. */
+  const getPoolWithFeesData = async (poolId: number, feesData?: object) => {
+    server.use(
+      http.get(new URL("/pools", SIDECAR_BASE_URL).toString(), () =>
+        HttpResponse.json({
+          data: [
+            {
+              ...mockSidecarResponse[0],
+              chain_model: {
+                ...mockSidecarResponse[0].chain_model,
+                id: poolId,
+              },
+              liquidity_cap: "1000",
+              fees_data: feesData,
+            },
+          ],
+          meta: { total_items: 1, next_cursor: -1 },
+        })
+      )
+    );
+
+    const { data } = await getPoolsFromSidecar({
+      assetLists: [],
+      chainList: [],
+      poolIds: [poolId.toString()],
+    });
+    return data[0];
+  };
+
+  it("leaves volume and fees unknown when fees data is missing or failed", async () => {
+    const missing = await getPoolWithFeesData(20001);
+    const failed = await getPoolWithFeesData(20002, {
+      volume_24h: 0,
+      volume_7d: 0,
+      fees_spent_24h: 0,
+      fees_spent_7d: 0,
+      is_error: true,
+    });
+
+    for (const pool of [missing, failed]) {
+      expect(pool.market?.volume24hUsd).toBeUndefined();
+      expect(pool.market?.volume7dUsd).toBeUndefined();
+      expect(pool.market?.feesSpent24hUsd).toBeUndefined();
+      expect(pool.market?.feesSpent7dUsd).toBeUndefined();
+      expect(pool.totalFiatValueLocked.toDec().toString()).toBe(
+        "1000.000000000000000000"
+      );
+    }
+  });
+
+  it("keeps known volume and fees, including a known zero", async () => {
+    const pool = await getPoolWithFeesData(20003, {
+      volume_24h: 0,
+      volume_7d: 700,
+      fees_spent_24h: 0,
+      fees_spent_7d: 2,
+    });
+
+    expect(pool.market?.volume24hUsd?.toDec().isZero()).toBe(true);
+    expect(pool.market?.volume7dUsd?.toDec().toString()).toBe(
+      "700.000000000000000000"
+    );
+    expect(pool.market?.feesSpent7dUsd?.toDec().toString()).toBe(
+      "2.000000000000000000"
+    );
+  });
+});
+
+describe("hasUnpricedReserves", () => {
+  // Listed, verified and stable in the mock asset lists.
+  const sail =
+    "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail";
+  const spam = "factory/osmo1spam/test";
+
+  it("is unknown when a held reserve that should have a price has none", () => {
+    expect(
+      hasUnpricedReserves(MockAssetLists, {
+        liquidity_cap_error: `zero cap for denom (${sail})`,
+        balances: [
+          { denom: sail, amount: "1832630768" },
+          { denom: "uosmo", amount: "1184090395" },
+        ],
+      })
+    ).toBe(true);
+  });
+
+  it("is known when the flagged reserve is drained or was never priced", () => {
+    expect(
+      hasUnpricedReserves(MockAssetLists, {
+        liquidity_cap_error: `zero cap for denom (${sail}); zero cap for denom (${spam})`,
+        balances: [
+          { denom: sail, amount: "0" },
+          { denom: spam, amount: "941235682501176" },
+          { denom: "uosmo", amount: "1184090395" },
+        ],
+      })
+    ).toBe(false);
   });
 });
 

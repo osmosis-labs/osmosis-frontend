@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "Recent swaps, deposits and withdrawals will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
+    "historyLoadError": "Couldn't load your full history. Please try again in a moment.",
     "connectToSee": "Connect to see your transaction history",
     "connectWallet": "Connect wallet",
     "title": "Transactions",
@@ -1333,6 +1335,10 @@
         "subtitle": "Your trade order history will appear here.",
         "connectTitle": "Connect your wallet to see your order history",
         "connectSubtitle": "Your past limit orders on Osmosis will appear here."
+      },
+      "errorState": {
+        "title": "Couldn't load your orders",
+        "subtitle": "Please try again in a moment."
       }
     },
     "aboveMarket": {

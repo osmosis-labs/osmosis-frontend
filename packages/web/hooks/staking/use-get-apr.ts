@@ -1,5 +1,3 @@
-import { Dec } from "@osmosis-labs/unit";
-
 import { api } from "~/utils/trpc";
 
 const getAprDateRange = () => {
@@ -15,12 +13,12 @@ const getAprDateRange = () => {
 export function useGetApr() {
   const { startDate, endDate } = getAprDateRange();
 
-  const { data, isLoading: isLoadingApr } = api.edge.staking.getApr.useQuery({
-    startDate,
-    endDate,
-  });
-
-  const stakingAPR = data || new Dec(0);
+  // Undefined when the APR is unavailable, so it isn't shown as 0%.
+  const { data: stakingAPR, isLoading: isLoadingApr } =
+    api.edge.staking.getApr.useQuery({
+      startDate,
+      endDate,
+    });
 
   return { stakingAPR, isLoadingApr };
 }

@@ -10,7 +10,8 @@ import { useTranslation } from "~/hooks";
 
 /** Liquidity to be removed. */
 export type RemovableShareLiquidity = {
-  shareValue: PricePretty;
+  /** Undefined when the shares can't be priced; removing them still works. */
+  shareValue?: PricePretty;
   shares: CoinPretty;
   underlyingCoins: CoinPretty[];
 };
@@ -35,7 +36,7 @@ export const RemoveLiquidity: FunctionComponent<
   const { t } = useTranslation();
 
   const percentageMultiplier = new Dec(percentage).quo(new Dec(100));
-  const removableValueWithPercentage = shareValue.mul(percentageMultiplier);
+  const removableValueWithPercentage = shareValue?.mul(percentageMultiplier);
   const removableSharesWithPercentage = shares.mul(percentageMultiplier);
 
   return (
@@ -48,7 +49,7 @@ export const RemoveLiquidity: FunctionComponent<
       >
         <div className="flex flex-col gap-1">
           <h2 className="mt-12 md:mt-7">
-            {removableValueWithPercentage.toString()}
+            {removableValueWithPercentage?.toString() ?? "–"}
           </h2>
           <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
             {t("removeLiquidity.sharesAmount", {
@@ -97,7 +98,7 @@ export const RemoveLiquidity: FunctionComponent<
             className="!h-full"
             size="sm"
             onClick={() => setPercentage("25")}
-            disabled={shareValue.toDec().isZero()}
+            disabled={shares.toDec().isZero()}
           >
             25%
           </Button>
@@ -105,7 +106,7 @@ export const RemoveLiquidity: FunctionComponent<
             className="!h-full"
             size="sm"
             onClick={() => setPercentage("50")}
-            disabled={shareValue.toDec().isZero()}
+            disabled={shares.toDec().isZero()}
           >
             50%
           </Button>
@@ -113,7 +114,7 @@ export const RemoveLiquidity: FunctionComponent<
             className="!h-full"
             size="sm"
             onClick={() => setPercentage("75")}
-            disabled={shareValue.toDec().isZero()}
+            disabled={shares.toDec().isZero()}
           >
             75%
           </Button>
@@ -121,7 +122,7 @@ export const RemoveLiquidity: FunctionComponent<
             className="!h-full"
             size="sm"
             onClick={() => setPercentage("100")}
-            disabled={shareValue.toDec().isZero()}
+            disabled={shares.toDec().isZero()}
           >
             {t("components.MAX")}
           </Button>

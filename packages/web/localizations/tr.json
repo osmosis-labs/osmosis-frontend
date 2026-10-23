@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Piyasa verileri şu anda kullanılamıyor. Lütfen birazdan tekrar deneyin.",
       "depositButton": "Yatır",
       "search": "Arama",
       "withdrawButton": "Çek",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
     "noTransactions": "İşlem yok",
     "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
+    "historyLoadError": "Geçmişinizin tamamı yüklenemedi. Lütfen birazdan tekrar deneyin.",
     "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
     "connectWallet": "Cüzdanı bağlayın",
     "title": "İşlemler",
@@ -1333,6 +1335,10 @@
         "subtitle": "Ticari sipariş geçmişiniz burada görünecektir.",
         "connectTitle": "Sipariş geçmişinizi görmek için cüzdanınızı bağlayın",
         "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
+      },
+      "errorState": {
+        "title": "Emirleriniz yüklenemedi",
+        "subtitle": "Lütfen birazdan tekrar deneyin."
       }
     },
     "aboveMarket": {

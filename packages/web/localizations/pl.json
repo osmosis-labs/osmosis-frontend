@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Dane rynkowe są obecnie niedostępne. Spróbuj ponownie za chwilę.",
       "depositButton": "Wpłać",
       "search": "Szukaj",
       "withdrawButton": "Wypłać",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami).",
     "noTransactions": "Żadnych transakcji",
     "pastShownHere": "Tutaj pojawią się Twoje poprzednie transakcje na Osmozie.",
+    "historyLoadError": "Nie udało się wczytać pełnej historii. Spróbuj ponownie za chwilę.",
     "connectToSee": "Połącz się, aby zobaczyć historię transakcji",
     "connectWallet": "Podłącz portfel",
     "title": "Transakcje",
@@ -1333,6 +1335,10 @@
         "subtitle": "Tutaj pojawi się historia Twoich zleceń handlowych.",
         "connectTitle": "Podłącz swój portfel, aby zobaczyć historię swoich zamówień",
         "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie."
+      },
+      "errorState": {
+        "title": "Nie udało się wczytać Twoich zleceń",
+        "subtitle": "Spróbuj ponownie za chwilę."
       }
     },
     "aboveMarket": {

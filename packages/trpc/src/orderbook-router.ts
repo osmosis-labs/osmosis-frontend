@@ -1,5 +1,6 @@
 import { tickToPrice } from "@osmosis-labs/math";
 import {
+  captureErrorAndReturn,
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookActiveOrdersSQS,
@@ -101,16 +102,26 @@ export const orderbookRouter = createTRPCRouter({
               return orders;
             }
           );
+          // Closed orders come from the data services; their failure must not hide open orders.
+          let historicalOrdersError: Error | undefined;
           promises.push(
             getOrderbookHistoricalOrders({
               userOsmoAddress: input.userOsmoAddress,
               assetLists: ctx.assetLists,
               chainList: ctx.chainList,
+            }).catch((e: Error) => {
+              historicalOrdersError = e;
+              return captureErrorAndReturn(e, [] as MappedLimitOrder[]);
             })
           );
 
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
+
+          // With no open orders to show, an empty list would read as "no orders".
+          if (historicalOrdersError && allOrders.length === 0) {
+            throw historicalOrdersError;
+          }
 
           return allOrders.sort(defaultSortOrders);
         },
@@ -142,17 +153,27 @@ export const orderbookRouter = createTRPCRouter({
               })
             );
           }
+          // Closed orders come from the data services; their failure must not hide open orders.
+          let historicalOrdersError: Error | undefined;
           if (shouldFetchHistorical) {
             promises.push(
               getOrderbookHistoricalOrders({
                 userOsmoAddress,
                 assetLists: ctx.assetLists,
                 chainList: ctx.chainList,
+              }).catch((e: Error) => {
+                historicalOrdersError = e;
+                return captureErrorAndReturn(e, [] as MappedLimitOrder[]);
               })
             );
           }
           const orders = await Promise.all(promises);
           const allOrders = orders.flat().sort(defaultSortOrders);
+
+          // With no open orders to show, an empty list would read as "no orders".
+          if (historicalOrdersError && allOrders.length === 0) {
+            throw historicalOrdersError;
+          }
           if (filter === "filled") {
             return allOrders.filter((o) => o.status === "filled");
           }

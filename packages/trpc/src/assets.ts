@@ -22,6 +22,7 @@ import {
   getUpcomingAssets,
   getUserAssetsTotal,
   IS_TESTNET,
+  isMarketDataAvailable,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
@@ -36,6 +37,7 @@ import {
   isNil,
   sort,
 } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -321,6 +323,15 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
+            // Without market data the list would come back empty; report an outage with
+            // its own code so the client can tell it apart from other errors.
+            if (!(await isMarketDataAvailable())) {
+              throw new TRPCError({
+                code: "SERVICE_UNAVAILABLE",
+                message: "Market data is unavailable",
+              });
+            }
+
             const assets = await mapGetMarketAssets({
               ...ctx,
               search,
@@ -461,9 +472,11 @@ export const assetsRouter = createTRPCRouter({
                 getAssetPrice({ ...ctx, asset })
                   .then((price) => new PricePretty(DEFAULT_VS_CURRENCY, price))
                   .catch((e) => captureErrorAndReturn(e, undefined)),
-                getAssetMarketActivity(asset).then(
-                  (activity) => activity?.price24hChange
-                ),
+                // Unavailable market data leaves the change unknown instead of
+                // failing the user's balances.
+                getAssetMarketActivity(asset)
+                  .then((activity) => activity?.price24hChange)
+                  .catch((e) => captureErrorAndReturn(e, undefined)),
               ]);
 
               return getBridgeAsset(ctx.assetLists, {
@@ -542,19 +555,24 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(({ input: { coinMinimalDenom, timeFrame, realtime } }) => {
+      // An empty chart lets the asset page fall back to CoinGecko history. Realtime
+      // callers (the TradingView feed) get the error instead, so it isn't shown as "no data".
+      const onError = (e: Error) =>
+        realtime ? Promise.reject(e) : captureErrorAndReturn(e, []);
+
       if (typeof timeFrame === "string") {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       } else {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame: timeFrame.custom.timeFrame as TimeFrame,
           numRecentFrames: timeFrame.custom.numRecentFrames,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       }
     }),
   /**
@@ -647,7 +665,13 @@ export const assetsRouter = createTRPCRouter({
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
         }).catch((e) =>
-          captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
+          // Same shape as an empty result: 0/0 would read as a real price range
+          // and seed the add-liquidity "moderate" range with it.
+          captureErrorAndReturn(e, {
+            prices: [],
+            min: Infinity,
+            max: -Infinity,
+          })
         )
     ),
   getTopNewAssets: publicProcedure
@@ -858,7 +882,7 @@ export const assetsRouter = createTRPCRouter({
                   .then((marketAsset) => ({
                     ...asset,
                     volume24h: marketAsset ? marketAsset.volume24h : 0,
-                    liquidity: marketAsset ? marketAsset.liquidity : 0,
+                    liquidity: marketAsset?.liquidity ?? 0,
                   }))
               )
             );
