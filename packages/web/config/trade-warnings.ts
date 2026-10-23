@@ -42,16 +42,19 @@ export const HighSlippageGate = new Dec(0.06);
 
 /**
  * Slippage *tolerance* (as a positive fraction, e.g. 0.02 = 2%) at or above
- * which a trade requires explicit user acknowledgement. This is the ceiling the
- * user set, not a loss they have taken, which is why it stamps `slip=` and
- * never `loss=` (see `deriveTradeMemoFlags`).
+ * which a trade requires explicit user acknowledgement. This is the submitted
+ * ceiling, not a loss the user has taken, which is why it stamps `slip=` and
+ * never `loss=` (see `deriveTradeMemoFlags`). The ceiling may be one the user
+ * typed or one the swap tool chose from the quote or a fee simulation error, so
+ * `slip=` records that the user acknowledged it, not that they picked it.
  *
  * Set to match the threshold at which the review-order modal already warns that
  * a trade "may result in significant loss of value". Before that alignment the
  * warning appeared from 2% while the gate sat at 6%, so anyone choosing a
  * tolerance in between read a loss warning with nothing to acknowledge and no
- * gate behind it. Slippage is a single typed field — there is no preset picker
- * wired up in the UI — so reaching this gate is always a deliberate act.
+ * gate behind it. The swap tool's automatic tiers reach this gate too (2%, 3%
+ * and 5% on high-impact or thin routes), so it is not always a deliberate act;
+ * the acknowledgement is what makes it one.
  */
 export const HighSlippageToleranceGate = new Dec(0.02);
 

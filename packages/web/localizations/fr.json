@@ -801,7 +801,11 @@
     "route": "itinéraire",
     "routes": "itinéraires",
     "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages",
-    "amountTooSmallForSlippage": "Montant trop faible pour un échange avec ce slippage. Augmentez le montant ou réduisez le slippage."
+    "amountTooSmallForSlippage": "Montant trop faible pour un échange avec ce slippage. Augmentez le montant ou réduisez le slippage.",
+    "slippageAutoAdjustedTitle": "Slippage ajusté automatiquement",
+    "slippageAutoAdjustedBody": "Le slippage par défaut de cette transaction a été augmenté en raison d'un fort impact sur le prix ou d'une faible liquidité.",
+    "routeLiquidityUnknown": "Impossible de vérifier la liquidité de cet itinéraire. Vérifiez le montant « Recevez au moins » avant de confirmer.",
+    "slippageAutoAdjustedHigh": "Le slippage a été augmenté automatiquement en raison du fort impact sur le prix ou de la faible liquidité de cette transaction. Vérifiez le montant « Recevez au moins » avant de confirmer."
   },
   "walletSelect": {
     "gettingStarted": "Commencer",
