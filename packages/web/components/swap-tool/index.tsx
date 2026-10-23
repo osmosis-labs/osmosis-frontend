@@ -165,10 +165,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     const outputDifference = useMemo(() => {
       if (quoteType === "in-given-out") {
         // priceImpactTokenOut is (effectivePrice / spotPrice) - 1, negative
-        // for an adverse trade. Negate so that adverse is positive, matching
-        // the exact-in fiat branch below.
+        // for an adverse trade, and excludes the swap fee. Negate the impact
+        // and add the fee so the figure matches the exact-in fiat branch
+        // below, whose output amount is already net of fees.
         return new RatePretty(
-          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)).neg()
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0))
+            .neg()
+            .add(swapState.quote?.swapFee?.toDec() ?? new Dec(0))
         );
       }
       return new RatePretty(
@@ -182,6 +185,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       swapState.inAmountInput?.fiatValue,
       swapState.tokenOutFiatValue,
       swapState.quote?.priceImpactTokenOut,
+      swapState.quote?.swapFee,
     ]);
 
     const showOutputDifferenceWarning = outputDifference
