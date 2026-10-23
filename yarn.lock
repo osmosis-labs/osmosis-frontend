@@ -3574,6 +3574,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cosmos-kit/vultisig-extension@npm:^2.17.1":
+  version: 2.17.1
+  resolution: "@cosmos-kit/vultisig-extension@npm:2.17.1"
+  dependencies:
+    "@cosmos-kit/core": "npm:^2.18.1"
+  peerDependencies:
+    "@cosmjs/amino": ">=0.32.3"
+    "@cosmjs/proto-signing": ">=0.32.3"
+  checksum: 10c0/ba7d5f0ab391cdbc54d6412d7d7c7ad46abd434037e6356aefc7faf495ea836720dc7bd4e9841c61b9bf21aeb0aeb3f75371f20490c1b1fbbd56b0c89c2bcdb9
+  languageName: node
+  linkType: hard
+
 "@cosmos-kit/walletconnect@npm:^2.15.1":
   version: 2.15.1
   resolution: "@cosmos-kit/walletconnect@npm:2.15.1"
@@ -8550,6 +8562,7 @@ __metadata:
     "@cosmos-kit/okxwallet-extension": "npm:^2.16.1"
     "@cosmos-kit/station-extension": "npm:^2.16.1"
     "@cosmos-kit/trust-extension": "npm:^2.15.1"
+    "@cosmos-kit/vultisig-extension": "npm:^2.17.1"
     "@cosmos-kit/xdefi-extension": "npm:^2.13.0"
     "@floating-ui/react": "npm:^0.26.16"
     "@headlessui/react": "npm:^2.2.10"
