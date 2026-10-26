@@ -32,7 +32,7 @@
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
     "generate:packages": "tsx scripts/gen-package-types.ts",
-    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
+    "generate:telescope": "tsc scripts/codegen.ts --ignoreConfig --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
   },
   "lint-staged": {
     "*": [
