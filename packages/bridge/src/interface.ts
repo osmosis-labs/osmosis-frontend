@@ -814,6 +814,13 @@ const txSnapshotSchema = z.object({
    */
   solanaRecentBlockhash: z.string().optional(),
   /**
+   * Set when the tracked tx was broadcast but its receipt couldn't be
+   * fetched, so its inclusion is unproven. A status provider that treats
+   * "not found" as failed must keep polling instead: a tx still waiting to
+   * be mined is unknown to it too.
+   */
+  sendTxUnconfirmed: z.boolean().optional(),
+  /**
    * Present while a multi-transaction route is mid-flow: the next
    * user-signed step, so an interrupted transfer can be resumed from
    * history. Cleared (set to undefined) when the final step is signed.

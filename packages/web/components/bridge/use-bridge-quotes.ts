@@ -10,7 +10,11 @@ import {
 } from "@osmosis-labs/bridge";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
+import {
+  getEvmExplorerUrl,
+  getNomicRelayerUrl,
+  isNil,
+} from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -68,6 +72,30 @@ class EvmTxRevertedError extends Error {
   constructor(readonly txHash: Address) {
     super(`Transaction ${txHash} reverted on-chain`);
   }
+}
+
+/** An EVM transaction the wallet broadcast whose receipt couldn't be
+ *  fetched (an RPC error while polling, or viem's receipt timeout). It may
+ *  still land, so this is not a failure. */
+class EvmTxStatusUnknownError extends Error {
+  constructor(
+    readonly txHash: Address,
+    readonly chainId: number,
+    readonly reason: unknown
+  ) {
+    super(`Status of transaction ${txHash} is unknown`);
+  }
+}
+
+/** Points to the explorer rather than reporting a failure: the user should
+ *  check there before sending again. */
+function getEvmTxStatusUnknownToastContent(e: EvmTxStatusUnknownError) {
+  return {
+    titleTranslationKey: "transactionStatusUnknown",
+    captionTranslationKey: "transactionStatusUnknownCaption",
+    learnMoreUrl: getEvmExplorerUrl({ hash: e.txHash, chainId: e.chainId }),
+    learnMoreUrlCaption: "viewExplorer",
+  } as const;
 }
 
 /** A Solana transaction that definitively moved nothing: it executed with
@@ -795,6 +823,7 @@ export const useBridgeQuotes = ({
       nomicCheckpointIndex,
       pendingStep,
       solanaRecentBlockhash,
+      sendTxUnconfirmed,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
@@ -803,6 +832,9 @@ export const useBridgeQuotes = ({
       pendingStep?: TxSnapshot["pendingStep"];
       /** Set when `sendTxHash` is a Solana signature. */
       solanaRecentBlockhash?: string;
+      /** Set when `sendTxHash` was broadcast but its receipt couldn't be
+       *  fetched. */
+      sendTxUnconfirmed?: boolean;
     }): boolean => {
       if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
         throw new Error(
@@ -860,6 +892,7 @@ export const useBridgeQuotes = ({
           quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
+          sendTxUnconfirmed,
         });
         return true;
       }
@@ -911,6 +944,22 @@ export const useBridgeQuotes = ({
       transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
+    const chainId = currentEvmChain.id;
+
+    // viem RETURNS (not throws) for a tx that reverted onchain, and rejects
+    // the whole wait on a single RPC error or its 3 minute timeout. Only the
+    // revert proves a failure; a rejected wait means the tx's status is
+    // unknown.
+    const waitForEvmReceipt = async (hash: Address) => {
+      const receipt = await waitForTransactionReceipt(publicClient, {
+        hash,
+      }).catch((e) => {
+        throw new EvmTxStatusUnknownError(hash, chainId, e);
+      });
+      if (receipt.status === "reverted") {
+        throw new EvmTxRevertedError(hash);
+      }
+    };
 
     /**
      * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
@@ -931,12 +980,7 @@ export const useBridgeQuotes = ({
         }
       );
 
-      const approvalReceipt = await waitForTransactionReceipt(publicClient, {
-        hash: approveTxHash,
-      });
-      if (approvalReceipt.status === "reverted") {
-        throw new EvmTxRevertedError(approveTxHash);
-      }
+      await waitForEvmReceipt(approveTxHash);
 
       for (const quoteResult of quoteResults) {
         await quoteResult.refetch();
@@ -970,16 +1014,11 @@ export const useBridgeQuotes = ({
 
     setIsBroadcastingTx(true);
 
-    // viem RETURNS (not throws) for a tx that reverted on-chain. A reverted
-    // first step must surface as a failure — for multi-tx transfers the
-    // entry was already persisted at broadcast, and without this it would
-    // sit "pending" forever with a Continue that can never work.
-    const receipt = await waitForTransactionReceipt(publicClient, {
-      hash: sendTxHash,
-    });
-    if (receipt.status === "reverted") {
-      throw new EvmTxRevertedError(sendTxHash);
-    }
+    // A reverted first step must surface as a failure: for multi-tx
+    // transfers the entry was already persisted at broadcast, and without
+    // this it would sit "pending" forever with a Continue that can never
+    // work.
+    await waitForEvmReceipt(sendTxHash);
 
     return sendTxHash;
   };
@@ -995,8 +1034,12 @@ export const useBridgeQuotes = ({
   ) => {
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
+    let broadcastHash: Address | undefined;
     try {
-      const sendTxHash = await sendEvmBridgeTx(transactionRequest);
+      const sendTxHash = await sendEvmBridgeTx(
+        transactionRequest,
+        (txHash) => (broadcastHash = txHash)
+      );
 
       trackTransferStatus({
         quote,
@@ -1009,6 +1052,23 @@ export const useBridgeQuotes = ({
       onTransferProp?.();
       setTransferInitiated(true);
     } catch (e) {
+      if (e instanceof EvmTxStatusUnknownError) {
+        // The transfer was broadcast but its receipt couldn't be fetched: it
+        // may still land, so record it and let the provider's status
+        // tracking settle it instead of reporting a failure the user might
+        // answer by sending again.
+        if (e.txHash === broadcastHash) {
+          trackTransferStatus({
+            quote,
+            sendTxHash: e.txHash,
+            sendTxUnconfirmed: true,
+          });
+          onTransferProp?.();
+          setTransferInitiated(true);
+        }
+        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        return;
+      }
       const error = e as BaseError;
       const toastContent = getWagmiToastErrorMessage({
         error,
@@ -1289,18 +1349,22 @@ export const useBridgeQuotes = ({
       // Named multi-tx failures (route expired, fee shortfall) carry
       // specific recovery copy shared with the resume flow; the funds are
       // on the intermediate chain and the entry stays resumable from
-      // history. Everything else gets the wallet-error mapping for the wallet
-      // that was signing (Phantom errors are not wagmi errors).
+      // history. An EVM tx whose receipt couldn't be fetched is not a
+      // failure: the first step's entry stays resumable from history.
+      // Everything else gets the wallet-error mapping for the wallet that
+      // was signing (Phantom errors are not wagmi errors).
       const multiTxToast = getMultiTxErrorToastContent(e, finalStepPrettyName);
       displayToast(
         multiTxToast ??
-          (firstStep.type === "solana"
-            ? getSolanaErrorToastContent(e)
-            : getWagmiToastErrorMessage({
-                error: e as BaseError,
-                t,
-                walletName: evmConnector?.name ?? "",
-              })),
+          (e instanceof EvmTxStatusUnknownError
+            ? getEvmTxStatusUnknownToastContent(e)
+            : firstStep.type === "solana"
+              ? getSolanaErrorToastContent(e)
+              : getWagmiToastErrorMessage({
+                  error: e as BaseError,
+                  t,
+                  walletName: evmConnector?.name ?? "",
+                })),
         ToastType.ERROR
       );
       if (e instanceof SolanaPreflightError && e.reason === "expired") {

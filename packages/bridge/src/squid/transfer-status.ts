@@ -97,7 +97,13 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           } as BridgeTransferStatus;
         } catch (e) {
           const error = e as Error | ApiClientError;
-          if (error instanceof ApiClientError && error.status === 404) {
+          // A tx whose inclusion is unproven may simply not be mined yet, so
+          // Squid not knowing it is no proof of failure.
+          if (
+            error instanceof ApiClientError &&
+            error.status === 404 &&
+            !snapshot.sendTxUnconfirmed
+          ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {
               return {
