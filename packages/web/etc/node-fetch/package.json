@@ -1,0 +1,8 @@
+{
+  "name": "node-fetch",
+  "version": "2.7.0-native",
+  "main": "index.js",
+  "private": true,
+  "scripts": {},
+  "dependencies": {}
+}

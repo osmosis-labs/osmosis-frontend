@@ -64,10 +64,7 @@ const libraryConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-wrapper-object-types": "off",
       "@typescript-eslint/prefer-as-const": "off",
-      "import/no-extraneous-dependencies": [
-        "error",
-        { devDependencies: true },
-      ],
+      "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
     },
   },
 ].map((config) => ({
@@ -204,6 +201,7 @@ const webConfig = [
       "packages/web/playwright.config.ts",
       "packages/web/open-next.config.ts",
       "packages/web/worker.ts",
+      "packages/web/router/worker.ts",
       "packages/web/localizations/dayjs-locale-*.js",
     ],
     rules: { "import/no-default-export": "off" },
