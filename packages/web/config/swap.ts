@@ -11,11 +11,18 @@ export const DefaultSlippage = "0.1";
  *
  * Route liquidity is the router's `liquidity_cap`: the summed USD liquidity
  * of every pool the quote routes through.
+ *
+ * Price impact alone raises the tolerance to 1% at most; only a thin route
+ * reaches the wider tiers. The quoted output already includes the trade's own
+ * impact, and the tolerance only has to cover price movement after the quote,
+ * which depends on how deep the route is. Widening it with impact would mostly
+ * widen how far below the quote the largest trades can fill.
  */
 export const AutoSlippageTiers: ReadonlyArray<{
   /** Slippage tolerance, in percent. */
   slippage: string;
-  minPriceImpact: Dec;
+  /** Absent on tiers that only a thin route can reach. */
+  minPriceImpact?: Dec;
   maxRouteLiquidityUsd: Dec;
 }> = [
   {
@@ -40,17 +47,14 @@ export const AutoSlippageTiers: ReadonlyArray<{
   },
   {
     slippage: "2",
-    minPriceImpact: new Dec("0.05"),
     maxRouteLiquidityUsd: new Dec(1_000),
   },
   {
     slippage: "3",
-    minPriceImpact: new Dec("0.1"),
     maxRouteLiquidityUsd: new Dec(300),
   },
   {
     slippage: "5",
-    minPriceImpact: new Dec("0.2"),
     maxRouteLiquidityUsd: new Dec(100),
   },
 ];

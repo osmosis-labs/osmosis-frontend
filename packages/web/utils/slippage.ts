@@ -34,9 +34,9 @@ function parseRouteLiquidity(
 /**
  * Picks the slippage tier for an exact-in quote.
  *
- * Price impact is the primary signal and route liquidity a secondary one.
- * When route liquidity is unknown it contributes nothing, so the tier comes
- * from price impact alone and `liquidityUnknown` is set so the review can say
+ * Price impact raises the tier up to 1%, and only a thin route raises it
+ * further (see {@link AutoSlippageTiers}). When route liquidity is unknown it
+ * contributes nothing, so the tier comes from price impact alone and `liquidityUnknown` is set so the review can say
  * so; an unknown route is never treated as thin, which would silently widen
  * the tolerance on what may be a deep route.
  */
@@ -65,7 +65,9 @@ export function computeAutoSlippage(quote: AutoSlippageQuote | undefined): {
       routeLiquidity !== undefined &&
       routeLiquidity !== "deep" &&
       routeLiquidity.lte(tier.maxRouteLiquidityUsd);
-    if (priceImpact.gte(tier.minPriceImpact) || thinRoute) {
+    const highImpact =
+      tier.minPriceImpact !== undefined && priceImpact.gte(tier.minPriceImpact);
+    if (highImpact || thinRoute) {
       return { slippage: tier.slippage, liquidityUnknown };
     }
   }

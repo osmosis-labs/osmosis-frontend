@@ -42,10 +42,11 @@ describe("computeAutoSlippage", () => {
     ["-0.006", "0.3"],
     ["-0.01", "0.5"],
     ["-0.03", "1"],
-    ["-0.05", "2"],
-    ["-0.1", "3"],
-    ["-0.2", "5"],
-    ["-0.9", "5"],
+    // Impact alone stops at 1%; only a thin route reaches the wider tiers.
+    ["-0.05", "1"],
+    ["-0.1", "1"],
+    ["-0.2", "1"],
+    ["-0.9", "1"],
   ])("picks the tier for %s impact on a deep route", (impact, tier) => {
     expect(computeAutoSlippage(quote(impact, DEEP)).slippage).toBe(tier);
   });
@@ -70,8 +71,10 @@ describe("computeAutoSlippage", () => {
   it("takes whichever signal selects the wider tier", () => {
     // 0.3% impact alone gives 0.2%; $900 of liquidity gives 2%.
     expect(computeAutoSlippage(quote("-0.003", "900")).slippage).toBe("2");
-    // $40k of liquidity alone gives 0.2%; 6% impact gives 2%.
-    expect(computeAutoSlippage(quote("-0.06", "40000")).slippage).toBe("2");
+    // $40k of liquidity alone gives 0.2%; 6% impact gives 1%.
+    expect(computeAutoSlippage(quote("-0.06", "40000")).slippage).toBe("1");
+    // 20% impact alone gives 1%; $100 of liquidity gives 5%.
+    expect(computeAutoSlippage(quote("-0.2", "100")).slippage).toBe("5");
   });
 
   it("clamps favourable (positive) impact to zero", () => {
@@ -95,9 +98,9 @@ describe("computeAutoSlippage", () => {
       });
     });
 
-    it("still applies price impact", () => {
+    it("still applies price impact, up to 1%", () => {
       expect(computeAutoSlippage(quote("-0.05", "0"))).toEqual({
-        slippage: "2",
+        slippage: "1",
         liquidityUnknown: true,
       });
     });

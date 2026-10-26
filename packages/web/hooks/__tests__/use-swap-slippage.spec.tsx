@@ -55,7 +55,7 @@ describe("useSwapSlippage", () => {
     // A preset select() in a mount effect would turn auto-adjust off once
     // StrictMode re-runs effects after the presets exist.
     const { result } = render({
-      quote: quote("-0.05"),
+      quote: quote("-0.05", "1000"),
       quoteType: "out-given-in",
     });
 
@@ -65,7 +65,7 @@ describe("useSwapSlippage", () => {
 
   it("follows the quote as its tier changes", () => {
     const { result, rerender } = render({
-      quote: quote("-0.05"),
+      quote: quote("-0.05", "1000"),
       quoteType: "out-given-in",
     });
     rerender({ quote: quote("-0.001"), quoteType: "out-given-in" });
@@ -76,7 +76,7 @@ describe("useSwapSlippage", () => {
 
   it("pins exact-out to the default", () => {
     const { result } = render({
-      quote: quote("-0.2"),
+      quote: quote("-0.2", "100"),
       quoteType: "in-given-out",
     });
 
@@ -86,7 +86,7 @@ describe("useSwapSlippage", () => {
 
   it("never overwrites a value the user typed", () => {
     const { result, rerender } = render({
-      quote: quote("-0.05"),
+      quote: quote("-0.05", "1000"),
       quoteType: "out-given-in",
     });
 
@@ -94,7 +94,7 @@ describe("useSwapSlippage", () => {
       result.current.slippageConfig.markUserOverride();
       result.current.slippageConfig.setManualSlippage("7");
     });
-    rerender({ quote: quote("-0.2"), quoteType: "out-given-in" });
+    rerender({ quote: quote("-0.2", "100"), quoteType: "out-given-in" });
 
     expect(result.current.source).toBe("user");
     expect(pct(result.current.slippageConfig)).toBe("7.0");
@@ -102,7 +102,7 @@ describe("useSwapSlippage", () => {
 
   it("re-applies the auto tier when the user clears their value", () => {
     const { result, rerender } = render({
-      quote: quote("-0.05"),
+      quote: quote("-0.05", "1000"),
       quoteType: "out-given-in",
     });
     act(() => {
@@ -115,7 +115,7 @@ describe("useSwapSlippage", () => {
       result.current.slippageConfig.clearUserOverride();
       result.current.slippageConfig.setIsManualSlippage(false);
     });
-    rerender({ quote: quote("-0.05"), quoteType: "out-given-in" });
+    rerender({ quote: quote("-0.05", "1000"), quoteType: "out-given-in" });
 
     expect(result.current.slippageConfig.isManualSlippage).toBe(true);
     expect(pct(result.current.slippageConfig)).toBe("2.0");
@@ -123,7 +123,7 @@ describe("useSwapSlippage", () => {
 
   it("resetForReview drops a typed value so the next review starts on auto", () => {
     const { result, rerender } = render({
-      quote: quote("-0.05"),
+      quote: quote("-0.05", "1000"),
       quoteType: "out-given-in",
     });
     act(() => {
@@ -132,7 +132,7 @@ describe("useSwapSlippage", () => {
     });
 
     act(() => result.current.resetForReview());
-    rerender({ quote: quote("-0.05"), quoteType: "out-given-in" });
+    rerender({ quote: quote("-0.05", "1000"), quoteType: "out-given-in" });
 
     expect(result.current.source).toBe("auto");
     expect(pct(result.current.slippageConfig)).toBe("2.0");
@@ -233,7 +233,7 @@ describe("useSwapSlippage", () => {
       expect(pct(result.current.slippageConfig)).toBe("0.2");
 
       rerender({
-        quote: quote("-0.2"),
+        quote: quote("-0.2", "100"),
         quoteType: "out-given-in",
         isReviewOpen: true,
       });
@@ -242,7 +242,7 @@ describe("useSwapSlippage", () => {
 
       // Released on close: the live tier applies again.
       rerender({
-        quote: quote("-0.2"),
+        quote: quote("-0.2", "100"),
         quoteType: "out-given-in",
         isReviewOpen: false,
       });
@@ -261,12 +261,12 @@ describe("useSwapSlippage", () => {
         isReviewOpen: false,
       });
       rerender({
-        quote: quote("-0.05"),
+        quote: quote("-0.05", "1000"),
         quoteType: "out-given-in",
         isReviewOpen: false,
       });
       rerender({
-        quote: quote("-0.05"),
+        quote: quote("-0.05", "1000"),
         quoteType: "out-given-in",
         isReviewOpen: true,
       });
