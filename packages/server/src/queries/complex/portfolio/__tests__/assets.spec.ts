@@ -80,11 +80,13 @@ const MOCK_DATA: PortfolioAssetsResponse = {
 
 describe("getAll", () => {
   it("should calculate the correct allocation percentages and fiat values", () => {
-    const result = getAllocations(MOCK_DATA.categories).map((allocation) => ({
-      ...allocation,
-      percentage: allocation.percentage.toString(),
-      fiatValue: allocation.fiatValue.toString(),
-    }));
+    const result = getAllocations(MOCK_DATA.categories, assetLists).map(
+      (allocation) => ({
+        ...allocation,
+        percentage: allocation.percentage.toString(),
+        fiatValue: allocation.fiatValue.toString(),
+      })
+    );
 
     expect(result).toEqual([
       {
@@ -251,6 +253,49 @@ describe("calculatePercentAndFiatValues", () => {
         percentage: "0%",
         fiatValue: "$0",
       },
+    ]);
+  });
+});
+
+describe("calculatePercentAndFiatValues unpriced coins", () => {
+  it("marks a held coin valued at zero as unknown, so it isn't treated as dust", () => {
+    const result = calculatePercentAndFiatValues(
+      {
+        ...MOCK_DATA.categories,
+        "total-assets": {
+          capitalization: "10",
+          account_coins_result: [
+            {
+              coin: {
+                denom:
+                  "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
+                amount: "10",
+              },
+              cap_value: "10",
+            },
+            {
+              coin: {
+                denom:
+                  "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+                amount: "5000",
+              },
+              cap_value: "0",
+            },
+          ],
+          is_best_effort: true,
+        },
+      },
+      assetLists,
+      "total-assets",
+      5
+    );
+
+    expect(
+      result.map(({ key, fiatValueUnknown }) => ({ key, fiatValueUnknown }))
+    ).toEqual([
+      { key: "WOSMO", fiatValueUnknown: undefined },
+      { key: "SAIL", fiatValueUnknown: true },
+      { key: "Other", fiatValueUnknown: undefined },
     ]);
   });
 });

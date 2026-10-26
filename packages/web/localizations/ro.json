@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Datele de piață nu sunt disponibile momentan. Te rugăm să încerci din nou în câteva momente.",
       "depositButton": "Depoziteaza",
       "search": "Filtreaza dupa simbol",
       "withdrawButton": "Retrage",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici.",
     "noTransactions": "Fără tranzacții",
     "pastShownHere": "Tranzacțiile tale anterioare pe Osmosis vor apărea aici.",
+    "historyLoadError": "Istoricul complet nu a putut fi încărcat. Te rugăm să încerci din nou în câteva momente.",
     "connectToSee": "Conectați-vă pentru a vedea istoricul tranzacțiilor dvs",
     "connectWallet": "Conectați portofelul",
     "title": "Tranzacții",
@@ -1333,6 +1335,10 @@
         "subtitle": "Istoricul comenzilor dvs. comerciale va apărea aici.",
         "connectTitle": "Conectați-vă portofelul pentru a vedea istoricul comenzilor",
         "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici."
+      },
+      "errorState": {
+        "title": "Ordinele tale nu au putut fi încărcate",
+        "subtitle": "Te rugăm să încerci din nou în câteva momente."
       }
     },
     "aboveMarket": {

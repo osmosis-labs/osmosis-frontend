@@ -81,9 +81,11 @@ export async function mapGetAssetsWithUserBalances<
 
   assets = await Promise.all(
     assets.map(async (asset) => {
+      // Liquidity is optional here, so unavailable market data must not fail the
+      // whole query (swap token selector, balances, bridge assets).
       const marketActivity = await getAssetMarketActivity({
         coinMinimalDenom: asset.coinMinimalDenom,
-      });
+      }).catch(() => undefined);
 
       return {
         ...asset,

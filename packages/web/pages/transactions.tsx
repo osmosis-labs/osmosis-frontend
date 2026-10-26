@@ -52,11 +52,12 @@ const Transactions: React.FC = memo(() => {
 
   // type filters run in the API, so they apply across all pages
   const [{ txTypes }] = useTransactionFilters();
-  const { transactions, hasNextPage, isLoading } = useTransactionHistory({
-    pageNumber: pageString,
-    pageSize: pageSizeString,
-    types: isAllKinds(txTypes) ? undefined : [...txTypes],
-  });
+  const { transactions, hasNextPage, isLoading, isError } =
+    useTransactionHistory({
+      pageNumber: pageString,
+      pageSize: pageSizeString,
+      types: isAllKinds(txTypes) ? undefined : [...txTypes],
+    });
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -113,6 +114,7 @@ const Transactions: React.FC = memo(() => {
         open={open}
         address={address}
         isLoading={isLoading || isWalletLoading}
+        isError={isError}
         isWalletConnected={isWalletConnected}
         page={pageString}
         hasNextPage={hasNextPage}

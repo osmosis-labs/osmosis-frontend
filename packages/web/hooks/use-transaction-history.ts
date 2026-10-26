@@ -40,31 +40,39 @@ export const useTransactionHistory = ({
   const transferHistoryStore = useTransferHistoryStore();
   const storedTransfers = useTransferHistoriesByAccount(address || "");
 
-  const { data: transactionsData, isLoading } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        address: address || "",
-        page: pageNumber,
-        pageSize,
-        types,
-      },
-      {
-        enabled: Boolean(isWalletConnected && address),
-        // An Axelar deposit's source sender comes from Axelarscan, which can
-        // lag or time out; the server retries on the next request, so poll a
-        // few times while any is still unknown.
-        refetchInterval: (query) =>
-          query.state.dataUpdateCount <= UNKNOWN_SENDER_MAX_REFETCHES &&
-          query.state.data?.transfers.some(
-            (t) =>
-              t.direction === "deposit" &&
-              t.fromChain.chainType === "evm" &&
-              !t.fromAddress
-          )
-            ? UNKNOWN_SENDER_REFETCH_MS
-            : false,
-      }
-    );
+  const {
+    data: transactionsData,
+    isLoading,
+    // Only a failed first load: a failed background refetch (e.g. the Axelar sender
+    // poll) keeps the history already loaded.
+    isLoadingError: isError,
+  } = api.edge.transactions.getTransactions.useQuery(
+    {
+      address: address || "",
+      page: pageNumber,
+      pageSize,
+      types,
+    },
+    {
+      enabled: Boolean(isWalletConnected && address),
+      // A failing transaction index takes about 15 s per request; retry once so the
+      // load error shows after about 30 s instead of a minute of spinner.
+      retry: 1,
+      // An Axelar deposit's source sender comes from Axelarscan, which can
+      // lag or time out; the server retries on the next request, so poll a
+      // few times while any is still unknown.
+      refetchInterval: (query) =>
+        query.state.dataUpdateCount <= UNKNOWN_SENDER_MAX_REFETCHES &&
+        query.state.data?.transfers.some(
+          (t) =>
+            t.direction === "deposit" &&
+            t.fromChain.chainType === "evm" &&
+            !t.fromAddress
+        )
+          ? UNKNOWN_SENDER_REFETCH_MS
+          : false,
+    }
+  );
 
   // Transfers from the transaction index, so history includes transfers
   // made in other browsers or devices (local history is per browser).
@@ -124,5 +132,7 @@ export const useTransactionHistory = ({
     transactions: sortedActivity,
     hasNextPage,
     isLoading,
+    /** True when the indexed history couldn't be loaded; only this browser's transfers are shown. */
+    isError,
   };
 };

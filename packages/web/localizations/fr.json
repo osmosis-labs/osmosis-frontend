@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Les données de marché sont indisponibles pour le moment. Veuillez réessayer dans un instant.",
       "depositButton": "Déposer",
       "search": "Chercher",
       "withdrawButton": "Retirer",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici.",
     "noTransactions": "Aucune transaction",
     "pastShownHere": "Vos transactions passées sur Osmosis apparaîtront ici.",
+    "historyLoadError": "Impossible de charger tout votre historique. Veuillez réessayer dans un instant.",
     "connectToSee": "Connectez-vous pour voir l'historique de vos transactions",
     "connectWallet": "Connecter le portefeuille",
     "title": "Transactions",
@@ -1333,6 +1335,10 @@
         "subtitle": "L’historique de vos commandes commerciales apparaîtra ici.",
         "connectTitle": "Connectez votre portefeuille pour voir l'historique de vos commandes",
         "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici."
+      },
+      "errorState": {
+        "title": "Impossible de charger vos ordres",
+        "subtitle": "Veuillez réessayer dans un instant."
       }
     },
     "aboveMarket": {

@@ -30,9 +30,9 @@ const RecentActivitySkeleton = () => {
 export const RecentActivity: FunctionComponent = memo(() => {
   const { t } = useTranslation();
 
-  const { transactions, isLoading } = useTransactionHistory();
+  const { transactions, isLoading, isError } = useTransactionHistory();
 
-  const showNoTransactionsSplash = transactions.length === 0;
+  const showNoTransactionsSplash = transactions.length === 0 && !isError;
 
   const topTransactions = transactions.slice(0, ACTIVITY_LIMIT);
 
@@ -58,6 +58,11 @@ export const RecentActivity: FunctionComponent = memo(() => {
         />
       </div>
       <div className="flex flex-col justify-between self-stretch py-2">
+        {isError && !isLoading && (
+          <p className="body2 py-3 text-center text-osmoverse-300">
+            {t("transactions.historyLoadError")}
+          </p>
+        )}
         {isLoading ? (
           <RecentActivitySkeleton />
         ) : showNoTransactionsSplash ? (

@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "市場數據暫時無法使用。請稍後再試。",
       "depositButton": "存入",
       "search": "搜索",
       "withdrawButton": "轉出",
@@ -1266,6 +1267,7 @@
     "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。",
     "noTransactions": "沒有交易",
     "pastShownHere": "您過去在 Osmosis 上的交易將顯示在這裡。",
+    "historyLoadError": "無法載入您的完整紀錄。請稍後再試。",
     "connectToSee": "連接以查看您的交易記錄",
     "connectWallet": "連接錢包",
     "title": "交易",
@@ -1333,6 +1335,10 @@
         "subtitle": "您的交易訂單歷史記錄將顯示在這裡。",
         "connectTitle": "連接您的錢包以查看您的訂單歷史記錄",
         "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。"
+      },
+      "errorState": {
+        "title": "無法載入您的訂單",
+        "subtitle": "請稍後再試。"
       }
     },
     "aboveMarket": {

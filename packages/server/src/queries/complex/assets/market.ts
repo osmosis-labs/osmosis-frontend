@@ -3,7 +3,10 @@ import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import {
+  DATA_SERVICES_MARKET_MAX_AGE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   type CoingeckoVsCurrencies,
@@ -43,11 +46,14 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 60, // 1 minute
-    getFreshValue: async () => {
-      const [assetMarketActivity, totalSupply] = await Promise.all([
-        getAssetMarketActivity(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        ),
+    getFreshValue: async ({ metadata }) => {
+      const [marketActivity, totalSupply] = await Promise.all([
+        getAssetMarketActivityWithFreshness(asset).catch((e) => {
+          // Market data is unavailable, not absent: retry soon instead of
+          // holding the asset without it for the full ttl.
+          metadata.ttl = 1000 * 5; // 5 seconds
+          return captureErrorAndReturn(e, undefined);
+        }),
         includeTotalSupply
           ? querySupplyTotal({
               ...params,
@@ -55,6 +61,15 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
             }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined,
       ]);
+      const assetMarketActivity = marketActivity?.activity;
+
+      // Never hold a price past the token data's freshness, and retry soon when
+      // there's no price (it may be unavailable rather than absent).
+      if (marketActivity) {
+        metadata.ttl = assetMarketActivity?.price
+          ? Math.min(1000 * 60, marketActivity.freshForMs)
+          : 1000 * 5;
+      }
 
       return {
         currentPrice: assetMarketActivity?.price,
@@ -99,6 +114,12 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   /** Maximum 24h price change in percent. If provided, assets with priceChange24h above this are excluded (sanity cap for stale data / shallow-pool blips). */
   maxPriceChange24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
+  // Without market data every asset would be filtered out below, which would read
+  // as an empty list rather than an outage.
+  if (!(await isMarketDataAvailable())) {
+    throw new Error("Market data is unavailable");
+  }
+
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
   // Apply variant filtering if requested
@@ -221,31 +242,173 @@ export async function getAssetCoingeckoCoin({
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-/** Fetches general asset info such as price and price change, liquidity, volume, and name
- *  configured outside of our asset list (from data services).
- *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
-export async function getAssetMarketActivity({
-  coinMinimalDenom,
-}: {
-  coinMinimalDenom: string;
-}) {
-  const assetMarketMap = await cachified({
+/** How long token data, which includes prices, counts as fresh. */
+const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
+
+/** How long past its ttl token data still counts as fresh. Right after the ttl the cached
+ *  entry is served while it refreshes in the background, which normally takes seconds;
+ *  only data older than this is treated as an outage. */
+const TOKEN_DATA_REFRESH_GRACE = 1000 * 60 * 2; // 2 minutes
+
+/** Every token data fetch gives up after this long. The data services have no timeout of
+ *  their own, and a hanging fetch would hold every request waiting on it. */
+const TOKEN_DATA_FETCH_TIMEOUT = 1000 * 4; // 4 seconds
+
+/** After a failed refresh, wait this long before trying again. */
+const TOKEN_DATA_REFRESH_RETRY_DELAY = 1000 * 30; // 30 seconds
+
+let tokenDataRefreshFailedAt = 0;
+
+function isTokenDataFresh(fetchedAt: number): boolean {
+  return Date.now() - fetchedAt <= TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE;
+}
+
+/** Fields that are prices or derived from prices. They are dropped when the token data is
+ *  served stale during a data-services outage: a last-known price can be badly wrong in a
+ *  volatile market, so it's shown as unknown instead. */
+const PRICE_DERIVED_FIELDS = [
+  "price",
+  "price1hChange",
+  "price24hChange",
+  "price7dChange",
+  "marketCap",
+  "liquidity",
+  "liquidity24hChange",
+] as const;
+
+/** Cached token data from the data services, keyed by upper-cased denom, with when it was fetched. */
+function getCachedTokenData(forceFresh = false) {
+  return cachified({
     cache: assetMarketCache,
-    ttl: 1000 * 60 * 5, // 5 minutes since there's price data
+    // Kept for its maximum age; `getTokenData` decides when to refresh it.
+    ttl: DATA_SERVICES_MARKET_MAX_AGE,
+    forceFresh,
+    // A failed refresh must not write the old entry back: that would renew it and keep
+    // it past its maximum age. `getTokenData` falls back to it instead.
+    fallbackToCache: false,
     key: "allTokenData",
     getFreshValue: async () => {
-      const allTokenData = await queryAllTokenData();
+      const allTokenData = await queryAllTokenData({
+        signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT),
+      });
 
       const tokenInfoMap = new Map<string, MarketActivity>();
       allTokenData.forEach((tokenData) => {
         const activity = makeMarketActivityFromTokenData(tokenData);
         tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
       });
-      return tokenInfoMap;
+      return { tokenInfoMap, fetchedAt: Date.now() };
     },
   });
+}
 
-  return assetMarketMap.get(coinMinimalDenom.toUpperCase());
+type TokenDataEntry = Awaited<ReturnType<typeof getCachedTokenData>>;
+
+/** The cached token data entry if it's within its maximum age, without fetching. */
+function readCachedTokenData(): TokenDataEntry | undefined {
+  const entry = assetMarketCache.get("allTokenData") as
+    CacheEntry<TokenDataEntry> | undefined;
+  if (
+    !entry ||
+    Date.now() - entry.value.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE
+  ) {
+    return undefined;
+  }
+  return entry.value;
+}
+
+/** Fetches token data fresh into the cache, recording a failure for the retry delay. */
+function refreshTokenData() {
+  return getCachedTokenData(true).catch((e) => {
+    tokenDataRefreshFailedAt = Date.now();
+    throw e;
+  });
+}
+
+/** Token data, refreshed once it's past its ttl:
+ *  - within the refresh grace, the cached entry is returned and refreshed in the background;
+ *  - past it (e.g. on an instance that sat idle), the request waits for the refresh, so
+ *    prices aren't dropped while the data services are healthy.
+ *  A failed refresh falls back to the cached entry, which is then treated as stale once past
+ *  the grace, and no refresh is tried again for `TOKEN_DATA_REFRESH_RETRY_DELAY`. */
+async function getTokenData() {
+  // Within the retry delay after a failed fetch, don't call the data services at all,
+  // including for a cold or expired cache.
+  if (Date.now() - tokenDataRefreshFailedAt < TOKEN_DATA_REFRESH_RETRY_DELAY) {
+    const cached = readCachedTokenData();
+    if (cached) return cached;
+    throw new Error("Token data is unavailable");
+  }
+
+  const tokenData = await getCachedTokenData().catch((e) => {
+    tokenDataRefreshFailedAt = Date.now();
+    throw e;
+  });
+  if (Date.now() - tokenData.fetchedAt <= TOKEN_DATA_TTL) return tokenData;
+
+  if (isTokenDataFresh(tokenData.fetchedAt)) {
+    refreshTokenData().catch(() => undefined);
+    return tokenData;
+  }
+  return refreshTokenData().catch((e) => {
+    // The refresh may have taken the entry past its maximum age.
+    if (Date.now() - tokenData.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE)
+      throw e;
+    return tokenData;
+  });
+}
+
+/** False while a data-services outage leaves no fresh token data: prices, liquidity and
+ *  market caps are then unknown for every asset, not missing for some. */
+export async function isMarketDataAvailable(): Promise<boolean> {
+  return getTokenData().then(
+    ({ fetchedAt }) => isTokenDataFresh(fetchedAt),
+    () => false
+  );
+}
+
+/** Fetches general asset info such as price and price change, liquidity, volume, and name
+ *  configured outside of our asset list (from data services).
+ *  Returns `undefined` for a given coin denom if there was an error or it's not available.
+ *  While a data-services outage keeps the data past its ttl and refresh grace, price-derived
+ *  fields are undefined. */
+export async function getAssetMarketActivity({
+  coinMinimalDenom,
+}: {
+  coinMinimalDenom: string;
+}): Promise<AssetMarketActivity | undefined> {
+  return (await getAssetMarketActivityWithFreshness({ coinMinimalDenom }))
+    .activity;
+}
+
+/** Market activity whose price-derived fields may be missing (stale data). */
+type AssetMarketActivity = Omit<
+  MarketActivity,
+  (typeof PRICE_DERIVED_FIELDS)[number]
+> &
+  Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>;
+
+/** `getAssetMarketActivity`, plus how much longer its prices stay fresh. */
+async function getAssetMarketActivityWithFreshness({
+  coinMinimalDenom,
+}: {
+  coinMinimalDenom: string;
+}): Promise<{
+  activity: AssetMarketActivity | undefined;
+  freshForMs: number;
+}> {
+  const { tokenInfoMap, fetchedAt } = await getTokenData();
+  const freshForMs = Math.max(
+    0,
+    fetchedAt + TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE - Date.now()
+  );
+
+  const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
+  if (!activity || freshForMs > 0) return { activity, freshForMs };
+
+  const staleActivity: Partial<MarketActivity> = { ...activity };
+  PRICE_DERIVED_FIELDS.forEach((field) => delete staleActivity[field]);
+  return { activity: staleActivity as AssetMarketActivity, freshForMs };
 }
 
 type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;

@@ -193,6 +193,7 @@ export const AssetsInfoTable: FunctionComponent<{
     data: assetPagesData,
     hasNextPage,
     isLoading,
+    error,
     isFetching,
     isPlaceholderData,
     isFetchingNextPage,
@@ -216,7 +217,14 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      placeholderData: keepPreviousData,
+      // Don't carry rows over from a query that failed: during an outage they'd show
+      // last-known prices while the new filters load.
+      placeholderData: (previousData, previousQuery) =>
+        previousQuery?.state.status === "error"
+          ? undefined
+          : keepPreviousData(previousData),
+      // A failing server times out after about 12 s; one retry is enough.
+      retry: 1,
 
       // expensive query
       trpc: {
@@ -226,13 +234,19 @@ export const AssetsInfoTable: FunctionComponent<{
       },
     }
   );
+  // The server reports a market data outage with its own code. Other errors (such as a
+  // failed next page) keep the rows already loaded.
+  const isMarketDataUnavailable = error?.data?.code === "SERVICE_UNAVAILABLE";
   const assetsData = useMemo(() => {
+    // Rows kept from an earlier load (including the persisted cache) would show
+    // last-known prices.
+    if (isMarketDataUnavailable) return [];
     const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
     if (selectedCategory === "topGainers") {
       return assets.slice(undefined, 10);
     }
     return assets;
-  }, [selectedCategory, assetPagesData]);
+  }, [isMarketDataUnavailable, selectedCategory, assetPagesData]);
   const clientCategoryImageSamples = useMemo(() => {
     if (selectedCategory === "topGainers") {
       const topGainers = assetsData
@@ -628,7 +642,12 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {noSearchResults && searchQuery?.query && (
+      {isMarketDataUnavailable && (
+        <p className="body2 py-8 text-center text-osmoverse-300">
+          {t("assets.table.marketDataUnavailable")}
+        </p>
+      )}
+      {!isMarketDataUnavailable && noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
           query={searchQuery.query}

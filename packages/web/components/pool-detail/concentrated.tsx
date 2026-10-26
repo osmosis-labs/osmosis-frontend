@@ -239,20 +239,24 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
-                {!isUninitializedPool &&
-                  !isInactivePool &&
-                  pool?.market?.volume24hUsd && (
-                    <PoolDataGroup
-                      label={t("pool.24hrTradingVolume")}
-                      value={formatPretty(pool.market.volume24hUsd)}
-                    />
-                  )}
+                {!isUninitializedPool && !isInactivePool && pool && (
+                  <PoolDataGroup
+                    label={t("pool.24hrTradingVolume")}
+                    value={
+                      pool.market?.volume24hUsd
+                        ? formatPretty(pool.market.volume24hUsd)
+                        : "–"
+                    }
+                  />
+                )}
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={
-                    pool?.totalFiatValueLocked
-                      ? formatPretty(pool.totalFiatValueLocked)
-                      : "0"
+                    pool?.tvlUnknown
+                      ? "–"
+                      : pool?.totalFiatValueLocked
+                        ? formatPretty(pool.totalFiatValueLocked)
+                        : "0"
                   }
                 />
 

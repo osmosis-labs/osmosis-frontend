@@ -155,7 +155,7 @@ export const poolsRouter = createTRPCRouter({
           poolId,
           lowerTick: lowerTickIndex.toString(),
           upperTick: upperTickIndex.toString(),
-        })) ?? null
+        }).catch(() => undefined)) ?? null
     ),
   getLockableDurations: publicProcedure.query(() => getLockableDurations()),
   getPoolGaugeIncentives: publicProcedure

@@ -135,7 +135,8 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
 });
 
 export const HistoricalChartHeader: FunctionComponent<{
-  hoverData: Dec;
+  /** Undefined when the value is unknown; shown as "–" rather than $0. */
+  hoverData: Dec | undefined;
   hoverDate?: string | null;
   maxDecimal?: number;
   formatOptions?: FormatOptions;
@@ -145,7 +146,7 @@ export const HistoricalChartHeader: FunctionComponent<{
   hoverDate,
   hoverData,
   formatOptions,
-  maxDecimal = Math.max(getDecimalCount(hoverData.toString()), 2),
+  maxDecimal = Math.max(getDecimalCount(hoverData?.toString() ?? "0"), 2),
   fiatSymbol,
   isLoading = false,
 }) => {
@@ -159,12 +160,18 @@ export const HistoricalChartHeader: FunctionComponent<{
       ) : (
         <>
           <h3 className="font-h3 sm:text-h4 xs:text-h4">
-            {fiatSymbol}
-            <SubscriptDecimal
-              decimal={hoverData}
-              maxDecimals={maxDecimal}
-              formatOptions={formatOptions}
-            />
+            {hoverData ? (
+              <>
+                {fiatSymbol}
+                <SubscriptDecimal
+                  decimal={hoverData}
+                  maxDecimals={maxDecimal}
+                  formatOptions={formatOptions}
+                />
+              </>
+            ) : (
+              "–"
+            )}
           </h3>
           {hoverDate !== undefined ? (
             <p className="flex flex-1 flex-col justify-center text-sm font-caption text-wosmongton-200">

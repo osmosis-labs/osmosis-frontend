@@ -27,7 +27,7 @@ export const StakeTool: React.FC<{
   availableAmount?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
-  stakingAPR: Dec;
+  stakingAPR: Dec | undefined;
   /** Shown above the button on the Stake tab. */
   stakeWarning?: ReactNode;
 }> = ({

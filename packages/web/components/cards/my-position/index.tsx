@@ -147,9 +147,13 @@ export const MyPositionCard: FunctionComponent<{
             {!hasPositionDetailsError && (
               <PositionDataGroup
                 label={t("pool.APR")}
-                value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
-                  maxDecimals: 1,
-                })}
+                value={
+                  positionDetails?.rangeApr
+                    ? formatPretty(positionDetails.rangeApr, {
+                        maxDecimals: 1,
+                      })
+                    : "–"
+                }
                 isSuperfluid={
                   Boolean(positionDetails?.superfluidData) &&
                   positionDetails?.status !== "outOfRange"
