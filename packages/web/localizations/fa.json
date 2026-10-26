@@ -297,6 +297,7 @@
     "notInitialized": "بارگذاری...",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
+    "scalingFactorNotInteger": "فاکتور تبدیل باید یک عدد صحیح باشد",
     "zeroAmount": "مقدار صفر است",
     "invalidRange": "محدوده قیمت نامعتبر است",
     "fallbackText1": "خطایی رخ داد",
@@ -799,7 +800,8 @@
     "noRoutes": "هیچ مسیری پیدا نشد",
     "route": "مسیر",
     "routes": "مسیرها",
-    "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش"
+    "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش",
+    "amountTooSmallForSlippage": "مقدار برای سواپ با این لغزش بسیار کم است. مقدار را افزایش دهید یا لغزش را کاهش دهید."
   },
   "walletSelect": {
     "gettingStarted": "شروع شدن",
@@ -855,6 +857,8 @@
   "swapFailed": "تعویض انجام نشد. نقدینگی ممکن است کافی نباشد. سعی کنید لغزش مجاز را تنظیم کنید.",
   "transactionBroadcasting": "در حال ارسال تراکنش",
   "transactionFailed": "تراکنش با موفقیت انجام نشد",
+  "transactionStatusUnknown": "وضعیت تراکنش نامشخص است",
+  "transactionStatusUnknownCaption": "ارسال شد، اما نتوانستیم آن را تأیید کنیم. پیش از تلاش دوباره، اکسپلورر را بررسی کنید.",
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
   "transfer": {
     "deposit": "سپرده",

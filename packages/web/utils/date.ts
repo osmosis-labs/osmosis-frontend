@@ -2,14 +2,18 @@ import dayjs from "dayjs";
 
 export function humanizeTime(
   date: dayjs.Dayjs,
-  useShortTimeUnits = false
+  useShortTimeUnits = false,
+  now: dayjs.Dayjs = dayjs()
 ): {
   value: number | string;
   unitTranslationKey: string;
 }[] {
   // Use absolute diffs so both future ("in 2 hours") and past ("2 hours ago")
   // produce the same unit/value breakdown. Direction is the caller's concern.
-  const secondsDiff = Math.abs(date.diff(dayjs(), "seconds"));
+  // Every unit derives from one elapsed duration: dayjs's day diff adjusts for
+  // UTC-offset changes while its hour diff doesn't, so mixing them across a DST
+  // change gives e.g. "6 days 0 hours" for 169 hours.
+  const secondsDiff = Math.abs(date.diff(now, "seconds"));
   if (secondsDiff < 60) {
     return [
       {
@@ -26,7 +30,7 @@ export function humanizeTime(
     ];
   }
 
-  const minutesDiff = Math.abs(date.diff(dayjs(), "minutes"));
+  const minutesDiff = Math.floor(secondsDiff / 60);
   if (minutesDiff < 60) {
     return [
       {
@@ -43,9 +47,9 @@ export function humanizeTime(
     ];
   }
 
-  const hoursDiff = Math.abs(date.diff(dayjs(), "hours"));
+  const hoursDiff = Math.floor(minutesDiff / 60);
   if (hoursDiff < 24) {
-    const minutes = Math.abs(date.diff(dayjs(), "minutes")) % 60;
+    const minutes = minutesDiff % 60;
     return [
       {
         value: hoursDiff,
@@ -72,9 +76,11 @@ export function humanizeTime(
     ];
   }
 
-  const daysDiff = Math.abs(date.diff(dayjs(), "days"));
-  if (daysDiff < 30) {
-    const hours = Math.abs(date.diff(dayjs(), "hours")) % 24;
+  const daysDiff = Math.floor(hoursDiff / 24);
+  // The cutoff uses calendar days so a 30-day span that gained an hour across a
+  // DST change still counts down instead of switching to a date.
+  if (Math.abs(date.diff(now, "days")) < 30) {
+    const hours = hoursDiff % 24;
     return [
       {
         value: daysDiff,

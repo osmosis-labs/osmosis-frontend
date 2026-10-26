@@ -6,8 +6,7 @@ import type {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, ReactNode } from "react";
+import React, { FunctionComponent, memo, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
@@ -29,7 +28,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     status: UserPositionDetails["status"];
     claimableRewardCoins: PositionHistoricalPerformance["claimableRewardCoins"];
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const {
     poolId,
     status,

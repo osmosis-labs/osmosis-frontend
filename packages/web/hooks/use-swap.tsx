@@ -51,7 +51,10 @@ import {
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import {
   use1CTSwapReviewMessages,
@@ -64,14 +67,13 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
 import { AppRouter } from "~/server/api/root-router";
-import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
+import { useLatestWhen } from "./use-latest-when";
 import { useWalletSelect } from "./use-wallet-select";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -121,13 +123,13 @@ export function useSwap(
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const apiUtils = api.useUtils();
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const {
     wallet: account,
     address,
     txTypeInProgress,
     signAndBroadcast,
-  } = useWallet();
+  } = walletApi;
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
@@ -270,6 +272,12 @@ export function useSwap(
     (isQuoteLoading_ && quoteQueryEnabled) ||
     (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
 
+  /** Error and input state for the direction the user is quoting in. */
+  const activeQuoteError =
+    quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
+  const activeAmountInput =
+    quoteType === "in-given-out" ? outAmountInput : inAmountInput;
+
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
@@ -294,8 +302,7 @@ export function useSwap(
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
-    let error =
-      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
+    let error = activeQuoteError;
 
     // only show spot price error if there's no quote
     if (
@@ -311,13 +318,11 @@ export function useSwap(
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
   }, [
-    quoteErrorMsg,
+    activeQuoteError,
     quote,
     spotPriceQuoteErrorMsg,
     inAmountInput.error,
     inAmountInput.isEmpty,
-    inGivenOutQuoteError,
-    quoteType,
   ]);
 
   const networkFeeQueryEnabled =
@@ -346,12 +351,12 @@ export function useSwap(
    */
   const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
+      OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // Refresh account metadata when the address changes, even if the wallet instance is unchanged.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, address, accountStore.osmosisChainId]);
+  }, [account, address]);
 
   const messages = useMemo(() => {
     if (isLedger) {
@@ -472,7 +477,7 @@ export function useSwap(
           // our current quote's gas estimation incorrect and low. This results in out of gas error.
           const messageCanBeSignedWithOneClickTrading = !isNil(messages)
             ? isOneClickTradingEnabled &&
-              (await accountStore.shouldBeSignedWithOneClickTrading({
+              (await walletApi.shouldBeSignedWithOneClickTrading({
                 messages,
               }))
             : false;
@@ -588,7 +593,7 @@ export function useSwap(
                       fallbackGetAuthenticatorId:
                         apiUtils.local.oneClickTrading.getSessionAuthenticator
                           .fetch,
-                      accountStore,
+                      walletApi,
                       allowedMessages: oneClickMessages.allowedMessages,
                       sessionPeriod: oneClickMessages.sessionPeriod,
                       spendLimitTokenDecimals:
@@ -604,7 +609,7 @@ export function useSwap(
                     oneClickMessages.type === "remove-1ct-session"
                   ) {
                     await onEnd1CTSession({
-                      accountStore,
+                      walletApi,
                       authenticatorId: oneClickMessages.authenticatorId,
                     });
                   }
@@ -629,7 +634,7 @@ export function useSwap(
               {
                 ...signOptions,
                 useOneClickTrading:
-                  await accountStore.shouldBeSignedWithOneClickTrading({
+                  await walletApi.shouldBeSignedWithOneClickTrading({
                     messages,
                   }),
               },
@@ -664,7 +669,7 @@ export function useSwap(
               undefined,
               signOptions?.fee,
               signOptions,
-              (tx) => {
+              async (tx) => {
                 const { code } = tx;
                 if (code) {
                   reject(
@@ -676,32 +681,40 @@ export function useSwap(
                     oneClickMessages &&
                     oneClickMessages.type === "create-1ct-session"
                   ) {
-                    onAdd1CTSession({
-                      privateKey: oneClickMessages.key,
-                      tx,
-                      userOsmoAddress: account?.address ?? "",
-                      fallbackGetAuthenticatorId:
-                        apiUtils.local.oneClickTrading.getSessionAuthenticator
-                          .fetch,
-                      accountStore,
-                      allowedMessages: oneClickMessages.allowedMessages,
-                      sessionPeriod: oneClickMessages.sessionPeriod,
-                      spendLimitTokenDecimals:
-                        oneClickMessages.spendLimitTokenDecimals,
-                      transaction1CTParams:
-                        oneClickMessages.transaction1CTParams,
-                      allowedAmount: oneClickMessages.allowedAmount,
-                      t,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onAdd1CTSession({
+                          privateKey: oneClickMessages.key,
+                          tx,
+                          userOsmoAddress: account?.address ?? "",
+                          fallbackGetAuthenticatorId:
+                            apiUtils.local.oneClickTrading
+                              .getSessionAuthenticator.fetch,
+                          walletApi,
+                          allowedMessages: oneClickMessages.allowedMessages,
+                          sessionPeriod: oneClickMessages.sessionPeriod,
+                          spendLimitTokenDecimals:
+                            oneClickMessages.spendLimitTokenDecimals,
+                          transaction1CTParams:
+                            oneClickMessages.transaction1CTParams,
+                          allowedAmount: oneClickMessages.allowedAmount,
+                          t,
+                        }),
+                      "create-1ct-session"
+                    );
                   } else if (
                     shouldSend1CTTx &&
                     oneClickMessages &&
                     oneClickMessages.type === "remove-1ct-session"
                   ) {
-                    onEnd1CTSession({
-                      accountStore,
-                      authenticatorId: oneClickMessages.authenticatorId,
-                    });
+                    await update1CTSessionAfterTrade(
+                      () =>
+                        onEnd1CTSession({
+                          walletApi,
+                          authenticatorId: oneClickMessages.authenticatorId,
+                        }),
+                      "remove-1ct-session"
+                    );
                   }
 
                   resolve(
@@ -723,7 +736,7 @@ export function useSwap(
       }),
     [
       account,
-      accountStore,
+      walletApi,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
       featureFlags.swapToolSimulateFee,
       hasOverSpendLimitError,
@@ -746,15 +759,18 @@ export function useSwap(
     ]
   );
 
-  const positivePrevQuote = usePreviousWhen(
+  // Held per quote direction, so a quote from the other direction is never
+  // shown while the new direction's first quote loads.
+  const positivePrevQuote = useLatestWhen(
     quote,
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
-    )
+        !activeQuoteError &&
+        !activeAmountInput.isEmpty,
+      [quote, activeQuoteError, activeAmountInput.isEmpty]
+    ),
+    quoteType
   );
 
   const quoteBaseOutSpotPrice = useMemo(() => {
@@ -861,9 +877,9 @@ export function useSwap(
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
-      isQuoteLoading || inAmountInput.isTyping
+      isQuoteLoading || activeAmountInput.isTyping
         ? positivePrevQuote
-        : !quoteErrorMsg
+        : !activeQuoteError
           ? quote
           : undefined,
     inBaseOutQuoteSpotPrice,
@@ -1227,13 +1243,18 @@ function useSwapAmountInput({
     [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
-  useEffect(() => {
-    if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
-
-    setGasAmount(
-      currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
-    );
-  }, [currentBalanceNetworkFee?.gasAmount]);
+  // gasAmount feeds the input above, which feeds this fee query, so it has to
+  // live in state; sync it during render whenever the fee result changes.
+  const latestFeeGasAmount = currentBalanceNetworkFee?.gasAmount;
+  // Seeded undefined so a fee already cached on mount still syncs.
+  const [prevFeeGasAmount, setPrevFeeGasAmount] =
+    useState<typeof latestFeeGasAmount>(undefined);
+  if (latestFeeGasAmount !== prevFeeGasAmount) {
+    setPrevFeeGasAmount(latestFeeGasAmount);
+    if (!isNil(latestFeeGasAmount)) {
+      setGasAmount(latestFeeGasAmount.mul(new Dec(1.02))); // Add 2% buffer
+    }
+  }
 
   const returnValue = useDeepMemo(() => {
     return {
@@ -1294,10 +1315,18 @@ function useToFromDenoms({
     initialToDenom
   );
 
-  useEffect(() => {
+  const [prevInitialDenoms, setPrevInitialDenoms] = useState({
+    initialFromDenom,
+    initialToDenom,
+  });
+  if (
+    prevInitialDenoms.initialFromDenom !== initialFromDenom ||
+    prevInitialDenoms.initialToDenom !== initialToDenom
+  ) {
+    setPrevInitialDenoms({ initialFromDenom, initialToDenom });
     setToAssetState(initialToDenom);
     setFromAssetState(initialFromDenom);
-  }, [initialFromDenom, initialToDenom]);
+  }
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
@@ -1647,7 +1676,8 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage > balance && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) &&
+        !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 

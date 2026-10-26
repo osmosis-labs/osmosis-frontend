@@ -3,13 +3,13 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useMemo, useState } from "react";
 
 import { POOL_CREATION_FEE_COIN } from "~/components/complex/pool/create";
+import { OsmosisChainInfo } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useWalletSelect } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
 import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookRatioGuard } from "~/hooks/limit-orders/use-orderbook-ratio-guard";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /**
@@ -35,7 +35,6 @@ export function useOrderbookCreationFlow({
   onCreated?: () => void;
 }) {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const { address, isWalletConnected } = useWallet();
   const { onOpenWalletSelect } = useWalletSelect();
 
@@ -120,7 +119,7 @@ export function useOrderbookCreationFlow({
       close();
       onOpenWalletSelect({
         walletOptions: [
-          { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+          { walletType: "cosmos", chainId: OsmosisChainInfo.chainId },
         ],
       });
       return;

@@ -1,10 +1,9 @@
-import {
-  type AddLiquidityPoolData,
-  ObservableAddLiquidityConfig,
-} from "@osmosis-labs/stores";
+import type { AddLiquidityPoolData } from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { EmptyAmountError, ZeroAmountError } from "@osmosis-labs/utils";
 
 import {
+  type AddLiquidityActionInput,
   type AddLiquidityContext,
   type AddLiquidityInputs,
   addLiquidityReducer,
@@ -62,196 +61,200 @@ const noOsmo = makePool([
   { c: weth, amount: "987654321987654321", weight: "3" },
 ]);
 
-const balanceSets: Record<string, [string, string][]> = {
-  none: [],
-  plenty: [
-    ["uosmo", "9000000000"],
-    ["uatom", "9000000000"],
-    ["uusdc", "9000000000"],
-    ["weth", "90000000000000000000"],
-  ],
-  atomLimited: [
-    ["uosmo", "500000000"],
-    ["uatom", "50000000"],
-    ["uusdc", "1000000000"],
-    ["weth", "5000000000000000000"],
-  ],
-  tinyOsmo: [
-    ["uosmo", "10000"],
-    ["uatom", "9000000000"],
-    ["uusdc", "9000000000"],
-    ["weth", "1"],
-  ],
-  zeroOne: [
-    ["uosmo", "1000"],
-    ["uatom", "0"],
-    ["uusdc", "5"],
-    ["weth", "7"],
-  ],
-};
+const plentyBalances: [string, string][] = [
+  ["uosmo", "9000000000"],
+  ["uatom", "9000000000"],
+  ["uusdc", "9000000000"],
+  ["weth", "90000000000000000000"],
+];
+const limitedBalances: [string, string][] = [
+  ["uosmo", "500000000"],
+  ["uatom", "50000000"],
+  ["uusdc", "1000000000"],
+];
 
-type Op =
-  | { op: "amount"; index: number; amount: string }
-  | { op: "max" }
-  | { op: "single"; value: boolean }
-  | { op: "singleIndex"; index: number }
-  | { op: "singleAmount"; amount: string };
-
-const scripts: Record<string, Op[]> = {
-  typed: [
-    { op: "amount", index: 0, amount: "10" },
-    { op: "amount", index: 1, amount: ".5" },
-    { op: "amount", index: 0, amount: "abc" },
-    { op: "amount", index: 0, amount: "0" },
-    { op: "amount", index: 0, amount: "-3" },
-    { op: "amount", index: 0, amount: "123456789" },
-    { op: "amount", index: 0, amount: "0.000001" },
-  ],
-  max: [{ op: "max" }],
-  maxAfterTyping: [{ op: "amount", index: 0, amount: "1" }, { op: "max" }],
-  single: [
-    { op: "single", value: true },
-    { op: "singleAmount", amount: "5" },
-    { op: "max" },
-    { op: "singleIndex", index: 1 },
-    { op: "singleAmount", amount: "0.1" },
-    { op: "single", value: false },
-    { op: "amount", index: 1, amount: "2" },
-    { op: "single", value: true },
-  ],
-};
-
-function snapshotLegacy(c: ObservableAddLiquidityConfig) {
-  return {
-    amounts: c.poolAssetConfigs.map((a) => a.amount),
-    shareOut: c.shareOutAmount?.toDec().toString(),
-    error: c.error?.constructor.name,
-    isSingle: c.isSingleAmountIn,
-    singleDenom: c.singleAmountInConfig?.sendCurrency.coinMinimalDenom,
-    impact: c.singleAmountInPriceImpact?.toDec().toString(),
-  };
-}
-
-function runLegacy(
-  pool: AddLiquidityPoolData,
-  bal: [string, string][],
-  ops: Op[]
-) {
-  const c = new ObservableAddLiquidityConfig("1", "osmo1sender");
-  c.setPool(pool);
-  c.setBalances(bal.map(([denom, amount]) => ({ denom, amount })));
-  const out = [snapshotLegacy(c)];
-  for (const o of ops) {
-    if (o.op === "amount") c.setAmountAt(o.index, o.amount);
-    if (o.op === "max") c.setMax();
-    if (o.op === "single") c.setIsSingleAmountIn(o.value);
-    if (o.op === "singleIndex") c.setSingleAmountInConfigIndex(o.index);
-    if (o.op === "singleAmount") c.singleAmountInConfig?.setAmount(o.amount);
-    out.push(snapshotLegacy(c));
-  }
-  return out;
-}
-
-function runNew(
-  pool: AddLiquidityPoolData,
-  bal: [string, string][],
-  ops: Op[]
-) {
-  const ctx: AddLiquidityContext = { pool, balances: new Map(bal) };
-  const scopeKey = getInputsScopeKey("1", "osmo1sender", pool);
-  let state = { ...initialAddLiquidityState, scopeKey };
-  const snap = () => {
-    const assets = getPoolAssets(pool);
-    const amounts = assets.map((_, i) => state.amounts[i] ?? "");
-    const configs = assets.map(({ currency }, i) => ({
-      sendCurrency: currency,
-      amount: amounts[i],
-      error: undefined as Error | undefined,
-    }));
-    configs.forEach((c) => {
-      c.error = getAssetAmountError(
-        c.amount,
-        getBalance(ctx.balances, c.sendCurrency)
+// Representative expected values retained from the legacy parity tests.
+// Shared amount validation is covered by create-pool and concentrated-deposit-amount;
+// single-asset share calculations are covered by tx/account/join-pool.
+describe("add liquidity calculations", () => {
+  it.each([
+    {
+      name: "two assets",
+      pool: osmoAtom,
+      amounts: ["5", "0.5"],
+      shares: "0.500000000000000000",
+    },
+    {
+      name: "three assets with OSMO second",
+      pool: atomOsmoUsdc,
+      amounts: ["0.08", "0.5", "0.29"],
+      shares: "0.029411764705882353",
+    },
+    {
+      name: "mixed 6- and 18-decimal assets without OSMO",
+      pool: noOsmo,
+      amounts: ["62.4", "0.5"],
+      shares: "50.624999948742187551",
+    },
+  ])(
+    "balances and rounds a typed deposit for $name",
+    ({ pool, amounts, shares }) => {
+      const result = computeSetAmountAt(
+        { pool, balances: new Map(plentyBalances) },
+        emptyAddLiquidityInputs,
+        1,
+        ".5"
       );
-    });
-    const single =
-      state.isSingleAmountIn && state.singleAmountInConfigIndex < configs.length
-        ? configs[state.singleAmountInConfigIndex]
-        : undefined;
-    return {
-      amounts,
-      shareOut: state.shareOutAmount?.toDec().toString(),
-      error: getAddLiquidityError({
-        configs,
-        isSingleAmountIn: state.isSingleAmountIn,
-        singleAmountInConfig: single,
-        shareOutAmount: state.shareOutAmount,
-      })?.constructor.name,
-      isSingle: state.isSingleAmountIn,
-      singleDenom: single?.sendCurrency.coinMinimalDenom,
-    };
-  };
-  const out = [snap()];
-  for (const o of ops) {
-    const base = { ctx, scopeKey };
-    if (o.op === "amount") {
-      state = addLiquidityReducer(state, {
-        ...base,
-        type: "setAmountAt",
-        index: o.index,
-        amount: o.amount,
-      });
+      expect(result.amounts).toEqual(amounts);
+      expect(result.shareOutAmount?.toDec().toString()).toBe(shares);
     }
-    if (o.op === "max")
-      state = addLiquidityReducer(state, { ...base, type: "setMax" });
-    if (o.op === "single") {
-      state = addLiquidityReducer(state, {
-        ...base,
-        type: "setIsSingleAmountIn",
-        value: o.value,
-      });
-    }
-    if (o.op === "singleIndex") {
-      state = addLiquidityReducer(state, {
-        ...base,
-        type: "setSingleAmountInConfigIndex",
-        index: o.index,
-      });
-    }
-    if (o.op === "singleAmount") {
-      state = addLiquidityReducer(state, {
-        ...base,
-        type: "setRawAmountAt",
-        index: state.singleAmountInConfigIndex,
-        amount: o.amount,
-      });
-    }
-    out.push(snap());
-  }
-  return out;
-}
+  );
 
-describe("add liquidity calculations match the legacy config", () => {
-  const pools = { osmoAtom, atomOsmoUsdc, noOsmo };
-  for (const [poolName, pool] of Object.entries(pools)) {
-    for (const [balName, bal] of Object.entries(balanceSets)) {
-      for (const [scriptName, ops] of Object.entries(scripts)) {
-        it(`${poolName} / ${balName} / ${scriptName}`, () => {
-          const legacy = runLegacy(pool, bal, ops);
-          const next = runNew(pool, bal, ops);
-          expect(next).toEqual(
-            legacy.map(({ impact: _impact, ...rest }) => rest)
-          );
-        });
-      }
+  it("clears calculated shares on invalid input without changing the other amount", () => {
+    const ctx = { pool: osmoAtom, balances: new Map(plentyBalances) };
+    const valid = computeSetAmountAt(ctx, emptyAddLiquidityInputs, 0, "10");
+    expect(valid.shareOutAmount).toBeDefined();
+    const invalid = computeSetAmountAt(ctx, valid, 0, "abc");
+    expect(invalid.amounts).toEqual(["abc", "1"]);
+    expect(invalid.shareOutAmount).toBeUndefined();
+  });
+
+  it("reports a rounded-to-zero counterpart even when shares are positive", () => {
+    const ctx = { pool: osmoAtom, balances: new Map(plentyBalances) };
+    const result = computeSetAmountAt(
+      ctx,
+      emptyAddLiquidityInputs,
+      0,
+      "0.000001"
+    );
+    expect(result.amounts).toEqual(["0.000001", "0"]);
+    expect(result.shareOutAmount?.toDec().isPositive()).toBe(true);
+    expect(
+      getAddLiquidityError({
+        configs: getPoolAssets(ctx.pool).map(({ currency }, i) => ({
+          error: getAssetAmountError(
+            result.amounts[i],
+            getBalance(ctx.balances, currency)
+          ),
+        })),
+        isSingleAmountIn: false,
+        singleAmountInConfig: undefined,
+        shareOutAmount: result.shareOutAmount,
+      })
+    ).toBeInstanceOf(ZeroAmountError);
+  });
+
+  it.each([
+    {
+      name: "OSMO limits the deposit and reserves the fee",
+      pool: osmoAtom,
+      balances: limitedBalances,
+      amounts: ["499.9875", "49.99875"],
+      shares: "49.998750000000000000",
+    },
+    {
+      name: "another asset limits the deposit without exhausting OSMO",
+      pool: atomOsmoUsdc,
+      balances: limitedBalances,
+      amounts: ["49.99999", "283.3333", "166.6666"],
+      shares: "16.666664705882352941",
+    },
+    {
+      name: "OSMO is the second asset and reserves the fee",
+      pool: atomOsmoUsdc,
+      balances: plentyBalances,
+      amounts: ["1588.233", "8999.987", "5294.109"],
+      shares: "529.411000000000000000",
+    },
+    {
+      name: "OSMO is absent and asset decimals differ",
+      pool: noOsmo,
+      balances: plentyBalances,
+      amounts: ["9000", "72"],
+      shares: "7290.000066339000603685",
+    },
+  ])(
+    "max replaces typed amounts when $name",
+    ({ pool, balances, amounts, shares }) => {
+      const ctx = { pool, balances: new Map(balances) };
+      const typed = computeSetAmountAt(ctx, emptyAddLiquidityInputs, 0, "1");
+      const result = computeSetMax(ctx, typed, {
+        isSingleAmountIn: false,
+        index: 0,
+      });
+      expect(result.amounts).toEqual(amounts);
+      expect(result.shareOutAmount?.toDec().toString()).toBe(shares);
     }
-  }
+  );
+
+  it("does not calculate shares when the OSMO balance cannot cover the fee reserve", () => {
+    const result = computeSetMax(
+      {
+        pool: osmoAtom,
+        balances: new Map([
+          ["uosmo", "10000"],
+          ["uatom", "9000000000"],
+        ]),
+      },
+      emptyAddLiquidityInputs,
+      { isSingleAmountIn: false, index: 0 }
+    );
+    expect(result.amounts).toEqual(["-0.0025", ""]);
+    expect(result.shareOutAmount).toBeUndefined();
+  });
+
+  it("prefers OSMO, uses its full balance on single-asset max, and keeps raw inputs independent", () => {
+    const ctx = { pool: atomOsmoUsdc, balances: new Map(plentyBalances) };
+    const scopeKey = getInputsScopeKey("1", "osmo1sender", ctx.pool);
+    let state = { ...initialAddLiquidityState, scopeKey };
+    const dispatch = (action: AddLiquidityActionInput) => {
+      state = addLiquidityReducer(state, { ...action, ctx, scopeKey });
+    };
+
+    dispatch({ type: "setIsSingleAmountIn", value: true });
+    expect(state.isSingleAmountIn).toBe(true);
+    expect(state.singleAmountInConfigIndex).toBe(1);
+    dispatch({ type: "setRawAmountAt", index: 1, amount: "5" });
+    expect(state.amounts).toEqual(["", "5", ""]);
+    expect(state.shareOutAmount).toBeUndefined();
+    dispatch({ type: "setMax" });
+    expect(state.amounts).toEqual(["1588", "9000", "5294"]);
+    expect(state.shareOutAmount?.toDec().toString()).toBe(
+      "529.411764705882352941"
+    );
+
+    dispatch({ type: "setSingleAmountInConfigIndex", index: 0 });
+    expect(state.singleAmountInConfigIndex).toBe(0);
+    dispatch({ type: "setRawAmountAt", index: 0, amount: ".1" });
+    expect(state.amounts).toEqual(["0.1", "9000", "5294"]);
+    dispatch({ type: "setIsSingleAmountIn", value: false });
+    expect(state.isSingleAmountIn).toBe(false);
+    expect(state.amounts).toEqual(["0.1", "9000", "5294"]);
+    dispatch({ type: "setIsSingleAmountIn", value: true });
+    expect(state.singleAmountInConfigIndex).toBe(1);
+  });
+
+  it("validates only the selected asset in single-asset mode without requiring balanced shares", () => {
+    const empty = { error: new EmptyAmountError("Amount is empty") };
+    const selected = { error: undefined };
+    const input = {
+      configs: [empty, selected],
+      singleAmountInConfig: selected,
+      shareOutAmount: undefined,
+    };
+    expect(
+      getAddLiquidityError({ ...input, isSingleAmountIn: true })
+    ).toBeUndefined();
+    expect(getAddLiquidityError({ ...input, isSingleAmountIn: false })).toBe(
+      empty.error
+    );
+  });
 });
 
 describe("add liquidity pure helpers", () => {
   const ctx: AddLiquidityContext = {
     pool: osmoAtom,
-    balances: new Map(balanceSets.atomLimited),
+    balances: new Map(limitedBalances),
   };
 
   it("ignores amounts for unknown asset indexes", () => {

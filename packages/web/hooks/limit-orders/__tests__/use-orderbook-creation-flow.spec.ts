@@ -17,15 +17,6 @@ let mockWallet: { address?: string; isWalletConnected: boolean } | undefined;
 let mockBalances: { denom: string; amount: string }[] | undefined;
 let mockGuard = { isBlocked: false, isRatioTooLow: false };
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: {
-      osmosisChainId: "osmosis-1",
-      getWallet: () => mockWallet,
-    },
-  }),
-}));
-
 jest.mock("~/hooks/use-wallet", () => ({
   useWallet: () => ({
     wallet: mockWallet,

@@ -125,6 +125,8 @@ function ClaimAllButton({
     try {
       await claimAllOrders();
       await refetch();
+    } catch {
+      // Broadcast failures are toasted by the tx client.
     } finally {
       setClaiming(false);
     }

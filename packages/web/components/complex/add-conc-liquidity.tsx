@@ -2,11 +2,11 @@ import type { Pool } from "@osmosis-labs/server";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   FunctionComponent,
+  memo,
   ReactNode,
   useCallback,
   useEffect,
@@ -59,7 +59,7 @@ export const AddConcLiquidity: FunctionComponent<
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ className, addLiquidityConfig, actionButton }) => {
+> = memo(({ className, addLiquidityConfig, actionButton }) => {
   const { poolId } = addLiquidityConfig;
 
   const { data: pool } = api.local.pools.getPool.useQuery({
@@ -84,7 +84,7 @@ const AddConcLiqView: FunctionComponent<
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
+> = memo(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -384,7 +384,7 @@ const ChartHeader: FunctionComponent<{
   chartConfig: HistoricalAndLiquidityData;
 
   addLiquidityConfig: AddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, priceDecimal } = chartConfig;
   const hoverPrice = useHoverPrice(chartConfig);
@@ -413,7 +413,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: HistoricalAndLiquidityData;
   addLiquidityConfig: AddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
@@ -441,7 +441,7 @@ const StrategySelectorGroup: FunctionComponent<
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer((props) => {
+> = memo((props) => {
   const { t } = useTranslation();
   const { currentStrategy } = props.addLiquidityConfig;
 
@@ -523,7 +523,7 @@ const PresetStrategyCard: FunctionComponent<
     highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
     disabledForInactivePool?: boolean;
   } & CustomClasses
-> = observer(
+> = memo(
   ({
     type,
     src,
@@ -649,7 +649,7 @@ const PriceInputBox: FunctionComponent<{
   forPriceIndex: 0 | 1;
   addConcLiquidityConfig: AddConcentratedLiquidityConfig;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
-}> = observer(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
+}> = memo(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const isFullRange =

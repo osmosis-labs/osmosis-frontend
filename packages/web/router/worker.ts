@@ -7,7 +7,9 @@ import {
   type Backend,
   BACKEND_HEADER,
   decideBackend,
+  FALLBACK_HEADER,
   isBuildAsset,
+  isPageLoad,
   otherBackend,
   parsePercent,
 } from "./routing";
@@ -31,23 +33,63 @@ const router = {
       parsePercent(env.CF_PERCENT)
     );
 
-    let servedBy = backend;
-    let response = await send(backend, request, env);
-    if (response.status === 404 && isBuildAsset(request)) {
-      servedBy = otherBackend(backend);
-      response = await send(servedBy, request, env);
-    }
+    const { response, servedBy, fallback } = await dispatch(
+      backend,
+      request,
+      env
+    );
 
     // Upgrade responses carry a socket that must be returned untouched.
     if (response.status === 101) return response;
 
     const routed = new Response(response.body, response);
     routed.headers.set(BACKEND_HEADER, servedBy);
+    if (fallback) routed.headers.set(FALLBACK_HEADER, fallback);
     for (const cookie of setCookies)
       routed.headers.append("set-cookie", cookie);
     return routed;
   },
 };
+
+type Dispatched = { response: Response; servedBy: Backend; fallback?: string };
+
+/**
+ * Sends a request to its backend, crossing to the other platform only where that cannot repeat a
+ * side effect: a build asset missing from the backend's build, and a page load the production
+ * Worker failed (threw or answered 5xx), which Vercel then serves. Everything else, including API
+ * calls, stays where it was routed, so a swap or broadcast never runs twice.
+ */
+async function dispatch(
+  backend: Backend,
+  request: Request,
+  env: RouterEnv
+): Promise<Dispatched> {
+  if (backend === "cf" && isPageLoad(request)) {
+    let failure: string;
+    try {
+      const response = await send("cf", request, env);
+      if (response.status < 500) return { response, servedBy: "cf" };
+      failure = String(response.status);
+      await response.body?.cancel();
+    } catch (error) {
+      failure = "error";
+      console.error("Production Worker threw on a page load", error);
+    }
+    return {
+      response: await send("vercel", request, env),
+      servedBy: "vercel",
+      fallback: `cf-${failure}`,
+    };
+  }
+
+  const response = await send(backend, request, env);
+  if (response.status === 404 && isBuildAsset(request)) {
+    await response.body?.cancel();
+    const other = otherBackend(backend);
+    return { response: await send(other, request, env), servedBy: other };
+  }
+  return { response, servedBy: backend };
+}
 
 function send(
   backend: Backend,

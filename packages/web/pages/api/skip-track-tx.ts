@@ -1,5 +1,9 @@
-import { createSkipTxHandler } from "~/server/integrations/skip/tx-status-handler";
+import { skipTrackTxHandler } from "~/server/api-handlers/skip-tx";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default createSkipTxHandler((client, params) =>
-  client.trackTransaction(params)
-);
+export default toNodeApiHandler(skipTrackTxHandler);
+
+// The handler reads the raw request, so Next must leave the body unparsed.
+export const config = {
+  api: { bodyParser: false },
+};

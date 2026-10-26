@@ -63,6 +63,13 @@ export interface LossFigures {
   /** True limit order priced across the opposite side of the book. */
   warnMarketFill?: boolean;
   /**
+   * Market trade whose minimum received is worth far less in USD than what is
+   * sent, or whose minimum output is zero. Catches a bad price that the
+   * router's price impact does not show. Trade surfaces only; it has no
+   * figure, so it stamps nothing into the memo.
+   */
+  warnValueDisparity?: boolean;
+  /**
    * Quote bundles an Osmosis swap whose price impact is unknown. Bridge-only —
    * the trade surfaces quote their own impact directly and omit this.
    */
@@ -94,6 +101,7 @@ export function hasActiveWarning(figures: LossFigures): boolean {
     figures.warnSlippage ||
     figures.warnPriceImpact ||
     (figures.warnMarketFill ?? false) ||
+    (figures.warnValueDisparity ?? false) ||
     (figures.swapImpactUnknown ?? false)
   );
 }
@@ -134,6 +142,9 @@ export function shouldResetAcknowledgement(
   if (current.warnSlippage && !acknowledged.warnSlippage) return true;
   if (current.warnPriceImpact && !acknowledged.warnPriceImpact) return true;
   if (current.warnMarketFill && !acknowledged.warnMarketFill) return true;
+  if (current.warnValueDisparity && !acknowledged.warnValueDisparity) {
+    return true;
+  }
   if (current.swapImpactUnknown && !acknowledged.swapImpactUnknown) return true;
 
   // No tolerance for slippage. On a trade it is a tolerance the user typed, so a

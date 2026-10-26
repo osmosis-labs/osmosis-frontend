@@ -6,6 +6,9 @@ const path = require("path");
  **/
 const config = {
   reactStrictMode: true,
+  experimental: {
+    reactCompiler: true,
+  },
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
@@ -154,6 +157,26 @@ const config = {
         path.resolve(__dirname, "etc", "noop", "index.js")
       )
     );
+
+    // Wallet SDKs are browser-only. Server builds swap these modules for their `.server.ts`
+    // stand-ins (no EVM connectors, Cosmos wallet installers that reject), which keeps the SDKs
+    // and their dependencies out of the server bundle. See config/wagmi-connectors.ts and
+    // config/wallet-installers.ts.
+    if (isServer) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /config[\\/](wagmi-connectors|wallet-installers)$/,
+          (resource) => {
+            const name = path.basename(resource.request);
+            resource.request = path.resolve(
+              __dirname,
+              "config",
+              `${name}.server.ts`
+            );
+          }
+        )
+      );
+    }
 
     return config;
   },

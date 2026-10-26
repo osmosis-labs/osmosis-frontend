@@ -6,10 +6,10 @@ import {
   isValidNumericalRawInput,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -46,6 +46,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
@@ -63,7 +64,6 @@ import {
 import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
-import { useStore } from "~/stores";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
@@ -141,14 +141,13 @@ const NON_DISPLAY_ERRORS = [
   "limitOrders.priceTooHigh",
 ];
 
-export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
+export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
   ({
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
-    const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const {
@@ -235,7 +234,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
 
     const swapState = usePlaceLimit({
-      osmosisChainId: accountStore.osmosisChainId,
+      osmosisChainId: OsmosisChainInfo.chainId,
       orderDirection,
       useQueryParams: false,
       baseDenom: from,
@@ -1018,7 +1017,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     walletOptions: [
                       {
                         walletType: "cosmos",
-                        chainId: accountStore.osmosisChainId,
+                        chainId: OsmosisChainInfo.chainId,
                       },
                     ],
                   })
@@ -1096,6 +1095,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
           quoteType={swapState.marketState.quoteType}
           priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
+          quoteAmount={swapState.marketState.quote?.amount.toDec()}
+          outAssetPrice={swapState.marketState.outAmountInput.price}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

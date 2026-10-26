@@ -39,14 +39,14 @@ describe.each(["base", "nested", "vesting"])(
         shape === "base"
           ? { "@type": BaseAccountTypeStr, ...baseAccount }
           : shape === "nested"
-          ? {
-              "@type": "/injective.types.v1beta1.EthAccount",
-              base_account: baseAccount,
-            }
-          : {
-              "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
-              base_vesting_account: { base_account: baseAccount },
-            };
+            ? {
+                "@type": "/injective.types.v1beta1.EthAccount",
+                base_account: baseAccount,
+              }
+            : {
+                "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+                base_vesting_account: { base_account: baseAccount },
+              };
       jest.mocked(queryBaseAccount).mockResolvedValue({ account } as any);
     }
 
@@ -54,9 +54,8 @@ describe.each(["base", "nested", "vesting"])(
       "preserves wire bytes for sequence %s",
       async (sequence, authHex) => {
         mockAccount(sequence);
-        const { rawUnsignedTx, unsignedTx } = await generateCosmosUnsignedTx(
-          options
-        );
+        const { rawUnsignedTx, unsignedTx } =
+          await generateCosmosUnsignedTx(options);
         const expectedHex = bodyHex + authHex + signaturesHex;
         expect(Buffer.from(rawUnsignedTx).toString("hex")).toBe(expectedHex);
         expect(unsignedTx).toBe(

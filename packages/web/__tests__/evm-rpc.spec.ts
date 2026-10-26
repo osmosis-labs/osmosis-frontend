@@ -5,7 +5,8 @@ import { http, HttpResponse } from "msw";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { server } from "~/__tests__/msw";
-import nodeEvmRpcHandler, { config, evmRpcHandler } from "~/pages/api/evm-rpc";
+import nodeEvmRpcHandler, { config } from "~/pages/api/evm-rpc";
+import { evmRpcHandler } from "~/server/api-handlers/evm-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
 const LD_CLIENT_ID = "ld-client-id";
@@ -20,12 +21,11 @@ function post(
   { origin = `https://${APP_HOST}`, chainId = "137" } = {}
 ) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
-  return {
+  return new Request(`https://${APP_HOST}/api/evm-rpc?chainId=${chainId}`, {
     method: "POST",
-    url: `https://${APP_HOST}/api/evm-rpc?chainId=${chainId}`,
-    headers: new Headers({ host: APP_HOST, origin }),
-    text: () => Promise.resolve(text),
-  } as unknown as Request;
+    headers: { host: APP_HOST, origin },
+    body: text,
+  });
 }
 
 const balanceOf = {

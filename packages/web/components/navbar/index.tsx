@@ -9,12 +9,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   Fragment,
   FunctionComponent,
+  memo,
   useEffect,
   useRef,
   useState,
@@ -46,7 +46,6 @@ import {
   handleExternalLink,
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
-import { useStore } from "~/stores";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { useProfileStore } from "~/stores/profile-store";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
@@ -346,8 +345,7 @@ export const NavBar: FunctionComponent<
 
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
-> = observer(({ className, onOpenProfile, icnsName }) => {
-  const { accountStore } = useStore();
+> = memo(({ className, onOpenProfile, icnsName }) => {
   const currentAvatar = useProfileStore((state) => state.currentAvatar);
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
@@ -390,7 +388,7 @@ const WalletInfo: FunctionComponent<
           onClick={() => {
             onOpenWalletSelect({
               walletOptions: [
-                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+                { walletType: "cosmos", chainId: OsmosisChainInfo.chainId },
               ],
             });
           }}
@@ -512,7 +510,7 @@ const WalletInfo: FunctionComponent<
   );
 });
 
-const OneClickTradingRadialProgress = observer(() => {
+const OneClickTradingRadialProgress = memo(() => {
   const { oneClickTradingInfo, getTimeRemaining, getTotalSessionTime } =
     useOneClickTradingSession();
   const [percentage, setPercentage] = useState(100);

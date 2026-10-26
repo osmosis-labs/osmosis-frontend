@@ -55,9 +55,10 @@ export function writeCurrentAssetListHash(hash: string): void {
   fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
-const IMAGE_FETCH_ATTEMPTS = 4;
-const IMAGE_FETCH_BASE_DELAY_MS = 1_000;
-const IMAGE_FETCH_MAX_DELAY_MS = 30_000;
+const FETCH_ATTEMPTS = 4;
+const FETCH_BASE_DELAY_MS = 1_000;
+const FETCH_MAX_DELAY_MS = 30_000;
+const FETCH_ATTEMPT_TIMEOUT_MS = 30_000;
 
 /**
  * Runs `run` over `groups` with `concurrency` workers. One worker takes a
@@ -113,18 +114,24 @@ function parseRetryAfterMs(header: string | null): number | undefined {
 }
 
 /**
- * Fetch an image, retrying rate limits (429), server errors (5xx) and network
- * errors with exponential backoff, honouring `Retry-After` (delay-seconds or
- * HTTP-date) when the host sends one, capped so one slow host cannot stall a
- * build. Other statuses (e.g. a dead logo URL's 404) fail at once.
- * @throws When the image could not be fetched.
+ * Fetch a build-time resource (asset list JSON, asset image), retrying rate
+ * limits (429), server errors (5xx) and network errors with exponential
+ * backoff, honouring `Retry-After` (delay-seconds or HTTP-date) when the host
+ * sends one, capped so one slow host cannot stall a build. Each attempt,
+ * including reading its body, is aborted after `FETCH_ATTEMPT_TIMEOUT_MS`, so
+ * a stalled connection is retried (and a caller can move on to a mirror)
+ * instead of hanging until undici's own minutes-long timeouts. Other statuses
+ * (e.g. a dead logo URL's 404) fail at once.
+ * @throws When the resource could not be fetched.
  */
-export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
+export async function fetchWithRetry(url: string): Promise<Response> {
   let lastError = "";
-  for (let attempt = 1; attempt <= IMAGE_FETCH_ATTEMPTS; attempt++) {
+  for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++) {
     let retryAfterMs: number | undefined;
     try {
-      const response = await fetch(imageUrl);
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_ATTEMPT_TIMEOUT_MS),
+      });
       if (response.ok) return response;
 
       lastError = `${response.status} ${response.statusText}`;
@@ -138,16 +145,16 @@ export async function fetchImageWithRetry(imageUrl: string): Promise<Response> {
       lastError = e instanceof Error ? e.message : String(e);
     }
 
-    if (attempt < IMAGE_FETCH_ATTEMPTS) {
+    if (attempt < FETCH_ATTEMPTS) {
       const delayMs = Math.min(
-        retryAfterMs ?? IMAGE_FETCH_BASE_DELAY_MS * 2 ** (attempt - 1),
-        IMAGE_FETCH_MAX_DELAY_MS
+        retryAfterMs ?? FETCH_BASE_DELAY_MS * 2 ** (attempt - 1),
+        FETCH_MAX_DELAY_MS
       );
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
 
-  throw new Error(`Failed to fetch image from ${imageUrl}: ${lastError}`);
+  throw new Error(`Failed to fetch ${url}: ${lastError}`);
 }
 
 /**
@@ -189,7 +196,7 @@ export async function saveAssetImageToTokensDir({
   }
 
   // Fetch the image from the URL.
-  const response = await fetchImageWithRetry(imageUrl);
+  const response = await fetchWithRetry(imageUrl);
   if (!response.body) {
     throw new Error(`Failed to fetch image from ${imageUrl}: empty body`);
   }

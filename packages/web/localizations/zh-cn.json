@@ -297,6 +297,7 @@
     "notInitialized": "加载中...",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
+    "scalingFactorNotInteger": "比例因子必须是整数",
     "zeroAmount": "数量为零",
     "invalidRange": "价格范围无效",
     "fallbackText1": "发生错误",
@@ -799,7 +800,8 @@
     "noRoutes": "未找到任何路线",
     "route": "路线",
     "routes": "路线",
-    "slippageOverBalance": "资金不足以弥补滑点"
+    "slippageOverBalance": "资金不足以弥补滑点",
+    "amountTooSmallForSlippage": "金额太小，无法以此滑点进行兑换。请增加金额或降低滑点。"
   },
   "walletSelect": {
     "gettingStarted": "入门",
@@ -855,6 +857,8 @@
   "swapFailed": "兑换失败。流动性可能不够。尝试调整允许的滑点。",
   "transactionBroadcasting": "广播交易中",
   "transactionFailed": "交易失败",
+  "transactionStatusUnknown": "交易状态未知",
+  "transactionStatusUnknownCaption": "已提交，但我们无法确认。请先查看浏览器，再重试。",
   "transactionSuccessful": "交易成功",
   "transfer": {
     "deposit": "订金",

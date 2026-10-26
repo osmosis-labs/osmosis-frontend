@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { BACKEND_HEADER, BUCKET_COOKIE } from "../routing";
+import { BACKEND_HEADER, BUCKET_COOKIE, FALLBACK_HEADER } from "../routing";
 import router, { type RouterEnv } from "../worker";
 
 const CF_COOKIE = `${BUCKET_COOKIE}=0`;
@@ -13,7 +13,7 @@ function setup({
   percent = "5",
   vercelOrigin,
 }: {
-  cf?: (request: Request) => Response;
+  cf?: (request: Request) => Response | Promise<Response>;
   vercel?: (request: Request) => Response;
   percent?: string;
   vercelOrigin?: string;
@@ -37,6 +37,7 @@ function setup({
           headers: {
             ...(cookie ? { cookie } : {}),
             "sec-fetch-dest": "document",
+            ...(init.headers as Record<string, string> | undefined),
           },
         }),
         env
@@ -133,6 +134,52 @@ describe("router", () => {
     expect(page.status).toBe(404);
     expect(api.status).toBe(404);
     expect(production).not.toHaveBeenCalled();
+  });
+
+  it("serves a page load from Vercel when the production Worker fails it", async () => {
+    const errorBody = new Response("error", { status: 503 });
+    const cancel = jest.spyOn(errorBody.body!, "cancel");
+    const { route, origin } = setup({ cf: () => errorBody });
+
+    const response = await route("https://app.test/pools", CF_COOKIE);
+
+    expect(await response.text()).toBe("from vercel");
+    expect(response.headers.get(BACKEND_HEADER)).toBe("vercel");
+    expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-503");
+    expect(origin).toHaveBeenCalledTimes(1);
+    expect(cancel).toHaveBeenCalled();
+  });
+
+  it("serves a page load from Vercel when the production Worker throws", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const { route } = setup({
+      cf: () => Promise.reject(new Error("exceeded CPU limit")),
+    });
+
+    const response = await route("https://app.test/pools", CF_COOKIE);
+
+    expect(await response.text()).toBe("from vercel");
+    expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-error");
+  });
+
+  it("keeps production Worker failures outside page loads on Cloudflare", async () => {
+    const { route, origin } = setup({
+      cf: () => new Response("error", { status: 500 }),
+    });
+
+    const api = await route("https://app.test/api/pools", CF_COOKIE, {
+      headers: { "sec-fetch-dest": "empty" },
+    });
+    const broadcast = await route(
+      "https://app.test/api/broadcast-transaction",
+      CF_COOKIE,
+      { method: "POST", body: "{}" }
+    );
+
+    expect(api.status).toBe(500);
+    expect(broadcast.status).toBe(500);
+    expect(api.headers.get(FALLBACK_HEADER)).toBeNull();
+    expect(origin).not.toHaveBeenCalled();
   });
 
   it("sends everyone to Vercel at 0%", async () => {

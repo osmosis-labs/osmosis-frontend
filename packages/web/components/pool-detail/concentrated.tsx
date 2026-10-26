@@ -3,10 +3,9 @@ import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, memo, useEffect, useMemo, useState } from "react";
 import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -53,7 +52,7 @@ const HistoricalPriceChart = dynamic(
 const OpenCreatePositionSearchParam = "open_create_position";
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
-  observer(({ poolId }) => {
+  memo(({ poolId }) => {
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
@@ -127,6 +126,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     useEffect(() => {
       if (openCreatePosition === "true") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot deep link: opens the modal and strips the query param together
         setActiveModal("add-liquidity");
         removeQueryParam(OpenCreatePositionSearchParam);
       }

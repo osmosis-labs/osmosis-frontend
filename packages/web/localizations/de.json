@@ -297,6 +297,7 @@
     "notInitialized": "Wird geladen...",
     "percentageSum": "Die Summe der Prozentsätze beträgt nicht 100",
     "scalingFactorTooLow": "Skalierungsfaktor zu niedrig",
+    "scalingFactorNotInteger": "Skalierungsfaktor muss eine ganze Zahl sein",
     "zeroAmount": "Betrag ist Null",
     "invalidRange": "Ungültige Preisspanne",
     "fallbackText1": "Ein Fehler ist aufgetreten",
@@ -799,7 +800,8 @@
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
     "routes": "Routen",
-    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage",
+    "amountTooSmallForSlippage": "Betrag zu klein für einen Swap mit dieser Slippage. Erhöhen Sie den Betrag oder verringern Sie die Slippage."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",
@@ -855,6 +857,8 @@
   "swapFailed": "Der Tausch ist fehlgeschlagen. Möglicherweise reicht die Liquidität nicht aus. Versuchen Sie, den zulässigen Schlupf anzupassen.",
   "transactionBroadcasting": "Transaktionsübertragung",
   "transactionFailed": "Transaktion fehlgeschlagen",
+  "transactionStatusUnknown": "Transaktionsstatus unbekannt",
+  "transactionStatusUnknownCaption": "Übermittelt, aber wir konnten sie nicht bestätigen. Prüfe den Explorer, bevor du es erneut versuchst.",
   "transactionSuccessful": "Transaktion Erfolgreich",
   "transfer": {
     "deposit": "Kaution",

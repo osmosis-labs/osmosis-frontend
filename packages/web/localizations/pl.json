@@ -297,6 +297,7 @@
     "notInitialized": "Ładowanie...",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
+    "scalingFactorNotInteger": "Współczynnik skalowania musi być liczbą całkowitą",
     "zeroAmount": "Ilość jest zerowa",
     "invalidRange": "Nieprawidłowy zakres cen",
     "fallbackText1": "Wystąpił błąd",
@@ -799,7 +800,8 @@
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
     "routes": "trasy",
-    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu",
+    "amountTooSmallForSlippage": "Kwota zbyt mała, aby dokonać wymiany przy tym poślizgu. Zwiększ kwotę lub zmniejsz poślizg."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
@@ -855,6 +857,8 @@
   "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
+  "transactionStatusUnknown": "Status transakcji nieznany",
+  "transactionStatusUnknownCaption": "Wysłano, ale nie udało się jej potwierdzić. Sprawdź eksplorator, zanim spróbujesz ponownie.",
   "transactionSuccessful": "Transakcja Udana",
   "transfer": {
     "deposit": "Depozyt",

@@ -7,14 +7,18 @@ import {
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -22,7 +26,6 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
-import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
@@ -69,7 +72,7 @@ export const usePlaceLimit = ({
 }: UsePlaceLimitParams) => {
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const {
     makerFee,
     isMakerFeeLoading,
@@ -308,12 +311,12 @@ export const usePlaceLimit = ({
    */
   const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
+      OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // Refresh account metadata when the address changes, even if the wallet instance is unchanged.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, address, accountStore.osmosisChainId]);
+  }, [account, address]);
 
   const limitMessages = useMemo(() => {
     if (isLedger) {
@@ -384,7 +387,7 @@ export const usePlaceLimit = ({
                     fallbackGetAuthenticatorId:
                       apiUtils.local.oneClickTrading.getSessionAuthenticator
                         .fetch,
-                    accountStore,
+                    walletApi,
                     allowedMessages: oneClickMessages.allowedMessages,
                     sessionPeriod: oneClickMessages.sessionPeriod,
                     spendLimitTokenDecimals:
@@ -399,7 +402,7 @@ export const usePlaceLimit = ({
                   oneClickMessages.type === "remove-1ct-session"
                 ) {
                   await onEnd1CTSession({
-                    accountStore,
+                    walletApi,
                     authenticatorId: oneClickMessages.authenticatorId,
                   });
                 }
@@ -425,38 +428,47 @@ export const usePlaceLimit = ({
             "",
             undefined,
             memoFlags ? { preferNoSetMemo: true } : undefined,
-            (tx) => {
+            async (tx) => {
               if (!tx.code) {
                 if (
                   shouldSend1CTTx &&
                   oneClickMessages &&
                   oneClickMessages.type === "create-1ct-session"
                 ) {
-                  onAdd1CTSession({
-                    privateKey: oneClickMessages.key,
-                    tx,
-                    userOsmoAddress: account?.address ?? "",
-                    fallbackGetAuthenticatorId:
-                      apiUtils.local.oneClickTrading.getSessionAuthenticator
-                        .fetch,
-                    accountStore,
-                    allowedMessages: oneClickMessages.allowedMessages,
-                    sessionPeriod: oneClickMessages.sessionPeriod,
-                    spendLimitTokenDecimals:
-                      oneClickMessages.spendLimitTokenDecimals,
-                    transaction1CTParams: oneClickMessages.transaction1CTParams,
-                    allowedAmount: oneClickMessages.allowedAmount,
-                    t,
-                  });
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        walletApi,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                      }),
+                    "create-1ct-session"
+                  );
                 } else if (
                   shouldSend1CTTx &&
                   oneClickMessages &&
                   oneClickMessages.type === "remove-1ct-session"
                 ) {
-                  onEnd1CTSession({
-                    accountStore,
-                    authenticatorId: oneClickMessages.authenticatorId,
-                  });
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onEnd1CTSession({
+                        walletApi,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                      }),
+                    "remove-1ct-session"
+                  );
                 }
               }
             },
@@ -478,7 +490,7 @@ export const usePlaceLimit = ({
       signAndBroadcast,
       account?.address,
       apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-      accountStore,
+      walletApi,
       t,
     ]
   );
@@ -669,7 +681,7 @@ export const usePlaceLimit = ({
     isLoading: gasFeeLoading,
     error: limitGasError,
   } = useEstimateTxFees({
-    chainId: accountStore.osmosisChainId,
+    chainId: OsmosisChainInfo.chainId,
     messages: limitMessages,
     enabled: shouldEstimateLimitGas,
   });
@@ -769,7 +781,7 @@ const useLimitPrice = ({
     { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
   );
 
-  const [orderPrice, setOrderPrice] = useState("0");
+  const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
 
   const minPrice = useMemo(() => {
@@ -968,9 +980,17 @@ const useLimitPrice = ({
     setPriceLock(false);
   }, []);
 
-  useEffect(() => {
+  const [prevResetKey, setPrevResetKey] = useState({
+    orderDirection,
+    baseDenom,
+  });
+  if (
+    prevResetKey.orderDirection !== orderDirection ||
+    prevResetKey.baseDenom !== baseDenom
+  ) {
+    setPrevResetKey({ orderDirection, baseDenom });
     reset();
-  }, [orderDirection, reset, baseDenom]);
+  }
 
   const isValidPrice =
     isValidInputPrice ||

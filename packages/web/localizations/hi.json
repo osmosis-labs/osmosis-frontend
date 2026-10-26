@@ -297,6 +297,7 @@
     "notInitialized": "लोड हो रहा है...",
     "percentageSum": "प्रतिशतों का योग 100 नहीं है",
     "scalingFactorTooLow": "स्केलिंग कारक बहुत कम है",
+    "scalingFactorNotInteger": "स्केलिंग कारक एक पूर्ण संख्या होना चाहिए",
     "zeroAmount": "राशि शून्य है",
     "invalidRange": "अमान्य मूल्य सीमा",
     "fallbackText1": "एक त्रुटि पाई गई",
@@ -799,7 +800,8 @@
     "noRoutes": "कोई मार्ग नहीं मिला",
     "route": "मार्ग",
     "routes": "मार्ग",
-    "slippageOverBalance": "स्लिपेज को कवर करने के लिए अपर्याप्त धनराशि"
+    "slippageOverBalance": "स्लिपेज को कवर करने के लिए अपर्याप्त धनराशि",
+    "amountTooSmallForSlippage": "इस स्लिपेज के साथ स्वैप करने के लिए राशि बहुत छोटी है। राशि बढ़ाएँ या स्लिपेज कम करें।"
   },
   "walletSelect": {
     "gettingStarted": "शुरू करना",
@@ -855,6 +857,8 @@
   "swapFailed": "स्वैप विफल. तरलता पर्याप्त नहीं हो सकती. अनुमत फिसलन को समायोजित करने का प्रयास करें।",
   "transactionBroadcasting": "लेन-देन प्रसारण",
   "transactionFailed": "लेन - देन विफल",
+  "transactionStatusUnknown": "लेनदेन की स्थिति अज्ञात",
+  "transactionStatusUnknownCaption": "सबमिट हो गया, लेकिन हम इसकी पुष्टि नहीं कर सके। दोबारा प्रयास करने से पहले एक्सप्लोरर देखें।",
   "transactionSuccessful": "लेनदेन सफल",
   "transfer": {
     "deposit": "जमा",

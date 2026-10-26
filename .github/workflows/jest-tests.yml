@@ -13,7 +13,6 @@ jobs:
             "web",
             "utils",
             "server",
-            "stores",
             "math",
             "bridge",
             "tx",

@@ -3,8 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { EmptyAmountError } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
@@ -18,7 +17,7 @@ import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
   UseDisclosureReturn,
-  usePreviousWhen,
+  useLatestWhen,
   useSlippageConfig,
   useTranslation,
 } from "~/hooks";
@@ -37,7 +36,7 @@ interface TradeDetailsProps {
   tab?: "buy" | "sell";
 }
 
-export const TradeDetails = observer(
+export const TradeDetails = memo(
   ({
     swapState,
     inPriceFetching,
@@ -510,7 +509,7 @@ function RoutesTaken({
   }) {
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
-  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
+  const latestSplitRef = useLatestWhen(split, (s) => s.length > 0);
 
   const displayedSplit = isLoading ? (latestSplitRef ?? split) : split;
 
