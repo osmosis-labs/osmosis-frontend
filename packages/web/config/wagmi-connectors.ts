@@ -54,6 +54,10 @@ export function createWagmiConnectors(): CreateConnectorFn[] {
     coinbaseWallet({
       appLogoUrl: "https://osmosis.zone/favicon.ico",
       appName: "Osmosis",
+      // The SDK's telemetry loads its analytics bundle as an inline script on
+      // every page, which the Content-Security-Policy blocks. `all` is the
+      // SDK's default (Smart Wallet and the extension).
+      preference: { options: "all", telemetry: false },
     }),
   ];
 }
