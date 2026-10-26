@@ -20,6 +20,10 @@ export type SlippageState = {
   selectedIndex: number;
   isManualSlippage: boolean;
   manualSlippage: string;
+  /** True while the slippage is a value the user typed, as opposed to one the
+   *  app chose. Set alongside setManualSlippage on user input; cleared when
+   *  control returns to the app. */
+  userOverrodeSlippage: boolean;
 };
 
 export const initialSlippageState: SlippageState = {
@@ -27,13 +31,15 @@ export const initialSlippageState: SlippageState = {
   selectedIndex: 0,
   isManualSlippage: true,
   manualSlippage: "0.5",
+  userOverrodeSlippage: false,
 };
 
 export type SlippageAction =
   | { type: "select"; index: number }
   | { type: "setIsManualSlippage"; value: boolean }
   | { type: "setManualSlippage"; value: string }
-  | { type: "setDefaultSlippage"; value: string };
+  | { type: "setDefaultSlippage"; value: string }
+  | { type: "setUserOverride"; value: boolean };
 
 /** Selects a preset by index; out of range indexes are ignored. */
 export function selectSlippage(
@@ -78,6 +84,8 @@ export function slippageReducer(
       return setManualSlippageStr(state, action.value);
     case "setDefaultSlippage":
       return { ...state, defaultManualSlippage: action.value };
+    case "setUserOverride":
+      return { ...state, userOverrodeSlippage: action.value };
   }
 }
 
