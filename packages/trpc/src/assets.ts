@@ -920,6 +920,8 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             variantsToBeExcluded: variantsNotToBeExcluded,
             prioritizedDenoms,
+            deprioritizedDenoms,
+            type,
           }),
           cursor,
           limit,

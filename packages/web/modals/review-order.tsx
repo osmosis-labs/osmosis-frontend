@@ -229,12 +229,15 @@ export function ReviewOrder({
    */
   const [reviewedOutput, setReviewedOutput] = useState(amountWithSlippage);
 
-  useEffect(() => {
+  // Re-baselined during render when the modal opens, so the drift check never
+  // runs against the previous session's quote. Deliberately keyed on `isOpen`
+  // alone — re-baselining on every quote tick would mean nothing ever counts
+  // as drift.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) setReviewedOutput(amountWithSlippage);
-    // Deliberately keyed on `isOpen` alone — re-baselining on every quote tick
-    // would mean nothing ever counts as drift.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }
 
   // A resting limit order fills at its limit price, so movement in the market
   // quote is not drift for it; only market orders compare against the

@@ -318,6 +318,7 @@ export const AmountScreen = memo(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
         setInputUnit("crypto");
       }
     }, [
@@ -841,9 +842,10 @@ export const AmountScreen = memo(
       selectedDenom,
     ]);
 
+    const fromDecimals = fromAsset?.decimals;
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
-        if (isNil(fromAsset?.decimals)) return;
+        if (isNil(fromDecimals)) return;
 
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -851,16 +853,17 @@ export const AmountScreen = memo(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(fromAsset.decimals)
+                .maxDecimals(fromDecimals)
                 .toString()
         );
       },
-      [fromAsset?.decimals, setCryptoAmount]
+      [fromDecimals, setCryptoAmount]
     );
 
+    const fiatMaxDecimals = canonicalAssetPrice?.fiatCurrency.maxDecimals;
     const onChangeFiatInput = useCallback(
       (amount: string) => {
-        if (isNil(canonicalAssetPrice?.fiatCurrency.maxDecimals)) return;
+        if (isNil(fiatMaxDecimals)) return;
 
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -868,11 +871,11 @@ export const AmountScreen = memo(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(canonicalAssetPrice.fiatCurrency.maxDecimals)
+                .maxDecimals(fiatMaxDecimals)
                 .toString()
         );
       },
-      [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+      [fiatMaxDecimals, setFiatAmount]
     );
 
     const isLoading =

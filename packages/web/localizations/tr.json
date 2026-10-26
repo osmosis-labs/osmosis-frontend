@@ -857,6 +857,8 @@
   "swapFailed": "Değiştirme başarısız oldu. Likidite yeterli olmayabilir. İzin verilen kaymayı ayarlamayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "transactionFailed": "İşlem Başarısız",
+  "transactionStatusUnknown": "İşlem durumu bilinmiyor",
+  "transactionStatusUnknownCaption": "Gönderildi, ancak doğrulayamadık. Tekrar denemeden önce gezgini kontrol edin.",
   "transactionSuccessful": "İşlem Başarılı",
   "transfer": {
     "deposit": "Depozito",

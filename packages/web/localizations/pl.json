@@ -857,6 +857,8 @@
   "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
+  "transactionStatusUnknown": "Status transakcji nieznany",
+  "transactionStatusUnknownCaption": "Wysłano, ale nie udało się jej potwierdzić. Sprawdź eksplorator, zanim spróbujesz ponownie.",
   "transactionSuccessful": "Transakcja Udana",
   "transfer": {
     "deposit": "Depozyt",

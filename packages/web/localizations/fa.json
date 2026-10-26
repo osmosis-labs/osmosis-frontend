@@ -857,6 +857,8 @@
   "swapFailed": "تعویض انجام نشد. نقدینگی ممکن است کافی نباشد. سعی کنید لغزش مجاز را تنظیم کنید.",
   "transactionBroadcasting": "در حال ارسال تراکنش",
   "transactionFailed": "تراکنش با موفقیت انجام نشد",
+  "transactionStatusUnknown": "وضعیت تراکنش نامشخص است",
+  "transactionStatusUnknownCaption": "ارسال شد، اما نتوانستیم آن را تأیید کنیم. پیش از تلاش دوباره، اکسپلورر را بررسی کنید.",
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
   "transfer": {
     "deposit": "سپرده",

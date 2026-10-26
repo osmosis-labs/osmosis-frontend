@@ -64,10 +64,7 @@ const libraryConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-wrapper-object-types": "off",
       "@typescript-eslint/prefer-as-const": "off",
-      "import/no-extraneous-dependencies": [
-        "error",
-        { devDependencies: true },
-      ],
+      "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
     },
   },
 ].map((config) => ({
@@ -140,7 +137,7 @@ const webConfig = [
     rules: {
       ...sharedRules,
       ...Object.fromEntries(
-        reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "warn"])
+        reactCompilerRules.map((rule) => [`react-hooks/${rule}`, "error"])
       ),
       "import/no-extraneous-dependencies": [
         "error",
@@ -201,6 +198,7 @@ const webConfig = [
     files: [
       "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
       "packages/web/playwright.config.ts",
+      "packages/web/router/worker.ts",
       "packages/web/localizations/dayjs-locale-*.js",
     ],
     rules: { "import/no-default-export": "off" },
@@ -213,6 +211,7 @@ export default [
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/.wrangler/**",
       "**/build/**",
       "**/dist/**",
       "packages/web/e2e/keplr-extension/**",

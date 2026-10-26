@@ -1,15 +1,13 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren } from "react";
+
+import { useIsClient } from "~/hooks/use-is-client";
 
 export const ClientOnly = (
   props: PropsWithChildren<{ className?: string }>
 ) => {
-  const [hasMounted, setHasMounted] = useState(false);
+  const isClient = useIsClient();
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
+  if (!isClient) {
     return null;
   }
 

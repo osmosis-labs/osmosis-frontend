@@ -857,6 +857,8 @@
   "swapFailed": "Falha na troca. A liquidez pode não ser suficiente. Tente ajustar o deslizamento permitido.",
   "transactionBroadcasting": "Transmitindo Transação",
   "transactionFailed": "Transação falhou",
+  "transactionStatusUnknown": "Status da transação desconhecido",
+  "transactionStatusUnknownCaption": "Enviada, mas não conseguimos confirmá-la. Verifique o explorador antes de tentar novamente.",
   "transactionSuccessful": "Transação Bem-Sucedida",
   "transfer": {
     "deposit": "Depósito",
