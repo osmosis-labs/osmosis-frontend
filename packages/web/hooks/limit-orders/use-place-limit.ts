@@ -506,16 +506,14 @@ export const usePlaceLimit = ({
   const baseTokenBalance = useMemo(() => {
     if (!baseAsset || !balances) return;
     const amount = balances.find(
-      ({ denom }) =>
-        denom.toLowerCase() === baseAsset.coinMinimalDenom.toLowerCase()
+      ({ denom }) => denom === baseAsset.coinMinimalDenom
     )?.amount;
     return new CoinPretty(baseAsset, amount ?? 0);
   }, [balances, baseAsset]);
   const quoteTokenBalance = useMemo(() => {
     if (!quoteAsset || !balances) return;
     const amount = balances.find(
-      ({ denom }) =>
-        denom.toLowerCase() === quoteAsset.coinMinimalDenom.toLowerCase()
+      ({ denom }) => denom === quoteAsset.coinMinimalDenom
     )?.amount;
     return new CoinPretty(quoteAsset, amount ?? 0);
   }, [balances, quoteAsset]);
