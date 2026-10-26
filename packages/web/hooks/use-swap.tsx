@@ -66,6 +66,7 @@ import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
+import { useUserWatchlist } from "~/hooks/user-settings";
 import { AppRouter } from "~/server/api/root-router";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { extractSwapRequiredErrorAmounts } from "~/utils/slippage";
@@ -1029,6 +1030,7 @@ export function useSwapAssets({
   );
 
   const { showPreviewAssets } = useShowPreviewAssets();
+  const { watchListDenoms } = useUserWatchlist();
 
   const canLoadAssets =
     Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies;
@@ -1043,6 +1045,8 @@ export function useSwapAssets({
     {
       poolId,
       search: queryInput,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: queryInput ? watchListDenoms : undefined,
       userOsmoAddress: address,
       includePreview: showPreviewAssets,
       limit: 50, // items per page
