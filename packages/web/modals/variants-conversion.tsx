@@ -12,7 +12,7 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useAssetVariantsToast, useTranslation, useWindowSize } from "~/hooks";
+import { useAssetVariantsToast, useTranslation } from "~/hooks";
 import {
   getConvertVariantMessages,
   useConvertVariant,
@@ -98,7 +98,6 @@ export const AssetVariantsConversionModal = () => {
   useAssetVariantsToast();
 
   const { address } = useWallet();
-  const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
   // Lift fee-token availability from row-level simulations: if any row's
@@ -171,13 +170,6 @@ export const AssetVariantsConversionModal = () => {
       setIsOpen(false);
     }
   }, [portfolioAssetsData, isOpen, setIsOpen]);
-
-  // should close toast if screen size changes to mobile while shown
-  useEffect(() => {
-    if (isMobile && isOpen) {
-      setIsOpen(false);
-    }
-  }, [isOpen, isMobile, setIsOpen]);
 
   return (
     <ModalBase
@@ -351,8 +343,10 @@ const AssetVariantRow: React.FC<{
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
-        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
-          <div className="flex min-w-0 items-center gap-3">
+        {/* On phones the four columns are too narrow to read, so from and to
+            stack with a down arrow between them. */}
+        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2 sm:grid-cols-[1fr_1.5rem]">
+          <div className="flex min-w-0 items-center gap-3 sm:col-span-2">
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -386,9 +380,9 @@ const AssetVariantRow: React.FC<{
             id="arrow"
             height={24}
             width={24}
-            className="text-osmoverse-700"
+            className="text-osmoverse-700 sm:col-span-2 sm:ml-2 sm:rotate-90"
           />
-          <div className="flex grow items-center gap-3 py-2 px-4">
+          <div className="flex min-w-0 grow items-center gap-3 py-2 px-4 sm:py-0 sm:px-0">
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -459,7 +453,7 @@ const AssetVariantRow: React.FC<{
             </div>
           )}
         </div>
-        <div className="flex place-content-between items-center gap-2">
+        <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
           <div className="body2 text-osmoverse-300">
             <FeeContent
               isLoading={isLoading}
@@ -472,7 +466,7 @@ const AssetVariantRow: React.FC<{
           <div className="flex items-center gap-2">
             <Button
               size="md"
-              className={classNames("!h-12 !w-fit", {
+              className={classNames("!h-12 !w-fit sm:!w-full", {
                 "rounded-full !bg-osmoverse-850/60": isButtonLoading,
               })}
               disabled={conversionDisabled}

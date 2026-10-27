@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useFeatureFlags, useWalletSelect, useWindowSize } from "~/hooks";
+import { useFeatureFlags, useWalletSelect } from "~/hooks";
 import {
   getToastEligibleVariantGroupKeys,
   shouldDisplayAlloyedAssetsToast,
@@ -16,7 +16,6 @@ export const useAssetVariantsToast = () => {
   // #region hooks & store
   const { address, isWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
   const { areAllGroupsDismissed, refresh } = useAlloyedAssetsToastDismissal();
   const {
@@ -76,7 +75,6 @@ export const useAssetVariantsToast = () => {
       shouldDisplayAlloyedAssetsToast({
         variantGroupKeys,
         isAlloyedAssetsEnabled: alloyedAssets,
-        isMobile,
         areAllGroupsDismissed,
       })
     ) {
@@ -102,7 +100,6 @@ export const useAssetVariantsToast = () => {
     data,
     hasSeenToastThisSession,
     alloyedAssets,
-    isMobile,
     areAllGroupsDismissed,
     markToastSeenThisSession,
   ]);

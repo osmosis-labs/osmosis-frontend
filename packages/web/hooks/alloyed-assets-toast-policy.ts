@@ -36,12 +36,10 @@ export function getToastEligibleVariantGroupKeys(
 export function shouldDisplayAlloyedAssetsToast({
   variantGroupKeys,
   isAlloyedAssetsEnabled,
-  isMobile,
   areAllGroupsDismissed,
 }: {
   variantGroupKeys: string[];
   isAlloyedAssetsEnabled: boolean;
-  isMobile: boolean;
   /** Per-group dismissal check; see use-alloyed-assets-toast-dismissal. */
   areAllGroupsDismissed: (variantGroupKeys: string[]) => boolean;
 }): boolean {
@@ -50,7 +48,6 @@ export function shouldDisplayAlloyedAssetsToast({
   // "all dismissed" below, so this guard is what keeps that from reading as a
   // reason to show the toast.
   if (variantGroupKeys.length === 0) return false;
-  if (isMobile) return false;
   return !areAllGroupsDismissed(variantGroupKeys);
 }
 
