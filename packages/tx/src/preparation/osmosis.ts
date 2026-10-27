@@ -1163,6 +1163,80 @@ export async function prepareExitPoolMsg(
   );
 }
 
+/**
+ * Exits a classic pool with caller-computed minimums, for flows that set
+ * their own tolerance. Unlike `prepareExitPoolMsg`, the minimums are used as
+ * given: never dropped, never loosened.
+ *
+ * @param shareInAmount Raw `gamm/pool/{poolId}` amount.
+ * @param tokenOutMins Raw minimums; must be non-empty and all positive.
+ */
+export async function prepareExitPoolWithMinimumsMsg(
+  context: TransactionPreparationContext,
+  poolId: string,
+  shareInAmount: string,
+  tokenOutMins: { denom: string; amount: string }[],
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  if (
+    tokenOutMins.length === 0 ||
+    tokenOutMins.some(({ amount }) => !new Int(amount).isPositive())
+  ) {
+    throw new Error("Exit minimums must be non-empty and positive");
+  }
+
+  const msg = await makeExitPoolMsg({
+    poolId: BigInt(poolId),
+    sender: context.address,
+    shareInAmount,
+    tokenOutMins,
+  });
+
+  return prepareTransaction(
+    "exitPool",
+    [msg],
+    memo,
+    undefined,
+    undefined,
+    onFulfill
+  );
+}
+
+/**
+ * Withdraws a whole CL position with a caller-supplied check run before the
+ * wallet prompt and again after signing. `MsgWithdrawPosition` has no
+ * minimum out, so the check (e.g. re-reading the position against its
+ * preview) is the only bound; the signed transaction also expires.
+ */
+export async function prepareGuardedWithdrawPositionMsg(
+  context: TransactionPreparationContext,
+  positionId: string,
+  liquidityAmount: string,
+  preBroadcastCheck: () => Promise<void>,
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  const msg = await makeWithdrawPositionMsg({
+    liquidityAmount,
+    positionId: BigInt(positionId),
+    sender: context.address,
+  });
+
+  await preBroadcastCheck();
+
+  return prepareTransaction(
+    "clWithdrawPosition",
+    [msg],
+    memo,
+    undefined,
+    undefined,
+    { onSign: preBroadcastCheck, onFulfill },
+    undefined,
+    true
+  );
+}
+
 export async function prepareCreateGaugeMsg(
   context: TransactionPreparationContext,
   distributeTo:

@@ -1,11 +1,17 @@
-import type { AssetVariant } from "@osmosis-labs/server";
+import type {
+  AssetVariant,
+  ForcedMigrationHolding,
+} from "@osmosis-labs/server";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 
 import {
   ForcedMigration,
   getActiveForcedMigrations,
+  getPositionExitTolerancePercent,
+  getShareExitTokenOutMins,
   HeldAssetAmount,
   isForcedMigrationSnoozed,
+  isWithdrawWithinTolerance,
   parseForcedMigrations,
 } from "../forced-migrations";
 
@@ -219,5 +225,175 @@ describe("isForcedMigrationSnoozed", () => {
   it("treats a missing or corrupt snooze as not snoozed", () => {
     expect(isForcedMigrationSnoozed(undefined, "notice", NOW)).toBe(false);
     expect(isForcedMigrationSnoozed(NaN, "notice", NOW)).toBe(false);
+  });
+});
+
+describe("getActiveForcedMigrations with per-position holdings", () => {
+  const share = (
+    state: "available" | "locked" | "unlocking",
+    oldAmount: string
+  ): ForcedMigrationHolding => ({
+    kind: "share",
+    poolId: "1",
+    state,
+    shares: "1000",
+    locks: state === "available" ? [] : [{ lockId: "7", isSynthetic: false }],
+    coins: [
+      { denom: USDC_NOBLE, amount: oldAmount },
+      { denom: "uosmo", amount: "1000000" },
+    ],
+    oldDenomAmount: oldAmount,
+  });
+
+  it("doesn't raise the popup for positions that are already unlocking", () => {
+    expect(
+      getActiveForcedMigrations({
+        migrations: [makeMigration()],
+        heldAssets: [held(USDC_NOBLE, "5000000", "5")],
+        assetVariants: [],
+        holdings: [share("unlocking", "5000000")],
+        now: NOW,
+      })
+    ).toEqual([]);
+  });
+
+  it("lists locked positions and keeps unlocking ones out of the dust threshold", () => {
+    const [active] = getActiveForcedMigrations({
+      migrations: [makeMigration({ minFiatValueUsd: 3 })],
+      // 9 USDC.noble priced at $9 across the portfolio: $1 per USDC.
+      heldAssets: [held(USDC_NOBLE, "9000000", "9")],
+      assetVariants: [],
+      holdings: [share("locked", "4000000"), share("unlocking", "5000000")],
+      now: NOW,
+    });
+    expect(active.positions).toHaveLength(1);
+    expect(active.unlocking).toHaveLength(1);
+    expect(active.heldElsewhere).toEqual([]);
+
+    // Only the locked $4 counts; under a $5 threshold nothing shows.
+    expect(
+      getActiveForcedMigrations({
+        migrations: [makeMigration({ minFiatValueUsd: 5 })],
+        heldAssets: [held(USDC_NOBLE, "9000000", "9")],
+        assetVariants: [],
+        holdings: [share("locked", "4000000"), share("unlocking", "5000000")],
+        now: NOW,
+      })
+    ).toEqual([]);
+  });
+
+  it("matches limit orders by exact denom", () => {
+    const order: ForcedMigrationHolding = {
+      kind: "order",
+      orderbookAddress: "osmo1book",
+      orderId: 1,
+      tickId: 2,
+      percentFilled: "0",
+      percentClaimed: "0",
+      inDenom: USDC_NOBLE,
+      outDenom: "uosmo",
+      remaining: "2000000",
+      unclaimed: "0",
+      oldDenomAmount: "2000000",
+    };
+    const [active] = getActiveForcedMigrations({
+      migrations: [makeMigration()],
+      heldAssets: [held(USDC_NOBLE, "2000000", "2")],
+      assetVariants: [],
+      holdings: [order, { ...order, inDenom: "ibc/OTHER", orderId: 3 }],
+      now: NOW,
+    });
+    expect(active.positions).toEqual([order]);
+  });
+});
+
+describe("getPositionExitTolerancePercent", () => {
+  it("defaults to 5% and accepts values up to the 10% cap", () => {
+    expect(getPositionExitTolerancePercent({})).toBe(5);
+    expect(
+      getPositionExitTolerancePercent({
+        positionExit: { maxSlippagePercent: 8 },
+      })
+    ).toBe(8);
+  });
+
+  it.each([0, -1, 10.5, NaN])("rejects %s rather than clamping it", (value) => {
+    expect(
+      getPositionExitTolerancePercent({
+        positionExit: { maxSlippagePercent: value },
+      })
+    ).toBeUndefined();
+  });
+});
+
+describe("getShareExitTokenOutMins", () => {
+  it("floors each coin at the tolerance and drops coins that round to zero", () => {
+    expect(
+      getShareExitTokenOutMins({
+        expectedCoins: [
+          { denom: USDC_NOBLE, amount: "1000001" },
+          { denom: "uosmo", amount: "1" },
+        ],
+        tolerancePercent: 5,
+        oldDenoms: [USDC_NOBLE],
+      })
+    ).toEqual([{ denom: USDC_NOBLE, amount: "950000" }]);
+  });
+
+  it("refuses to build an exit that doesn't bound the old denom", () => {
+    expect(() =>
+      getShareExitTokenOutMins({
+        expectedCoins: [{ denom: USDC_NOBLE, amount: "1" }],
+        tolerancePercent: 5,
+        oldDenoms: [USDC_NOBLE],
+      })
+    ).toThrow();
+    expect(() =>
+      getShareExitTokenOutMins({
+        expectedCoins: [{ denom: USDC_NOBLE, amount: "1000000" }],
+        tolerancePercent: 0,
+        oldDenoms: [USDC_NOBLE],
+      })
+    ).toThrow();
+  });
+});
+
+describe("isWithdrawWithinTolerance", () => {
+  const preview = [
+    { denom: USDC_NOBLE, amount: "1000000" },
+    { denom: "uosmo", amount: "2000000" },
+  ];
+
+  it("passes while each side holds within the tolerance", () => {
+    expect(
+      isWithdrawWithinTolerance({
+        previewCoins: preview,
+        freshCoins: [
+          { denom: USDC_NOBLE, amount: "950000" },
+          { denom: "uosmo", amount: "2100000" },
+        ],
+        tolerancePercent: 5,
+      })
+    ).toBe(true);
+  });
+
+  it("fails when one side falls further, or a side is missing", () => {
+    expect(
+      isWithdrawWithinTolerance({
+        previewCoins: preview,
+        freshCoins: [
+          { denom: USDC_NOBLE, amount: "949999" },
+          { denom: "uosmo", amount: "3000000" },
+        ],
+        tolerancePercent: 5,
+      })
+    ).toBe(false);
+    expect(
+      isWithdrawWithinTolerance({
+        previewCoins: preview,
+        freshCoins: [{ denom: USDC_NOBLE, amount: "1000000" }],
+        tolerancePercent: 5,
+      })
+    ).toBe(false);
   });
 });

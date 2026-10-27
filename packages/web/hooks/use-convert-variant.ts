@@ -10,14 +10,13 @@ import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
 import { useWallet } from "./use-wallet";
 
 /** Slippage tolerance for a conversion through a single fixed-ratio pool
- *  (transmuter / alloyed), as a decimal fraction: 0.01%.
+ *  (transmuter / alloyed), as a decimal fraction: 0.1%.
  *
  *  Deliberately not "0". `maxSlippage` sets `tokenOutMinAmount` to
  *  `quoted * (1 - maxSlippage)`, so exact zero demands byte-exact output and one
- *  unit of chain-side truncation reverts the tx. This is small enough to be
- *  economically irrelevant (100 base units on a 1M USDC conversion) while still
- *  absorbing rounding. */
-export const ONE_TO_ONE_MAX_SLIPPAGE = "0.0001";
+ *  unit of chain-side truncation reverts the tx. A fixed-ratio pool never moves
+ *  against the user, so this only ever absorbs rounding, with room to spare. */
+export const ONE_TO_ONE_MAX_SLIPPAGE = "0.001";
 
 /** Slippage tolerance for any conversion that can genuinely move against the
  *  user between quote and execution: splits, multi-hops, and price-moving pools
@@ -201,9 +200,9 @@ export async function getConvertVariantMessages(
   //
   // Not exactly zero: `maxSlippage` becomes `tokenOutMinAmount` via
   // `quoted * (1 - maxSlippage)`, so "0" demands byte-exact output and a single
-  // unit of chain-side truncation reverts the tx. ONE_TO_ONE_MAX_SLIPPAGE is the
-  // smallest tolerance that absorbs rounding while still capping loss at 0.01%
-  // (100 base units on a 1M USDC conversion, against 50,000 under the old 5%).
+  // unit of chain-side truncation reverts the tx. ONE_TO_ONE_MAX_SLIPPAGE
+  // absorbs rounding while still capping loss at 0.1% (1,000 USDC on a 1M USDC
+  // conversion, against 50,000 under the old 5%).
   //
   // Not every variant conversion is an alloy conversion: `variantGroupKey` also
   // groups non-alloy canonical assets, whose conversions route through ordinary

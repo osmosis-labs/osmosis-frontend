@@ -1,5 +1,6 @@
 import {
   getAlloyStatuses,
+  getForcedMigrationHoldings,
   getPortfolioAssets,
   getPortfolioOverTime,
 } from "@osmosis-labs/server";
@@ -49,5 +50,20 @@ export const portfolioRouter = createTRPCRouter({
     )
     .query(({ input: { contractAddresses }, ctx: { assetLists, chainList } }) =>
       getAlloyStatuses({ contractAddresses, assetLists, chainList })
+    ),
+  getForcedMigrationHoldings: publicProcedure
+    .input(
+      z.object({
+        address: z.string().startsWith("osmo"),
+        denoms: z.array(z.string().min(1)).max(20),
+      })
+    )
+    .query(({ input: { address, denoms }, ctx: { assetLists, chainList } }) =>
+      getForcedMigrationHoldings({
+        assetLists,
+        chainList,
+        bech32Address: address,
+        denoms,
+      })
     ),
 });

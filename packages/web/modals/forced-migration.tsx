@@ -1,4 +1,9 @@
-import { getDeepValue, shorten } from "@osmosis-labs/utils";
+import type { ConcentratedHolding } from "@osmosis-labs/server";
+import {
+  getAssetFromAssetList,
+  getDeepValue,
+  shorten,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import {
@@ -11,19 +16,30 @@ import {
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useForcedMigrations } from "~/hooks/use-forced-migrations";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals/base";
 import {
   ExternalLinkModal,
   handleExternalLink,
 } from "~/modals/external-links-modal";
 import {
+  ForcedMigrationPositionRow,
+  useForcedPositionMigration,
+} from "~/modals/forced-migration-positions";
+import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
+import {
   AssetVariantRow,
   InsufficientFeeTokensBanner,
 } from "~/modals/variants-conversion";
 import { interpolateBannerText } from "~/utils/asset-alerts";
-import { ActiveForcedMigration } from "~/utils/forced-migrations";
+import {
+  ActiveForcedMigration,
+  getPositionExitTolerancePercent,
+} from "~/utils/forced-migrations";
+import { api } from "~/utils/trpc";
 
 const PORTFOLIO_PATHNAME = "/portfolio";
 
@@ -56,7 +72,13 @@ export const ForcedMigrationModal = () => {
     []
   );
 
-  const isOpen = visibleMigrations.length > 0;
+  // A CL position being migrated from the popup. The popup steps aside for
+  // the migrate modal without snoozing, and comes back when it closes.
+  const [migrating, setMigrating] = useState<
+    { holding: ConcentratedHolding; tolerancePercent: number } | undefined
+  >();
+
+  const isOpen = visibleMigrations.length > 0 && !migrating;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the per-denom fee errors that rows reported once the popup closes
@@ -76,25 +98,103 @@ export const ForcedMigrationModal = () => {
   }, [snoozeVisible, router]);
 
   return (
-    <ModalBase
-      isOpen={isOpen}
-      onRequestClose={snoozeVisible}
-      className="flex max-w-[500px] flex-col gap-6 bg-osmoverse-900"
-    >
-      {visibleMigrations.map((active, index) => (
-        <MigrationSection
-          key={active.migration.id}
-          active={active}
-          showDivider={index > 0}
-          onViewPortfolio={onViewPortfolio}
-          onInsufficientFeeTokens={reportInsufficientFeeTokens}
+    <>
+      <ModalBase
+        isOpen={isOpen}
+        onRequestClose={snoozeVisible}
+        className="flex max-w-[500px] flex-col gap-6 bg-osmoverse-900"
+      >
+        {visibleMigrations.map((active, index) => (
+          <MigrationSection
+            key={active.migration.id}
+            active={active}
+            showDivider={index > 0}
+            onViewPortfolio={onViewPortfolio}
+            onInsufficientFeeTokens={reportInsufficientFeeTokens}
+            onMigrate={(holding, tolerancePercent) =>
+              setMigrating({ holding, tolerancePercent })
+            }
+          />
+        ))}
+        {hasInsufficientFeeTokens && <InsufficientFeeTokensBanner />}
+        <Button variant="outline" onClick={snoozeVisible}>
+          {t("forcedMigration.remindMeLater")}
+        </Button>
+      </ModalBase>
+      {migrating && (
+        <ForcedPositionMigrateModal
+          holding={migrating.holding}
+          tolerancePercent={migrating.tolerancePercent}
+          onClose={() => setMigrating(undefined)}
         />
-      ))}
-      {hasInsufficientFeeTokens && <InsufficientFeeTokensBanner />}
-      <Button variant="outline" onClick={snoozeVisible}>
-        {t("forcedMigration.remindMeLater")}
-      </Button>
-    </ModalBase>
+      )}
+    </>
+  );
+};
+
+/**
+ * The existing CL position migration, opened from the popup with the forced
+ * migration's flat tolerance. Mounts once the position and its eligibility
+ * have loaded; closes back to the popup if the position can't be migrated.
+ */
+const ForcedPositionMigrateModal: FunctionComponent<{
+  holding: ConcentratedHolding;
+  tolerancePercent: number;
+  onClose: () => void;
+}> = ({ holding, tolerancePercent, onClose }) => {
+  const { address } = useWallet();
+  const { data: position, isFetched } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      { userOsmoAddress: address ?? "", forPoolId: holding.poolId },
+      {
+        enabled: Boolean(address),
+        select: (positions) =>
+          positions.find(
+            ({ position }) =>
+              position.position.position_id === holding.positionId
+          ),
+      }
+    );
+  const {
+    mappedMigration,
+    eligibility,
+    minAmountTolerance,
+    revalidate,
+    isPoolDataRefetching,
+  } = useForcedPositionMigration(holding, tolerancePercent);
+
+  const isMountable =
+    position &&
+    mappedMigration &&
+    eligibility?.divergencePercent !== undefined &&
+    eligibility.appliedTolerancePercent !== undefined &&
+    minAmountTolerance !== undefined;
+
+  // Eligibility that came back without a price gap is structural (pairing
+  // pulled, position out of range): the migrate modal can't open on it.
+  const isStructurallyIneligible =
+    eligibility !== undefined && eligibility.divergencePercent === undefined;
+
+  useEffect(() => {
+    // The position is gone (already withdrawn) or can't be migrated any
+    // more: nothing to show, so hand back to the popup.
+    if ((isFetched && !position) || isStructurallyIneligible) onClose();
+  }, [isFetched, position, isStructurallyIneligible, onClose]);
+
+  if (!isMountable) return null;
+
+  return (
+    <MigrateConcentratedPositionModal
+      isOpen={true}
+      position={position}
+      toPoolId={mappedMigration.toPoolId.toString()}
+      divergencePercent={eligibility.divergencePercent!}
+      appliedTolerancePercent={eligibility.appliedTolerancePercent!}
+      isEligible={eligibility.isEligible}
+      isPoolDataRefetching={isPoolDataRefetching}
+      revalidate={revalidate}
+      onRequestClose={onClose}
+    />
   );
 };
 
@@ -106,11 +206,20 @@ const MigrationSection: FunctionComponent<{
     coinMinimalDenom: string,
     hasInsufficient: boolean
   ) => void;
+  onMigrate: (holding: ConcentratedHolding, tolerancePercent: number) => void;
 }> = ({
-  active: { migration, stage, convertibleVariants, heldElsewhere },
+  active: {
+    migration,
+    stage,
+    convertibleVariants,
+    positions,
+    unlocking,
+    heldElsewhere,
+  },
   showDivider,
   onViewPortfolio,
   onInsufficientFeeTokens,
+  onMigrate,
 }) => {
   const { t, language } = useTranslation();
   const {
@@ -131,14 +240,42 @@ const MigrationSection: FunctionComponent<{
     [migration.deadline, language]
   );
 
-  const symbolsText = [
-    ...new Set([
-      ...convertibleVariants.map(
-        (variant) => variant.amount.currency.coinDenom
-      ),
-      ...heldElsewhere.map((held) => held.coinDenom ?? shorten(held.denom)),
-    ]),
-  ].join(", ");
+  const heldOldDenoms = migration.fromDenoms.filter(
+    (denom) =>
+      convertibleVariants.some(
+        (variant) => variant.amount.currency.coinMinimalDenom === denom
+      ) ||
+      heldElsewhere.some((held) => held.denom === denom) ||
+      [...positions, ...unlocking].some((holding) =>
+        holding.kind === "order"
+          ? holding.inDenom === denom || holding.outDenom === denom
+          : holding.coins.some((coin) => coin.denom === denom)
+      )
+  );
+  const symbolsText = heldOldDenoms
+    .map(
+      (denom) =>
+        getAssetFromAssetList({
+          coinMinimalDenom: denom,
+          assetLists: AssetLists,
+        })?.symbol ??
+        heldElsewhere.find((held) => held.denom === denom)?.coinDenom ??
+        shorten(denom)
+    )
+    .join(", ");
+  const tolerancePercent = getPositionExitTolerancePercent(migration);
+  const lateUnlockNote = migration.enLateUnlockNoteOrLocalizationPath
+    ? interpolateBannerText(
+        localize(migration.enLateUnlockNoteOrLocalizationPath),
+        { deadline: deadlineText ?? "" }
+      )
+    : undefined;
+  const hasPoolRows = [...positions, ...unlocking].some(
+    ({ kind }) => kind !== "order"
+  );
+  const hasOrderRows = [...positions, ...unlocking].some(
+    ({ kind }) => kind === "order"
+  );
 
   const bodyPath =
     stage === "pastDeadline" && migration.enAfterDeadlineBodyOrLocalizationPath
@@ -212,6 +349,38 @@ const MigrationSection: FunctionComponent<{
           ))}
         </div>
       )}
+      {positions.length + unlocking.length > 0 && (
+        <div className="flex flex-col gap-1 rounded-2xl border border-osmoverse-700 px-4 py-2">
+          <p className="body2 pt-2 text-osmoverse-300">
+            {[
+              hasPoolRows &&
+                t("forcedMigration.heldInPools", {
+                  symbols: symbolsText,
+                }),
+              hasOrderRows &&
+                t("forcedMigration.heldInOrders", {
+                  symbols: symbolsText,
+                }),
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          </p>
+          {[...positions, ...unlocking].map((holding) => (
+            <ForcedMigrationPositionRow
+              key={getHoldingKey(holding)}
+              holding={holding}
+              migration={migration}
+              tolerancePercent={tolerancePercent}
+              onMigrate={(clHolding) =>
+                tolerancePercent !== undefined &&
+                onMigrate(clHolding, tolerancePercent)
+              }
+              lateUnlockNote={lateUnlockNote}
+              deadlineText={deadlineText}
+            />
+          ))}
+        </div>
+      )}
       {heldElsewhere.length > 0 && (
         <div className="flex flex-col gap-2 rounded-2xl border border-osmoverse-700 p-4">
           <p className="body2 text-osmoverse-300">
@@ -242,6 +411,19 @@ const MigrationSection: FunctionComponent<{
       )}
     </div>
   );
+};
+
+const getHoldingKey = (
+  holding: ActiveForcedMigration["positions"][number]
+): string => {
+  switch (holding.kind) {
+    case "order":
+      return `order:${holding.orderbookAddress}:${holding.orderId}`;
+    case "cl":
+      return `cl:${holding.positionId}`;
+    case "share":
+      return `share:${holding.poolId}:${holding.state}`;
+  }
 };
 
 /** Long date in the user's language, in UTC so the day shown is the day the

@@ -84,12 +84,32 @@ export const useForcedMigrations = () => {
       }
     );
 
+  const fromDenoms = useMemo(
+    () => [...new Set(migrations.flatMap(({ fromDenoms }) => fromDenoms))],
+    [migrations]
+  );
+
+  // Per-position rows, so unlocking positions can be told apart from locked
+  // ones. On failure the popup falls back to the portfolio totals.
+  const {
+    data: holdings,
+    isFetched: isHoldingsFetched,
+    isError: isHoldingsError,
+  } = api.local.portfolio.getForcedMigrationHoldings.useQuery(
+    { address: address ?? "", denoms: fromDenoms },
+    {
+      enabled: isEnabled && fromDenoms.length > 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   /** Whether `activeMigrations` is final for now: nothing is gated on, or
-   *  the CMS file and (when it has entries) the portfolio have loaded. A
-   *  failed fetch counts as settled. */
+   *  the CMS file and (when it has entries) the portfolio and holdings have
+   *  loaded. A failed fetch counts as settled. */
   const isSettled =
     !isEnabled ||
-    (isMigrationsFetched && (migrations.length === 0 || isPortfolioFetched));
+    (isMigrationsFetched &&
+      (migrations.length === 0 || (isPortfolioFetched && isHoldingsFetched)));
 
   const now = new Date();
 
@@ -97,11 +117,14 @@ export const useForcedMigrations = () => {
   // the current time, and cached data is ignored as soon as the flag flips
   // off or the wallet disconnects.
   const activeMigrations: ActiveForcedMigration[] =
-    isEnabled && portfolioAssets
+    // Waits for the holdings too, so the popup doesn't open on the
+    // portfolio-totals fallback and then change shape.
+    isEnabled && portfolioAssets && isHoldingsFetched
       ? getActiveForcedMigrations({
           migrations,
           heldAssets: portfolioAssets.heldAssets,
           assetVariants: portfolioAssets.assetVariants,
+          holdings: isHoldingsError ? undefined : holdings,
           now,
         })
       : [];

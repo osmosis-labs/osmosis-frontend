@@ -1,4 +1,7 @@
-import type { AssetVariant } from "@osmosis-labs/server";
+import type {
+  AssetVariant,
+  ForcedMigrationHolding,
+} from "@osmosis-labs/server";
 import { Dec, Int } from "@osmosis-labs/unit";
 
 import type { CMSBannerFields } from "~/utils/asset-alerts";
@@ -34,7 +37,14 @@ export interface ForcedMigration {
   enBodyOrLocalizationPath: string;
   /** Replaces the body once `deadline` has passed. */
   enAfterDeadlineBodyOrLocalizationPath?: string;
+  /** Shown beside a lock whose unlock would end after `deadline`: what
+   *  happens to the asset then. May contain `{deadline}`. */
+  enLateUnlockNoteOrLocalizationPath?: string;
   link?: CMSBannerFields["link"];
+  /** How far a position exit may fall short of its preview, and how wide a
+   *  mapped pool migration's price gap may be. Loose on purpose: losing a few
+   *  percent beats holding the old asset past the deadline. */
+  positionExit?: { maxSlippagePercent?: number };
   localization?: Record<string, Record<string, any>>;
 }
 
@@ -58,11 +68,107 @@ export interface ActiveForcedMigration {
   stage: ForcedMigrationStage;
   /** Bank balances that can be converted to `toDenom` from the popup. */
   convertibleVariants: AssetVariant[];
-  /** Old assets held outside the bank balance (pooled, staked, in locks,
-   *  rewards), or in the bank but without a valid convert route. The user has
-   *  to free these first. */
+  /** Pool positions, locks and limit orders holding an old asset that the
+   *  user can act on now (withdraw, migrate, unlock, cancel or claim). */
+  positions: ForcedMigrationHolding[];
+  /** Positions already unlocking. Shown, but they don't raise the popup:
+   *  they become `positions` once the unlock ends. */
+  unlocking: ForcedMigrationHolding[];
+  /** Only when per-position holdings couldn't be loaded: old assets outside
+   *  the bank balance by the portfolio totals, which can't tell locked from
+   *  unlocking. */
   heldElsewhere: HeldAssetAmount[];
 }
+
+/** Default and cap for `positionExit.maxSlippagePercent`. */
+export const DEFAULT_POSITION_EXIT_TOLERANCE_PERCENT = 5;
+export const MAX_POSITION_EXIT_TOLERANCE_PERCENT = 10;
+
+const isValidTolerance = (value: unknown): value is number =>
+  typeof value === "number" &&
+  Number.isFinite(value) &&
+  value > 0 &&
+  value <= MAX_POSITION_EXIT_TOLERANCE_PERCENT;
+
+/**
+ * The position exit tolerance for a migration, in percent: the CMS value, or
+ * the default when unset. Undefined when the CMS value is out of range, which
+ * hides the exit actions rather than clamping a value someone mistyped.
+ */
+export function getPositionExitTolerancePercent(
+  migration: Pick<ForcedMigration, "positionExit">
+): number | undefined {
+  const { positionExit } = migration;
+  if (positionExit === undefined)
+    return DEFAULT_POSITION_EXIT_TOLERANCE_PERCENT;
+  if (!positionExit || typeof positionExit !== "object") return undefined;
+  const value = positionExit.maxSlippagePercent;
+  if (value === undefined) return DEFAULT_POSITION_EXIT_TOLERANCE_PERCENT;
+  return isValidTolerance(value) ? value : undefined;
+}
+
+/**
+ * `tokenOutMins` for exiting a classic pool: each expected coin less the
+ * tolerance, rounded down. A coin whose minimum rounds to zero is worth less
+ * than a base unit and is left out (the chain rejects zero coins), but the
+ * list always bounds an old denom, so an exit is never sent unprotected.
+ */
+export function getShareExitTokenOutMins({
+  expectedCoins,
+  tolerancePercent,
+  oldDenoms,
+}: {
+  expectedCoins: { denom: string; amount: string }[];
+  tolerancePercent: number;
+  oldDenoms: string[];
+}): { denom: string; amount: string }[] {
+  if (!isValidTolerance(tolerancePercent))
+    throw new Error(`Invalid exit tolerance: ${tolerancePercent}`);
+  const keep = new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100)));
+
+  const mins = expectedCoins
+    .map(({ denom, amount }) => ({
+      denom,
+      amount: new Dec(amount).mul(keep).truncate(),
+    }))
+    .filter(({ amount }) => amount.isPositive())
+    .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+  if (!mins.some(({ denom }) => oldDenoms.includes(denom)))
+    throw new Error("Exit minimums don't bound the old denom");
+  return mins;
+}
+
+/**
+ * Whether a CL position read just before signing still pays out within the
+ * tolerance of its preview, side by side: a price move shifts value from one
+ * side to the other, and the loss shows as one side falling. A CL withdrawal
+ * has no minimum on chain, so this check (before the wallet prompt and again
+ * after signing) is its bound.
+ */
+export function isWithdrawWithinTolerance({
+  previewCoins,
+  freshCoins,
+  tolerancePercent,
+}: {
+  previewCoins: { denom: string; amount: string }[];
+  freshCoins: { denom: string; amount: string }[];
+  tolerancePercent: number;
+}): boolean {
+  if (!isValidTolerance(tolerancePercent)) return false;
+  const keep = new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100)));
+  return previewCoins.every(({ denom, amount }) => {
+    const min = new Dec(amount).mul(keep).truncate();
+    const fresh = freshCoins.find((coin) => coin.denom === denom);
+    return new Int(fresh?.amount ?? "0").gte(min);
+  });
+}
+
+/** Denoms a holding touches, for matching it to a migration. */
+const getHoldingDenoms = (holding: ForcedMigrationHolding): string[] =>
+  holding.kind === "order"
+    ? [holding.inDenom, holding.outDenom]
+    : holding.coins.map(({ denom }) => denom);
 
 const SNOOZE_MS: Record<ForcedMigrationStage, number> = {
   notice: 24 * 60 * 60 * 1000,
@@ -167,21 +273,26 @@ export function getForcedMigrationSnoozeEndMs(
  * Matches started migrations against what the wallet holds, by exact minimal
  * denom. Snoozing and the feature flag are left to the caller.
  *
- * `heldAssets` are totals across every category, so the amount held outside
- * the bank is the total less the bank balance.
+ * With `holdings` (per-position rows from chain state), positions that are
+ * already unlocking don't raise the popup or count towards the dust
+ * threshold. Without them (the query failed), the amount outside the bank
+ * falls back to the portfolio total less the bank balance, which nags about
+ * everything rather than going silent.
  */
 export function getActiveForcedMigrations({
   migrations,
   heldAssets,
   assetVariants,
+  holdings,
   now = new Date(),
 }: {
   migrations: ForcedMigration[];
   heldAssets: HeldAssetAmount[];
   assetVariants: AssetVariant[];
+  holdings?: ForcedMigrationHolding[];
   now?: Date;
 }): ActiveForcedMigration[] {
-  if (heldAssets.length === 0) return [];
+  if (heldAssets.length === 0 && !holdings?.length) return [];
 
   const heldByDenom = new Map(heldAssets.map((asset) => [asset.denom, asset]));
   const variantByDenom = new Map(
@@ -199,6 +310,47 @@ export function getActiveForcedMigrations({
       let totalFiat = new Dec(0);
       let hasUnpricedHolding = false;
 
+      /** Adds `amount` of `denom` at the portfolio's unit price. Sidecar
+       *  values a coin it can't price at zero, which is unknown, not
+       *  worthless. */
+      const addValue = (denom: string, amount: Int) => {
+        const held = heldByDenom.get(denom);
+        const heldAmount = new Int(held?.amount ?? "0");
+        const heldFiat = new Dec(held?.fiatValue ?? "0");
+        if (!heldAmount.isPositive() || heldFiat.isZero()) {
+          hasUnpricedHolding = true;
+          return;
+        }
+        totalFiat = totalFiat.add(
+          heldFiat.mul(new Dec(amount)).quo(new Dec(heldAmount))
+        );
+      };
+
+      const migrationHoldings = (holdings ?? []).filter((holding) =>
+        getHoldingDenoms(holding).some((denom) =>
+          migration.fromDenoms.includes(denom)
+        )
+      );
+      const isUnlocking = (holding: ForcedMigrationHolding) =>
+        holding.kind !== "order" && holding.state === "unlocking";
+      const positions = migrationHoldings.filter(
+        (holding) => !isUnlocking(holding)
+      );
+      const unlocking = migrationHoldings.filter(isUnlocking);
+      for (const holding of positions) {
+        if (holding.kind === "order") {
+          if (migration.fromDenoms.includes(holding.inDenom))
+            addValue(holding.inDenom, new Int(holding.remaining));
+          if (migration.fromDenoms.includes(holding.outDenom))
+            addValue(holding.outDenom, new Int(holding.unclaimed));
+        } else {
+          for (const coin of holding.coins) {
+            if (migration.fromDenoms.includes(coin.denom))
+              addValue(coin.denom, new Int(coin.amount));
+          }
+        }
+      }
+
       for (const denom of migration.fromDenoms) {
         const held = heldByDenom.get(denom);
         if (!held) continue;
@@ -206,11 +358,13 @@ export function getActiveForcedMigrations({
         const heldAmount = new Int(held.amount);
         if (!heldAmount.isPositive()) continue;
 
-        const heldFiat = new Dec(held.fiatValue);
-        totalFiat = totalFiat.add(heldFiat);
-        // Sidecar values a coin it can't price at zero, which is unknown, not
-        // worthless.
-        if (heldFiat.isZero()) hasUnpricedHolding = true;
+        // With per-position holdings the bank part is valued on its own
+        // below; otherwise the portfolio total stands for everything.
+        if (!holdings) {
+          const heldFiat = new Dec(held.fiatValue);
+          totalFiat = totalFiat.add(heldFiat);
+          if (heldFiat.isZero()) hasUnpricedHolding = true;
+        }
 
         const variant = variantByDenom.get(denom);
         // The convert swaps into the variant's canonical asset, so only offer
@@ -226,16 +380,25 @@ export function getActiveForcedMigrations({
         let bankAmount = new Int(0);
         if (variant && canConvert) {
           bankAmount = new Int(variant.amount.toCoin().amount);
-          if (bankAmount.isPositive()) convertibleVariants.push(variant);
+          if (bankAmount.isPositive()) {
+            convertibleVariants.push(variant);
+            if (holdings) addValue(denom, bankAmount);
+          }
         }
 
-        const elsewhereAmount = heldAmount.sub(bankAmount);
-        if (elsewhereAmount.isPositive()) {
-          heldElsewhere.push({ ...held, amount: elsewhereAmount.toString() });
+        if (!holdings) {
+          const elsewhereAmount = heldAmount.sub(bankAmount);
+          if (elsewhereAmount.isPositive()) {
+            heldElsewhere.push({ ...held, amount: elsewhereAmount.toString() });
+          }
         }
       }
 
-      if (convertibleVariants.length === 0 && heldElsewhere.length === 0)
+      if (
+        convertibleVariants.length === 0 &&
+        positions.length === 0 &&
+        heldElsewhere.length === 0
+      )
         return undefined;
 
       const minFiat = migration.minFiatValueUsd;
@@ -250,6 +413,8 @@ export function getActiveForcedMigrations({
         migration,
         stage: getForcedMigrationStage(migration, now),
         convertibleVariants,
+        positions,
+        unlocking,
         heldElsewhere,
       };
     })
