@@ -1488,6 +1488,12 @@
     "dismiss": "Despedir",
     "convert": "Convertir"
   },
+  "forcedMigration": {
+    "remindMeLater": "Recordármelo más tarde",
+    "deadline": "Fecha límite: {date}",
+    "heldElsewhere": "También tienes {symbols} en pools, staking o bloqueos. Retíralo de allí y luego conviértelo aquí.",
+    "viewPortfolio": "Ver portafolio"
+  },
   "assetVariantsConversion": {
     "title": "Estandarizar activos",
     "description": "Convierta los siguientes activos a su versión estandarizada en Osmosis para obtener mayor flexibilidad y compatibilidad.",

@@ -1488,6 +1488,12 @@
     "dismiss": "Dismiss",
     "convert": "Convert"
   },
+  "forcedMigration": {
+    "remindMeLater": "Remind me later",
+    "deadline": "Deadline: {date}",
+    "heldElsewhere": "You also hold {symbols} in pools, staking or locks. Withdraw it from there, then convert it here.",
+    "viewPortfolio": "View portfolio"
+  },
   "assetVariantsConversion": {
     "title": "Standardize Assets",
     "description": "Convert the following assets to their standardized version on Osmosis for more flexibility and increased compatibility.",

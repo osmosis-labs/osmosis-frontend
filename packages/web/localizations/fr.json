@@ -1488,6 +1488,12 @@
     "dismiss": "Rejeter",
     "convert": "Convertir"
   },
+  "forcedMigration": {
+    "remindMeLater": "Me le rappeler plus tard",
+    "deadline": "Date limite : {date}",
+    "heldElsewhere": "Vous détenez aussi des {symbols} dans des pools, en staking ou en verrouillage. Retirez-les d'abord, puis convertissez-les ici.",
+    "viewPortfolio": "Voir le portefeuille"
+  },
   "assetVariantsConversion": {
     "title": "Normaliser les actifs",
     "description": "Convertissez les ressources suivantes en leur version standardisée sur Osmosis pour plus de flexibilité et une compatibilité accrue.",

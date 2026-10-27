@@ -1488,6 +1488,12 @@
     "dismiss": "Zurückweisen",
     "convert": "Konvertieren"
   },
+  "forcedMigration": {
+    "remindMeLater": "Später erinnern",
+    "deadline": "Frist: {date}",
+    "heldElsewhere": "Du hältst {symbols} auch in Pools, beim Staking oder in Locks. Ziehe es dort ab und konvertiere es dann hier.",
+    "viewPortfolio": "Portfolio ansehen"
+  },
   "assetVariantsConversion": {
     "title": "Standardisierung von Assets",
     "description": "Konvertieren Sie die folgenden Assets in ihre standardisierte Version auf Osmosis für mehr Flexibilität und höhere Kompatibilität.",

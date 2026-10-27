@@ -1488,6 +1488,12 @@
     "dismiss": "Respingeți",
     "convert": "Convertit"
   },
+  "forcedMigration": {
+    "remindMeLater": "Amintește-mi mai târziu",
+    "deadline": "Termen limită: {date}",
+    "heldElsewhere": "Deții {symbols} și în pool-uri, staking sau blocări. Retrage-l de acolo, apoi convertește-l aici.",
+    "viewPortfolio": "Vezi portofoliul"
+  },
   "assetVariantsConversion": {
     "title": "Standardizați activele",
     "description": "Convertiți următoarele elemente în versiunea lor standardizată pe Osmosis pentru mai multă flexibilitate și compatibilitate sporită.",

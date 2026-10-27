@@ -1488,6 +1488,12 @@
     "dismiss": "却下する",
     "convert": "変換する"
   },
+  "forcedMigration": {
+    "remindMeLater": "後で通知する",
+    "deadline": "期限: {date}",
+    "heldElsewhere": "プール、ステーキング、またはロックにも {symbols} を保有しています。そこから引き出してから、ここで変換してください。",
+    "viewPortfolio": "ポートフォリオを見る"
+  },
   "assetVariantsConversion": {
     "title": "資産を標準化する",
     "description": "柔軟性と互換性を高めるために、次のアセットを Osmosis の標準バージョンに変換します。",

@@ -1488,6 +1488,12 @@
     "dismiss": "Azletmek",
     "convert": "Dönüştürmek"
   },
+  "forcedMigration": {
+    "remindMeLater": "Daha sonra hatırlat",
+    "deadline": "Son tarih: {date}",
+    "heldElsewhere": "Havuzlarda, stakingde veya kilitlerde de {symbols} tutuyorsunuz. Önce oradan çekin, sonra burada dönüştürün.",
+    "viewPortfolio": "Portföyü görüntüle"
+  },
   "assetVariantsConversion": {
     "title": "Varlıkları Standartlaştırın",
     "description": "Daha fazla esneklik ve uyumluluk için aşağıdaki varlıkları Osmosis'teki standart sürümlerine dönüştürün.",

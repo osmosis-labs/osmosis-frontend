@@ -204,24 +204,7 @@ export const AssetVariantsConversionModal = () => {
             {t("assetVariantsConversion.learnMore")}
           </a>
         </p>
-        {hasInsufficientFeeTokens && (
-          <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-4">
-            <Icon
-              id="alert-triangle"
-              width={20}
-              height={20}
-              className="text-rust-600 min-w-[20px] mt-1"
-            />
-            <div className="flex flex-col gap-1">
-              <span className="body2 text-base text-rust-500">
-                {t("errors.insufficientFeeTokens.title")}
-              </span>
-              <span className="subtitle2 text-osmoverse-400">
-                {t("errors.insufficientFeeTokens.body")}
-              </span>
-            </div>
-          </div>
-        )}
+        {hasInsufficientFeeTokens && <InsufficientFeeTokensBanner />}
         <div className="mt-4 flex flex-col">
           {isPortfolioAssetsLoading ? (
             <AllocationSkeleton />
@@ -245,7 +228,32 @@ export const AssetVariantsConversionModal = () => {
   );
 };
 
-const AssetVariantRow: React.FC<{
+/** Shown once above the rows when a row's fee estimate finds the wallet can't
+ *  pay gas; the cause is the fee balance, not the variant. */
+export const InsufficientFeeTokensBanner = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-4">
+      <Icon
+        id="alert-triangle"
+        width={20}
+        height={20}
+        className="text-rust-600 min-w-[20px] mt-1"
+      />
+      <div className="flex flex-col gap-1">
+        <span className="body2 text-base text-rust-500">
+          {t("errors.insufficientFeeTokens.title")}
+        </span>
+        <span className="subtitle2 text-osmoverse-400">
+          {t("errors.insufficientFeeTokens.body")}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
   // Row reports its own coinMinimalDenom alongside the boolean so the parent

@@ -1488,6 +1488,12 @@
     "dismiss": "해고하다",
     "convert": "전환하다"
   },
+  "forcedMigration": {
+    "remindMeLater": "나중에 알림",
+    "deadline": "마감일: {date}",
+    "heldElsewhere": "풀, 스테이킹 또는 락에도 {symbols}을(를) 보유하고 있습니다. 먼저 인출한 후 여기에서 변환하세요.",
+    "viewPortfolio": "포트폴리오 보기"
+  },
   "assetVariantsConversion": {
     "title": "자산 표준화",
     "description": "더 큰 유연성과 호환성을 위해 다음 자산을 Osmosis의 표준화된 버전으로 변환하세요.",

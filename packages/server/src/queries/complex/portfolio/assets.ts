@@ -212,6 +212,10 @@ export type HeldAsset = {
   denom: string;
   /** Display symbol from the asset list, when the asset is listed. */
   coinDenom?: string;
+  /** Total held across every category, in minimal units. */
+  amount: string;
+  /** Fiat value of `amount` from sidecar; "0" when sidecar couldn't price it. */
+  fiatValue: string;
 };
 
 export type PortfolioAssets = {
@@ -316,12 +320,16 @@ export function getHeldAssets(
   const assetListAssets = assetLists.flatMap((list) => list.assets);
 
   return (
-    categories["total-assets"]?.account_coins_result?.map(({ coin }) => ({
-      denom: coin.denom,
-      coinDenom: assetListAssets.find(
-        (asset) => asset.coinMinimalDenom === coin.denom
-      )?.symbol,
-    })) ?? []
+    categories["total-assets"]?.account_coins_result?.map(
+      ({ coin, cap_value }) => ({
+        denom: coin.denom,
+        coinDenom: assetListAssets.find(
+          (asset) => asset.coinMinimalDenom === coin.denom
+        )?.symbol,
+        amount: coin.amount,
+        fiatValue: cap_value,
+      })
+    ) ?? []
   );
 }
 

@@ -1488,6 +1488,12 @@
     "dismiss": "解雇",
     "convert": "转变"
   },
+  "forcedMigration": {
+    "remindMeLater": "稍后提醒我",
+    "deadline": "截止日期：{date}",
+    "heldElsewhere": "您在流动性池、质押或锁仓中也持有 {symbols}。请先从那里取出，然后在此处转换。",
+    "viewPortfolio": "查看投资组合"
+  },
   "assetVariantsConversion": {
     "title": "标准化资产",
     "description": "将以下资产转换为 Osmosis 上的标准化版本，以获得更大的灵活性和更高的兼容性。",

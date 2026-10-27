@@ -1488,6 +1488,12 @@
     "dismiss": "Odrzucać",
     "convert": "Konwertować"
   },
+  "forcedMigration": {
+    "remindMeLater": "Przypomnij mi później",
+    "deadline": "Termin: {date}",
+    "heldElsewhere": "Masz też {symbols} w pulach, stakingu lub blokadach. Wypłać je stamtąd, a potem przekonwertuj tutaj.",
+    "viewPortfolio": "Zobacz portfel"
+  },
   "assetVariantsConversion": {
     "title": "Standaryzacja aktywów",
     "description": "Przekonwertuj poniższe zasoby do ich standardowej wersji w Osmosis, aby uzyskać większą elastyczność i lepszą kompatybilność.",

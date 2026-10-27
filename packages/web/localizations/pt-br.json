@@ -1488,6 +1488,12 @@
     "dismiss": "Liberar",
     "convert": "Converter"
   },
+  "forcedMigration": {
+    "remindMeLater": "Lembrar mais tarde",
+    "deadline": "Prazo: {date}",
+    "heldElsewhere": "Você também tem {symbols} em pools, staking ou bloqueios. Retire de lá e depois converta aqui.",
+    "viewPortfolio": "Ver portfólio"
+  },
   "assetVariantsConversion": {
     "title": "Padronizar Ativos",
     "description": "Converta os seguintes ativos para sua versão padronizada no Osmosis para obter mais flexibilidade e compatibilidade aprimorada.",
