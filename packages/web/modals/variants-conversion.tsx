@@ -264,7 +264,6 @@ const AssetVariantRow: React.FC<{
     quote,
     convertFee,
     isLoading,
-    isConvertFeeLoading,
     isError,
     isConvertingVariant,
     isConvertingThisVariant,
@@ -461,7 +460,7 @@ const AssetVariantRow: React.FC<{
         <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
           <div className="body2 text-osmoverse-300">
             <FeeContent
-              isLoading={isLoading || isConvertFeeLoading}
+              isLoading={isLoading}
               convertFee={convertFee}
               swapFee={quote?.swapFee}
               isUnavailable={isUnavailable}

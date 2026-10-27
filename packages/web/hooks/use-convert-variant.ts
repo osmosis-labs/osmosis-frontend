@@ -145,8 +145,7 @@ export function useConvertVariant(
     [variant, account, quote, signAndBroadcast, variantTransactionIdentifier]
   );
 
-  const { fiatValue: feeFiatValue, isLoading: isFeeFiatValueLoading } =
-    useCoinFiatValue(quote?.feeAmount);
+  const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
 
   // Check for large difference in amount of in v out
   const isLargeAmountDiff = useMemo(() => {
@@ -158,9 +157,9 @@ export function useConvertVariant(
   return {
     onConvert,
     quote,
-    /** Undefined when the variant has no price; the fee rate still applies. */
+    /** Undefined until priced, and always for a variant with no price; the
+     *  fee rate is shown either way. */
     convertFee: feeFiatValue,
-    isConvertFeeLoading: isFeeFiatValueLoading,
     variant,
     isLoading: isQuoteLoading || isPortfolioAssetsLoading,
     isError: isLargeAmountDiff || isQuoteError || isPortfolioAssetsError,
