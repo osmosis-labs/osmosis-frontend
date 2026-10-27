@@ -45,7 +45,7 @@ const FeeContent: React.FC<{
 }> = ({ isLoading, convertFee, swapFee, isUnavailable, simulation }) => {
   const { t } = useTranslation();
 
-  if (isLoading || !convertFee || !swapFee || simulation.loading)
+  if (isLoading || simulation.loading)
     return <SkeletonLoader className="h-4 w-20" />;
 
   if (isUnavailable)
@@ -54,6 +54,8 @@ const FeeContent: React.FC<{
         {t("assetVariantsConversion.unavailable")}
       </span>
     );
+
+  if (!swapFee) return <SkeletonLoader className="h-4 w-20" />;
 
   // Free
   if (swapFee.toDec().isZero()) {
@@ -72,7 +74,9 @@ const FeeContent: React.FC<{
    * low liq variants can have wildly high prices if the pool is imbalanced.
    */
   const showConvertFee =
-    convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
+    convertFee !== undefined &&
+    convertFee.toDec().isPositive() &&
+    convertFee.toDec().lt(new Dec(10_000));
 
   // Fees
   return (
@@ -260,6 +264,7 @@ const AssetVariantRow: React.FC<{
     quote,
     convertFee,
     isLoading,
+    isConvertFeeLoading,
     isError,
     isConvertingVariant,
     isConvertingThisVariant,
@@ -456,7 +461,7 @@ const AssetVariantRow: React.FC<{
         <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
           <div className="body2 text-osmoverse-300">
             <FeeContent
-              isLoading={isLoading}
+              isLoading={isLoading || isConvertFeeLoading}
               convertFee={convertFee}
               swapFee={quote?.swapFee}
               isUnavailable={isUnavailable}
