@@ -589,7 +589,25 @@ const AssetActionsCell: AssetCellComponent<{
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
   const needsConversion = coinMinimalDenom !== variantGroupKey;
-  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
+
+  // Only variants that convert 1:1 (members of an active alloy) come back as
+  // asset variants, so the button never opens a modal with nothing in it.
+  const { address } = useWallet();
+  const { data: isConvertible = false } =
+    api.local.portfolio.getPortfolioAssets.useQuery(
+      { address: address ?? "" },
+      {
+        enabled: featureFlags.alloyedAssets && needsConversion && !!address,
+        refetchOnWindowFocus: false,
+        select: (data) =>
+          data.assetVariants.some(
+            (variant) =>
+              variant.amount.currency.coinMinimalDenom === coinMinimalDenom
+          ),
+      }
+    );
+  const showConvertButton =
+    featureFlags.alloyedAssets && needsConversion && isConvertible;
 
   const actionOptions = getActionOptions(
     t,

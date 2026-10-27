@@ -8,9 +8,9 @@ import type { AssetVariant } from "@osmosis-labs/server";
  * ASTRO.terra, and today's ibc-denom USDC with its ten bridged variants), and
  * volunteering those unprompted is noise.
  *
- * This narrows the unsolicited toast ONLY. Conversion itself stays available for
- * every variant group via the portfolio Convert button and the modal, so this
- * deliberately does not gate `checkAssetVariants` server-side.
+ * The portfolio query already returns only members of active alloys, so this
+ * filter removes nothing today; it stays so the toast's rule doesn't silently
+ * depend on the server's.
  *
  * Deliberately a moving target: when a group's canonical asset becomes an alloy
  * (as USDC will), it starts qualifying with no code change here.

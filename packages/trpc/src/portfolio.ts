@@ -23,10 +23,11 @@ export const portfolioRouter = createTRPCRouter({
         address: z.string().startsWith("osmo"),
       })
     )
-    .query(({ input: { address }, ctx: { assetLists } }) =>
+    .query(({ input: { address }, ctx: { assetLists, chainList } }) =>
       getPortfolioAssets({
         address,
         assetLists,
+        chainList,
       })
     ),
 });

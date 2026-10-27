@@ -1,9 +1,15 @@
-import { AssetList, MinimalAsset } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
-import { captureIfError } from "../../../utils";
+import { captureIfError, DEFAULT_LRU_OPTIONS } from "../../../utils";
+import {
+  queryTransmuterAssetConfigs,
+  queryTransmuterIsActive,
+} from "../../contracts";
 import {
   type AccountCoinsResult,
   Categories,
@@ -226,10 +232,12 @@ export type PortfolioAssets = {
 export async function getPortfolioAssets({
   address,
   assetLists,
+  chainList,
   allocationLimit = 5,
 }: {
   address: string;
   assetLists: AssetList[];
+  chainList: Chain[];
   allocationLimit?: number;
 }): Promise<PortfolioAssets> {
   const data = await queryPortfolioAssets({
@@ -267,7 +275,10 @@ export async function getPortfolioAssets({
     })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
-  const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
+  const assetVariants = await filterConvertibleAssetVariants(
+    checkAssetVariants(userBalanceDenoms, assetLists),
+    (contractAddress) => getCachedAlloyStatus(contractAddress, chainList)
+  );
 
   const heldAssets = getHeldAssets(categories, assetLists);
 
@@ -305,6 +316,93 @@ export function getHeldAssets(
       )?.symbol,
     })) ?? []
   );
+}
+
+export interface AlloyStatus {
+  isActive: boolean;
+  /** Minimal denoms the alloy's transmuter holds 1:1. */
+  memberDenoms: string[];
+}
+
+const ALLOYED_DENOM_REGEX = /^factory\/(osmo1[a-z0-9]+)\/alloyed\/[^/]+$/;
+
+/** The transmuter contract that mints an alloyed denom, which is the denom's
+ *  tokenfactory creator. */
+export function getAlloyContractAddress(
+  alloyedDenom: string
+): string | undefined {
+  return ALLOYED_DENOM_REGEX.exec(alloyedDenom)?.[1];
+}
+
+const alloyStatusCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+function getCachedAlloyStatus(
+  contractAddress: string,
+  chainList: Chain[]
+): Promise<AlloyStatus> {
+  return cachified({
+    cache: alloyStatusCache,
+    ttl: 1000 * 60, // 1 minute
+    key: `alloy-status-${contractAddress}`,
+    getFreshValue: async () => {
+      const [isActive, assetConfigs] = await Promise.all([
+        queryTransmuterIsActive({ contractAddress, chainList }),
+        queryTransmuterAssetConfigs({ contractAddress, chainList }),
+      ]);
+      return {
+        isActive: isActive.data.is_active,
+        memberDenoms: assetConfigs.data.asset_configs.map(({ denom }) => denom),
+      };
+    },
+  });
+}
+
+/**
+ * Keeps only variants that convert 1:1: the canonical asset is an alloy, its
+ * transmuter is active (a frozen one rejects swaps), and the variant is one of
+ * its members. `variantGroupKey` alone also groups legacy consolidations and
+ * bridged assets that aren't in any 1:1 pool, which could only convert
+ * through a price-moving route.
+ *
+ * Fails closed: an alloy whose status can't be fetched offers no conversion.
+ */
+export async function filterConvertibleAssetVariants(
+  variants: AssetVariant[],
+  getAlloyStatus: (contractAddress: string) => Promise<AlloyStatus>
+): Promise<AssetVariant[]> {
+  const contractAddresses = new Set(
+    variants
+      .filter(({ canonicalAsset }) => canonicalAsset?.isAlloyed)
+      .map(({ canonicalAsset }) =>
+        getAlloyContractAddress(canonicalAsset.coinMinimalDenom)
+      )
+      .filter((address): address is string => Boolean(address))
+  );
+
+  const statusByContract = new Map(
+    await Promise.all(
+      [...contractAddresses].map(
+        async (address) =>
+          [
+            address,
+            await getAlloyStatus(address).catch((error) => {
+              console.error(`Failed to get alloy status for ${address}`, error);
+              return undefined;
+            }),
+          ] as const
+      )
+    )
+  );
+
+  return variants.filter(({ amount, canonicalAsset }) => {
+    if (!canonicalAsset?.isAlloyed) return false;
+    const address = getAlloyContractAddress(canonicalAsset.coinMinimalDenom);
+    const status = address ? statusByContract.get(address) : undefined;
+    return Boolean(
+      status?.isActive &&
+      status.memberDenoms.includes(amount.currency.coinMinimalDenom)
+    );
+  });
 }
 
 export function checkAssetVariants(
