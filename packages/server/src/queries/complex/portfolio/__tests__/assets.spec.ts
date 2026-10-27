@@ -436,6 +436,7 @@ describe("filterConvertibleAssetVariants", () => {
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
   // Hypothetical member with a coarser normalization factor than allUSDC.
   const USDC_INJ = "ibc/USDCINJ";
+  const USDC_AXL_CORRUPTED = "ibc/USDCCORRUPTED";
   const WBTC =
     "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc";
   const ETH_AXL =
@@ -463,6 +464,8 @@ describe("filterConvertibleAssetVariants", () => {
         variant(USDC_NOBLE, allUsdc),
         // Member, but too small to mint one unit of the alloy.
         variant(USDC_INJ, allUsdc, true, "999"),
+        // Member the transmuter marks corrupted (it won't take it in).
+        variant(USDC_AXL_CORRUPTED, allUsdc),
         // In the variant group, but not a member of the transmuter.
         variant(USDC_AXL, `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`),
         // Member of a frozen transmuter.
@@ -479,13 +482,16 @@ describe("filterConvertibleAssetVariants", () => {
             normalizationFactors: {
               [USDC_NOBLE]: "1",
               [USDC_INJ]: "1000",
+              [USDC_AXL_CORRUPTED]: "1",
               [allUsdc]: "1",
             },
+            corruptedDenoms: [USDC_AXL_CORRUPTED],
           };
         if (contractAddress === ALL_BTC_CONTRACT)
           return {
             isActive: false,
             normalizationFactors: { [WBTC]: "1", [allBtc]: "1" },
+            corruptedDenoms: [],
           };
         throw new Error("node down");
       }

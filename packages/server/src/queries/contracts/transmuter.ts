@@ -61,6 +61,27 @@ interface TransmuterAssetConfigsResponse {
   };
 }
 
+interface TransmuterCorruptedDenomsResponse {
+  data: {
+    corrupted_denoms: string[];
+  };
+}
+
+/** Members the pool is winding down: it rejects swaps that increase their
+ *  amount, so they can't be converted into the alloy. */
+export const queryTransmuterCorruptedDenoms = createNodeQuery<
+  TransmuterCorruptedDenomsResponse,
+  {
+    contractAddress: string;
+  }
+>({
+  path: ({ contractAddress }) =>
+    getQuerySmartContractPath({
+      msg: { get_corrupted_denoms: {} },
+      contractAddress,
+    }),
+});
+
 /** The pool's member denoms (including its own alloyed denom). */
 export const queryTransmuterAssetConfigs = createNodeQuery<
   TransmuterAssetConfigsResponse,

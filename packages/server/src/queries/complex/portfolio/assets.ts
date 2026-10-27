@@ -5,9 +5,15 @@ import { sort } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { captureIfError, DEFAULT_LRU_OPTIONS } from "../../../utils";
+import {
+  captureError,
+  captureErrorAndReturn,
+  captureIfError,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils";
 import {
   queryTransmuterAssetConfigs,
+  queryTransmuterCorruptedDenoms,
   queryTransmuterIsActive,
 } from "../../contracts";
 import {
@@ -323,6 +329,8 @@ export interface AlloyStatus {
   /** Normalization factor by minimal denom, for every asset the alloy's
    *  transmuter holds plus the alloyed denom itself. */
   normalizationFactors: Record<string, string>;
+  /** Members the transmuter won't take in (see `queryTransmuterCorruptedDenoms`). */
+  corruptedDenoms: string[];
 }
 
 const ALLOYED_DENOM_REGEX = /^factory\/(osmo1[a-z0-9]+)\/alloyed\/[^/]+$/;
@@ -345,11 +353,25 @@ function getCachedAlloyStatus(
     cache: alloyStatusCache,
     ttl: 1000 * 60, // 1 minute
     key: `alloy-status-${contractAddress}`,
-    getFreshValue: async () => {
-      const [isActive, assetConfigs] = await Promise.all([
+    getFreshValue: async ({ metadata }) => {
+      const result = await Promise.all([
         queryTransmuterIsActive({ contractAddress, chainList }),
         queryTransmuterAssetConfigs({ contractAddress, chainList }),
-      ]);
+        queryTransmuterCorruptedDenoms({ contractAddress, chainList }),
+      ]).catch((e) => {
+        // Fail closed, but briefly: caching the failure keeps a node outage
+        // from adding the full request timeout to every portfolio load.
+        metadata.ttl = 1000 * 30; // 30 seconds
+        return captureErrorAndReturn(e, undefined);
+      });
+      if (!result)
+        return {
+          isActive: false,
+          normalizationFactors: {},
+          corruptedDenoms: [],
+        };
+
+      const [isActive, assetConfigs, corruptedDenoms] = result;
       return {
         isActive: isActive.data.is_active,
         normalizationFactors: Object.fromEntries(
@@ -357,6 +379,7 @@ function getCachedAlloyStatus(
             ({ denom, normalization_factor }) => [denom, normalization_factor]
           )
         ),
+        corruptedDenoms: corruptedDenoms.data.corrupted_denoms,
       };
     },
   });
@@ -372,7 +395,8 @@ function getCachedAlloyStatus(
  * down, so e.g. 1 adydx (factor 10^6) into allDYDX (factor 1) yields nothing
  * and the quote fails.
  *
- * Fails closed: an alloy whose status can't be fetched offers no conversion.
+ * Fails closed: an alloy whose status can't be fetched offers no conversion,
+ * and neither does a corrupted member, which the transmuter won't take in.
  */
 export async function filterConvertibleAssetVariants(
   variants: AssetVariant[],
@@ -394,7 +418,7 @@ export async function filterConvertibleAssetVariants(
           [
             address,
             await getAlloyStatus(address).catch((error) => {
-              console.error(`Failed to get alloy status for ${address}`, error);
+              captureError(error);
               return undefined;
             }),
           ] as const
@@ -407,6 +431,8 @@ export async function filterConvertibleAssetVariants(
     const address = getAlloyContractAddress(canonicalAsset.coinMinimalDenom);
     const status = address ? statusByContract.get(address) : undefined;
     if (!status?.isActive) return false;
+    if (status.corruptedDenoms.includes(amount.currency.coinMinimalDenom))
+      return false;
     const inFactor =
       status.normalizationFactors[amount.currency.coinMinimalDenom];
     const outFactor =

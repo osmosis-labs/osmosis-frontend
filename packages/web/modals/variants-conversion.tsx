@@ -274,6 +274,11 @@ const AssetVariantRow: React.FC<{
    * has very low liquidity and would fail on chain for some reason.
    * If so, block the user from sending tx.
    */
+  // Re-run once the quote arrives (it usually isn't cached on mount). Keyed on
+  // the variant's denom and amount, not the object, which callers may rebuild
+  // on render.
+  const variantDenom = variant.amount.currency.coinMinimalDenom;
+  const variantAmount = variant.amount.toCoin().amount;
   const simulation = useAsync(async () => {
     if (!account || !quote || !account?.address) return;
 
@@ -286,7 +291,8 @@ const AssetVariantRow: React.FC<{
     if (!Array.isArray(messages)) return;
 
     await estimateFee({ messages });
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.address, quote, variantDenom, variantAmount]);
 
   const isUnavailable = Boolean(simulation?.error) || isError;
 
