@@ -2,6 +2,7 @@ import { AssetLists as assetLists } from "../../../__tests__/mock-asset-lists";
 import { PortfolioAssetsResponse } from "../../../sidecar";
 import { calculatePercentAndFiatValues, getAllocations } from "../assets";
 import {
+  type AlloyStatus,
   type AssetVariant,
   checkAssetVariants,
   filterConvertibleAssetVariants,
@@ -433,6 +434,8 @@ describe("filterConvertibleAssetVariants", () => {
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
   const USDC_AXL =
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
+  // Hypothetical member with a coarser normalization factor than allUSDC.
+  const USDC_INJ = "ibc/USDCINJ";
   const WBTC =
     "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc";
   const ETH_AXL =
@@ -441,17 +444,25 @@ describe("filterConvertibleAssetVariants", () => {
   const variant = (
     denom: string,
     canonicalDenom: string,
-    isAlloyed = true
+    isAlloyed = true,
+    baseAmount = "1000000"
   ): AssetVariant =>
     ({
-      amount: { currency: { coinMinimalDenom: denom } },
+      amount: {
+        currency: { coinMinimalDenom: denom },
+        toCoin: () => ({ denom, amount: baseAmount }),
+      },
       canonicalAsset: { coinMinimalDenom: canonicalDenom, isAlloyed },
     }) as unknown as AssetVariant;
 
   it("keeps only members of active alloys, failing closed", async () => {
+    const allUsdc = `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`;
+    const allBtc = `factory/${ALL_BTC_CONTRACT}/alloyed/allBTC`;
     const result = await filterConvertibleAssetVariants(
       [
-        variant(USDC_NOBLE, `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`),
+        variant(USDC_NOBLE, allUsdc),
+        // Member, but too small to mint one unit of the alloy.
+        variant(USDC_INJ, allUsdc, true, "999"),
         // In the variant group, but not a member of the transmuter.
         variant(USDC_AXL, `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`),
         // Member of a frozen transmuter.
@@ -461,11 +472,21 @@ describe("filterConvertibleAssetVariants", () => {
         // Canonical asset isn't an alloy (legacy consolidation).
         variant("ibc/OLD", "uold", false),
       ],
-      async (contractAddress) => {
+      async (contractAddress): Promise<AlloyStatus> => {
         if (contractAddress === ALL_USDC_CONTRACT)
-          return { isActive: true, memberDenoms: [USDC_NOBLE] };
+          return {
+            isActive: true,
+            normalizationFactors: {
+              [USDC_NOBLE]: "1",
+              [USDC_INJ]: "1000",
+              [allUsdc]: "1",
+            },
+          };
         if (contractAddress === ALL_BTC_CONTRACT)
-          return { isActive: false, memberDenoms: [WBTC] };
+          return {
+            isActive: false,
+            normalizationFactors: { [WBTC]: "1", [allBtc]: "1" },
+          };
         throw new Error("node down");
       }
     );

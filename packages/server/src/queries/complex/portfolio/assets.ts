@@ -1,6 +1,6 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { Dec, Int, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -320,8 +320,9 @@ export function getHeldAssets(
 
 export interface AlloyStatus {
   isActive: boolean;
-  /** Minimal denoms the alloy's transmuter holds 1:1. */
-  memberDenoms: string[];
+  /** Normalization factor by minimal denom, for every asset the alloy's
+   *  transmuter holds plus the alloyed denom itself. */
+  normalizationFactors: Record<string, string>;
 }
 
 const ALLOYED_DENOM_REGEX = /^factory\/(osmo1[a-z0-9]+)\/alloyed\/[^/]+$/;
@@ -351,7 +352,11 @@ function getCachedAlloyStatus(
       ]);
       return {
         isActive: isActive.data.is_active,
-        memberDenoms: assetConfigs.data.asset_configs.map(({ denom }) => denom),
+        normalizationFactors: Object.fromEntries(
+          assetConfigs.data.asset_configs.map(
+            ({ denom, normalization_factor }) => [denom, normalization_factor]
+          )
+        ),
       };
     },
   });
@@ -362,7 +367,10 @@ function getCachedAlloyStatus(
  * transmuter is active (a frozen one rejects swaps), and the variant is one of
  * its members. `variantGroupKey` alone also groups legacy consolidations and
  * bridged assets that aren't in any 1:1 pool, which could only convert
- * through a price-moving route.
+ * through a price-moving route. Also drops dust that would mint zero of the
+ * alloy: the transmuter scales amounts by `outFactor / inFactor`, rounding
+ * down, so e.g. 1 adydx (factor 10^6) into allDYDX (factor 1) yields nothing
+ * and the quote fails.
  *
  * Fails closed: an alloy whose status can't be fetched offers no conversion.
  */
@@ -398,10 +406,16 @@ export async function filterConvertibleAssetVariants(
     if (!canonicalAsset?.isAlloyed) return false;
     const address = getAlloyContractAddress(canonicalAsset.coinMinimalDenom);
     const status = address ? statusByContract.get(address) : undefined;
-    return Boolean(
-      status?.isActive &&
-      status.memberDenoms.includes(amount.currency.coinMinimalDenom)
-    );
+    if (!status?.isActive) return false;
+    const inFactor =
+      status.normalizationFactors[amount.currency.coinMinimalDenom];
+    const outFactor =
+      status.normalizationFactors[canonicalAsset.coinMinimalDenom];
+    if (!inFactor || !outFactor) return false;
+    // At least one unit out: amount * outFactor / inFactor >= 1.
+    return new Int(amount.toCoin().amount)
+      .mul(new Int(outFactor))
+      .gte(new Int(inFactor));
   });
 }
 
