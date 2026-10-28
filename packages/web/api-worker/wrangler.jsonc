@@ -1,0 +1,31 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // API routes only. Pages stay on osmosis-frontend-production (OpenNext).
+  "name": "osmosis-frontend-api-production",
+  "main": "worker.ts",
+  // Wrangler makes this path cwd-relative, then esbuild resolves it from this config's
+  // directory. From `packages/web`, `../tsconfig.json` becomes `tsconfig.json` and esbuild
+  // loads `api-worker/tsconfig.json` (the `~/*` paths). Run the cf:api scripts from that package.
+  "tsconfig": "../tsconfig.json",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+  "minify": true,
+  // Same server aliases as next.config.js. `./libsodium` is the relative import inside
+  // @cosmjs/crypto (alias matches the specifier, and nothing else in node_modules uses it).
+  // Wagmi connector stand-ins are omitted: the API graph does not import those modules.
+  // isows/uncrypto pick their workerd export because Wrangler bundles with that condition.
+  "alias": {
+    "starknet": "../etc/noop/index.js",
+    "libsodium": "../etc/noop/index.js",
+    "libsodium-wrappers": "../etc/noop/index.js",
+    "libsodium-sumo": "../etc/noop/index.js",
+    "libsodium-wrappers-sumo": "../etc/noop/index.js",
+    "bip39": "bip39-light",
+    "./libsodium": "../etc/noop/index.js",
+  },
+}
