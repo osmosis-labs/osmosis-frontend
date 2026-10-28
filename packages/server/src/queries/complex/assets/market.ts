@@ -128,7 +128,10 @@ async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
 }
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
- *  If no assets provided, they will be fetched and passed the given search params. */
+ *  If no assets provided, they will be fetched and passed the given search params.
+ *  Without market data the liquidity and volume filters drop every asset, which would read
+ *  as an empty list rather than an outage: callers that use them check
+ *  `isMarketDataAvailable` first and report the outage with their own error code. */
 export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   excludeVariants = false,
@@ -152,12 +155,6 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   /** Maximum 24h price change in percent. If provided, assets with priceChange24h above this are excluded (sanity cap for stale data / shallow-pool blips). */
   maxPriceChange24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  // Without market data every asset would be filtered out below, which would read
-  // as an empty list rather than an outage.
-  if (!(await isMarketDataAvailable())) {
-    throw new Error("Market data is unavailable");
-  }
-
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
   // Apply variant filtering if requested

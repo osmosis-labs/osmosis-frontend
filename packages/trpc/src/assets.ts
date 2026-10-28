@@ -339,9 +339,17 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            // Without market data the list would come back empty; report an outage with
-            // its own code so the client can tell it apart from other errors.
-            if (!(await isMarketDataAvailable())) {
+            // Without market data the liquidity and volume filters drop every asset, so
+            // the list would come back empty; report an outage with its own code so the
+            // client can tell it apart from other errors. A search with no such filter
+            // doesn't depend on market data: its rows carry unknown market fields and
+            // prices fall back to SQS.
+            const dependsOnMarketData = !(
+              search &&
+              minLiquidity === 0 &&
+              minVolume24h === undefined
+            );
+            if (dependsOnMarketData && !(await isMarketDataAvailable())) {
               throw new TRPCError({
                 code: "SERVICE_UNAVAILABLE",
                 message: "Market data is unavailable",
