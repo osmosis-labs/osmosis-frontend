@@ -3,8 +3,8 @@ import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { AssetLists as assetLists } from "../../../__tests__/mock-asset-lists";
 import { MockChains as chainList } from "../../../__tests__/mock-chains";
 import { queryBalances } from "../../../cosmos";
-import { getPriceFromSidecar } from "../price/providers/sidecar";
 import { getGammShareUnderlyingCoins } from "../../pools/share";
+import { getPriceFromSidecar } from "../price/providers/sidecar";
 import { getUserAssetsTotal } from "../user";
 
 jest.mock("../../../cosmos", () => ({
