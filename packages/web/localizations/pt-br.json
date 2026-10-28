@@ -1343,7 +1343,8 @@
       "errorState": {
         "title": "Não foi possível carregar suas ordens",
         "subtitle": "Tente novamente em instantes."
-      }
+      },
+      "historyUnavailable": "O histórico de ordens está indisponível no momento. Suas ordens abertas estão sendo exibidas."
     },
     "aboveMarket": {
       "title": "Preço limite acima do preço de mercado",

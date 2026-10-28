@@ -1343,7 +1343,8 @@
       "errorState": {
         "title": "Ihre Orders konnten nicht geladen werden",
         "subtitle": "Bitte versuchen Sie es gleich noch einmal."
-      }
+      },
+      "historyUnavailable": "Der Orderverlauf ist derzeit nicht verfügbar. Ihre offenen Orders werden angezeigt."
     },
     "aboveMarket": {
       "title": "Limitpreis über Marktpreis",

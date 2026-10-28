@@ -69,8 +69,11 @@ export const orderbookRouter = createTRPCRouter({
   getAllOrders: publicProcedure
     .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
+      // True when the closed orders couldn't be fetched, so the list holds only the
+      // open orders. Only a fresh fetch can set it: such a list is never cached.
+      let historyUnavailable = false;
+      const page = await maybeCachePaginatedItems({
+        getFreshItems: async (context) => {
           const { userOsmoAddress } = input;
           const pools = await getOrderbookPools();
           const activePools = pools.filter((p) => parseInt(p.poolId) < 2065);
@@ -122,6 +125,11 @@ export const orderbookRouter = createTRPCRouter({
           if (historicalOrdersError && allOrders.length === 0) {
             throw historicalOrdersError;
           }
+          if (historicalOrdersError) {
+            historyUnavailable = true;
+            // don't serve this partial list from the cache as if it were complete
+            if (context) context.metadata.ttl = 0;
+          }
 
           return allOrders.sort(defaultSortOrders);
         },
@@ -130,12 +138,16 @@ export const orderbookRouter = createTRPCRouter({
         cursor: input.cursor,
         limit: input.limit,
       });
+      return { ...page, historyUnavailable };
     }),
   getAllOrdersSQS: publicProcedure
     .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
+      // True when the closed orders couldn't be fetched, so the list holds only the
+      // open orders. Only a fresh fetch can set it: such a list is never cached.
+      let historyUnavailable = false;
+      const page = await maybeCachePaginatedItems({
+        getFreshItems: async (context) => {
           const { userOsmoAddress, filter } = input;
 
           const shouldFetchActive =
@@ -174,6 +186,11 @@ export const orderbookRouter = createTRPCRouter({
           if (historicalOrdersError && allOrders.length === 0) {
             throw historicalOrdersError;
           }
+          if (historicalOrdersError) {
+            historyUnavailable = true;
+            // don't serve this partial list from the cache as if it were complete
+            if (context) context.metadata.ttl = 0;
+          }
           if (filter === "filled") {
             return allOrders.filter((o) => o.status === "filled");
           }
@@ -184,6 +201,7 @@ export const orderbookRouter = createTRPCRouter({
         cursor: input.cursor,
         limit: input.limit,
       });
+      return { ...page, historyUnavailable };
     }),
   getOrderbookState: publicProcedure
     .input(OsmoAddressSchema.required())

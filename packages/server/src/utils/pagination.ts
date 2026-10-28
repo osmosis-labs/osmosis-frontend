@@ -56,7 +56,12 @@ export function maybeCursorPaginatedItems<TItem>(
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export type CachedPaginationParams<TItem> = {
-  getFreshItems: () => Promise<TItem[]>;
+  /** Set `metadata.ttl` (e.g. to 0) to keep a result from being served from the cache,
+   *  such as a list that is known to be incomplete. `metadata` is absent when
+   *  pagination isn't used and nothing is cached. */
+  getFreshItems: (context?: {
+    metadata: { ttl?: number | null };
+  }) => Promise<TItem[]>;
   cacheKey: string;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;

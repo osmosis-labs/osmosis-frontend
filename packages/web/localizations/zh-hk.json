@@ -1343,7 +1343,8 @@
       "errorState": {
         "title": "無法載入您的訂單",
         "subtitle": "請稍後再試。"
-      }
+      },
+      "historyUnavailable": "訂單歷史記錄暫時無法使用。正在顯示你的未完成訂單。"
     },
     "aboveMarket": {
       "title": "限價高於市場價格",

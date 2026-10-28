@@ -1343,7 +1343,8 @@
       "errorState": {
         "title": "无法加载您的订单",
         "subtitle": "请稍后再试。"
-      }
+      },
+      "historyUnavailable": "订单历史记录暂时不可用。正在显示您的未结订单。"
     },
     "aboveMarket": {
       "title": "限制价格高于市场价格",

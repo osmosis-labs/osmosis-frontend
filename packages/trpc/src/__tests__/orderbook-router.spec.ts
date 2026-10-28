@@ -1,4 +1,9 @@
-import { getOrderbookPools, queryTx } from "@osmosis-labs/server";
+import {
+  getOrderbookActiveOrdersSQS,
+  getOrderbookHistoricalOrders,
+  getOrderbookPools,
+  queryTx,
+} from "@osmosis-labs/server";
 
 import {
   createCallerFactory,
@@ -14,6 +19,8 @@ jest.mock("@osmosis-labs/server", () => {
   const mocked = {
     ...actual,
     getOrderbookPools: jest.fn(),
+    getOrderbookActiveOrdersSQS: jest.fn(),
+    getOrderbookHistoricalOrders: jest.fn(),
     queryTx: jest.fn(),
   };
   // Defined separately: a getter inside the spread literal compiles to
@@ -24,6 +31,8 @@ jest.mock("@osmosis-labs/server", () => {
 
 const mockedGetOrderbookPools = jest.mocked(getOrderbookPools);
 const mockedQueryTx = jest.mocked(queryTx);
+const mockedActiveOrdersSQS = jest.mocked(getOrderbookActiveOrdersSQS);
+const mockedHistoricalOrders = jest.mocked(getOrderbookHistoricalOrders);
 
 // ATOM
 const BASE_DENOM =
@@ -219,5 +228,50 @@ describe("orderbookRouter.getCreateOrderbookTxStatus", () => {
       caller.orderbooks.getCreateOrderbookTxStatus({ txHash: "../evil" })
     ).rejects.toThrow();
     expect(mockedQueryTx).not.toHaveBeenCalled();
+  });
+});
+
+describe("orderbookRouter.getAllOrdersSQS", () => {
+  const openOrder = { status: "open" } as Awaited<
+    ReturnType<typeof getOrderbookActiveOrdersSQS>
+  >[number];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns the open orders flagged, and doesn't cache them as complete, when the history fails", async () => {
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
+    mockedHistoricalOrders.mockRejectedValue(new Error("history down"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const input = { userOsmoAddress: "osmo1historyfail", limit: 20 };
+
+    const first = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 1,
+    });
+    const second = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 1,
+    });
+
+    expect(first.historyUnavailable).toBe(true);
+    // cursor 1 skips the only item, but the flag is set from the fetch
+    expect(second.historyUnavailable).toBe(true);
+    // not served from the cache the second time
+    expect(mockedHistoricalOrders).toHaveBeenCalledTimes(2);
+  });
+
+  it("isn't flagged when the history loads", async () => {
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
+    mockedHistoricalOrders.mockResolvedValue([]);
+
+    const result = await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress: "osmo1historyok",
+      limit: 20,
+    });
+
+    expect(result.historyUnavailable).toBe(false);
+    expect(result.items).toHaveLength(1);
   });
 });
