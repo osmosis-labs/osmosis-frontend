@@ -1,9 +1,6 @@
 import { AssetList } from "@osmosis-labs/types";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { queryPools } from "../../../sidecar";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
@@ -12,31 +9,22 @@ import { NoSqsPriceError } from "./providers/sidecar";
 /** Pools fetched per asset when checking that all of them are drained. */
 const POOLS_PAGE_SIZE = 100;
 
-const drainedCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-
 /** True only when SQS lists at least one pool holding the denom and every one of them
  *  has a zero balance of it. Throws when the pools can't be read, and is false when the
- *  list may be incomplete (more pages) or a pool doesn't report the balance. Not a price,
- *  so a short cache is safe; a failed query is not cached. */
-function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
-  return cachified({
-    cache: drainedCache,
-    key: `drained-${coinMinimalDenom}`,
-    ttl: 1000 * 60, // 1 minute
-    getFreshValue: async () => {
-      const { data: pools, meta } = await queryPools({
-        denoms: [coinMinimalDenom],
-        pagination: { limit: POOLS_PAGE_SIZE },
-      });
-      if (meta.next_cursor !== undefined || pools.length === 0) return false;
+ *  list may be incomplete (more pages) or a pool doesn't report the balance. Read fresh
+ *  each time: a cached "drained" could outlive liquidity being added back. */
+async function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
+  const { data: pools, meta } = await queryPools({
+    denoms: [coinMinimalDenom],
+    pagination: { limit: POOLS_PAGE_SIZE },
+  });
+  if (meta.next_cursor !== undefined || pools.length === 0) return false;
 
-      return pools.every((pool) => {
-        const balance = pool.balances.find(
-          ({ denom }) => denom === coinMinimalDenom
-        );
-        return balance !== undefined && new Dec(balance.amount).isZero();
-      });
-    },
+  return pools.every((pool) => {
+    const balance = pool.balances.find(
+      ({ denom }) => denom === coinMinimalDenom
+    );
+    return balance !== undefined && new Dec(balance.amount).isZero();
   });
 }
 
