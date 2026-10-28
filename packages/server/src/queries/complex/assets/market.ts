@@ -68,6 +68,23 @@ async function withSqsPriceFallback<
   return { ...asset, currentPrice };
 }
 
+const totalSupplyCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Total supply on its own, longer cache: it moves slowly, while the market info entry
+ *  of an asset with no price is retried every few seconds and must not re-query the chain
+ *  each time. A failed query isn't cached. */
+function getCachedTotalSupply(params: {
+  chainList: Chain[];
+  assetLists: AssetList[];
+  denom: string;
+}) {
+  return cachified({
+    cache: totalSupplyCache,
+    key: `total-supply-${params.denom}`,
+    ttl: 1000 * 60 * 10, // 10 minutes
+    getFreshValue: () => querySupplyTotal(params),
+  });
+}
+
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info from the data services only. */
 async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
@@ -93,7 +110,7 @@ async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
           return captureErrorAndReturn(e, undefined);
         }),
         includeTotalSupply
-          ? querySupplyTotal({
+          ? getCachedTotalSupply({
               ...params,
               denom: asset.coinMinimalDenom,
             }).catch((e) => captureErrorAndReturn(e, undefined))
