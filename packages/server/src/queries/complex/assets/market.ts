@@ -17,6 +17,7 @@ import { querySupplyTotal } from "../../cosmos";
 import { queryAllTokenData, type TokenData } from "../../data-services";
 import { type AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getAssetPrice } from "./price";
 import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
@@ -30,9 +31,46 @@ export type AssetMarketInfo = Partial<{
   liquidity: PricePretty;
 }>;
 
+/** Cached function that returns an asset with market info included. The current price
+ *  falls back to SQS when the data services have none. */
+export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: TAsset;
+  includeTotalSupply?: boolean;
+}): Promise<TAsset & AssetMarketInfo> {
+  return withSqsPriceFallback({
+    ...params,
+    asset: await getDataServicesMarketAsset(params),
+  });
+}
+
+/** Fills a missing current price from SQS, which prices from pool state and doesn't
+ *  depend on the data services. Only the spot price: price changes, market cap, liquidity
+ *  and volume stay unknown. Not cached here, since `getAssetPrice` caches its own prices. */
+async function withSqsPriceFallback<
+  TAsset extends MinimalAsset & AssetMarketInfo,
+>({
+  asset,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: TAsset;
+}): Promise<TAsset> {
+  if (asset.currentPrice) return asset;
+
+  // Many listed assets have no SQS price (no pools), so a failure isn't reported.
+  const currentPrice = await getAssetPrice({ ...params, asset }).then(
+    (price) => new PricePretty(DEFAULT_VS_CURRENCY, price),
+    () => undefined
+  );
+  return { ...asset, currentPrice };
+}
+
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Cached function that returns an asset with market info included. */
-export async function getMarketAsset<TAsset extends MinimalAsset>({
+/** Cached function that returns an asset with market info from the data services only. */
+async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
   asset,
   includeTotalSupply = false,
   ...params
@@ -149,11 +187,11 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   }
 
   const marketAssets = await Promise.all(
-    assets.map((asset) => getMarketAsset({ asset, ...params }))
+    assets.map((asset) => getDataServicesMarketAsset({ asset, ...params }))
   );
 
   // Filter for assets that meet liquidity and volume requirements
-  return marketAssets.filter((asset) => {
+  const listedMarketAssets = marketAssets.filter((asset) => {
     const liquidityDec = asset.liquidity?.toDec() ?? new Dec(0);
 
     if (minLiquidity !== undefined) {
@@ -176,6 +214,13 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
 
     return true;
   });
+
+  // Only after filtering: pricing every listed asset from SQS at once would flood it.
+  return Promise.all(
+    listedMarketAssets.map((asset) =>
+      withSqsPriceFallback({ asset, ...params })
+    )
+  );
 }
 
 const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
@@ -297,7 +342,14 @@ function getCachedTokenData(forceFresh = false) {
         const activity = makeMarketActivityFromTokenData(tokenData);
         tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
       });
-      return { tokenInfoMap, fetchedAt: Date.now() };
+      return {
+        tokenInfoMap,
+        fetchedAt: Date.now(),
+        // The data services can answer with every price or liquidity null, which is an
+        // outage of that field rather than data.
+        hasPrices: allTokenData.some(({ price }) => price !== null),
+        hasLiquidity: allTokenData.some(({ liquidity }) => liquidity !== null),
+      };
     },
   });
 }
@@ -330,7 +382,9 @@ function refreshTokenData() {
  *  - past it (e.g. on an instance that sat idle), the request waits for the refresh, so
  *    prices aren't dropped while the data services are healthy.
  *  A failed refresh falls back to the cached entry, which is then treated as stale once past
- *  the grace, and no refresh is tried again for `TOKEN_DATA_REFRESH_RETRY_DELAY`. */
+ *  the grace, and no refresh is tried again for `TOKEN_DATA_REFRESH_RETRY_DELAY`. Token data
+ *  without any price is refreshed after that delay instead of the ttl, so prices come back
+ *  soon after the data services recover. */
 async function getTokenData() {
   // Within the retry delay after a failed fetch, don't call the data services at all,
   // including for a cold or expired cache.
@@ -344,7 +398,10 @@ async function getTokenData() {
     tokenDataRefreshFailedAt = Date.now();
     throw e;
   });
-  if (Date.now() - tokenData.fetchedAt <= TOKEN_DATA_TTL) return tokenData;
+  const refreshAfter = tokenData.hasPrices
+    ? TOKEN_DATA_TTL
+    : TOKEN_DATA_REFRESH_RETRY_DELAY;
+  if (Date.now() - tokenData.fetchedAt <= refreshAfter) return tokenData;
 
   if (isTokenDataFresh(tokenData.fetchedAt)) {
     refreshTokenData().catch(() => undefined);
@@ -358,11 +415,14 @@ async function getTokenData() {
   });
 }
 
-/** False while a data-services outage leaves no fresh token data: prices, liquidity and
- *  market caps are then unknown for every asset, not missing for some. */
+/** False while a data-services outage leaves no fresh token data, or token data without
+ *  any liquidity: liquidity is then unknown for every asset, not missing for some, and the
+ *  asset list filtered by it would read as empty. Missing prices alone don't count, since
+ *  they fall back to SQS. */
 export async function isMarketDataAvailable(): Promise<boolean> {
   return getTokenData().then(
-    ({ fetchedAt }) => isTokenDataFresh(fetchedAt),
+    ({ fetchedAt, hasLiquidity }) =>
+      hasLiquidity && isTokenDataFresh(fetchedAt),
     () => false
   );
 }
@@ -421,7 +481,11 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
         : undefined,
     denom: tokenData.denom,
     symbol: tokenData.symbol,
-    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity ?? 0),
+    // Null liquidity and volume are unknown, not zero.
+    liquidity:
+      tokenData.liquidity !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity)
+        : undefined,
     liquidity24hChange:
       tokenData.liquidity_24h_change !== null
         ? new RatePretty(
@@ -431,7 +495,10 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
     marketCap: tokenData.coingecko_mcap
       ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.coingecko_mcap)
       : undefined,
-    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h ?? 0),
+    volume24h:
+      tokenData.volume_24h !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h)
+        : undefined,
     volume24hChange:
       tokenData.volume_24h_change !== null
         ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
