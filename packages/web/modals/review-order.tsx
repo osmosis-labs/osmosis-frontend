@@ -49,6 +49,7 @@ import {
 } from "~/hooks";
 import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
+import { usePendingWalletRequest } from "~/hooks/use-pending-wallet-request";
 import { useSwap } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
@@ -75,6 +76,9 @@ interface ReviewOrderProps {
    */
   confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
+  /** True from the confirm click until the transaction attempt settles, i.e.
+   *  while a wallet prompt may be open. */
+  isAwaitingSignature?: boolean;
   slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
@@ -127,6 +131,7 @@ export function ReviewOrder({
   onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
+  isAwaitingSignature = false,
   slippageConfig,
   amountWithSlippage,
   fiatAmountWithSlippage,
@@ -157,6 +162,7 @@ export function ReviewOrder({
   slippageLiquidityUnknown = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
+  const pendingWalletRequest = usePendingWalletRequest();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
@@ -1114,12 +1120,30 @@ export function ReviewOrder({
                         isSlippageBoundZeroOnChain ||
                         warningNeedsAcknowledgement
                       }
+                      isLoading={isAwaitingSignature}
+                      loadingText={t("limitOrders.waitingForWallet")}
                       className="body2 sm:caption !rounded-2xl"
                     >
                       <h6>{t("limitOrders.confirm")}</h6>
                     </Button>
                   </div>
                 </>
+              )}
+              {isAwaitingSignature && pendingWalletRequest && (
+                <div className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl bg-osmoverse-800 p-3">
+                  <span className="body2 sm:caption text-osmoverse-200">
+                    {t("limitOrders.walletNotResponding", {
+                      wallet: pendingWalletRequest.walletName,
+                    })}
+                  </span>
+                  <Button
+                    mode="secondary"
+                    onClick={pendingWalletRequest.cancel}
+                    className="body2 w-fit !rounded-2xl"
+                  >
+                    <h6>{t("limitOrders.cancel")}</h6>
+                  </Button>
+                </div>
               )}
             </div>
           </div>

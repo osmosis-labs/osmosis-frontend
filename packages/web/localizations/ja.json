@@ -1397,6 +1397,8 @@
       "description": "この取引は市場価格を{impact}変動させるため、表示された金額を大きく下回る額を受け取る可能性があります。"
     },
     "lossAcknowledgement": "はい、この取引により価値が大幅に損なわれる可能性があることを理解した上で続行します。",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
       "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",

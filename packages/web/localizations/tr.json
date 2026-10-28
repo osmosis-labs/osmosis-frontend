@@ -1397,6 +1397,8 @@
       "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
     },
     "lossAcknowledgement": "Evet, bu işlemin önemli değer kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
       "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",

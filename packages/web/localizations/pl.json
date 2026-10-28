@@ -1397,6 +1397,8 @@
       "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
     },
     "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",

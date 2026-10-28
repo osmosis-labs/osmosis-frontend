@@ -826,6 +826,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
           orderType="market"
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
+          isAwaitingSignature={isSendingTx}
           slippageConfig={slippageConfig}
           amountWithSlippage={amountWithSlippage}
           fiatAmountWithSlippage={fiatAmountWithSlippage}

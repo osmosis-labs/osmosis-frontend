@@ -1397,6 +1397,8 @@
       "description": "Esta operación mueve el precio de mercado un {impact}, por lo que podría recibir mucho menos que el importe mostrado."
     },
     "lossAcknowledgement": "Sí, entiendo que esta operación podría causar una pérdida significativa de valor y deseo continuar.",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "No tienes fondos {coinName} en Osmosis para operar. Elija una opción para continuar.",
       "tradeMayResultInLossOfValue": "Su operación puede resultar en una pérdida significativa de valor",

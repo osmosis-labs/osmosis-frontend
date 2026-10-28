@@ -1397,6 +1397,8 @@
       "description": "این معامله قیمت بازار را به میزان {impact} تغییر می‌دهد، بنابراین ممکن است بسیار کمتر از مبلغ نشان‌داده‌شده دریافت کنید."
     },
     "lossAcknowledgement": "بله، می‌دانم که این معامله ممکن است باعث از دست رفتن قابل توجه ارزش شود و می‌خواهم ادامه دهم.",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "شما هیچ گونه وجوهی در Osmosis برای تجارت با {coinName} ندارید. گزینه ای را برای ادامه انتخاب کنید.",
       "tradeMayResultInLossOfValue": "تجارت شما ممکن است منجر به از دست دادن قابل توجه ارزش شود",

@@ -1397,6 +1397,8 @@
       "description": "此交易将使市场价格变动{impact}，因此您收到的金额可能远低于显示的金额。"
     },
     "lossAcknowledgement": "是的，我明白此交易可能导致重大价值损失，我仍希望继续。",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "您在 Osmosis 上没有任何{coinName}资金可供交易。选择一个选项以继续。",
       "tradeMayResultInLossOfValue": "您的交易可能会导致重大价值损失",

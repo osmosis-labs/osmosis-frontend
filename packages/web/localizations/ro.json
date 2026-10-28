@@ -1397,6 +1397,8 @@
       "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
     },
     "lossAcknowledgement": "Da, înțeleg că această tranzacție ar putea cauza pierderi semnificative de valoare și doresc să continui.",
+    "waitingForWallet": "Waiting for your wallet...",
+    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
       "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",
