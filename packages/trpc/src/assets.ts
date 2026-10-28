@@ -349,14 +349,15 @@ export const assetsRouter = createTRPCRouter({
               minLiquidity === 0 &&
               minVolume24h === undefined
             );
-            if (dependsOnMarketData && !(await isMarketDataAvailable())) {
+            const marketDataAvailable = await isMarketDataAvailable();
+            if (dependsOnMarketData && !marketDataAvailable) {
               throw new TRPCError({
                 code: "SERVICE_UNAVAILABLE",
                 message: "Market data is unavailable",
               });
             }
 
-            const assets = await mapGetMarketAssets({
+            const marketAssets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -368,6 +369,14 @@ export const assetsRouter = createTRPCRouter({
               minVolume24h,
               maxPriceChange24h,
             });
+            // A search served during an outage shows no outage state, so the stale
+            // volume the data keeps is shown as unknown instead.
+            const assets = marketDataAvailable
+              ? marketAssets
+              : marketAssets.map((asset) => ({
+                  ...asset,
+                  volume24h: undefined,
+                }));
 
             // sorting
             if (sortInput) {
