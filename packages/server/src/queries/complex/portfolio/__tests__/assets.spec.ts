@@ -462,8 +462,8 @@ describe("filterConvertibleAssetVariants", () => {
     const result = await filterConvertibleAssetVariants(
       [
         variant(USDC_NOBLE, allUsdc),
-        // Member, but too small to mint one unit of the alloy.
-        variant(USDC_INJ, allUsdc, true, "999"),
+        // Member, but too small to mint two units of the alloy.
+        variant(USDC_INJ, allUsdc, true, "1999"),
         // Member the transmuter marks corrupted (it won't take it in).
         variant(USDC_AXL_CORRUPTED, allUsdc),
         // In the variant group, but not a member of the transmuter.

@@ -390,10 +390,11 @@ function getCachedAlloyStatus(
  * transmuter is active (a frozen one rejects swaps), and the variant is one of
  * its members. `variantGroupKey` alone also groups legacy consolidations and
  * bridged assets that aren't in any 1:1 pool, which could only convert
- * through a price-moving route. Also drops dust that would mint zero of the
- * alloy: the transmuter scales amounts by `outFactor / inFactor`, rounding
- * down, so e.g. 1 adydx (factor 10^6) into allDYDX (factor 1) yields nothing
- * and the quote fails.
+ * through a price-moving route. Also drops dust that would mint less than two
+ * units of the alloy: the transmuter scales amounts by `outFactor / inFactor`,
+ * rounding down, so e.g. 1 adydx (factor 10^6) into allDYDX (factor 1) yields
+ * nothing and the quote fails, and a single unit out leaves no room for any
+ * slippage allowance while costing more in gas than it is worth.
  *
  * Fails closed: an alloy whose status can't be fetched offers no conversion,
  * and neither does a corrupted member, which the transmuter won't take in.
@@ -438,10 +439,10 @@ export async function filterConvertibleAssetVariants(
     const outFactor =
       status.normalizationFactors[canonicalAsset.coinMinimalDenom];
     if (!inFactor || !outFactor) return false;
-    // At least one unit out: amount * outFactor / inFactor >= 1.
+    // At least two units out: amount * outFactor / inFactor >= 2.
     return new Int(amount.toCoin().amount)
       .mul(new Int(outFactor))
-      .gte(new Int(inFactor));
+      .gte(new Int(inFactor).mul(new Int(2)));
   });
 }
 
