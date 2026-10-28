@@ -1509,7 +1509,6 @@
     "cancelOrder": "Emri iptal et",
     "claim": "Talep et",
     "claimAndCancel": "Talep et ve iptal et",
-    "atLeast": "En az {amounts}",
     "conversionUnavailable": "Dönüştürme şu anda kullanılamıyor, bu yüzden çekme duraklatıldı.",
     "positionMoved": "Pozisyonun değeri açıldığından beri çok fazla değişti. Tekrar deneyin."
   },

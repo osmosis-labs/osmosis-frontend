@@ -1509,7 +1509,6 @@
     "cancelOrder": "Cancelar ordem",
     "claim": "Resgatar",
     "claimAndCancel": "Resgatar e cancelar",
-    "atLeast": "Pelo menos {amounts}",
     "conversionUnavailable": "A conversão está indisponível no momento, então a retirada está pausada.",
     "positionMoved": "O valor da posição mudou demais desde que isto foi aberto. Tente novamente."
   },

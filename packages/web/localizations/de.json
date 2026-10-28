@@ -1509,7 +1509,6 @@
     "cancelOrder": "Order stornieren",
     "claim": "Einfordern",
     "claimAndCancel": "Einfordern und stornieren",
-    "atLeast": "Mindestens {amounts}",
     "conversionUnavailable": "Die Konvertierung ist derzeit nicht verfügbar, daher ist das Abziehen pausiert.",
     "positionMoved": "Der Wert der Position hat sich seit dem Öffnen zu stark verändert. Versuche es erneut."
   },

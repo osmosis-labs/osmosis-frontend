@@ -1509,7 +1509,6 @@
     "cancelOrder": "取消订单",
     "claim": "领取",
     "claimAndCancel": "领取并取消",
-    "atLeast": "至少 {amounts}",
     "conversionUnavailable": "当前无法转换，因此提取已暂停。",
     "positionMoved": "自打开以来仓位价值变化过大，请重试。"
   },

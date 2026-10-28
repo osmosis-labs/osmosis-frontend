@@ -1509,7 +1509,6 @@
     "cancelOrder": "Cancel order",
     "claim": "Claim",
     "claimAndCancel": "Claim and cancel",
-    "atLeast": "At least {amounts}",
     "conversionUnavailable": "Converting this isn't available right now, so withdrawing is paused.",
     "positionMoved": "The position's value moved too far since this opened. Try again."
   },

@@ -1509,7 +1509,6 @@
     "cancelOrder": "Anuluj zlecenie",
     "claim": "Odbierz",
     "claimAndCancel": "Odbierz i anuluj",
-    "atLeast": "Co najmniej {amounts}",
     "conversionUnavailable": "Konwersja jest teraz niedostępna, więc wypłata jest wstrzymana.",
     "positionMoved": "Wartość pozycji zmieniła się zbyt mocno od otwarcia. Spróbuj ponownie."
   },

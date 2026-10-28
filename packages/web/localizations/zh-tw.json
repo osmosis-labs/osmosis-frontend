@@ -1509,7 +1509,6 @@
     "cancelOrder": "取消訂單",
     "claim": "領取",
     "claimAndCancel": "領取並取消",
-    "atLeast": "至少 {amounts}",
     "conversionUnavailable": "目前無法轉換，因此提領已暫停。",
     "positionMoved": "自開啟以來倉位價值變化過大，請重試。"
   },

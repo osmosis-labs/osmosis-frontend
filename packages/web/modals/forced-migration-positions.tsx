@@ -13,10 +13,15 @@ import {
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList, shorten } from "@osmosis-labs/utils";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { AssetLists } from "~/config/generated/asset-lists";
+import {
+  USDC_ALLOYED_DENOM,
+  USDC_NOBLE_DENOM,
+} from "~/config/position-migration";
 import { useTranslation } from "~/hooks";
 import {
   getLcdClient,
@@ -28,27 +33,22 @@ import {
   getShareExitTokenOutMins,
   isWithdrawWithinTolerance,
 } from "~/utils/forced-migrations";
+import { formatPretty } from "~/utils/formatter";
 import { ChainPositionResponse } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
-/** Display amount for a raw coin; unlisted denoms show the raw amount. */
-export function formatHoldingCoin(denom: string, amount: string): string {
-  const asset = getAssetFromAssetList({
-    coinMinimalDenom: denom,
-    assetLists: AssetLists,
-  });
-  if (!asset) return `${amount} ${shorten(denom)}`;
-  return new CoinPretty(asset.currency, amount)
-    .trim(true)
-    .maxDecimals(6)
-    .toString();
-}
+const getListedAsset = (denom: string) =>
+  getAssetFromAssetList({ coinMinimalDenom: denom, assetLists: AssetLists });
 
-const keepAfterTolerance = (amount: string, tolerancePercent: number) =>
-  new Dec(amount)
-    .mul(new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100))))
-    .truncate()
-    .toString();
+/** Display amount for a raw coin, formatted as in the position cards;
+ *  unlisted denoms show the raw amount. */
+export function formatHoldingCoin(denom: string, amount: string): string {
+  const asset = getListedAsset(denom);
+  if (!asset) return `${amount} ${shorten(denom)}`;
+  return formatPretty(new CoinPretty(asset.currency, amount), {
+    maxDecimals: 6,
+  });
+}
 
 /** Thrown by the pre-broadcast check when a CL position no longer pays out
  *  within tolerance; shown to the user instead of a generic failure. */
@@ -97,25 +97,42 @@ export const ForcedMigrationPositionRow: FunctionComponent<{
 
   return (
     <div className="flex flex-col gap-2 border-b border-osmoverse-700 py-3 last:border-b-0">
-      <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-stretch">
-        <div className="flex min-w-0 flex-col">
-          <span className="subtitle1 text-osmoverse-100">
-            {getHoldingLabel(holding, t)}
-          </span>
-          <span className="body2 text-osmoverse-300">
-            {[oldAmountText, getHoldingStateText(holding, t)]
-              .filter(Boolean)
-              .join(" · ")}
-          </span>
+      {holding.kind === "order" ? (
+        <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-stretch">
+          <div className="flex min-w-0 flex-col">
+            <span className="subtitle1 text-osmoverse-100">
+              {getOrderLabel(holding, t)}
+            </span>
+            {oldAmountText && (
+              <span className="body2 text-osmoverse-300">{oldAmountText}</span>
+            )}
+          </div>
+          <OrderAction holding={holding} />
         </div>
-        <HoldingAction
+      ) : holding.kind === "cl" &&
+        holding.state === "available" &&
+        tolerancePercent !== undefined &&
+        oldDenom ? (
+        <MigratablePoolRow
           holding={holding}
           migration={migration}
           oldDenom={oldDenom}
           tolerancePercent={tolerancePercent}
           onMigrate={onMigrate}
         />
-      </div>
+      ) : (
+        <PoolRowLayout
+          holding={holding}
+          actions={
+            <PoolHoldingAction
+              holding={holding}
+              migration={migration}
+              oldDenom={oldDenom}
+              tolerancePercent={tolerancePercent}
+            />
+          }
+        />
+      )}
       {unlockEndsAfterDeadline && deadlineText && (
         <p className="caption text-rust-300">
           {t("forcedMigration.unlockEndsAfterDeadline", {
@@ -147,26 +164,22 @@ function getUnlockEndsAfterDeadline(
   return false;
 }
 
-function getHoldingLabel(
-  holding: ForcedMigrationHolding,
+function getOrderLabel(
+  holding: OrderHolding,
   t: ReturnType<typeof useTranslation>["t"]
 ): string {
-  if (holding.kind === "order") {
-    const symbol = (denom: string) =>
-      getAssetFromAssetList({ coinMinimalDenom: denom, assetLists: AssetLists })
-        ?.symbol ?? shorten(denom);
-    return t("forcedMigration.limitOrder", {
-      pair: `${symbol(holding.inDenom)} → ${symbol(holding.outDenom)}`,
-    });
-  }
-  return t("forcedMigration.poolPosition", { poolId: holding.poolId });
+  const symbol = (denom: string) =>
+    getListedAsset(denom)?.symbol ?? shorten(denom);
+  return t("forcedMigration.limitOrder", {
+    pair: `${symbol(holding.inDenom)} → ${symbol(holding.outDenom)}`,
+  });
 }
 
 function getHoldingStateText(
-  holding: ForcedMigrationHolding,
-  t: ReturnType<typeof useTranslation>["t"]
+  holding: ShareHolding | ConcentratedHolding,
+  t: ReturnType<typeof useTranslation>["t"],
+  language: string
 ): string | undefined {
-  if (holding.kind === "order") return undefined;
   switch (holding.state) {
     case "locked":
       return holding.kind === "share" &&
@@ -178,7 +191,7 @@ function getHoldingStateText(
     case "unlocking":
       return holding.unlockEndTime
         ? t("forcedMigration.unlockingUntil", {
-            date: new Date(holding.unlockEndTime).toLocaleDateString(),
+            date: formatUnlockDate(holding.unlockEndTime, language),
           })
         : t("forcedMigration.unlocking");
     default:
@@ -186,34 +199,191 @@ function getHoldingStateText(
   }
 }
 
-const HoldingAction: FunctionComponent<{
-  holding: ForcedMigrationHolding;
+/** Unlock end in the user's language and time zone. */
+function formatUnlockDate(isoDate: string, language: string): string {
+  const date = new Date(isoDate);
+  try {
+    return new Intl.DateTimeFormat(language, { dateStyle: "medium" }).format(
+      date
+    );
+  } catch {
+    return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(date);
+  }
+}
+
+/**
+ * A pool holding's logos and pair, then its pool number and lock state, then
+ * the amount of each asset. With `migrateTo`, the destination pool is shown
+ * the same way on the right and the actions move to a line below.
+ */
+const PoolRowLayout: FunctionComponent<{
+  holding: ShareHolding | ConcentratedHolding;
+  actions: ReactNode;
+  migrateTo?: { poolId: string; coins: { denom: string; amount: string }[] };
+}> = ({ holding, actions, migrateTo }) => {
+  const { t, language } = useTranslation();
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-stretch">
+        <PoolSummary
+          poolId={holding.poolId}
+          coins={holding.coins}
+          detail={getHoldingStateText(holding, t, language)}
+        />
+        {migrateTo ? (
+          <>
+            <Icon
+              id="arrow-right"
+              height={20}
+              width={20}
+              className="shrink-0 text-osmoverse-400 sm:rotate-90 sm:self-center"
+            />
+            <PoolSummary
+              poolId={migrateTo.poolId}
+              coins={migrateTo.coins}
+              isEstimate
+              alignRight
+            />
+          </>
+        ) : (
+          actions
+        )}
+      </div>
+      {migrateTo && (
+        <div className="flex justify-end gap-2 sm:flex-col">{actions}</div>
+      )}
+    </div>
+  );
+};
+
+const PoolSummary: FunctionComponent<{
+  poolId: string;
+  coins: { denom: string; amount: string }[];
+  detail?: string;
+  /** The amounts are what the holding is expected to become. */
+  isEstimate?: boolean;
+  alignRight?: boolean;
+}> = ({ poolId, coins, detail, isEstimate = false, alignRight = false }) => {
+  const { t } = useTranslation();
+  const assets = coins.map(({ denom }) => {
+    const asset = getListedAsset(denom);
+    return {
+      coinDenom: asset?.symbol ?? shorten(denom),
+      coinMinimalDenom: denom,
+      coinImageUrl: asset?.currency.coinImageUrl,
+    };
+  });
+  const amounts = coins.filter(({ amount }) => new Dec(amount).isPositive());
+  return (
+    <div
+      className={
+        alignRight
+          ? "flex min-w-0 flex-col items-end gap-1 text-right sm:items-start sm:text-left"
+          : "flex min-w-0 flex-col gap-1"
+      }
+    >
+      <div className="flex min-w-0 items-center gap-2">
+        <PoolAssetsIcon size="sm" assets={assets} />
+        <PoolAssetsName
+          size="sm"
+          className="truncate text-osmoverse-100"
+          assetDenoms={assets.map(({ coinDenom, coinMinimalDenom }) => ({
+            symbol: coinDenom,
+            minDenom: coinMinimalDenom,
+          }))}
+          withAssetInfoLink={false}
+        />
+      </div>
+      <span className="body2 text-osmoverse-300">
+        {[t("forcedMigration.poolPosition", { poolId }), detail]
+          .filter(Boolean)
+          .join(" · ")}
+      </span>
+      {amounts.length > 0 && (
+        <span className="body2 flex flex-wrap gap-x-3 text-osmoverse-300">
+          {amounts.map(({ denom, amount }) => (
+            <span key={denom} className="whitespace-nowrap">
+              {isEstimate && "≈ "}
+              {formatHoldingCoin(denom, amount)}
+            </span>
+          ))}
+        </span>
+      )}
+    </div>
+  );
+};
+
+/** The action for a pool holding with no migration on offer. */
+const PoolHoldingAction: FunctionComponent<{
+  holding: ShareHolding | ConcentratedHolding;
   migration: ForcedMigration;
   oldDenom: string | undefined;
   tolerancePercent: number | undefined;
-  onMigrate: (holding: ConcentratedHolding) => void;
-}> = ({ holding, migration, oldDenom, tolerancePercent, onMigrate }) => {
-  if (holding.kind === "order") return <OrderAction holding={holding} />;
+}> = ({ holding, migration, oldDenom, tolerancePercent }) => {
   if (holding.state === "unlocking") return null;
   if (holding.state === "locked" || holding.state === "superfluidStaked")
     return <UnlockAction holding={holding} />;
   if (tolerancePercent === undefined || !oldDenom) return null;
   return (
-    <div className="flex items-center gap-2 sm:flex-col sm:items-stretch">
-      {holding.kind === "cl" && (
-        <MigrateAction
-          holding={holding}
-          tolerancePercent={tolerancePercent}
-          onMigrate={onMigrate}
-        />
-      )}
-      <WithdrawAction
-        holding={holding}
-        migration={migration}
-        oldDenom={oldDenom}
-        tolerancePercent={tolerancePercent}
-      />
-    </div>
+    <WithdrawAction
+      holding={holding}
+      migration={migration}
+      oldDenom={oldDenom}
+      tolerancePercent={tolerancePercent}
+    />
+  );
+};
+
+/**
+ * A withdrawable CL position. When fe-content pairs its pool with a
+ * destination, the destination is shown beside it with Migrate and Withdraw
+ * below; otherwise it lays out like any other pool row.
+ */
+const MigratablePoolRow: FunctionComponent<{
+  holding: ConcentratedHolding;
+  migration: ForcedMigration;
+  oldDenom: string;
+  tolerancePercent: number;
+  onMigrate: (holding: ConcentratedHolding) => void;
+}> = ({ holding, migration, oldDenom, tolerancePercent, onMigrate }) => {
+  const forcedMigration = useForcedPositionMigration(holding, tolerancePercent);
+  const toPoolId = forcedMigration.mappedMigration?.toPoolId.toString();
+
+  const withdraw = (
+    <WithdrawAction
+      holding={holding}
+      migration={migration}
+      oldDenom={oldDenom}
+      tolerancePercent={tolerancePercent}
+    />
+  );
+
+  if (!toPoolId) return <PoolRowLayout holding={holding} actions={withdraw} />;
+
+  return (
+    <PoolRowLayout
+      holding={holding}
+      migrateTo={{
+        poolId: toPoolId,
+        // The migration converts USDC.noble to USDC 1:1 (same decimals) and
+        // re-deposits in the same range; the destination's price can return a
+        // little of one side, hence an estimate.
+        coins: holding.coins.map(({ denom, amount }) => ({
+          denom: denom === USDC_NOBLE_DENOM ? USDC_ALLOYED_DENOM : denom,
+          amount,
+        })),
+      }}
+      actions={
+        <>
+          <MigrateAction
+            holding={holding}
+            forcedMigration={forcedMigration}
+            onMigrate={onMigrate}
+          />
+          {withdraw}
+        </>
+      }
+    />
   );
 };
 
@@ -299,13 +469,6 @@ const WithdrawAction: FunctionComponent<{
     );
   const canConvert = Boolean(quote) && !isQuoteError;
 
-  const minimums = holding.coins
-    .map(({ denom, amount }) => ({
-      denom,
-      amount: keepAfterTolerance(amount, tolerancePercent),
-    }))
-    .filter(({ amount }) => new Dec(amount).isPositive());
-
   const withdraw = () =>
     run(async (context) => {
       if (holding.kind === "share") {
@@ -352,15 +515,11 @@ const WithdrawAction: FunctionComponent<{
         variant="outline"
         error={error}
       />
-      <span className="caption text-right text-osmoverse-400 sm:text-left">
-        {isQuoteError
-          ? t("forcedMigration.conversionUnavailable")
-          : t("forcedMigration.atLeast", {
-              amounts: minimums
-                .map(({ denom, amount }) => formatHoldingCoin(denom, amount))
-                .join(" + "),
-            })}
-      </span>
+      {isQuoteError && (
+        <span className="caption text-right text-osmoverse-400 sm:text-left">
+          {t("forcedMigration.conversionUnavailable")}
+        </span>
+      )}
     </div>
   );
 };
@@ -401,14 +560,15 @@ export const useForcedPositionMigration = (
  *  the tolerance) show the button disabled, with withdraw beside it. */
 const MigrateAction: FunctionComponent<{
   holding: ConcentratedHolding;
-  tolerancePercent: number;
+  forcedMigration: ReturnType<typeof useForcedPositionMigration>;
   onMigrate: (holding: ConcentratedHolding) => void;
-}> = ({ holding, tolerancePercent, onMigrate }) => {
+}> = ({
+  holding,
+  forcedMigration: { eligibility, isPoolDataRefetching },
+  onMigrate,
+}) => {
   const { t } = useTranslation();
   const { txTypeInProgress } = useWallet();
-  const { mappedMigration, eligibility, isPoolDataRefetching } =
-    useForcedPositionMigration(holding, tolerancePercent);
-  if (!mappedMigration) return null;
   const isEligible = Boolean(eligibility?.isEligible);
   return (
     <ActionButton

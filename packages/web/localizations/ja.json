@@ -1509,7 +1509,6 @@
     "cancelOrder": "注文をキャンセル",
     "claim": "請求する",
     "claimAndCancel": "請求してキャンセル",
-    "atLeast": "最低 {amounts}",
     "conversionUnavailable": "現在変換できないため、引き出しは一時停止しています。",
     "positionMoved": "開いてからポジションの価値が大きく変動しました。もう一度お試しください。"
   },
