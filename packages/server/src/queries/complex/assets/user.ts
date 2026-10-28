@@ -171,6 +171,13 @@ export async function mapGetAssetsWithUserBalances<
   return userAssets;
 }
 
+/** True for a pool share denom (`gamm/pool/<id>`). A looser match would treat other
+ *  denoms that merely contain "gamm" (e.g. a tokenfactory denom) as shares, and a
+ *  failed pool lookup on one would make the whole total unknown. */
+function isGammShareDenom(denom: string) {
+  return /^gamm\/pool\/\d+$/.test(denom);
+}
+
 /** Returns total fiat value of all assets held by a user.
  *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.
  *  `value` is `undefined` (unknown) when a coin that should have a price can't be priced,
@@ -250,7 +257,7 @@ export async function getUserCoinsFromBank(params: {
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
-    if (denom.includes("gamm")) {
+    if (isGammShareDenom(denom)) {
       eventualShareCoins.push(
         getGammShareUnderlyingCoins({
           ...params,
@@ -294,7 +301,7 @@ export async function getUserShareUnderlyingCoinsFromLocks(params: {
   });
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
-    if (coin.denom.includes("gamm")) {
+    if (isGammShareDenom(coin.denom)) {
       return await getGammShareUnderlyingCoins({ ...params, ...coin }).catch(
         (e) => captureErrorAndReturn(e, undefined)
       );

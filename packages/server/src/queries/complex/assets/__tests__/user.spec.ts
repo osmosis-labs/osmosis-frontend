@@ -88,4 +88,25 @@ describe("getUserAssetsTotal", () => {
 
     expect(value).toBeUndefined();
   });
+
+  it("doesn't read a non-share denom containing 'gamm' as a pool share", async () => {
+    mockedQueryBalances.mockResolvedValue({
+      balances: [
+        { denom: "uosmo", amount: "1000000" },
+        { denom: "factory/osmo1abc/gamm", amount: "1" },
+      ],
+      pagination: { next_key: null, total: "2" },
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    mockedGetPrice.mockResolvedValue(new Dec(2));
+    mockedGetShareCoins.mockClear();
+
+    const { value } = await getUserAssetsTotal({
+      assetLists,
+      chainList,
+      userOsmoAddress: "osmo1tokenfactorygamm",
+    });
+
+    expect(mockedGetShareCoins).not.toHaveBeenCalled();
+    expect(value).toBeDefined();
+  });
 });
