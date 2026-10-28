@@ -123,9 +123,11 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           })
           // For a Solana-signed tx, Skip not knowing it yet (or erroring)
           // is not an outcome: keep polling so the chain check above can
-          // still resolve it, rather than stopping on the error.
+          // still resolve it, rather than stopping on the error. The same
+          // holds for a tx whose inclusion is unproven: it may not be mined
+          // yet, so Skip rejecting it is not an outcome either.
           .catch((error) => {
-            if (isSolanaSigned) return undefined;
+            if (isSolanaSigned || snapshot.sendTxUnconfirmed) return undefined;
             throw error;
           });
 

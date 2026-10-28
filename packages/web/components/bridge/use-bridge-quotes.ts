@@ -1336,6 +1336,25 @@ export const useBridgeQuotes = ({
         setTransferInitiated(true);
         return;
       }
+      // The first step was broadcast but its receipt couldn't be fetched.
+      // Close the flow so Confirm can't sign a second burn while this one
+      // may still land; the entry persisted at broadcast stays resumable
+      // from history.
+      if (
+        e instanceof EvmTxStatusUnknownError &&
+        e.txHash === firstStepBroadcastHash
+      ) {
+        await transferHistoryStore.persistNow().catch((persistError) => {
+          console.error(
+            "Multi-tx transfer entry could not be persisted",
+            persistError
+          );
+        });
+        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        onTransferProp?.();
+        setTransferInitiated(true);
+        return;
+      }
       // A first tx that definitively failed (an EVM revert, or a Solana tx
       // that errored or expired before landing) moved nothing: the entry
       // persisted at broadcast must not stay "pending" with a Continue that
