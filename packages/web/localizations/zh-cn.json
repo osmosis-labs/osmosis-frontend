@@ -116,17 +116,6 @@
       "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
-  "store": {
-    "headerTitle": "提升您的体验",
-    "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
-    "featured": "特色",
-    "searchPlaceholder": "搜索",
-    "getFeatured": "获得特色",
-    "featuredDescription": "在应用商店上架并接触成千上万的用户。如果您想上榜或被推荐，请联系我们，我们将保持沟通。",
-    "applyButton": "申请",
-    "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
-    "allAppsHeader": "所有应用"
-  },
   "createFirstPositionCta": {
     "title": "创建您的第一个 Supercharged 职位",
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
@@ -395,10 +384,8 @@
     "info": "统计数据",
     "pools": "资金池",
     "stake": "质押",
-    "store": "应用",
     "vote": "投票",
     "featureRequests": "功能请求",
-    "more": "更多的",
     "new": "新的",
     "settings": "设置"
   },
@@ -1171,10 +1158,6 @@
     "default": {
       "title": "渗透区贸易",
       "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
-    },
-    "apps": {
-      "title": "渗透应用商店",
-      "description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就"
     },
     "disclaimer": {
       "title": "渗透免责声明",

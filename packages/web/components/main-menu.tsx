@@ -1,4 +1,3 @@
-import { Popover } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import { isFunction } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -12,8 +11,7 @@ import {
 } from "react";
 
 import { Pill } from "~/components/indicators/pill";
-import { useTranslation, useWindowSize } from "~/hooks";
-import { useIsClient } from "~/hooks/use-is-client";
+import { useTranslation } from "~/hooks";
 
 export type MainLayoutMenu = {
   label: string;
@@ -24,7 +22,6 @@ export type MainLayoutMenu = {
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
   subtext?: string;
-  showMore?: boolean;
 };
 
 export const MainMenu: FunctionComponent<{
@@ -33,48 +30,56 @@ export const MainMenu: FunctionComponent<{
   className?: string;
 }> = ({ menus, className, secondaryMenuItems }) => {
   return (
-    <ul
-      className={classNames(
-        "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
-        className
+    <>
+      <ul
+        className={classNames(
+          "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
+          className
+        )}
+      >
+        {menus.map((menu, index) => (
+          <MenuListItem key={index} menu={menu} />
+        ))}
+      </ul>
+      {secondaryMenuItems.length > 0 && (
+        <ul className="mt-3 flex w-full flex-col gap-3 border-t border-osmoverse-800 pt-3 md:mt-2 md:gap-0 md:pt-2">
+          {secondaryMenuItems.map((menu) => (
+            <MenuListItem key={menu.label} menu={menu} isSecondary />
+          ))}
+        </ul>
       )}
-    >
-      {menus.map((menu, index) => {
-        const { link, selectionTest, secondaryLogo, showMore } = menu;
+    </>
+  );
+};
 
-        return (
-          <li
-            key={index}
-            className="flex cursor-pointer items-center"
-            onClick={(e) => {
-              if (isFunction(link)) link(e);
-            }}
-          >
-            <MenuLink
-              href={link}
-              secondaryLogo={secondaryLogo}
-              selectionTest={selectionTest}
-              showMore={showMore}
-            >
-              {({ showSubTitle, selected }) =>
-                showMore ? (
-                  <MorePopover
-                    item={menu}
-                    secondaryMenus={secondaryMenuItems}
-                  />
-                ) : (
-                  <MenuItemContent
-                    menu={menu}
-                    selected={selected}
-                    showSubTitle={showSubTitle}
-                  />
-                )
-              }
-            </MenuLink>
-          </li>
-        );
-      })}
-    </ul>
+const MenuListItem: FunctionComponent<{
+  menu: MainLayoutMenu;
+  isSecondary?: boolean;
+}> = ({ menu, isSecondary }) => {
+  const { link, selectionTest, secondaryLogo } = menu;
+
+  return (
+    <li
+      className="flex cursor-pointer items-center"
+      onClick={(e) => {
+        if (isFunction(link)) link(e);
+      }}
+    >
+      <MenuLink
+        href={link}
+        secondaryLogo={secondaryLogo}
+        selectionTest={selectionTest}
+      >
+        {({ showSubTitle, selected }) => (
+          <MenuItemContent
+            menu={menu}
+            selected={selected}
+            showSubTitle={showSubTitle}
+            isSecondary={isSecondary}
+          />
+        )}
+      </MenuLink>
+    </li>
   );
 };
 
@@ -85,15 +90,9 @@ const MenuLink: FunctionComponent<{
   secondaryLogo?: React.ReactNode;
   children: MaybeRenderProp<{ showSubTitle: boolean; selected: boolean }>;
   selectionTest?: RegExp;
-  showMore?: boolean;
-}> = ({ href, children, secondaryLogo, selectionTest, showMore }) => {
+}> = ({ href, children, secondaryLogo, selectionTest }) => {
   const router = useRouter();
   const [showSubTitle, setShowSubTitle] = useState(false);
-  // Needed because of NextJS SSR.
-  const isMounted = useIsClient();
-
-  const { isMobile } = useWindowSize();
-
   const shouldShowHover = !!secondaryLogo;
 
   const onClickLink = (e: React.MouseEvent) => {
@@ -104,24 +103,12 @@ const MenuLink: FunctionComponent<{
     href(e);
   };
 
-  if (isMounted && showMore && isMobile) {
-    return null; // Don't render more menu on mobile per discussion with Syed.
-  }
-
   const selected = selectionTest ? selectionTest.test(router.pathname) : false;
 
   const hoverHandlers = {
     onMouseEnter: () => shouldShowHover && setShowSubTitle(true),
     onMouseLeave: () => shouldShowHover && setShowSubTitle(false),
   };
-
-  if (showMore) {
-    return (
-      <div className="flex w-full items-center" {...hoverHandlers}>
-        {runIfFn(children, { showSubTitle, selected })}
-      </div>
-    );
-  }
 
   return (
     <Link
@@ -137,44 +124,12 @@ const MenuLink: FunctionComponent<{
   );
 };
 
-const MorePopover: FunctionComponent<{
-  item: MainLayoutMenu;
-  secondaryMenus: MainLayoutMenu[];
-}> = ({ item, secondaryMenus }) => {
-  return (
-    <Popover className="relative flex h-full w-full items-center px-5 py-3">
-      {({ open }) => (
-        <>
-          <Popover.Button className="focus:outline-none">
-            <MenuItemContent menu={item} selected={open} />
-          </Popover.Button>
-          <Popover.Panel className="absolute bottom-full -left-1 flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
-            {secondaryMenus.map((menu: MainLayoutMenu) => {
-              const { link, selectionTest, secondaryLogo, showMore } = menu;
-              return (
-                <MenuLink
-                  href={link}
-                  secondaryLogo={secondaryLogo}
-                  selectionTest={selectionTest}
-                  showMore={showMore}
-                  key={menu.label}
-                >
-                  <MenuItemContent menu={menu} />
-                </MenuLink>
-              );
-            })}
-          </Popover.Panel>
-        </>
-      )}
-    </Popover>
-  );
-};
-
 const MenuItemContent: React.FC<{
   selected?: boolean;
   showSubTitle?: boolean;
   menu: MainLayoutMenu;
-}> = ({ selected, showSubTitle, menu }) => {
+  isSecondary?: boolean;
+}> = ({ selected, showSubTitle, menu, isSecondary }) => {
   const { t } = useTranslation();
 
   const { label, icon, isNew, badge, secondaryLogo, subtext } = menu;
@@ -185,7 +140,9 @@ const MenuItemContent: React.FC<{
         "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out md:gap-2",
         selected
           ? "text-white-high"
-          : "text-osmoverse-300 hover:text-white-high"
+          : isSecondary
+            ? "text-osmoverse-400 hover:text-white-high"
+            : "text-osmoverse-300 hover:text-white-high"
       )}
     >
       <div className="relative h-6 w-6">
