@@ -1,7 +1,10 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import {
+  DATA_SERVICES_MARKET_MAX_AGE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../../utils/cache";
 import { dayjs } from "../../../../utils/dayjs";
 import { queryMarketChart } from "../../../coingecko";
 import {
@@ -73,6 +76,9 @@ export function getAssetHistoricalPrice({
       numRecentFrames ?? "all"
     }-${realtime}`,
     ttl: realtime ? 1000 * 3 : 1000 * 60 * 3, // 3 seconds for realtime, 3 minutes for non-realtime
+    staleWhileRevalidate: realtime
+      ? 0
+      : DATA_SERVICES_MARKET_MAX_AGE - 1000 * 60 * 3,
     getFreshValue: () =>
       queryTokenHistoricalChart({
         coinMinimalDenom,
@@ -104,6 +110,7 @@ export function getPoolAssetPairHistoricalPrice({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
     ttl: 1000 * 60 * 3, // 3 minutes
+    staleWhileRevalidate: DATA_SERVICES_MARKET_MAX_AGE - 1000 * 60 * 3,
     getFreshValue: () =>
       queryTokenPairHistoricalChart(
         poolId,

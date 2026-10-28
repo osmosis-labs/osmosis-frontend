@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "市场数据暂时不可用。请稍后再试。",
       "depositButton": "存入",
       "search": "搜索",
       "withdrawButton": "提币",
@@ -801,7 +802,11 @@
     "route": "路线",
     "routes": "路线",
     "slippageOverBalance": "资金不足以弥补滑点",
-    "amountTooSmallForSlippage": "金额太小，无法以此滑点进行兑换。请增加金额或降低滑点。"
+    "amountTooSmallForSlippage": "金额太小，无法以此滑点进行兑换。请增加金额或降低滑点。",
+    "slippageAutoAdjustedTitle": "滑点已自动调整",
+    "slippageAutoAdjustedBody": "由于价格影响较大或流动性较低，此交易的默认滑点已上调。",
+    "routeLiquidityUnknown": "无法验证此路径的流动性。确认前请检查“至少收到”的数量。",
+    "slippageAutoAdjustedHigh": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“至少收到”的数量。"
   },
   "walletSelect": {
     "gettingStarted": "入门",
@@ -1266,6 +1271,7 @@
     "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
     "noTransactions": "没有交易",
     "pastShownHere": "您过去在 Osmosis 上的交易将会显示在这里。",
+    "historyLoadError": "无法加载您的完整历史记录。请稍后再试。",
     "connectToSee": "连接以查看您的交易历史记录",
     "connectWallet": "连接钱包",
     "title": "交易",
@@ -1333,6 +1339,10 @@
         "subtitle": "您的交易订单历史记录将显示在这里。",
         "connectTitle": "连接您的钱包以查看您的订单历史记录",
         "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。"
+      },
+      "errorState": {
+        "title": "无法加载您的订单",
+        "subtitle": "请稍后再试。"
       }
     },
     "aboveMarket": {

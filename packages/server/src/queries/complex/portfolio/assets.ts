@@ -4,14 +4,21 @@ import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
 
 import { captureIfError } from "../../../utils";
-import { Categories, queryPortfolioAssets } from "../../sidecar";
-import { getAsset } from "../assets";
+import {
+  type AccountCoinsResult,
+  Categories,
+  type Category,
+  queryPortfolioAssets,
+} from "../../sidecar";
+import { getAsset, isHoldingValueUnknown } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 
 export interface Allocation {
   key: string;
   percentage: RatePretty;
   fiatValue: PricePretty;
+  /** True when the value includes a coin SQS couldn't price (held, but valued at zero). */
+  fiatValueUnknown?: boolean;
   asset?: CoinPretty;
 }
 
@@ -22,7 +29,40 @@ export interface AssetVariant {
   canonicalAsset: MinimalAsset;
 }
 
-export function getAllocations(categories: Categories): Allocation[] {
+/** SQS values a coin it can't price at zero. For an asset that should have a price,
+ *  that zero is unknown, not zero. */
+function isUnpricedCoin(
+  assetLists: AssetList[],
+  { coin, cap_value }: AccountCoinsResult
+): boolean {
+  return (
+    new Dec(cap_value).isZero() &&
+    isHoldingValueUnknown({
+      assetLists,
+      coinMinimalDenom: coin.denom,
+      amount: coin.amount,
+    })
+  );
+}
+
+/** A category total is unknown when SQS couldn't price a coin in it that should have a
+ *  price. `is_best_effort` isn't used: SQS also sets it for coins expected to have no
+ *  price (e.g. sunset assets), which would leave many wallets' totals unknown. */
+function isCategoryValueUnknown(
+  assetLists: AssetList[],
+  category: Category
+): boolean {
+  return Boolean(
+    category.account_coins_result?.some((coin) =>
+      isUnpricedCoin(assetLists, coin)
+    )
+  );
+}
+
+export function getAllocations(
+  categories: Categories,
+  assetLists: AssetList[]
+): Allocation[] {
   const userBalancesCap = new Dec(categories["user-balances"].capitalization);
   const stakedCap = new Dec(categories["staked"].capitalization);
   const unstakingCap = new Dec(categories["unstaking"].capitalization);
@@ -37,26 +77,31 @@ export function getAllocations(categories: Categories): Allocation[] {
     .add(unclaimedRewardsCap)
     .add(pooledCap);
 
-  const allocations: { key: string; fiatValue: Dec }[] = [
+  const allocations: { key: string; fiatValue: Dec; category: Category }[] = [
     {
       key: "available",
       fiatValue: userBalancesCap,
+      category: categories["user-balances"],
     },
     {
       key: "staked",
       fiatValue: stakedCap,
+      category: categories["staked"],
     },
     {
       key: "unstaking",
       fiatValue: unstakingCap,
+      category: categories["unstaking"],
     },
     {
       key: "unclaimedRewards",
       fiatValue: unclaimedRewardsCap,
+      category: categories["unclaimed-rewards"],
     },
     {
       key: "pooled",
       fiatValue: pooledCap,
+      category: categories["pooled"],
     },
   ];
 
@@ -69,6 +114,9 @@ export function getAllocations(categories: Categories): Allocation[] {
         ? new RatePretty(0)
         : new RatePretty(allocation.fiatValue.quo(totalCap)),
       fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, allocation.fiatValue),
+      ...(isCategoryValueUnknown(assetLists, allocation.category) && {
+        fiatValueUnknown: true,
+      }),
     })
   );
 
@@ -88,6 +136,7 @@ export function calculatePercentAndFiatValues(
     (asset) => ({
       coin: asset.coin,
       fiatValue: new Dec(asset.cap_value),
+      fiatValueUnknown: isUnpricedCoin(assetLists, asset),
     })
   );
 
@@ -118,6 +167,7 @@ export function calculatePercentAndFiatValues(
           ? new RatePretty(0)
           : new RatePretty(asset.fiatValue.quo(totalCap)),
         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.fiatValue),
+        ...(asset.fiatValueUnknown && { fiatValueUnknown: true }),
         asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
       };
     })
@@ -138,6 +188,9 @@ export function calculatePercentAndFiatValues(
     key: "Other",
     percentage: otherPercentage,
     fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, otherAmount),
+    ...(otherAssets.some((asset) => asset.fiatValueUnknown) && {
+      fiatValueUnknown: true,
+    }),
   };
 
   return [...assets, other];
@@ -155,6 +208,8 @@ export type PortfolioAssets = {
   assets: Allocation[];
   available: Allocation[];
   totalCap: PricePretty;
+  /** A held coin that should have a price couldn't be priced, so `totalCap` is unknown. */
+  totalCapUnknown: boolean;
   assetVariants: AssetVariant[];
   /**
    * Assets the user holds across all categories (bank balances, staked,
@@ -183,7 +238,7 @@ export async function getPortfolioAssets({
 
   const categories = data.categories;
 
-  const allocations = getAllocations(categories);
+  const allocations = getAllocations(categories, assetLists);
   const assets = calculatePercentAndFiatValues(
     categories,
     assetLists,
@@ -221,6 +276,10 @@ export async function getPortfolioAssets({
     assets,
     available,
     totalCap,
+    totalCapUnknown: isCategoryValueUnknown(
+      assetLists,
+      categories["total-assets"]
+    ),
     assetVariants,
     heldAssets,
   };

@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",
@@ -801,7 +802,11 @@
     "route": "route",
     "routes": "routes",
     "slippageOverBalance": "Insufficient funds to cover slippage",
-    "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage."
+    "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage.",
+    "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
+    "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity.",
+    "routeLiquidityUnknown": "Couldn't verify this route's liquidity. Check the \"Receive at least\" amount before confirming.",
+    "slippageAutoAdjustedHigh": "Slippage was raised automatically for this trade's high price impact or low liquidity. Check the \"Receive at least\" amount before confirming."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",
@@ -1266,6 +1271,7 @@
     "recentShownHere": "Recent swaps, deposits and withdrawals will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
+    "historyLoadError": "Couldn't load your full history. Please try again in a moment.",
     "connectToSee": "Connect to see your transaction history",
     "connectWallet": "Connect wallet",
     "title": "Transactions",
@@ -1333,6 +1339,10 @@
         "subtitle": "Your trade order history will appear here.",
         "connectTitle": "Connect your wallet to see your order history",
         "connectSubtitle": "Your past limit orders on Osmosis will appear here."
+      },
+      "errorState": {
+        "title": "Couldn't load your orders",
+        "subtitle": "Please try again in a moment."
       }
     },
     "aboveMarket": {

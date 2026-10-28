@@ -36,11 +36,9 @@ yarn build && yarn start
 
 ### Cloudflare production candidate (`master-cf`)
 
-`master-cf` tracks production `master` (last merged at `6c75a6d26`), with Cloudflare
-compatibility changes ported from `stage-cf`. It does not include unreleased stage
-features. Next.js and its bundle analyzer are on 15.5.28 to satisfy OpenNext's
-
-> =15.5.28 peer requirement.
+`master-cf` includes the deployed `stage-cf` release with production Cloudflare
+configuration. Next.js and its bundle analyzer are on 15.5.28 to satisfy OpenNext's
+>=15.5.28 peer requirement.
 
 `cf:build` loads `.env.production.local`, `.env.local`, `.env.production` and `.env`
 (shell variables take precedence) for the whole build, so `yarn generate:lists`
@@ -135,11 +133,8 @@ Cloudflare location (`x-edge-cache: HIT|MISS` shows the result):
   transformations per month beyond the free 5,000, and the Images product must be
   enabled on the account.
 
-For future production releases, merge `origin/master` into `master-cf`; port
-Cloudflare fixes individually from `stage-cf` rather than merging its unreleased
-application changes. Record the production base commit and deployed Worker
-version for each candidate. Worker rollback does not revert R2 or Durable Object
-state.
+Record the release commit and deployed Worker version for each candidate. Worker
+rollback does not revert R2 or Durable Object state.
 
 ### Traffic router (`router/`)
 

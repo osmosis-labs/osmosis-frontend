@@ -125,6 +125,10 @@ jest.mock("~/hooks/use-debounced-state", () => ({
 
 jest.mock("~/hooks/input/use-amount-input", () => {
   const { CoinPretty } = require("@osmosis-labs/unit");
+  // Stable like the real hook's useCallback setters; fresh functions per render
+  // would make useSwap's deep-memoised input loop on any re-render.
+  const setAmount = jest.fn();
+  const reset = jest.fn();
 
   return {
     useAmountInput: ({ currency }: { currency?: any }) => {
@@ -141,8 +145,8 @@ jest.mock("~/hooks/input/use-amount-input", () => {
         price: undefined,
         fiatValue: undefined,
         error: undefined,
-        setAmount: jest.fn(),
-        reset: jest.fn(),
+        setAmount,
+        reset,
       };
     },
   };

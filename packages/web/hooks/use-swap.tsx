@@ -66,8 +66,10 @@ import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
+import { useUserWatchlist } from "~/hooks/user-settings";
 import { AppRouter } from "~/server/api/root-router";
 import { trimPlaceholderZeros } from "~/utils/number";
+import { extractSwapRequiredErrorAmounts } from "~/utils/slippage";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -1028,6 +1030,7 @@ export function useSwapAssets({
   );
 
   const { showPreviewAssets } = useShowPreviewAssets();
+  const { watchListDenoms } = useUserWatchlist();
 
   const canLoadAssets =
     Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies;
@@ -1042,6 +1045,8 @@ export function useSwapAssets({
     {
       poolId,
       search: queryInput,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: queryInput ? watchListDenoms : undefined,
       userOsmoAddress: address,
       includePreview: showPreviewAssets,
       limit: 50, // items per page
@@ -1771,27 +1776,4 @@ export function useDynamicSlippageConfig({
       }
     }
   }, [feeError, quoteType]);
-}
-
-/** Extracts the numerical values from the swap required error
- *
- * e.g. Error: Fetch error. failed to execute message; message index: 0:
- * Swap requires 498419192699272362737ibc/E47F4E97C534C95B942729E1B25DBDE111EA791411CFF100515050BEA0AC0C6B,
- * which is greater than the amount 497246119581463551214: calculated amount is larger than max amount
- *
- * returns ["498419192699272362737", "497246119581463551214"]
- */
-function extractSwapRequiredErrorAmounts(str: string) {
-  const regex = /^\d+/;
-  const split = str
-    .split(" ")
-    .map((s) => {
-      const stripped = s.replace("(", "").replace(")", "");
-      if (regex.test(stripped)) {
-        return stripped.match(regex)?.[0] ?? undefined;
-      }
-    })
-    .filter(Boolean);
-
-  return [split[1], split[2]];
 }

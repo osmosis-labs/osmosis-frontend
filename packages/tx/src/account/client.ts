@@ -55,6 +55,8 @@ export type SignerData = {
   sequence: number;
   chainId: string;
 };
+/** The account pubkey as stored onchain: its proto type URL and base64 key. */
+export type AccountPubKey = { typeUrl: string; key: string };
 export type SessionSignRequest = {
   wallet: AccountStoreWallet;
   /** The session checked against the signer, so another tab cannot swap it. */
@@ -64,6 +66,12 @@ export type SessionSignRequest = {
   fee: StdFee;
   memo: string;
   signerData: SignerData;
+  /**
+   * Read from the chain rather than the wallet, so a session-key signature
+   * never waits on the wallet. A WalletConnect wallet relays every request to
+   * the phone, and a closed app holds it until reopened.
+   */
+  accountPubKey: AccountPubKey | undefined;
   memoFlags?: TxFeMemoFlags;
 };
 export type OneClickSigningAdapter = {
@@ -457,7 +465,8 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
        */
       useTimeoutHeight?: boolean;
     }): Promise<TxRaw> {
-      const { accountNumber, sequence } = await service.getSequence(wallet);
+      const { accountNumber, sequence, pubKey } =
+        await service.getSequence(wallet);
       const chainId = wallet?.chainId;
 
       if (!chainId) {
@@ -509,6 +518,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
           fee,
           memo,
           signerData,
+          accountPubKey: pubKey,
           memoFlags,
         });
       }
@@ -894,11 +904,14 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
       return {
         accountNumber: account.getAccountNumber(),
         sequence: account.getSequence(),
+        pubKey: account.getPubKey(),
       };
     },
-    async getSequence(
-      wallet: AccountStoreWallet
-    ): Promise<{ accountNumber: string; sequence: number }> {
+    async getSequence(wallet: AccountStoreWallet): Promise<{
+      accountNumber: string;
+      sequence: number;
+      pubKey?: AccountPubKey;
+    }> {
       const account = await service.getAccountFromNode(wallet);
       if (!account) {
         throw new Error(
@@ -911,6 +924,7 @@ export function createWalletTxClient(deps: WalletTxDependencies) {
         // keep the exact decimal string the node returned.
         accountNumber: account.accountNumber.toString(),
         sequence: Number(account.sequence.toString()),
+        pubKey: account.pubKey,
       };
     },
     async estimateFee({

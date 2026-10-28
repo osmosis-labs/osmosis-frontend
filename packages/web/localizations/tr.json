@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Piyasa verileri şu anda kullanılamıyor. Lütfen birazdan tekrar deneyin.",
       "depositButton": "Yatır",
       "search": "Arama",
       "withdrawButton": "Çek",
@@ -801,7 +802,11 @@
     "route": "rota",
     "routes": "rotalar",
     "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok",
-    "amountTooSmallForSlippage": "Bu kayma ile takas için tutar çok küçük. Tutarı artırın veya kaymayı azaltın."
+    "amountTooSmallForSlippage": "Bu kayma ile takas için tutar çok küçük. Tutarı artırın veya kaymayı azaltın.",
+    "slippageAutoAdjustedTitle": "Kayma otomatik ayarlandı",
+    "slippageAutoAdjustedBody": "Yüksek fiyat etkisi veya düşük likidite nedeniyle bu işlemin varsayılan kayması artırıldı.",
+    "routeLiquidityUnknown": "Bu rotanın likiditesi doğrulanamadı. Onaylamadan önce \"En azından al\" tutarını kontrol edin.",
+    "slippageAutoAdjustedHigh": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En azından al\" tutarını kontrol edin."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
@@ -1266,6 +1271,7 @@
     "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
     "noTransactions": "İşlem yok",
     "pastShownHere": "Osmosis'teki geçmiş işlemleriniz burada görünecek.",
+    "historyLoadError": "Geçmişinizin tamamı yüklenemedi. Lütfen birazdan tekrar deneyin.",
     "connectToSee": "İşlem geçmişinizi görmek için bağlanın",
     "connectWallet": "Cüzdanı bağlayın",
     "title": "İşlemler",
@@ -1333,6 +1339,10 @@
         "subtitle": "Ticari sipariş geçmişiniz burada görünecektir.",
         "connectTitle": "Sipariş geçmişinizi görmek için cüzdanınızı bağlayın",
         "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
+      },
+      "errorState": {
+        "title": "Emirleriniz yüklenemedi",
+        "subtitle": "Lütfen birazdan tekrar deneyin."
       }
     },
     "aboveMarket": {

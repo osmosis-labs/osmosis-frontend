@@ -198,12 +198,14 @@ export const useAssetInfoConfig = (
     }
   );
 
+  // CoinGecko fills in when our price history is empty or failed (realtime requests
+  // return the error rather than an empty history).
   const enableCoinGecko =
     Boolean(coingeckoId) &&
     coingeckoId !== undefined &&
-    historicalPriceData !== undefined &&
-    historicalPriceData.length === 0 &&
-    !isLoading;
+    !isLoading &&
+    (isError ||
+      (historicalPriceData !== undefined && historicalPriceData.length === 0));
 
   // Stable so React Query keeps the selected array between renders.
   const selectCoingeckoData = useCallback(
