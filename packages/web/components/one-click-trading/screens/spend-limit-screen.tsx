@@ -128,7 +128,7 @@ export const SpendLimitScreen = ({
                 DEFAULT_VS_CURRENCY,
                 new Dec(!shareOfBalance?.value ? 0 : shareOfBalance.value)
                   .quo(new Dec(100))
-                  .mul(userAssetsTotal?.value.toDec() ?? new Dec(0))
+                  .mul(userAssetsTotal?.value?.toDec() ?? new Dec(0))
               ),
             };
           });
@@ -307,15 +307,19 @@ export const SpendLimitScreen = ({
                 isLoaded={!isLoadingUserAssetsTotal}
               >
                 <span className="subtitle1 text-osmoverse-100">
-                  ~
-                  {userAssetsTotal?.value
-                    .mul(
-                      new Dec(
-                        !shareOfBalance?.value ? 0 : shareOfBalance.value
-                      ).quo(new Dec(100))
-                    )
-                    .toString() ??
-                    new PricePretty(DEFAULT_VS_CURRENCY, 0).toString()}
+                  {userAssetsTotal && !userAssetsTotal.value
+                    ? // the balance couldn't be priced, so its share is unknown
+                      "–"
+                    : `~${
+                        userAssetsTotal?.value
+                          ?.mul(
+                            new Dec(
+                              !shareOfBalance?.value ? 0 : shareOfBalance.value
+                            ).quo(new Dec(100))
+                          )
+                          .toString() ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, 0).toString()
+                      }`}
                 </span>
               </SkeletonLoader>
             </p>

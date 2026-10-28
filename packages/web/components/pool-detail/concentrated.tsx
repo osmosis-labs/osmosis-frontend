@@ -560,10 +560,12 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
     });
     return Array.from(coinSums.values());
   }, [userPositions]);
+  // undefined (unknown) when any position's value is unknown
   const userPoolValue = useMemo(
     () =>
-      (userPositions ?? []).reduce(
-        (sum, { currentValue }) => sum.add(currentValue),
+      (userPositions ?? []).reduce<PricePretty | undefined>(
+        (sum, { currentValue }) =>
+          sum && currentValue ? sum.add(currentValue) : undefined,
         new PricePretty(DEFAULT_VS_CURRENCY, 0)
       ),
     [userPositions]
@@ -588,7 +590,9 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             {t("clPositions.totalBalance")}
           </span>
           <div>
-            <h4 className="text-osmoverse-100">{userPoolValue.toString()}</h4>
+            <h4 className="text-osmoverse-100">
+              {userPoolValue?.toString() ?? "–"}
+            </h4>
             <span className="subtitle1 text-osmoverse-300">
               {numUserPositions === 1
                 ? t("clPositions.onePosition")
