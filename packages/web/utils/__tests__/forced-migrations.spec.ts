@@ -282,6 +282,22 @@ describe("getActiveForcedMigrations with per-position holdings", () => {
     ).toEqual([]);
   });
 
+  it("names a held balance that is neither convertible nor in a position", () => {
+    const [active] = getActiveForcedMigrations({
+      migrations: [makeMigration()],
+      heldAssets: [held(USDC_NOBLE, "2000000", "2")],
+      // No variant (e.g. its alloy is unavailable) and no position rows.
+      assetVariants: [],
+      holdings: [],
+      now: NOW,
+    });
+    expect(active.convertibleVariants).toEqual([]);
+    expect(active.heldElsewhere).toEqual([]);
+    expect(active.unconvertible.map(({ denom }) => denom)).toEqual([
+      USDC_NOBLE,
+    ]);
+  });
+
   it("matches limit orders by exact denom", () => {
     const order: ForcedMigrationHolding = {
       kind: "order",

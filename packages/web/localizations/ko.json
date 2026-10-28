@@ -1492,6 +1492,7 @@
     "remindMeLater": "나중에 알림",
     "deadline": "마감일: {date}",
     "heldElsewhere": "유동성 풀에도 {symbols}을(를) 보유하고 있습니다.",
+    "heldUnconvertible": "{symbols}을(를) 보유하고 있지만 지금은 변환할 수 없습니다. 잠시 후 다시 확인해 주세요.",
     "viewPortfolio": "포트폴리오 보기",
     "poolPosition": "풀 #{poolId}",
     "holdingsTitle": "보유 자산",

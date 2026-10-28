@@ -1492,6 +1492,7 @@
     "remindMeLater": "Напомнить позже",
     "deadline": "Срок: {date}",
     "heldElsewhere": "У вас также есть {symbols} в пулах ликвидности.",
+    "heldUnconvertible": "У вас есть {symbols}, но конвертация сейчас недоступна. Загляните позже.",
     "viewPortfolio": "Открыть портфель",
     "poolPosition": "Пул #{poolId}",
     "holdingsTitle": "Активы",

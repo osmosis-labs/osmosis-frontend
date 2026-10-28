@@ -1492,6 +1492,7 @@
     "remindMeLater": "Przypomnij mi później",
     "deadline": "Termin: {date}",
     "heldElsewhere": "Masz też {symbols} w pulach płynności.",
+    "heldUnconvertible": "Masz {symbols}, ale konwersja jest teraz niedostępna. Sprawdź ponownie wkrótce.",
     "viewPortfolio": "Zobacz portfel",
     "poolPosition": "Pula #{poolId}",
     "holdingsTitle": "Aktywa",

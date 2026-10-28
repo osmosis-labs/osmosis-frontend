@@ -1492,6 +1492,7 @@
     "remindMeLater": "Daha sonra hatırlat",
     "deadline": "Son tarih: {date}",
     "heldElsewhere": "Likidite havuzlarında da {symbols} tutuyorsunuz.",
+    "heldUnconvertible": "{symbols} varlığınız var, ancak dönüştürme şu anda kullanılamıyor. Yakında tekrar kontrol edin.",
     "viewPortfolio": "Portföyü görüntüle",
     "poolPosition": "Havuz #{poolId}",
     "holdingsTitle": "Varlıklar",

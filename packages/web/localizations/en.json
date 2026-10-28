@@ -1492,6 +1492,7 @@
     "remindMeLater": "Remind me later",
     "deadline": "Deadline: {date}",
     "heldElsewhere": "You also hold {symbols} in liquidity pools.",
+    "heldUnconvertible": "You hold {symbols}, but converting it isn't available right now. Check back soon.",
     "viewPortfolio": "View portfolio",
     "poolPosition": "Pool #{poolId}",
     "holdingsTitle": "Holdings",

@@ -1492,6 +1492,7 @@
     "remindMeLater": "Lembrar mais tarde",
     "deadline": "Prazo: {date}",
     "heldElsewhere": "Você também tem {symbols} em pools de liquidez.",
+    "heldUnconvertible": "Você tem {symbols}, mas a conversão não está disponível agora. Volte em breve.",
     "viewPortfolio": "Ver portfólio",
     "poolPosition": "Pool #{poolId}",
     "holdingsTitle": "Saldos",

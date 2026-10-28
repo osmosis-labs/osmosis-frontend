@@ -215,6 +215,7 @@ const MigrationSection: FunctionComponent<{
     positions,
     unlocking,
     heldElsewhere,
+    unconvertible,
   },
   showDivider,
   onViewPortfolio,
@@ -246,6 +247,7 @@ const MigrationSection: FunctionComponent<{
         (variant) => variant.amount.currency.coinMinimalDenom === denom
       ) ||
       heldElsewhere.some((held) => held.denom === denom) ||
+      unconvertible.some((held) => held.denom === denom) ||
       [...positions, ...unlocking].some((holding) =>
         holding.kind === "order"
           ? holding.inDenom === denom || holding.outDenom === denom
@@ -380,6 +382,21 @@ const MigrationSection: FunctionComponent<{
               ))}
             </div>
           )
+      )}
+      {unconvertible.length > 0 && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-osmoverse-700 p-4">
+          <p className="body2 text-osmoverse-300">
+            {t("forcedMigration.heldUnconvertible", {
+              symbols: [
+                ...new Set(
+                  unconvertible.map(
+                    (held) => held.coinDenom ?? shorten(held.denom)
+                  )
+                ),
+              ].join(", "),
+            })}
+          </p>
+        </div>
       )}
       {heldElsewhere.length > 0 && (
         <div className="flex flex-col gap-2 rounded-2xl border border-osmoverse-700 p-4">

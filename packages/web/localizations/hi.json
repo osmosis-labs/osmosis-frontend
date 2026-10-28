@@ -1492,6 +1492,7 @@
     "remindMeLater": "बाद में याद दिलाएं",
     "deadline": "समय सीमा: {date}",
     "heldElsewhere": "आप लिक्विडिटी पूल में भी {symbols} रखते हैं।",
+    "heldUnconvertible": "आपके पास {symbols} है, लेकिन अभी इसे बदलना उपलब्ध नहीं है। जल्द ही फिर देखें।",
     "viewPortfolio": "पोर्टफोलियो देखें",
     "poolPosition": "पूल #{poolId}",
     "holdingsTitle": "होल्डिंग्स",

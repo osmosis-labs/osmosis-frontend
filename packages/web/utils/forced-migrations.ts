@@ -78,6 +78,10 @@ export interface ActiveForcedMigration {
    *  the bank balance by the portfolio totals, which can't tell locked from
    *  unlocking. */
   heldElsewhere: HeldAssetAmount[];
+  /** Held old assets that can't be converted from the bank and aren't in any
+   *  position row (e.g. the variant is missing or its alloy is unavailable),
+   *  so the popup can name them instead of going silent. */
+  unconvertible: HeldAssetAmount[];
 }
 
 /** Default and cap for `positionExit.maxSlippagePercent`. */
@@ -222,7 +226,9 @@ function getForcedMigrationProblem(entry: any): string | undefined {
     return "invalid deadline";
   if (
     entry.minFiatValueUsd !== undefined &&
-    (typeof entry.minFiatValueUsd !== "number" || entry.minFiatValueUsd < 0)
+    (typeof entry.minFiatValueUsd !== "number" ||
+      !Number.isFinite(entry.minFiatValueUsd) ||
+      entry.minFiatValueUsd < 0)
   )
     return "invalid minFiatValueUsd";
   if (!isNonEmptyString(entry.enTitleOrLocalizationPath))
@@ -307,6 +313,7 @@ export function getActiveForcedMigrations({
     .map((migration): ActiveForcedMigration | undefined => {
       const convertibleVariants: AssetVariant[] = [];
       const heldElsewhere: HeldAssetAmount[] = [];
+      const unconvertible: HeldAssetAmount[] = [];
       let totalFiat = new Dec(0);
       let hasUnpricedHolding = false;
 
@@ -391,13 +398,25 @@ export function getActiveForcedMigrations({
           if (elsewhereAmount.isPositive()) {
             heldElsewhere.push({ ...held, amount: elsewhereAmount.toString() });
           }
+        } else if (
+          !bankAmount.isPositive() &&
+          !migrationHoldings.some((holding) =>
+            getHoldingDenoms(holding).includes(denom)
+          )
+        ) {
+          // Held, but neither convertible from the bank (e.g. the variant is
+          // missing or its alloy is unavailable) nor in any position row: name
+          // it rather than going silent.
+          unconvertible.push(held);
+          addValue(denom, heldAmount);
         }
       }
 
       if (
         convertibleVariants.length === 0 &&
         positions.length === 0 &&
-        heldElsewhere.length === 0
+        heldElsewhere.length === 0 &&
+        unconvertible.length === 0
       )
         return undefined;
 
@@ -416,6 +435,7 @@ export function getActiveForcedMigrations({
         positions,
         unlocking,
         heldElsewhere,
+        unconvertible,
       };
     })
     .filter((active): active is ActiveForcedMigration => Boolean(active))

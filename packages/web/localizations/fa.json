@@ -1492,6 +1492,7 @@
     "remindMeLater": "بعداً یادآوری کن",
     "deadline": "مهلت: {date}",
     "heldElsewhere": "شما {symbols} را در استخرهای نقدینگی نیز نگه می‌دارید.",
+    "heldUnconvertible": "شما {symbols} دارید، اما تبدیل آن در حال حاضر در دسترس نیست. به‌زودی دوباره سر بزنید.",
     "viewPortfolio": "مشاهده پورتفولیو",
     "poolPosition": "استخر #{poolId}",
     "holdingsTitle": "دارایی‌ها",

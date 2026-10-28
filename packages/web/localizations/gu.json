@@ -1492,6 +1492,7 @@
     "remindMeLater": "પછીથી યાદ અપાવો",
     "deadline": "અંતિમ તારીખ: {date}",
     "heldElsewhere": "તમે લિક્વિડિટી પૂલ્સમાં પણ {symbols} ધરાવો છો.",
+    "heldUnconvertible": "તમારી પાસે {symbols} છે, પરંતુ હાલમાં તેને રૂપાંતરિત કરી શકાતું નથી. થોડી વાર પછી ફરી તપાસો.",
     "viewPortfolio": "પોર્ટફોલિયો જુઓ",
     "poolPosition": "પૂલ #{poolId}",
     "holdingsTitle": "હોલ્ડિંગ્સ",

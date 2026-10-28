@@ -1492,6 +1492,7 @@
     "remindMeLater": "Später erinnern",
     "deadline": "Frist: {date}",
     "heldElsewhere": "Du hältst {symbols} auch in Liquiditätspools.",
+    "heldUnconvertible": "Du hältst {symbols}, aber die Umwandlung ist gerade nicht verfügbar. Schau bald wieder vorbei.",
     "viewPortfolio": "Portfolio ansehen",
     "poolPosition": "Pool #{poolId}",
     "holdingsTitle": "Bestände",

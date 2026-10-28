@@ -1492,6 +1492,7 @@
     "remindMeLater": "稍后提醒我",
     "deadline": "截止日期：{date}",
     "heldElsewhere": "您还在流动性池中持有 {symbols}。",
+    "heldUnconvertible": "您持有 {symbols}，但目前无法转换。请稍后再查看。",
     "viewPortfolio": "查看投资组合",
     "poolPosition": "池 #{poolId}",
     "holdingsTitle": "持有资产",

@@ -121,8 +121,18 @@ export const ForcedMigrationPositionRow: FunctionComponent<{
       ? migration.fromDenoms.find(
           (denom) => denom === holding.inDenom || denom === holding.outDenom
         )
-      : holding.coins.find(({ denom }) => migration.fromDenoms.includes(denom))
-          ?.denom;
+      : // A positive coin first: an out-of-range CL position holds zero of
+        // one side, which would fail the withdraw's conversion quote.
+        (
+          holding.coins.find(
+            ({ denom, amount }) =>
+              migration.fromDenoms.includes(denom) &&
+              new Dec(amount).isPositive()
+          ) ??
+          holding.coins.find(({ denom }) =>
+            migration.fromDenoms.includes(denom)
+          )
+        )?.denom;
   const oldAmountText = oldDenom
     ? formatHoldingCoin(oldDenom, holding.oldDenomAmount)
     : undefined;
@@ -623,12 +633,17 @@ const WithdrawAction: FunctionComponent<{
   const { run, isRunning, isDisabled, error } = useHoldingTx();
 
   // A quote only shows a route exists; the bank row's fee simulation is what
-  // catches a conversion the pool would reject, once the funds are out.
+  // catches a conversion the pool would reject, once the funds are out. The
+  // amount is this denom's own share (`oldDenomAmount` sums every source
+  // denom in the position).
+  const oldDenomCoinAmount =
+    holding.coins.find(({ denom }) => denom === oldDenom)?.amount ??
+    holding.oldDenomAmount;
   const { data: quote, isError: isQuoteError } =
     api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
       {
         tokenInDenom: oldDenom,
-        tokenInAmount: holding.oldDenomAmount,
+        tokenInAmount: oldDenomCoinAmount,
         tokenOutDenom: migration.toDenom,
       },
       { refetchOnWindowFocus: false }

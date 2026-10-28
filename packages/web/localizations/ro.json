@@ -1492,6 +1492,7 @@
     "remindMeLater": "Amintește-mi mai târziu",
     "deadline": "Termen limită: {date}",
     "heldElsewhere": "Deții și {symbols} în pool-uri de lichiditate.",
+    "heldUnconvertible": "Deții {symbols}, dar conversia nu este disponibilă acum. Revino în curând.",
     "viewPortfolio": "Vezi portofoliul",
     "poolPosition": "Pool #{poolId}",
     "holdingsTitle": "Dețineri",

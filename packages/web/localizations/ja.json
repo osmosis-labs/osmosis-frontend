@@ -1492,6 +1492,7 @@
     "remindMeLater": "後で通知する",
     "deadline": "期限: {date}",
     "heldElsewhere": "流動性プールにも {symbols} を保有しています。",
+    "heldUnconvertible": "{symbols} を保有していますが、現在は変換できません。しばらくしてから再度ご確認ください。",
     "viewPortfolio": "ポートフォリオを見る",
     "poolPosition": "プール #{poolId}",
     "holdingsTitle": "保有資産",
