@@ -25,27 +25,65 @@ type CachePolicy = {
   toClientHeaders(headers: Headers): void;
 };
 
+type PolicyFor = (request: Request) => CachePolicy | undefined;
+
 /**
- * Wraps a Worker's fetch handler with the shared CDN cache Vercel gives the app, using the
- * location's `cache`:
- *
- * - API routes: GET `/api/*` responses that send `Cache-Control: s-maxage` are kept for that long.
- *   Routes decide what is shareable through that header (see `utils/trpc-cdn-cache.ts`), so
- *   anything they leave uncached stays uncached. Like Vercel, the key is the URL alone, and
- *   browsers get the header without `s-maxage`.
- * - Optimized images (`/_next/image`): OpenNext refetches and re-transforms the source on every
- *   request, so successful results are kept for `IMAGE_EDGE_TTL_SECONDS`, keyed by URL and the
- *   formats the browser accepts.
- *
- * Hits skip Next's middleware, so API requests the middleware would block always reach `handler`.
+ * GET/HEAD requests without `Authorization` can be cached. Both policies share this gate so a
+ * credentialed or non-idempotent request is never stored.
  */
-export function withEdgeCache(
+function cacheableUrl(request: Request): URL | undefined {
+  if (request.method !== "GET" && request.method !== "HEAD") return undefined;
+  if (request.headers.has("authorization")) return undefined;
+  return new URL(request.url);
+}
+
+/** Cache policy for GET `/api/*` responses that opt in with `s-maxage`. */
+function apiCachePolicy(request: Request): CachePolicy | undefined {
+  const url = cacheableUrl(request);
+  if (!url?.pathname.startsWith("/api/")) return undefined;
+  // A blocked client must not be served (or stored as) another client's cached response.
+  // The API Worker also rejects these before the cache; the pages Worker still relies on this.
+  if (isBlockedApiUserAgent(request.headers.get("user-agent")))
+    return undefined;
+  return {
+    key: request.url,
+    edgeTtl: sharedMaxAge,
+    toClientHeaders: (headers) => {
+      const cacheControl = withoutSharedDirectives(
+        headers.get("cache-control")
+      );
+      if (cacheControl) headers.set("cache-control", cacheControl);
+      else headers.delete("cache-control");
+    },
+  };
+}
+
+/** Cache policy for `/_next/image`. OpenNext re-transforms the source on every miss. */
+function imageCachePolicy(request: Request): CachePolicy | undefined {
+  const url = cacheableUrl(request);
+  if (url?.pathname !== "/_next/image") return undefined;
+  return {
+    key: imageCacheKey(url, request.headers.get("accept")),
+    edgeTtl: (response) =>
+      isImage(response) ? IMAGE_EDGE_TTL_SECONDS : undefined,
+    toClientHeaders: (headers) => {
+      headers.set(
+        "cache-control",
+        `public, max-age=${IMAGE_BROWSER_TTL_SECONDS}`
+      );
+      headers.set("vary", "Accept");
+    },
+  };
+}
+
+function applyEdgeCache(
   handler: FetchHandler,
   cache: Cache,
-  waitUntil: WaitUntil
+  waitUntil: WaitUntil,
+  policyFor: PolicyFor
 ): FetchHandler {
   return async (request) => {
-    const policy = cachePolicy(request);
+    const policy = policyFor(request);
     if (!policy) return handler(request);
 
     const key = new Request(policy.key, { method: "GET" });
@@ -67,42 +105,48 @@ export function withEdgeCache(
   };
 }
 
-function cachePolicy(request: Request): CachePolicy | undefined {
-  if (request.method !== "GET" && request.method !== "HEAD") return undefined;
-  if (request.headers.has("authorization")) return undefined;
+/**
+ * Caches GET `/api/*` responses that send `Cache-Control: s-maxage`. Routes decide what is
+ * shareable through that header (see `utils/trpc-cdn-cache.ts`). Like Vercel, the key is the URL
+ * alone, and browsers get the header without `s-maxage`.
+ */
+export function withApiEdgeCache(
+  handler: FetchHandler,
+  cache: Cache,
+  waitUntil: WaitUntil
+): FetchHandler {
+  return applyEdgeCache(handler, cache, waitUntil, apiCachePolicy);
+}
 
-  const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/")) {
-    if (isBlockedApiUserAgent(request.headers.get("user-agent"))) {
-      return undefined;
-    }
-    return {
-      key: request.url,
-      edgeTtl: sharedMaxAge,
-      toClientHeaders: (headers) => {
-        const cacheControl = withoutSharedDirectives(
-          headers.get("cache-control")
-        );
-        if (cacheControl) headers.set("cache-control", cacheControl);
-        else headers.delete("cache-control");
-      },
-    };
-  }
-  if (url.pathname === "/_next/image") {
-    return {
-      key: imageCacheKey(url, request.headers.get("accept")),
-      edgeTtl: (response) =>
-        isImage(response) ? IMAGE_EDGE_TTL_SECONDS : undefined,
-      toClientHeaders: (headers) => {
-        headers.set(
-          "cache-control",
-          `public, max-age=${IMAGE_BROWSER_TTL_SECONDS}`
-        );
-        headers.set("vary", "Accept");
-      },
-    };
-  }
-  return undefined;
+/**
+ * Caches successful `/_next/image` responses for `IMAGE_EDGE_TTL_SECONDS`, keyed by URL and the
+ * formats the browser accepts.
+ */
+export function withImageEdgeCache(
+  handler: FetchHandler,
+  cache: Cache,
+  waitUntil: WaitUntil
+): FetchHandler {
+  return applyEdgeCache(handler, cache, waitUntil, imageCachePolicy);
+}
+
+/**
+ * Wraps a Worker's fetch handler with the shared CDN cache Vercel gives the app: the API policy
+ * and the image policy. The API Worker uses `withApiEdgeCache` alone. Hits skip Next's middleware,
+ * so API requests the middleware would block always reach `handler` when this wrapper is what
+ * enforces the bot check.
+ */
+export function withEdgeCache(
+  handler: FetchHandler,
+  cache: Cache,
+  waitUntil: WaitUntil
+): FetchHandler {
+  return applyEdgeCache(
+    handler,
+    cache,
+    waitUntil,
+    (request) => apiCachePolicy(request) ?? imageCachePolicy(request)
+  );
 }
 
 /** The response's `s-maxage` in seconds, or undefined if it must not be shared. */
