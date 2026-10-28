@@ -2,9 +2,12 @@
 
 `osmosis-frontend-router` moves `app.osmosis.zone` from Vercel to Cloudflare Workers
 gradually. It sits on the `app.osmosis.zone/*` route and sends a sticky share of
-browsers to the `osmosis-frontend-production` Worker (built from `master-cf` with
-OpenNext) over a service binding; everyone else is passed through to Vercel. The URL
-never changes, and every response carries `x-osmosis-backend: cf|vercel`.
+browsers to Cloudflare over service bindings; everyone else is passed through to
+Vercel. Pages and assets go to `osmosis-frontend-production` (OpenNext, from
+`master-cf`). `/api/*` for that same share goes to `osmosis-frontend-api-production`.
+The URL never changes, and every response carries `x-osmosis-backend: cf|vercel`.
+API responses from the Cloudflare share also carry
+`x-osmosis-api-worker: osmosis-frontend-api-production`.
 
 ## Routing
 
@@ -28,6 +31,8 @@ the CPU limit) or answering 5xx, is served by Vercel instead, with
 `x-osmosis-fallback: cf-<status>` or `cf-error`. A bad deploy then shows up as slower
 pages and that header rather than error pages. Nothing else is retried across platforms:
 API calls stay where they were routed, so a failed swap or broadcast never runs twice.
+There is no separate API percentage. A Vercel page talking to the Cloudflare API (or
+the reverse) would mix tRPC builds.
 
 After a ramp change, a browser at the margin with an open tab asks the other platform
 for `/_next/data/<buildId>/...`, which has a different build ID and answers 404. Next
@@ -56,9 +61,13 @@ Deploying does not attach a route; that is a separate, deliberate step in Cloudf
 hostname (set it to `https://app.osmosis.zone` there). Leave it unset on the
 production route, where `fetch(request)` reaches the zone's origin (Vercel).
 
-Before the production Worker serves traffic through the router, the upstream
-exception for `sqsprod.osmosis.zone`, `rpc.app.osmosis.zone` and
-`lcd.app.osmosis.zone` must allow Worker requests from the `osmosis.zone` zone.
+Deploy `osmosis-frontend-api-production` before this router. The `API` binding
+fails closed until that Worker exists.
+
+Before either Worker serves traffic, the upstream exception for
+`sqsprod.osmosis.zone`, `rpc.app.osmosis.zone` and `lcd.app.osmosis.zone` must allow
+Worker requests from the `osmosis.zone` zone, including the new API Worker. From a
+developer machine those hosts answer `403` with `x-blocked-by: app-only`.
 
 ## Rollout
 

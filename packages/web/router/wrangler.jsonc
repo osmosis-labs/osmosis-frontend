@@ -10,6 +10,11 @@
       "binding": "PRODUCTION",
       "service": "osmosis-frontend-production",
     },
+    {
+      // Deploy osmosis-frontend-api-production before this router. Same sticky bucket as pages.
+      "binding": "API",
+      "service": "osmosis-frontend-api-production",
+    },
   ],
   "vars": {
     // Share of browsers routed to Cloudflare (0-100). This file is the source of truth: a deploy
