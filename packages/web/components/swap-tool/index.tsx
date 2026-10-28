@@ -138,6 +138,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       quoteType,
       feeError: swapState.networkFeeError,
       isReviewOpen: showSwapReviewModal,
+      // While typing or quoting, swapState.quote is the previous input's quote.
+      isQuoteSettled:
+        !swapState.isQuoteLoading &&
+        !(quoteType === "in-given-out"
+          ? swapState.outAmountInput.isTyping
+          : swapState.inAmountInput.isTyping),
     });
     const { resetForReview } = swapSlippage;
     const closeReview = useCallback(() => {
