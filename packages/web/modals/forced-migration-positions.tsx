@@ -38,7 +38,7 @@ import {
   getShareExitTokenOutMins,
   isWithdrawWithinTolerance,
 } from "~/utils/forced-migrations";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { ChainPositionResponse } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
@@ -46,12 +46,14 @@ import { api } from "~/utils/trpc";
 const getListedAsset = (denom: string) =>
   getAssetFromAssetList({ coinMinimalDenom: denom, assetLists: AssetLists });
 
-/** Display amount for a raw coin, formatted as elsewhere in the app;
+/** Display amount for a raw coin, formatted like the portfolio balances;
  *  unlisted denoms show the raw amount. */
 export function formatHoldingCoin(denom: string, amount: string): string {
   const asset = getListedAsset(denom);
   if (!asset) return `${amount} ${shorten(denom)}`;
-  return formatPretty(new CoinPretty(asset.currency, amount));
+  return formatPretty(new CoinPretty(asset.currency, amount), {
+    maxDecimals: 8,
+  });
 }
 
 /** Fiat value of raw coins, or undefined if any of them is unlisted or
@@ -217,7 +219,7 @@ const OrderAmount: FunctionComponent<{
   const { prices } = useBatchedPrices([denom]);
   const value = getCoinsFiatValue([{ denom, amount }], prices);
   if (!value) return <>{text}</>;
-  return <HoverValue value={text} content={value.toString()} />;
+  return <HoverValue value={text} content={formatFiatPrice(value)} />;
 };
 
 /** "Buy ATOM" / "Sell ATOM", as in the portfolio's open orders. */
@@ -416,7 +418,7 @@ const PoolSummary: FunctionComponent<{
         {amounts.length > 0 &&
           (value ? (
             <HoverValue
-              value={value.toString()}
+              value={formatFiatPrice(value)}
               content={
                 <div className="caption flex flex-col gap-1">
                   {amountLines}

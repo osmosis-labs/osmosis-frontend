@@ -27,7 +27,7 @@ import {
 import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
@@ -615,10 +615,10 @@ const AmountWithValue: React.FC<{
   amount: CoinPretty;
   fiatValue: PricePretty | undefined;
 }> = ({ amount, fiatValue }) => {
-  const text = formatPretty(amount);
+  const text = formatPretty(amount, { maxDecimals: 8 });
   if (!fiatValue) return <>{text}</>;
   return (
-    <Tooltip content={fiatValue.toString()} arrow>
+    <Tooltip content={formatFiatPrice(fiatValue)} arrow>
       <span className="cursor-help underline decoration-dotted underline-offset-4">
         {text}
       </span>
