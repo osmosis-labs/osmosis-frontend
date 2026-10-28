@@ -18,13 +18,20 @@ type Props = {
   quoteType: QuoteDirection;
   feeError?: Error | null;
   isReviewOpen?: boolean;
+  isQuoteSettled?: boolean;
 };
 
 /** Renders the swap tool's slippage stack (config + driver) the way the swap
  *  tool does, under StrictMode, which double-invokes effects in dev. */
 function render(initialProps: Props) {
   return renderHook(
-    ({ quote, quoteType, feeError, isReviewOpen = false }: Props) => {
+    ({
+      quote,
+      quoteType,
+      feeError,
+      isReviewOpen = false,
+      isQuoteSettled = true,
+    }: Props) => {
       const slippageConfig = useSwapSlippageConfig();
       const slippage = useSwapSlippage({
         slippageConfig,
@@ -32,6 +39,7 @@ function render(initialProps: Props) {
         quoteType,
         feeError,
         isReviewOpen,
+        isQuoteSettled,
       });
       return { slippageConfig, ...slippage };
     },
@@ -218,6 +226,78 @@ describe("useSwapSlippage", () => {
   });
 
   describe("while the review is open", () => {
+    it("holds the first quote for the current input, not the previous input's", () => {
+      // Typing a new amount and opening the review inside the input debounce:
+      // `quote` is still the previous amount's quote.
+      const { result, rerender } = render({
+        quote: quote("-0.001"),
+        quoteType: "out-given-in",
+      });
+      rerender({
+        quote: quote("-0.001"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: false,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.1");
+
+      // The new amount's quote lands: its tier applies and is held.
+      rerender({
+        quote: quote("-0.005"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(result.current.source).toBe("auto");
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+
+      rerender({
+        quote: quote("-0.2", "100"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+    });
+
+    it("does not hold the default when the current input settles with no quote", () => {
+      // The router drops a zero-amount quote but still reports success.
+      const { result, rerender } = render({
+        quote: quote("-0.001"),
+        quoteType: "out-given-in",
+      });
+      rerender({
+        quote: quote("-0.001"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: false,
+      });
+      rerender({
+        quote: undefined,
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.1");
+
+      // A refresh for the same input returns a quote: its tier applies and is held.
+      rerender({
+        quote: quote("-0.005"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+
+      rerender({
+        quote: quote("-0.2", "100"),
+        quoteType: "out-given-in",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+    });
+
     it("holds the auto tier when a quote refresh crosses a tier boundary", () => {
       // A widening alone would not trip the quote-drift banner, which compares
       // against the tolerance itself.
