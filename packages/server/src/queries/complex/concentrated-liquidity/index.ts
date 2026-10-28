@@ -14,7 +14,6 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  calcCoinValue,
   calcSumCoinsValueOrUnknown,
   getAsset,
   mapRawCoinToPretty,
@@ -39,7 +38,6 @@ import {
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";
@@ -767,19 +765,11 @@ export async function getPositionHistoricalPerformance({
 
   const [
     currentValue,
-    currentCoinsValues,
     principalValue,
     claimableRewardsValue,
     totalEarnedValue,
   ] = await Promise.all([
     sumValue(currentCoins),
-    Promise.all(
-      currentCoins
-        .map((coin) => calcCoinValue({ ...params, coin }))
-        .map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
-    ).then((values) =>
-      values.map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p))
-    ),
     sumValue(principalCoins),
     sumValue(claimableRewardCoins),
     sumValue(totalRewardCoins),
@@ -804,7 +794,6 @@ export async function getPositionHistoricalPerformance({
 
   return {
     currentCoins,
-    currentCoinsValues,
     currentValue,
     principalCoins,
     principalValue,
