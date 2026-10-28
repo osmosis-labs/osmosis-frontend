@@ -1,8 +1,11 @@
 import { Asset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 
+import { AssetLists as assetLists } from "../../../../__tests__/mock-asset-lists";
+import { MockChains as chainList } from "../../../../__tests__/mock-chains";
 import { querySimplePrice } from "../../../../coingecko";
 import { queryPrices, QUOTE_COIN_MINIMAL_DENOM } from "../../../../sidecar";
+import { getAssetPrice } from "..";
 import { getCoingeckoPrice } from "../providers/coingecko";
 import { getPriceFromSidecar } from "../providers/sidecar";
 
@@ -85,5 +88,24 @@ describe("getCoingeckoPrice", () => {
     expect((missing as PromiseRejectedResult).reason.message).toBe(
       "No CoinGecko price result for missing and usd"
     );
+  });
+});
+
+describe("getAssetPrice", () => {
+  it("keeps a failed price briefly instead of re-querying on every call", async () => {
+    const priceProvider = jest
+      .fn()
+      .mockRejectedValue(new Error("No SQS price result for uion and USDC"));
+    const params = {
+      assetLists,
+      chainList,
+      asset: { coinMinimalDenom: "uion" },
+      priceProvider,
+    };
+
+    await expect(getAssetPrice(params)).rejects.toThrow("No SQS price result");
+    await expect(getAssetPrice(params)).rejects.toThrow("No SQS price result");
+
+    expect(priceProvider).toHaveBeenCalledTimes(1);
   });
 });
