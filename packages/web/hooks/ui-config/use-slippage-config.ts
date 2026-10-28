@@ -19,6 +19,9 @@ export type SlippageConfig = {
   readonly manualSlippageStr: string;
   readonly defaultManualSlippage: string;
   readonly isManualSlippage: boolean;
+  /** True while the slippage is a value the user typed rather than one the
+   *  app chose. */
+  readonly userOverrodeSlippage: boolean;
   readonly manualSlippageError: Error | undefined;
   readonly selectableSlippages: {
     slippage: RatePretty;
@@ -29,6 +32,8 @@ export type SlippageConfig = {
   setIsManualSlippage: (value: boolean) => void;
   setManualSlippage: (str: string) => void;
   setDefaultSlippage: (value: string) => void;
+  markUserOverride: () => void;
+  clearUserOverride: () => void;
   getSmallestSlippage: (value: Dec) => [number, Dec];
 };
 
@@ -61,6 +66,14 @@ export function useSlippageConfig({
     (value: string) => dispatch({ type: "setDefaultSlippage", value }),
     []
   );
+  const markUserOverride = useCallback(
+    () => dispatch({ type: "setUserOverride", value: true }),
+    []
+  );
+  const clearUserOverride = useCallback(
+    () => dispatch({ type: "setUserOverride", value: false }),
+    []
+  );
 
   useEffect(() => {
     setDefaultSlippage(defaultSlippage);
@@ -74,6 +87,7 @@ export function useSlippageConfig({
       manualSlippageStr: state.manualSlippage,
       defaultManualSlippage: state.defaultManualSlippage,
       isManualSlippage: state.isManualSlippage,
+      userOverrodeSlippage: state.userOverrodeSlippage,
       manualSlippageError: getManualSlippageError(state),
       selectableSlippages: DefaultSelectableSlippages.map((_, i) => ({
         slippage: getSlippage({
@@ -88,8 +102,18 @@ export function useSlippageConfig({
       setIsManualSlippage,
       setManualSlippage,
       setDefaultSlippage,
+      markUserOverride,
+      clearUserOverride,
       getSmallestSlippage: (value: Dec) => getSmallestSlippage(value),
     }),
-    [state, select, setIsManualSlippage, setManualSlippage, setDefaultSlippage]
+    [
+      state,
+      select,
+      setIsManualSlippage,
+      setManualSlippage,
+      setDefaultSlippage,
+      markUserOverride,
+      clearUserOverride,
+    ]
   );
 }

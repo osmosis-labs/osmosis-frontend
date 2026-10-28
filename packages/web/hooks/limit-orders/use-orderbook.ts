@@ -278,6 +278,7 @@ const useOrdersQuery = ({
   const {
     data: sqsOrders,
     isLoading: isSQSOrdersLoading,
+    isError: isSQSOrdersError,
     fetchNextPage: fetchSQSOrdersNextPage,
     isFetching: isSQSOrdersFetching,
     isFetchingNextPage: isSQSOrdersFetchingNextPage,
@@ -310,6 +311,7 @@ const useOrdersQuery = ({
   const {
     data: nodeOrders,
     isLoading: isNodeOrdersLoading,
+    isError: isNodeOrdersError,
     fetchNextPage: fetchNodeOrdersNextPage,
     isFetching: isNodeOrdersFetching,
     isFetchingNextPage: isNodeOrdersFetchingNextPage,
@@ -341,6 +343,7 @@ const useOrdersQuery = ({
   return {
     data: sqsActiveOrders ? sqsOrders : nodeOrders,
     isLoading: sqsActiveOrders ? isSQSOrdersLoading : isNodeOrdersLoading,
+    isError: sqsActiveOrders ? isSQSOrdersError : isNodeOrdersError,
     fetchNextPage: sqsActiveOrders
       ? fetchSQSOrdersNextPage
       : fetchNodeOrdersNextPage,
@@ -370,6 +373,7 @@ export const useOrderbookOrders = ({
   const {
     data: orders,
     isLoading,
+    isError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -390,6 +394,8 @@ export const useOrderbookOrders = ({
   return {
     orders: allOrders,
     isLoading,
+    /** True when the orders couldn't be loaded, so an empty list is unknown, not "no orders". */
+    isError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,

@@ -58,6 +58,8 @@ export interface ExistingPoolSummary {
   totalFiatValueLocked: Pool["totalFiatValueLocked"];
   /** Raw TVL number for sorting. */
   tvlNumber: number;
+  /** A reserve has no price, so the TVL is unknown rather than the partial sum. */
+  tvlUnknown: boolean;
   /** "/pool/{id}". */
   detailUrl: string;
   /** Decimal string for swap fee / spread factor (raw chain repr). */
@@ -233,6 +235,7 @@ function summarize(pool: Pool): ExistingPoolSummary {
     symbols,
     totalFiatValueLocked: pool.totalFiatValueLocked,
     tvlNumber: Number(pool.totalFiatValueLocked.toDec().toString()),
+    tvlUnknown: Boolean(pool.tvlUnknown),
     detailUrl: `/pool/${pool.id}`,
     feeRaw: poolFeeDec(pool),
   };

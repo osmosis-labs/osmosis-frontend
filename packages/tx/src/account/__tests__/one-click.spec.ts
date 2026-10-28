@@ -3,6 +3,7 @@ import { makeSignBytes, makeSignDoc, Registry } from "@cosmjs/proto-signing";
 import { Hash } from "@keplr-wallet/crypto/build/hash";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
+import { PubKey } from "cosmjs-types/cosmos/crypto/secp256k1/keys";
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import type { SessionSignRequest } from "../client";
@@ -96,6 +97,34 @@ it("honors fee-limit continuation, cancellation and absent UI handlers", async (
   ).rejects.toThrow("User cancelled");
 });
 
+const registry = new Registry([[typeUrl, MsgSend]]);
+const accountPubKey = {
+  typeUrl: "/cosmos.crypto.secp256k1.PubKey",
+  key: toBase64(key.getPubKey().toBytes()),
+};
+const request = {
+  wallet: {
+    address: info.userOsmoAddress,
+    chain: { chain_id: "osmosis-1" },
+    // A WalletConnect wallet would wait on the phone here.
+    offlineSigner: {
+      getAccounts: () => {
+        throw new Error("wallet was asked for the account");
+      },
+    },
+  },
+  signerAddress: info.userOsmoAddress,
+  messages,
+  fee: { amount: [], gas: "200000" },
+  memo: "memo",
+  signerData: {
+    accountNumber: "18446744073709551615",
+    sequence: 7,
+    chainId: "osmosis-1",
+  },
+  accountPubKey,
+} as unknown as SessionSignRequest;
+
 it.each([1, 31, 32])(
   "signs with a persisted %s-byte session key and exact uint64 account number",
   async (length) => {
@@ -108,31 +137,6 @@ it.each([1, 31, 32])(
       sessionKey: toBase64(bytes),
       publicKey: toBase64(sessionKey.getPubKey().toBytes()),
     };
-    const registry = new Registry([[typeUrl, MsgSend]]);
-    const request = {
-      wallet: {
-        address: info.userOsmoAddress,
-        chain: { chain_id: "osmosis-1" },
-        offlineSigner: {
-          getAccounts: async () => [
-            {
-              address: info.userOsmoAddress,
-              pubkey: key.getPubKey().toBytes(),
-              algo: "secp256k1",
-            },
-          ],
-        },
-      },
-      signerAddress: info.userOsmoAddress,
-      messages,
-      fee: { amount: [], gas: "200000" },
-      memo: "memo",
-      signerData: {
-        accountNumber: "18446744073709551615",
-        sequence: 7,
-        chainId: "osmosis-1",
-      },
-    } as unknown as SessionSignRequest;
     const tx = await signOneClick(request, {
       chains: [],
       registry,
@@ -144,8 +148,11 @@ it.each([1, 31, 32])(
     expect(body.nonCriticalExtensionOptions).toEqual(
       await getOneClickExtensionOptions({ oneClickTradingInfo: info })
     );
-    expect(AuthInfo.decode(tx.authInfoBytes).signerInfos[0].sequence).toBe(
-      BigInt(7)
+    const [signerInfo] = AuthInfo.decode(tx.authInfoBytes).signerInfos;
+    expect(signerInfo.sequence).toBe(BigInt(7));
+    expect(signerInfo.publicKey?.typeUrl).toBe(accountPubKey.typeUrl);
+    expect(PubKey.decode(signerInfo.publicKey!.value).key).toEqual(
+      key.getPubKey().toBytes()
     );
     const doc = makeSignDoc(
       tx.bodyBytes,
@@ -172,3 +179,24 @@ it.each([1, 31, 32])(
     ).rejects.toThrow("not valid");
   }
 );
+
+it("refuses to sign without a matching onchain account pubkey", async () => {
+  for (const [change, error] of [
+    [{ accountPubKey: undefined }, "not available onchain"],
+    [
+      { accountPubKey: { ...accountPubKey, typeUrl: "/other.PubKey" } },
+      "Unsupported account public key type",
+    ],
+  ] as const)
+    await expect(
+      signOneClick(
+        { ...request, ...change },
+        {
+          chains: [],
+          registry,
+          oneClickTradingInfo: info,
+          osmosisChainId: "osmosis-1",
+        }
+      )
+    ).rejects.toThrow(error);
+});

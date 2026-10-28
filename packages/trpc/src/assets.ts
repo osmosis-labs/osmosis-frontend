@@ -22,9 +22,11 @@ import {
   getUpcomingAssets,
   getUserAssetsTotal,
   IS_TESTNET,
+  isMarketDataAvailable,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
+  sortAssetSearchResults,
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
@@ -36,6 +38,7 @@ import {
   isNil,
   sort,
 } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -43,6 +46,11 @@ import { UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
   CursorPaginationSchema.merge(AssetFilterSchema);
+
+/** Symbols (`coinDenom`) the user has watchlisted; ranks them up in search results. */
+const WatchListDenomsSchema = z.object({
+  watchListDenoms: z.array(z.string()).optional(),
+});
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -69,12 +77,14 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          // Optional poolId to filter assets by pool
-          poolId: z.string().optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            // Optional poolId to filter assets by pool
+            poolId: z.string().optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       async ({
@@ -87,12 +97,13 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
           categories,
           poolId,
+          watchListDenoms,
         },
         ctx,
       }) =>
         maybeCachePaginatedItems({
-          getFreshItems: () =>
-            mapGetAssetsWithUserBalances({
+          getFreshItems: async () => {
+            const assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -101,7 +112,12 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
               categories,
               poolId,
-            }),
+            });
+
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
+              : assets;
+          },
           cacheKey: JSON.stringify({
             search,
             userOsmoAddress,
@@ -109,6 +125,8 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             categories,
             poolId,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,
@@ -321,6 +339,15 @@ export const assetsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
+            // Without market data the list would come back empty; report an outage with
+            // its own code so the client can tell it apart from other errors.
+            if (!(await isMarketDataAvailable())) {
+              throw new TRPCError({
+                code: "SERVICE_UNAVAILABLE",
+                message: "Market data is unavailable",
+              });
+            }
+
             const assets = await mapGetMarketAssets({
               ...ctx,
               search,
@@ -339,6 +366,11 @@ export const assetsRouter = createTRPCRouter({
               // user sorting
 
               return sort(assets, sortInput.keyPath, sortInput.direction);
+            } else if (search) {
+              return sortAssetSearchResults(assets, {
+                search,
+                watchListDenoms,
+              });
             } else {
               // default sorting, maybe with watchlist
 
@@ -415,15 +447,17 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          sort: createSortSchema([
-            "currentPrice",
-            "priceChange24h",
-            "usdValue",
-          ] as const).optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            sort: createSortSchema([
+              "currentPrice",
+              "priceChange24h",
+              "usdValue",
+            ] as const).optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -436,6 +470,7 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
           includePreview,
+          watchListDenoms,
         },
         ctx,
       }) => {
@@ -461,9 +496,11 @@ export const assetsRouter = createTRPCRouter({
                 getAssetPrice({ ...ctx, asset })
                   .then((price) => new PricePretty(DEFAULT_VS_CURRENCY, price))
                   .catch((e) => captureErrorAndReturn(e, undefined)),
-                getAssetMarketActivity(asset).then(
-                  (activity) => activity?.price24hChange
-                ),
+                // Unavailable market data leaves the change unknown instead of
+                // failing the user's balances.
+                getAssetMarketActivity(asset)
+                  .then((activity) => activity?.price24hChange)
+                  .catch((e) => captureErrorAndReturn(e, undefined)),
               ]);
 
               return getBridgeAsset(ctx.assetLists, {
@@ -481,6 +518,8 @@ export const assetsRouter = createTRPCRouter({
           sort: sortInput,
           categories,
           includePreview,
+          // only affects ordering while searching without a column sort
+          watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
         });
 
         // Sorting by a price field needs every row priced first.
@@ -507,8 +546,10 @@ export const assetsRouter = createTRPCRouter({
         return maybeCachePaginatedItems({
           getFreshItems: async () => {
             const assets = await getUserAssets();
-            return sortInput
-              ? sort(assets, sortInput.keyPath, sortInput.direction)
+            if (sortInput)
+              return sort(assets, sortInput.keyPath, sortInput.direction);
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
               : assets;
           },
           cacheKey,
@@ -542,19 +583,24 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(({ input: { coinMinimalDenom, timeFrame, realtime } }) => {
+      // An empty chart lets the asset page fall back to CoinGecko history. Realtime
+      // callers (the TradingView feed) get the error instead, so it isn't shown as "no data".
+      const onError = (e: Error) =>
+        realtime ? Promise.reject(e) : captureErrorAndReturn(e, []);
+
       if (typeof timeFrame === "string") {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       } else {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame: timeFrame.custom.timeFrame as TimeFrame,
           numRecentFrames: timeFrame.custom.numRecentFrames,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       }
     }),
   /**
@@ -647,7 +693,13 @@ export const assetsRouter = createTRPCRouter({
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
         }).catch((e) =>
-          captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
+          // Same shape as an empty result: 0/0 would read as a real price range
+          // and seed the add-liquidity "moderate" range with it.
+          captureErrorAndReturn(e, {
+            prices: [],
+            min: Infinity,
+            max: -Infinity,
+          })
         )
     ),
   getTopNewAssets: publicProcedure
@@ -794,6 +846,7 @@ export const assetsRouter = createTRPCRouter({
             type: z.union([z.literal("deposit"), z.literal("withdraw")]),
           })
         )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -807,6 +860,7 @@ export const assetsRouter = createTRPCRouter({
           prioritizedDenoms,
           deprioritizedDenoms,
           type,
+          watchListDenoms,
         },
         ctx,
       }) =>
@@ -858,17 +912,21 @@ export const assetsRouter = createTRPCRouter({
                   .then((marketAsset) => ({
                     ...asset,
                     volume24h: marketAsset ? marketAsset.volume24h : 0,
-                    liquidity: marketAsset ? marketAsset.liquidity : 0,
+                    liquidity: marketAsset?.liquidity ?? 0,
                   }))
               )
             );
 
-            // avoid sorting while searching
+            // rank search results the same way as other asset searches
             if (search)
-              return marketAssets.filter(({ liquidity, isVerified }) =>
-                liquidity instanceof PricePretty
-                  ? liquidity.toDec().isPositive()
-                  : liquidity > 0 || isVerified
+              return sortAssetSearchResults(
+                marketAssets.filter(
+                  ({ liquidity, isVerified }) =>
+                    (liquidity instanceof PricePretty
+                      ? liquidity.toDec().isPositive()
+                      : liquidity > 0) || isVerified
+                ),
+                { search, watchListDenoms }
               );
 
             // Sort by volume 24h desc
@@ -922,6 +980,8 @@ export const assetsRouter = createTRPCRouter({
             prioritizedDenoms,
             deprioritizedDenoms,
             type,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,

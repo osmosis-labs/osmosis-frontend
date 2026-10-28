@@ -18,7 +18,7 @@ import {
 } from "../staking/user";
 import {
   AssetFilter,
-  calcSumCoinsValue,
+  calcSumCoinsValueOrUnknown,
   getAsset,
   getAssetMarketActivity,
   getAssets,
@@ -81,9 +81,11 @@ export async function mapGetAssetsWithUserBalances<
 
   assets = await Promise.all(
     assets.map(async (asset) => {
+      // Liquidity is optional here, so unavailable market data must not fail the
+      // whole query (swap token selector, balances, bridge assets).
       const marketActivity = await getAssetMarketActivity({
         coinMinimalDenom: asset.coinMinimalDenom,
-      });
+      }).catch(() => undefined);
 
       return {
         ...asset,
@@ -168,12 +170,13 @@ export async function mapGetAssetsWithUserBalances<
 }
 
 /** Returns total fiat value of all assets held by a user.
- *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
+ *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.
+ *  `value` is `undefined` (unknown) when a coin that should have a price can't be priced. */
 export async function getUserAssetsTotal(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   userOsmoAddress: string;
-}): Promise<{ value: PricePretty; coins: CoinPretty[] }> {
+}): Promise<{ value: PricePretty | undefined; coins: CoinPretty[] }> {
   // Use Promise.all to send concurrent requests.
   const coins = await Promise.all([
     getUserCoinsFromBank(params),
@@ -198,13 +201,15 @@ export async function getUserAssetsTotal(params: {
     undelegatingCoin,
   ];
 
-  const aggregatedValue = await calcSumCoinsValue({
+  const aggregatedValue = await calcSumCoinsValueOrUnknown({
     ...params,
     coins: allCoins,
   });
 
   return {
-    value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
+    value: aggregatedValue
+      ? new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue)
+      : undefined,
     coins: allCoins,
   };
 }

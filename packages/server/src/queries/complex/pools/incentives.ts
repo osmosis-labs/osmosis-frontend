@@ -9,7 +9,10 @@ import { z } from "zod";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import {
+  DATA_SERVICES_APR_MAX_AGE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils/cache";
 import {
   type PoolDataRange,
   queryPoolAprsRange,
@@ -71,6 +74,7 @@ export function getCachedPoolIncentivesMap(): Promise<
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - 1000 * 30,
     getFreshValue: async () => {
       const aprs = await queryPoolAprsRange();
 
@@ -180,6 +184,7 @@ export function getConcentratedRangePoolApr({
     cache: aprCache,
     key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
     ttl: 30 * 1000, // 30 seconds
+    staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - 30 * 1000,
     getFreshValue: async () => {
       const { APR } = await queryPriceRangeApr({
         lowerTickIndex: lowerTick,
@@ -187,7 +192,8 @@ export function getConcentratedRangePoolApr({
         poolId: poolId,
       });
       const apr = APR / 100;
-      if (isNaN(apr)) return;
+      // Throw rather than cache an unknown APR, so a bad response keeps the last good one.
+      if (isNaN(apr)) throw new Error(`Invalid range APR for pool ${poolId}`);
       return new RatePretty(apr);
     },
   });

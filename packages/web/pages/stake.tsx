@@ -281,9 +281,10 @@ export const Staking: React.FC = memo(() => {
   ]);
 
   // one decimal place, truncated so the banner never overstates the APR
-  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR.toString(
-    1
-  )}% ${t("stake.alertTitleEnd")}`;
+  // Without an APR the banner falls back to the generic "Earn".
+  const alertTitle = stakingAPR
+    ? `${t("stake.alertTitleBeginning")} ${stakingAPR.toString(1)}% ${t("stake.alertTitleEnd")}`
+    : t("stake.alertTitleBeginning");
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 

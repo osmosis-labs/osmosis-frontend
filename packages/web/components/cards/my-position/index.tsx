@@ -141,15 +141,19 @@ export const MyPositionCard: FunctionComponent<{
           )}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
-            value={formatPretty(currentValue)}
+            value={currentValue ? formatPretty(currentValue) : "–"}
           />
           <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
             {!hasPositionDetailsError && (
               <PositionDataGroup
                 label={t("pool.APR")}
-                value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
-                  maxDecimals: 1,
-                })}
+                value={
+                  positionDetails?.rangeApr
+                    ? formatPretty(positionDetails.rangeApr, {
+                        maxDecimals: 1,
+                      })
+                    : "–"
+                }
                 isSuperfluid={
                   Boolean(positionDetails?.superfluidData) &&
                   positionDetails?.status !== "outOfRange"

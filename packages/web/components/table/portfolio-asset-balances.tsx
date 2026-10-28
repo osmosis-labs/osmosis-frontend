@@ -136,6 +136,8 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       userOsmoAddress: address,
       limit: 50,
       search: searchQuery,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: searchQuery ? watchListDenoms : undefined,
       onlyVerified: !searchQuery && showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
       sort,
@@ -167,6 +169,8 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   );
 
   const filteredAssetsData = useMemo(() => {
+    // search results are already ranked (watchlist included) by the server
+    if (searchQuery) return dustFilteredAssetsData;
     return dustFilteredAssetsData.sort((a, b) => {
       const aIsFavorite = watchListDenoms.includes(a.coinDenom);
       const bIsFavorite = watchListDenoms.includes(b.coinDenom);
@@ -174,7 +178,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       if (!aIsFavorite && bIsFavorite) return 1;
       return 0;
     });
-  }, [dustFilteredAssetsData, watchListDenoms]);
+  }, [dustFilteredAssetsData, watchListDenoms, searchQuery]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 

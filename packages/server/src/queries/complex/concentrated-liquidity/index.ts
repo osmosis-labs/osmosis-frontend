@@ -15,7 +15,7 @@ import { LRUCache } from "lru-cache";
 
 import {
   calcCoinValue,
-  calcSumCoinsValue,
+  calcSumCoinsValueOrUnknown,
   getAsset,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
@@ -317,9 +317,12 @@ export async function mapGetUserPositionDetails({
           `Error finding assets for position ${position.position_id}`
         );
       }
-      const currentValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
+      // undefined (unknown) when a coin that should have a price can't be priced
+      const currentValue = await calcSumCoinsValueOrUnknown({
+        ...params,
+        coins: [baseCoin, quoteCoin],
+      }).then((value) =>
+        value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
 
       const lowerTick = new Int(position.lower_tick);
@@ -338,19 +341,18 @@ export async function mapGetUserPositionDetails({
       ]);
 
       // the APR range query involves a lot of calculation and can timeout the gateway
-      // instead, let's timeout the query and return undefined if it takes too long
-      const rangeApr = await timeout(
+      // instead, let's timeout the query and return undefined if it takes too long.
+      // Undefined means unknown, so it isn't shown as 0%.
+      const rangeApr: RatePretty | undefined = await timeout(
         () =>
           getConcentratedRangePoolApr({
             lowerTick: lowerTick.toString(),
             upperTick: upperTick.toString(),
             poolId: position.pool_id,
-          })
-            .then((rate) => rate ?? new RatePretty(0))
-            .catch(() => new RatePretty(0)),
+          }),
         4_000, // 4 seconds
         "getConcentratedRangePoolApr"
-      )().catch(() => new RatePretty(0));
+      )().catch(() => undefined);
 
       const pool = pools.items.find((pool) => pool.id === position.pool_id);
       if (!pool) {
@@ -488,7 +490,7 @@ export async function mapGetUserPositionDetails({
       }
 
       const totalRangeApr =
-        isSuperfluidStaked || isSuperfluidUnstaking
+        rangeApr && (isSuperfluidStaked || isSuperfluidUnstaking)
           ? rangeApr.add(superfluidApr ?? new Dec(0))
           : rangeApr;
 
@@ -611,9 +613,12 @@ export async function mapGetUserPositions({
           `Error finding assets for position ${position.position_id}`
         );
       }
-      const currentValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
+      // undefined (unknown) when a coin that should have a price can't be priced
+      const currentValue = await calcSumCoinsValueOrUnknown({
+        ...params,
+        coins: [baseCoin, quoteCoin],
+      }).then((value) =>
+        value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
 
       const lowerTick = new Int(position.lower_tick);
@@ -752,7 +757,13 @@ export async function getPositionHistoricalPerformance({
     ...totalSpreadRewardCoins,
   ]);
 
-  // calculate fiat values
+  // calculate fiat values; each is undefined (unknown) when a coin that should
+  // have a price can't be priced
+
+  const sumValue = (coins: CoinPretty[]) =>
+    calcSumCoinsValueOrUnknown({ ...params, coins }).then((value) =>
+      value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
+    );
 
   const [
     currentValue,
@@ -761,9 +772,7 @@ export async function getPositionHistoricalPerformance({
     claimableRewardsValue,
     totalEarnedValue,
   ] = await Promise.all([
-    calcSumCoinsValue({ ...params, coins: currentCoins })
-      .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value))
-      .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))),
+    sumValue(currentCoins),
     Promise.all(
       currentCoins
         .map((coin) => calcCoinValue({ ...params, coin }))
@@ -771,30 +780,27 @@ export async function getPositionHistoricalPerformance({
     ).then((values) =>
       values.map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p))
     ),
-    calcSumCoinsValue({ ...params, coins: principalCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
-    calcSumCoinsValue({ ...params, coins: claimableRewardCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
-    calcSumCoinsValue({ ...params, coins: totalRewardCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
+    sumValue(principalCoins),
+    sumValue(claimableRewardCoins),
+    sumValue(totalRewardCoins),
   ]);
 
-  const principalValueDec = principalValue.toDec();
-
-  const roi = new RatePretty(
-    currentValue
-      .toDec()
-      .add(claimableRewardsValue.toDec())
-      .add(totalEarnedValue.toDec())
-      .sub(principalValueDec)
-      .quo(
-        // Principal can be 0 if the position is not found
-        principalValueDec.equals(new Dec(0)) ? new Dec(1) : principalValueDec
-      )
-  );
+  const roi =
+    currentValue && principalValue && claimableRewardsValue && totalEarnedValue
+      ? new RatePretty(
+          currentValue
+            .toDec()
+            .add(claimableRewardsValue.toDec())
+            .add(totalEarnedValue.toDec())
+            .sub(principalValue.toDec())
+            .quo(
+              // Principal can be 0 if the position is not found
+              principalValue.toDec().equals(new Dec(0))
+                ? new Dec(1)
+                : principalValue.toDec()
+            )
+        )
+      : undefined;
 
   return {
     currentCoins,

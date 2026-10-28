@@ -1,7 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
 import { DEFAULT_VS_CURRENCY, MaybeUserAssetCoin } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
@@ -48,6 +48,42 @@ function sortByAmount(
   )
     ? -1
     : 1;
+}
+
+/**
+ * Joins bank balances onto the quote allowlist for the tab. Iterates the
+ * allowlist, not the balances, so quotes the user holds none of stay listed
+ * (the Buy tab always offers the defaults; the Sell tab offers every quote).
+ */
+export function getUserQuotes(
+  balances: { denom: string; coin?: CoinPretty }[],
+  tab: string | null
+): AssetWithBalance[] {
+  return (tab === "sell" ? SELL_QUOTES : VALID_QUOTES)
+    .map((coinMinimalDenom) => {
+      const asset = getAssetFromAssetList({
+        assetLists: AssetLists,
+        coinMinimalDenom,
+      })?.rawAsset;
+      // In the future, we might want to pass every coin instead of just stables.
+      if (!asset?.categories.includes("stablecoin")) return undefined;
+
+      const returnAsset: AssetWithBalance = {
+        ...asset,
+        amount: balances.find(({ denom }) => denom === coinMinimalDenom)?.coin,
+      };
+      return returnAsset;
+    })
+    .filter(Boolean)
+    .toSorted(sortByAmount)
+    .toSorted((a, b) => {
+      const ai = UI_DEFAULT_QUOTES.indexOf(a!.coinMinimalDenom);
+      const bi = UI_DEFAULT_QUOTES.indexOf(b!.coinMinimalDenom);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    }) as AssetWithBalance[];
 }
 
 interface PriceSelectorProps {
@@ -150,47 +186,16 @@ export const PriceSelector = memo(
       []
     );
 
-    const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
-      { userOsmoAddress: address },
-      {
-        enabled: !!address,
-        select: (data) =>
-          data.items
-            .map((walletAsset) => {
-              if (
-                !(tab === "sell" ? SELL_QUOTES : VALID_QUOTES).includes(
-                  walletAsset.coinMinimalDenom
-                )
-              ) {
-                return undefined;
-              }
+    // Bank balances rather than the unpaginated `assets.getUserAssets`, which
+    // maps every asset listing and times out, leaving the dropdown empty.
+    const { data: balances } = api.local.balances.getUserBalances.useQuery(
+      { bech32Address: address ?? "" },
+      { enabled: !!address }
+    );
 
-              const asset = getAssetFromAssetList({
-                assetLists: AssetLists,
-                coinMinimalDenom: walletAsset.coinMinimalDenom,
-              });
-
-              // Extrapolate the rawAsset and return the amount and usdValue
-              const returnAsset: AssetWithBalance = {
-                ...asset!.rawAsset,
-                amount: walletAsset.amount,
-              };
-              // In the future, we might want to pass every coin instead of just stables.
-              return asset?.rawAsset.categories.includes("stablecoin")
-                ? returnAsset
-                : undefined;
-            })
-            .filter(Boolean)
-            .toSorted(sortByAmount)
-            .toSorted((a, b) => {
-              const ai = UI_DEFAULT_QUOTES.indexOf(a!.coinMinimalDenom);
-              const bi = UI_DEFAULT_QUOTES.indexOf(b!.coinMinimalDenom);
-              if (ai === -1 && bi === -1) return 0;
-              if (ai === -1) return 1;
-              if (bi === -1) return -1;
-              return ai - bi;
-            }) as AssetWithBalance[],
-      }
+    const userQuotes = useMemo(
+      () => balances && getUserQuotes(balances, tab),
+      [balances, tab]
     );
 
     const userQuotesWithoutBalances = useMemo(
@@ -463,34 +468,43 @@ function HighestBalanceAssetsIcons({
 }: {
   userOsmoAddress: string;
 }) {
-  const { data: userSortedAssets } = api.edge.assets.getUserAssets.useQuery(
-    { userOsmoAddress },
-    {
-      select: ({ items }) => {
-        return items.sort(sortByAmount).slice(0, 5).reverse();
-      },
-    }
-  );
+  const { data: userSortedAssets } =
+    api.local.balances.getUserBalances.useQuery(
+      { bech32Address: userOsmoAddress },
+      {
+        select: (balances) =>
+          balances
+            .flatMap(({ denom, coin }) => {
+              const asset = getAssetFromAssetList({
+                assetLists: AssetLists,
+                coinMinimalDenom: denom,
+              })?.rawAsset;
+              return asset && coin ? [{ ...asset, amount: coin }] : [];
+            })
+            .sort(sortByAmount)
+            .slice(0, 5)
+            .reverse(),
+      }
+    );
 
   return (
     <div className="relative flex h-6 w-[88px] items-center">
-      {userSortedAssets?.map(({ coinImageUrl, coinName }, i) => (
-        <EntityImage
-          key={coinImageUrl}
-          width={24}
-          height={24}
-          logoURIs={{
-            png: coinImageUrl,
-            svg: coinImageUrl,
-          }}
-          name={coinName}
-          symbol={coinName}
-          className="absolute rounded-full"
-          style={{
-            right: i * 16,
-          }}
-        />
-      ))}
+      {userSortedAssets?.map(
+        ({ coinMinimalDenom, logoURIs, name, symbol }, i) => (
+          <EntityImage
+            key={coinMinimalDenom}
+            width={24}
+            height={24}
+            logoURIs={logoURIs}
+            name={name}
+            symbol={symbol}
+            className="absolute rounded-full"
+            style={{
+              right: i * 16,
+            }}
+          />
+        )
+      )}
     </div>
   );
 }

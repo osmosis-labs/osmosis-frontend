@@ -189,27 +189,19 @@ const ChartHeader: FunctionComponent = () => {
       }
     );
 
-  const hoverData = useMemo(() => {
-    let data = new Dec(0);
+  // Undefined when market data has no current value, so it isn't shown as $0. The last
+  // chart close isn't used in its place: chart history can be served stale during a
+  // data-services outage, and a last-known price is misleading as the current one.
+  const hoverData = useMemo((): Dec | undefined => {
     const decHoverPrice = hoveredPrice?.toDec();
+    if (decHoverPrice) return decHoverPrice;
 
-    if (decHoverPrice) {
-      data = decHoverPrice;
-    } else {
-      if (assetInfoConfig.dataType === "price") {
-        data =
-          marketAsset?.currentPrice?.toDec() ??
-          new Dec(assetInfoConfig.lastChartData?.close ?? 0);
-      } else {
-        data = marketAsset?.volume24h?.toDec() ?? new Dec(0);
-      }
-    }
-
-    return data;
+    return assetInfoConfig.dataType === "price"
+      ? marketAsset?.currentPrice?.toDec()
+      : marketAsset?.volume24h?.toDec();
   }, [
     hoveredPrice,
     assetInfoConfig.dataType,
-    assetInfoConfig.lastChartData?.close,
     marketAsset?.currentPrice,
     marketAsset?.volume24h,
   ]);

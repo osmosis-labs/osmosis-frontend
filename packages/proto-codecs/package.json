@@ -32,7 +32,7 @@
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
     "generate:packages": "tsx scripts/gen-package-types.ts",
-    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
+    "generate:telescope": "tsc scripts/codegen.ts --ignoreConfig --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
   },
   "lint-staged": {
     "*": [
@@ -51,7 +51,7 @@
     "rimraf": "^5.0.0",
     "ts-jest": "^29.4.14",
     "tsx": "^4.22.4",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "dependencies": {
     "@cosmjs/amino": "0.36.2",

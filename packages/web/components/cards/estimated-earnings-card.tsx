@@ -27,7 +27,8 @@ const PriceCaption: FunctionComponent<{
 
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
-  stakingAPR: Dec;
+  /** Undefined when the APR is unavailable: earnings show as unknown, not zero. */
+  stakingAPR: Dec | undefined;
 }> = ({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
 
@@ -35,9 +36,9 @@ export const EstimatedEarningCard: FunctionComponent<{
 
   // stakeAmount is already a CoinPretty in OSMO. Shifting by coinDecimals
   // here treated that amount as uosmo and scaled earnings by 10^6.
-  const calculatedInflationAmountPerYear = stakeAmount
-    ?.toDec()
-    .mul(stakingAPR.quo(new Dec(100)));
+  const calculatedInflationAmountPerYear = stakingAPR
+    ? stakeAmount?.toDec().mul(stakingAPR.quo(new Dec(100)))
+    : undefined;
 
   const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));
   const perMonthCalculation = calculatedInflationAmountPerYear?.quo(
@@ -72,18 +73,26 @@ export const EstimatedEarningCard: FunctionComponent<{
         </span>
         <div className="mb-2 mt-5 flex items-center gap-2">
           <PriceCaption
-            price={calculatedDailyPrice?.toString()}
+            price={stakingAPR ? calculatedDailyPrice?.toString() : "–"}
             term={t("stake.day")}
-            osmoPrice={formatPretty(prettifiedDailyAmount, {
-              maxDecimals: 2,
-            })?.toString()}
+            osmoPrice={
+              stakingAPR
+                ? formatPretty(prettifiedDailyAmount, {
+                    maxDecimals: 2,
+                  })?.toString()
+                : "–"
+            }
           />
           <PriceCaption
-            price={calculatedMonthlyPrice?.toString()}
+            price={stakingAPR ? calculatedMonthlyPrice?.toString() : "–"}
             term={t("stake.month")}
-            osmoPrice={formatPretty(prettifiedMonthlyAmount, {
-              maxDecimals: 2,
-            })?.toString()}
+            osmoPrice={
+              stakingAPR
+                ? formatPretty(prettifiedMonthlyAmount, {
+                    maxDecimals: 2,
+                  })?.toString()
+                : "–"
+            }
           />
         </div>
       </div>

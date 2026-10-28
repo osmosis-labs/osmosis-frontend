@@ -141,6 +141,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Los datos del mercado no están disponibles en este momento. Inténtalo de nuevo en un momento.",
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Retirar",
@@ -801,7 +802,11 @@
     "route": "ruta",
     "routes": "rutas",
     "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento",
-    "amountTooSmallForSlippage": "Cantidad demasiado pequeña para intercambiar con este deslizamiento. Aumente la cantidad o reduzca el deslizamiento."
+    "amountTooSmallForSlippage": "Cantidad demasiado pequeña para intercambiar con este deslizamiento. Aumente la cantidad o reduzca el deslizamiento.",
+    "slippageAutoAdjustedTitle": "Deslizamiento ajustado automáticamente",
+    "slippageAutoAdjustedBody": "El deslizamiento predeterminado de esta operación se ha aumentado debido al alto impacto en el precio o la baja liquidez.",
+    "routeLiquidityUnknown": "No se pudo verificar la liquidez de esta ruta. Revisa el importe de «Recibir al menos» antes de confirmar.",
+    "slippageAutoAdjustedHigh": "El deslizamiento se aumentó automáticamente por el alto impacto en el precio o la baja liquidez de esta operación. Revisa el importe de «Recibir al menos» antes de confirmar."
   },
   "walletSelect": {
     "gettingStarted": "Empezando",
@@ -1266,6 +1271,7 @@
     "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí.",
     "noTransactions": "Sin transacciones",
     "pastShownHere": "Tus operaciones anteriores en Osmosis aparecerán aquí.",
+    "historyLoadError": "No se pudo cargar tu historial completo. Inténtalo de nuevo en un momento.",
     "connectToSee": "Conéctese para ver su historial de transacciones",
     "connectWallet": "Conectar billetera",
     "title": "Actas",
@@ -1333,6 +1339,10 @@
         "subtitle": "Su historial de órdenes comerciales aparecerá aquí.",
         "connectTitle": "Conecte su billetera para ver su historial de pedidos",
         "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
+      },
+      "errorState": {
+        "title": "No se pudieron cargar tus órdenes",
+        "subtitle": "Inténtalo de nuevo en un momento."
       }
     },
     "aboveMarket": {

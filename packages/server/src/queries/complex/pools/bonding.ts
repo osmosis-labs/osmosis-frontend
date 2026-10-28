@@ -9,7 +9,7 @@ import {
   querySuperfluidDelegations,
   querySuperfluidUnelegations,
 } from "../../osmosis/superfluid";
-import { calcSumCoinsValue } from "../assets";
+import { calcSumCoinsValueOrUnknown } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getUserLocks } from "../osmosis";
 import { getValidatorInfo } from "../staking/validator";
@@ -43,15 +43,17 @@ export type BondDuration = {
   bondable: boolean;
   /** User locked shares. */
   userShares: CoinPretty;
-  userLockedShareValue: PricePretty;
+  /** Undefined when a coin behind the shares that should have a price has none. */
+  userLockedShareValue?: PricePretty;
   userLocks: {
     lockId: string;
     /** AKA is superfluid lock */
     isSynthetic: boolean;
   }[];
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
-  aggregateApr: RatePretty;
-  swapFeeApr: RatePretty;
+  /** Undefined when pool APRs are unavailable (data-services outage), so they aren't shown as 0%. */
+  aggregateApr?: RatePretty;
+  swapFeeApr?: RatePretty;
   incentivesBreakdown: {
     apr: RatePretty;
     type: "osmosis" | "boost";
@@ -60,7 +62,8 @@ export type BondDuration = {
   superfluid?: {
     /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
     duration: Duration;
-    apr: RatePretty;
+    /** Undefined when pool APRs are unavailable. */
+    apr?: RatePretty;
   } & UserDurationSuperfluidDelegation;
 };
 
@@ -81,9 +84,15 @@ export async function getSharePoolBondDurations({
         getShareDenomPoolId(gauge.distribute_to.denom) === poolId
     )
   );
-  const poolIncentivesPromise = getCachedPoolIncentivesMap().then((map) =>
-    map.get(poolId)
-  );
+  // Pool APRs come from the data services. When they're unavailable the durations are
+  // still returned, with their APRs unknown rather than 0%.
+  let aprsUnavailable = false;
+  const poolIncentivesPromise = getCachedPoolIncentivesMap()
+    .then((map) => map.get(poolId))
+    .catch((e) => {
+      aprsUnavailable = true;
+      return captureErrorAndReturn(e, undefined);
+    });
   const isSuperfluidPromise = getSuperfluidPoolIds(params).then((ids) =>
     ids.includes(poolId)
   );
@@ -176,22 +185,22 @@ export async function getSharePoolBondDurations({
             userLockedLockIds.push(userDurationLock.ID);
           });
         }
-        let userLockedShareValue = new PricePretty(DEFAULT_VS_CURRENCY, 0);
+        let userLockedShareValue: PricePretty | undefined = new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          0
+        );
         if (userShares.toDec().isPositive()) {
           const underlyingCoins = await getGammShareUnderlyingCoins({
             ...params,
             ...userShares.toCoin(),
           }).catch((e) => captureErrorAndReturn(e, []));
-          const userSharesValue = await calcSumCoinsValue({
+          const userSharesValue = await calcSumCoinsValueOrUnknown({
             ...params,
             coins: underlyingCoins,
           });
-          if (userSharesValue) {
-            userLockedShareValue = new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              userSharesValue
-            );
-          }
+          userLockedShareValue = userSharesValue
+            ? new PricePretty(DEFAULT_VS_CURRENCY, userSharesValue)
+            : undefined;
         }
 
         // get user unlocking shares
@@ -234,22 +243,26 @@ export async function getSharePoolBondDurations({
             });
           }
         }
-        let aggregateApr = incentivesBreakdown.reduce(
-          (sum, { apr }) => sum.add(apr),
-          new RatePretty(0)
-        );
-        const swapFeeApr =
-          poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0);
-        aggregateApr = aggregateApr.add(swapFeeApr);
+        const swapFeeApr = aprsUnavailable
+          ? undefined
+          : (poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0));
+        let aggregateApr = swapFeeApr
+          ? incentivesBreakdown
+              .reduce((sum, { apr }) => sum.add(apr), new RatePretty(0))
+              .add(swapFeeApr)
+          : undefined;
 
         // get superfluid info for this duration
         let superfluid: BondDuration["superfluid"] | undefined = undefined;
         const userSyntheticLockIds: string[] = [];
         if (isSuperfluidDuration) {
-          const superfluidApr =
-            poolIncentives?.aprBreakdown?.superfluid?.upper ??
-            new RatePretty(0);
-          aggregateApr = aggregateApr.add(superfluidApr);
+          const superfluidApr = aprsUnavailable
+            ? undefined
+            : (poolIncentives?.aprBreakdown?.superfluid?.upper ??
+              new RatePretty(0));
+          if (aggregateApr && superfluidApr) {
+            aggregateApr = aggregateApr.add(superfluidApr);
+          }
 
           const userDelegations = bech32Address
             ? await querySuperfluidDelegations({ ...params, bech32Address })
