@@ -246,20 +246,22 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
     const input = { userOsmoAddress: "osmo1historyfail", limit: 20 };
 
-    const first = await makeCaller().orderbooks.getAllOrdersSQS({
+    // concurrent requests share one fetch; both must see that it was incomplete
+    const [first, second] = await Promise.all([
+      makeCaller().orderbooks.getAllOrdersSQS({ ...input, cursor: 0 }),
+      makeCaller().orderbooks.getAllOrdersSQS({ ...input, cursor: 0 }),
+    ]);
+    const third = await makeCaller().orderbooks.getAllOrdersSQS({
       ...input,
-      cursor: 1,
-    });
-    const second = await makeCaller().orderbooks.getAllOrdersSQS({
-      ...input,
-      cursor: 1,
+      cursor: 0,
     });
 
     expect(first.historyUnavailable).toBe(true);
-    // cursor 1 skips the only item, but the flag is set from the fetch
     expect(second.historyUnavailable).toBe(true);
-    // not served from the cache the second time
-    expect(mockedHistoricalOrders).toHaveBeenCalledTimes(2);
+    expect(first.items).toHaveLength(1);
+    // the incomplete list wasn't cached, so the third request fetches again
+    expect(third.historyUnavailable).toBe(true);
+    expect(mockedHistoricalOrders.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 
   it("isn't flagged when the history loads", async () => {

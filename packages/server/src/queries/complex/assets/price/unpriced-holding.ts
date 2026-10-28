@@ -75,7 +75,9 @@ export async function resolveUnpricedHolding({
     // Without fresh data services data, "no Numia price" can't be told from "unknown".
     if (!(await isMarketDataAvailable())) return undefined;
     const activity = await getAssetMarketActivity({ coinMinimalDenom });
-    if (activity?.price) return displayAmount.mul(activity.price.toDec());
+    // a zero price is no price: it must not stand in for the drained-pool check
+    const numiaPrice = activity?.price?.toDec();
+    if (numiaPrice?.isPositive()) return displayAmount.mul(numiaPrice);
 
     if (asset.coinGeckoId) {
       const price = await getCoingeckoPrice({
@@ -90,7 +92,7 @@ export async function resolveUnpricedHolding({
           return undefined;
         throw e;
       });
-      if (price) return displayAmount.mul(price);
+      if (price?.isPositive()) return displayAmount.mul(price);
     }
 
     return (await isDrainedOnSqs(coinMinimalDenom)) ? new Dec(0) : undefined;

@@ -41,6 +41,8 @@ const DENOMS = {
     "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
   liquid:
     "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+  zeroPrice:
+    "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
   coingecko:
     "factory/osmo1mlng7pz4pnyxtpq0akfwall37czyk9lukaucsrn30ameplhhshtqdvfm5c/ulvn",
 };
@@ -107,5 +109,14 @@ describe("holding SQS has no price for", () => {
     pools.mockResolvedValue(poolsOf(DENOMS.liquid, ["0", "1500000"]));
 
     expect(await sum(DENOMS.liquid)).toBeUndefined();
+  });
+
+  it("doesn't take a zero fallback price for a price", async () => {
+    pools.mockResolvedValue(poolsOf(DENOMS.zeroPrice, ["1500000"]));
+    marketActivity.mockResolvedValue({
+      price: new PricePretty({ currency: "usd" } as never, new Dec(0)),
+    });
+
+    expect(await sum(DENOMS.zeroPrice)).toBeUndefined();
   });
 });

@@ -55,13 +55,15 @@ export function maybeCursorPaginatedItems<TItem>(
 
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
+/** Cache keys whose latest fresh list was incomplete, so every request that shared that
+ *  fetch (cachified shares one pending fetch between concurrent requests) can report it. */
+const incompleteKeys = new LRUCache<string, true>({ max: 500, ttl: 30 * 1000 });
+
 export type CachedPaginationParams<TItem> = {
-  /** Set `metadata.ttl` (e.g. to 0) to keep a result from being served from the cache,
-   *  such as a list that is known to be incomplete. `metadata` is absent when
-   *  pagination isn't used and nothing is cached. */
-  getFreshItems: (context?: {
-    metadata: { ttl?: number | null };
-  }) => Promise<TItem[]>;
+  /** Call `markIncomplete` when the list is known to be missing items (e.g. one data
+   *  source failed): it is then not served from the cache, and the result carries
+   *  `incomplete: true`. */
+  getFreshItems: (context: { markIncomplete: () => void }) => Promise<TItem[]>;
   cacheKey: string;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;
@@ -80,10 +82,23 @@ export async function maybeCachePaginatedItems<TItem>({
 }: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
   nextCursor: number | undefined;
+  /** Present (true) only when the list is missing items, see `markIncomplete`. */
+  incomplete?: true;
 }> {
   // if pagination is not used, return items
-  if (!cursor && !limit)
-    return { items: await getFreshItems(), nextCursor: undefined };
+  if (!cursor && !limit) {
+    let incomplete = false;
+    const items = await getFreshItems({
+      markIncomplete: () => {
+        incomplete = true;
+      },
+    });
+    return {
+      items,
+      nextCursor: undefined,
+      ...(incomplete ? { incomplete: true as const } : {}),
+    };
+  }
 
   // If cursor is 0, delete the cache entry for the given key
   if (cursor === 0) {
@@ -94,8 +109,23 @@ export async function maybeCachePaginatedItems<TItem>({
     key: cacheKey,
     cache: paginationCache,
     ttl,
-    getFreshValue: getFreshItems,
+    getFreshValue: async ({ metadata }) => {
+      let incomplete = false;
+      const fresh = await getFreshItems({
+        markIncomplete: () => {
+          incomplete = true;
+          // never serve an incomplete list from the cache as if it were complete
+          metadata.ttl = 0;
+        },
+      });
+      if (incomplete) incompleteKeys.set(cacheKey, true);
+      else incompleteKeys.delete(cacheKey);
+      return fresh;
+    },
   });
 
-  return maybeCursorPaginatedItems(items, cursor, limit);
+  return {
+    ...maybeCursorPaginatedItems(items, cursor, limit),
+    ...(incompleteKeys.has(cacheKey) ? { incomplete: true as const } : {}),
+  };
 }
