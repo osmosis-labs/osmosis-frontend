@@ -351,6 +351,9 @@ function getCachedAlloyStatus(
 ): Promise<AlloyStatus> {
   return cachified({
     cache: alloyStatusCache,
+    // A transmuter frozen within this window still shows Convert until the
+    // entry expires; the row's fee simulation then fails and disables it, so
+    // nothing is broadcast. Accepted to keep contract queries off most loads.
     ttl: 1000 * 60, // 1 minute
     key: `alloy-status-${contractAddress}`,
     getFreshValue: async ({ metadata }) => {
@@ -358,12 +361,38 @@ function getCachedAlloyStatus(
         queryTransmuterIsActive({ contractAddress, chainList }),
         queryTransmuterAssetConfigs({ contractAddress, chainList }),
         queryTransmuterCorruptedDenoms({ contractAddress, chainList }),
-      ]).catch((e) => {
-        // Fail closed, but briefly: caching the failure keeps a node outage
-        // from adding the full request timeout to every portfolio load.
-        metadata.ttl = 1000 * 30; // 30 seconds
-        return captureErrorAndReturn(e, undefined);
-      });
+      ])
+        .then(([isActive, assetConfigs, corruptedDenoms]) => {
+          // Checked here so a malformed response fails closed and is cached
+          // like an outage, instead of throwing later in the filter.
+          const active = isActive?.data?.is_active;
+          const configs = assetConfigs?.data?.asset_configs;
+          const corrupted = corruptedDenoms?.data?.corrupted_denoms;
+          if (
+            typeof active !== "boolean" ||
+            !Array.isArray(configs) ||
+            !Array.isArray(corrupted)
+          )
+            throw new Error(
+              `Unexpected transmuter status response from ${contractAddress}`
+            );
+          return {
+            isActive: active,
+            normalizationFactors: Object.fromEntries(
+              configs.map(({ denom, normalization_factor }) => [
+                denom,
+                normalization_factor,
+              ])
+            ),
+            corruptedDenoms: corrupted,
+          };
+        })
+        .catch((e) => {
+          // Fail closed, but briefly: caching the failure keeps a node outage
+          // from adding the full request timeout to every portfolio load.
+          metadata.ttl = 1000 * 30; // 30 seconds
+          return captureErrorAndReturn(e, undefined);
+        });
       if (!result)
         return {
           isActive: false,
@@ -371,16 +400,7 @@ function getCachedAlloyStatus(
           corruptedDenoms: [],
         };
 
-      const [isActive, assetConfigs, corruptedDenoms] = result;
-      return {
-        isActive: isActive.data.is_active,
-        normalizationFactors: Object.fromEntries(
-          assetConfigs.data.asset_configs.map(
-            ({ denom, normalization_factor }) => [denom, normalization_factor]
-          )
-        ),
-        corruptedDenoms: corruptedDenoms.data.corrupted_denoms,
-      };
+      return result;
     },
   });
 }
