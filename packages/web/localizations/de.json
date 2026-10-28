@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "Die Entsperrung endet nach dem {deadline}.",
     "withdraw": "Abziehen",
     "migratePosition": "Migrieren",
+    "migratedAmountsNote": "Ein Teil davon wird als Liquidität im neuen Pool eingezahlt, der Rest geht an deine Wallet zurück.",
     "migrateUnavailable": "Migration derzeit nicht verfügbar",
     "unlock": "Entsperren",
     "cancelOrder": "Order stornieren",

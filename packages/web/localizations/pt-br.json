@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "O desbloqueio termina depois de {deadline}.",
     "withdraw": "Retirar",
     "migratePosition": "Migrar",
+    "migratedAmountsNote": "Uma parte é depositada como liquidez no novo pool; o restante volta para sua carteira.",
     "migrateUnavailable": "Migração indisponível no momento",
     "unlock": "Desbloquear",
     "cancelOrder": "Cancelar ordem",

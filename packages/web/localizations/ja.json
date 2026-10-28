@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "アンロックは {deadline} より後に完了します。",
     "withdraw": "引き出す",
     "migratePosition": "移行する",
+    "migratedAmountsNote": "一部は新しいプールに流動性として預け入れられ、残りはウォレットに戻ります。",
     "migrateUnavailable": "現在移行できません",
     "unlock": "アンロック",
     "cancelOrder": "注文をキャンセル",

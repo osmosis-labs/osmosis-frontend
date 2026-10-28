@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "آزادسازی پس از {deadline} تمام می‌شود.",
     "withdraw": "برداشت",
     "migratePosition": "مهاجرت",
+    "migratedAmountsNote": "بخشی از این مبلغ به‌عنوان نقدینگی در استخر جدید واریز می‌شود و باقی به کیف پول شما برمی‌گردد.",
     "migrateUnavailable": "مهاجرت در حال حاضر در دسترس نیست",
     "unlock": "آزادسازی",
     "cancelOrder": "لغو سفارش",

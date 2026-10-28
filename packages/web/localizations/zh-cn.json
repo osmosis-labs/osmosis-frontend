@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "解锁将在 {deadline} 之后完成。",
     "withdraw": "提取",
     "migratePosition": "迁移",
+    "migratedAmountsNote": "其中一部分作为流动性存入新池，其余退回到您的钱包。",
     "migrateUnavailable": "暂时无法迁移",
     "unlock": "解锁",
     "cancelOrder": "取消订单",

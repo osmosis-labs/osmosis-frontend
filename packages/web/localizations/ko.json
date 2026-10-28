@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "잠금 해제는 {deadline} 이후에 완료됩니다.",
     "withdraw": "출금",
     "migratePosition": "마이그레이션",
+    "migratedAmountsNote": "일부는 새 풀에 유동성으로 예치되고, 나머지는 지갑으로 돌아옵니다.",
     "migrateUnavailable": "현재 마이그레이션할 수 없습니다",
     "unlock": "잠금 해제",
     "cancelOrder": "주문 취소",

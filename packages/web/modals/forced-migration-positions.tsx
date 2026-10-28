@@ -1,8 +1,9 @@
-import type {
-  ConcentratedHolding,
-  ForcedMigrationHolding,
-  OrderHolding,
-  ShareHolding,
+import {
+  type ConcentratedHolding,
+  DEFAULT_VS_CURRENCY,
+  type ForcedMigrationHolding,
+  type OrderHolding,
+  type ShareHolding,
 } from "@osmosis-labs/server";
 import {
   prepareBeginUnlockingMsg,
@@ -11,12 +12,13 @@ import {
   prepareGuardedWithdrawPositionMsg,
   prepareMultiExecuteContractMsg,
 } from "@osmosis-labs/tx";
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import { getAssetFromAssetList, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -25,6 +27,7 @@ import {
   USDC_NOBLE_DENOM,
 } from "~/config/position-migration";
 import { useTranslation } from "~/hooks";
+import { useBatchedPrices } from "~/hooks/queries/assets/use-prices";
 import {
   getLcdClient,
   usePositionMigrationForPosition,
@@ -52,6 +55,37 @@ export function formatHoldingCoin(denom: string, amount: string): string {
     maxDecimals: 6,
   });
 }
+
+/** Fiat value of raw coins, or undefined if any of them is unlisted or
+ *  unpriced: a partial sum would understate the holding. */
+function getCoinsFiatValue(
+  coins: { denom: string; amount: string }[],
+  prices: Record<string, PricePretty> | undefined
+): PricePretty | undefined {
+  if (!prices) return undefined;
+  let total = new Dec(0);
+  for (const { denom, amount } of coins) {
+    const asset = getListedAsset(denom);
+    const price = prices[denom];
+    if (!asset || !price) return undefined;
+    total = total.add(
+      new CoinPretty(asset.currency, amount).toDec().mul(price.toDec())
+    );
+  }
+  return new PricePretty(DEFAULT_VS_CURRENCY, total);
+}
+
+/** A value with a dotted underline that reveals more on hover. */
+const HoverValue: FunctionComponent<{
+  value: string;
+  content: ReactNode;
+}> = ({ value, content }) => (
+  <Tooltip content={content} arrow>
+    <span className="cursor-help whitespace-nowrap underline decoration-dotted underline-offset-4">
+      {value}
+    </span>
+  </Tooltip>
+);
 
 /** Thrown by the pre-broadcast check when a CL position no longer pays out
  *  within tolerance; shown to the user instead of a generic failure. */
@@ -108,9 +142,13 @@ export const ForcedMigrationPositionRow: FunctionComponent<{
               <span className="subtitle1 text-osmoverse-100">
                 {getOrderLabel(holding, t)}
               </span>
-              {oldAmountText && (
+              {oldAmountText && oldDenom && (
                 <span className="body2 text-osmoverse-300">
-                  {oldAmountText}
+                  <OrderAmount
+                    denom={oldDenom}
+                    amount={holding.oldDenomAmount}
+                    text={oldAmountText}
+                  />
                 </span>
               )}
             </div>
@@ -171,6 +209,18 @@ function getUnlockEndsAfterDeadline(
     );
   return false;
 }
+
+/** The old-asset amount in an order, with its dollar value on hover. */
+const OrderAmount: FunctionComponent<{
+  denom: string;
+  amount: string;
+  text: string;
+}> = ({ denom, amount, text }) => {
+  const { prices } = useBatchedPrices([denom]);
+  const value = getCoinsFiatValue([{ denom, amount }], prices);
+  if (!value) return <>{text}</>;
+  return <HoverValue value={text} content={formatPretty(value)} />;
+};
 
 /** "Buy ATOM" / "Sell ATOM", as in the portfolio's open orders. */
 function getOrderLabel(
@@ -287,7 +337,7 @@ const PoolRowLayout: FunctionComponent<{
             <PoolSummary
               poolId={migrateTo.poolId}
               coins={migrateTo.coins}
-              isEstimate
+              amountsNote={t("forcedMigration.migratedAmountsNote")}
               alignRight
               className="flex-1 basis-0"
             />
@@ -307,15 +357,15 @@ const PoolSummary: FunctionComponent<{
   poolId: string;
   coins: { denom: string; amount: string }[];
   detail?: string;
-  /** The amounts are an upper bound on what the holding becomes. */
-  isEstimate?: boolean;
+  /** Shown under the amounts in the value's hover. */
+  amountsNote?: string;
   alignRight?: boolean;
   className?: string;
 }> = ({
   poolId,
   coins,
   detail,
-  isEstimate = false,
+  amountsNote,
   alignRight = false,
   className,
 }) => {
@@ -329,6 +379,13 @@ const PoolSummary: FunctionComponent<{
     };
   });
   const amounts = coins.filter(({ amount }) => new Dec(amount).isPositive());
+  const { prices } = useBatchedPrices(amounts.map(({ denom }) => denom));
+  const value = getCoinsFiatValue(amounts, prices);
+  const amountLines = amounts.map(({ denom, amount }) => (
+    <span key={denom} className="whitespace-nowrap">
+      {formatHoldingCoin(denom, amount)}
+    </span>
+  ));
   return (
     <div
       className={classNames(
@@ -354,16 +411,29 @@ const PoolSummary: FunctionComponent<{
         <PoolTypeAndSpread poolId={poolId} />
         {detail && <span>· {detail}</span>}
       </span>
-      {amounts.length > 0 && (
-        <span className="body2 flex flex-wrap gap-x-3 text-osmoverse-300">
-          {amounts.map(({ denom, amount }) => (
-            <span key={denom} className="whitespace-nowrap">
-              {isEstimate && "≤ "}
-              {formatHoldingCoin(denom, amount)}
-            </span>
-          ))}
-        </span>
-      )}
+      {amounts.length > 0 &&
+        (value ? (
+          <span className="body2 text-osmoverse-300">
+            <HoverValue
+              value={formatPretty(value)}
+              content={
+                <div className="caption flex flex-col gap-1">
+                  {amountLines}
+                  {amountsNote && (
+                    <span className="pt-1 text-osmoverse-300">
+                      {amountsNote}
+                    </span>
+                  )}
+                </div>
+              }
+            />
+          </span>
+        ) : (
+          // Without a price for every asset, show the amounts themselves.
+          <span className="body2 flex flex-wrap gap-x-3 text-osmoverse-300">
+            {amountLines}
+          </span>
+        ))}
     </div>
   );
 };
@@ -448,9 +518,9 @@ const MigratablePoolRow: FunctionComponent<{
       migrateTo={{
         poolId: toPoolId,
         // The migration converts USDC.noble to USDC 1:1 (same decimals) and
-        // re-deposits in the same range, sized just under what the withdraw
-        // pays out. At the destination's price the deposit can take less of
-        // one side, which stays in the wallet, so these are upper bounds.
+        // re-deposits in the same range. What the new position doesn't take
+        // is returned to the wallet, so in total the user ends up with the
+        // same amounts.
         coins: holding.coins.map(({ denom, amount }) => ({
           denom: denom === USDC_NOBLE_DENOM ? USDC_ALLOYED_DENOM : denom,
           amount,
@@ -458,12 +528,15 @@ const MigratablePoolRow: FunctionComponent<{
       }}
       actions={
         <>
+          {/* Withdraw is only the way out when migrating can't be used. */}
+          {forcedMigration.eligibility &&
+            !forcedMigration.eligibility.isEligible &&
+            withdraw}
           <MigrateAction
             holding={holding}
             forcedMigration={forcedMigration}
             onMigrate={onMigrate}
           />
-          {withdraw}
         </>
       }
     />

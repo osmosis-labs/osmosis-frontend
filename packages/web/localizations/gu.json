@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "અનલોક {deadline} પછી પૂર્ણ થશે.",
     "withdraw": "ઉપાડો",
     "migratePosition": "માઇગ્રેટ કરો",
+    "migratedAmountsNote": "આનો એક ભાગ નવા પૂલમાં લિક્વિડિટી તરીકે જમા થાય છે; બાકીનો ભાગ તમારા વૉલેટમાં પાછો આવે છે.",
     "migrateUnavailable": "માઇગ્રેશન હાલમાં ઉપલબ્ધ નથી",
     "unlock": "અનલોક કરો",
     "cancelOrder": "ઓર્ડર રદ કરો",

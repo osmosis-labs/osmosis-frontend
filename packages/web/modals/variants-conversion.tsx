@@ -1,5 +1,5 @@
 import type { AssetVariant } from "@osmosis-labs/server";
-import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import React, {
@@ -19,6 +19,7 @@ import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useAssetVariantsToast, useTranslation } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
   getConvertVariantMessages,
   useConvertVariant,
@@ -26,6 +27,7 @@ import {
 import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
+import { formatPretty } from "~/utils/formatter";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
@@ -219,6 +221,7 @@ export const AssetVariantsConversionModal = () => {
                 variant={variant}
                 showBottomBorder={index !== variants.length - 1}
                 onInsufficientFeeTokens={reportInsufficientFeeTokens}
+                showAmounts
               />
             ))
           )}
@@ -266,7 +269,15 @@ export const AssetVariantRow: React.FC<{
     coinMinimalDenom: string,
     hasInsufficient: boolean
   ) => void;
-}> = ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
+  /** Show the amounts in and out (dollar value on hover) instead of the
+   *  symbols under each name. */
+  showAmounts?: boolean;
+}> = ({
+  variant,
+  showBottomBorder = true,
+  onInsufficientFeeTokens,
+  showAmounts = false,
+}) => {
   const { t } = useTranslation();
 
   const { estimateFee, wallet: account } = useWallet();
@@ -378,6 +389,10 @@ export const AssetVariantRow: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { fiatValue: quoteFiatValue } = useCoinFiatValue(
+    showAmounts ? quote?.amount : undefined
+  );
+
   const conversionDisabled =
     isLoading ||
     isError ||
@@ -419,7 +434,14 @@ export const AssetVariantRow: React.FC<{
             <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
               <span className="subtitle1 truncate">{variant.name}</span>
               <span className="body2 truncate text-osmoverse-300">
-                {variant.amount.currency.coinDenom ?? ""}
+                {showAmounts ? (
+                  <AmountWithValue
+                    amount={variant.amount}
+                    fiatValue={variant.fiatValue}
+                  />
+                ) : (
+                  (variant.amount.currency.coinDenom ?? "")
+                )}
               </span>
             </div>
           </div>
@@ -457,7 +479,14 @@ export const AssetVariantRow: React.FC<{
                 {variant.canonicalAsset?.coinName}
               </span>
               <span className="body2 truncate text-osmoverse-300">
-                {variant?.canonicalAsset?.coinDenom ?? ""}
+                {showAmounts && quote ? (
+                  <AmountWithValue
+                    amount={quote.amount}
+                    fiatValue={quoteFiatValue}
+                  />
+                ) : (
+                  (variant?.canonicalAsset?.coinDenom ?? "")
+                )}
               </span>
             </div>
           </div>
@@ -542,3 +571,19 @@ const AllocationSkeleton = () => (
     <Skeleton className="h-[90px] w-full" />
   </div>
 );
+
+/** A coin amount with its dollar value on hover. */
+const AmountWithValue: React.FC<{
+  amount: CoinPretty;
+  fiatValue: PricePretty | undefined;
+}> = ({ amount, fiatValue }) => {
+  const text = formatPretty(amount, { maxDecimals: 6 });
+  if (!fiatValue) return <>{text}</>;
+  return (
+    <Tooltip content={formatPretty(fiatValue)} arrow>
+      <span className="cursor-help underline decoration-dotted underline-offset-4">
+        {text}
+      </span>
+    </Tooltip>
+  );
+};

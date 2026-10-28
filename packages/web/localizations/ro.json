@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "Deblocarea se încheie după {deadline}.",
     "withdraw": "Retrage",
     "migratePosition": "Migrează",
+    "migratedAmountsNote": "O parte este depusă ca lichiditate în noul pool; restul revine în portofelul tău.",
     "migrateUnavailable": "Migrarea nu este disponibilă acum",
     "unlock": "Deblochează",
     "cancelOrder": "Anulează ordinul",

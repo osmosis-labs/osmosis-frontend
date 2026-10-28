@@ -102,7 +102,7 @@ export const ForcedMigrationModal = () => {
       <ModalBase
         isOpen={isOpen}
         onRequestClose={snoozeVisible}
-        className="flex max-w-[500px] flex-col gap-6 bg-osmoverse-900"
+        className="flex max-w-[600px] flex-col gap-6 bg-osmoverse-900"
       >
         {visibleMigrations.map((active, index) => (
           <MigrationSection
@@ -342,6 +342,7 @@ const MigrationSection: FunctionComponent<{
               variant={variant}
               showBottomBorder={index !== convertibleVariants.length - 1}
               onInsufficientFeeTokens={onInsufficientFeeTokens}
+              showAmounts
             />
           ))}
         </div>

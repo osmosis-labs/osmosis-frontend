@@ -1505,6 +1505,7 @@
     "unlockEndsAfterDeadline": "Le déverrouillage se termine après le {deadline}.",
     "withdraw": "Retirer",
     "migratePosition": "Migrer",
+    "migratedAmountsNote": "Une partie est déposée comme liquidité dans le nouveau pool ; le reste revient dans votre portefeuille.",
     "migrateUnavailable": "Migration indisponible pour le moment",
     "unlock": "Déverrouiller",
     "cancelOrder": "Annuler l'ordre",
