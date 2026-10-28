@@ -260,6 +260,37 @@ describe("useSwapSlippage", () => {
       expect(pct(result.current.slippageConfig)).toBe("0.2");
     });
 
+    it("holds the first settled exact-out quote, not the previous input's", () => {
+      const { result, rerender } = render({
+        quote: quote("-0.001"),
+        quoteType: "in-given-out",
+      });
+      rerender({
+        quote: quote("-0.001"),
+        quoteType: "in-given-out",
+        isReviewOpen: true,
+        isQuoteSettled: false,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.1");
+
+      rerender({
+        quote: quote("-0.005"),
+        quoteType: "in-given-out",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(result.current.source).toBe("auto");
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+
+      rerender({
+        quote: quote("-0.2", "100"),
+        quoteType: "in-given-out",
+        isReviewOpen: true,
+        isQuoteSettled: true,
+      });
+      expect(pct(result.current.slippageConfig)).toBe("0.2");
+    });
+
     it("does not hold the default when the current input settles with no quote", () => {
       // The router drops a zero-amount quote but still reports success.
       const { result, rerender } = render({
