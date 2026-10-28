@@ -1344,6 +1344,7 @@ export const useBridgeQuotes = ({
         e instanceof EvmTxStatusUnknownError &&
         e.txHash === firstStepBroadcastHash
       ) {
+        transferHistoryStore.markSendTxUnconfirmed(e.txHash);
         await transferHistoryStore.persistNow().catch((persistError) => {
           console.error(
             "Multi-tx transfer entry could not be persisted",

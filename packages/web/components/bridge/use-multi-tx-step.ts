@@ -343,8 +343,10 @@ export const useMultiTxResume = () => {
           // only after the whole budget is spent
           onWaiting: stillInTransitToast,
           // Skip abandoning a landed Solana burn is a tracking timeout, not
-          // proof the funds are gone: keep the entry resumable.
-          abandonedIsFailed: !priorStepOnSolana,
+          // proof the funds are gone: keep the entry resumable. The same
+          // holds for an EVM burn whose receipt was never confirmed, which
+          // may simply be slow to land.
+          abandonedIsFailed: !priorStepOnSolana && !snapshot.sendTxUnconfirmed,
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(

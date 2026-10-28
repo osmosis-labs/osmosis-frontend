@@ -685,6 +685,21 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 
   /**
+   * Record that the entry's first transaction was broadcast but its receipt
+   * couldn't be fetched, so its inclusion is unproven. Status providers and
+   * the resume check then stop reading "not found" or "abandoned" as proof
+   * of failure.
+   */
+  markSendTxUnconfirmed(sendTxHash: string) {
+    const snapshot = this.snapshots.find(
+      (snapshot) => snapshot.sendTxHash === sendTxHash
+    );
+    if (!snapshot) return;
+
+    this.replaceSnapshot(snapshot, { ...snapshot, sendTxUnconfirmed: true });
+  }
+
+  /**
    * Durably write the given snapshots, merged against what storage already
    * holds: a full-array write from a session with a stale in-memory copy
    * must never regress a multi-tx entry that another session has advanced
