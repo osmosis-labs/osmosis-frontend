@@ -122,13 +122,17 @@ export const SpendLimitScreen = ({
               };
             }
 
+            // A share of an unknown (unpriced or not yet loaded) balance is unknown, so
+            // keep the current limit rather than saving a zero one.
+            if (!userAssetsTotal?.value) return previousParams;
+
             return {
               ...previousParams,
               spendLimit: new PricePretty(
                 DEFAULT_VS_CURRENCY,
                 new Dec(!shareOfBalance?.value ? 0 : shareOfBalance.value)
                   .quo(new Dec(100))
-                  .mul(userAssetsTotal?.value?.toDec() ?? new Dec(0))
+                  .mul(userAssetsTotal.value.toDec())
               ),
             };
           });
