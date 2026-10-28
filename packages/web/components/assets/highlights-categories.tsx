@@ -140,8 +140,10 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         {
           // Gainers-only: single column, no row span.
           "grid-cols-1": visibleTileCount === 1,
-          // Two tiles: 2 columns, Top Gainers spans 2 rows on xl.
-          "grid-cols-2 xl:grid-rows-2": visibleTileCount === 2,
+          // Two tiles: 2 columns. Top Gainers spans 2 rows on xl; without it the two
+          // tiles share one row, so no second row is reserved.
+          "grid-cols-2": visibleTileCount === 2,
+          "xl:grid-rows-2": visibleTileCount === 2 && hasTopGainers,
           // Three tiles: 3 columns collapsing to 2x2 on xl.
           "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2": visibleTileCount === 3,
         },
