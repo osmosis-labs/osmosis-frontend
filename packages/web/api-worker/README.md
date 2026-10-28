@@ -55,4 +55,12 @@ yarn cf:api:dev       # local Worker
 yarn cf:api:deploy    # wrangler deploy --keep-vars; do not run this by hand
 ```
 
-Deploy this Worker before the traffic router that binds to it.
+Deploy this Worker before the traffic router. The router's `API` binding names
+`osmosis-frontend-api-production`, and Cloudflare-bucket `/api/*` is sent there.
+Pages on that same bucket still go to `osmosis-frontend-production`. Vercel-bucket
+traffic, including `/api`, is unchanged. There is no separate API percentage: a page
+and its tRPC client stay on one build.
+
+The `app-only` upstream exception (`sqsprod.osmosis.zone`, `rpc.app.osmosis.zone`,
+`lcd.app.osmosis.zone`) must cover this Worker as well as the pages Worker. Outside
+that exception those hosts answer `403` with `x-blocked-by: app-only`.
