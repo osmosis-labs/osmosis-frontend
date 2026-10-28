@@ -44,7 +44,7 @@ const config = {
       {
         source: "/apps",
         destination: "/",
-        permanent: true,
+        permanent: false,
       },
     ];
   },
