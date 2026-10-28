@@ -46,14 +46,12 @@ import { api } from "~/utils/trpc";
 const getListedAsset = (denom: string) =>
   getAssetFromAssetList({ coinMinimalDenom: denom, assetLists: AssetLists });
 
-/** Display amount for a raw coin, formatted as in the position cards;
+/** Display amount for a raw coin, formatted as elsewhere in the app;
  *  unlisted denoms show the raw amount. */
 export function formatHoldingCoin(denom: string, amount: string): string {
   const asset = getListedAsset(denom);
   if (!asset) return `${amount} ${shorten(denom)}`;
-  return formatPretty(new CoinPretty(asset.currency, amount), {
-    maxDecimals: 6,
-  });
+  return formatPretty(new CoinPretty(asset.currency, amount));
 }
 
 /** Fiat value of raw coins, or undefined if any of them is unlisted or
@@ -219,7 +217,7 @@ const OrderAmount: FunctionComponent<{
   const { prices } = useBatchedPrices([denom]);
   const value = getCoinsFiatValue([{ denom, amount }], prices);
   if (!value) return <>{text}</>;
-  return <HoverValue value={text} content={formatPretty(value)} />;
+  return <HoverValue value={text} content={value.toString()} />;
 };
 
 /** "Buy ATOM" / "Sell ATOM", as in the portfolio's open orders. */
@@ -406,16 +404,19 @@ const PoolSummary: FunctionComponent<{
           withAssetInfoLink={false}
         />
       </div>
-      <span className="body2 flex flex-wrap items-center gap-x-1.5 text-osmoverse-300">
+      <span
+        className={classNames(
+          "body2 flex flex-wrap items-center gap-x-1.5 text-osmoverse-300",
+          alignRight && "justify-end sm:justify-start"
+        )}
+      >
         <span>{t("forcedMigration.poolPosition", { poolId })}</span>
         <PoolTypeAndSpread poolId={poolId} />
-        {detail && <span>· {detail}</span>}
-      </span>
-      {amounts.length > 0 &&
-        (value ? (
-          <span className="body2 text-osmoverse-300">
+        {amounts.length > 0 && <span>·</span>}
+        {amounts.length > 0 &&
+          (value ? (
             <HoverValue
-              value={formatPretty(value)}
+              value={value.toString()}
               content={
                 <div className="caption flex flex-col gap-1">
                   {amountLines}
@@ -427,13 +428,12 @@ const PoolSummary: FunctionComponent<{
                 </div>
               }
             />
-          </span>
-        ) : (
-          // Without a price for every asset, show the amounts themselves.
-          <span className="body2 flex flex-wrap gap-x-3 text-osmoverse-300">
-            {amountLines}
-          </span>
-        ))}
+          ) : (
+            // Without a price for every asset, show the amounts themselves.
+            amountLines
+          ))}
+        {detail && <span>· {detail}</span>}
+      </span>
     </div>
   );
 };

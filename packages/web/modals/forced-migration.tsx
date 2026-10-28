@@ -335,7 +335,10 @@ const MigrationSection: FunctionComponent<{
           </a>
         ))}
       {convertibleVariants.length > 0 && (
-        <div className="flex flex-col">
+        <div className="flex flex-col rounded-2xl border border-osmoverse-700 px-4 pt-4">
+          <span className="subtitle1 text-osmoverse-100">
+            {t("forcedMigration.holdingsTitle")}
+          </span>
           {convertibleVariants.map((variant, index) => (
             <AssetVariantRow
               key={variant.amount.currency.coinMinimalDenom}
@@ -343,34 +346,24 @@ const MigrationSection: FunctionComponent<{
               showBottomBorder={index !== convertibleVariants.length - 1}
               onInsufficientFeeTokens={onInsufficientFeeTokens}
               showAmounts
+              isCompact
             />
           ))}
         </div>
       )}
       {(
         [
-          {
-            rows: poolRows,
-            title: t("forcedMigration.liquidityPoolsTitle"),
-            note: t("forcedMigration.heldInPools", { symbols: symbolsText }),
-          },
-          {
-            rows: orderRows,
-            title: t("forcedMigration.limitOrdersTitle"),
-            note: t("forcedMigration.heldInOrders", { symbols: symbolsText }),
-          },
+          { rows: poolRows, title: t("forcedMigration.liquidityPoolsTitle") },
+          { rows: orderRows, title: t("forcedMigration.limitOrdersTitle") },
         ] as const
       ).map(
-        ({ rows, title, note }) =>
+        ({ rows, title }) =>
           rows.length > 0 && (
             <div
               key={title}
               className="flex flex-col gap-1 rounded-2xl border border-osmoverse-700 px-4 py-2"
             >
-              <div className="flex flex-col gap-1 pt-2">
-                <span className="subtitle1 text-osmoverse-100">{title}</span>
-                <p className="body2 text-osmoverse-300">{note}</p>
-              </div>
+              <span className="subtitle1 pt-2 text-osmoverse-100">{title}</span>
               {rows.map((holding) => (
                 <ForcedMigrationPositionRow
                   key={getHoldingKey(holding)}

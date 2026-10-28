@@ -272,11 +272,15 @@ export const AssetVariantRow: React.FC<{
   /** Show the amounts in and out (dollar value on hover) instead of the
    *  symbols under each name. */
   showAmounts?: boolean;
+  /** One line: Convert beside the target, no alloy badge, and the fee line
+   *  only when it says something other than Free. */
+  isCompact?: boolean;
 }> = ({
   variant,
   showBottomBorder = true,
   onInsufficientFeeTokens,
   showAmounts = false,
+  isCompact = false,
 }) => {
   const { t } = useTranslation();
 
@@ -401,14 +405,47 @@ export const AssetVariantRow: React.FC<{
     Boolean(simulation?.error);
 
   const isButtonLoading = isConvertingThisVariant || simulation.loading;
+  const hasConversionFee = Boolean(
+    quote?.swapFee && !quote.swapFee.toDec().isZero()
+  );
+
+  const convertButton = (
+    <Button
+      size="md"
+      className={classNames("!h-12 !w-fit sm:!w-full", {
+        "rounded-full !bg-osmoverse-850/60": isButtonLoading,
+      })}
+      disabled={conversionDisabled}
+      isLoading={isButtonLoading}
+      onClick={() =>
+        onConvert().catch((e) => {
+          console.error("Failed to convert", e);
+        })
+      }
+    >
+      {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
+    </Button>
+  );
 
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
         {/* On phones the four columns are too narrow to read, so from and to
             stack with a down arrow between them. */}
-        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2 sm:grid-cols-[1fr_1.5rem]">
-          <div className="flex min-w-0 items-center gap-3 sm:col-span-2">
+        <div
+          className={classNames(
+            "grid w-full items-center gap-3 py-2",
+            isCompact
+              ? "grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_auto] sm:grid-cols-1"
+              : "grid-cols-[1fr_1.5rem_1fr_1.5rem] sm:grid-cols-[1fr_1.5rem]"
+          )}
+        >
+          <div
+            className={classNames(
+              "flex min-w-0 items-center gap-3",
+              !isCompact && "sm:col-span-2"
+            )}
+          >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -449,9 +486,18 @@ export const AssetVariantRow: React.FC<{
             id="arrow"
             height={24}
             width={24}
-            className="text-osmoverse-700 sm:col-span-2 sm:ml-2 sm:rotate-90"
+            className={
+              isCompact
+                ? "text-osmoverse-400 sm:rotate-90 sm:justify-self-center"
+                : "text-osmoverse-700 sm:col-span-2 sm:ml-2 sm:rotate-90"
+            }
           />
-          <div className="flex min-w-0 grow items-center gap-3 py-2 px-4 sm:py-0 sm:px-0">
+          <div
+            className={classNames(
+              "flex min-w-0 grow items-center gap-3 py-2",
+              !isCompact && "px-4 sm:py-0 sm:px-0"
+            )}
+          >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -490,7 +536,11 @@ export const AssetVariantRow: React.FC<{
               </span>
             </div>
           </div>
-          {variant.canonicalAsset?.isAlloyed && (
+          {isCompact && (
+            // Full width under the pair on phones.
+            <div className="sm:[&>button]:!w-full">{convertButton}</div>
+          )}
+          {!isCompact && variant.canonicalAsset?.isAlloyed && (
             <div className="flex items-center justify-center">
               <Tooltip
                 arrow={true}
@@ -529,34 +579,22 @@ export const AssetVariantRow: React.FC<{
             </div>
           )}
         </div>
-        <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
-          <div className="body2 text-osmoverse-300">
-            <FeeContent
-              isLoading={isLoading}
-              convertFee={convertFee}
-              swapFee={quote?.swapFee}
-              isUnavailable={isUnavailable}
-              simulation={simulation}
-            />
+        {(!isCompact || isUnavailable || hasConversionFee) && (
+          <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
+            <div className="body2 text-osmoverse-300">
+              <FeeContent
+                isLoading={isLoading}
+                convertFee={convertFee}
+                swapFee={quote?.swapFee}
+                isUnavailable={isUnavailable}
+                simulation={simulation}
+              />
+            </div>
+            {!isCompact && (
+              <div className="flex items-center gap-2">{convertButton}</div>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="md"
-              className={classNames("!h-12 !w-fit sm:!w-full", {
-                "rounded-full !bg-osmoverse-850/60": isButtonLoading,
-              })}
-              disabled={conversionDisabled}
-              isLoading={isButtonLoading}
-              onClick={() =>
-                onConvert().catch((e) => {
-                  console.error("Failed to convert", e);
-                })
-              }
-            >
-              {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
       {showBottomBorder && <div className="h-px w-full bg-osmoverse-700" />}
     </>
@@ -577,10 +615,10 @@ const AmountWithValue: React.FC<{
   amount: CoinPretty;
   fiatValue: PricePretty | undefined;
 }> = ({ amount, fiatValue }) => {
-  const text = formatPretty(amount, { maxDecimals: 6 });
+  const text = formatPretty(amount);
   if (!fiatValue) return <>{text}</>;
   return (
-    <Tooltip content={formatPretty(fiatValue)} arrow>
+    <Tooltip content={fiatValue.toString()} arrow>
       <span className="cursor-help underline decoration-dotted underline-offset-4">
         {text}
       </span>
