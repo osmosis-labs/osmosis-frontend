@@ -8,7 +8,7 @@ import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
-import { getPriceFromSidecar } from "./providers/sidecar";
+import { getPriceFromSidecar, NoSqsPriceError } from "./providers/sidecar";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
@@ -18,10 +18,11 @@ export type PriceProvider = (
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Assets whose price just failed, retried after the ttl. cachified doesn't keep
- *  failures, so without this an asset with no price (e.g. no pools) is re-sent to SQS on
- *  every request, and those are the denoms SQS route-searches. Only the failure is kept,
- *  never a price. */
+/** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
+ *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
+ *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
+ *  kept, never a price: a transient failure (5xx, timeout, expired batch) says nothing
+ *  about the asset and must be retried at once. */
 const priceFailures = new LRUCache<string, Error>({
   max: 1_500,
   ttl: 1000 * 30, // 30 seconds
@@ -95,7 +96,7 @@ export async function getAssetPrice({
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () => priceProvider(foundAsset, currency),
   }).catch((e) => {
-    priceFailures.set(key, e instanceof Error ? e : new Error(String(e)));
+    if (e instanceof NoSqsPriceError) priceFailures.set(key, e);
     throw e;
   });
 }
