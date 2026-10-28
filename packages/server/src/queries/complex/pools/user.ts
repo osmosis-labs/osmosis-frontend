@@ -209,34 +209,48 @@ export async function getUserSharePools(params: {
     const totalShares = total ? makeShareCoin(total) : null;
 
     // underlying assets behind all shares
-    // when catching: likely shares balance is too small for precision
+    // a failure here (pool not found, unexpected pool type) comes back as undefined;
+    // shares too small for token precision resolve to an empty list instead
     const [
-      underlyingAvailableCoins,
-      underlyingLockedCoins,
-      underlyingUnlockingCoins,
-      totalCoins,
+      underlyingAvailableCoinsOrFailed,
+      underlyingLockedCoinsOrFailed,
+      underlyingUnlockingCoinsOrFailed,
+      totalCoinsOrFailed,
     ] = await Promise.all([
       available
         ? getGammShareUnderlyingCoins({ ...params, ...available }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       locked
         ? getGammShareUnderlyingCoins({ ...params, ...locked }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       unlocking
         ? getGammShareUnderlyingCoins({ ...params, ...unlocking }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       total
         ? getGammShareUnderlyingCoins({ ...params, ...total }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
     ]);
+
+    // A failed lookup (pool not found, unexpected pool type) is not an empty position:
+    // it leaves the value unknown instead of $0.
+    const shareLookupFailed = [
+      underlyingAvailableCoinsOrFailed,
+      underlyingLockedCoinsOrFailed,
+      underlyingUnlockingCoinsOrFailed,
+      totalCoinsOrFailed,
+    ].some((coins) => coins === undefined);
+    const underlyingAvailableCoins = underlyingAvailableCoinsOrFailed ?? [];
+    const underlyingLockedCoins = underlyingLockedCoinsOrFailed ?? [];
+    const underlyingUnlockingCoins = underlyingUnlockingCoinsOrFailed ?? [];
+    const totalCoins = totalCoinsOrFailed ?? [];
 
     // value of all shares; undefined when a coin that should have a price has none
     const [availableValue, lockedValue, unlockingValue, totalValue] =
@@ -258,12 +272,11 @@ export async function getUserSharePools(params: {
           coins: totalCoins,
         }),
       ]);
-    const valueUnknown = [
-      availableValue,
-      lockedValue,
-      unlockingValue,
-      totalValue,
-    ].some((value) => value === undefined);
+    const valueUnknown =
+      shareLookupFailed ||
+      [availableValue, lockedValue, unlockingValue, totalValue].some(
+        (value) => value === undefined
+      );
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(
