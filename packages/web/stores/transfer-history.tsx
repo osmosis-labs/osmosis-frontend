@@ -717,6 +717,16 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
         [];
       const merged = snapshots.map((local) => {
+        const winner = pickFurtherAlong(local);
+        // Unproven inclusion is only ever resolved by the status providers,
+        // so a copy that learned it must not lose it to the other copy.
+        const twin = stored.find((s) => keyOf(s) === keyOf(local));
+        return !winner.sendTxUnconfirmed &&
+          (local.sendTxUnconfirmed || twin?.sendTxUnconfirmed)
+          ? { ...winner, sendTxUnconfirmed: true }
+          : winner;
+      });
+      function pickFurtherAlong(local: TxSnapshot): TxSnapshot {
         const key = keyOf(local);
         const storedTwin = stored.find((snapshot) => keyOf(snapshot) === key);
         if (!storedTwin) return local;
@@ -739,7 +749,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           return storedTwin;
         }
         return local;
-      });
+      }
       // Union, not replacement: entries that exist only in storage (created
       // by another session after this one loaded) must survive this
       // session's write, or a stale tab persisting an unrelated change
@@ -863,7 +873,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       this.markPendingStepStale(local.sendTxHash);
       return "stale";
     }
-    if (storedSnapshot.pendingStep) return "resumable";
+    if (storedSnapshot.pendingStep) {
+      // another session may have learned the first tx is unconfirmed
+      if (storedSnapshot.sendTxUnconfirmed && !local.sendTxUnconfirmed) {
+        this.markSendTxUnconfirmed(local.sendTxHash);
+      }
+      return "resumable";
+    }
 
     // Advanced elsewhere: mirror the persisted state so this session's row
     // stops offering Continue, and pick up tracking if still pending.

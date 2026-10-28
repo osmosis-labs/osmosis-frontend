@@ -346,7 +346,11 @@ export const useMultiTxResume = () => {
           // proof the funds are gone: keep the entry resumable. The same
           // holds for an EVM burn whose receipt was never confirmed, which
           // may simply be slow to land.
-          abandonedIsFailed: !priorStepOnSolana && !snapshot.sendTxUnconfirmed,
+          abandonedIsFailed:
+            !priorStepOnSolana &&
+            !transferHistoryStore.snapshots.find(
+              (s) => s.sendTxHash === snapshot.sendTxHash
+            )?.sendTxUnconfirmed,
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(
