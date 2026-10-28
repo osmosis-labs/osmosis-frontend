@@ -270,12 +270,9 @@ const MigrationSection: FunctionComponent<{
         { deadline: deadlineText ?? "" }
       )
     : undefined;
-  const hasPoolRows = [...positions, ...unlocking].some(
-    ({ kind }) => kind !== "order"
-  );
-  const hasOrderRows = [...positions, ...unlocking].some(
-    ({ kind }) => kind === "order"
-  );
+  const holdingRows = [...positions, ...unlocking];
+  const poolRows = holdingRows.filter(({ kind }) => kind !== "order");
+  const orderRows = holdingRows.filter(({ kind }) => kind === "order");
 
   const bodyPath =
     stage === "pastDeadline" && migration.enAfterDeadlineBodyOrLocalizationPath
@@ -349,37 +346,46 @@ const MigrationSection: FunctionComponent<{
           ))}
         </div>
       )}
-      {positions.length + unlocking.length > 0 && (
-        <div className="flex flex-col gap-1 rounded-2xl border border-osmoverse-700 px-4 py-2">
-          <p className="body2 pt-2 text-osmoverse-300">
-            {[
-              hasPoolRows &&
-                t("forcedMigration.heldInPools", {
-                  symbols: symbolsText,
-                }),
-              hasOrderRows &&
-                t("forcedMigration.heldInOrders", {
-                  symbols: symbolsText,
-                }),
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          </p>
-          {[...positions, ...unlocking].map((holding) => (
-            <ForcedMigrationPositionRow
-              key={getHoldingKey(holding)}
-              holding={holding}
-              migration={migration}
-              tolerancePercent={tolerancePercent}
-              onMigrate={(clHolding) =>
-                tolerancePercent !== undefined &&
-                onMigrate(clHolding, tolerancePercent)
-              }
-              lateUnlockNote={lateUnlockNote}
-              deadlineText={deadlineText}
-            />
-          ))}
-        </div>
+      {(
+        [
+          {
+            rows: poolRows,
+            title: t("forcedMigration.liquidityPoolsTitle"),
+            note: t("forcedMigration.heldInPools", { symbols: symbolsText }),
+          },
+          {
+            rows: orderRows,
+            title: t("forcedMigration.limitOrdersTitle"),
+            note: t("forcedMigration.heldInOrders", { symbols: symbolsText }),
+          },
+        ] as const
+      ).map(
+        ({ rows, title, note }) =>
+          rows.length > 0 && (
+            <div
+              key={title}
+              className="flex flex-col gap-1 rounded-2xl border border-osmoverse-700 px-4 py-2"
+            >
+              <div className="flex flex-col gap-1 pt-2">
+                <span className="subtitle1 text-osmoverse-100">{title}</span>
+                <p className="body2 text-osmoverse-300">{note}</p>
+              </div>
+              {rows.map((holding) => (
+                <ForcedMigrationPositionRow
+                  key={getHoldingKey(holding)}
+                  holding={holding}
+                  migration={migration}
+                  tolerancePercent={tolerancePercent}
+                  onMigrate={(clHolding) =>
+                    tolerancePercent !== undefined &&
+                    onMigrate(clHolding, tolerancePercent)
+                  }
+                  lateUnlockNote={lateUnlockNote}
+                  deadlineText={deadlineText}
+                />
+              ))}
+            </div>
+          )
       )}
       {heldElsewhere.length > 0 && (
         <div className="flex flex-col gap-2 rounded-2xl border border-osmoverse-700 p-4">

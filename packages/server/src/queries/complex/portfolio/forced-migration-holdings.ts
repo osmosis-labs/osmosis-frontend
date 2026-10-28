@@ -70,6 +70,10 @@ export type OrderHolding = {
   orderbookAddress: string;
   orderId: number;
   tickId: number;
+  /** Bid buys the base asset with the quote; ask sells the base. */
+  direction: "bid" | "ask";
+  baseDenom: string;
+  quoteDenom: string;
   /** Fraction filled and claimed, 0 to 1. */
   percentFilled: string;
   percentClaimed: string;
@@ -491,6 +495,9 @@ export function getOrderHoldings({
         orderbookAddress: order.orderbookAddress,
         orderId: order.order_id,
         tickId: order.tick_id,
+        direction: order.order_direction,
+        baseDenom,
+        quoteDenom,
         percentFilled: order.percentFilled,
         percentClaimed: order.percentClaimed,
         inDenom,

@@ -13,10 +13,12 @@ import {
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList, shorten } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   USDC_ALLOYED_DENOM,
@@ -34,6 +36,7 @@ import {
   isWithdrawWithinTolerance,
 } from "~/utils/forced-migrations";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { ChainPositionResponse } from "~/utils/position-migrations";
 import { api } from "~/utils/trpc";
 
@@ -99,13 +102,18 @@ export const ForcedMigrationPositionRow: FunctionComponent<{
     <div className="flex flex-col gap-2 border-b border-osmoverse-700 py-3 last:border-b-0">
       {holding.kind === "order" ? (
         <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-stretch">
-          <div className="flex min-w-0 flex-col">
-            <span className="subtitle1 text-osmoverse-100">
-              {getOrderLabel(holding, t)}
-            </span>
-            {oldAmountText && (
-              <span className="body2 text-osmoverse-300">{oldAmountText}</span>
-            )}
+          <div className="flex min-w-0 items-center gap-3">
+            <OrderPairIcon holding={holding} />
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="subtitle1 text-osmoverse-100">
+                {getOrderLabel(holding, t)}
+              </span>
+              {oldAmountText && (
+                <span className="body2 text-osmoverse-300">
+                  {oldAmountText}
+                </span>
+              )}
+            </div>
           </div>
           <OrderAction holding={holding} />
         </div>
@@ -164,16 +172,52 @@ function getUnlockEndsAfterDeadline(
   return false;
 }
 
+/** "Buy ATOM" / "Sell ATOM", as in the portfolio's open orders. */
 function getOrderLabel(
   holding: OrderHolding,
   t: ReturnType<typeof useTranslation>["t"]
 ): string {
-  const symbol = (denom: string) =>
-    getListedAsset(denom)?.symbol ?? shorten(denom);
-  return t("forcedMigration.limitOrder", {
-    pair: `${symbol(holding.inDenom)} → ${symbol(holding.outDenom)}`,
-  });
+  const base = getListedAsset(holding.baseDenom)?.symbol;
+  return `${t(
+    holding.direction === "bid" ? "portfolio.buy" : "portfolio.sell"
+  )} ${base ?? shorten(holding.baseDenom)}`;
 }
+
+/** Base asset logo with the quote's set into its corner, as on the
+ *  create-orderbook modal. */
+const OrderPairIcon: FunctionComponent<{ holding: OrderHolding }> = ({
+  holding,
+}) => {
+  const [base, quote] = [holding.baseDenom, holding.quoteDenom].map((denom) => {
+    const asset = getListedAsset(denom);
+    return {
+      symbol: asset?.symbol ?? shorten(denom),
+      logoURIs: getLogoURIs(asset?.currency.coinImageUrl),
+    };
+  });
+  return (
+    <div className="relative h-10 w-10 shrink-0">
+      <EntityImage
+        logoURIs={base.logoURIs}
+        name={base.symbol}
+        symbol={base.symbol}
+        width={40}
+        height={40}
+        className="rounded-full"
+      />
+      <div className="absolute -bottom-1 -right-1 h-5 w-5 overflow-hidden rounded-full border-2 border-osmoverse-800">
+        <EntityImage
+          logoURIs={quote.logoURIs}
+          name={quote.symbol}
+          symbol={quote.symbol}
+          width={20}
+          height={20}
+          className="rounded-full"
+        />
+      </div>
+    </div>
+  );
+};
 
 function getHoldingStateText(
   holding: ShareHolding | ConcentratedHolding,
@@ -229,6 +273,8 @@ const PoolRowLayout: FunctionComponent<{
           poolId={holding.poolId}
           coins={holding.coins}
           detail={getHoldingStateText(holding, t, language)}
+          // Side by side, the two pools split the width evenly.
+          className={migrateTo ? "flex-1 basis-0" : undefined}
         />
         {migrateTo ? (
           <>
@@ -243,6 +289,7 @@ const PoolRowLayout: FunctionComponent<{
               coins={migrateTo.coins}
               isEstimate
               alignRight
+              className="flex-1 basis-0"
             />
           </>
         ) : (
@@ -260,10 +307,18 @@ const PoolSummary: FunctionComponent<{
   poolId: string;
   coins: { denom: string; amount: string }[];
   detail?: string;
-  /** The amounts are what the holding is expected to become. */
+  /** The amounts are an upper bound on what the holding becomes. */
   isEstimate?: boolean;
   alignRight?: boolean;
-}> = ({ poolId, coins, detail, isEstimate = false, alignRight = false }) => {
+  className?: string;
+}> = ({
+  poolId,
+  coins,
+  detail,
+  isEstimate = false,
+  alignRight = false,
+  className,
+}) => {
   const { t } = useTranslation();
   const assets = coins.map(({ denom }) => {
     const asset = getListedAsset(denom);
@@ -276,14 +331,14 @@ const PoolSummary: FunctionComponent<{
   const amounts = coins.filter(({ amount }) => new Dec(amount).isPositive());
   return (
     <div
-      className={
-        alignRight
-          ? "flex min-w-0 flex-col items-end gap-1 text-right sm:items-start sm:text-left"
-          : "flex min-w-0 flex-col gap-1"
-      }
+      className={classNames(
+        "flex min-w-0 flex-col gap-1",
+        alignRight && "items-end text-right sm:items-start sm:text-left",
+        className
+      )}
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <PoolAssetsIcon size="sm" assets={assets} />
+      <div className="flex min-w-0 items-center gap-3">
+        <PoolAssetsIcon size="sm" className="shrink-0" assets={assets} />
         <PoolAssetsName
           size="sm"
           className="truncate text-osmoverse-100"
@@ -294,22 +349,49 @@ const PoolSummary: FunctionComponent<{
           withAssetInfoLink={false}
         />
       </div>
-      <span className="body2 text-osmoverse-300">
-        {[t("forcedMigration.poolPosition", { poolId }), detail]
-          .filter(Boolean)
-          .join(" · ")}
+      <span className="body2 flex flex-wrap items-center gap-x-1.5 text-osmoverse-300">
+        <span>{t("forcedMigration.poolPosition", { poolId })}</span>
+        <PoolTypeAndSpread poolId={poolId} />
+        {detail && <span>· {detail}</span>}
       </span>
       {amounts.length > 0 && (
         <span className="body2 flex flex-wrap gap-x-3 text-osmoverse-300">
           {amounts.map(({ denom, amount }) => (
             <span key={denom} className="whitespace-nowrap">
-              {isEstimate && "≈ "}
+              {isEstimate && "≤ "}
               {formatHoldingCoin(denom, amount)}
             </span>
           ))}
         </span>
       )}
     </div>
+  );
+};
+
+/** Pool type icon and spread factor, coloured as in the pools table. */
+const PoolTypeAndSpread: FunctionComponent<{ poolId: string }> = ({
+  poolId,
+}) => {
+  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
+  if (!pool) return null;
+  return (
+    <span
+      className={classNames("flex items-center gap-1", {
+        "text-ion-400": pool.type === "concentrated",
+        "text-bullish-300": pool.type === "stable",
+      })}
+    >
+      {pool.type === "weighted" && (
+        <Icon id="weighted-pool" width={16} height={16} />
+      )}
+      {pool.type === "stable" && (
+        <Icon id="stable-pool" width={16} height={16} />
+      )}
+      {pool.type === "concentrated" && (
+        <Icon id="concentrated-pool" width={16} height={16} />
+      )}
+      {pool.spreadFactor.toString()}
+    </span>
   );
 };
 
@@ -366,8 +448,9 @@ const MigratablePoolRow: FunctionComponent<{
       migrateTo={{
         poolId: toPoolId,
         // The migration converts USDC.noble to USDC 1:1 (same decimals) and
-        // re-deposits in the same range; the destination's price can return a
-        // little of one side, hence an estimate.
+        // re-deposits in the same range, sized just under what the withdraw
+        // pays out. At the destination's price the deposit can take less of
+        // one side, which stays in the wallet, so these are upper bounds.
         coins: holding.coins.map(({ denom, amount }) => ({
           denom: denom === USDC_NOBLE_DENOM ? USDC_ALLOYED_DENOM : denom,
           amount,
