@@ -243,7 +243,11 @@ export const AssetsInfoTable: FunctionComponent<{
     if (isMarketDataUnavailable) return [];
     const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
     if (selectedCategory === "topGainers") {
-      return assets.slice(undefined, 10);
+      // The server sort keeps rows with an unknown 24h change (last); they are not
+      // gainers, so leave them out rather than show blank change cells.
+      return assets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(undefined, 10);
     }
     return assets;
   }, [isMarketDataUnavailable, selectedCategory, assetPagesData]);
