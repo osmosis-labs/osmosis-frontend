@@ -35,6 +35,7 @@ jest.mock("../../staking/user", () => {
   };
 });
 jest.mock("../price/providers/sidecar", () => ({
+  ...jest.requireActual("../price/providers/sidecar"),
   getPriceFromSidecar: jest.fn(),
 }));
 

@@ -9,6 +9,7 @@ import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
 import { getPriceFromSidecar, NoSqsPriceError } from "./providers/sidecar";
+import { resolveUnpricedHolding } from "./unpriced-holding";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
@@ -206,7 +207,9 @@ export function isHoldingValueUnknown({
 
 /** Sums the value of the given coins, or returns `undefined` when a coin that should have
  *  a price (see `isHoldingValueUnknown`) can't be priced. Unlike `calcSumCoinsValue`, that
- *  coin isn't counted as zero, which would understate the value. */
+ *  coin isn't counted as zero, which would understate the value. The one exception is an
+ *  asset SQS has no price for, with no price from the other sources and every SQS pool
+ *  holding it drained (see `resolveUnpricedHolding`). */
 export async function calcSumCoinsValueOrUnknown({
   coins,
   ...params
@@ -221,13 +224,18 @@ export async function calcSumCoinsValueOrUnknown({
       .map((coin) => {
         const { denom, amount } = coin.toCoin();
         return calcAssetValue({ ...params, anyDenom: denom, amount }).catch(
-          () =>
+          (error) =>
             isHoldingValueUnknown({
               assetLists: params.assetLists,
               coinMinimalDenom: denom,
               amount,
             })
-              ? undefined
+              ? resolveUnpricedHolding({
+                  assetLists: params.assetLists,
+                  coinMinimalDenom: denom,
+                  amount,
+                  error,
+                })
               : new Dec(0)
         );
       })
