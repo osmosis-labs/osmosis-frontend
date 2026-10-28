@@ -154,6 +154,27 @@ export async function calcAssetValue({
 /** Smallest display amount whose value can't round to zero at any real price. */
 const MIN_PRICEABLE_AMOUNT = new Dec("0.000001");
 
+const assetsByMinimalDenom = new WeakMap<AssetList[], Map<string, Asset>>();
+/** `coinMinimalDenom` lookup that indexes each asset list array once, since the check
+ *  runs per coin and per zero-cap reserve across all pools. First match wins. */
+function findAssetByMinimalDenom(
+  assetLists: AssetList[],
+  coinMinimalDenom: string
+): Asset | undefined {
+  let index = assetsByMinimalDenom.get(assetLists);
+  if (!index) {
+    index = new Map();
+    for (const { assets } of assetLists) {
+      for (const asset of assets) {
+        if (!index.has(asset.coinMinimalDenom))
+          index.set(asset.coinMinimalDenom, asset);
+      }
+    }
+    assetsByMinimalDenom.set(assetLists, index);
+  }
+  return index.get(coinMinimalDenom);
+}
+
 /** True when a held coin with no value means its price is unavailable, so the value is
  *  unknown rather than zero. That holds only for assets that should always have a price:
  *  listed, verified and not preview, disabled or unstable. Spam, sunset and halted assets
@@ -167,9 +188,7 @@ export function isHoldingValueUnknown({
   coinMinimalDenom: string;
   amount: string;
 }): boolean {
-  const asset = assetLists
-    .flatMap(({ assets }) => assets)
-    .find((asset) => asset.coinMinimalDenom === coinMinimalDenom);
+  const asset = findAssetByMinimalDenom(assetLists, coinMinimalDenom);
   if (
     !asset ||
     !asset.verified ||
