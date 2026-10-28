@@ -164,9 +164,14 @@ describe("getOrderHoldings", () => {
   });
 
   it("counts a bid's unfilled amount and an ask's unclaimed proceeds in the old denom", () => {
-    const [bid, ask] = getOrderHoldings({
+    const [bid, partialBid, ask] = getOrderHoldings({
       orders: [
         order("bid"),
+        // Half filled, nothing claimed yet: `quantity` is still the placed
+        // amount onchain, but only half of it is unfilled noble.
+        order("bid", { percentFilled: "0.5" }),
+        // Fully filled, unclaimed: the order holds no noble any more.
+        order("bid", { percentFilled: "1" }),
         order("ask", {
           output: "2000000",
           percentFilled: "0.5",
@@ -181,6 +186,10 @@ describe("getOrderHoldings", () => {
     expect(bid).toMatchObject({
       inDenom: USDC_NOBLE,
       oldDenomAmount: "1000000",
+    });
+    expect(partialBid).toMatchObject({
+      remaining: "500000",
+      oldDenomAmount: "500000",
     });
     expect(ask).toMatchObject({
       outDenom: USDC_NOBLE,

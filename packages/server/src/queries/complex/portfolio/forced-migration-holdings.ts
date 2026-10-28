@@ -18,7 +18,7 @@ import {
 } from "../../osmosis";
 import { queryActiveOrdersSQS, SQSActiveOrder } from "../../sidecar/orderbooks";
 import { getUserLocks, UserLock } from "../osmosis/lockup";
-import { getPools } from "../pools";
+import { getPool, getPools } from "../pools";
 
 type RawCoin = { denom: string; amount: string };
 
@@ -210,7 +210,22 @@ async function getShareHoldings({
   ];
   if (poolIds.length === 0) return [];
 
-  const { items: pools } = await getPools({ assetLists, chainList, poolIds });
+  const { items: sidecarPools } = await getPools({
+    assetLists,
+    chainList,
+    poolIds,
+  });
+  // SQS leaves out pools with an unlisted asset, so those are read from the
+  // chain; otherwise a holding in one would silently raise no reminder. A pool
+  // neither source can build fails the query, and the popup falls back to the
+  // portfolio-total note rather than going quiet.
+  const listedIds = new Set(sidecarPools.map(({ id }) => id));
+  const chainPools = await Promise.all(
+    poolIds
+      .filter((poolId) => !listedIds.has(poolId))
+      .map((poolId) => getPool({ assetLists, chainList, poolId }))
+  );
+  const pools = [...sidecarPools, ...chainPools];
   const poolById = new Map(
     pools
       .filter(
@@ -476,7 +491,13 @@ export function getOrderHoldings({
     const inDenom = isBid ? quoteDenom : baseDenom;
     const outDenom = isBid ? baseDenom : quoteDenom;
 
-    const remaining = new Dec(order.quantity).truncate();
+    // `quantity` only drops when an order is claimed, so it still counts
+    // filled-but-unclaimed amounts; the unfilled part comes from the fill
+    // fraction of what was placed.
+    const unfilledFraction = new Dec(1).sub(new Dec(order.percentFilled));
+    const remaining = unfilledFraction.isPositive()
+      ? new Dec(order.placed_quantity).mul(unfilledFraction).truncate()
+      : new Int(0);
     const unfilledClaims = new Dec(order.percentFilled).sub(
       new Dec(order.percentClaimed)
     );

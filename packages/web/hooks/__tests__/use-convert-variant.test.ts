@@ -106,7 +106,7 @@ describe("getConvertVariantMessages slippage", () => {
 
   test("the 1:1 tolerance is small but non-zero", () => {
     // Non-zero so a unit of chain-side truncation cannot revert the tx; small
-    // enough to be economically irrelevant (0.01% = 100 base units on a 1M USDC
+    // enough to be economically irrelevant (0.1% = 1,000 base units on a 1M USDC
     // conversion). Exact "0" would demand byte-exact output.
     expect(ONE_TO_ONE_MAX_SLIPPAGE).toBe("0.001");
     expect(new Dec(ONE_TO_ONE_MAX_SLIPPAGE).isPositive()).toBe(true);

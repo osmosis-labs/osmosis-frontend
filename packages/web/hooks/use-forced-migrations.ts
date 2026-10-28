@@ -149,9 +149,12 @@ export const useForcedMigrations = () => {
     ),
     ...activeMigrations.map(({ migration, stage }) => {
       const snoozedAtMs = getSnoozedAtMs(migration.id);
-      return snoozedAtMs === undefined
-        ? Number.POSITIVE_INFINITY
-        : getForcedMigrationSnoozeEndMs(snoozedAtMs, stage);
+      const endMs =
+        snoozedAtMs === undefined
+          ? Number.POSITIVE_INFINITY
+          : getForcedMigrationSnoozeEndMs(snoozedAtMs, stage);
+      // An expired snooze keeps its stored key; it's no longer a boundary.
+      return endMs > now.getTime() ? endMs : Number.POSITIVE_INFINITY;
     })
   );
 

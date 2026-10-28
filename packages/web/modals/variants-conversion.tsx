@@ -475,6 +475,7 @@ export const AssetVariantRow: React.FC<{
                   <AmountWithValue
                     amount={variant.amount}
                     fiatValue={variant.fiatValue}
+                    hideDenom={isCompact}
                   />
                 ) : (
                   (variant.amount.currency.coinDenom ?? "")
@@ -529,6 +530,7 @@ export const AssetVariantRow: React.FC<{
                   <AmountWithValue
                     amount={quote.amount}
                     fiatValue={quoteFiatValue}
+                    hideDenom={isCompact}
                   />
                 ) : (
                   (variant?.canonicalAsset?.coinDenom ?? "")
@@ -614,8 +616,9 @@ const AllocationSkeleton = () => (
 const AmountWithValue: React.FC<{
   amount: CoinPretty;
   fiatValue: PricePretty | undefined;
-}> = ({ amount, fiatValue }) => {
-  const text = formatPretty(amount, { maxDecimals: 8 });
+  hideDenom?: boolean;
+}> = ({ amount, fiatValue, hideDenom = false }) => {
+  const text = formatPretty(amount.hideDenom(hideDenom), { maxDecimals: 8 });
   if (!fiatValue) return <>{text}</>;
   return (
     <Tooltip content={formatFiatPrice(fiatValue)} arrow>

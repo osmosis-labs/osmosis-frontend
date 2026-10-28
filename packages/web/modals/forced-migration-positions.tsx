@@ -530,10 +530,10 @@ const MigratablePoolRow: FunctionComponent<{
       }}
       actions={
         <>
-          {/* Withdraw is only the way out when migrating can't be used. */}
-          {forcedMigration.eligibility &&
-            !forcedMigration.eligibility.isEligible &&
-            withdraw}
+          {/* Hidden only once migrating is confirmed possible: if the
+              eligibility check never resolves (pool or CMS data failing to
+              load), the user still has a way out. */}
+          {!forcedMigration.eligibility?.isEligible && withdraw}
           <MigrateAction
             holding={holding}
             forcedMigration={forcedMigration}
@@ -565,8 +565,16 @@ function useHoldingTx() {
       await signAndBroadcast(...(await build(transactionContext)));
     } catch (e) {
       console.error("Forced migration position action failed", e);
-      if (e instanceof PositionMovedError)
-        setError(t("forcedMigration.positionMoved"));
+      // Shown rather than only logged, as the migrate modal does: e.g. an
+      // order filling just before its cancel fails simulation, and nothing
+      // else tells the user it didn't go through.
+      setError(
+        e instanceof PositionMovedError
+          ? t("forcedMigration.positionMoved")
+          : e instanceof Error
+            ? e.message
+            : String(e)
+      );
     } finally {
       setIsRunning(false);
     }
@@ -630,8 +638,8 @@ const WithdrawAction: FunctionComponent<{
   const withdraw = () =>
     run(async (context) => {
       if (holding.kind === "share") {
-        // Minimums come from the amounts shown here, so the chain enforces
-        // exactly the worst case the user saw.
+        // Minimums are the previewed exit amounts less the tolerance, so the
+        // chain enforces that bound on every coin paid out.
         const tokenOutMins = getShareExitTokenOutMins({
           expectedCoins: holding.coins,
           tolerancePercent,
@@ -760,16 +768,17 @@ const UnlockAction: FunctionComponent<{
           [{ lockId: holding.lockId, isSynthetic: true }]
         );
       }
-      if (holding.locks.some(({ isSynthetic }) => isSynthetic))
-        return prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-          context,
-          holding.locks
-        );
       // Ten locks per tx keeps it under the block gas limit, as the pool
       // page does; the rest stay listed for another click.
+      const locks = holding.locks.slice(0, 10);
+      if (locks.some(({ isSynthetic }) => isSynthetic))
+        return prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+          context,
+          locks
+        );
       return prepareBeginUnlockingMsg(
         context,
-        holding.locks.slice(0, 10).map(({ lockId }) => lockId)
+        locks.map(({ lockId }) => lockId)
       );
     });
 
