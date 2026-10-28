@@ -90,6 +90,8 @@ export async function mapGetAssetsWithUserBalances<
       return {
         ...asset,
         liquidity: marketActivity?.liquidity,
+        // lets search ranking use it without a second lookup
+        volume24h: marketActivity?.volume24h,
       };
     })
   );
