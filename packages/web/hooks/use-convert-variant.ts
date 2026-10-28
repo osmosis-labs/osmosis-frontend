@@ -3,6 +3,7 @@ import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
@@ -43,32 +44,27 @@ export function useConvertVariant(
 
   // If the variant is not provided, we will fetch from user's list of variants
   const {
-    data: portfolioAssetsData,
+    assetVariants,
     isError: isPortfolioAssetsError,
     isLoading: isPortfolioAssetsLoading,
-  } = api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: address ?? "",
-    },
-    {
-      enabled:
-        enabled &&
-        !!address &&
-        typeof givenVariantOrCoinMinimalDenom === "string" &&
-        Boolean(givenVariantOrCoinMinimalDenom),
-    }
-  );
+  } = useConvertibleAssetVariants({
+    address,
+    enabled:
+      enabled &&
+      typeof givenVariantOrCoinMinimalDenom === "string" &&
+      Boolean(givenVariantOrCoinMinimalDenom),
+  });
 
   const variant = useMemo(() => {
     if (typeof givenVariantOrCoinMinimalDenom !== "string")
       return givenVariantOrCoinMinimalDenom;
 
-    return portfolioAssetsData?.assetVariants.find(
+    return assetVariants?.find(
       (variant) =>
         variant.amount.currency.coinMinimalDenom ===
         givenVariantOrCoinMinimalDenom
     );
-  }, [givenVariantOrCoinMinimalDenom, portfolioAssetsData]);
+  }, [givenVariantOrCoinMinimalDenom, assetVariants]);
 
   const variantTransactionIdentifier = `${transactionIdentifier}-${variant?.amount.currency.coinMinimalDenom}`;
 

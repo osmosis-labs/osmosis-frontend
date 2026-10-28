@@ -456,10 +456,10 @@ describe("filterConvertibleAssetVariants", () => {
       canonicalAsset: { coinMinimalDenom: canonicalDenom, isAlloyed },
     }) as unknown as AssetVariant;
 
-  it("keeps only members of active alloys, failing closed", async () => {
+  it("keeps only members of active alloys, failing closed", () => {
     const allUsdc = `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`;
     const allBtc = `factory/${ALL_BTC_CONTRACT}/alloyed/allBTC`;
-    const result = await filterConvertibleAssetVariants(
+    const result = filterConvertibleAssetVariants(
       [
         variant(USDC_NOBLE, allUsdc),
         // Member, but too small to mint two units of the alloy.
@@ -470,30 +470,27 @@ describe("filterConvertibleAssetVariants", () => {
         variant(USDC_AXL, `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`),
         // Member of a frozen transmuter.
         variant(WBTC, `factory/${ALL_BTC_CONTRACT}/alloyed/allBTC`),
-        // Status query fails.
+        // No status fetched for this alloy.
         variant(ETH_AXL, `factory/${ALL_ETH_CONTRACT}/alloyed/allETH`),
         // Canonical asset isn't an alloy (legacy consolidation).
         variant("ibc/OLD", "uold", false),
       ],
-      async (contractAddress): Promise<AlloyStatus> => {
-        if (contractAddress === ALL_USDC_CONTRACT)
-          return {
-            isActive: true,
-            normalizationFactors: {
-              [USDC_NOBLE]: "1",
-              [USDC_INJ]: "1000",
-              [USDC_AXL_CORRUPTED]: "1",
-              [allUsdc]: "1",
-            },
-            corruptedDenoms: [USDC_AXL_CORRUPTED],
-          };
-        if (contractAddress === ALL_BTC_CONTRACT)
-          return {
-            isActive: false,
-            normalizationFactors: { [WBTC]: "1", [allBtc]: "1" },
-            corruptedDenoms: [],
-          };
-        throw new Error("node down");
+      {
+        [ALL_USDC_CONTRACT]: {
+          isActive: true,
+          normalizationFactors: {
+            [USDC_NOBLE]: "1",
+            [USDC_INJ]: "1000",
+            [USDC_AXL_CORRUPTED]: "1",
+            [allUsdc]: "1",
+          },
+          corruptedDenoms: [USDC_AXL_CORRUPTED],
+        } satisfies AlloyStatus,
+        [ALL_BTC_CONTRACT]: {
+          isActive: false,
+          normalizationFactors: { [WBTC]: "1", [allBtc]: "1" },
+          corruptedDenoms: [],
+        },
       }
     );
 

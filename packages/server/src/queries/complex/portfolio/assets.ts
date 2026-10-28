@@ -6,7 +6,6 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  captureError,
   captureErrorAndReturn,
   captureIfError,
   DEFAULT_LRU_OPTIONS,
@@ -222,7 +221,9 @@ export type PortfolioAssets = {
   totalCap: PricePretty;
   /** A held coin that should have a price couldn't be priced, so `totalCap` is unknown. */
   totalCapUnknown: boolean;
-  assetVariants: AssetVariant[];
+  /** Variants grouped with a canonical asset. Only those passing
+   *  `filterConvertibleAssetVariants` with `getAlloyStatuses` convert 1:1. */
+  assetVariantCandidates: AssetVariant[];
   /**
    * Assets the user holds across all categories (bank balances, staked,
    * unstaking, in-locks, unclaimed rewards, and pooled — GAMM shares and
@@ -238,12 +239,10 @@ export type PortfolioAssets = {
 export async function getPortfolioAssets({
   address,
   assetLists,
-  chainList,
   allocationLimit = 5,
 }: {
   address: string;
   assetLists: AssetList[];
-  chainList: Chain[];
   allocationLimit?: number;
 }): Promise<PortfolioAssets> {
   const data = await queryPortfolioAssets({
@@ -280,10 +279,12 @@ export async function getPortfolioAssets({
       fiatValue: result.cap_value,
     })) ?? [];
 
-  // check for asset variants, alloys and canonical assets such as USDC
-  const assetVariants = await filterConvertibleAssetVariants(
-    checkAssetVariants(userBalanceDenoms, assetLists),
-    (contractAddress) => getCachedAlloyStatus(contractAddress, chainList)
+  // Variants grouped with a canonical asset. Which of them actually convert
+  // depends on each alloy's transmuter status, fetched separately
+  // (`getAlloyStatuses`) so contract queries never hold up the portfolio.
+  const assetVariantCandidates = checkAssetVariants(
+    userBalanceDenoms,
+    assetLists
   );
 
   const heldAssets = getHeldAssets(categories, assetLists);
@@ -297,7 +298,7 @@ export async function getPortfolioAssets({
       assetLists,
       categories["total-assets"]
     ),
-    assetVariants,
+    assetVariantCandidates,
     heldAssets,
   };
 }
@@ -388,22 +389,60 @@ function getCachedAlloyStatus(
             corruptedDenoms: corrupted,
           };
         })
-        .catch((e) => {
+        .catch((e): AlloyStatus => {
           // Fail closed, but briefly: caching the failure keeps a node outage
-          // from adding the full request timeout to every portfolio load.
+          // from adding the full request timeout to every lookup.
           metadata.ttl = 1000 * 30; // 30 seconds
-          return captureErrorAndReturn(e, undefined);
+          return captureErrorAndReturn(e, INACTIVE_ALLOY_STATUS);
         });
-      if (!result)
-        return {
-          isActive: false,
-          normalizationFactors: {},
-          corruptedDenoms: [],
-        };
-
       return result;
     },
   });
+}
+
+const INACTIVE_ALLOY_STATUS: AlloyStatus = {
+  isActive: false,
+  normalizationFactors: {},
+  corruptedDenoms: [],
+};
+
+/** How many alloys' statuses are fetched at once: each costs three contract
+ *  queries, and public REST endpoints throttle bursts. */
+const ALLOY_STATUS_CONCURRENCY = 3;
+
+/** Transmuter contracts minting the alloys these variants convert into. */
+export function getAlloyContractAddresses(variants: AssetVariant[]): string[] {
+  return [
+    ...new Set(
+      variants
+        .filter(({ canonicalAsset }) => canonicalAsset?.isAlloyed)
+        .map(({ canonicalAsset }) =>
+          getAlloyContractAddress(canonicalAsset.coinMinimalDenom)
+        )
+        .filter((address): address is string => Boolean(address))
+    ),
+  ].sort();
+}
+
+/** Status of each alloy transmuter, a few at a time. A failed lookup comes
+ *  back inactive (cached briefly), so its variants aren't offered. */
+export async function getAlloyStatuses({
+  contractAddresses,
+  chainList,
+}: {
+  contractAddresses: string[];
+  chainList: Chain[];
+}): Promise<Record<string, AlloyStatus>> {
+  const statuses: Record<string, AlloyStatus> = {};
+  const queue = [...new Set(contractAddresses)];
+  await Promise.all(
+    Array.from({ length: ALLOY_STATUS_CONCURRENCY }, async () => {
+      for (let address = queue.shift(); address; address = queue.shift()) {
+        statuses[address] = await getCachedAlloyStatus(address, chainList);
+      }
+    })
+  );
+  return statuses;
 }
 
 /**
@@ -417,41 +456,20 @@ function getCachedAlloyStatus(
  * nothing and the quote fails, and a single unit out leaves no room for any
  * slippage allowance while costing more in gas than it is worth.
  *
- * Fails closed: an alloy whose status can't be fetched offers no conversion,
- * and neither does a corrupted member, which the transmuter won't take in.
+ * Fails closed: an alloy without a status offers no conversion, and neither
+ * does a corrupted member, which the transmuter won't take in.
  */
-export async function filterConvertibleAssetVariants(
+export function filterConvertibleAssetVariants(
   variants: AssetVariant[],
-  getAlloyStatus: (contractAddress: string) => Promise<AlloyStatus>
-): Promise<AssetVariant[]> {
-  const contractAddresses = new Set(
-    variants
-      .filter(({ canonicalAsset }) => canonicalAsset?.isAlloyed)
-      .map(({ canonicalAsset }) =>
-        getAlloyContractAddress(canonicalAsset.coinMinimalDenom)
-      )
-      .filter((address): address is string => Boolean(address))
-  );
-
-  const statusByContract = new Map(
-    await Promise.all(
-      [...contractAddresses].map(
-        async (address) =>
-          [
-            address,
-            await getAlloyStatus(address).catch((error) => {
-              captureError(error);
-              return undefined;
-            }),
-          ] as const
-      )
-    )
-  );
-
+  statusByContract: Record<string, AlloyStatus>
+): AssetVariant[] {
   return variants.filter(({ amount, canonicalAsset }) => {
     if (!canonicalAsset?.isAlloyed) return false;
     const address = getAlloyContractAddress(canonicalAsset.coinMinimalDenom);
-    const status = address ? statusByContract.get(address) : undefined;
+    const status =
+      address && Object.prototype.hasOwnProperty.call(statusByContract, address)
+        ? statusByContract[address]
+        : undefined;
     if (!status?.isActive) return false;
     if (status.corruptedDenoms.includes(amount.currency.coinMinimalDenom))
       return false;

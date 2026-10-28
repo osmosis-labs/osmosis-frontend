@@ -2,7 +2,13 @@ import type { AssetVariant } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";
 
@@ -17,9 +23,9 @@ import {
   getConvertVariantMessages,
   useConvertVariant,
 } from "~/hooks/use-convert-variant";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { api } from "~/utils/trpc";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
@@ -136,44 +142,30 @@ export const AssetVariantsConversionModal = () => {
   );
 
   const {
-    data: portfolioAssetsData,
+    assetVariants: convertibleVariants,
     error: portfolioAssetsError,
     isLoading: isPortfolioAssetsLoading,
-  } = api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: address ?? "",
-    },
-    {
-      enabled: !!address,
-      select: (data) => {
-        // If the modal is open for a specific variant, filter the assets to only include that variant
-        if (variantCoinMinimalDenom) {
-          return {
-            ...data,
-            assetVariants: data.assetVariants.filter(
-              (variant) =>
-                variant.amount.currency.coinMinimalDenom ===
-                variantCoinMinimalDenom
-            ),
-          };
-        }
-
-        return data;
-      },
-    }
+  } = useConvertibleAssetVariants({ address });
+  // Opened for one variant: show only that one.
+  const assetVariants = useMemo(
+    () =>
+      variantCoinMinimalDenom
+        ? convertibleVariants?.filter(
+            (variant) =>
+              variant.amount.currency.coinMinimalDenom ===
+              variantCoinMinimalDenom
+          )
+        : convertibleVariants,
+    [convertibleVariants, variantCoinMinimalDenom]
   );
 
   // Use effect to close modal when no variants left
   // This method, after testing, is more immediate than using tanstack's select
   useEffect(() => {
-    if (
-      portfolioAssetsData &&
-      portfolioAssetsData.assetVariants.length === 0 &&
-      isOpen
-    ) {
+    if (assetVariants && assetVariants.length === 0 && isOpen) {
       setIsOpen(false);
     }
-  }, [portfolioAssetsData, isOpen, setIsOpen]);
+  }, [assetVariants, isOpen, setIsOpen]);
 
   return (
     <ModalBase
@@ -224,16 +216,14 @@ export const AssetVariantsConversionModal = () => {
               {t("assetVariantsConversion.errorLoading")}
             </p>
           ) : (
-            portfolioAssetsData?.assetVariants.map(
-              (variant, index, variants) => (
-                <AssetVariantRow
-                  key={variant.amount.currency.coinMinimalDenom}
-                  variant={variant}
-                  showBottomBorder={index !== variants.length - 1}
-                  onInsufficientFeeTokens={reportInsufficientFeeTokens}
-                />
-              )
-            )
+            assetVariants?.map((variant, index, variants) => (
+              <AssetVariantRow
+                key={variant.amount.currency.coinMinimalDenom}
+                variant={variant}
+                showBottomBorder={index !== variants.length - 1}
+                onInsufficientFeeTokens={reportInsufficientFeeTokens}
+              />
+            ))
           )}
         </div>
       </div>
@@ -274,11 +264,21 @@ const AssetVariantRow: React.FC<{
    * has very low liquidity and would fail on chain for some reason.
    * If so, block the user from sending tx.
    */
-  // Re-run once the quote arrives (it usually isn't cached on mount). Keyed on
-  // the variant's denom and amount, not the object, which callers may rebuild
-  // on render.
+  // Re-run once the quote arrives (it usually isn't cached on mount), and again
+  // only when it changes in substance. Keyed on stable fields, not the
+  // objects: callers may rebuild the variant on render, and a refetched quote
+  // is a new object (it holds class instances, so structural sharing can't
+  // keep it) even when nothing changed, e.g. on returning from a wallet app.
   const variantDenom = variant.amount.currency.coinMinimalDenom;
   const variantAmount = variant.amount.toCoin().amount;
+  const quoteKey = quote
+    ? `${quote.amount.toCoin().amount}:${quote.split
+        .map(({ pools }) => pools.map(({ id }) => id).join(">"))
+        .join("|")}`
+    : undefined;
+  // Bumped on returning to the window while the row is failing, so a fee
+  // top-up or a recovered node is picked up without a change to the quote.
+  const [retryNonce, setRetryNonce] = useState(0);
   const simulation = useAsync(async () => {
     if (!account || !quote || !account?.address) return;
 
@@ -290,9 +290,24 @@ const AssetVariantRow: React.FC<{
 
     if (!Array.isArray(messages)) return;
 
-    await estimateFee({ messages });
+    try {
+      await estimateFee({ messages });
+    } catch (e) {
+      // A short fee balance is definitive; anything else (node timeout, 5xx,
+      // throttling) gets one retry before the row shows Unavailable.
+      if (e instanceof InsufficientBalanceForFeeError) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+      await estimateFee({ messages });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.address, quote, variantDenom, variantAmount]);
+  }, [account?.address, quoteKey, variantDenom, variantAmount, retryNonce]);
+
+  useEffect(() => {
+    if (!simulation.error) return;
+    const retry = () => setRetryNonce((nonce) => nonce + 1);
+    window.addEventListener("focus", retry);
+    return () => window.removeEventListener("focus", retry);
+  }, [simulation.error]);
 
   const isUnavailable = Boolean(simulation?.error) || isError;
 

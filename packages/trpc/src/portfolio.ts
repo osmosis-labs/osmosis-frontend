@@ -1,4 +1,8 @@
-import { getPortfolioAssets, getPortfolioOverTime } from "@osmosis-labs/server";
+import {
+  getAlloyStatuses,
+  getPortfolioAssets,
+  getPortfolioOverTime,
+} from "@osmosis-labs/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -23,11 +27,22 @@ export const portfolioRouter = createTRPCRouter({
         address: z.string().startsWith("osmo"),
       })
     )
-    .query(({ input: { address }, ctx: { assetLists, chainList } }) =>
+    .query(({ input: { address }, ctx: { assetLists } }) =>
       getPortfolioAssets({
         address,
         assetLists,
-        chainList,
       })
+    ),
+  /** Transmuter status per alloy contract, for deciding which variants
+   *  convert. Separate from the portfolio so contract queries never hold it
+   *  up. */
+  getAlloyStatuses: publicProcedure
+    .input(
+      z.object({
+        contractAddresses: z.array(z.string().startsWith("osmo1")).max(50),
+      })
+    )
+    .query(({ input: { contractAddresses }, ctx: { chainList } }) =>
+      getAlloyStatuses({ contractAddresses, chainList })
     ),
 });
