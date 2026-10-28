@@ -371,7 +371,8 @@ function getCachedAlloyStatus(
           if (
             typeof active !== "boolean" ||
             !Array.isArray(configs) ||
-            !Array.isArray(corrupted)
+            !Array.isArray(corrupted) ||
+            !corrupted.every((denom) => typeof denom === "string")
           )
             throw new Error(
               `Unexpected transmuter status response from ${contractAddress}`
@@ -454,10 +455,14 @@ export async function filterConvertibleAssetVariants(
     if (!status?.isActive) return false;
     if (status.corruptedDenoms.includes(amount.currency.coinMinimalDenom))
       return false;
-    const inFactor =
-      status.normalizationFactors[amount.currency.coinMinimalDenom];
-    const outFactor =
-      status.normalizationFactors[canonicalAsset.coinMinimalDenom];
+    // Own keys only, so a denom like "constructor" can't read an inherited
+    // property off the plain object.
+    const factorOf = (denom: string) =>
+      Object.prototype.hasOwnProperty.call(status.normalizationFactors, denom)
+        ? status.normalizationFactors[denom]
+        : undefined;
+    const inFactor = factorOf(amount.currency.coinMinimalDenom);
+    const outFactor = factorOf(canonicalAsset.coinMinimalDenom);
     if (!inFactor || !outFactor) return false;
     // At least two units out: amount * outFactor / inFactor >= 2.
     return new Int(amount.toCoin().amount)
