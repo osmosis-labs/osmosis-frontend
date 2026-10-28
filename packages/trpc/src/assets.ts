@@ -743,7 +743,12 @@ export const assetsRouter = createTRPCRouter({
       );
 
       return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        // `sort` keeps rows without a listing date (last); this list excludes them.
+        marketAssets.filter(
+          (asset) =>
+            asset.priceChange24h !== undefined &&
+            asset.listingDate !== undefined
+        ),
         "listingDate"
       ).slice(0, topN);
     }),
