@@ -21,8 +21,10 @@ export interface TokenData {
   coingecko_mcap: number | null;
 }
 
-export async function queryAllTokenData(): Promise<TokenData[]> {
+export async function queryAllTokenData({
+  signal,
+}: { signal?: AbortSignal } = {}): Promise<TokenData[]> {
   // collect params
   const url = new URL("/tokens/v2/all", HISTORICAL_DATA_URL);
-  return await apiClient<TokenData[]>(url.toString());
+  return await apiClient<TokenData[]>(url.toString(), { signal });
 }

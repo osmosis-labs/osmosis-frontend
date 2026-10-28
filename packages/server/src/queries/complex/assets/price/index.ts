@@ -135,6 +135,76 @@ export async function calcAssetValue({
     .mul(price);
 }
 
+/** Smallest display amount whose value can't round to zero at any real price. */
+const MIN_PRICEABLE_AMOUNT = new Dec("0.000001");
+
+/** True when a held coin with no value means its price is unavailable, so the value is
+ *  unknown rather than zero. That holds only for assets that should always have a price:
+ *  listed, verified and not preview, disabled or unstable. Spam, sunset and halted assets
+ *  are expected to have no price, and a tiny amount can round to a zero value. */
+export function isHoldingValueUnknown({
+  assetLists,
+  coinMinimalDenom,
+  amount,
+}: {
+  assetLists: AssetList[];
+  coinMinimalDenom: string;
+  amount: string;
+}): boolean {
+  const asset = assetLists
+    .flatMap(({ assets }) => assets)
+    .find((asset) => asset.coinMinimalDenom === coinMinimalDenom);
+  if (
+    !asset ||
+    !asset.verified ||
+    asset.preview ||
+    asset.disabled ||
+    asset.unstable
+  ) {
+    return false;
+  }
+
+  return new Dec(amount)
+    .quo(DecUtils.getTenExponentN(asset.decimals))
+    .gte(MIN_PRICEABLE_AMOUNT);
+}
+
+/** Sums the value of the given coins, or returns `undefined` when a coin that should have
+ *  a price (see `isHoldingValueUnknown`) can't be priced. Unlike `calcSumCoinsValue`, that
+ *  coin isn't counted as zero, which would understate the value. */
+export async function calcSumCoinsValueOrUnknown({
+  coins,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  coins: CoinPretty[];
+}): Promise<Dec | undefined> {
+  const values = await Promise.all(
+    coins
+      .filter((coin) => coin.toDec().isPositive())
+      .map((coin) => {
+        const { denom, amount } = coin.toCoin();
+        return calcAssetValue({ ...params, anyDenom: denom, amount }).catch(
+          () =>
+            isHoldingValueUnknown({
+              assetLists: params.assetLists,
+              coinMinimalDenom: denom,
+              amount,
+            })
+              ? undefined
+              : new Dec(0)
+        );
+      })
+  );
+  let sum = new Dec(0);
+  for (const value of values) {
+    if (value === undefined) return undefined;
+    sum = sum.add(value);
+  }
+  return sum;
+}
+
 /** Calculate and sum the value of multiple coins.
  *  Will only include listed assets with prices as part of sum. */
 export function calcSumCoinsValue({

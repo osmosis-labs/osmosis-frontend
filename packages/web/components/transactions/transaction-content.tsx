@@ -29,6 +29,7 @@ export const TransactionContent = ({
   open,
   address,
   isLoading,
+  isError = false,
   isWalletConnected,
   page,
   hasNextPage,
@@ -41,6 +42,8 @@ export const TransactionContent = ({
   open: boolean;
   address: string;
   isLoading: boolean;
+  /** The indexed history failed to load, so the list may be incomplete. */
+  isError?: boolean;
   isWalletConnected: boolean;
   page: string;
   hasNextPage: boolean;
@@ -130,6 +133,11 @@ export const TransactionContent = ({
             <TabPanel>
               <>
                 <div className="-mx-4 flex flex-col">
+                  {isError && !showConnectWallet && (
+                    <p className="body2 px-4 py-3 text-center text-osmoverse-300">
+                      {t("transactions.historyLoadError")}
+                    </p>
+                  )}
                   {showConnectWallet ? (
                     <NoTransactionsSplash variant="connect" />
                   ) : showNoMatches ? (
@@ -153,7 +161,7 @@ export const TransactionContent = ({
                     />
                   ) : isLoading ? (
                     <Spinner className="self-center" />
-                  ) : transactions.length === 0 ? (
+                  ) : transactions.length === 0 && !isError ? (
                     <NoTransactionsSplash variant="transactions" />
                   ) : null}
                 </div>

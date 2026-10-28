@@ -20,37 +20,41 @@ export const NavbarOsmoPrice = () => {
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
   const { isWalletConnected } = useWallet();
 
-  const { data: osmo } = api.edge.assets.getMarketAsset.useQuery({
+  const { data: osmo, isLoading } = api.edge.assets.getMarketAsset.useQuery({
     findMinDenomOrSymbol: "OSMO",
   });
 
-  if (!osmo || !osmo.currentPrice) return null;
+  // The price can be unavailable (data-services outage): it shows "–", and
+  // Buy tokens still renders.
+  const price = osmo?.currentPrice;
 
   return (
     <div className="flex flex-col gap-6 px-2">
       <div className="flex items-center justify-between px-2">
         <SkeletonLoader
-          isLoaded={osmo.currentPrice.isReady}
+          isLoaded={price?.isReady ?? !isLoading}
           className="min-w-[70px]"
         >
           <div className="flex items-center gap-1">
             <EntityImage
-              name={osmo.coinName}
-              symbol={osmo.coinDenom}
+              name={osmo?.coinName ?? "Osmosis"}
+              symbol={osmo?.coinDenom ?? "OSMO"}
               logoURIs={{
-                png: osmo.coinImageUrl,
+                png: osmo?.coinImageUrl,
               }}
               width={20}
               height={20}
             />
 
             <p className="mt-[3px]">
-              {formatPretty(osmo.currentPrice, {
-                maxDecimals: 6,
-                maximumSignificantDigits: undefined,
-                maximumFractionDigits: 3,
-                notation: "standard",
-              })}
+              {price
+                ? formatPretty(price, {
+                    maxDecimals: 6,
+                    maximumSignificantDigits: undefined,
+                    maximumFractionDigits: 3,
+                    notation: "standard",
+                  })
+                : "–"}
             </p>
           </div>
         </SkeletonLoader>
@@ -59,7 +63,7 @@ export const NavbarOsmoPrice = () => {
       </div>
 
       {isWalletConnected && (
-        <SkeletonLoader isLoaded={osmo.currentPrice.isReady}>
+        <SkeletonLoader isLoaded={!isLoading}>
           <Button
             variant="outline"
             className="button group relative flex w-full items-center justify-center gap-2 overflow-hidden !rounded-full border-osmoverse-700 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"

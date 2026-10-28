@@ -163,6 +163,22 @@ const config = {
     // and their dependencies out of the server bundle. See config/wagmi-connectors.ts and
     // config/wallet-installers.ts.
     if (isServer) {
+      // Bundle @keplr-wallet/crypto on the server instead of loading it from node_modules, so the
+      // starknet stub above applies there too. Nothing server-side uses its Starknet key methods.
+      // `transpilePackages` would do this, but it also makes the client build downlevel the
+      // workspace packages, which breaks the codecs' `(value?.toString)()` calls on BigInts.
+      const bundledOnServer = /^@keplr-wallet\/crypto(\/|$)/;
+      config.externals = []
+        .concat(config.externals)
+        .map((external) =>
+          typeof external === "function"
+            ? (/** @type {any} */ data, /** @type {any[]} */ ...rest) =>
+                bundledOnServer.test(data.request)
+                  ? Promise.resolve()
+                  : external(data, ...rest)
+            : external
+        );
+
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(
           /config[\\/](wagmi-connectors|wallet-installers)$/,
