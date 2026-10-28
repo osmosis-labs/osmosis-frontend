@@ -42,7 +42,7 @@ function apiCachePolicy(request: Request): CachePolicy | undefined {
   const url = cacheableUrl(request);
   if (!url?.pathname.startsWith("/api/")) return undefined;
   // A blocked client must not be served (or stored as) another client's cached response.
-  // The API Worker also rejects these before the cache; the pages Worker still relies on this.
+  // The API Worker rejects these before the cache; this keeps a direct call to the policy honest.
   if (isBlockedApiUserAgent(request.headers.get("user-agent")))
     return undefined;
   return {
@@ -132,9 +132,9 @@ export function withImageEdgeCache(
 
 /**
  * Wraps a Worker's fetch handler with the shared CDN cache Vercel gives the app: the API policy
- * and the image policy. The API Worker uses `withApiEdgeCache` alone. Hits skip Next's middleware,
- * so API requests the middleware would block always reach `handler` when this wrapper is what
- * enforces the bot check.
+ * and the image policy. The API Worker uses `withApiEdgeCache` alone, and the pages Worker uses
+ * `withImageEdgeCache` alone. Hits skip Next's middleware, so API requests the middleware would
+ * block always reach `handler` when this wrapper is what enforces the bot check.
  */
 export function withEdgeCache(
   handler: FetchHandler,

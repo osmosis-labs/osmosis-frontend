@@ -13,7 +13,7 @@
     "test": "yarn generate && dotenv -c -- jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
-    "cf:build": "dotenv -c production -- opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
+    "cf:build": "dotenv -c production -- node scripts/cf-build-pages.mjs",
     "cf:build:profile": "CF_PROFILE=true yarn cf:build",
     "cf:preview": "opennextjs-cloudflare preview",
     "cf:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
