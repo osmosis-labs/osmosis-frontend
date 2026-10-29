@@ -646,6 +646,8 @@
     "title": "Liquidität entfernen"
   },
   "requestRejected": "Anfrage zurückgewiesen",
+  "waitingForWallet": "Warten auf Ihre Wallet...",
+  "signInMobileWallet": "Signieren Sie in Ihrer mobilen Wallet...",
   "settings": {
     "filterDust": "Staub filtern",
     "selectLanguage": "Sprache auswählen",
@@ -1398,8 +1400,6 @@
       "description": "Dieser Handel verändert den Marktpreis um {impact}, sodass Sie möglicherweise deutlich weniger als den angezeigten Betrag erhalten."
     },
     "lossAcknowledgement": "Ja, ich verstehe, dass dieser Handel zu einem erheblichen Wertverlust führen kann, und ich möchte fortfahren.",
-    "waitingForWallet": "Warten auf Ihre Wallet...",
-    "walletNotResponding": "Warten auf Ihre Wallet. Öffnen Sie {wallet} auf Ihrem Telefon, um fortzufahren.",
     "errors": {
       "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren.",
       "tradeMayResultInLossOfValue": "Ihr Handel kann zu einem erheblichen Wertverlust führen",

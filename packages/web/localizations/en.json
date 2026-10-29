@@ -646,6 +646,8 @@
     "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
+  "waitingForWallet": "Waiting for your wallet...",
+  "signInMobileWallet": "Sign in your mobile wallet...",
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
@@ -1398,8 +1400,6 @@
       "description": "This trade moves the market price by {impact}, so you may receive far less than the amount shown."
     },
     "lossAcknowledgement": "Yes, I understand this trade may lose a significant amount of value and I wish to proceed.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
     "errors": {
       "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue.",
       "tradeMayResultInLossOfValue": "Your trade may result in significant loss of value",

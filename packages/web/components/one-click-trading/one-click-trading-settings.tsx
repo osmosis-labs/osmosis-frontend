@@ -36,6 +36,7 @@ import {
 } from "~/hooks";
 import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
+import { useWalletPromptLabel } from "~/hooks/use-wallet-prompt-label";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { api } from "~/utils/trpc";
 
@@ -143,6 +144,7 @@ export const OneClickTradingSettings = ({
   setExternalChanges,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
+  const walletPromptLabel = useWalletPromptLabel();
 
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
@@ -499,6 +501,7 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
+                        loadingText={walletPromptLabel}
                         disabled={hasInsufficientFeeTokensForRemove}
                       >
                         {hasInsufficientFeeTokensForRemove
@@ -516,6 +519,7 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
+                        loadingText={walletPromptLabel}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>

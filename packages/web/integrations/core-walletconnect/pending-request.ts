@@ -1,49 +1,22 @@
 /**
- * Tracks the WalletConnect request currently waiting on the user's phone, so
- * the UI can offer a way out and a stalled request cannot hang a flow forever.
+ * Tracks WalletConnect requests waiting on the user's phone, so the UI can
+ * point the user at their mobile wallet and a stalled request cannot hang a
+ * flow forever.
  *
- * Settling is one-way: once a request is cancelled or times out, the caller's
- * promise is rejected and any answer the wallet sends later is ignored. The
- * signed payload never reaches the broadcast step, so nothing is sent after the
- * user was told the transaction stopped.
+ * Settling is one-way: once a request times out, the caller's promise is
+ * rejected and any answer the wallet sends later is ignored. The signed payload
+ * never reaches the broadcast step, so nothing is sent after the user was told
+ * the transaction stopped.
  */
 
 /** Hard limit for a single wallet request. A late approval inside the window is
  *  the user's own action and goes through normally. */
 export const WC_REQUEST_TIMEOUT_MS = 120_000;
 
-/** How long to wait with no answer before the UI shows the waiting state. */
-export const WC_WAITING_NOTICE_DELAY_MS = 5_000;
-
-export interface PendingWalletRequest {
-  walletName: string;
-  startedAt: number;
-  cancel: () => void;
-}
-
 type Listener = () => void;
 
-const inFlight = new Set<PendingWalletRequest & { reject: () => void }>();
-let current: PendingWalletRequest | null = null;
+const inFlight = new Set<object>();
 const listeners = new Set<Listener>();
-
-/** The snapshot is rebuilt on every change so it stays referentially stable
- *  between changes. It describes the newest request, so the waiting notice is
- *  timed from the latest prompt rather than an older one still open. Cancelling
- *  it cancels every in-flight request: requests can overlap (e.g. an account
- *  lookup while a signature is open), and a cancel that left any of them live
- *  could still end in a broadcast. */
-function refresh() {
-  const newest = [...inFlight][inFlight.size - 1];
-  current = newest
-    ? {
-        walletName: newest.walletName,
-        startedAt: newest.startedAt,
-        cancel: () => [...inFlight].forEach((request) => request.reject()),
-      }
-    : null;
-  listeners.forEach((listener) => listener());
-}
 
 export function subscribePendingWalletRequest(listener: Listener) {
   listeners.add(listener);
@@ -52,14 +25,15 @@ export function subscribePendingWalletRequest(listener: Listener) {
   };
 }
 
-export function getPendingWalletRequest() {
-  return current;
+/** True while any WalletConnect request is waiting on the phone. */
+export function hasPendingWalletRequest() {
+  return inFlight.size > 0;
 }
 
 /**
- * Races `request` against the user's cancel and a hard timeout. The underlying
- * request is not aborted (WalletConnect has no abort), only detached: its
- * eventual result is discarded.
+ * Races `request` against a hard timeout. The underlying request is not
+ * aborted (WalletConnect has no abort), only detached: its eventual result is
+ * discarded.
  */
 export function trackWalletRequest<T>({
   request,
@@ -72,13 +46,7 @@ export function trackWalletRequest<T>({
 }): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     let settled = false;
-
-    const pending = {
-      walletName,
-      startedAt: Date.now(),
-      cancel: () => {},
-      reject: () => settle(() => reject(new Error("Request rejected"))),
-    };
+    const pending = {};
 
     const timer = setTimeout(
       () =>
@@ -97,12 +65,12 @@ export function trackWalletRequest<T>({
       settled = true;
       clearTimeout(timer);
       inFlight.delete(pending);
-      refresh();
+      listeners.forEach((listener) => listener());
       finish();
     }
 
     inFlight.add(pending);
-    refresh();
+    listeners.forEach((listener) => listener());
 
     request.then(
       (value) => settle(() => resolve(value)),

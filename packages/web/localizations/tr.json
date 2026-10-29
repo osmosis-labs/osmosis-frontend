@@ -646,6 +646,8 @@
     "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
+  "waitingForWallet": "Cüzdanınız bekleniyor...",
+  "signInMobileWallet": "Mobil cüzdanınızda imzalayın...",
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",
@@ -1398,8 +1400,6 @@
       "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
     },
     "lossAcknowledgement": "Evet, bu işlemin önemli değer kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
-    "waitingForWallet": "Cüzdanınız bekleniyor...",
-    "walletNotResponding": "Cüzdanınız bekleniyor. Devam etmek için telefonunuzda {wallet} uygulamasını açın.",
     "errors": {
       "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
       "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",

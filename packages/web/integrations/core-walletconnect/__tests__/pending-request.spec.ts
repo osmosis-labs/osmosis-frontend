@@ -1,7 +1,7 @@
 import { prettifyTxError } from "~/components/alert/prettify";
 
 import {
-  getPendingWalletRequest,
+  hasPendingWalletRequest,
   trackWalletRequest,
   WC_REQUEST_TIMEOUT_MS,
 } from "../pending-request";
@@ -10,26 +10,14 @@ describe("trackWalletRequest", () => {
   beforeEach(() => jest.useFakeTimers());
   afterEach(() => jest.useRealTimers());
 
-  it("resolves with the wallet response and clears the pending request", async () => {
+  it("resolves with the wallet response and clears the pending flag", async () => {
     const result = trackWalletRequest({
       request: Promise.resolve("signed"),
       walletName: "Keplr",
     });
+    expect(hasPendingWalletRequest()).toBe(true);
     await expect(result).resolves.toBe("signed");
-    expect(getPendingWalletRequest()).toBeNull();
-  });
-
-  it("rejects on cancel and drops a response that arrives afterwards", async () => {
-    let answer!: (value: string) => void;
-    const late = new Promise<string>((resolve) => (answer = resolve));
-    const result = trackWalletRequest({ request: late, walletName: "Keplr" });
-
-    getPendingWalletRequest()!.cancel();
-    await expect(result).rejects.toThrow("Request rejected");
-
-    answer("signed-too-late");
-    await Promise.resolve();
-    expect(getPendingWalletRequest()).toBeNull();
+    expect(hasPendingWalletRequest()).toBe(false);
   });
 
   it("rejects at the hard timeout and drops a late response", async () => {
@@ -45,9 +33,31 @@ describe("trackWalletRequest", () => {
 
     jest.advanceTimersByTime(1);
     await expect(result).rejects.toThrow("did not respond in time");
+    expect(hasPendingWalletRequest()).toBe(false);
 
     answer("signed-too-late");
     await expect(result).rejects.toThrow("did not respond in time");
+  });
+
+  it("stays pending until every overlapping request has settled", async () => {
+    let answerAccounts!: (value: string) => void;
+    const accounts = trackWalletRequest({
+      request: new Promise<string>((resolve) => (answerAccounts = resolve)),
+      walletName: "Keplr",
+    });
+    const signing = trackWalletRequest({
+      request: new Promise<string>(() => {}),
+      walletName: "Keplr",
+    });
+    signing.catch(() => {});
+
+    answerAccounts("accounts");
+    await accounts;
+    expect(hasPendingWalletRequest()).toBe(true);
+
+    jest.advanceTimersByTime(WC_REQUEST_TIMEOUT_MS);
+    await expect(signing).rejects.toThrow("did not respond in time");
+    expect(hasPendingWalletRequest()).toBe(false);
   });
 
   it("times out with a message the toast can translate", async () => {
@@ -62,24 +72,5 @@ describe("trackWalletRequest", () => {
       "errors.walletRequestTimedOut",
       { wallet: "Keplr Mobile" },
     ]);
-  });
-});
-
-describe("overlapping requests", () => {
-  it("cancel rejects every in-flight request, not just the latest", async () => {
-    const signing = trackWalletRequest({
-      request: new Promise<string>(() => {}),
-      walletName: "Keplr",
-    });
-    const accounts = trackWalletRequest({
-      request: new Promise<string>(() => {}),
-      walletName: "Keplr",
-    });
-
-    getPendingWalletRequest()!.cancel();
-
-    await expect(signing).rejects.toThrow("Request rejected");
-    await expect(accounts).rejects.toThrow("Request rejected");
-    expect(getPendingWalletRequest()).toBeNull();
   });
 });

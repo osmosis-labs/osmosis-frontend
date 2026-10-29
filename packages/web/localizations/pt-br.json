@@ -646,6 +646,8 @@
     "title": "Remover Liquidez"
   },
   "requestRejected": "Solicitação rejeitada",
+  "waitingForWallet": "Aguardando sua carteira...",
+  "signInMobileWallet": "Assine na sua carteira móvel...",
   "settings": {
     "filterDust": "Filtrar Poeira",
     "selectLanguage": "Selecionar idioma",
@@ -1398,8 +1400,6 @@
       "description": "Esta negociação move o preço de mercado em {impact}, portanto você pode receber muito menos do que o valor exibido."
     },
     "lossAcknowledgement": "Sim, entendo que esta negociação pode causar uma perda significativa de valor e desejo continuar.",
-    "waitingForWallet": "Aguardando sua carteira...",
-    "walletNotResponding": "Aguardando sua carteira. Abra {wallet} no seu celular para continuar.",
     "errors": {
       "noAssetAvailable": "Você não tem nenhum fundo {coinName} no Osmosis para negociar. Escolha uma opção para continuar.",
       "tradeMayResultInLossOfValue": "Sua negociação pode resultar em perda significativa de valor",

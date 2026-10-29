@@ -646,6 +646,8 @@
     "title": "Elimina Lichiditate"
   },
   "requestRejected": "Cerere respinsa",
+  "waitingForWallet": "Se așteaptă portofelul dumneavoastră...",
+  "signInMobileWallet": "Semnați în portofelul mobil...",
   "settings": {
     "filterDust": "Filtru de praf",
     "selectLanguage": "Selecteaza limba",
@@ -1398,8 +1400,6 @@
       "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
     },
     "lossAcknowledgement": "Da, înțeleg că această tranzacție ar putea cauza pierderi semnificative de valoare și doresc să continui.",
-    "waitingForWallet": "Se așteaptă portofelul dumneavoastră...",
-    "walletNotResponding": "Se așteaptă portofelul dvs. Deschideți {wallet} pe telefon pentru a continua.",
     "errors": {
       "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
       "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",

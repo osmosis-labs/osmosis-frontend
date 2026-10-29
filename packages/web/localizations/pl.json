@@ -646,6 +646,8 @@
     "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
+  "waitingForWallet": "Oczekiwanie na portfel...",
+  "signInMobileWallet": "Podpisz w portfelu mobilnym...",
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",
@@ -1398,8 +1400,6 @@
       "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
     },
     "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
-    "waitingForWallet": "Oczekiwanie na portfel...",
-    "walletNotResponding": "Oczekiwanie na portfel. Otwórz {wallet} na telefonie, aby kontynuować.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",

@@ -49,9 +49,9 @@ import {
 } from "~/hooks";
 import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
-import { usePendingWalletRequest } from "~/hooks/use-pending-wallet-request";
 import { useSwap } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
+import { useWalletPromptLabel } from "~/hooks/use-wallet-prompt-label";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -162,7 +162,7 @@ export function ReviewOrder({
   slippageLiquidityUnknown = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-  const pendingWalletRequest = usePendingWalletRequest();
+  const walletPromptLabel = useWalletPromptLabel();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
@@ -1128,9 +1128,7 @@ export function ReviewOrder({
                       }
                       isLoading={isAwaitingSignature}
                       loadingText={
-                        signsWithOneClickSession
-                          ? undefined
-                          : t("limitOrders.waitingForWallet")
+                        signsWithOneClickSession ? undefined : walletPromptLabel
                       }
                       className="body2 sm:caption !rounded-2xl"
                     >
@@ -1138,22 +1136,6 @@ export function ReviewOrder({
                     </Button>
                   </div>
                 </>
-              )}
-              {isAwaitingSignature && pendingWalletRequest && (
-                <div className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl bg-osmoverse-800 p-3">
-                  <span className="body2 sm:caption text-osmoverse-200">
-                    {t("limitOrders.walletNotResponding", {
-                      wallet: pendingWalletRequest.walletName,
-                    })}
-                  </span>
-                  <Button
-                    mode="secondary"
-                    onClick={pendingWalletRequest.cancel}
-                    className="body2 w-fit !rounded-2xl"
-                  >
-                    <h6>{t("limitOrders.cancel")}</h6>
-                  </Button>
-                </div>
               )}
             </div>
           </div>

@@ -646,6 +646,8 @@
     "title": "Retirar liquidez"
   },
   "requestRejected": "Solicitud rechazada",
+  "waitingForWallet": "Esperando a su billetera...",
+  "signInMobileWallet": "Firme en su billetera móvil...",
   "settings": {
     "filterDust": "Filtro de polvo",
     "selectLanguage": "Seleccione el idioma",
@@ -1398,8 +1400,6 @@
       "description": "Esta operación mueve el precio de mercado un {impact}, por lo que podría recibir mucho menos que el importe mostrado."
     },
     "lossAcknowledgement": "Sí, entiendo que esta operación podría causar una pérdida significativa de valor y deseo continuar.",
-    "waitingForWallet": "Esperando a su billetera...",
-    "walletNotResponding": "Esperando a su billetera. Abra {wallet} en su teléfono para continuar.",
     "errors": {
       "noAssetAvailable": "No tienes fondos {coinName} en Osmosis para operar. Elija una opción para continuar.",
       "tradeMayResultInLossOfValue": "Su operación puede resultar en una pérdida significativa de valor",

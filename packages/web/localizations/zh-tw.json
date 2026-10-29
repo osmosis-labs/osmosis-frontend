@@ -646,6 +646,8 @@
     "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
+  "waitingForWallet": "正在等待您的錢包...",
+  "signInMobileWallet": "請在您的手機錢包中簽署...",
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
@@ -1398,8 +1400,6 @@
       "description": "此交易將使市場價格變動{impact}，因此您收到的金額可能遠低於顯示的金額。"
     },
     "lossAcknowledgement": "是的，我明白此交易可能導致重大價值損失，我仍希望繼續。",
-    "waitingForWallet": "正在等待您的錢包...",
-    "walletNotResponding": "正在等待您的錢包。請在手機上開啟 {wallet} 以繼續。",
     "errors": {
       "noAssetAvailable": "您在 Osmosis 上沒有任何可用於交易的{coinName}資金。選擇一個選項繼續。",
       "tradeMayResultInLossOfValue": "您的交易可能會導致重大價值損失",
