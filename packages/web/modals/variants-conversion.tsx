@@ -431,23 +431,21 @@ export const AssetVariantRow: React.FC<{
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
         {/* On phones the four columns are too narrow to read, so from and to
-            stack with a down arrow between them. In the compact layout both
-            sit in the same fixed-width box, centered under each other, so the
-            logos line up whatever the name lengths. */}
+            stack with a down arrow between them. In the compact layout they
+            stay left, in a column as wide as the wider of the two, with the
+            arrow centered in it. */}
         <div
           className={classNames(
             "grid w-full items-center gap-3 py-2",
             isCompact
-              ? "grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_auto] sm:grid-cols-1"
+              ? "grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,max-content)_1fr]"
               : "grid-cols-[1fr_1.5rem_1fr_1.5rem] sm:grid-cols-[1fr_1.5rem]"
           )}
         >
           <div
             className={classNames(
               "flex min-w-0 items-center gap-3",
-              isCompact
-                ? "sm:w-64 sm:max-w-full sm:justify-self-center"
-                : "sm:col-span-2"
+              isCompact ? "sm:col-start-1" : "sm:col-span-2"
             )}
           >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -493,16 +491,14 @@ export const AssetVariantRow: React.FC<{
             width={24}
             className={
               isCompact
-                ? "text-osmoverse-400 sm:rotate-90 sm:justify-self-center"
+                ? "text-osmoverse-400 sm:col-start-1 sm:rotate-90 sm:justify-self-center"
                 : "text-osmoverse-700 sm:col-span-2 sm:ml-2 sm:rotate-90"
             }
           />
           <div
             className={classNames(
               "flex min-w-0 grow items-center gap-3 py-2",
-              isCompact
-                ? "sm:w-64 sm:max-w-full sm:justify-self-center sm:py-0"
-                : "px-4 sm:py-0 sm:px-0"
+              isCompact ? "sm:col-start-1 sm:py-0" : "px-4 sm:py-0 sm:px-0"
             )}
           >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -546,7 +542,9 @@ export const AssetVariantRow: React.FC<{
           </div>
           {isCompact && (
             // Full width under the pair on phones.
-            <div className="sm:[&>button]:!w-full">{convertButton}</div>
+            <div className="sm:col-span-2 sm:[&>button]:!w-full">
+              {convertButton}
+            </div>
           )}
           {!isCompact && variant.canonicalAsset?.isAlloyed && (
             <div className="flex items-center justify-center">

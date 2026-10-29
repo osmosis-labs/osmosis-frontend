@@ -331,15 +331,20 @@ const PoolRowLayout: FunctionComponent<{
   const { t, language } = useTranslation();
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-stretch">
+      {/* Stacked on phones, a migrate row is as wide as the wider pool, so
+          the pools stay left and the arrow sits centered between them. */}
+      <div
+        className={classNames(
+          "flex items-center justify-between gap-3 sm:flex-col sm:items-stretch",
+          migrateTo && "sm:w-fit sm:max-w-full"
+        )}
+      >
         <PoolSummary
           poolId={holding.poolId}
           coins={holding.coins}
           detail={getHoldingStateText(holding, t, language)}
-          // Side by side, the two pools split the width evenly. Stacked on
-          // phones, both sit in the same fixed-width box, centered, so the
-          // logos line up whatever the pool names.
-          className={migrateTo ? MIGRATE_POOL_CLASS : undefined}
+          // Side by side, the two pools split the width evenly.
+          className={migrateTo ? "flex-1 basis-0" : undefined}
         />
         {migrateTo ? (
           <>
@@ -354,7 +359,7 @@ const PoolRowLayout: FunctionComponent<{
               coins={migrateTo.coins}
               amountsNote={t("forcedMigration.migratedAmountsNote")}
               alignRight
-              className={MIGRATE_POOL_CLASS}
+              className="flex-1 basis-0"
             />
           </>
         ) : (
@@ -367,9 +372,6 @@ const PoolRowLayout: FunctionComponent<{
     </div>
   );
 };
-
-const MIGRATE_POOL_CLASS =
-  "flex-1 basis-0 sm:w-64 sm:max-w-full sm:self-center";
 
 const PoolSummary: FunctionComponent<{
   poolId: string;
