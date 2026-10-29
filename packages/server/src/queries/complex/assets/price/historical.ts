@@ -217,8 +217,9 @@ export async function getCoinGeckoCoinMarketChart({
     fromTimestamp = timeFrame === "all" ? 0 : range.from;
     toTimestamp = range.to;
   } else {
-    ({ from: fromTimestamp, to: toTimestamp } =
-      roundMarketChartRange(timeFrame));
+    // explicit bounds are used as given, shifting them would drop the start of the range
+    fromTimestamp = timeFrame.from;
+    toTimestamp = timeFrame.to;
   }
 
   return cachified({

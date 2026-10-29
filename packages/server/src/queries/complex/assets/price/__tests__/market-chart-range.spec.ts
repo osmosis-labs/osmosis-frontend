@@ -21,7 +21,10 @@ describe("roundMarketChartRange", () => {
       from: 1_700_000_001 - 7 * 86_400,
       to: 1_700_000_001,
     });
-    expect(week.to % 3600).toBe(0);
+    expect(week.to).toBe(1_700_002_800);
+    expect(roundMarketChartRange({ from: 0, to: 91 * 86_400 + 1 }).to).toBe(
+      92 * 86_400
+    );
     expect(roundMarketChartRange({ from: 0, to: 600 }).to).toBe(600);
   });
 });
