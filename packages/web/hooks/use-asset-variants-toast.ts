@@ -10,6 +10,7 @@ import {
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAlloyedAssetsToastSession } from "~/hooks/use-alloyed-assets-toast-session";
 import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
+import { useForcedMigrations } from "~/hooks/use-forced-migrations";
 import { useWallet } from "~/hooks/use-wallet";
 
 export const useAssetVariantsToast = () => {
@@ -23,6 +24,12 @@ export const useAssetVariantsToast = () => {
     isSessionHydrated,
     markToastSeenThisSession,
   } = useAlloyedAssetsToastSession();
+  // While a forced migration applies (snoozed or not) its popup is the only
+  // conversion prompt, so the softer toast waits until none applies rather
+  // than appearing alongside it.
+  const { activeMigrations, isSettled: areForcedMigrationsSettled } =
+    useForcedMigrations();
+  const hasForcedMigration = activeMigrations.length > 0;
 
   // #region effects
   // Hydrate the shared store from localStorage once on the client. The gating
@@ -65,6 +72,8 @@ export const useAssetVariantsToast = () => {
     )
       return;
     if (hasSeenToastThisSession) return;
+    // Wait until we know whether a forced migration applies.
+    if (!areForcedMigrationsSettled || hasForcedMigration) return;
 
     // Eligibility and visibility live in alloyed-assets-toast-policy so the
     // release-critical rules are assertable without a component or a tRPC
@@ -102,6 +111,8 @@ export const useAssetVariantsToast = () => {
     alloyedAssets,
     areAllGroupsDismissed,
     markToastSeenThisSession,
+    hasForcedMigration,
+    areForcedMigrationsSettled,
   ]);
 
   useEffect(() => {

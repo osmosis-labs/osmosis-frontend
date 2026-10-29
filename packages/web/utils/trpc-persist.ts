@@ -18,8 +18,10 @@ export const PERSIST_EXCLUDED_KEYS = [
  * v5: `edge.transactions.getTransactions` gained `transfers`.
  * v6: `local.portfolio.getPortfolioAssets` replaced `assetVariants` with
  * unfiltered `assetVariantCandidates`.
+ * v7: `local.portfolio.getPortfolioAssets` `heldAssets` gained `amount` and
+ * `fiatValue`.
  */
-export const PERSIST_BUSTER = "v6";
+export const PERSIST_BUSTER = "v7";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

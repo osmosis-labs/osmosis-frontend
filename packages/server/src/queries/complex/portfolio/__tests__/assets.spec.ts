@@ -314,16 +314,22 @@ describe("getHeldAssets", () => {
       {
         denom: "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
         coinDenom: "WOSMO",
+        amount: "789",
+        fiatValue: "10.000000000000000000",
       },
       {
         denom:
           "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
         coinDenom: "SAIL",
+        amount: "456",
+        fiatValue: "20.000000000000000000",
       },
       {
         denom:
           "ibc/7ED954CFFFC06EE8419387F3FC688837FF64EF264DE14219935F724EEEDBF8D3",
         coinDenom: "CTK",
+        amount: "123",
+        fiatValue: "30.000000000000000000",
       },
     ]);
   });
@@ -346,7 +352,14 @@ describe("getHeldAssets", () => {
         },
         assetLists
       )
-    ).toEqual([{ denom: "factory/osmo1notlisted/spam", coinDenom: undefined }]);
+    ).toEqual([
+      {
+        denom: "factory/osmo1notlisted/spam",
+        coinDenom: undefined,
+        amount: "1",
+        fiatValue: "1",
+      },
+    ]);
   });
 
   it("should return an empty array when the breakdown is missing", () => {
