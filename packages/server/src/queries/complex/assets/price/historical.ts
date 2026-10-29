@@ -6,7 +6,7 @@ import {
   DEFAULT_LRU_OPTIONS,
 } from "../../../../utils/cache";
 import { dayjs } from "../../../../utils/dayjs";
-import { queryMarketChart } from "../../../coingecko";
+import { queryMarketChart, QueryMarketChartResponse } from "../../../coingecko";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -139,16 +139,52 @@ type CoinGeckoCoinMarketChartParams = {
   vsCurrency?: string;
 };
 
+const MINUTE_S = 60;
+const HOUR_S = 60 * MINUTE_S;
+const DAY_S = 24 * HOUR_S;
+
+/** Width of the bucket the range is rounded to, scaled to the span of the chart
+ *  (CoinGecko's own data granularity is 5 minutes up to 1 day, hourly up to 90 days,
+ *  daily beyond). */
+function getMarketChartBucketSeconds(spanSeconds: number) {
+  if (spanSeconds <= DAY_S) return 5 * MINUTE_S;
+  if (spanSeconds <= 90 * DAY_S) return HOUR_S;
+  return DAY_S;
+}
+
+/** Rounds a market chart range to a bucket so that requests made within the same bucket
+ *  are identical (same URL and cache key). `to` is rounded up, so the latest data point
+ *  is never cut off (CoinGecko accepts an end in the future), and `from` is derived from
+ *  it so the span is preserved: widening it could cross CoinGecko's granularity boundary
+ *  (e.g. a 1 day range turning hourly instead of 5 minute). */
+export function roundMarketChartRange({
+  from,
+  to,
+}: {
+  /** Unix timestamp in seconds. */
+  from: number;
+  /** Unix timestamp in seconds. */
+  to: number;
+}) {
+  const span = to - from;
+  const bucket = getMarketChartBucketSeconds(span);
+  const roundedTo = Math.ceil(to / bucket) * bucket;
+  return { from: roundedTo - span, to: roundedTo };
+}
+
 /** Cached CoinGecko ID for needs of price function. */
 export async function getCoinGeckoCoinMarketChart({
   vsCurrency = DEFAULT_VS_CURRENCY.currency,
   timeFrame,
   id,
 }: CoinGeckoCoinMarketChartParams) {
-  let from: dayjs.Dayjs | undefined = dayjs(new Date());
-  const to = dayjs(new Date());
+  let fromTimestamp: number;
+  let toTimestamp: number;
 
   if (typeof timeFrame === "string") {
+    const now = dayjs(new Date());
+    let from: dayjs.Dayjs | undefined = now;
+
     /**
      * We set the range of data to be displayed by type
      */
@@ -172,22 +208,45 @@ export async function getCoinGeckoCoinMarketChart({
         from = undefined;
         break;
     }
-  }
 
-  const fromTimestamp =
-    typeof timeFrame === "string" ? (from?.unix() ?? 0) : timeFrame.from;
-  const toTimestamp = typeof timeFrame === "string" ? to?.unix() : timeFrame.to;
+    const range = roundMarketChartRange({
+      from: from?.unix() ?? 0,
+      to: now.unix(),
+    });
+    // "all" always starts at 0, whatever the rounded end
+    fromTimestamp = timeFrame === "all" ? 0 : range.from;
+    toTimestamp = range.to;
+  } else {
+    // explicit bounds are used as given, shifting them would drop the start of the range
+    fromTimestamp = timeFrame.from;
+    toTimestamp = timeFrame.to;
+  }
 
   return cachified({
     cache: tokenHistoricalPriceCache,
-    key: `coingecko-coin-market-chart-${id}-${from?.unix()}-${to.unix()}-${vsCurrency}`,
-    ttl: 1000 * 10, // 10 seconds
-    getFreshValue: async () =>
-      queryMarketChart({
+    key: `coingecko-coin-market-chart-${id}-${fromTimestamp}-${toTimestamp}-${vsCurrency}`,
+    // 5 minutes, the width of the shortest bucket, so the latest point is never much older
+    ttl: 1000 * 60 * 5,
+    getFreshValue: async () => {
+      const result = await queryMarketChart({
         id,
         vsCurrency,
         to: toTimestamp,
         from: fromTimestamp,
-      }),
+      });
+      // An empty chart is not cached, so it doesn't outlive CoinGecko recovering
+      // (the CDN skips caching it for the same reason). The result rides on the error
+      // because cachified hands that same error to concurrent callers of this key.
+      if (!result?.prices?.length) {
+        throw Object.assign(
+          new Error(`Empty CoinGecko market chart for ${id}`),
+          { emptyMarketChart: result }
+        );
+      }
+      return result;
+    },
+  }).catch((e: { emptyMarketChart?: QueryMarketChartResponse }) => {
+    if (e?.emptyMarketChart) return e.emptyMarketChart;
+    throw e;
   });
 }
