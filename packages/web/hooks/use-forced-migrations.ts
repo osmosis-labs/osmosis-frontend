@@ -158,7 +158,10 @@ export const useForcedMigrations = () => {
       ? getActiveForcedMigrations({
           migrations,
           heldAssets: portfolioAssets?.heldAssets ?? [],
-          assetVariants: portfolioAssets?.assetVariants ?? [],
+          // Unfiltered candidates, not the active-alloy filter: the popup must
+          // still list a held old asset whose alloy can't take it right now,
+          // and each row's own quote and fee check disable Convert.
+          assetVariants: portfolioAssets?.assetVariantCandidates ?? [],
           holdings: isHoldingsError ? undefined : holdings,
           now,
         })
