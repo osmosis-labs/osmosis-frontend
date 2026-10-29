@@ -141,7 +141,7 @@ export const MyPositionCard: FunctionComponent<{
           )}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
-            value={formatPretty(currentValue)}
+            value={currentValue ? formatPretty(currentValue) : "–"}
           />
           <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
             {!hasPositionDetailsError && (

@@ -18,6 +18,14 @@ export type PriceProvider = (
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Assets whose price just failed, retried after the ttl. cachified doesn't keep
+ *  failures, so without this an asset with no price (e.g. no pools) is re-sent to SQS on
+ *  every request, and those are the denoms SQS route-searches. Only the failure is kept,
+ *  never a price. */
+const priceFailures = new LRUCache<string, Error>({
+  max: 1_500,
+  ttl: 1000 * 30, // 30 seconds
+});
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
@@ -77,11 +85,18 @@ export async function getAssetPrice({
       } not found in asset list registry.`
     );
 
+  const key = `asset-price-${foundAsset.coinMinimalDenom}`;
+  const failure = priceFailures.get(key);
+  if (failure) throw failure;
+
   return cachified({
-    key: `asset-price-${foundAsset.coinMinimalDenom}`,
+    key,
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () => priceProvider(foundAsset, currency),
+  }).catch((e) => {
+    priceFailures.set(key, e instanceof Error ? e : new Error(String(e)));
+    throw e;
   });
 }
 

@@ -63,7 +63,8 @@ function getBatchLoader() {
   return cachified({
     cache: sidecarCache,
     key: "sidecar-batch-loader",
-    // This TTL only controls the lifetime of the DataLoader instance, not the individual cache entries.
+    // This TTL only controls the lifetime of the DataLoader instance. The loader doesn't
+    // memoize (`cache: false`), so prices are cached only by `getAssetPrice`.
     // The value is chosen arbitrarily to prevent long-running batch loaders as recommended by the documentation
     ttl: 1000 * 60 * 10, // 10 minutes
     getFreshValue: () =>
@@ -104,6 +105,9 @@ function getBatchLoader() {
             })
           ),
         {
+          // Batch only. Memoizing would hold each price, and each failed price, for the
+          // loader's 10 minute lifetime instead of the 10s price TTL.
+          cache: false,
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
           maxBatchSize: 100,
         }
