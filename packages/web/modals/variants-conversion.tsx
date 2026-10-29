@@ -145,7 +145,12 @@ export const AssetVariantsConversionModal = () => {
     assetVariants: convertibleVariants,
     error: portfolioAssetsError,
     isLoading: isPortfolioAssetsLoading,
-  } = useConvertibleAssetVariants({ address });
+  } = useConvertibleAssetVariants({
+    address,
+    // Always mounted: only look up statuses while open. The toast and the
+    // portfolio rows that open it share the same cached lookup.
+    areStatusesEnabled: isOpen,
+  });
   // Opened for one variant: show only that one.
   const assetVariants = useMemo(
     () =>

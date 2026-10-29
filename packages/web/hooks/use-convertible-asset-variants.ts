@@ -21,11 +21,15 @@ import { api } from "~/utils/trpc";
 export function useConvertibleAssetVariants({
   address,
   enabled = true,
+  areStatusesEnabled = true,
   staleTime = 30_000,
   refetchOnWindowFocus = false,
 }: {
   address: string | undefined;
   enabled?: boolean;
+  /** Lets an always-mounted consumer skip the status lookup while hidden;
+   *  it then reads whatever another consumer has cached. */
+  areStatusesEnabled?: boolean;
   /** For the portfolio query; the status query keeps its own minute. */
   staleTime?: number;
   refetchOnWindowFocus?: boolean;
@@ -43,7 +47,7 @@ export function useConvertibleAssetVariants({
   const statusQuery = api.local.portfolio.getAlloyStatuses.useQuery(
     { contractAddresses },
     {
-      enabled: enabled && contractAddresses.length > 0,
+      enabled: enabled && areStatusesEnabled && contractAddresses.length > 0,
       // A failed lookup comes back inactive, so it must be refetchable: once
       // a minute old, a refocus or remount refreshes it (the server caches
       // failures for 30s, so this can't hammer a struggling node).
@@ -54,9 +58,12 @@ export function useConvertibleAssetVariants({
   const assetVariants = useMemo((): AssetVariant[] | undefined => {
     if (!candidates) return undefined;
     if (contractAddresses.length === 0) return [];
+    // A failed (e.g. timed-out) refetch keeps the previous data around; fail
+    // closed rather than filter with statuses that may no longer hold.
+    if (statusQuery.isError) return [];
     if (!statusQuery.data) return undefined;
     return filterConvertibleAssetVariants(candidates, statusQuery.data);
-  }, [candidates, contractAddresses, statusQuery.data]);
+  }, [candidates, contractAddresses, statusQuery.data, statusQuery.isError]);
 
   const needsStatuses = contractAddresses.length > 0;
   return {
