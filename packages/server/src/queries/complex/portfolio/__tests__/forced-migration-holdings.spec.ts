@@ -42,7 +42,7 @@ describe("groupShareLocks", () => {
             },
           ],
         ],
-        // Undelegated but not yet unbonded: on its way out, so not nagged.
+        // Undelegated but not unbonded: still locked, needs only the unbond.
         [
           "4",
           [
@@ -57,13 +57,14 @@ describe("groupShareLocks", () => {
 
     const byState = Object.fromEntries(groups.map((g) => [g.state, g]));
     expect(byState.available.shares).toBe("10");
-    expect(byState.locked.shares).toBe("50");
+    expect(byState.locked.shares).toBe("100");
     expect(byState.locked.locks).toEqual([
       { lockId: "1", isSynthetic: false },
       { lockId: "2", isSynthetic: true },
+      { lockId: "4", isSynthetic: false, isUndelegating: true },
     ]);
     expect(byState.locked.unlockDurationSeconds).toBe(14 * 24 * 60 * 60);
-    expect(byState.unlocking.shares).toBe("90");
+    expect(byState.unlocking.shares).toBe("40");
     expect(byState.unlocking.unlockEndTime).toBe("2026-12-01T00:00:00.000Z");
   });
 });
@@ -109,12 +110,14 @@ describe("getConcentratedHoldings", () => {
         position("2", "20"),
         position("3", "30"),
         position("4", "0"),
+        position("5", "50"),
       ],
       oldDenoms: new Set([USDC_NOBLE]),
       lockDurations: new Map([["99", 1209600]]),
       unbonding: [{ positionId: "3", endTime: "2026-12-01T00:00:00Z" }],
       delegated: [{ positionId: "2", lockId: "99" }],
-      undelegating: [],
+      // Undelegated, but its lock never started unbonding.
+      undelegating: [{ positionId: "5", lockId: "98" }],
     });
 
     expect(
@@ -123,7 +126,9 @@ describe("getConcentratedHoldings", () => {
       ["1", "available"],
       ["2", "superfluidStaked"],
       ["3", "unlocking"],
+      ["5", "superfluidStaked"],
     ]);
+    expect(holdings[3]).toMatchObject({ lockId: "98", isUndelegating: true });
     expect(holdings[1].lockId).toBe("99");
     expect(holdings[1].unlockDurationSeconds).toBe(1209600);
     expect(holdings[0].coins.map(({ denom }) => denom)).toEqual([

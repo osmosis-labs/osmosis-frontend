@@ -136,7 +136,9 @@ export function getShareExitTokenOutMins({
       amount: new Dec(amount).mul(keep).truncate(),
     }))
     .filter(({ amount }) => amount.isPositive())
-    .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+    .map(({ denom, amount }) => ({ denom, amount: amount.toString() }))
+    // `MsgExitPool` rejects minimums that aren't sorted by denom.
+    .sort((a, b) => (a.denom < b.denom ? -1 : a.denom > b.denom ? 1 : 0));
 
   if (!mins.some(({ denom }) => oldDenoms.includes(denom)))
     throw new Error("Exit minimums don't bound the old denom");

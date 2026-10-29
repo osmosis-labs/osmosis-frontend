@@ -73,16 +73,19 @@ export const useForcedMigrations = () => {
     [migrationsData]
   );
 
-  const { data: portfolioAssets, isFetched: isPortfolioFetched } =
-    api.local.portfolio.getPortfolioAssets.useQuery(
-      {
-        address: address ?? "",
-      },
-      {
-        enabled: isEnabled && migrations.length > 0,
-        refetchOnWindowFocus: false,
-      }
-    );
+  const {
+    data: portfolioAssets,
+    isFetched: isPortfolioFetched,
+    isError: isPortfolioError,
+  } = api.local.portfolio.getPortfolioAssets.useQuery(
+    {
+      address: address ?? "",
+    },
+    {
+      enabled: isEnabled && migrations.length > 0,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const fromDenoms = useMemo(
     () => [...new Set(migrations.flatMap(({ fromDenoms }) => fromDenoms))],
@@ -118,12 +121,17 @@ export const useForcedMigrations = () => {
   // off or the wallet disconnects.
   const activeMigrations: ActiveForcedMigration[] =
     // Waits for the holdings too, so the popup doesn't open on the
-    // portfolio-totals fallback and then change shape.
-    isEnabled && portfolioAssets && isHoldingsFetched
+    // portfolio-totals fallback and then change shape. A failed portfolio
+    // still evaluates the chain holdings (no bank rows or prices, so they
+    // count as unpriced), rather than going quiet on a wallet known to hold
+    // the old asset.
+    isEnabled &&
+    isHoldingsFetched &&
+    (portfolioAssets || (isPortfolioFetched && isPortfolioError))
       ? getActiveForcedMigrations({
           migrations,
-          heldAssets: portfolioAssets.heldAssets,
-          assetVariants: portfolioAssets.assetVariants,
+          heldAssets: portfolioAssets?.heldAssets ?? [],
+          assetVariants: portfolioAssets?.assetVariants ?? [],
           holdings: isHoldingsError ? undefined : holdings,
           now,
         })

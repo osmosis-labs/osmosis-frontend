@@ -1469,6 +1469,8 @@ export async function prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSynthet
   locks: {
     lockId: string;
     isSynthetic: boolean;
+    /** Already superfluid undelegated: only the unbond is left to send. */
+    isUndelegating?: boolean;
   }[],
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
@@ -1476,7 +1478,14 @@ export async function prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSynthet
   const msgs = await locks.reduce(
     async (msgsPromise, lock) => {
       const msgs = await msgsPromise;
-      if (!lock.isSynthetic) {
+      if (lock.isUndelegating) {
+        msgs.push(
+          await makeSuperfluidUnbondLockMsg({
+            sender: context.address,
+            lockId: BigInt(lock.lockId),
+          })
+        );
+      } else if (!lock.isSynthetic) {
         // normal unlock
         msgs.push(
           await makeBeginUnlockingMsg({

@@ -36,8 +36,9 @@ export type ShareHolding = {
   /** Raw `gamm/pool/{poolId}` amount. */
   shares: string;
   /** Locks holding the shares (`locked` and `unlocking` only). A superfluid
-   *  lock is `isSynthetic`. */
-  locks: { lockId: string; isSynthetic: boolean }[];
+   *  lock is `isSynthetic`; one that was superfluid undelegated but never
+   *  unbonded is `isUndelegating` (still locked, needs only the unbond). */
+  locks: HoldingLock[];
   /** Latest end time across the locks, for `unlocking`. */
   unlockEndTime?: string;
   /** Longest lock duration, for `locked`: how long an unlock started now
@@ -46,6 +47,12 @@ export type ShareHolding = {
   /** Pro-rata underlying coins at the current pool state. */
   coins: RawCoin[];
   oldDenomAmount: string;
+};
+
+export type HoldingLock = {
+  lockId: string;
+  isSynthetic: boolean;
+  isUndelegating?: boolean;
 };
 
 export type ConcentratedHolding = {
@@ -58,6 +65,9 @@ export type ConcentratedHolding = {
   upperTick: string;
   /** Superfluid delegation lock, for `superfluidStaked`. */
   lockId?: string;
+  /** Superfluid undelegated but the lock never started unbonding: still
+   *  locked, and only `MsgSuperfluidUnbondLock` frees it. */
+  isUndelegating?: boolean;
   unlockDurationSeconds?: number;
   unlockEndTime?: string;
   /** `[asset0, asset1]`, in the position's own order. */
@@ -161,9 +171,9 @@ export async function getForcedMigrationHoldings({
       })
     ),
     undelegating: undelegatingPositions.cl_pool_user_position_records.map(
-      ({ position_id, synthetic_lock }) => ({
+      ({ position_id, lock_id }) => ({
         positionId: position_id,
-        endTime: synthetic_lock.end_time,
+        lockId: lock_id,
       })
     ),
   });
@@ -288,8 +298,9 @@ async function getShareHoldings({
 /**
  * Groups share balances per pool and lock state. A lock with a superbonding
  * synthetic lock is superfluid staked (`locked`, `isSynthetic`). One with only
- * a superunbonding synthetic lock is undelegating, so it counts as
- * `unlocking` until the synthetic lock ends.
+ * a superunbonding synthetic lock was undelegated but not unbonded, so it is
+ * still `locked` (`isUndelegating`): only `MsgSuperfluidUnbondLock` starts
+ * its unlock.
  */
 export function groupShareLocks({
   bankShares,
@@ -315,6 +326,7 @@ export function groupShareLocks({
     lock?: {
       lockId: string;
       isSynthetic: boolean;
+      isUndelegating?: boolean;
       endTime?: string;
       durationSeconds?: number;
     }
@@ -328,7 +340,11 @@ export function groupShareLocks({
     };
     group.shares = new Int(group.shares).add(new Int(shares)).toString();
     if (lock) {
-      group.locks.push({ lockId: lock.lockId, isSynthetic: lock.isSynthetic });
+      group.locks.push({
+        lockId: lock.lockId,
+        isSynthetic: lock.isSynthetic,
+        ...(lock.isUndelegating ? { isUndelegating: true } : {}),
+      });
       if (
         lock.endTime &&
         (!group.unlockEndTime ||
@@ -369,10 +385,13 @@ export function groupShareLocks({
           endTime: lock.endTime.toISOString(),
         });
       } else if (superunbonding && !superbonding) {
-        add(poolId, "unlocking", amount, {
+        // Undelegated but never unbonded: still locked, and only
+        // `MsgSuperfluidUnbondLock` starts the unlock.
+        add(poolId, "locked", amount, {
           lockId: lock.ID,
           isSynthetic: false,
-          endTime: superunbonding.end_time,
+          isUndelegating: true,
+          durationSeconds: lock.duration.asSeconds(),
         });
       } else {
         add(poolId, "locked", amount, {
@@ -431,7 +450,7 @@ export function getConcentratedHoldings({
   lockDurations: Map<string, number>;
   unbonding: { positionId: string; endTime: string }[];
   delegated: { positionId: string; lockId: string }[];
-  undelegating: { positionId: string; endTime: string }[];
+  undelegating: { positionId: string; lockId: string }[];
 }): ConcentratedHolding[] {
   return positions.flatMap(({ position, asset0, asset1 }) => {
     const coins = [asset0, asset1].filter(Boolean);
@@ -439,10 +458,17 @@ export function getConcentratedHoldings({
     if (!new Int(oldDenomAmount).isPositive()) return [];
 
     const id = position.position_id;
-    const unlockEnd =
-      undelegating.find(({ positionId }) => positionId === id)?.endTime ??
-      unbonding.find(({ positionId }) => positionId === id)?.endTime;
-    const delegation = delegated.find(({ positionId }) => positionId === id);
+    // Undelegating alone doesn't unlock: only a lock that is unbonding is on
+    // its way out. An undelegated position whose lock isn't unbonding stays
+    // locked until `MsgSuperfluidUnbondLock`.
+    const unlockEnd = unbonding.find(
+      ({ positionId }) => positionId === id
+    )?.endTime;
+    const undelegation = unlockEnd
+      ? undefined
+      : undelegating.find(({ positionId }) => positionId === id);
+    const delegation =
+      delegated.find(({ positionId }) => positionId === id) ?? undelegation;
 
     const state: ConcentratedHolding["state"] = unlockEnd
       ? "unlocking"
@@ -460,6 +486,7 @@ export function getConcentratedHoldings({
         lowerTick: position.lower_tick,
         upperTick: position.upper_tick,
         lockId: state === "superfluidStaked" ? delegation?.lockId : undefined,
+        isUndelegating: state === "superfluidStaked" && Boolean(undelegation),
         unlockDurationSeconds:
           state === "superfluidStaked" && delegation
             ? lockDurations.get(delegation.lockId)

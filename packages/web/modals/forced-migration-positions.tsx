@@ -291,7 +291,10 @@ function getHoldingStateText(
         ? t("forcedMigration.superfluidStaked")
         : t("forcedMigration.bonded");
     case "superfluidStaked":
-      return t("forcedMigration.superfluidStaked");
+      // Undelegated but not unbonded: no longer staked, still locked.
+      return holding.kind === "cl" && holding.isUndelegating
+        ? t("forcedMigration.bonded")
+        : t("forcedMigration.superfluidStaked");
     case "unlocking":
       return holding.unlockEndTime
         ? t("forcedMigration.unlockingUntil", {
@@ -780,13 +783,23 @@ const UnlockAction: FunctionComponent<{
         if (!holding.lockId) throw new Error("No superfluid lock id");
         return prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
           context,
-          [{ lockId: holding.lockId, isSynthetic: true }]
+          [
+            {
+              lockId: holding.lockId,
+              isSynthetic: true,
+              isUndelegating: holding.isUndelegating,
+            },
+          ]
         );
       }
       // Ten locks per tx keeps it under the block gas limit, as the pool
       // page does; the rest stay listed for another click.
       const locks = holding.locks.slice(0, 10);
-      if (locks.some(({ isSynthetic }) => isSynthetic))
+      if (
+        locks.some(
+          ({ isSynthetic, isUndelegating }) => isSynthetic || isUndelegating
+        )
+      )
         return prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
           context,
           locks
