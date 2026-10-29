@@ -626,6 +626,9 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          # Records a Playwright trace of the wallet browser, uploaded below
+          # on failure (MTN-460).
+          TRACE_DIR: ${{ runner.temp }}/traces
           # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
@@ -646,6 +649,13 @@ jobs:
         with:
           name: preview-trade-test-results
           path: packages/e2e/playwright-report
+      - name: upload Trade traces
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: preview-trade-traces
+          path: ${{ runner.temp }}/traces
+          if-no-files-found: ignore
 
   preview-claim-tests:
     concurrency:

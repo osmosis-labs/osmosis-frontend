@@ -25,6 +25,11 @@ test.describe("Test Trade feature", () => {
   test.beforeAll(async () => {
     USDC = await resolveAppUsdcDenom();
     context = await new SetupKeplr().setupWallet(privateKey);
+    // Off unless the workflow sets TRACE_DIR (MTN-460). It starts after the
+    // wallet import so the uploaded trace never holds the private key.
+    if (process.env.TRACE_DIR) {
+      await context.tracing.start({ screenshots: true, snapshots: true });
+    }
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
@@ -39,6 +44,11 @@ test.describe("Test Trade feature", () => {
   test.afterAll(async () => {
     // beforeAll resolves the USDC identity before the wallet exists, and that
     // resolver throws by design, so context can still be undefined here.
+    if (process.env.TRACE_DIR) {
+      await context?.tracing.stop({
+        path: `${process.env.TRACE_DIR}/trade-${Date.now()}.zip`,
+      });
+    }
     await context?.close();
   });
 
