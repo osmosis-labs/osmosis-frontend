@@ -22,8 +22,9 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
  *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
  *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
- *  kept, never a price: a transient failure (5xx, timeout, expired batch) says nothing
- *  about the asset and must be retried at once. */
+ *  kept, never a price: a failed request (5xx, timeout, expired batch) says nothing
+ *  about the asset and must be retried at once. SQS's answer can itself come from a
+ *  failed route search on its side, hence the short ttl. */
 const priceFailures = new LRUCache<string, Error>({
   max: 1_500,
   ttl: 1000 * 30, // 30 seconds

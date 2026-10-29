@@ -12,7 +12,8 @@ import { EdgeDataLoader } from "../../../../../utils/batching";
 import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
 
 /** SQS answered but has no usable price for the denom (as opposed to a transport or
- *  timeout failure, which says nothing about the asset). */
+ *  timeout failure of the request). Not fully definite: SQS also reports a zero price
+ *  when its own route search for the denom fails or times out. */
 export class NoSqsPriceError extends Error {
   constructor(message: string) {
     super(message);
