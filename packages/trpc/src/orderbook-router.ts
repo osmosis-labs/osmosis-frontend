@@ -188,7 +188,8 @@ export const orderbookRouter = createTRPCRouter({
           }
           return allOrders;
         },
-        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
+        // the filter changes the list, so each filter is cached on its own
+        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}-${input.filter ?? "all"}`,
         ttl: 10000,
         cursor: input.cursor,
         limit: input.limit,

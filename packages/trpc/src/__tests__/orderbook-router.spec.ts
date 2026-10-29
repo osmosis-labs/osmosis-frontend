@@ -240,7 +240,7 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
     jest.clearAllMocks();
   });
 
-  it("returns the open orders flagged, and doesn't cache them as complete, when the history fails", async () => {
+  it("returns the open orders flagged when the history fails", async () => {
     mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
     mockedHistoricalOrders.mockRejectedValue(new Error("history down"));
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -259,7 +259,7 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
     expect(first.historyUnavailable).toBe(true);
     expect(second.historyUnavailable).toBe(true);
     expect(first.items).toHaveLength(1);
-    // the incomplete list wasn't cached, so the third request fetches again
+    // a reload fetches again
     expect(third.historyUnavailable).toBe(true);
     expect(mockedHistoricalOrders.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
@@ -275,5 +275,57 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
 
     expect(result.historyUnavailable).toBe(false);
     expect(result.items).toHaveLength(1);
+  });
+
+  it("serves later pages from the first page's list, and clears the flag on reload once the history is back", async () => {
+    const filledOrder = { status: "filled" } as typeof openOrder;
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder, openOrder]);
+    mockedHistoricalOrders.mockRejectedValueOnce(new Error("history down"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const input = { userOsmoAddress: "osmo1historyrecovers", limit: 1 };
+
+    const first = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 0,
+    });
+    // the history is back, but the next page still comes from the first page's list
+    mockedHistoricalOrders.mockResolvedValue([filledOrder]);
+    const second = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 1,
+    });
+    const reloaded = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 0,
+    });
+
+    expect(first.historyUnavailable).toBe(true);
+    expect(second.historyUnavailable).toBe(true);
+    expect(second.items).toEqual([openOrder]);
+    expect(mockedHistoricalOrders).toHaveBeenCalledTimes(2);
+    expect(reloaded.historyUnavailable).toBe(false);
+    expect(reloaded.items).toEqual([filledOrder]);
+  });
+
+  it("doesn't serve one filter's list to another", async () => {
+    const filledOrder = { status: "filled" } as typeof openOrder;
+    mockedActiveOrdersSQS.mockResolvedValue([filledOrder, openOrder, openOrder]);
+    mockedHistoricalOrders.mockResolvedValue([]);
+    const userOsmoAddress = "osmo1filters";
+
+    await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress,
+      filter: "filled",
+      limit: 1,
+      cursor: 0,
+    });
+    const unfiltered = await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress,
+      limit: 1,
+      cursor: 1,
+    });
+
+    expect(unfiltered.items).toEqual([openOrder]);
+    expect(unfiltered.nextCursor).toBe(2);
   });
 });

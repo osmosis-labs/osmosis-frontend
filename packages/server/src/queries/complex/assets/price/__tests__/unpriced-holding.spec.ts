@@ -49,6 +49,10 @@ const DENOMS = {
     "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
   numiaNoLiquidity: "factory/osmo17fel472lgzs87ekt9dvk0zqyh5gl80sqp4sk4n/LAB",
   concurrent: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqtia",
+  outageCoingecko:
+    "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+  outageDrained:
+    "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
 };
 
 const USDC =
@@ -164,6 +168,24 @@ describe("holding SQS has no price for", () => {
       new Dec(0).toString(),
     ]);
     expect(pools).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses CoinGecko's price while the data services are down", async () => {
+    marketAvailable.mockResolvedValue(false);
+    coingecko.mockResolvedValue(new Dec("2.5"));
+
+    expect((await sum(DENOMS.outageCoingecko))?.toString()).toBe(
+      new Dec("2.5").toString()
+    );
+    expect(marketActivity).not.toHaveBeenCalled();
+  });
+
+  it("stays unknown while the data services are down, even when every pool is drained", async () => {
+    marketAvailable.mockResolvedValue(false);
+    pools.mockResolvedValue(poolsOf(DENOMS.outageDrained, [["0", "0"]]));
+
+    expect(await sum(DENOMS.outageDrained)).toBeUndefined();
+    expect(pools).not.toHaveBeenCalled();
   });
 
   it("doesn't take a zero fallback price for a price", async () => {

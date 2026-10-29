@@ -55,14 +55,9 @@ export function maybeCursorPaginatedItems<TItem>(
 
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-/** Cache keys whose latest fresh list was incomplete, so every request that shared that
- *  fetch (cachified shares one pending fetch between concurrent requests) can report it. */
-const incompleteKeys = new LRUCache<string, true>({ max: 500, ttl: 30 * 1000 });
-
 export type CachedPaginationParams<TItem> = {
   /** Call `markIncomplete` when the list is known to be missing items (e.g. one data
-   *  source failed): it is then not served from the cache, and the result carries
-   *  `incomplete: true`. */
+   *  source failed): the result then carries `incomplete: true`, on later pages too. */
   getFreshItems: (context: { markIncomplete: () => void }) => Promise<TItem[]>;
   cacheKey: string;
   cursor?: number | null | undefined;
@@ -105,27 +100,26 @@ export async function maybeCachePaginatedItems<TItem>({
     paginationCache.delete(cacheKey);
   }
 
-  const items = await cachified({
+  // The incomplete flag is cached with its list, so later pages are cut from the same
+  // snapshot as the first and every request sharing a fetch reports that fetch's status.
+  // A reload (cursor 0) fetches again.
+  const { items, incomplete } = await cachified({
     key: cacheKey,
     cache: paginationCache,
     ttl,
-    getFreshValue: async ({ metadata }) => {
+    getFreshValue: async () => {
       let incomplete = false;
-      const fresh = await getFreshItems({
+      const items = await getFreshItems({
         markIncomplete: () => {
           incomplete = true;
-          // never serve an incomplete list from the cache as if it were complete
-          metadata.ttl = 0;
         },
       });
-      if (incomplete) incompleteKeys.set(cacheKey, true);
-      else incompleteKeys.delete(cacheKey);
-      return fresh;
+      return { items, incomplete };
     },
   });
 
   return {
     ...maybeCursorPaginatedItems(items, cursor, limit),
-    ...(incompleteKeys.has(cacheKey) ? { incomplete: true as const } : {}),
+    ...(incomplete ? { incomplete: true as const } : {}),
   };
 }

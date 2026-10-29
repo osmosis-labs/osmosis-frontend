@@ -48,7 +48,8 @@ function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
  *  1. the data services' price (Numia), when their data is available and fresh and they
  *     report liquidity for the asset (without it the price may be a last trade);
  *  2. CoinGecko's price, when the asset has a CoinGecko id;
- *  3. zero, only when every SQS pool holding the asset is empty.
+ *  3. zero, only when the data services' data is available and every SQS pool holding
+ *     the asset is empty.
  *  Any error, an unavailable data source, or a pool with liquidity left leaves it
  *  unknown. A price is used for this call only, never kept. */
 export async function resolveUnpricedHolding({
@@ -73,14 +74,17 @@ export async function resolveUnpricedHolding({
     // Lazy import: market.ts imports the price module.
     const { getAssetMarketActivity, isMarketDataAvailable } =
       await import("../market");
-    // Without fresh data services data, "no Numia price" can't be told from "unknown".
-    if (!(await isMarketDataAvailable())) return undefined;
-    const activity = await getAssetMarketActivity({ coinMinimalDenom });
-    // a zero price is no price: it must not stand in for the drained-pool check. A price
-    // without liquidity behind it may be the last trade before the pools emptied.
-    const numiaPrice = activity?.price?.toDec();
-    if (numiaPrice?.isPositive() && activity?.liquidity?.toDec().isPositive())
-      return displayAmount.mul(numiaPrice);
+    // Without fresh data services data, "no Numia price" can't be told from "unknown",
+    // so only CoinGecko can still settle it.
+    const marketDataAvailable = await isMarketDataAvailable();
+    if (marketDataAvailable) {
+      const activity = await getAssetMarketActivity({ coinMinimalDenom });
+      // a zero price is no price: it must not stand in for the drained-pool check. A
+      // price without liquidity behind it may be the last trade before the pools emptied.
+      const numiaPrice = activity?.price?.toDec();
+      if (numiaPrice?.isPositive() && activity?.liquidity?.toDec().isPositive())
+        return displayAmount.mul(numiaPrice);
+    }
 
     if (asset.coinGeckoId) {
       const price = await getCoingeckoPrice({
@@ -98,6 +102,7 @@ export async function resolveUnpricedHolding({
       if (price?.isPositive()) return displayAmount.mul(price);
     }
 
+    if (!marketDataAvailable) return undefined;
     return (await isDrainedOnSqs(coinMinimalDenom)) ? new Dec(0) : undefined;
   } catch {
     return undefined;
