@@ -282,6 +282,19 @@ describe("getActiveForcedMigrations with per-position holdings", () => {
     ).toEqual([]);
   });
 
+  it("doesn't throw on a persisted portfolio that predates amount and fiat value", () => {
+    const legacy = { denom: USDC_NOBLE, coinDenom: "USDC.noble" };
+    expect(() =>
+      getActiveForcedMigrations({
+        migrations: [makeMigration()],
+        heldAssets: [legacy as unknown as HeldAssetAmount],
+        assetVariants: [],
+        holdings: [],
+        now: NOW,
+      })
+    ).not.toThrow();
+  });
+
   it("names a held balance that is neither convertible nor in a position", () => {
     const [active] = getActiveForcedMigrations({
       migrations: [makeMigration()],

@@ -41,6 +41,9 @@ export type ShareHolding = {
   locks: HoldingLock[];
   /** Latest end time across the locks, for `unlocking`. */
   unlockEndTime?: string;
+  /** Earliest end time across the locks, for `unlocking`: when the first of
+   *  them frees its shares. */
+  nextUnlockEndTime?: string;
   /** Longest lock duration, for `locked`: how long an unlock started now
    *  takes. */
   unlockDurationSeconds?: number;
@@ -351,6 +354,12 @@ export function groupShareLocks({
           new Date(lock.endTime) > new Date(group.unlockEndTime))
       )
         group.unlockEndTime = lock.endTime;
+      if (
+        lock.endTime &&
+        (!group.nextUnlockEndTime ||
+          new Date(lock.endTime) < new Date(group.nextUnlockEndTime))
+      )
+        group.nextUnlockEndTime = lock.endTime;
       if (
         lock.durationSeconds !== undefined &&
         lock.durationSeconds > (group.unlockDurationSeconds ?? 0)

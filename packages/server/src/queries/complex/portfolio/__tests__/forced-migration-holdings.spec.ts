@@ -66,6 +66,9 @@ describe("groupShareLocks", () => {
     expect(byState.locked.unlockDurationSeconds).toBe(14 * 24 * 60 * 60);
     expect(byState.unlocking.shares).toBe("40");
     expect(byState.unlocking.unlockEndTime).toBe("2026-12-01T00:00:00.000Z");
+    expect(byState.unlocking.nextUnlockEndTime).toBe(
+      "2026-12-01T00:00:00.000Z"
+    );
   });
 });
 

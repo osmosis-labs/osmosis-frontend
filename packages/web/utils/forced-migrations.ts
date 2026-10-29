@@ -324,8 +324,8 @@ export function getActiveForcedMigrations({
        *  worthless. */
       const addValue = (denom: string, amount: Int) => {
         const held = heldByDenom.get(denom);
-        const heldAmount = new Int(held?.amount ?? "0");
-        const heldFiat = new Dec(held?.fiatValue ?? "0");
+        const heldAmount = toInt(held?.amount);
+        const heldFiat = toDec(held?.fiatValue);
         if (!heldAmount.isPositive() || heldFiat.isZero()) {
           hasUnpricedHolding = true;
           return;
@@ -364,13 +364,13 @@ export function getActiveForcedMigrations({
         const held = heldByDenom.get(denom);
         if (!held) continue;
 
-        const heldAmount = new Int(held.amount);
+        const heldAmount = toInt(held.amount);
         if (!heldAmount.isPositive()) continue;
 
         // With per-position holdings the bank part is valued on its own
         // below; otherwise the portfolio total stands for everything.
         if (!holdings) {
-          const heldFiat = new Dec(held.fiatValue);
+          const heldFiat = toDec(held.fiatValue);
           totalFiat = totalFiat.add(heldFiat);
           if (heldFiat.isZero()) hasUnpricedHolding = true;
         }
@@ -445,6 +445,24 @@ export function getActiveForcedMigrations({
       (a, b) => deadlineSortValue(a.migration) - deadlineSortValue(b.migration)
     );
 }
+
+/** A held amount or value read from a portfolio that may predate these
+ *  fields (a persisted cache): missing reads as zero, which counts as
+ *  unpriced rather than throwing. */
+const toInt = (value: string | undefined) => {
+  try {
+    return new Int(value ?? "0");
+  } catch {
+    return new Int(0);
+  }
+};
+const toDec = (value: string | undefined) => {
+  try {
+    return new Dec(value ?? "0");
+  } catch {
+    return new Dec(0);
+  }
+};
 
 /** Soonest deadline first; no deadline sorts last. */
 const deadlineSortValue = ({ deadline }: ForcedMigration) =>

@@ -1,6 +1,7 @@
 import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { create } from "zustand";
 
 import { useFeatureFlags, useWalletSelect } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
@@ -39,18 +40,38 @@ const readSnoozedAtMs = (key: string): number | undefined => {
  * loads. Both are empty while the `forcedMigrations` flag is off or no
  * wallet is connected.
  */
+/**
+ * Snoozes in memory, shared by every `useForcedMigrations` caller (the popup
+ * and the alerts that wait for it), so a snooze in one is seen by all at once
+ * and closing still works when storage is blocked.
+ */
+const useSessionSnoozeStore = create<{
+  sessionSnoozes: Record<string, number>;
+  addSnoozes: (keys: string[], snoozedAt: number) => void;
+}>((set) => ({
+  sessionSnoozes: {},
+  addSnoozes: (keys, snoozedAt) =>
+    set(({ sessionSnoozes }) => ({
+      sessionSnoozes: {
+        ...sessionSnoozes,
+        ...Object.fromEntries(keys.map((key) => [key, snoozedAt])),
+      },
+    })),
+}));
+
 export const useForcedMigrations = () => {
   const { address, isWalletConnected: isOsmosisWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { forcedMigrations } = useFeatureFlags();
 
-  // Bumped when a snooze is written and at stage / snooze boundaries:
-  // visibility is derived at render time, so a re-render re-evaluates it.
+  // Bumped at stage / snooze boundaries: visibility is derived at render
+  // time, so a re-render re-evaluates it. A new snooze re-renders every caller
+  // through the shared store.
   const [, forceVisibilityUpdate] = useReducer((count: number) => count + 1, 0);
-  // Mirrors snoozes in memory, so closing works even when storage is blocked.
-  const [sessionSnoozes, setSessionSnoozes] = useState<Record<string, number>>(
-    {}
+  const sessionSnoozes = useSessionSnoozeStore(
+    ({ sessionSnoozes }) => sessionSnoozes
   );
+  const addSnoozes = useSessionSnoozeStore(({ addSnoozes }) => addSnoozes);
 
   const isWalletConnected =
     !isWalletLoading && isOsmosisWalletConnected && Boolean(address);
@@ -98,6 +119,7 @@ export const useForcedMigrations = () => {
     data: holdings,
     isFetched: isHoldingsFetched,
     isError: isHoldingsError,
+    refetch: refetchHoldings,
   } = api.local.portfolio.getForcedMigrationHoldings.useQuery(
     { address: address ?? "", denoms: fromDenoms },
     {
@@ -147,9 +169,31 @@ export const useForcedMigrations = () => {
       !isForcedMigrationSnoozed(getSnoozedAtMs(migration.id), stage, now)
   );
 
+  // Unlocks finishing free their funds, which can bring the popup back (a
+  // wallet holding only unlocking positions has no active migration until
+  // then), so holdings are refetched just after each one ends. Read from the
+  // raw holdings for that reason, with a few seconds for the block.
+  const UNLOCK_SETTLE_MS = 10_000;
+  const nextUnlockEndMs = Math.min(
+    ...(holdings ?? [])
+      .flatMap((holding) => {
+        if (holding.kind === "order" || holding.state !== "unlocking")
+          return [];
+        // A pool's unlocking locks share one row; the first to end frees
+        // shares, so schedule on the earliest.
+        const end =
+          (holding.kind === "share" && holding.nextUnlockEndTime) ||
+          holding.unlockEndTime;
+        return end ? [new Date(end).getTime() + UNLOCK_SETTLE_MS] : [];
+      })
+      .filter((time) => !Number.isNaN(time) && time > now.getTime())
+  );
+
   // Re-render at the next boundary that can change visibility: a migration
-  // starting, escalating or passing its deadline, or a snooze running out.
+  // starting, escalating or passing its deadline, a snooze running out, or an
+  // unlock finishing.
   const nextBoundaryMs = Math.min(
+    nextUnlockEndMs,
     ...migrations.flatMap(({ startDate, escalateDate, deadline }) =>
       [startDate, escalateDate, deadline]
         .map((date) => (date ? new Date(date).getTime() : NaN))
@@ -174,9 +218,13 @@ export const useForcedMigrations = () => {
       Math.max(nextBoundaryMs - Date.now() + 1, 0),
       2 ** 31 - 1
     );
-    const timeout = setTimeout(forceVisibilityUpdate, delay);
+    const isUnlockEnd = nextBoundaryMs === nextUnlockEndMs;
+    const timeout = setTimeout(() => {
+      if (isUnlockEnd) void refetchHoldings();
+      forceVisibilityUpdate();
+    }, delay);
     return () => clearTimeout(timeout);
-  }, [nextBoundaryMs]);
+  }, [nextBoundaryMs, nextUnlockEndMs, refetchHoldings]);
 
   const snooze = useCallback(
     (ids: string[]) => {
@@ -184,20 +232,17 @@ export const useForcedMigrations = () => {
       const keys = ids.map((id) =>
         getForcedMigrationSnoozeKey(id, address ?? "")
       );
-      setSessionSnoozes((prev) => ({
-        ...prev,
-        ...Object.fromEntries(keys.map((key) => [key, snoozedAt])),
-      }));
       keys.forEach((key) => {
         try {
           window.localStorage.setItem(key, String(snoozedAt));
         } catch {
-          // The in-memory snooze above covers this session.
+          // The in-memory snooze below covers this session.
         }
       });
-      forceVisibilityUpdate();
+      // Written after storage, so every caller re-renders with both in place.
+      addSnoozes(keys, snoozedAt);
     },
-    [address]
+    [address, addSnoozes]
   );
 
   return { activeMigrations, visibleMigrations, isSettled, snooze };
