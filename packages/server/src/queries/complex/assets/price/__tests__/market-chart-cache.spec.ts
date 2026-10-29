@@ -26,12 +26,13 @@ describe("getCoinGeckoCoinMarketChart", () => {
     jest.useRealTimers();
   });
 
-  it("shares one upstream request for calls a few seconds apart", async () => {
+  it("shares one upstream request for calls a minute apart", async () => {
     mockQueryMarketChart.mockResolvedValue(chart([[1, 1]]));
 
     jest.setSystemTime(1_700_000_010_000);
     await getCoinGeckoCoinMarketChart({ id: "shared", timeFrame: "1d" });
-    jest.setSystemTime(1_700_000_017_000);
+    // same 5 minute bucket, but past the previous 10 second TTL
+    jest.setSystemTime(1_700_000_070_000);
     await getCoinGeckoCoinMarketChart({ id: "shared", timeFrame: "1d" });
 
     expect(mockQueryMarketChart).toHaveBeenCalledTimes(1);
