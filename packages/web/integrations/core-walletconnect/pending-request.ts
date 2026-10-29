@@ -10,7 +10,10 @@
  */
 
 /** Hard limit for a single wallet request. A late approval inside the window is
- *  the user's own action and goes through normally. */
+ *  the user's own action and goes through normally. The limit is the timer, not
+ *  a deadline: if the browser was suspended (e.g. while the user was in the
+ *  wallet app) and the approval is processed before the overdue timer fires, it
+ *  still goes through, since the user was never told the request stopped. */
 export const WC_REQUEST_TIMEOUT_MS = 120_000;
 
 type Listener = () => void;
