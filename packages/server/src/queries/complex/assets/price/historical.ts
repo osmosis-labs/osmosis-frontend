@@ -222,17 +222,30 @@ export async function getCoinGeckoCoinMarketChart({
     toTimestamp = timeFrame.to;
   }
 
+  let emptyResult: Awaited<ReturnType<typeof queryMarketChart>> | undefined;
+
   return cachified({
     cache: tokenHistoricalPriceCache,
     key: `coingecko-coin-market-chart-${id}-${fromTimestamp}-${toTimestamp}-${vsCurrency}`,
-    ttl: 1000 * 60 * 10, // 10 minutes
-    staleWhileRevalidate: 1000 * 60 * 10,
-    getFreshValue: async () =>
-      queryMarketChart({
+    // 5 minutes, the width of the shortest bucket, so the latest point is never much older
+    ttl: 1000 * 60 * 5,
+    getFreshValue: async () => {
+      const result = await queryMarketChart({
         id,
         vsCurrency,
         to: toTimestamp,
         from: fromTimestamp,
-      }),
+      });
+      // An empty chart is not cached, so it doesn't outlive CoinGecko recovering
+      // (the CDN skips caching it for the same reason)
+      if (!result?.prices?.length) {
+        emptyResult = result;
+        throw new Error(`Empty CoinGecko market chart for ${id}`);
+      }
+      return result;
+    },
+  }).catch((e) => {
+    if (emptyResult) return emptyResult;
+    throw e;
   });
 }
