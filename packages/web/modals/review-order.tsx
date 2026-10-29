@@ -162,7 +162,6 @@ export function ReviewOrder({
   slippageLiquidityUnknown = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-  const walletPromptLabel = useWalletPromptLabel();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
@@ -206,6 +205,9 @@ export function ReviewOrder({
    *  the wallet does sign. */
   const signsWithOneClickSession =
     show1CT && is1CTEnabled && !transaction1CTParamsChanges?.length;
+  const walletPromptLabel = useWalletPromptLabel({
+    signsLocally: signsWithOneClickSession,
+  });
 
   const [queryOrderType] = useQueryState(
     "type",
@@ -1127,9 +1129,7 @@ export function ReviewOrder({
                         warningNeedsAcknowledgement
                       }
                       isLoading={isAwaitingSignature}
-                      loadingText={
-                        signsWithOneClickSession ? undefined : walletPromptLabel
-                      }
+                      loadingText={walletPromptLabel}
                       className="body2 sm:caption !rounded-2xl"
                     >
                       <h6>{t("limitOrders.confirm")}</h6>
