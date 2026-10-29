@@ -22,6 +22,7 @@ export type MainLayoutMenu = {
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
   subtext?: string;
+  hideOnMobile?: boolean;
 };
 
 export const MainMenu: FunctionComponent<{

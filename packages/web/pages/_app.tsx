@@ -147,16 +147,13 @@ const MainLayoutWrapper: FunctionComponent<{
   const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
     () => [
       {
-        label: t("menu.help"),
-        link: "https://support.osmosis.zone/",
-        icon: <Icon id="help-circle" className="h-6 w-6" />,
-      },
-      {
         label: t("menu.vote"),
         link:
           osmosisWallet?.walletInfo?.governanceUrl ??
           "https://wallet.keplr.app/chains/osmosis?tab=governance",
         icon: <Icon id="vote" className="h-6 w-6" />,
+        // The wallet governance link doesn't work on mobile.
+        hideOnMobile: true,
       },
       {
         label: t("menu.info"),
@@ -167,6 +164,11 @@ const MainLayoutWrapper: FunctionComponent<{
         label: t("menu.featureRequests"),
         link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-6 w-6" />,
+      },
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-6 w-6" />,
       },
     ],
     [t, osmosisWallet?.walletInfo?.governanceUrl]
