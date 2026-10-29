@@ -166,11 +166,18 @@ export const AssetVariantsConversionModal = () => {
 
   // Use effect to close modal when no variants left
   // This method, after testing, is more immediate than using tanstack's select
+  // Not on an error: a failed lookup fails closed to no variants, and the
+  // modal should then show its error rather than vanish.
   useEffect(() => {
-    if (assetVariants && assetVariants.length === 0 && isOpen) {
+    if (
+      assetVariants &&
+      assetVariants.length === 0 &&
+      isOpen &&
+      !portfolioAssetsError
+    ) {
       setIsOpen(false);
     }
-  }, [assetVariants, isOpen, setIsOpen]);
+  }, [assetVariants, isOpen, setIsOpen, portfolioAssetsError]);
 
   return (
     <ModalBase
