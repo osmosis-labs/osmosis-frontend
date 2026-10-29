@@ -4,6 +4,7 @@ import { poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
+  EvmReceiptCheck,
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
@@ -71,7 +72,13 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
      * Optional. Resolves Solana-signed transfers Skip can't: a tx that never
      * landed is invisible to Skip, so without this it stays pending.
      */
-    protected readonly checkSolanaSignature?: SolanaSignatureCheck
+    protected readonly checkSolanaSignature?: SolanaSignatureCheck,
+    /**
+     * Optional. Resolves EVM transfers whose receipt wait failed after
+     * broadcast (`sendTxUnconfirmed`): a reverted tx never reaches Skip, so
+     * without this it stays pending.
+     */
+    protected readonly checkEvmReceipt?: EvmReceiptCheck
   ) {
     this.axelarScanBaseUrl =
       env === "mainnet"
@@ -84,6 +91,8 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
     } = snapshot;
+    // set once the source-chain receipt proves the tx was included
+    let receiptFound = false;
 
     await poll({
       fn: async () => {
@@ -109,6 +118,26 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           }
         }
 
+        // An EVM tx whose receipt wait failed may have reverted, which Skip
+        // never sees: check the receipt until it turns up.
+        if (
+          snapshot.sendTxUnconfirmed &&
+          !receiptFound &&
+          this.checkEvmReceipt &&
+          snapshot.trackingChainId === undefined &&
+          typeof fromChainId === "number"
+        ) {
+          const outcome = await this.checkEvmReceipt({
+            txHash: sendTxHash,
+            chainId: fromChainId,
+          });
+          if (outcome === "reverted") {
+            return { id: sendTxHash, status: "failed" as const };
+          }
+          if (outcome === "success") receiptFound = true;
+        }
+        const inclusionUnproven = snapshot.sendTxUnconfirmed && !receiptFound;
+
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
@@ -127,7 +156,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           // holds for a tx whose inclusion is unproven: it may not be mined
           // yet, so Skip rejecting it is not an outcome either.
           .catch((error) => {
-            if (isSolanaSigned || snapshot.sendTxUnconfirmed) return undefined;
+            if (isSolanaSigned || inclusionUnproven) return undefined;
             throw error;
           });
 

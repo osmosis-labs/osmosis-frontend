@@ -1,7 +1,10 @@
 import {
+  EthereumChainInfo,
   EvmRpcTransportOptions,
   getEvmRpcTransportFromUrls,
 } from "@osmosis-labs/utils";
+import { type Address, createPublicClient } from "viem";
+import { getTransactionReceipt } from "viem/actions";
 
 /** This app's EVM RPC route (pages/api/evm-rpc), which forwards to the
  *  chain's keyed provider server-side. */
@@ -55,4 +58,34 @@ export function getClientEvmRpcTransport(
   opts?: EvmRpcTransportOptions
 ) {
   return getEvmRpcTransportFromUrls(getClientEvmRpcUrls(chain), opts);
+}
+
+/**
+ * One-shot, provable outcome of a broadcast EVM transaction from its receipt,
+ * for status tracking that outlives the signing flow (a receipt wait that
+ * failed, or a transfer restored after a reload).
+ *
+ * - `success` / `reverted`: the receipt exists, with that status.
+ * - `undefined`: nothing provable (not mined yet, dropped, unknown chain, or
+ *   the RPC didn't answer). Callers must keep waiting, never treat it as a
+ *   failure.
+ */
+export async function checkEvmReceiptOutcome({
+  txHash,
+  chainId,
+}: {
+  txHash: string;
+  chainId: number;
+}): Promise<"success" | "reverted" | undefined> {
+  const chain = EthereumChainInfo.find((chain) => chain.id === chainId);
+  if (!chain) return undefined;
+  try {
+    const receipt = await getTransactionReceipt(
+      createPublicClient({ chain, transport: getClientEvmRpcTransport(chain) }),
+      { hash: txHash as Address }
+    );
+    return receipt.status === "reverted" ? "reverted" : "success";
+  } catch {
+    return undefined; // not found or unanswered: undecided, not negative
+  }
 }

@@ -393,6 +393,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       multiTxStepVersion: (snapshot.multiTxStepVersion ?? 0) + 1,
       pendingStep: undefined,
       sendTxHash: finalSendTxHash,
+      // described the first step's hash; the final step's was confirmed
+      sendTxUnconfirmed: undefined,
       trackingChainId,
       estimatedArrivalUnix,
       status: "pending",
@@ -719,10 +721,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       const merged = snapshots.map((local) => {
         const winner = pickFurtherAlong(local);
         // Unproven inclusion is only ever resolved by the status providers,
-        // so a copy that learned it must not lose it to the other copy.
+        // so a copy that learned it must not lose it to the other copy. It
+        // describes one hash: a copy at another step (advanced past it)
+        // must not pass it on.
         const twin = stored.find((s) => keyOf(s) === keyOf(local));
+        const flagsWinnerTx = (copy?: TxSnapshot) =>
+          copy?.sendTxUnconfirmed && copy.sendTxHash === winner.sendTxHash;
         return !winner.sendTxUnconfirmed &&
-          (local.sendTxUnconfirmed || twin?.sendTxUnconfirmed)
+          (flagsWinnerTx(local) || flagsWinnerTx(twin))
           ? { ...winner, sendTxUnconfirmed: true }
           : winner;
       });
@@ -890,6 +896,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ...current,
             pendingStep: undefined,
             sendTxHash: storedSnapshot.sendTxHash,
+            sendTxUnconfirmed: storedSnapshot.sendTxUnconfirmed,
             trackingChainId: storedSnapshot.trackingChainId,
             estimatedArrivalUnix: storedSnapshot.estimatedArrivalUnix,
             status: storedSnapshot.status,

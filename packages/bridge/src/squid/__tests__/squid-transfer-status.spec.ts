@@ -161,6 +161,34 @@ describe("SquidTransferStatusProvider", () => {
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
+  it("resolves an unconfirmed tx as failed when its receipt shows a revert", async () => {
+    // A reverted tx never reaches Squid, which only answers 404 for it.
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+    const check = jest.fn(async () => "reverted" as const);
+    const evmProvider = new SquidTransferStatusProvider(
+      "integratorId",
+      "mainnet" as BridgeEnvironment,
+      MockChains,
+      check
+    );
+    evmProvider.statusReceiverDelegate = mockReceiver;
+
+    await evmProvider.trackTxStatus(
+      createTxSnapshot({ sendTxUnconfirmed: true })
+    );
+
+    expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      "testTxHash",
+      "failed",
+      undefined
+    );
+  });
+
   it("should generate correct explorer URL", () => {
     const snapshot = createTxSnapshot({
       sendTxHash: "testTxHash",

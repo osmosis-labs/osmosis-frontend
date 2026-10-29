@@ -1128,6 +1128,7 @@ export const useBridgeQuotes = ({
     // set the moment the first tx leaves the wallet: the error handling
     // below must know whether an entry keyed on it was already persisted
     let firstStepBroadcastHash: string | undefined;
+    let entryRecorded = false;
 
     try {
       // ---- Preflight the intermediate signer; nothing irreversible yet ----
@@ -1218,7 +1219,6 @@ export const useBridgeQuotes = ({
       // hash: the funds are en route from broadcast, so waiting for the
       // receipt to record it would lose the resume record if the app
       // closes during confirmation.
-      let entryRecorded = false;
       const onFirstStepBroadcast = (
         broadcastHash: string,
         solanaRecentBlockhash?: string
@@ -1339,19 +1339,43 @@ export const useBridgeQuotes = ({
       // The first step was broadcast but its receipt couldn't be fetched.
       // Close the flow so Confirm can't sign a second burn while this one
       // may still land; the entry persisted at broadcast stays resumable
-      // from history.
+      // from history. If it wasn't recorded or persisted, there is no
+      // Continue to offer: say so, as the confirmed path does.
       if (
         e instanceof EvmTxStatusUnknownError &&
         e.txHash === firstStepBroadcastHash
       ) {
-        transferHistoryStore.markSendTxUnconfirmed(e.txHash);
-        await transferHistoryStore.persistNow().catch((persistError) => {
-          console.error(
-            "Multi-tx transfer entry could not be persisted",
-            persistError
+        let entrySaved = entryRecorded;
+        if (entrySaved) {
+          transferHistoryStore.markSendTxUnconfirmed(e.txHash);
+          entrySaved = await transferHistoryStore.persistNow().then(
+            () => true,
+            (persistError) => {
+              console.error(
+                "Multi-tx transfer entry could not be persisted",
+                persistError
+              );
+              return false;
+            }
           );
-        });
+        } else {
+          console.error(
+            "Multi-tx transfer entry was not recorded at broadcast"
+          );
+        }
         displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        if (!entrySaved) {
+          displayToast(
+            {
+              titleTranslationKey: "transfer.somethingIsntWorking",
+              captionTranslationKey: [
+                "transfer.multiTxRecordFailed",
+                { chain: finalStepPrettyName },
+              ],
+            },
+            ToastType.ERROR
+          );
+        }
         onTransferProp?.();
         setTransferInitiated(true);
         return;

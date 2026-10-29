@@ -817,7 +817,10 @@ const txSnapshotSchema = z.object({
    * Set when the tracked tx was broadcast but its receipt couldn't be
    * fetched, so its inclusion is unproven. A status provider that treats
    * "not found" as failed must keep polling instead: a tx still waiting to
-   * be mined is unknown to it too.
+   * be mined is unknown to it too. Until the receipt is found (see
+   * `EvmReceiptCheck`), a reverted receipt is the only proof of failure.
+   * Describes `sendTxHash` only, so it is dropped when a multi-tx entry
+   * advances to its next step.
    */
   sendTxUnconfirmed: z.boolean().optional(),
   /**
@@ -872,6 +875,17 @@ const txSnapshotSchema = z.object({
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
+
+/**
+ * Proves the outcome of an EVM tx from its source chain's receipt,
+ * independent of the bridge's status API: "success" or "reverted" once the
+ * receipt exists. Anything unproven (not mined yet, dropped, or the RPC
+ * didn't answer) must come back undefined, never as a failure.
+ */
+export type EvmReceiptCheck = (params: {
+  txHash: string;
+  chainId: number;
+}) => Promise<"success" | "reverted" | undefined>;
 
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {

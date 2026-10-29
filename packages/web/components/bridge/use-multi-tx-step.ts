@@ -8,6 +8,7 @@ import { ToastType } from "~/components/alert/types";
 import { OsmosisChainInfo } from "~/config/chain";
 import { useWallet } from "~/hooks/use-wallet";
 import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
+import { checkEvmReceiptOutcome } from "~/utils/evm-rpc";
 import {
   BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
   BRIDGE_ROUTE_EXPIRED_MESSAGE,
@@ -332,6 +333,28 @@ export const useMultiTxResume = () => {
           }
         }
 
+        // An EVM first step whose receipt wait failed may have reverted,
+        // which Skip never reports as failed: prove it from the receipt.
+        // Until the receipt turns up, its inclusion stays unproven.
+        let priorStepUnproven = !!transferHistoryStore.snapshots.find(
+          (s) => s.sendTxHash === snapshot.sendTxHash
+        )?.sendTxUnconfirmed;
+        if (priorStepUnproven && snapshot.fromChain.chainType === "evm") {
+          const outcome = await checkEvmReceiptOutcome({
+            txHash: pendingStep.priorStepTxHash,
+            chainId: snapshot.fromChain.chainId,
+          });
+          if (outcome === "reverted") {
+            transferHistoryStore.receiveNewTxStatus(
+              snapshot.sendTxHash,
+              "failed",
+              undefined
+            );
+            return;
+          }
+          if (outcome === "success") priorStepUnproven = false;
+        }
+
         const arrival = await waitForSkipStepArrival({
           chainId: String(snapshot.fromChain.chainId),
           txHash: pendingStep.priorStepTxHash,
@@ -344,13 +367,9 @@ export const useMultiTxResume = () => {
           onWaiting: stillInTransitToast,
           // Skip abandoning a landed Solana burn is a tracking timeout, not
           // proof the funds are gone: keep the entry resumable. The same
-          // holds for an EVM burn whose receipt was never confirmed, which
-          // may simply be slow to land.
-          abandonedIsFailed:
-            !priorStepOnSolana &&
-            !transferHistoryStore.snapshots.find(
-              (s) => s.sendTxHash === snapshot.sendTxHash
-            )?.sendTxUnconfirmed,
+          // holds for an EVM burn whose receipt hasn't turned up, which may
+          // simply be slow to land.
+          abandonedIsFailed: !priorStepOnSolana && !priorStepUnproven,
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(
