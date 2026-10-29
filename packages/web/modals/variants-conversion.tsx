@@ -431,8 +431,9 @@ export const AssetVariantRow: React.FC<{
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
         {/* On phones the four columns are too narrow to read, so from and to
-            stack with a down arrow between them (centered in the compact
-            layout, in line with the arrow). */}
+            stack with a down arrow between them. In the compact layout both
+            sit in the same fixed-width box, centered under each other, so the
+            logos line up whatever the name lengths. */}
         <div
           className={classNames(
             "grid w-full items-center gap-3 py-2",
@@ -444,7 +445,9 @@ export const AssetVariantRow: React.FC<{
           <div
             className={classNames(
               "flex min-w-0 items-center gap-3",
-              isCompact ? "sm:justify-center" : "sm:col-span-2"
+              isCompact
+                ? "sm:w-64 sm:max-w-full sm:justify-self-center"
+                : "sm:col-span-2"
             )}
           >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -497,7 +500,9 @@ export const AssetVariantRow: React.FC<{
           <div
             className={classNames(
               "flex min-w-0 grow items-center gap-3 py-2",
-              isCompact ? "sm:justify-center sm:py-0" : "px-4 sm:py-0 sm:px-0"
+              isCompact
+                ? "sm:w-64 sm:max-w-full sm:justify-self-center sm:py-0"
+                : "px-4 sm:py-0 sm:px-0"
             )}
           >
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">

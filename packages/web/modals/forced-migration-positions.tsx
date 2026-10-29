@@ -336,8 +336,10 @@ const PoolRowLayout: FunctionComponent<{
           poolId={holding.poolId}
           coins={holding.coins}
           detail={getHoldingStateText(holding, t, language)}
-          // Side by side, the two pools split the width evenly.
-          className={migrateTo ? "flex-1 basis-0" : undefined}
+          // Side by side, the two pools split the width evenly. Stacked on
+          // phones, both sit in the same fixed-width box, centered, so the
+          // logos line up whatever the pool names.
+          className={migrateTo ? MIGRATE_POOL_CLASS : undefined}
         />
         {migrateTo ? (
           <>
@@ -352,7 +354,7 @@ const PoolRowLayout: FunctionComponent<{
               coins={migrateTo.coins}
               amountsNote={t("forcedMigration.migratedAmountsNote")}
               alignRight
-              className="flex-1 basis-0"
+              className={MIGRATE_POOL_CLASS}
             />
           </>
         ) : (
@@ -365,6 +367,9 @@ const PoolRowLayout: FunctionComponent<{
     </div>
   );
 };
+
+const MIGRATE_POOL_CLASS =
+  "flex-1 basis-0 sm:w-64 sm:max-w-full sm:self-center";
 
 const PoolSummary: FunctionComponent<{
   poolId: string;
