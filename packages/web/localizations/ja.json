@@ -312,6 +312,7 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "walletRequestTimedOut": "{wallet}が時間内に応答しませんでした。署名や送信は行われていません。もう一度お試しください。",
     "insufficientFeeTokens": {
       "title": "残高が十分な手数料トークンがありません",
       "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
@@ -1397,8 +1398,8 @@
       "description": "この取引は市場価格を{impact}変動させるため、表示された金額を大きく下回る額を受け取る可能性があります。"
     },
     "lossAcknowledgement": "はい、この取引により価値が大幅に損なわれる可能性があることを理解した上で続行します。",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "ウォレットの応答を待っています...",
+    "walletNotResponding": "ウォレットの応答を待っています。続行するにはスマートフォンで{wallet}を開いてください。",
     "errors": {
       "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
       "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",

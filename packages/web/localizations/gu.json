@@ -312,6 +312,7 @@
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
+    "walletRequestTimedOut": "{wallet} એ સમયસર જવાબ આપ્યો નહીં. કંઈપણ સહી કે મોકલવામાં આવ્યું નથી, કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFeeTokens": {
       "title": "પૂરતા બેલેન્સ સાથે કોઈ ફી ટોકન નથી",
       "body": "નેટવર્ક ફી ભરપાઈ કરવા માટે Osmosis પર OSMO અથવા અન્ય સમર્થિત ફી ટોકન જમા કરો.",
@@ -1397,8 +1398,8 @@
       "description": "આ વેપાર બજારભાવમાં {impact} નો ફેરફાર કરે છે, તેથી તમને દર્શાવેલી રકમ કરતાં ઘણું ઓછું મળી શકે છે."
     },
     "lossAcknowledgement": "હા, હું સમજું છું કે આ વેપારથી મૂલ્યમાં નોંધપાત્ર નુકસાન થઈ શકે છે અને હું આગળ વધવા માંગું છું.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "તમારા વૉલેટની રાહ જોઈ રહ્યા છીએ...",
+    "walletNotResponding": "તમારા વૉલેટની રાહ જોઈ રહ્યા છીએ. ચાલુ રાખવા માટે તમારા ફોન પર {wallet} ખોલો.",
     "errors": {
       "noAssetAvailable": "તમારી પાસે ઓસ્મોસિસ પર વેપાર કરવા માટે કોઈ {coinName} ફંડ નથી. ચાલુ રાખવા માટે એક વિકલ્પ પસંદ કરો.",
       "tradeMayResultInLossOfValue": "તમારા વેપારના પરિણામે મૂલ્યમાં નોંધપાત્ર નુકસાન થઈ શકે છે",

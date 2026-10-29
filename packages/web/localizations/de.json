@@ -312,6 +312,7 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
+    "walletRequestTimedOut": "{wallet} hat nicht rechtzeitig geantwortet. Es wurde nichts signiert oder gesendet, bitte versuchen Sie es erneut.",
     "insufficientFeeTokens": {
       "title": "Keine Gebührentoken mit ausreichendem Guthaben",
       "body": "Zahle OSMO oder einen anderen unterstützten Gebührentoken auf Osmosis ein, um die Netzwerkgebühr zu decken.",
@@ -1397,8 +1398,8 @@
       "description": "Dieser Handel verändert den Marktpreis um {impact}, sodass Sie möglicherweise deutlich weniger als den angezeigten Betrag erhalten."
     },
     "lossAcknowledgement": "Ja, ich verstehe, dass dieser Handel zu einem erheblichen Wertverlust führen kann, und ich möchte fortfahren.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "Warten auf Ihre Wallet...",
+    "walletNotResponding": "Warten auf Ihre Wallet. Öffnen Sie {wallet} auf Ihrem Telefon, um fortzufahren.",
     "errors": {
       "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren.",
       "tradeMayResultInLossOfValue": "Ihr Handel kann zu einem erheblichen Wertverlust führen",

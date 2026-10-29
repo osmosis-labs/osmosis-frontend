@@ -312,6 +312,7 @@
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
+    "walletRequestTimedOut": "{wallet} ने समय पर जवाब नहीं दिया. कुछ भी साइन या भेजा नहीं गया, कृपया फिर से प्रयास करें.",
     "insufficientFeeTokens": {
       "title": "पर्याप्त शेष राशि वाला कोई शुल्क टोकन नहीं है",
       "body": "नेटवर्क शुल्क को कवर करने के लिए Osmosis पर OSMO या अन्य समर्थित शुल्क टोकन जमा करें।",
@@ -1397,8 +1398,8 @@
       "description": "यह व्यापार बाज़ार मूल्य को {impact} बदल देता है, इसलिए आपको दिखाई गई राशि से बहुत कम मिल सकता है।"
     },
     "lossAcknowledgement": "हाँ, मैं समझता/समझती हूँ कि इस व्यापार से मूल्य में महत्वपूर्ण हानि हो सकती है और मैं आगे बढ़ना चाहता/चाहती हूँ।",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "आपके वॉलेट की प्रतीक्षा की जा रही है...",
+    "walletNotResponding": "आपके वॉलेट की प्रतीक्षा की जा रही है. जारी रखने के लिए अपने फ़ोन पर {wallet} खोलें.",
     "errors": {
       "noAssetAvailable": "आपके पास Osmosis पर व्यापार करने के लिए कोई {coinName} फंड नहीं है। जारी रखने के लिए कोई विकल्प चुनें।",
       "tradeMayResultInLossOfValue": "आपके व्यापार के परिणामस्वरूप मूल्य में महत्वपूर्ण हानि हो सकती है",

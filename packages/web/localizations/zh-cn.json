@@ -312,6 +312,7 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "walletRequestTimedOut": "{wallet} 未及时响应。未签名或发送任何内容，请重试。",
     "insufficientFeeTokens": {
       "title": "没有余额足够的手续费代币",
       "body": "请在 Osmosis 上充值 OSMO 或其他受支持的手续费代币以支付网络费用。",
@@ -1397,8 +1398,8 @@
       "description": "此交易将使市场价格变动{impact}，因此您收到的金额可能远低于显示的金额。"
     },
     "lossAcknowledgement": "是的，我明白此交易可能导致重大价值损失，我仍希望继续。",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "正在等待您的钱包...",
+    "walletNotResponding": "正在等待您的钱包。请在手机上打开 {wallet} 以继续。",
     "errors": {
       "noAssetAvailable": "您在 Osmosis 上没有任何{coinName}资金可供交易。选择一个选项以继续。",
       "tradeMayResultInLossOfValue": "您的交易可能会导致重大价值损失",

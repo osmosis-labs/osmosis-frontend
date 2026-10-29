@@ -28,15 +28,17 @@ let current: PendingWalletRequest | null = null;
 const listeners = new Set<Listener>();
 
 /** The snapshot is rebuilt on every change so it stays referentially stable
- *  between changes. Cancelling it cancels every in-flight request: requests
- *  can overlap (e.g. an account lookup while a signature is open), and a
- *  cancel that left any of them live could still end in a broadcast. */
+ *  between changes. It describes the newest request, so the waiting notice is
+ *  timed from the latest prompt rather than an older one still open. Cancelling
+ *  it cancels every in-flight request: requests can overlap (e.g. an account
+ *  lookup while a signature is open), and a cancel that left any of them live
+ *  could still end in a broadcast. */
 function refresh() {
-  const [first] = inFlight;
-  current = first
+  const newest = [...inFlight][inFlight.size - 1];
+  current = newest
     ? {
-        walletName: first.walletName,
-        startedAt: first.startedAt,
+        walletName: newest.walletName,
+        startedAt: newest.startedAt,
         cancel: () => [...inFlight].forEach((request) => request.reject()),
       }
     : null;

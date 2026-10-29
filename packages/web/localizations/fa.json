@@ -312,6 +312,7 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
+    "walletRequestTimedOut": "{wallet} به موقع پاسخ نداد. چیزی امضا یا ارسال نشد، لطفاً دوباره تلاش کنید.",
     "insufficientFeeTokens": {
       "title": "هیچ توکن کارمزدی با موجودی کافی وجود ندارد",
       "body": "برای پوشش کارمزد شبکه، OSMO یا یک توکن کارمزد پشتیبانی‌شده دیگر را در Osmosis واریز کنید.",
@@ -1397,8 +1398,8 @@
       "description": "این معامله قیمت بازار را به میزان {impact} تغییر می‌دهد، بنابراین ممکن است بسیار کمتر از مبلغ نشان‌داده‌شده دریافت کنید."
     },
     "lossAcknowledgement": "بله، می‌دانم که این معامله ممکن است باعث از دست رفتن قابل توجه ارزش شود و می‌خواهم ادامه دهم.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "در انتظار کیف پول شما...",
+    "walletNotResponding": "در انتظار کیف پول شما. برای ادامه، {wallet} را در تلفن خود باز کنید.",
     "errors": {
       "noAssetAvailable": "شما هیچ گونه وجوهی در Osmosis برای تجارت با {coinName} ندارید. گزینه ای را برای ادامه انتخاب کنید.",
       "tradeMayResultInLossOfValue": "تجارت شما ممکن است منجر به از دست دادن قابل توجه ارزش شود",

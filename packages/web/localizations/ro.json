@@ -312,6 +312,7 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
+    "walletRequestTimedOut": "{wallet} nu a răspuns la timp. Nimic nu a fost semnat sau trimis, vă rugăm să încercați din nou.",
     "insufficientFeeTokens": {
       "title": "Niciun token de comision cu sold suficient",
       "body": "Depune OSMO sau un alt token de comision acceptat pe Osmosis pentru a acoperi comisionul de rețea.",
@@ -1397,8 +1398,8 @@
       "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
     },
     "lossAcknowledgement": "Da, înțeleg că această tranzacție ar putea cauza pierderi semnificative de valoare și doresc să continui.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "Se așteaptă portofelul dumneavoastră...",
+    "walletNotResponding": "Se așteaptă portofelul dvs. Deschideți {wallet} pe telefon pentru a continua.",
     "errors": {
       "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
       "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",

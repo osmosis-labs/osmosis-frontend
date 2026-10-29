@@ -312,6 +312,7 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
+    "walletRequestTimedOut": "{wallet} nie odpowiedział na czas. Nic nie zostało podpisane ani wysłane, spróbuj ponownie.",
     "insufficientFeeTokens": {
       "title": "Brak tokenów opłat z wystarczającym saldem",
       "body": "Wpłać OSMO lub inny obsługiwany token opłat w Osmosis, aby pokryć opłatę sieciową.",
@@ -1397,8 +1398,8 @@
       "description": "Ta transakcja zmienia cenę rynkową o {impact}, więc możesz otrzymać znacznie mniej niż wyświetlana kwota."
     },
     "lossAcknowledgement": "Tak, rozumiem, że ta transakcja może spowodować znaczną utratę wartości i chcę kontynuować.",
-    "waitingForWallet": "Waiting for your wallet...",
-    "walletNotResponding": "Waiting for your wallet. Open {wallet} on your phone to continue.",
+    "waitingForWallet": "Oczekiwanie na portfel...",
+    "walletNotResponding": "Oczekiwanie na portfel. Otwórz {wallet} na telefonie, aby kontynuować.",
     "errors": {
       "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
       "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",

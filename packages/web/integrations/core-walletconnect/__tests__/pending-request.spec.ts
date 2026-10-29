@@ -1,3 +1,5 @@
+import { prettifyTxError } from "~/components/alert/prettify";
+
 import {
   getPendingWalletRequest,
   trackWalletRequest,
@@ -46,6 +48,20 @@ describe("trackWalletRequest", () => {
 
     answer("signed-too-late");
     await expect(result).rejects.toThrow("did not respond in time");
+  });
+
+  it("times out with a message the toast can translate", async () => {
+    const result = trackWalletRequest({
+      request: new Promise<string>(() => {}),
+      walletName: "Keplr Mobile",
+    });
+    jest.advanceTimersByTime(WC_REQUEST_TIMEOUT_MS);
+    const error: Error = await result.catch((e) => e);
+
+    expect(prettifyTxError(error.message, [])).toEqual([
+      "errors.walletRequestTimedOut",
+      { wallet: "Keplr Mobile" },
+    ]);
   });
 });
 
