@@ -596,7 +596,7 @@ const AssetActionsCell: AssetCellComponent<{
   const { address } = useWallet();
   const { assetVariants } = useConvertibleAssetVariants({
     address,
-    enabled: featureFlags.alloyedAssets && needsConversion,
+    enabled: Boolean(featureFlags.alloyedAssets) && needsConversion,
   });
   const isConvertible = Boolean(
     assetVariants?.some(

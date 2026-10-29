@@ -39,10 +39,14 @@ export const portfolioRouter = createTRPCRouter({
   getAlloyStatuses: publicProcedure
     .input(
       z.object({
-        contractAddresses: z.array(z.string().startsWith("osmo1")).max(50),
+        // Contract addresses (osmo1 + 58 chars), a handful at most: there
+        // are only a few alloys, and unknown ones are ignored server-side.
+        contractAddresses: z
+          .array(z.string().regex(/^osmo1[a-z0-9]{58}$/))
+          .max(20),
       })
     )
-    .query(({ input: { contractAddresses }, ctx: { chainList } }) =>
-      getAlloyStatuses({ contractAddresses, chainList })
+    .query(({ input: { contractAddresses }, ctx: { assetLists, chainList } }) =>
+      getAlloyStatuses({ contractAddresses, assetLists, chainList })
     ),
 });

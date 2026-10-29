@@ -150,6 +150,8 @@ export const AssetVariantsConversionModal = () => {
     // Always mounted: only look up statuses while open. The toast and the
     // portfolio rows that open it share the same cached lookup.
     areStatusesEnabled: isOpen,
+    // As before this hook: the asset-alert banners rely on this refetch.
+    refetchOnWindowFocus: true,
   });
   // Opened for one variant: show only that one.
   const assetVariants = useMemo(

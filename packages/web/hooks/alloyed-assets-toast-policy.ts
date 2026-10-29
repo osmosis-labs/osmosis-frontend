@@ -8,9 +8,10 @@ import type { AssetVariant } from "@osmosis-labs/server";
  * ASTRO.terra, and today's ibc-denom USDC with its ten bridged variants), and
  * volunteering those unprompted is noise.
  *
- * The portfolio query already returns only members of active alloys, so this
- * filter removes nothing today; it stays so the toast's rule doesn't silently
- * depend on the server's.
+ * Callers pass `useConvertibleAssetVariants`, which keeps only members of
+ * active alloys, so this filter removes nothing today; it stays so the toast's
+ * rule doesn't silently depend on that hook. Raw `getPortfolioAssets`
+ * candidates are not filtered and must not be passed here.
  *
  * Deliberately a moving target: when a group's canonical asset becomes an alloy
  * (as USDC will), it starts qualifying with no code change here.

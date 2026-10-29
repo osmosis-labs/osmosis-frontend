@@ -3,6 +3,7 @@ import {
   filterConvertibleAssetVariants,
   getAlloyContractAddresses,
 } from "@osmosis-labs/server";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { api } from "~/utils/trpc";
@@ -10,9 +11,8 @@ import { api } from "~/utils/trpc";
 /**
  * The connected wallet's variants that convert 1:1 into an active alloy. The
  * portfolio supplies the candidates; transmuter statuses are a separate,
- * longer-lived query (also invalidated after every tx), so they never hold up
- * the portfolio and rows that remount (virtualized tables) don't refetch
- * either.
+ * longer-lived query, so they never hold up the portfolio and rows that
+ * remount (virtualized tables) don't refetch either.
  *
  * `assetVariants` stays undefined until both have loaded. A failed status
  * lookup comes back inactive from the server, so its variants are dropped
@@ -52,6 +52,9 @@ export function useConvertibleAssetVariants({
       // a minute old, a refocus or remount refreshes it (the server caches
       // failures for 30s, so this can't hammer a struggling node).
       staleTime: 60_000,
+      // Converting the last of one alloy's variants changes the key; keep the
+      // previous statuses meanwhile so rows don't drop to a skeleton.
+      placeholderData: keepPreviousData,
     }
   );
 

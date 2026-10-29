@@ -353,8 +353,10 @@ function getCachedAlloyStatus(
   return cachified({
     cache: alloyStatusCache,
     // A transmuter frozen within this window still shows Convert until the
-    // entry expires; the row's fee simulation then fails and disables it, so
-    // nothing is broadcast. Accepted to keep contract queries off most loads.
+    // entry expires, and the client's own one-minute stale time stacks on
+    // top, so up to about two minutes. The row's fee simulation then fails
+    // and disables it, so nothing is broadcast. Accepted to keep contract
+    // queries off most loads.
     ttl: 1000 * 60, // 1 minute
     key: `alloy-status-${contractAddress}`,
     getFreshValue: async ({ metadata }) => {
@@ -372,6 +374,11 @@ function getCachedAlloyStatus(
           if (
             typeof active !== "boolean" ||
             !Array.isArray(configs) ||
+            !configs.every(
+              ({ normalization_factor }) =>
+                typeof normalization_factor === "string" &&
+                /^\d+$/.test(normalization_factor)
+            ) ||
             !Array.isArray(corrupted) ||
             !corrupted.every((denom) => typeof denom === "string")
           )
@@ -425,16 +432,31 @@ export function getAlloyContractAddresses(variants: AssetVariant[]): string[] {
 }
 
 /** Status of each alloy transmuter, a few at a time. A failed lookup comes
- *  back inactive (cached briefly), so its variants aren't offered. */
+ *  back inactive (cached briefly), so its variants aren't offered.
+ *
+ *  Only contracts minting an alloy in the asset list are queried: the
+ *  procedure is also served by our API, so caller-chosen addresses must not
+ *  turn into contract queries from our servers. */
 export async function getAlloyStatuses({
   contractAddresses,
+  assetLists,
   chainList,
 }: {
   contractAddresses: string[];
+  assetLists: AssetList[];
   chainList: Chain[];
 }): Promise<Record<string, AlloyStatus>> {
+  const knownAlloyContracts = new Set(
+    assetLists
+      .flatMap(({ assets }) => assets)
+      .filter(({ isAlloyed }) => isAlloyed)
+      .map(({ coinMinimalDenom }) => getAlloyContractAddress(coinMinimalDenom))
+      .filter((address): address is string => Boolean(address))
+  );
   const statuses: Record<string, AlloyStatus> = {};
-  const queue = [...new Set(contractAddresses)];
+  const queue = [...new Set(contractAddresses)].filter((address) =>
+    knownAlloyContracts.has(address)
+  );
   await Promise.all(
     Array.from({ length: ALLOY_STATUS_CONCURRENCY }, async () => {
       for (let address = queue.shift(); address; address = queue.shift()) {
