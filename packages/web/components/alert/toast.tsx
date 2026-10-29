@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import {
   Id,
   toast,
@@ -11,7 +11,6 @@ import { Alert, AlloyedAssetsAlert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
 import { shouldPersistDismissalOnClose } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
@@ -279,15 +278,6 @@ const AlloyedAssetsToast: FunctionComponent<
   variantGroupKeys,
   closeToast,
 }) => {
-  const { isMobile } = useWindowSize();
-  // should close toast if screen size changes to mobile while shown
-  useEffect(() => {
-    if (isMobile) {
-      // Use timeout to avoid the maximum update depth exceeded error
-      setTimeout(closeToast, 0);
-    }
-  }, [isMobile, closeToast]);
-
   const { setIsOpen } = useAssetVariantsModalStore();
 
   const { dismissGroups } = useAlloyedAssetsToastDismissal();

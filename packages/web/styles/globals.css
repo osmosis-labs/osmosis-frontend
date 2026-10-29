@@ -233,6 +233,7 @@
 @media (max-width: 767px) {
   .Toastify__toast-container {
     min-width: 280px !important;
+    max-width: none !important;
     width: 100% !important;
     padding: 0 20px !important;
     right: 0 !important;
@@ -241,12 +242,20 @@
 
   .Toastify__toast--default {
     min-width: 280px !important;
+    max-width: none !important;
     margin-top: 10px;
     width: 100%;
   }
 
   .Toastify__toast {
     padding: 16px !important;
+  }
+
+  /* react-toastify pins bottom toasts flush to the screen edge on phones. */
+  .Toastify__toast-container--bottom-left,
+  .Toastify__toast-container--bottom-center,
+  .Toastify__toast-container--bottom-right {
+    bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
   }
 }
 

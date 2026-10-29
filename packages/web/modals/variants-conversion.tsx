@@ -2,7 +2,13 @@ import type { AssetVariant } from "@osmosis-labs/server";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";
 
@@ -12,14 +18,14 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useAssetVariantsToast, useTranslation, useWindowSize } from "~/hooks";
+import { useAssetVariantsToast, useTranslation } from "~/hooks";
 import {
   getConvertVariantMessages,
   useConvertVariant,
 } from "~/hooks/use-convert-variant";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
-import { api } from "~/utils/trpc";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
@@ -45,7 +51,7 @@ const FeeContent: React.FC<{
 }> = ({ isLoading, convertFee, swapFee, isUnavailable, simulation }) => {
   const { t } = useTranslation();
 
-  if (isLoading || !convertFee || !swapFee || simulation.loading)
+  if (isLoading || simulation.loading)
     return <SkeletonLoader className="h-4 w-20" />;
 
   if (isUnavailable)
@@ -54,6 +60,8 @@ const FeeContent: React.FC<{
         {t("assetVariantsConversion.unavailable")}
       </span>
     );
+
+  if (!swapFee) return <SkeletonLoader className="h-4 w-20" />;
 
   // Free
   if (swapFee.toDec().isZero()) {
@@ -72,7 +80,9 @@ const FeeContent: React.FC<{
    * low liq variants can have wildly high prices if the pool is imbalanced.
    */
   const showConvertFee =
-    convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
+    convertFee !== undefined &&
+    convertFee.toDec().isPositive() &&
+    convertFee.toDec().lt(new Dec(10_000));
 
   // Fees
   return (
@@ -98,7 +108,6 @@ export const AssetVariantsConversionModal = () => {
   useAssetVariantsToast();
 
   const { address } = useWallet();
-  const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
   // Lift fee-token availability from row-level simulations: if any row's
@@ -133,51 +142,44 @@ export const AssetVariantsConversionModal = () => {
   );
 
   const {
-    data: portfolioAssetsData,
+    assetVariants: convertibleVariants,
     error: portfolioAssetsError,
     isLoading: isPortfolioAssetsLoading,
-  } = api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: address ?? "",
-    },
-    {
-      enabled: !!address,
-      select: (data) => {
-        // If the modal is open for a specific variant, filter the assets to only include that variant
-        if (variantCoinMinimalDenom) {
-          return {
-            ...data,
-            assetVariants: data.assetVariants.filter(
-              (variant) =>
-                variant.amount.currency.coinMinimalDenom ===
-                variantCoinMinimalDenom
-            ),
-          };
-        }
-
-        return data;
-      },
-    }
+  } = useConvertibleAssetVariants({
+    address,
+    // Always mounted: only look up statuses while open. The toast and the
+    // portfolio rows that open it share the same cached lookup.
+    areStatusesEnabled: isOpen,
+    // As before this hook: the asset-alert banners rely on this refetch.
+    refetchOnWindowFocus: true,
+  });
+  // Opened for one variant: show only that one.
+  const assetVariants = useMemo(
+    () =>
+      variantCoinMinimalDenom
+        ? convertibleVariants?.filter(
+            (variant) =>
+              variant.amount.currency.coinMinimalDenom ===
+              variantCoinMinimalDenom
+          )
+        : convertibleVariants,
+    [convertibleVariants, variantCoinMinimalDenom]
   );
 
   // Use effect to close modal when no variants left
   // This method, after testing, is more immediate than using tanstack's select
+  // Not on an error: a failed lookup fails closed to no variants, and the
+  // modal should then show its error rather than vanish.
   useEffect(() => {
     if (
-      portfolioAssetsData &&
-      portfolioAssetsData.assetVariants.length === 0 &&
-      isOpen
+      assetVariants &&
+      assetVariants.length === 0 &&
+      isOpen &&
+      !portfolioAssetsError
     ) {
       setIsOpen(false);
     }
-  }, [portfolioAssetsData, isOpen, setIsOpen]);
-
-  // should close toast if screen size changes to mobile while shown
-  useEffect(() => {
-    if (isMobile && isOpen) {
-      setIsOpen(false);
-    }
-  }, [isOpen, isMobile, setIsOpen]);
+  }, [assetVariants, isOpen, setIsOpen, portfolioAssetsError]);
 
   return (
     <ModalBase
@@ -228,16 +230,14 @@ export const AssetVariantsConversionModal = () => {
               {t("assetVariantsConversion.errorLoading")}
             </p>
           ) : (
-            portfolioAssetsData?.assetVariants.map(
-              (variant, index, variants) => (
-                <AssetVariantRow
-                  key={variant.amount.currency.coinMinimalDenom}
-                  variant={variant}
-                  showBottomBorder={index !== variants.length - 1}
-                  onInsufficientFeeTokens={reportInsufficientFeeTokens}
-                />
-              )
-            )
+            assetVariants?.map((variant, index, variants) => (
+              <AssetVariantRow
+                key={variant.amount.currency.coinMinimalDenom}
+                variant={variant}
+                showBottomBorder={index !== variants.length - 1}
+                onInsufficientFeeTokens={reportInsufficientFeeTokens}
+              />
+            ))
           )}
         </div>
       </div>
@@ -278,6 +278,21 @@ const AssetVariantRow: React.FC<{
    * has very low liquidity and would fail on chain for some reason.
    * If so, block the user from sending tx.
    */
+  // Re-run once the quote arrives (it usually isn't cached on mount), and again
+  // only when it changes in substance. Keyed on stable fields, not the
+  // objects: callers may rebuild the variant on render, and a refetched quote
+  // is a new object (it holds class instances, so structural sharing can't
+  // keep it) even when nothing changed, e.g. on returning from a wallet app.
+  const variantDenom = variant.amount.currency.coinMinimalDenom;
+  const variantAmount = variant.amount.toCoin().amount;
+  const quoteKey = quote
+    ? `${quote.amount.toCoin().amount}:${quote.split
+        .map(({ pools }) => pools.map(({ id }) => id).join(">"))
+        .join("|")}`
+    : undefined;
+  // Bumped on returning to the window while the row is failing, so a fee
+  // top-up or a recovered node is picked up without a change to the quote.
+  const [retryNonce, setRetryNonce] = useState(0);
   const simulation = useAsync(async () => {
     if (!account || !quote || !account?.address) return;
 
@@ -289,8 +304,24 @@ const AssetVariantRow: React.FC<{
 
     if (!Array.isArray(messages)) return;
 
-    await estimateFee({ messages });
-  });
+    try {
+      await estimateFee({ messages });
+    } catch (e) {
+      // A short fee balance is definitive; anything else (node timeout, 5xx,
+      // throttling) gets one retry before the row shows Unavailable.
+      if (e instanceof InsufficientBalanceForFeeError) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+      await estimateFee({ messages });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.address, quoteKey, variantDenom, variantAmount, retryNonce]);
+
+  useEffect(() => {
+    if (!simulation.error) return;
+    const retry = () => setRetryNonce((nonce) => nonce + 1);
+    window.addEventListener("focus", retry);
+    return () => window.removeEventListener("focus", retry);
+  }, [simulation.error]);
 
   const isUnavailable = Boolean(simulation?.error) || isError;
 
@@ -351,8 +382,10 @@ const AssetVariantRow: React.FC<{
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
-        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
-          <div className="flex min-w-0 items-center gap-3">
+        {/* On phones the four columns are too narrow to read, so from and to
+            stack with a down arrow between them. */}
+        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2 sm:grid-cols-[1fr_1.5rem]">
+          <div className="flex min-w-0 items-center gap-3 sm:col-span-2">
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -386,9 +419,9 @@ const AssetVariantRow: React.FC<{
             id="arrow"
             height={24}
             width={24}
-            className="text-osmoverse-700"
+            className="text-osmoverse-700 sm:col-span-2 sm:ml-2 sm:rotate-90"
           />
-          <div className="flex grow items-center gap-3 py-2 px-4">
+          <div className="flex min-w-0 grow items-center gap-3 py-2 px-4 sm:py-0 sm:px-0">
             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
                 logoURIs={
@@ -459,7 +492,7 @@ const AssetVariantRow: React.FC<{
             </div>
           )}
         </div>
-        <div className="flex place-content-between items-center gap-2">
+        <div className="flex place-content-between items-center gap-2 sm:flex-col sm:items-stretch sm:gap-3">
           <div className="body2 text-osmoverse-300">
             <FeeContent
               isLoading={isLoading}
@@ -472,7 +505,7 @@ const AssetVariantRow: React.FC<{
           <div className="flex items-center gap-2">
             <Button
               size="md"
-              className={classNames("!h-12 !w-fit", {
+              className={classNames("!h-12 !w-fit sm:!w-full", {
                 "rounded-full !bg-osmoverse-850/60": isButtonLoading,
               })}
               disabled={conversionDisabled}

@@ -2,21 +2,20 @@ import { useEffect } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useFeatureFlags, useWalletSelect, useWindowSize } from "~/hooks";
+import { useFeatureFlags, useWalletSelect } from "~/hooks";
 import {
   getToastEligibleVariantGroupKeys,
   shouldDisplayAlloyedAssetsToast,
 } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
 import { useAlloyedAssetsToastSession } from "~/hooks/use-alloyed-assets-toast-session";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useWallet } from "~/hooks/use-wallet";
-import { api } from "~/utils/trpc";
 
 export const useAssetVariantsToast = () => {
   // #region hooks & store
   const { address, isWalletConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
   const { areAllGroupsDismissed, refresh } = useAlloyedAssetsToastDismissal();
   const {
@@ -45,38 +44,37 @@ export const useAssetVariantsToast = () => {
     isWalletConnected &&
     Boolean(address);
 
-  const { data, error, isFetchedAfterMount, isSuccess, isFetching } =
-    api.local.portfolio.getPortfolioAssets.useQuery(
-      {
-        address: address ?? "",
-      },
-      {
-        enabled,
-        refetchOnWindowFocus: false,
-      }
-    );
+  const {
+    assetVariants,
+    portfolioQuery: { isFetchedAfterMount, isSuccess },
+    isFetching,
+    error,
+  } = useConvertibleAssetVariants({ address, enabled, staleTime: 0 });
 
   useEffect(() => {
     // Only a settled, successful fetch this mount made while the gate was open
     // counts. The query can expose cached or persisted data while disabled,
     // keeps old data when a refetch fails, and a late cache restore can mark
     // it fetched mid-fetch; any of those would toast for a stale portfolio.
-    if (!enabled || !isSuccess || isFetching || !isFetchedAfterMount || !data)
+    if (
+      !enabled ||
+      !isSuccess ||
+      isFetching ||
+      !isFetchedAfterMount ||
+      !assetVariants
+    )
       return;
     if (hasSeenToastThisSession) return;
 
     // Eligibility and visibility live in alloyed-assets-toast-policy so the
     // release-critical rules are assertable without a component or a tRPC
     // client. Keep this callback to wiring only.
-    const variantGroupKeys = getToastEligibleVariantGroupKeys(
-      data?.assetVariants
-    );
+    const variantGroupKeys = getToastEligibleVariantGroupKeys(assetVariants);
 
     if (
       shouldDisplayAlloyedAssetsToast({
         variantGroupKeys,
         isAlloyedAssetsEnabled: alloyedAssets,
-        isMobile,
         areAllGroupsDismissed,
       })
     ) {
@@ -99,10 +97,9 @@ export const useAssetVariantsToast = () => {
     isSuccess,
     isFetching,
     isFetchedAfterMount,
-    data,
+    assetVariants,
     hasSeenToastThisSession,
     alloyedAssets,
-    isMobile,
     areAllGroupsDismissed,
     markToastSeenThisSession,
   ]);

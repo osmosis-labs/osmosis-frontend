@@ -1,9 +1,20 @@
-import { AssetList, MinimalAsset } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { Dec, Int, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
-import { captureIfError } from "../../../utils";
+import {
+  captureErrorAndReturn,
+  captureIfError,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils";
+import {
+  queryTransmuterAssetConfigs,
+  queryTransmuterCorruptedDenoms,
+  queryTransmuterIsActive,
+} from "../../contracts";
 import {
   type AccountCoinsResult,
   Categories,
@@ -210,7 +221,9 @@ export type PortfolioAssets = {
   totalCap: PricePretty;
   /** A held coin that should have a price couldn't be priced, so `totalCap` is unknown. */
   totalCapUnknown: boolean;
-  assetVariants: AssetVariant[];
+  /** Variants grouped with a canonical asset. Only those passing
+   *  `filterConvertibleAssetVariants` with `getAlloyStatuses` convert 1:1. */
+  assetVariantCandidates: AssetVariant[];
   /**
    * Assets the user holds across all categories (bank balances, staked,
    * unstaking, in-locks, unclaimed rewards, and pooled — GAMM shares and
@@ -266,8 +279,13 @@ export async function getPortfolioAssets({
       fiatValue: result.cap_value,
     })) ?? [];
 
-  // check for asset variants, alloys and canonical assets such as USDC
-  const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
+  // Variants grouped with a canonical asset. Which of them actually convert
+  // depends on each alloy's transmuter status, fetched separately
+  // (`getAlloyStatuses`) so contract queries never hold up the portfolio.
+  const assetVariantCandidates = checkAssetVariants(
+    userBalanceDenoms,
+    assetLists
+  );
 
   const heldAssets = getHeldAssets(categories, assetLists);
 
@@ -280,7 +298,7 @@ export async function getPortfolioAssets({
       assetLists,
       categories["total-assets"]
     ),
-    assetVariants,
+    assetVariantCandidates,
     heldAssets,
   };
 }
@@ -305,6 +323,192 @@ export function getHeldAssets(
       )?.symbol,
     })) ?? []
   );
+}
+
+export interface AlloyStatus {
+  isActive: boolean;
+  /** Normalization factor by minimal denom, for every asset the alloy's
+   *  transmuter holds plus the alloyed denom itself. */
+  normalizationFactors: Record<string, string>;
+  /** Members the transmuter won't take in (see `queryTransmuterCorruptedDenoms`). */
+  corruptedDenoms: string[];
+}
+
+const ALLOYED_DENOM_REGEX = /^factory\/(osmo1[a-z0-9]+)\/alloyed\/[^/]+$/;
+
+/** The transmuter contract that mints an alloyed denom, which is the denom's
+ *  tokenfactory creator. */
+export function getAlloyContractAddress(
+  alloyedDenom: string
+): string | undefined {
+  return ALLOYED_DENOM_REGEX.exec(alloyedDenom)?.[1];
+}
+
+const alloyStatusCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+function getCachedAlloyStatus(
+  contractAddress: string,
+  chainList: Chain[]
+): Promise<AlloyStatus> {
+  return cachified({
+    cache: alloyStatusCache,
+    // A transmuter frozen within this window still shows Convert until the
+    // entry expires, and the client's own one-minute stale time stacks on
+    // top, so up to about two minutes. The row's fee simulation then fails
+    // and disables it, so nothing is broadcast. Accepted to keep contract
+    // queries off most loads.
+    ttl: 1000 * 60, // 1 minute
+    key: `alloy-status-${contractAddress}`,
+    getFreshValue: async ({ metadata }) => {
+      const result = await Promise.all([
+        queryTransmuterIsActive({ contractAddress, chainList }),
+        queryTransmuterAssetConfigs({ contractAddress, chainList }),
+        queryTransmuterCorruptedDenoms({ contractAddress, chainList }),
+      ])
+        .then(([isActive, assetConfigs, corruptedDenoms]) => {
+          // Checked here so a malformed response fails closed and is cached
+          // like an outage, instead of throwing later in the filter.
+          const active = isActive?.data?.is_active;
+          const configs = assetConfigs?.data?.asset_configs;
+          const corrupted = corruptedDenoms?.data?.corrupted_denoms;
+          if (
+            typeof active !== "boolean" ||
+            !Array.isArray(configs) ||
+            !configs.every(
+              ({ normalization_factor }) =>
+                typeof normalization_factor === "string" &&
+                /^\d+$/.test(normalization_factor)
+            ) ||
+            !Array.isArray(corrupted) ||
+            !corrupted.every((denom) => typeof denom === "string")
+          )
+            throw new Error(
+              `Unexpected transmuter status response from ${contractAddress}`
+            );
+          return {
+            isActive: active,
+            normalizationFactors: Object.fromEntries(
+              configs.map(({ denom, normalization_factor }) => [
+                denom,
+                normalization_factor,
+              ])
+            ),
+            corruptedDenoms: corrupted,
+          };
+        })
+        .catch((e): AlloyStatus => {
+          // Fail closed, but briefly: caching the failure keeps a node outage
+          // from adding the full request timeout to every lookup.
+          metadata.ttl = 1000 * 30; // 30 seconds
+          return captureErrorAndReturn(e, INACTIVE_ALLOY_STATUS);
+        });
+      return result;
+    },
+  });
+}
+
+const INACTIVE_ALLOY_STATUS: AlloyStatus = {
+  isActive: false,
+  normalizationFactors: {},
+  corruptedDenoms: [],
+};
+
+/** How many alloys' statuses are fetched at once: each costs three contract
+ *  queries, and public REST endpoints throttle bursts. */
+const ALLOY_STATUS_CONCURRENCY = 3;
+
+/** Transmuter contracts minting the alloys these variants convert into. */
+export function getAlloyContractAddresses(variants: AssetVariant[]): string[] {
+  return [
+    ...new Set(
+      variants
+        .filter(({ canonicalAsset }) => canonicalAsset?.isAlloyed)
+        .map(({ canonicalAsset }) =>
+          getAlloyContractAddress(canonicalAsset.coinMinimalDenom)
+        )
+        .filter((address): address is string => Boolean(address))
+    ),
+  ].sort();
+}
+
+/** Status of each alloy transmuter, a few at a time. A failed lookup comes
+ *  back inactive (cached briefly), so its variants aren't offered.
+ *
+ *  Only contracts minting an alloy in the asset list are queried: the
+ *  procedure is also served by our API, so caller-chosen addresses must not
+ *  turn into contract queries from our servers. */
+export async function getAlloyStatuses({
+  contractAddresses,
+  assetLists,
+  chainList,
+}: {
+  contractAddresses: string[];
+  assetLists: AssetList[];
+  chainList: Chain[];
+}): Promise<Record<string, AlloyStatus>> {
+  const knownAlloyContracts = new Set(
+    assetLists
+      .flatMap(({ assets }) => assets)
+      .filter(({ isAlloyed }) => isAlloyed)
+      .map(({ coinMinimalDenom }) => getAlloyContractAddress(coinMinimalDenom))
+      .filter((address): address is string => Boolean(address))
+  );
+  const statuses: Record<string, AlloyStatus> = {};
+  const queue = [...new Set(contractAddresses)].filter((address) =>
+    knownAlloyContracts.has(address)
+  );
+  await Promise.all(
+    Array.from({ length: ALLOY_STATUS_CONCURRENCY }, async () => {
+      for (let address = queue.shift(); address; address = queue.shift()) {
+        statuses[address] = await getCachedAlloyStatus(address, chainList);
+      }
+    })
+  );
+  return statuses;
+}
+
+/**
+ * Keeps only variants that convert 1:1: the canonical asset is an alloy, its
+ * transmuter is active (a frozen one rejects swaps), and the variant is one of
+ * its members. `variantGroupKey` alone also groups legacy consolidations and
+ * bridged assets that aren't in any 1:1 pool, which could only convert
+ * through a price-moving route. Also drops dust that would mint less than two
+ * units of the alloy: the transmuter scales amounts by `outFactor / inFactor`,
+ * rounding down, so e.g. 1 adydx (factor 10^6) into allDYDX (factor 1) yields
+ * nothing and the quote fails, and a single unit out leaves no room for any
+ * slippage allowance while costing more in gas than it is worth.
+ *
+ * Fails closed: an alloy without a status offers no conversion, and neither
+ * does a corrupted member, which the transmuter won't take in.
+ */
+export function filterConvertibleAssetVariants(
+  variants: AssetVariant[],
+  statusByContract: Record<string, AlloyStatus>
+): AssetVariant[] {
+  return variants.filter(({ amount, canonicalAsset }) => {
+    if (!canonicalAsset?.isAlloyed) return false;
+    const address = getAlloyContractAddress(canonicalAsset.coinMinimalDenom);
+    const status =
+      address && Object.prototype.hasOwnProperty.call(statusByContract, address)
+        ? statusByContract[address]
+        : undefined;
+    if (!status?.isActive) return false;
+    if (status.corruptedDenoms.includes(amount.currency.coinMinimalDenom))
+      return false;
+    // Own keys only, so a denom like "constructor" can't read an inherited
+    // property off the plain object.
+    const factorOf = (denom: string) =>
+      Object.prototype.hasOwnProperty.call(status.normalizationFactors, denom)
+        ? status.normalizationFactors[denom]
+        : undefined;
+    const inFactor = factorOf(amount.currency.coinMinimalDenom);
+    const outFactor = factorOf(canonicalAsset.coinMinimalDenom);
+    if (!inFactor || !outFactor) return false;
+    // At least two units out: amount * outFactor / inFactor >= 2.
+    return new Int(amount.toCoin().amount)
+      .mul(new Int(outFactor))
+      .gte(new Int(inFactor).mul(new Int(2)));
+  });
 }
 
 export function checkAssetVariants(

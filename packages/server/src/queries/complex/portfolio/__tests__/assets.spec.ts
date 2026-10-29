@@ -1,7 +1,13 @@
 import { AssetLists as assetLists } from "../../../__tests__/mock-asset-lists";
 import { PortfolioAssetsResponse } from "../../../sidecar";
 import { calculatePercentAndFiatValues, getAllocations } from "../assets";
-import { checkAssetVariants, getHeldAssets } from "../assets";
+import {
+  type AlloyStatus,
+  type AssetVariant,
+  checkAssetVariants,
+  filterConvertibleAssetVariants,
+  getHeldAssets,
+} from "../assets";
 
 const MOCK_DATA: PortfolioAssetsResponse = {
   categories: {
@@ -414,5 +420,82 @@ describe("Has Asset Variants", () => {
 
     const result = checkAssetVariants(userCoinMinimalDenoms, assetLists);
     expect(result.length).toBe(0);
+  });
+});
+
+describe("filterConvertibleAssetVariants", () => {
+  const ALL_USDC_CONTRACT =
+    "osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0";
+  const ALL_BTC_CONTRACT =
+    "osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3";
+  const ALL_ETH_CONTRACT =
+    "osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm";
+  const USDC_NOBLE =
+    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+  const USDC_AXL =
+    "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
+  // Hypothetical member with a coarser normalization factor than allUSDC.
+  const USDC_INJ = "ibc/USDCINJ";
+  const USDC_AXL_CORRUPTED = "ibc/USDCCORRUPTED";
+  const WBTC =
+    "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc";
+  const ETH_AXL =
+    "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5";
+
+  const variant = (
+    denom: string,
+    canonicalDenom: string,
+    isAlloyed = true,
+    baseAmount = "1000000"
+  ): AssetVariant =>
+    ({
+      amount: {
+        currency: { coinMinimalDenom: denom },
+        toCoin: () => ({ denom, amount: baseAmount }),
+      },
+      canonicalAsset: { coinMinimalDenom: canonicalDenom, isAlloyed },
+    }) as unknown as AssetVariant;
+
+  it("keeps only members of active alloys, failing closed", () => {
+    const allUsdc = `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`;
+    const allBtc = `factory/${ALL_BTC_CONTRACT}/alloyed/allBTC`;
+    const result = filterConvertibleAssetVariants(
+      [
+        variant(USDC_NOBLE, allUsdc),
+        // Member, but too small to mint two units of the alloy.
+        variant(USDC_INJ, allUsdc, true, "1999"),
+        // Member the transmuter marks corrupted (it won't take it in).
+        variant(USDC_AXL_CORRUPTED, allUsdc),
+        // In the variant group, but not a member of the transmuter.
+        variant(USDC_AXL, `factory/${ALL_USDC_CONTRACT}/alloyed/allUSDC`),
+        // Member of a frozen transmuter.
+        variant(WBTC, `factory/${ALL_BTC_CONTRACT}/alloyed/allBTC`),
+        // No status fetched for this alloy.
+        variant(ETH_AXL, `factory/${ALL_ETH_CONTRACT}/alloyed/allETH`),
+        // Canonical asset isn't an alloy (legacy consolidation).
+        variant("ibc/OLD", "uold", false),
+      ],
+      {
+        [ALL_USDC_CONTRACT]: {
+          isActive: true,
+          normalizationFactors: {
+            [USDC_NOBLE]: "1",
+            [USDC_INJ]: "1000",
+            [USDC_AXL_CORRUPTED]: "1",
+            [allUsdc]: "1",
+          },
+          corruptedDenoms: [USDC_AXL_CORRUPTED],
+        } satisfies AlloyStatus,
+        [ALL_BTC_CONTRACT]: {
+          isActive: false,
+          normalizationFactors: { [WBTC]: "1", [allBtc]: "1" },
+          corruptedDenoms: [],
+        },
+      }
+    );
+
+    expect(
+      result.map(({ amount }) => amount.currency.coinMinimalDenom)
+    ).toEqual([USDC_NOBLE]);
   });
 });
