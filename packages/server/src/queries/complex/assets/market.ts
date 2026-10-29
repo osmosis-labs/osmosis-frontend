@@ -1,5 +1,6 @@
 import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { timeout } from "@osmosis-labs/utils";
 import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -299,6 +300,13 @@ const TOKEN_DATA_REFRESH_GRACE = 1000 * 60 * 2; // 2 minutes
  *  their own, and a hanging fetch would hold every request waiting on it. */
 const TOKEN_DATA_FETCH_TIMEOUT = 1000 * 4; // 4 seconds
 
+/** A refresh still pending this long after it started is treated as lost, and the next
+ *  request starts a new one instead of waiting on it. A refresh started in the background
+ *  (not awaited by the request that started it) can stall on the serverless runtime after
+ *  that request ends, abort timer included, and would otherwise be shared with every later
+ *  request on the instance. */
+const TOKEN_DATA_REFRESH_ABANDON_AFTER = TOKEN_DATA_FETCH_TIMEOUT + 1000; // 5 seconds
+
 /** After a failed refresh, wait this long before trying again. */
 const TOKEN_DATA_REFRESH_RETRY_DELAY = 1000 * 30; // 30 seconds
 
@@ -321,60 +329,88 @@ const PRICE_DERIVED_FIELDS = [
   "liquidity24hChange",
 ] as const;
 
-/** Cached token data from the data services, keyed by upper-cased denom, with when it was fetched. */
-function getCachedTokenData(forceFresh = false) {
-  return cachified({
-    cache: assetMarketCache,
-    // Kept for its maximum age; `getTokenData` decides when to refresh it.
-    ttl: DATA_SERVICES_MARKET_MAX_AGE,
-    forceFresh,
-    // A failed refresh must not write the old entry back: that would renew it and keep
-    // it past its maximum age. `getTokenData` falls back to it instead.
-    fallbackToCache: false,
-    key: "allTokenData",
-    getFreshValue: async () => {
-      const allTokenData = await queryAllTokenData({
-        signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT),
-      });
-
-      const tokenInfoMap = new Map<string, MarketActivity>();
-      allTokenData.forEach((tokenData) => {
-        const activity = makeMarketActivityFromTokenData(tokenData);
-        tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
-      });
-      return {
-        tokenInfoMap,
-        fetchedAt: Date.now(),
-        // The data services can answer with every price or liquidity null, which is an
-        // outage of that field rather than data.
-        hasPrices: allTokenData.some(({ price }) => price !== null),
-        hasLiquidity: allTokenData.some(({ liquidity }) => liquidity !== null),
-      };
-    },
+/** Token data from the data services, keyed by upper-cased denom, with when it was fetched. */
+async function fetchTokenData() {
+  const allTokenData = await queryAllTokenData({
+    signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT),
   });
+
+  const tokenInfoMap = new Map<string, MarketActivity>();
+  allTokenData.forEach((tokenData) => {
+    const activity = makeMarketActivityFromTokenData(tokenData);
+    tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
+  });
+  return {
+    tokenInfoMap,
+    fetchedAt: Date.now(),
+    // The data services can answer with every price or liquidity null, which is an
+    // outage of that field rather than data.
+    hasPrices: allTokenData.some(({ price }) => price !== null),
+    hasLiquidity: allTokenData.some(({ liquidity }) => liquidity !== null),
+  };
 }
 
-type TokenDataEntry = Awaited<ReturnType<typeof getCachedTokenData>>;
+type TokenDataEntry = Awaited<ReturnType<typeof fetchTokenData>>;
+
+/** The last token data fetched. A failed refresh leaves it in place without renewing it,
+ *  so it ages out at its maximum age. */
+let tokenDataEntry: TokenDataEntry | undefined;
+/** The refresh in flight, shared by every request that needs one. */
+let tokenDataRefresh:
+  { promise: Promise<TokenDataEntry>; startedAt: number } | undefined;
 
 /** The cached token data entry if it's within its maximum age, without fetching. */
 function readCachedTokenData(): TokenDataEntry | undefined {
-  const entry = assetMarketCache.get("allTokenData") as
-    CacheEntry<TokenDataEntry> | undefined;
   if (
-    !entry ||
-    Date.now() - entry.value.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE
+    !tokenDataEntry ||
+    Date.now() - tokenDataEntry.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE
   ) {
     return undefined;
   }
-  return entry.value;
+  return tokenDataEntry;
 }
 
-/** Fetches token data fresh into the cache, recording a failure for the retry delay. */
-function refreshTokenData() {
-  return getCachedTokenData(true).catch((e) => {
-    tokenDataRefreshFailedAt = Date.now();
-    throw e;
-  });
+/** Refreshes token data, joining the refresh in flight unless it has been pending long
+ *  enough to count as lost. A failure is recorded for the retry delay. */
+function refreshTokenData(): Promise<TokenDataEntry> {
+  if (
+    tokenDataRefresh &&
+    Date.now() - tokenDataRefresh.startedAt < TOKEN_DATA_REFRESH_ABANDON_AFTER
+  ) {
+    return tokenDataRefresh.promise;
+  }
+
+  const refresh = {
+    startedAt: Date.now(),
+    promise: fetchTokenData().then(
+      (entry) => {
+        tokenDataEntry = entry;
+        return entry;
+      },
+      (e) => {
+        tokenDataRefreshFailedAt = Date.now();
+        throw e;
+      }
+    ),
+  };
+  tokenDataRefresh = refresh;
+  // A lost refresh that settles late must not clear its replacement.
+  refresh.promise
+    .finally(() => {
+      if (tokenDataRefresh === refresh) tokenDataRefresh = undefined;
+    })
+    .catch(() => undefined);
+  return refresh.promise;
+}
+
+/** Waits for a token data refresh, but never longer than a fetch may take: the shared
+ *  refresh can be a lost one, and this request's own timer still fires. */
+async function waitForTokenDataRefresh(): Promise<TokenDataEntry> {
+  return await timeout(
+    refreshTokenData,
+    TOKEN_DATA_FETCH_TIMEOUT,
+    "refreshTokenData"
+  )();
 }
 
 /** Token data, refreshed once it's past its ttl:
@@ -384,20 +420,20 @@ function refreshTokenData() {
  *  A failed refresh falls back to the cached entry, which is then treated as stale once past
  *  the grace, and no refresh is tried again for `TOKEN_DATA_REFRESH_RETRY_DELAY`. Token data
  *  without any price is refreshed after that delay instead of the ttl, so prices come back
- *  soon after the data services recover. */
-async function getTokenData() {
+ *  soon after the data services recover. A request never waits on a refresh for longer than
+ *  a fetch may take, even when the shared refresh is a lost one. */
+async function getTokenData(): Promise<TokenDataEntry> {
+  const tokenData = readCachedTokenData();
+
   // Within the retry delay after a failed fetch, don't call the data services at all,
   // including for a cold or expired cache.
   if (Date.now() - tokenDataRefreshFailedAt < TOKEN_DATA_REFRESH_RETRY_DELAY) {
-    const cached = readCachedTokenData();
-    if (cached) return cached;
+    if (tokenData) return tokenData;
     throw new Error("Token data is unavailable");
   }
 
-  const tokenData = await getCachedTokenData().catch((e) => {
-    tokenDataRefreshFailedAt = Date.now();
-    throw e;
-  });
+  if (!tokenData) return waitForTokenDataRefresh();
+
   const refreshAfter = tokenData.hasPrices
     ? TOKEN_DATA_TTL
     : TOKEN_DATA_REFRESH_RETRY_DELAY;
@@ -407,7 +443,7 @@ async function getTokenData() {
     refreshTokenData().catch(() => undefined);
     return tokenData;
   }
-  return refreshTokenData().catch((e) => {
+  return waitForTokenDataRefresh().catch((e) => {
     // The refresh may have taken the entry past its maximum age.
     if (Date.now() - tokenData.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE)
       throw e;

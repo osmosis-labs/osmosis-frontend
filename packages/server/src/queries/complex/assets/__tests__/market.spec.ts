@@ -105,6 +105,44 @@ describe("getAssetMarketActivity", () => {
   });
 });
 
+describe("getAssetMarketActivity with a lost refresh", () => {
+  afterEach(() => jest.useRealTimers());
+
+  it("doesn't hold requests on a background refresh that never settles", async () => {
+    // Fresh module state, so the cache and retry delay from the tests above don't apply.
+    let market!: typeof import("../market");
+    let query!: jest.Mock;
+    jest.isolateModules(() => {
+      market = require("../market");
+      query = require("../../../data-services").queryAllTokenData;
+    });
+
+    jest.useFakeTimers({ now: new Date("2026-10-20T10:00:00Z") });
+    query.mockResolvedValueOnce([tokenData]);
+    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+
+    // Past the ttl the cached entry is served and refreshed in the background. That refresh
+    // never settles, as when the serverless runtime stalls it after its request has ended.
+    query.mockReturnValue(new Promise(() => undefined));
+    jest.setSystemTime(new Date("2026-10-20T10:06:00Z"));
+    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+
+    // Past the grace a request waits for a refresh, but not on the lost one, and not for
+    // longer than a fetch may take.
+    jest.setSystemTime(new Date("2026-10-20T10:08:00Z"));
+    const callsBefore = query.mock.calls.length;
+    const pending = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    const stale = await pending;
+    expect(stale?.price).toBeUndefined();
+    expect(stale?.volume24h).toBeDefined();
+    // It started a new fetch instead of joining the lost refresh.
+    expect(query.mock.calls.length).toBe(callsBefore + 1);
+  });
+});
+
 describe("isHoldingValueUnknown", () => {
   const sail =
     "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail";
