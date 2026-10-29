@@ -67,4 +67,16 @@ describe("getCoinGeckoCoinMarketChart", () => {
     expect(first.prices).toEqual([]);
     expect(mockQueryMarketChart).toHaveBeenCalledTimes(2);
   });
+
+  it("returns an empty chart to concurrent callers of the same key", async () => {
+    mockQueryMarketChart.mockResolvedValue(chart([]));
+
+    jest.setSystemTime(1_700_000_010_000);
+    const results = await Promise.all([
+      getCoinGeckoCoinMarketChart({ id: "concurrent", timeFrame: "1d" }),
+      getCoinGeckoCoinMarketChart({ id: "concurrent", timeFrame: "1d" }),
+    ]);
+
+    expect(results.map((r) => r.prices)).toEqual([[], []]);
+  });
 });

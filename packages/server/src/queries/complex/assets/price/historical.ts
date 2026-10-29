@@ -6,7 +6,7 @@ import {
   DEFAULT_LRU_OPTIONS,
 } from "../../../../utils/cache";
 import { dayjs } from "../../../../utils/dayjs";
-import { queryMarketChart } from "../../../coingecko";
+import { queryMarketChart, QueryMarketChartResponse } from "../../../coingecko";
 import {
   queryTokenHistoricalChart,
   queryTokenPairHistoricalChart,
@@ -222,8 +222,6 @@ export async function getCoinGeckoCoinMarketChart({
     toTimestamp = timeFrame.to;
   }
 
-  let emptyResult: Awaited<ReturnType<typeof queryMarketChart>> | undefined;
-
   return cachified({
     cache: tokenHistoricalPriceCache,
     key: `coingecko-coin-market-chart-${id}-${fromTimestamp}-${toTimestamp}-${vsCurrency}`,
@@ -237,15 +235,18 @@ export async function getCoinGeckoCoinMarketChart({
         from: fromTimestamp,
       });
       // An empty chart is not cached, so it doesn't outlive CoinGecko recovering
-      // (the CDN skips caching it for the same reason)
+      // (the CDN skips caching it for the same reason). The result rides on the error
+      // because cachified hands that same error to concurrent callers of this key.
       if (!result?.prices?.length) {
-        emptyResult = result;
-        throw new Error(`Empty CoinGecko market chart for ${id}`);
+        throw Object.assign(
+          new Error(`Empty CoinGecko market chart for ${id}`),
+          { emptyMarketChart: result }
+        );
       }
       return result;
     },
-  }).catch((e) => {
-    if (emptyResult) return emptyResult;
+  }).catch((e: { emptyMarketChart?: QueryMarketChartResponse }) => {
+    if (e?.emptyMarketChart) return e.emptyMarketChart;
     throw e;
   });
 }
