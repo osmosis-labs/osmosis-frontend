@@ -35,6 +35,11 @@ export function useSwapSlippageConfig(): SlippageConfig {
  * change the tolerance under the user's eyes (the quote-drift check compares
  * against the tolerance, so a widening alone would go unnoticed). A typed
  * value or a fee-error raise still applies.
+ *
+ * The hold starts from the first quote for the current input. Between a
+ * keystroke and its quote, `quote` is still the previous input's quote; a
+ * review opened in that window would otherwise hold that quote's tier for a
+ * trade it was never computed for.
  */
 export function useSwapSlippage({
   slippageConfig,
@@ -42,22 +47,35 @@ export function useSwapSlippage({
   quoteType,
   feeError,
   isReviewOpen,
+  isQuoteSettled,
 }: {
   slippageConfig: SlippageConfig;
   quote: AutoSlippageQuote | undefined;
   quoteType: QuoteDirection;
   feeError: Error | null | undefined;
   isReviewOpen: boolean;
+  /** False while the input is being typed or its quote is loading, when
+   *  `quote` still belongs to the previous input. */
+  isQuoteSettled: boolean;
 }) {
   const liveAuto = useMemo(() => computeAutoSlippage(quote), [quote]);
 
-  // Latch the auto tier when the review opens; release it when it closes.
+  // Latch the auto tier when the review opens on a settled quote, or on the
+  // first settled quote after it opens; release it when the review closes.
+  // A settled input can still have no quote (the router dropped a zero-amount
+  // one), and the default tier must not be held over the quote that follows.
+  const canLatch = isQuoteSettled && quote !== undefined;
   const [heldAuto, setHeldAuto] = useState<{
     isReviewOpen: boolean;
     auto: typeof liveAuto | undefined;
   }>({ isReviewOpen: false, auto: undefined });
   if (heldAuto.isReviewOpen !== isReviewOpen) {
-    setHeldAuto({ isReviewOpen, auto: isReviewOpen ? liveAuto : undefined });
+    setHeldAuto({
+      isReviewOpen,
+      auto: isReviewOpen && canLatch ? liveAuto : undefined,
+    });
+  } else if (isReviewOpen && heldAuto.auto === undefined && canLatch) {
+    setHeldAuto({ isReviewOpen, auto: liveAuto });
   }
   const auto =
     isReviewOpen && heldAuto.isReviewOpen && heldAuto.auto

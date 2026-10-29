@@ -545,6 +545,7 @@ export const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
+    /** Undefined when the assets couldn't be priced; shown as unknown, not hidden. */
     totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
@@ -582,9 +583,9 @@ export const AssetsInfo: FunctionComponent<
             </div>
           </div>
           <div>
-            {totalValue && (
-              <div className="text-white-full">({totalValue.toString()})</div>
-            )}
+            <div className="text-white-full">
+              ({totalValue?.toString() ?? "–"})
+            </div>
           </div>
         </div>
       ) : emptyText ? (

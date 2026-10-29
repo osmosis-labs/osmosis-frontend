@@ -581,7 +581,7 @@ export interface ChainPositionResponse {
  * than from the render-time snapshot.
  *
  * Value is linear in the amounts at fixed prices - the rendered value is
- * `calcSumCoinsValue` over the two coins - so scaling by the amount ratio
+ * `calcSumCoinsValueOrUnknown` over the two coins - so scaling by the amount ratio
  * tracks a position that moved within its range without dragging the async
  * pricing pipeline into the pre-broadcast path, where a new failure mode
  * would be worse than the staleness it removes. Prices themselves can still

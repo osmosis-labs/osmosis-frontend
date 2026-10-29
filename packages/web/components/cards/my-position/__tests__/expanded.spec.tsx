@@ -98,7 +98,7 @@ describe("AssetsInfo", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders without total value when not provided", () => {
+  it("renders an unknown total value when not provided", () => {
     const assets = [
       new CoinPretty(
         { coinDenom: "ATOM", coinDecimals: 6, coinMinimalDenom: "uatom" },
@@ -110,6 +110,6 @@ describe("AssetsInfo", () => {
       <AssetsInfo title="Test Title" assets={assets} className="test-class" />
     );
 
-    expect(screen.queryByText("(100 USD)")).not.toBeInTheDocument();
+    expect(screen.getByText("(–)")).toBeInTheDocument();
   });
 });
