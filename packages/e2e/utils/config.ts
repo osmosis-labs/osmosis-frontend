@@ -23,6 +23,20 @@ export const SQS_BASE_URL = (
 ).replace(/\/+$/, "");
 
 /**
+ * Numia data services endpoint the frontend reads market data from.
+ *
+ * Resolution order:
+ * 1. `NEXT_PUBLIC_HISTORICAL_DATA_URL` (frontend var, see packages/web/.env)
+ * 2. `https://data.app.osmosis.zone`
+ *
+ * This matches packages/web/.env, not the `data.stage` fallback in
+ * packages/server/src/env.ts, which the deployments don't use.
+ */
+export const DATA_SERVICES_BASE_URL = (
+  process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL ?? "https://data.app.osmosis.zone"
+).replace(/\/+$/, "");
+
+/**
  * Osmosis LCD/REST endpoint used for balance queries.
  *
  * Resolution order:

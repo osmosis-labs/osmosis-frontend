@@ -347,6 +347,12 @@ jobs:
       - name: Check E2E tooling
         working-directory: packages/e2e
         run: yarn typecheck && yarn test:tooling
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -358,6 +364,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: set-output
         if: failure() || success()
         id: set-output
@@ -407,6 +419,12 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -418,6 +436,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test swap.usdc.wallet
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: upload Swap test results
         if: failure() || success()
         id: swap-test-results
@@ -454,6 +478,12 @@ jobs:
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -465,6 +495,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test portfolio transactions
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: upload Portfolio and transactions test results
         if: failure()
         id: portfolio-test-results
@@ -510,12 +546,24 @@ jobs:
       - name: Install Playwright
         run: |
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
         run: |
           cd packages/e2e
           npx playwright test pools select
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: upload pools test results
         if: failure()
         id: pools-test-results
@@ -568,6 +616,12 @@ jobs:
           # test orders are left alone.
           MIN_ORDER_AGE_MINUTES: "20"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -579,6 +633,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test trade
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: upload Trade test results
         if: failure()
         id: preview-trade-test-results
@@ -615,6 +675,12 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Start upstream watch
+        id: upstream-watch
+        continue-on-error: true
+        # Samples Numia and SQS while the tests run, for the report step below.
+        # It never calls the preview or the wallet (MTN-460).
+        run: nohup npx tsx packages/e2e/scripts/upstream-watch.ts sample > "$RUNNER_TEMP/upstream-watch.log" 2>&1 &
       - name: Run Claim tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -626,6 +692,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test claim
+      - name: Report upstream health
+        if: always() && steps.upstream-watch.outcome == 'success'
+        continue-on-error: true
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: npx tsx packages/e2e/scripts/upstream-watch.ts report
       - name: upload Claim test results
         if: failure()
         id: claim-test-results
