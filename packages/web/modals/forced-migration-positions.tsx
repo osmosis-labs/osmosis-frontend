@@ -563,6 +563,7 @@ function useHoldingTx() {
   const { t } = useTranslation();
   const { wallet, txTypeInProgress, signAndBroadcast, transactionContext } =
     useWallet();
+  const apiUtils = api.useUtils();
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
@@ -578,6 +579,9 @@ function useHoldingTx() {
       await signAndBroadcast(...(await build(transactionContext)));
     } catch (e) {
       console.error("Forced migration position action failed", e);
+      // The previews (CL guard, share-exit minimums) may be what's stale, so
+      // a retry should check against fresh amounts.
+      void apiUtils.local.portfolio.getForcedMigrationHoldings.invalidate();
       // Shown rather than only logged, as the migrate modal does: e.g. an
       // order filling just before its cancel fails simulation, and nothing
       // else tells the user it didn't go through.
@@ -634,6 +638,8 @@ const WithdrawAction: FunctionComponent<{
 }> = ({ holding, migration, oldDenom, tolerancePercent }) => {
   const { t } = useTranslation();
   const { run, isRunning, isDisabled, error } = useHoldingTx();
+  // Current prices for the CL guard's value comparison.
+  const { prices } = useBatchedPrices(holding.coins.map(({ denom }) => denom));
 
   // A quote only shows a route exists; the bank row's fee simulation is what
   // catches a conversion the pool would reject, once the funds are out. The
@@ -682,6 +688,7 @@ const WithdrawAction: FunctionComponent<{
               previewCoins: holding.coins,
               freshCoins: fresh,
               tolerancePercent,
+              getValue: (coins) => getCoinsFiatValue(coins, prices)?.toDec(),
             })
           )
             throw new PositionMovedError();

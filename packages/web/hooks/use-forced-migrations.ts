@@ -96,7 +96,9 @@ export const useForcedMigrations = () => {
 
   const {
     data: portfolioAssets,
-    isFetched: isPortfolioFetched,
+    // After mount, not just fetched: a restored persisted cache already
+    // counts as fetched and may hold a previous session's state.
+    isFetchedAfterMount: isPortfolioFetched,
     isError: isPortfolioError,
   } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
@@ -117,7 +119,7 @@ export const useForcedMigrations = () => {
   // ones. On failure the popup falls back to the portfolio totals.
   const {
     data: holdings,
-    isFetched: isHoldingsFetched,
+    isFetchedAfterMount: isHoldingsFetched,
     isError: isHoldingsError,
     refetch: refetchHoldings,
   } = api.local.portfolio.getForcedMigrationHoldings.useQuery(

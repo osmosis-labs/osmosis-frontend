@@ -156,13 +156,24 @@ export function isWithdrawWithinTolerance({
   previewCoins,
   freshCoins,
   tolerancePercent,
+  getValue,
 }: {
   previewCoins: { denom: string; amount: string }[];
   freshCoins: { denom: string; amount: string }[];
   tolerancePercent: number;
+  /** Value of coins at current prices, or undefined if any is unpriced. With
+   *  both values known the check compares totals: inside a CL range a small
+   *  price move shifts value from one side to the other, so a narrow
+   *  position can lose most of one side while its value barely changes. */
+  getValue?: (coins: { denom: string; amount: string }[]) => Dec | undefined;
 }): boolean {
   if (!isValidTolerance(tolerancePercent)) return false;
   const keep = new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100)));
+  const previewValue = getValue?.(previewCoins);
+  const freshValue = getValue?.(freshCoins);
+  if (previewValue && freshValue && previewValue.isPositive())
+    return freshValue.gte(previewValue.mul(keep));
+  // Unpriced: fall back to bounding each side.
   return previewCoins.every(({ denom, amount }) => {
     const min = new Dec(amount).mul(keep).truncate();
     const fresh = freshCoins.find((coin) => coin.denom === denom);

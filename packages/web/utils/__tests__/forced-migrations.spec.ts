@@ -396,6 +396,42 @@ describe("isWithdrawWithinTolerance", () => {
     { denom: "uosmo", amount: "2000000" },
   ];
 
+  it("with prices, bounds total value rather than each side", () => {
+    // Noble at 1, OSMO at 0.5 per base unit: the preview is worth 2,000,000.
+    const getValue = (coins: { denom: string; amount: string }[]) =>
+      coins.reduce(
+        (sum, { denom, amount }) =>
+          sum.add(
+            new Dec(amount).mul(new Dec(denom === USDC_NOBLE ? "1" : "0.5"))
+          ),
+        new Dec(0)
+      );
+    // A tight range swung to the other side: noble down 40%, value intact.
+    expect(
+      isWithdrawWithinTolerance({
+        previewCoins: preview,
+        freshCoins: [
+          { denom: USDC_NOBLE, amount: "600000" },
+          { denom: "uosmo", amount: "2800000" },
+        ],
+        tolerancePercent: 5,
+        getValue,
+      })
+    ).toBe(true);
+    // Worth 1,850,000: a 7.5% loss.
+    expect(
+      isWithdrawWithinTolerance({
+        previewCoins: preview,
+        freshCoins: [
+          { denom: USDC_NOBLE, amount: "600000" },
+          { denom: "uosmo", amount: "2500000" },
+        ],
+        tolerancePercent: 5,
+        getValue,
+      })
+    ).toBe(false);
+  });
+
   it("passes while each side holds within the tolerance", () => {
     expect(
       isWithdrawWithinTolerance({
