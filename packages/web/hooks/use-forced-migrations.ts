@@ -100,6 +100,7 @@ export const useForcedMigrations = () => {
     // counts as fetched and may hold a previous session's state.
     isFetchedAfterMount: isPortfolioFetched,
     isError: isPortfolioError,
+    refetch: refetchPortfolio,
   } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: address ?? "",
@@ -144,14 +145,16 @@ export const useForcedMigrations = () => {
   // the current time, and cached data is ignored as soon as the flag flips
   // off or the wallet disconnects.
   const activeMigrations: ActiveForcedMigration[] =
-    // Waits for the holdings too, so the popup doesn't open on the
-    // portfolio-totals fallback and then change shape. A failed portfolio
+    // Waits for both queries since mount, so the popup doesn't open on the
+    // portfolio-totals fallback or a restored cache and then change shape.
+    // A failed portfolio
     // still evaluates the chain holdings (no bank rows or prices, so they
     // count as unpriced), rather than going quiet on a wallet known to hold
     // the old asset.
     isEnabled &&
     isHoldingsFetched &&
-    (portfolioAssets || (isPortfolioFetched && isPortfolioError))
+    isPortfolioFetched &&
+    (portfolioAssets || isPortfolioError)
       ? getActiveForcedMigrations({
           migrations,
           heldAssets: portfolioAssets?.heldAssets ?? [],
@@ -222,11 +225,15 @@ export const useForcedMigrations = () => {
     );
     const isUnlockEnd = nextBoundaryMs === nextUnlockEndMs;
     const timeout = setTimeout(() => {
-      if (isUnlockEnd) void refetchHoldings();
+      // The freed tokens move to the bank balance too.
+      if (isUnlockEnd) {
+        void refetchHoldings();
+        void refetchPortfolio();
+      }
       forceVisibilityUpdate();
     }, delay);
     return () => clearTimeout(timeout);
-  }, [nextBoundaryMs, nextUnlockEndMs, refetchHoldings]);
+  }, [nextBoundaryMs, nextUnlockEndMs, refetchHoldings, refetchPortfolio]);
 
   const snooze = useCallback(
     (ids: string[]) => {
