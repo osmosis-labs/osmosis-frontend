@@ -1,6 +1,6 @@
 import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import { timeout } from "@osmosis-labs/utils";
+import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
 import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -329,8 +329,10 @@ const PRICE_DERIVED_FIELDS = [
   "liquidity24hChange",
 ] as const;
 
-/** Token data from the data services, keyed by upper-cased denom, with when it was fetched. */
-async function fetchTokenData() {
+/** Token data from the data services, keyed by upper-cased denom, with when it was fetched.
+ *  `fetchedAt` is when the fetch started: a response that arrives late (e.g. from a refresh
+ *  that stalled) is no newer than the moment it was requested. */
+async function fetchTokenData(fetchedAt: number) {
   const allTokenData = await queryAllTokenData({
     signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT),
   });
@@ -342,7 +344,7 @@ async function fetchTokenData() {
   });
   return {
     tokenInfoMap,
-    fetchedAt: Date.now(),
+    fetchedAt,
     // The data services can answer with every price or liquidity null, which is an
     // outage of that field rather than data.
     hasPrices: allTokenData.some(({ price }) => price !== null),
@@ -371,7 +373,8 @@ function readCachedTokenData(): TokenDataEntry | undefined {
 }
 
 /** Refreshes token data, joining the refresh in flight unless it has been pending long
- *  enough to count as lost. A failure is recorded for the retry delay. */
+ *  enough to count as lost. A failure of the current refresh is recorded for the retry
+ *  delay. */
 function refreshTokenData(): Promise<TokenDataEntry> {
   if (
     tokenDataRefresh &&
@@ -380,15 +383,20 @@ function refreshTokenData(): Promise<TokenDataEntry> {
     return tokenDataRefresh.promise;
   }
 
-  const refresh = {
-    startedAt: Date.now(),
-    promise: fetchTokenData().then(
+  const startedAt = Date.now();
+  const refresh: NonNullable<typeof tokenDataRefresh> = {
+    startedAt,
+    promise: fetchTokenData(startedAt).then(
       (entry) => {
-        tokenDataEntry = entry;
-        return entry;
+        // A lost refresh that settles after its replacement must not put older data back.
+        if (!tokenDataEntry || entry.fetchedAt > tokenDataEntry.fetchedAt) {
+          tokenDataEntry = entry;
+        }
+        return tokenDataEntry;
       },
       (e) => {
-        tokenDataRefreshFailedAt = Date.now();
+        // A lost refresh failing late says nothing about its replacement.
+        if (tokenDataRefresh === refresh) tokenDataRefreshFailedAt = Date.now();
         throw e;
       }
     ),
@@ -404,13 +412,19 @@ function refreshTokenData(): Promise<TokenDataEntry> {
 }
 
 /** Waits for a token data refresh, but never longer than a fetch may take: the shared
- *  refresh can be a lost one, and this request's own timer still fires. */
+ *  refresh can be a lost one, and this request's own timer still fires. Timing out counts
+ *  as a failed refresh, so the retry delay applies even when the refresh never settles. */
 async function waitForTokenDataRefresh(): Promise<TokenDataEntry> {
-  return await timeout(
-    refreshTokenData,
-    TOKEN_DATA_FETCH_TIMEOUT,
-    "refreshTokenData"
-  )();
+  try {
+    return await timeout(
+      refreshTokenData,
+      TOKEN_DATA_FETCH_TIMEOUT,
+      "refreshTokenData"
+    )();
+  } catch (e) {
+    if (e instanceof AsyncTimeoutError) tokenDataRefreshFailedAt = Date.now();
+    throw e;
+  }
 }
 
 /** Token data, refreshed once it's past its ttl:
