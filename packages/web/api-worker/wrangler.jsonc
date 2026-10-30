@@ -10,6 +10,12 @@
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": true,
+  "vars": {
+    // Libraries read `NODE_ENV` at runtime through paths the build-time define in
+    // run-wrangler.mjs does not rewrite (tRPC checks `globalThis.process.env.NODE_ENV`).
+    // Unset, tRPC treats the Worker as development and puts stack traces in error responses.
+    "NODE_ENV": "production",
+  },
   "observability": {
     "enabled": true,
   },
