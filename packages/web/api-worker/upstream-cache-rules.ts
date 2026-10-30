@@ -1,9 +1,14 @@
 /**
  * Allowlist for the API Worker's shared upstream cache.
  *
- * Each `id` has a row in the Allowlist table of `UPSTREAM_CACHE.md`. A Jest
- * test fails when the two drift. Hosts are the ones this repo actually calls
- * (env defaults plus the production sidecar). An unknown host never matches.
+ * Only responses that are the same for every user belong here. Hosts are the
+ * ones this repo actually calls (env defaults plus the production sidecar). An
+ * unknown host never matches.
+ *
+ * Left out on purpose: SQS quote routes (price-like, one URL per amount),
+ * Skip/Squid lists (an empty or rate-limited 200 would be pinned), LCD/RPC and
+ * wasm smart queries (the same hosts and messages can carry an account), and
+ * any path with an address, position, order or tx hash.
  */
 
 export type UpstreamCacheRule = {

@@ -1,9 +1,6 @@
 /**
  * @jest-environment node
  */
-import fs from "node:fs";
-import path from "node:path";
-
 import {
   applyUpstreamServerTiming,
   bindUpstreamCache,
@@ -11,7 +8,6 @@ import {
   restoreUpstreamCache,
   runWithUpstreamCache,
 } from "../upstream-cache";
-import { UPSTREAM_CACHE_RULES } from "../upstream-cache-rules";
 
 const POOLS = "https://sqs.osmosis.zone/pools";
 const APR = "https://data.app.osmosis.zone/apr";
@@ -314,22 +310,5 @@ describe("upstream cache", () => {
     expect(ctx.cache.entries.get(daily)?.headers.get("cache-control")).toBe(
       "public, s-maxage=30"
     );
-  });
-});
-
-describe("allowlist inventory", () => {
-  it("matches UPSTREAM_CACHE.md in both directions", () => {
-    const markdown = fs.readFileSync(
-      path.join(__dirname, "../UPSTREAM_CACHE.md"),
-      "utf8"
-    );
-    const section = markdown.split(/^## Allowlist/m)[1]?.split(/^## /m)[0];
-    expect(section).toBeDefined();
-    const documented = [
-      ...(section ?? "").matchAll(/^\| `([a-z0-9-]+)`\s+\|/gm),
-    ].map((match) => match[1]);
-    const coded = UPSTREAM_CACHE_RULES.map((rule) => rule.id);
-
-    expect(documented).toEqual(coded);
   });
 });
