@@ -200,21 +200,24 @@ export function ReviewOrder({
     overspendErrorParams?.wouldSpendTotal,
   ]);
 
-  /** An active session with unchanged settings signs locally, so there is no
-   *  wallet prompt to wait on. Changing the settings sends a session tx that
-   *  the wallet does sign. */
-  const signsWithOneClickSession =
-    show1CT && is1CTEnabled && !transaction1CTParamsChanges?.length;
-  const walletPrompt = useWalletPrompt({
-    isLoading: isAwaitingSignature,
-    signsLocally: signsWithOneClickSession,
-  });
-
   const [queryOrderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
   );
   const orderType = orderTypeProp ?? queryOrderType;
+
+  /** An active session with unchanged settings signs locally, so there is no
+   *  wallet prompt to wait on. Changing the settings sends a session tx that
+   *  the wallet does sign, and limit orders are always signed by the wallet. */
+  const signsWithOneClickSession =
+    show1CT &&
+    is1CTEnabled &&
+    !transaction1CTParamsChanges?.length &&
+    orderType !== "limit";
+  const walletPrompt = useWalletPrompt({
+    isLoading: isAwaitingSignature,
+    signsLocally: signsWithOneClickSession,
+  });
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   /**
