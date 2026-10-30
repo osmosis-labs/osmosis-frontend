@@ -51,7 +51,7 @@ import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
-import { useWalletPromptLabel } from "~/hooks/use-wallet-prompt-label";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -205,7 +205,8 @@ export function ReviewOrder({
    *  the wallet does sign. */
   const signsWithOneClickSession =
     show1CT && is1CTEnabled && !transaction1CTParamsChanges?.length;
-  const walletPromptLabel = useWalletPromptLabel({
+  const walletPrompt = useWalletPrompt({
+    isLoading: isAwaitingSignature,
     signsLocally: signsWithOneClickSession,
   });
 
@@ -1129,11 +1130,20 @@ export function ReviewOrder({
                         warningNeedsAcknowledgement
                       }
                       isLoading={isAwaitingSignature}
-                      loadingText={walletPromptLabel}
+                      loadingText={walletPrompt.label}
                       className="body2 sm:caption !rounded-2xl"
                     >
                       <h6>{t("limitOrders.confirm")}</h6>
                     </Button>
+                    {walletPrompt.onCancel && (
+                      <Button
+                        mode="secondary"
+                        onClick={walletPrompt.onCancel}
+                        className="body2 sm:caption w-fit !rounded-2xl"
+                      >
+                        <h6>{t("limitOrders.cancel")}</h6>
+                      </Button>
+                    )}
                   </div>
                 </>
               )}

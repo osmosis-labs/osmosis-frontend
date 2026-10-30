@@ -36,7 +36,7 @@ import {
 } from "~/hooks";
 import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { useWalletPromptLabel } from "~/hooks/use-wallet-prompt-label";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { api } from "~/utils/trpc";
 
@@ -144,7 +144,18 @@ export const OneClickTradingSettings = ({
   setExternalChanges,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
-  const walletPromptLabel = useWalletPromptLabel();
+  const walletPrompt = useWalletPrompt({
+    isLoading: !!isSendingTx || !!isEndingSession,
+  });
+  const walletPromptCancel = walletPrompt.onCancel && (
+    <Button
+      mode="secondary"
+      className="w-fit text-h6 font-h6"
+      onClick={walletPrompt.onCancel}
+    >
+      {t("limitOrders.cancel")}
+    </Button>
+  );
 
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
@@ -395,9 +406,16 @@ export const OneClickTradingSettings = ({
                       content={
                         <div className="flex items-center gap-3">
                           {hasExistingSession && isEndingSession && (
-                            <p className="text-wosmongton-200">
-                              {t("oneClickTrading.settings.endingSession")}
-                            </p>
+                            <div className="flex flex-col items-end">
+                              <p className="text-wosmongton-200">
+                                {t("oneClickTrading.settings.endingSession")}
+                              </p>
+                              {walletPrompt.isOnPhone && (
+                                <p className="caption text-osmoverse-300">
+                                  {t("signInMobileWallet")}
+                                </p>
+                              )}
+                            </div>
                           )}
                           {(isLoading || isEndingSession) && (
                             <Spinner className="text-wosmongton-200" />
@@ -496,33 +514,35 @@ export const OneClickTradingSettings = ({
                   hasExistingSession &&
                   changes.filter((c) => c !== "isEnabled").length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
-                    <div className="px-8">
+                    <div className="flex gap-3 px-8">
                       <Button
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        loadingText={walletPromptLabel}
+                        loadingText={walletPrompt.label}
                         disabled={hasInsufficientFeeTokensForRemove}
                       >
                         {hasInsufficientFeeTokensForRemove
                           ? t("errors.insufficientFeeTokens.buttonLabel")
                           : t("oneClickTrading.settings.editSessionButton")}
                       </Button>
+                      {walletPromptCancel}
                     </div>
                   )}
 
                 {standalone &&
                   !hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (
-                    <div className="px-8">
+                    <div className="flex gap-3 px-8">
                       <Button
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        loadingText={walletPromptLabel}
+                        loadingText={walletPrompt.label}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
+                      {walletPromptCancel}
                     </div>
                   )}
 

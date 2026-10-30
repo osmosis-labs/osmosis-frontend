@@ -568,9 +568,10 @@ export class WCClient implements WalletClient {
   protected async trackedRequest<T>(
     ...args: Parameters<SignClient["request"]>
   ): Promise<T | undefined> {
-    if (!this.signClient) return undefined;
+    const signClient = this.signClient;
+    if (!signClient) return undefined;
     return trackWalletRequest<T>({
-      request: this.signClient.request<T>(...args),
+      send: () => signClient.request<T>(...args),
       walletName: this.walletInfo.prettyName,
     });
   }

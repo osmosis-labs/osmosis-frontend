@@ -1,10 +1,9 @@
 /**
- * Tracks WalletConnect requests waiting on the user's phone, so the UI can
- * point the user at their mobile wallet and a stalled request cannot hang a
- * flow forever.
+ * Tracks WalletConnect requests waiting on the user's phone, so the user can
+ * back out and a stalled request cannot hang a flow forever.
  *
- * Settling is one-way: once a request times out, the caller's promise is
- * rejected and any answer the wallet sends later is ignored. The signed payload
+ * Settling is one-way: once a request is cancelled or times out, the caller's
+ * promise is rejected and any answer the wallet sends later is ignored. The signed payload
  * never reaches the broadcast step, so nothing is sent after the user was told
  * the transaction stopped.
  */
@@ -18,8 +17,24 @@ export const WC_REQUEST_TIMEOUT_MS = 120_000;
 
 type Listener = () => void;
 
-const inFlight = new Set<object>();
+const inFlight = new Set<{ reject: () => void }>();
 const listeners = new Set<Listener>();
+
+/** Set by a cancel and held until the attempt ends, so a request that would
+ *  have started after the cancel (e.g. the signature after an account lookup)
+ *  is refused instead of reaching the phone. */
+let cancelled = false;
+
+/** Rejects every open request and refuses new ones until
+ *  `resetWalletRequestCancel` is called. */
+export function cancelWalletRequests() {
+  cancelled = true;
+  [...inFlight].forEach((request) => request.reject());
+}
+
+export function resetWalletRequestCancel() {
+  cancelled = false;
+}
 
 export function subscribePendingWalletRequest(listener: Listener) {
   listeners.add(listener);
@@ -34,22 +49,26 @@ export function hasPendingWalletRequest() {
 }
 
 /**
- * Races `request` against a hard timeout. The underlying request is not
- * aborted (WalletConnect has no abort), only detached: its eventual result is
- * discarded.
+ * Sends `send()` and races it against cancel and a hard timeout. The request is
+ * not aborted on the phone (WalletConnect has no abort), only detached: its
+ * eventual result is discarded.
  */
 export function trackWalletRequest<T>({
-  request,
+  send,
   walletName,
   timeoutMs = WC_REQUEST_TIMEOUT_MS,
 }: {
-  request: Promise<T>;
+  send: () => Promise<T>;
   walletName: string;
   timeoutMs?: number;
 }): Promise<T> {
+  if (cancelled) return Promise.reject(new Error("Request rejected"));
+
   return new Promise<T>((resolve, reject) => {
     let settled = false;
-    const pending = {};
+    const pending = {
+      reject: () => settle(() => reject(new Error("Request rejected"))),
+    };
 
     const timer = setTimeout(
       () =>
@@ -75,7 +94,7 @@ export function trackWalletRequest<T>({
     inFlight.add(pending);
     listeners.forEach((listener) => listener());
 
-    request.then(
+    send().then(
       (value) => settle(() => resolve(value)),
       (error) => settle(() => reject(error))
     );
