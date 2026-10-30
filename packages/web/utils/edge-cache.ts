@@ -130,25 +130,6 @@ export function withImageEdgeCache(
   return applyEdgeCache(handler, cache, waitUntil, imageCachePolicy);
 }
 
-/**
- * Wraps a Worker's fetch handler with the shared CDN cache Vercel gives the app: the API policy
- * and the image policy. The API Worker uses `withApiEdgeCache` alone, and the pages Worker uses
- * `withImageEdgeCache` alone. Hits skip Next's middleware, so API requests the middleware would
- * block always reach `handler` when this wrapper is what enforces the bot check.
- */
-export function withEdgeCache(
-  handler: FetchHandler,
-  cache: Cache,
-  waitUntil: WaitUntil
-): FetchHandler {
-  return applyEdgeCache(
-    handler,
-    cache,
-    waitUntil,
-    (request) => apiCachePolicy(request) ?? imageCachePolicy(request)
-  );
-}
-
 /** The response's `s-maxage` in seconds, or undefined if it must not be shared. */
 export function sharedMaxAge(response: Response): number | undefined {
   if (response.status !== 200) return undefined;
