@@ -124,7 +124,6 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           snapshot.sendTxUnconfirmed &&
           !receiptFound &&
           this.checkEvmReceipt &&
-          snapshot.trackingChainId === undefined &&
           typeof fromChainId === "number"
         ) {
           const outcome = await this.checkEvmReceipt({

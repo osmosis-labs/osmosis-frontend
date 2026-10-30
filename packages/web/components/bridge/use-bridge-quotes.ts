@@ -1393,8 +1393,8 @@ export const useBridgeQuotes = ({
       // Named multi-tx failures (route expired, fee shortfall) carry
       // specific recovery copy shared with the resume flow; the funds are
       // on the intermediate chain and the entry stays resumable from
-      // history. An EVM tx whose receipt couldn't be fetched is not a
-      // failure: the first step's entry stays resumable from history.
+      // history. An approval whose receipt couldn't be fetched is not a
+      // failure either: nothing was recorded, so point to the explorer.
       // Everything else gets the wallet-error mapping for the wallet that
       // was signing (Phantom errors are not wagmi errors).
       const multiTxToast = getMultiTxErrorToastContent(e, finalStepPrettyName);
