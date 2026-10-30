@@ -17,11 +17,18 @@ import {
 
 type WaitUntil = (promise: Promise<unknown>) => void;
 
-type RequestCounts = {
+type RequestState = {
   hit: number;
   miss: number;
   bypass: number;
   waitUntil: WaitUntil;
+  /**
+   * One upstream read per cache key, shared by concurrent misses within this request (a tRPC
+   * batch often needs the same upstream several times). Never shared across requests: the
+   * Workers runtime ties a fetch to the request that started it, so another request waiting on
+   * it would fail or hang if the first one is canceled.
+   */
+  inflight: Map<string, Promise<CachedBody>>;
 };
 
 type CachedBody = {
@@ -31,14 +38,11 @@ type CachedBody = {
   body: ArrayBuffer;
 };
 
-const requestStore = new AsyncLocalStorage<RequestCounts>();
-
-/** One in-flight upstream read per cache key, shared by concurrent misses. */
-const inflight = new Map<string, Promise<CachedBody>>();
+const requestStore = new AsyncLocalStorage<RequestState>();
 
 /**
- * Caps concurrent distinct misses. Past this, callers fetch on their own
- * instead of joining the map, so a burst cannot grow it without bound.
+ * Caps concurrent distinct misses per request. Past this, callers fetch on
+ * their own instead of joining the map, so a burst cannot grow it without bound.
  */
 const MAX_INFLIGHT = 100;
 
@@ -57,12 +61,11 @@ export function installUpstreamCache(): void {
   globalThis.fetch = (input, init) => cachedFetch(input, init);
 }
 
-/** Puts the original `fetch` back and drops in-flight joins. For tests. */
+/** Puts the original `fetch` back. For tests. */
 export function restoreUpstreamCache(): void {
   if (!nativeFetch) return;
   globalThis.fetch = nativeFetch;
   nativeFetch = undefined;
-  inflight.clear();
 }
 
 /** The location's `caches.default`. Writes are skipped when this was not set. */
@@ -78,7 +81,10 @@ export function runWithUpstreamCache<T>(
   waitUntil: WaitUntil,
   fn: () => Promise<T>
 ): Promise<T> {
-  return requestStore.run({ hit: 0, miss: 0, bypass: 0, waitUntil }, fn);
+  return requestStore.run(
+    { hit: 0, miss: 0, bypass: 0, waitUntil, inflight: new Map() },
+    fn
+  );
 }
 
 /** Appends `upstream;desc="hit=… miss=… bypass=…"` from the current request. */
@@ -189,13 +195,15 @@ async function readUpstream(
 }
 
 /**
- * Joins an in-flight miss for `key`. The loader is removed when it settles,
- * whether it succeeds or throws.
+ * Joins an in-flight miss for `key` in the current request. The loader is
+ * removed when it settles, whether it succeeds or throws.
  */
 function loadShared(
   key: string,
   loader: () => Promise<CachedBody>
 ): Promise<CachedBody> {
+  const inflight = requestStore.getStore()?.inflight;
+  if (!inflight) return loader();
   const existing = inflight.get(key);
   if (existing) return existing;
   if (inflight.size >= MAX_INFLIGHT) return loader();

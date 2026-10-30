@@ -193,7 +193,8 @@ describe("upstream cache", () => {
     ).toBe("public, s-maxage=10");
   });
 
-  it("shares one upstream read across concurrent misses", async () => {
+  /** Holds every upstream response until `release` is called. */
+  function gateUpstream() {
     let release: () => void = () => undefined;
     const gate = new Promise<void>((resolve) => {
       release = resolve;
@@ -202,13 +203,22 @@ describe("upstream cache", () => {
       await gate;
       return new Response("pools", { status: 200 });
     });
+    return release;
+  }
 
-    const calls = Promise.all([
-      ctx.call(POOLS),
-      ctx.call(POOLS),
-      ctx.call(POOLS),
-      ctx.call(POOLS),
-    ]);
+  it("shares one upstream read across concurrent misses in one request", async () => {
+    const release = gateUpstream();
+
+    const calls = runWithUpstreamCache(
+      () => undefined,
+      () =>
+        Promise.all([
+          globalThis.fetch(POOLS),
+          globalThis.fetch(POOLS),
+          globalThis.fetch(POOLS),
+          globalThis.fetch(POOLS),
+        ])
+    );
     release();
     const responses = await calls;
 
@@ -216,6 +226,19 @@ describe("upstream cache", () => {
     expect(
       await Promise.all(responses.map((response) => response.text()))
     ).toEqual(["pools", "pools", "pools", "pools"]);
+  });
+
+  it("never makes one request wait on another request's upstream read", async () => {
+    const release = gateUpstream();
+
+    const calls = Promise.all([ctx.call(POOLS), ctx.call(POOLS)]);
+    release();
+    const responses = await calls;
+
+    expect(ctx.upstream).toHaveBeenCalledTimes(2);
+    expect(
+      await Promise.all(responses.map((response) => response.text()))
+    ).toEqual(["pools", "pools"]);
   });
 
   it("falls through to the network when the Cache API throws", async () => {
