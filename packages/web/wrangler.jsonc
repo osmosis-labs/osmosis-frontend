@@ -13,6 +13,11 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "osmosis-frontend-stage",
     },
+    {
+      // This frontend's backend: worker.ts forwards `/api/*` here. Deploy it before this Worker.
+      "binding": "API",
+      "service": "osmosis-frontend-api-stage",
+    },
   ],
   "r2_buckets": [
     {

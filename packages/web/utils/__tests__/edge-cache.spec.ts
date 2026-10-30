@@ -7,7 +7,8 @@ import {
   IMAGE_EDGE_TTL_SECONDS,
   imageCacheKey,
   sharedMaxAge,
-  withEdgeCache,
+  withApiEdgeCache,
+  withImageEdgeCache,
 } from "~/utils/edge-cache";
 
 const POOLS_URL = "https://app.test/api/pools";
@@ -29,12 +30,13 @@ function setup(
   respond: (request: Request) => Response = () =>
     new Response("pools", {
       headers: { "cache-control": "public, s-maxage=60" },
-    })
+    }),
+  wrap: typeof withApiEdgeCache = withApiEdgeCache
 ) {
   const cache = new MemoryCache();
   const pending: Promise<unknown>[] = [];
   const handler = jest.fn(async (request: Request) => respond(request));
-  const fetch = withEdgeCache(handler, cache as unknown as Cache, (promise) => {
+  const fetch = wrap(handler, cache as unknown as Cache, (promise) => {
     pending.push(promise);
   });
   return {
@@ -48,7 +50,7 @@ function setup(
   };
 }
 
-describe("withEdgeCache: API routes", () => {
+describe("withApiEdgeCache", () => {
   it("serves repeat GETs of a shared API response from the cache", async () => {
     const { fetch, handler } = setup();
 
@@ -167,9 +169,12 @@ function image(contentType = "image/webp", status = 200) {
   });
 }
 
-describe("withEdgeCache: optimized images", () => {
+describe("withImageEdgeCache", () => {
+  const setupImage = (respond: (request: Request) => Response) =>
+    setup(respond, withImageEdgeCache);
+
   it("keeps a transformed image for repeat requests", async () => {
-    const { fetch, handler, cache } = setup(() => image());
+    const { fetch, handler, cache } = setupImage(() => image());
 
     const miss = await fetch(IMAGE_URL, WEBP);
     const hit = await fetch(IMAGE_URL, WEBP);
@@ -186,7 +191,7 @@ describe("withEdgeCache: optimized images", () => {
   });
 
   it("tells browsers to cache it and that it varies by Accept", async () => {
-    const { fetch } = setup(() => image());
+    const { fetch } = setupImage(() => image());
 
     for (const response of [
       await fetch(IMAGE_URL, WEBP),
@@ -200,7 +205,7 @@ describe("withEdgeCache: optimized images", () => {
   });
 
   it("keeps formats negotiated from Accept apart", async () => {
-    const { fetch, handler } = setup((request) =>
+    const { fetch, handler } = setupImage((request) =>
       image(
         request.headers.get("accept")?.includes("image/webp")
           ? "image/webp"
@@ -219,7 +224,7 @@ describe("withEdgeCache: optimized images", () => {
     ["an error", () => image("image/png", 400)],
     ["a non-image body", () => new Response("nope", { status: 200 })],
   ])("does not keep %s", async (_, respond) => {
-    const { fetch, handler, cache } = setup(respond);
+    const { fetch, handler, cache } = setupImage(respond);
 
     await fetch(IMAGE_URL, WEBP);
     await fetch(IMAGE_URL, WEBP);
