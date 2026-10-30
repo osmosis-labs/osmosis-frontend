@@ -144,8 +144,14 @@ const MainLayoutWrapper: FunctionComponent<{
     t,
   ]);
 
-  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
-    () => [
+  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(() => {
+    // Wait for the flag-gated primary menu so these links don't render first
+    // and then jump down when it appears.
+    if (!flags._isInitialized) {
+      return [];
+    }
+
+    return [
       {
         label: t("menu.vote"),
         link:
@@ -170,9 +176,8 @@ const MainLayoutWrapper: FunctionComponent<{
         link: "https://support.osmosis.zone/",
         icon: <Icon id="help-circle" className="h-6 w-6" />,
       },
-    ],
-    [t, osmosisWallet?.walletInfo?.governanceUrl]
-  );
+    ];
+  }, [flags._isInitialized, t, osmosisWallet?.walletInfo?.governanceUrl]);
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
