@@ -33,6 +33,28 @@ export function resetWalletRequestCancel() {
   cancelled = false;
 }
 
+/** Set when a wallet has returned a signature, so the button stops pointing at
+ *  the wallet while the tx broadcasts. Cleared when the attempt ends. */
+let signed = false;
+const signedListeners = new Set<() => void>();
+
+function setSigned(value: boolean) {
+  if (signed === value) return;
+  signed = value;
+  signedListeners.forEach((listener) => listener());
+}
+
+export const markWalletSigned = () => setSigned(true);
+export const resetWalletSigned = () => setSigned(false);
+export const isWalletSigned = () => signed;
+
+export function subscribeWalletSigned(listener: () => void) {
+  signedListeners.add(listener);
+  return () => {
+    signedListeners.delete(listener);
+  };
+}
+
 /** True while any WalletConnect request is waiting on the phone. */
 export function hasPendingWalletRequest() {
   return inFlight.size > 0;

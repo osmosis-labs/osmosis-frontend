@@ -10,6 +10,7 @@ import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
+import { markWalletSigned } from "~/integrations/core-walletconnect/pending-request";
 import { WalletRuntime } from "~/stores/wallet-runtime";
 
 export class RootStore {
@@ -22,6 +23,10 @@ export class RootStore {
   } = {}) {
     const preTxEvents: TxEvents = {
       ...txEvents,
+      onSign: async () => {
+        await txEvents?.onSign?.();
+        markWalletSigned();
+      },
       onBroadcastFailed: (string, e) => {
         txEvents?.onBroadcastFailed?.(string, e);
         return toastOnBroadcastFailed((chainId) =>

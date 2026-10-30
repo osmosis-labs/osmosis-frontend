@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useTranslation } from "~/hooks/language";
 import { useWallet } from "~/hooks/use-wallet";
 import {
   cancelWalletRequests,
+  isWalletSigned,
   resetWalletRequestCancel,
+  resetWalletSigned,
+  subscribeWalletSigned,
 } from "~/integrations/core-walletconnect/pending-request";
 
 /**
@@ -13,7 +16,8 @@ import {
  * the open request, since one signature can be several requests with gaps.
  *
  * `signsLocally` (an active 1CT session) drops the label and the cancel, since
- * no wallet is involved.
+ * no wallet is involved. Both also drop once the wallet has signed, leaving a
+ * plain spinner while the tx broadcasts.
  */
 export function useWalletPrompt({
   isLoading,
@@ -24,23 +28,35 @@ export function useWalletPrompt({
 }) {
   const { t } = useTranslation();
   const { wallet } = useWallet();
+  const hasSigned = useSyncExternalStore(
+    subscribeWalletSigned,
+    isWalletSigned,
+    () => false
+  );
 
-  // A cancel holds until the attempt it cancelled has ended.
+  // A cancel, and the signed state, hold until the attempt has ended.
   useEffect(() => {
-    if (!isLoading) resetWalletRequestCancel();
-    return resetWalletRequestCancel;
+    const reset = () => {
+      resetWalletRequestCancel();
+      resetWalletSigned();
+    };
+    if (!isLoading) reset();
+    return reset;
   }, [isLoading]);
 
   const isOnPhone =
     !signsLocally && wallet?.walletInfo.mode === "wallet-connect";
+  const isWaiting = !signsLocally && !hasSigned;
 
   return {
-    isOnPhone,
-    label: isOnPhone
-      ? t("signInMobileWallet")
-      : signsLocally
-        ? undefined
+    /** The wallet prompt is on the phone and not yet answered. */
+    isOnPhone: isOnPhone && isWaiting,
+    label: !isWaiting
+      ? undefined
+      : isOnPhone
+        ? t("signInMobileWallet")
         : t("waitingForWallet"),
-    onCancel: isLoading && isOnPhone ? cancelWalletRequests : undefined,
+    onCancel:
+      isLoading && isOnPhone && isWaiting ? cancelWalletRequests : undefined,
   };
 }
