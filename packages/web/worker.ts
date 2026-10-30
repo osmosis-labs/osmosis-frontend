@@ -1,6 +1,8 @@
 /**
  * Cloudflare Worker entry (wrangler.jsonc `main`). Wraps OpenNext's generated Worker with the edge
- * cache for optimized images. `/api/*` is the API Worker; see `api-worker/` and `utils/edge-cache.ts`.
+ * cache for optimized images (`utils/edge-cache.ts`). This build has no API routes: `/api/*` goes
+ * to this frontend's own API Worker (`api-worker/`) over the `API` service binding, so the traffic
+ * router only ever picks a frontend.
  *
  * Excluded from tsconfig: after a build, tsc would follow the import below into the whole
  * generated Worker bundle and run out of memory.
@@ -13,12 +15,24 @@ import { withImageEdgeCache } from "./utils/edge-cache";
 export { DOQueueHandler } from "./.open-next/worker.js";
 
 type WorkerContext = { waitUntil(promise: Promise<unknown>): void };
+type WorkerEnv = {
+  /** Service binding to this frontend's API Worker (`api-worker/wrangler.jsonc`). */
+  API: { fetch(request: Request): Promise<Response> };
+};
 type OpenNextWorker = {
-  fetch(request: Request, env: unknown, ctx: WorkerContext): Promise<Response>;
+  fetch(
+    request: Request,
+    env: WorkerEnv,
+    ctx: WorkerContext
+  ): Promise<Response>;
 };
 
 const worker: OpenNextWorker = {
   fetch(request, env, ctx) {
+    if (new URL(request.url).pathname.startsWith("/api/")) {
+      return env.API.fetch(request);
+    }
+
     const handler = (req: Request) =>
       (openNextWorker as OpenNextWorker).fetch(req, env, ctx);
     // `caches.default` is the Workers runtime's shared cache for this location.

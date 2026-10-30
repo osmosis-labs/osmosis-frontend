@@ -1,6 +1,6 @@
 /**
  * Cloudflare API Worker (`api-worker/wrangler.jsonc`). Serves `/api/*` outside the OpenNext pages
- * Worker. Pages stay on OpenNext; the traffic router sends `/api/*` here for the Cloudflare bucket.
+ * Worker. The pages Worker (`worker.ts`) forwards `/api/*` here over its `API` service binding.
  */
 import { handleApiRequest } from "./dispatch";
 import { apiHandlers } from "./handlers";

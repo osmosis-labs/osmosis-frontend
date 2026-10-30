@@ -1,10 +1,15 @@
 # API Worker
 
-`osmosis-frontend-api-production` (built from `master-cf`) serves `/api/*` for the
-Cloudflare share of `app.osmosis.zone`. On `stage-cf` the same Worker is
-`osmosis-frontend-api-stage`, next to the `osmosis-frontend-stage` pages Worker.
-The OpenNext Worker keeps pages and `/_next/image`. Vercel is unchanged:
-`pages/api/*` and `middleware.ts` still build there.
+The Cloudflare frontend's own backend. The OpenNext pages Worker keeps pages and
+`/_next/image` and forwards `/api/*` here over its `API` service binding
+(`worker.ts`), so the traffic router only picks a frontend and never routes API
+calls. Vercel stays a monolith: `pages/api/*` and `middleware.ts` still build and
+serve there.
+
+| Branch      | Pages Worker                  | API Worker                        |
+| ----------- | ----------------------------- | --------------------------------- |
+| `stage-cf`  | `osmosis-frontend-stage`      | `osmosis-frontend-api-stage`      |
+| `master-cf` | `osmosis-frontend-production` | `osmosis-frontend-api-production` |
 
 The route table is `routes.ts`. It must list every file under `pages/api`; the Jest
 drift test fails when one is missing. Handlers live in `server/api-handlers` and are
@@ -57,4 +62,9 @@ yarn cf:api:dev       # local Worker
 yarn cf:api:deploy    # wrangler deploy --keep-vars; do not run this by hand
 ```
 
-Deploy this Worker before the traffic router that binds to it.
+Deploy this Worker before the pages Worker: until it exists, the `API` binding has
+nothing to call and Cloudflare `/api/*` fails.
+
+The `app-only` upstream exception (`sqsprod.osmosis.zone`, `rpc.app.osmosis.zone`,
+`lcd.app.osmosis.zone`) must cover this Worker as well as the pages Worker. Outside
+that exception those hosts answer `403` with `x-blocked-by: app-only`.
