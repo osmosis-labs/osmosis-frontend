@@ -36,8 +36,8 @@ describe("getAssetMarketActivity", () => {
     const fresh = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
     expect(fresh?.price?.toDec().toString()).toBe("2.000000000000000000");
 
-    // Just past the ttl the entry is served while it refreshes in the background (which
-    // fails here); it still counts as fresh.
+    // Just past the ttl the refresh fails; within the grace the cached entry still counts
+    // as fresh.
     (queryAllTokenData as jest.Mock).mockRejectedValue(new Error("500"));
     jest.setSystemTime(new Date("2026-10-19T10:06:00Z"));
     const refreshing = await getAssetMarketActivity({
@@ -108,7 +108,7 @@ describe("getAssetMarketActivity", () => {
 describe("getAssetMarketActivity with a lost refresh", () => {
   afterEach(() => jest.useRealTimers());
 
-  it("doesn't hold requests on a background refresh that never settles", async () => {
+  it("doesn't hold requests on a refresh that never settles", async () => {
     // Fresh module state, so the cache and retry delay from the tests above don't apply.
     let market!: typeof import("../market");
     let query!: jest.Mock;
@@ -121,11 +121,17 @@ describe("getAssetMarketActivity with a lost refresh", () => {
     query.mockResolvedValueOnce([tokenData]);
     await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
 
-    // Past the ttl the cached entry is served and refreshed in the background. That refresh
-    // never settles, as when the serverless runtime stalls it after its request has ended.
+    // Past the ttl the refresh never settles, as when the serverless runtime stalls it.
+    // The request gives up after a fetch's timeout and keeps the cached prices (grace).
     query.mockReturnValue(new Promise(() => undefined));
     jest.setSystemTime(new Date("2026-10-20T10:06:00Z"));
-    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+    const refreshing = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    expect((await refreshing)?.price?.toDec().toString()).toBe(
+      "2.000000000000000000"
+    );
 
     // Past the grace a request waits for a refresh, but not on the lost one, and not for
     // longer than a fetch may take.
@@ -154,11 +160,15 @@ describe("getAssetMarketActivity with a lost refresh", () => {
     query.mockResolvedValueOnce([tokenData]);
     await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
 
-    // The background refresh past the ttl stalls...
+    // The refresh past the ttl stalls and its request gives up on it...
     let settleLost!: (data: TokenData[]) => void;
     query.mockReturnValueOnce(new Promise((resolve) => (settleLost = resolve)));
     jest.setSystemTime(new Date("2026-10-20T10:06:00Z"));
-    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+    const refreshing = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    await refreshing;
 
     // ...and is replaced past the grace by a refresh with newer prices.
     query.mockResolvedValueOnce([{ ...tokenData, price: 3 }]);
