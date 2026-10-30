@@ -1,8 +1,10 @@
 # API Worker
 
-`osmosis-frontend-api-production` serves `/api/*` for the Cloudflare share of
-`app.osmosis.zone`. The OpenNext Worker keeps pages and `/_next/image`. Vercel is
-unchanged: `pages/api/*` and `middleware.ts` still build there.
+`osmosis-frontend-api-production` (built from `master-cf`) serves `/api/*` for the
+Cloudflare share of `app.osmosis.zone`. On `stage-cf` the same Worker is
+`osmosis-frontend-api-stage`, next to the `osmosis-frontend-stage` pages Worker.
+The OpenNext Worker keeps pages and `/_next/image`. Vercel is unchanged:
+`pages/api/*` and `middleware.ts` still build there.
 
 The route table is `routes.ts`. It must list every file under `pages/api`; the Jest
 drift test fails when one is missing. Handlers live in `server/api-handlers` and are

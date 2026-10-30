@@ -1,7 +1,8 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  // API routes only. Pages stay on osmosis-frontend-production (OpenNext).
-  "name": "osmosis-frontend-api-production",
+  // API routes only. Pages stay on osmosis-frontend-stage (OpenNext). master-cf names this
+  // osmosis-frontend-api-production, the Worker the router's `API` binding targets.
+  "name": "osmosis-frontend-api-stage",
   "main": "worker.ts",
   // Wrangler makes this path cwd-relative, then esbuild resolves it from this config's
   // directory. From `packages/web`, `../tsconfig.json` becomes `tsconfig.json` and esbuild
