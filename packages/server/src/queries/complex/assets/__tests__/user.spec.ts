@@ -44,6 +44,8 @@ const mockedGetPrice = jest.mocked(getPriceFromSidecar);
 const mockedGetShareCoins = jest.mocked(getGammShareUnderlyingCoins);
 
 describe("getUserAssetsTotal", () => {
+  afterEach(() => jest.restoreAllMocks());
+
   beforeEach(() => {
     mockedQueryBalances.mockResolvedValue({
       balances: [

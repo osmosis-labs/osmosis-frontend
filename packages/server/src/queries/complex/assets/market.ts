@@ -48,7 +48,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
 /** Fills a missing current price from SQS, which prices from pool state and doesn't
  *  depend on the data services. Only the spot price: price changes, market cap, liquidity
  *  and volume stay unknown. Not cached here, since `getAssetPrice` caches its own prices. */
-async function withSqsPriceFallback<
+export async function withSqsPriceFallback<
   TAsset extends MinimalAsset & AssetMarketInfo,
 >({
   asset,
@@ -156,11 +156,15 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   minLiquidity,
   minVolume24h,
   maxPriceChange24h,
+  sqsPriceFallback = true,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
+  /** Fill missing prices from SQS. Turn off when most rows lack a price (a data services
+   *  outage) and price only the rows actually returned. Defaults to true. */
+  sqsPriceFallback?: boolean;
   /** Exclude non-canonical variants (keep only assets where variantGroupKey === coinMinimalDenom). Defaults to false. */
   excludeVariants?: boolean;
   /** Exclude stablecoins (assets with "stablecoin" category). Defaults to false. */
@@ -230,6 +234,7 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   });
 
   // Only after filtering: pricing every listed asset from SQS at once would flood it.
+  if (!sqsPriceFallback) return listedMarketAssets;
   return Promise.all(
     listedMarketAssets.map((asset) =>
       withSqsPriceFallback({ asset, ...params })

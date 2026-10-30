@@ -92,12 +92,12 @@ beforeEach(() => {
 
 describe("holding SQS has no price for", () => {
   it("is a known $0 when every pool is drained and no fallback has a price", async () => {
-    pools.mockResolvedValue(
-      poolsOf(DENOMS.drained, [
-        ["0", "0"],
-        ["0", "0"],
-      ])
-    );
+    const drained = poolsOf(DENOMS.drained, [["0", "0"]]);
+    // SQS lists an empty Balancer or CL pool with no balances at all
+    pools.mockResolvedValue({
+      ...drained,
+      data: [...drained.data, { balances: [] }],
+    });
 
     expect((await sum(DENOMS.drained))?.toString()).toBe(new Dec(0).toString());
   });

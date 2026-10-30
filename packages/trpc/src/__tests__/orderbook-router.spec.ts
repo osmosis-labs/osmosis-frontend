@@ -240,6 +240,8 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => jest.restoreAllMocks());
+
   it("returns the open orders flagged when the history fails", async () => {
     mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
     mockedHistoricalOrders.mockRejectedValue(new Error("history down"));

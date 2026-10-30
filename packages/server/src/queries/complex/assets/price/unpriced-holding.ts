@@ -3,6 +3,7 @@ import { Dec, DecUtils } from "@osmosis-labs/unit";
 
 import { queryPools } from "../../../sidecar";
 import { getAsset } from "..";
+import { getAssetMarketActivity, isMarketDataAvailable } from "../market";
 import { getCoingeckoPrice } from "./providers/coingecko";
 import { NoSqsPriceError } from "./providers/sidecar";
 
@@ -13,12 +14,13 @@ const POOLS_PAGE_SIZE = 100;
  *  pool) share one pools request. Only the pending request is shared, never a result. */
 const pendingDrainedChecks = new Map<string, Promise<boolean>>();
 
-/** True only when SQS lists at least one pool holding the denom and every one of them
- *  is empty: a zero balance of the denom and of every other asset in the pool. A pool
- *  with none of the denom left but other assets in it can still buy the denom, so it
- *  isn't drained. Throws when the pools can't be read, and is false when the list may be
- *  incomplete (more pages) or a pool doesn't report the denom's balance. Read fresh each
- *  time: a cached "drained" could outlive liquidity being added back. */
+/** True only when SQS lists at least one pool for the denom and every one of them is
+ *  empty: every balance zero, the denom's and every other asset's. SQS lists an empty
+ *  Balancer or CL pool with no balances at all, which counts as empty. A pool with none
+ *  of the denom left but other assets in it can still buy the denom, so it isn't
+ *  drained. Throws when the pools can't be read, and is false when the list may be
+ *  incomplete (more pages). Read fresh each time: a cached "drained" could outlive
+ *  liquidity being added back. */
 function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
   const pending = pendingDrainedChecks.get(coinMinimalDenom);
   if (pending) return pending;
@@ -30,10 +32,8 @@ function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
     });
     if (meta.next_cursor !== undefined || pools.length === 0) return false;
 
-    return pools.every(
-      (pool) =>
-        pool.balances.some(({ denom }) => denom === coinMinimalDenom) &&
-        pool.balances.every(({ amount }) => new Dec(amount).isZero())
+    return pools.every((pool) =>
+      pool.balances.every(({ amount }) => new Dec(amount).isZero())
     );
   })().finally(() => pendingDrainedChecks.delete(coinMinimalDenom));
   pendingDrainedChecks.set(coinMinimalDenom, check);
@@ -71,9 +71,6 @@ export async function resolveUnpricedHolding({
       DecUtils.getTenExponentN(asset.coinDecimals)
     );
 
-    // Lazy import: market.ts imports the price module.
-    const { getAssetMarketActivity, isMarketDataAvailable } =
-      await import("../market");
     // Without fresh data services data, "no Numia price" can't be told from "unknown",
     // so only CoinGecko can still settle it.
     const marketDataAvailable = await isMarketDataAvailable();
