@@ -116,17 +116,6 @@
       "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
-  "store": {
-    "headerTitle": "Îmbunătățește-ți experiența",
-    "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
-    "featured": "Recomandat",
-    "searchPlaceholder": "Căutare",
-    "getFeatured": "Fii recomandat",
-    "featuredDescription": "Lansează-te pe magazinul de aplicații și obține acces la mii de utilizatori. Dacă dorești să fii listat sau recomandat, contactează-ne și vom fi în legătură.",
-    "applyButton": "Aplică",
-    "storeDisclaimer": "Anumite conținuturi au fost pregătite de terțe părți neafiliate cu Osmosis Labs sau cu oricare dintre afilierile sale, iar Osmosis Labs nu este responsabilă pentru astfel de conținuturi. Osmosis Labs nu este responsabilă pentru eventualele erori sau întârzieri în conținut sau pentru orice acțiuni întreprinse bazându-se pe orice conținut. Informațiile sunt furnizate numai în scop informativ și nu constituie sfaturi de investiții. Aceasta nu este o recomandare de a cumpăra sau vinde un anumit activ digital sau de a utiliza o anumită strategie de investiții. Osmosis Labs nu face nicio declarație cu privire la acuratețea, adecvarea sau validitatea oricăror informații furnizate sau pentru un anumit activ. Prețurile prezentate sunt doar în scop ilustrativ. Prețurile reale ale criptomonedelor și statisticile asociate pot varia. Datele prezentate pot reflecta active tranzacționate pe bursa Osmosis Labs și pe alte burse de criptomonede selectate.",
-    "allAppsHeader": "Toate aplicațiile"
-  },
   "createFirstPositionCta": {
     "title": "Creați-vă prima poziție Supercharged",
     "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
@@ -395,11 +384,8 @@
     "info": "Statistici",
     "pools": "Pool-uri",
     "stake": "Actiuni",
-    "store": "Aplicații",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
-    "more": "Mai mult",
-    "new": "NOU",
     "settings": "Setări"
   },
   "oneClickTrading": {
@@ -1171,10 +1157,6 @@
     "default": {
       "title": "Comerț în zona de osmoză",
       "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
-    },
-    "apps": {
-      "title": "Magazin de aplicații Osmosis",
-      "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
     },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",

@@ -216,16 +216,20 @@ export const NavBar: FunctionComponent<
             {({ close: closeMobileMainMenu }) => {
               closeMobileMenuRef.current = closeMobileMainMenu;
 
-              const mobileMenus = menus.concat({
-                label: t("menu.settings"),
-                link: (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenSettings();
-                  closeMobileMainMenu();
+              // Mobile shows primary and secondary items as one list.
+              const mobileMenus = menus.concat(
+                {
+                  label: t("menu.settings"),
+                  link: (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenSettings();
+                    closeMobileMainMenu();
+                  },
+                  icon: <Icon id="setting" className="h-6 w-6" />,
                 },
-                icon: <Icon id="setting" className="h-6 w-6" />,
-              });
+                secondaryMenuItems.filter(({ hideOnMobile }) => !hideOnMobile)
+              );
 
               return (
                 <>
@@ -245,11 +249,8 @@ export const NavBar: FunctionComponent<
                       }
                     />
                   </PopoverButton>
-                  <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
-                    <MainMenu
-                      menus={mobileMenus}
-                      secondaryMenuItems={secondaryMenuItems}
-                    />
+                  <PopoverPanel className="absolute top-full mt-4 flex max-h-[calc(100dvh-6rem)] w-52 flex-col gap-2 overflow-y-auto rounded-3xl bg-osmoverse-800 py-3 px-2">
+                    <MainMenu menus={mobileMenus} secondaryMenuItems={[]} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
                         <WalletInfo onOpenProfile={onOpenProfile} />
