@@ -301,6 +301,7 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
+    "walletRequestTimedOut": "{wallet} hat nicht rechtzeitig geantwortet. Es wurde nichts signiert oder gesendet, bitte versuchen Sie es erneut.",
     "insufficientFeeTokens": {
       "title": "Keine Gebührentoken mit ausreichendem Guthaben",
       "body": "Zahle OSMO oder einen anderen unterstützten Gebührentoken auf Osmosis ein, um die Netzwerkgebühr zu decken.",
@@ -631,6 +632,8 @@
     "title": "Liquidität entfernen"
   },
   "requestRejected": "Anfrage zurückgewiesen",
+  "waitingForWallet": "Warten auf Ihre Wallet...",
+  "signInMobileWallet": "Signieren Sie in Ihrer mobilen Wallet...",
   "settings": {
     "filterDust": "Staub filtern",
     "selectLanguage": "Sprache auswählen",

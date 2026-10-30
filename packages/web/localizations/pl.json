@@ -301,6 +301,7 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
+    "walletRequestTimedOut": "{wallet} nie odpowiedział na czas. Nic nie zostało podpisane ani wysłane, spróbuj ponownie.",
     "insufficientFeeTokens": {
       "title": "Brak tokenów opłat z wystarczającym saldem",
       "body": "Wpłać OSMO lub inny obsługiwany token opłat w Osmosis, aby pokryć opłatę sieciową.",
@@ -631,6 +632,8 @@
     "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
+  "waitingForWallet": "Oczekiwanie na portfel...",
+  "signInMobileWallet": "Podpisz w portfelu mobilnym...",
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",

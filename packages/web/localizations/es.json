@@ -301,6 +301,7 @@
     "invalidAmounts": "Montos no válidos",
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
     "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
+    "walletRequestTimedOut": "{wallet} no respondió a tiempo. No se firmó ni se envió nada, inténtelo de nuevo.",
     "insufficientFeeTokens": {
       "title": "No hay tokens de comisión con saldo suficiente",
       "body": "Deposita OSMO u otro token de comisión compatible en Osmosis para cubrir la tarifa de red.",
@@ -631,6 +632,8 @@
     "title": "Retirar liquidez"
   },
   "requestRejected": "Solicitud rechazada",
+  "waitingForWallet": "Esperando a su billetera...",
+  "signInMobileWallet": "Firme en su billetera móvil...",
   "settings": {
     "filterDust": "Filtro de polvo",
     "selectLanguage": "Seleccione el idioma",

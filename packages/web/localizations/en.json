@@ -301,6 +301,7 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "walletRequestTimedOut": "{wallet} did not respond in time. Nothing was signed or sent, please try again.",
     "insufficientFeeTokens": {
       "title": "No fee tokens with sufficient balance",
       "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
@@ -631,6 +632,8 @@
     "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
+  "waitingForWallet": "Waiting for your wallet...",
+  "signInMobileWallet": "Sign in your mobile wallet...",
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",

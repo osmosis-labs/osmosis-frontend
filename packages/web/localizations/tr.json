@@ -301,6 +301,7 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
+    "walletRequestTimedOut": "{wallet} zamanında yanıt vermedi. Hiçbir şey imzalanmadı veya gönderilmedi, lütfen tekrar deneyin.",
     "insufficientFeeTokens": {
       "title": "Yeterli bakiyeye sahip ücret tokeni yok",
       "body": "Ağ ücretini karşılamak için Osmosis üzerinde OSMO veya desteklenen başka bir ücret tokeni yatırın.",
@@ -631,6 +632,8 @@
     "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
+  "waitingForWallet": "Cüzdanınız bekleniyor...",
+  "signInMobileWallet": "Mobil cüzdanınızda imzalayın...",
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",

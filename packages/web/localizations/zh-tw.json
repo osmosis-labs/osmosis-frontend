@@ -301,6 +301,7 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
+    "walletRequestTimedOut": "{wallet} 未及時回應。未簽署或發送任何內容，請重試。",
     "insufficientFeeTokens": {
       "title": "沒有餘額足夠的手續費代幣",
       "body": "請在 Osmosis 上存入 OSMO 或其他支援的手續費代幣以支付網路費用。",
@@ -631,6 +632,8 @@
     "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
+  "waitingForWallet": "正在等待您的錢包...",
+  "signInMobileWallet": "請在您的手機錢包中簽署...",
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",

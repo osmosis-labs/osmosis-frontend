@@ -35,6 +35,7 @@ import {
 import { getSdkError } from "@walletconnect/utils";
 import EventEmitter from "events";
 
+import { trackWalletRequest } from "~/integrations/core-walletconnect/pending-request";
 import {
   WCAccount,
   WCSignDirectRequest,
@@ -563,12 +564,24 @@ export class WCClient implements WalletClient {
       : this.getOfflineSignerDirect(chainId);
   }
 
+  /** Sends a request over the session, bounded by the cancel/timeout tracker. */
+  protected async trackedRequest<T>(
+    ...args: Parameters<SignClient["request"]>
+  ): Promise<T | undefined> {
+    const signClient = this.signClient;
+    if (!signClient) return undefined;
+    return trackWalletRequest<T>({
+      send: () => signClient.request<T>(...args),
+      walletName: this.walletInfo.prettyName,
+    });
+  }
+
   protected async _getAccount(chainId: string) {
     const session = this.getSession("cosmos", chainId);
     if (!session) {
       throw new Error(`Session for ${chainId} not established yet.`);
     }
-    const resp = await this.signClient?.request<[WCAccount]>({
+    const resp = await this.trackedRequest<[WCAccount]>({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
       request: {
@@ -607,7 +620,7 @@ export class WCClient implements WalletClient {
       throw new Error(`Session for ${chainId} not established yet.`);
     }
 
-    const resp = await this.signClient?.request<AminoSignResponse>({
+    const resp = await this.trackedRequest<AminoSignResponse>({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
       request: {
@@ -670,7 +683,7 @@ export class WCClient implements WalletClient {
       },
     };
 
-    const resp = await this.signClient?.request({
+    const resp = await this.trackedRequest<WCSignDirectResponse>({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
       request: {

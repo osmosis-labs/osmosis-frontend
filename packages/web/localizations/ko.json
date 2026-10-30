@@ -301,6 +301,7 @@
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
+    "walletRequestTimedOut": "{wallet}이(가) 제시간에 응답하지 않았습니다. 서명되거나 전송된 것은 없습니다. 다시 시도해 주세요.",
     "insufficientFeeTokens": {
       "title": "잔액이 충분한 수수료 토큰이 없습니다",
       "body": "네트워크 수수료를 충당하려면 Osmosis에 OSMO 또는 지원되는 다른 수수료 토큰을 입금하세요.",
@@ -631,6 +632,8 @@
     "title": "유동성 해제하기"
   },
   "requestRejected": "요청이 거부됨",
+  "waitingForWallet": "지갑 응답을 기다리는 중...",
+  "signInMobileWallet": "모바일 지갑에서 서명하세요...",
   "settings": {
     "filterDust": "소액 필터",
     "selectLanguage": "언어 선택",

@@ -301,6 +301,7 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "walletRequestTimedOut": "{wallet}が時間内に応答しませんでした。署名や送信は行われていません。もう一度お試しください。",
     "insufficientFeeTokens": {
       "title": "残高が十分な手数料トークンがありません",
       "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
@@ -631,6 +632,8 @@
     "title": "流動性の除去"
   },
   "requestRejected": "リクエストが拒否されました",
+  "waitingForWallet": "ウォレットの応答を待っています...",
+  "signInMobileWallet": "モバイルウォレットで署名してください...",
   "settings": {
     "filterDust": "フィルターダスト",
     "selectLanguage": "言語を選択する",

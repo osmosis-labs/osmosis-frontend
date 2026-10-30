@@ -301,6 +301,7 @@
     "invalidAmounts": "Montant(s) invalide(s)",
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
+    "walletRequestTimedOut": "{wallet} n'a pas répondu à temps. Rien n'a été signé ni envoyé, veuillez réessayer.",
     "insufficientFeeTokens": {
       "title": "Aucun jeton de frais avec un solde suffisant",
       "body": "Déposez de l'OSMO ou un autre jeton de frais pris en charge sur Osmosis pour couvrir les frais de réseau.",
@@ -631,6 +632,8 @@
     "title": "Retirer de la liquidité"
   },
   "requestRejected": "Demande rejetée",
+  "waitingForWallet": "En attente de votre portefeuille...",
+  "signInMobileWallet": "Signez dans votre portefeuille mobile...",
   "settings": {
     "filterDust": "Filtrer la poussière",
     "selectLanguage": "Choisir la langue",
