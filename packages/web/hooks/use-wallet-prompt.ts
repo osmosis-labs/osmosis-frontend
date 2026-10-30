@@ -1,12 +1,10 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 
 import { useTranslation } from "~/hooks/language";
 import { useWallet } from "~/hooks/use-wallet";
 import {
   cancelWalletRequests,
-  hasPendingWalletRequest,
   resetWalletRequestCancel,
-  subscribePendingWalletRequest,
 } from "~/integrations/core-walletconnect/pending-request";
 
 /**
@@ -14,8 +12,8 @@ import {
  * waits on a wallet signature. The label follows the wallet type rather than
  * the open request, since one signature can be several requests with gaps.
  *
- * `signsLocally` (an active 1CT session) drops the label, since no wallet is
- * involved, unless signing fell back to WalletConnect anyway.
+ * `signsLocally` (an active 1CT session) drops the label and the cancel, since
+ * no wallet is involved.
  */
 export function useWalletPrompt({
   isLoading,
@@ -26,11 +24,6 @@ export function useWalletPrompt({
 }) {
   const { t } = useTranslation();
   const { wallet } = useWallet();
-  const isWaitingOnPhone = useSyncExternalStore(
-    subscribePendingWalletRequest,
-    hasPendingWalletRequest,
-    () => false
-  );
 
   // A cancel holds until the attempt it cancelled has ended.
   useEffect(() => {
@@ -39,8 +32,7 @@ export function useWalletPrompt({
   }, [isLoading]);
 
   const isOnPhone =
-    isWaitingOnPhone ||
-    (!signsLocally && wallet?.walletInfo.mode === "wallet-connect");
+    !signsLocally && wallet?.walletInfo.mode === "wallet-connect";
 
   return {
     isOnPhone,

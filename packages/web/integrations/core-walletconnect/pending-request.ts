@@ -15,10 +15,7 @@
  *  still goes through, since the user was never told the request stopped. */
 export const WC_REQUEST_TIMEOUT_MS = 120_000;
 
-type Listener = () => void;
-
 const inFlight = new Set<{ reject: () => void }>();
-const listeners = new Set<Listener>();
 
 /** Set by a cancel and held until the attempt ends, so a request that would
  *  have started after the cancel (e.g. the signature after an account lookup)
@@ -34,13 +31,6 @@ export function cancelWalletRequests() {
 
 export function resetWalletRequestCancel() {
   cancelled = false;
-}
-
-export function subscribePendingWalletRequest(listener: Listener) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
 }
 
 /** True while any WalletConnect request is waiting on the phone. */
@@ -87,12 +77,10 @@ export function trackWalletRequest<T>({
       settled = true;
       clearTimeout(timer);
       inFlight.delete(pending);
-      listeners.forEach((listener) => listener());
       finish();
     }
 
     inFlight.add(pending);
-    listeners.forEach((listener) => listener());
 
     send().then(
       (value) => settle(() => resolve(value)),
