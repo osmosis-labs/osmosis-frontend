@@ -2,9 +2,6 @@ export type Backend = "cf" | "vercel";
 
 /** Response header naming the platform that served a request. */
 export const BACKEND_HEADER = "x-osmosis-backend";
-/** Set when a Cloudflare-bucket `/api/*` request was served by the API Worker. */
-export const API_WORKER_HEADER = "x-osmosis-api-worker";
-export const API_WORKER_NAME = "osmosis-frontend-api-production";
 /** Set when Vercel served a page load the production Worker failed: `cf-<status>` or `cf-error`. */
 export const FALLBACK_HEADER = "x-osmosis-fallback";
 /** Pins a browser's traffic bucket (0-9999) across IP and user-agent changes. */

@@ -1,13 +1,7 @@
 /**
  * @jest-environment node
  */
-import {
-  API_WORKER_HEADER,
-  API_WORKER_NAME,
-  BACKEND_HEADER,
-  BUCKET_COOKIE,
-  FALLBACK_HEADER,
-} from "../routing";
+import { BACKEND_HEADER, BUCKET_COOKIE, FALLBACK_HEADER } from "../routing";
 import router, { type RouterEnv } from "../worker";
 
 const CF_COOKIE = `${BUCKET_COOKIE}=0`;
@@ -15,31 +9,26 @@ const VERCEL_COOKIE = `${BUCKET_COOKIE}=9999`;
 
 function setup({
   cf = () => new Response("from cf"),
-  api = () => new Response("from api"),
   vercel = () => new Response("from vercel"),
   percent = "5",
   vercelOrigin,
 }: {
   cf?: (request: Request) => Response | Promise<Response>;
-  api?: (request: Request) => Response | Promise<Response>;
   vercel?: (request: Request) => Response;
   percent?: string;
   vercelOrigin?: string;
 } = {}) {
   const production = jest.fn(async (request: Request) => cf(request));
-  const apiWorker = jest.fn(async (request: Request) => api(request));
   const origin = jest
     .spyOn(globalThis, "fetch")
     .mockImplementation(async (input) => vercel(input as Request));
   const env: RouterEnv = {
     PRODUCTION: { fetch: production },
-    API: { fetch: apiWorker },
     CF_PERCENT: percent,
     VERCEL_ORIGIN: vercelOrigin,
   };
   return {
     production,
-    apiWorker,
     origin,
     route: (url: string, cookie?: string, init: RequestInit = {}) =>
       router.fetch(
@@ -60,30 +49,13 @@ afterEach(() => jest.restoreAllMocks());
 
 describe("router", () => {
   it("serves a Cloudflare-bucket browser from the production Worker", async () => {
-    const { route, production, apiWorker, origin } = setup();
+    const { route, production, origin } = setup();
 
     const response = await route("https://app.test/pools", CF_COOKIE);
 
     expect(await response.text()).toBe("from cf");
     expect(response.headers.get(BACKEND_HEADER)).toBe("cf");
-    expect(response.headers.get(API_WORKER_HEADER)).toBeNull();
     expect(production).toHaveBeenCalledTimes(1);
-    expect(apiWorker).not.toHaveBeenCalled();
-    expect(origin).not.toHaveBeenCalled();
-  });
-
-  it("sends Cloudflare /api to the API Worker", async () => {
-    const { route, production, apiWorker, origin } = setup();
-
-    const response = await route("https://app.test/api/pools/1", CF_COOKIE, {
-      headers: { "sec-fetch-dest": "empty" },
-    });
-
-    expect(await response.text()).toBe("from api");
-    expect(response.headers.get(BACKEND_HEADER)).toBe("cf");
-    expect(response.headers.get(API_WORKER_HEADER)).toBe(API_WORKER_NAME);
-    expect(apiWorker).toHaveBeenCalledTimes(1);
-    expect(production).not.toHaveBeenCalled();
     expect(origin).not.toHaveBeenCalled();
   });
 
@@ -148,7 +120,7 @@ describe("router", () => {
   });
 
   it("never retries other 404s or failures on the other platform", async () => {
-    const { route, production, apiWorker } = setup({
+    const { route, production } = setup({
       vercel: () => new Response("not found", { status: 404 }),
     });
 
@@ -162,7 +134,6 @@ describe("router", () => {
     expect(page.status).toBe(404);
     expect(api.status).toBe(404);
     expect(production).not.toHaveBeenCalled();
-    expect(apiWorker).not.toHaveBeenCalled();
   });
 
   it("serves a page load from Vercel when the production Worker fails it", async () => {
@@ -191,9 +162,9 @@ describe("router", () => {
     expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-error");
   });
 
-  it("keeps API failures on the API Worker, with no platform fallback", async () => {
-    const { route, origin, production, apiWorker } = setup({
-      api: () => new Response("error", { status: 500 }),
+  it("keeps production Worker failures outside page loads on Cloudflare", async () => {
+    const { route, origin } = setup({
+      cf: () => new Response("error", { status: 500 }),
     });
 
     const api = await route("https://app.test/api/pools", CF_COOKIE, {
@@ -207,27 +178,7 @@ describe("router", () => {
 
     expect(api.status).toBe(500);
     expect(broadcast.status).toBe(500);
-    expect(api.headers.get(BACKEND_HEADER)).toBe("cf");
-    expect(api.headers.get(API_WORKER_HEADER)).toBe(API_WORKER_NAME);
     expect(api.headers.get(FALLBACK_HEADER)).toBeNull();
-    expect(apiWorker).toHaveBeenCalledTimes(2);
-    expect(production).not.toHaveBeenCalled();
-    expect(origin).not.toHaveBeenCalled();
-  });
-
-  it("keeps a non-API production failure on Cloudflare", async () => {
-    const { route, origin, apiWorker } = setup({
-      cf: () => new Response("error", { status: 500 }),
-    });
-
-    const response = await route("https://app.test/pools", CF_COOKIE, {
-      headers: { "sec-fetch-dest": "empty" },
-    });
-
-    expect(response.status).toBe(500);
-    expect(response.headers.get(FALLBACK_HEADER)).toBeNull();
-    expect(response.headers.get(API_WORKER_HEADER)).toBeNull();
-    expect(apiWorker).not.toHaveBeenCalled();
     expect(origin).not.toHaveBeenCalled();
   });
 
