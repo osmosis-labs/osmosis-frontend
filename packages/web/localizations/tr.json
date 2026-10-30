@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "Emirleriniz yüklenemedi",
         "subtitle": "Lütfen birazdan tekrar deneyin."
-      }
+      },
+      "historyUnavailable": "Emir geçmişi şu anda kullanılamıyor. Açık emirleriniz gösteriliyor."
     },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",

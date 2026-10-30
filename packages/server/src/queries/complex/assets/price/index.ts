@@ -8,7 +8,8 @@ import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
-import { getPriceFromSidecar } from "./providers/sidecar";
+import { getPriceFromSidecar, NoSqsPriceError } from "./providers/sidecar";
+import { resolveUnpricedHolding } from "./unpriced-holding";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
@@ -18,10 +19,12 @@ export type PriceProvider = (
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Assets whose price just failed, retried after the ttl. cachified doesn't keep
- *  failures, so without this an asset with no price (e.g. no pools) is re-sent to SQS on
- *  every request, and those are the denoms SQS route-searches. Only the failure is kept,
- *  never a price. */
+/** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
+ *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
+ *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
+ *  kept, never a price: a failed request (5xx, timeout, expired batch) says nothing
+ *  about the asset and must be retried at once. SQS's answer can itself come from a
+ *  failed route search on its side, hence the short ttl. */
 const priceFailures = new LRUCache<string, Error>({
   max: 1_500,
   ttl: 1000 * 30, // 30 seconds
@@ -95,7 +98,7 @@ export async function getAssetPrice({
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () => priceProvider(foundAsset, currency),
   }).catch((e) => {
-    priceFailures.set(key, e instanceof Error ? e : new Error(String(e)));
+    if (e instanceof NoSqsPriceError) priceFailures.set(key, e);
     throw e;
   });
 }
@@ -153,6 +156,27 @@ export async function calcAssetValue({
 /** Smallest display amount whose value can't round to zero at any real price. */
 const MIN_PRICEABLE_AMOUNT = new Dec("0.000001");
 
+const assetsByMinimalDenom = new WeakMap<AssetList[], Map<string, Asset>>();
+/** `coinMinimalDenom` lookup that indexes each asset list array once, since the check
+ *  runs per coin and per zero-cap reserve across all pools. First match wins. */
+function findAssetByMinimalDenom(
+  assetLists: AssetList[],
+  coinMinimalDenom: string
+): Asset | undefined {
+  let index = assetsByMinimalDenom.get(assetLists);
+  if (!index) {
+    index = new Map();
+    for (const { assets } of assetLists) {
+      for (const asset of assets) {
+        if (!index.has(asset.coinMinimalDenom))
+          index.set(asset.coinMinimalDenom, asset);
+      }
+    }
+    assetsByMinimalDenom.set(assetLists, index);
+  }
+  return index.get(coinMinimalDenom);
+}
+
 /** True when a held coin with no value means its price is unavailable, so the value is
  *  unknown rather than zero. That holds only for assets that should always have a price:
  *  listed, verified and not preview, disabled or unstable. Spam, sunset and halted assets
@@ -166,9 +190,7 @@ export function isHoldingValueUnknown({
   coinMinimalDenom: string;
   amount: string;
 }): boolean {
-  const asset = assetLists
-    .flatMap(({ assets }) => assets)
-    .find((asset) => asset.coinMinimalDenom === coinMinimalDenom);
+  const asset = findAssetByMinimalDenom(assetLists, coinMinimalDenom);
   if (
     !asset ||
     !asset.verified ||
@@ -186,7 +208,9 @@ export function isHoldingValueUnknown({
 
 /** Sums the value of the given coins, or returns `undefined` when a coin that should have
  *  a price (see `isHoldingValueUnknown`) can't be priced. Unlike `calcSumCoinsValue`, that
- *  coin isn't counted as zero, which would understate the value. */
+ *  coin isn't counted as zero, which would understate the value. The one exception is an
+ *  asset SQS has no price for, with no price from the other sources and every SQS pool
+ *  holding it drained (see `resolveUnpricedHolding`). */
 export async function calcSumCoinsValueOrUnknown({
   coins,
   ...params
@@ -201,13 +225,18 @@ export async function calcSumCoinsValueOrUnknown({
       .map((coin) => {
         const { denom, amount } = coin.toCoin();
         return calcAssetValue({ ...params, anyDenom: denom, amount }).catch(
-          () =>
+          (error) =>
             isHoldingValueUnknown({
               assetLists: params.assetLists,
               coinMinimalDenom: denom,
               amount,
             })
-              ? undefined
+              ? resolveUnpricedHolding({
+                  assetLists: params.assetLists,
+                  coinMinimalDenom: denom,
+                  amount,
+                  error,
+                })
               : new Dec(0)
         );
       })

@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "주문을 불러올 수 없습니다",
         "subtitle": "잠시 후 다시 시도해 주세요."
-      }
+      },
+      "historyUnavailable": "주문 내역을 지금 불러올 수 없습니다. 열려 있는 주문을 표시합니다."
     },
     "aboveMarket": {
       "title": "시장가보다 높은 가격 제한",

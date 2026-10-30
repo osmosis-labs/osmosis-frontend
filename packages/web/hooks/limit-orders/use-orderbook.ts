@@ -340,8 +340,13 @@ const useOrdersQuery = ({
     }
   );
 
+  const orders = sqsActiveOrders ? sqsOrders : nodeOrders;
+
   return {
-    data: sqsActiveOrders ? sqsOrders : nodeOrders,
+    data: orders,
+    /** True when the closed orders couldn't be loaded, so the list holds only open orders. */
+    historyUnavailable:
+      orders?.pages.some((page) => page.historyUnavailable) ?? false,
     isLoading: sqsActiveOrders ? isSQSOrdersLoading : isNodeOrdersLoading,
     isError: sqsActiveOrders ? isSQSOrdersError : isNodeOrdersError,
     fetchNextPage: sqsActiveOrders
@@ -372,6 +377,7 @@ export const useOrderbookOrders = ({
 }) => {
   const {
     data: orders,
+    historyUnavailable,
     isLoading,
     isError,
     fetchNextPage,
@@ -393,6 +399,8 @@ export const useOrderbookOrders = ({
 
   return {
     orders: allOrders,
+    /** True when the closed orders couldn't be loaded, so `orders` holds only open orders. */
+    historyUnavailable,
     isLoading,
     /** True when the orders couldn't be loaded, so an empty list is unknown, not "no orders". */
     isError,

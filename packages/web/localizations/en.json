@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "Couldn't load your orders",
         "subtitle": "Please try again in a moment."
-      }
+      },
+      "historyUnavailable": "Order history is unavailable right now. Your open orders are shown."
     },
     "aboveMarket": {
       "title": "Limit price above market price",

@@ -56,7 +56,9 @@ export function maybeCursorPaginatedItems<TItem>(
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export type CachedPaginationParams<TItem> = {
-  getFreshItems: () => Promise<TItem[]>;
+  /** Call `markIncomplete` when the list is known to be missing items (e.g. one data
+   *  source failed): the result then carries `incomplete: true`, on later pages too. */
+  getFreshItems: (context: { markIncomplete: () => void }) => Promise<TItem[]>;
   cacheKey: string;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;
@@ -75,22 +77,49 @@ export async function maybeCachePaginatedItems<TItem>({
 }: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
   nextCursor: number | undefined;
+  /** Present (true) only when the list is missing items, see `markIncomplete`. */
+  incomplete?: true;
 }> {
   // if pagination is not used, return items
-  if (!cursor && !limit)
-    return { items: await getFreshItems(), nextCursor: undefined };
+  if (!cursor && !limit) {
+    let incomplete = false;
+    const items = await getFreshItems({
+      markIncomplete: () => {
+        incomplete = true;
+      },
+    });
+    return {
+      items,
+      nextCursor: undefined,
+      ...(incomplete ? { incomplete: true as const } : {}),
+    };
+  }
 
   // If cursor is 0, delete the cache entry for the given key
   if (cursor === 0) {
     paginationCache.delete(cacheKey);
   }
 
-  const items = await cachified({
+  // The incomplete flag is cached with its list, so later pages are cut from the same
+  // snapshot as the first and every request sharing a fetch reports that fetch's status.
+  // A reload (cursor 0) fetches again.
+  const { items, incomplete } = await cachified({
     key: cacheKey,
     cache: paginationCache,
     ttl,
-    getFreshValue: getFreshItems,
+    getFreshValue: async () => {
+      let incomplete = false;
+      const items = await getFreshItems({
+        markIncomplete: () => {
+          incomplete = true;
+        },
+      });
+      return { items, incomplete };
+    },
   });
 
-  return maybeCursorPaginatedItems(items, cursor, limit);
+  return {
+    ...maybeCursorPaginatedItems(items, cursor, limit),
+    ...(incomplete ? { incomplete: true as const } : {}),
+  };
 }

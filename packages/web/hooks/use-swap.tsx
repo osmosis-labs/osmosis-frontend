@@ -69,7 +69,7 @@ import { useWallet } from "~/hooks/use-wallet";
 import { useUserWatchlist } from "~/hooks/user-settings";
 import { AppRouter } from "~/server/api/root-router";
 import { trimPlaceholderZeros } from "~/utils/number";
-import { extractSwapRequiredErrorAmounts } from "~/utils/slippage";
+import { slippageRequiredByFeeError } from "~/utils/slippage";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -1741,39 +1741,23 @@ export function useDynamicSlippageConfig({
 
   useEffect(() => {
     const slippageConfig = slippageConfigRef.current;
-    if (feeError) {
-      if (
-        (feeError.message.includes("Swap requires") ||
-          feeError.message.includes("is greater than max amount")) &&
-        quoteType === "in-given-out"
-      ) {
-        const amounts = extractSwapRequiredErrorAmounts(feeError.message);
+    // the same shortfall rule the swap tool uses, so both pick from one definition
+    const required = slippageRequiredByFeeError({
+      errorMessage: feeError?.message,
+      quoteType,
+      currentSlippage: slippageConfig.slippage.toDec(),
+    });
+    if (required === undefined) return;
 
-        if (amounts) {
-          const [required, sent] = amounts;
-          const slippage = new Dec(1).add(slippageConfig.slippage.toDec());
-
-          if (!required || !sent) return;
-
-          const amountPreSlippage = new Dec(sent).quo(slippage);
-          const slippageRequired = new Dec(required).quo(amountPreSlippage);
-
-          if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
-            const [index, amount] = slippageConfig.getSmallestSlippage(
-              slippageRequired.sub(new Dec(1))
-            );
-
-            slippageConfig.select(index as number);
-            slippageConfig.setDefaultSlippage(
-              trimPlaceholderZeros(
-                (amount as Dec)
-                  .mul(DecUtils.getTenExponentNInPrecisionRange(2))
-                  .toString()
-              )
-            );
-          }
-        }
-      }
-    }
+    // snap up to the limit tool's selectable presets
+    const [index, amount] = slippageConfig.getSmallestSlippage(
+      new Dec(required).quo(DecUtils.getTenExponentN(2))
+    );
+    slippageConfig.select(index);
+    slippageConfig.setDefaultSlippage(
+      trimPlaceholderZeros(
+        amount.mul(DecUtils.getTenExponentNInPrecisionRange(2)).toString()
+      )
+    );
   }, [feeError, quoteType]);
 }

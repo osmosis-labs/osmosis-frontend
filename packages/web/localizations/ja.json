@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "注文を読み込めませんでした",
         "subtitle": "しばらくしてからもう一度お試しください。"
-      }
+      },
+      "historyUnavailable": "注文履歴は現在利用できません。未約定の注文を表示しています。"
     },
     "aboveMarket": {
       "title": "市場価格を上回る制限価格",

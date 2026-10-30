@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "Ordinele tale nu au putut fi încărcate",
         "subtitle": "Te rugăm să încerci din nou în câteva momente."
-      }
+      },
+      "historyUnavailable": "Istoricul ordinelor nu este disponibil momentan. Sunt afișate ordinele tale deschise."
     },
     "aboveMarket": {
       "title": "Preț limită peste prețul pieței",

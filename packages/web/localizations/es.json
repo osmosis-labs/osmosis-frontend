@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "No se pudieron cargar tus órdenes",
         "subtitle": "Inténtalo de nuevo en un momento."
-      }
+      },
+      "historyUnavailable": "El historial de órdenes no está disponible ahora. Se muestran tus órdenes abiertas."
     },
     "aboveMarket": {
       "title": "Precio límite por encima del precio de mercado",

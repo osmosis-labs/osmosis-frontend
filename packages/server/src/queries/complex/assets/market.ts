@@ -48,7 +48,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
 /** Fills a missing current price from SQS, which prices from pool state and doesn't
  *  depend on the data services. Only the spot price: price changes, market cap, liquidity
  *  and volume stay unknown. Not cached here, since `getAssetPrice` caches its own prices. */
-async function withSqsPriceFallback<
+export async function withSqsPriceFallback<
   TAsset extends MinimalAsset & AssetMarketInfo,
 >({
   asset,
@@ -66,6 +66,23 @@ async function withSqsPriceFallback<
     () => undefined
   );
   return { ...asset, currentPrice };
+}
+
+const totalSupplyCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Total supply on its own, longer cache: it moves slowly, while the market info entry
+ *  of an asset with no price is retried every few seconds and must not re-query the chain
+ *  each time. A failed query isn't cached. */
+function getCachedTotalSupply(params: {
+  chainList: Chain[];
+  assetLists: AssetList[];
+  denom: string;
+}) {
+  return cachified({
+    cache: totalSupplyCache,
+    key: `total-supply-${params.denom}`,
+    ttl: 1000 * 60 * 10, // 10 minutes
+    getFreshValue: () => querySupplyTotal(params),
+  });
 }
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -93,7 +110,7 @@ async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
           return captureErrorAndReturn(e, undefined);
         }),
         includeTotalSupply
-          ? querySupplyTotal({
+          ? getCachedTotalSupply({
               ...params,
               denom: asset.coinMinimalDenom,
             }).catch((e) => captureErrorAndReturn(e, undefined))
@@ -128,7 +145,10 @@ async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
 }
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
- *  If no assets provided, they will be fetched and passed the given search params. */
+ *  If no assets provided, they will be fetched and passed the given search params.
+ *  Without market data the liquidity and volume filters drop every asset, which would read
+ *  as an empty list rather than an outage: callers that use them check
+ *  `isMarketDataAvailable` first and report the outage with their own error code. */
 export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   excludeVariants = false,
@@ -136,11 +156,15 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   minLiquidity,
   minVolume24h,
   maxPriceChange24h,
+  sqsPriceFallback = true,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
+  /** Fill missing prices from SQS. Turn off when most rows lack a price (a data services
+   *  outage) and price only the rows actually returned. Defaults to true. */
+  sqsPriceFallback?: boolean;
   /** Exclude non-canonical variants (keep only assets where variantGroupKey === coinMinimalDenom). Defaults to false. */
   excludeVariants?: boolean;
   /** Exclude stablecoins (assets with "stablecoin" category). Defaults to false. */
@@ -152,12 +176,6 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   /** Maximum 24h price change in percent. If provided, assets with priceChange24h above this are excluded (sanity cap for stale data / shallow-pool blips). */
   maxPriceChange24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  // Without market data every asset would be filtered out below, which would read
-  // as an empty list rather than an outage.
-  if (!(await isMarketDataAvailable())) {
-    throw new Error("Market data is unavailable");
-  }
-
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
   // Apply variant filtering if requested
@@ -216,6 +234,7 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   });
 
   // Only after filtering: pricing every listed asset from SQS at once would flood it.
+  if (!sqsPriceFallback) return listedMarketAssets;
   return Promise.all(
     listedMarketAssets.map((asset) =>
       withSqsPriceFallback({ asset, ...params })

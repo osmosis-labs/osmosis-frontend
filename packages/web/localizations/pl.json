@@ -1328,7 +1328,8 @@
       "errorState": {
         "title": "Nie udało się wczytać Twoich zleceń",
         "subtitle": "Spróbuj ponownie za chwilę."
-      }
+      },
+      "historyUnavailable": "Historia zleceń jest obecnie niedostępna. Wyświetlane są Twoje otwarte zlecenia."
     },
     "aboveMarket": {
       "title": "Cena graniczna powyżej ceny rynkowej",
