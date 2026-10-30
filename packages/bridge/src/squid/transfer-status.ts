@@ -4,6 +4,7 @@ import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
+  EvmReceiptCheck,
   TransferStatusProvider,
   TransferStatusReceiver,
   TxSnapshot,
@@ -23,7 +24,13 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   constructor(
     protected readonly integratorId: string,
     env: BridgeEnvironment,
-    protected readonly chainList: Chain[]
+    protected readonly chainList: Chain[],
+    /**
+     * Optional. Resolves transfers whose receipt wait failed after broadcast
+     * (`sendTxUnconfirmed`): a reverted tx never reaches Squid, which only
+     * answers 404 for it.
+     */
+    protected readonly checkEvmReceipt?: EvmReceiptCheck
   ) {
     this.apiUrl =
       env === "mainnet"
@@ -47,8 +54,28 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       toChain: { chainId: toChainId },
       quoteId,
     } = snapshot;
+    // set once the source-chain receipt proves the tx was included
+    let receiptFound = false;
     await poll({
       fn: async () => {
+        // An EVM tx whose receipt wait failed may have reverted: check the
+        // receipt until it turns up, since Squid can't tell that from a tx
+        // not mined yet.
+        if (
+          snapshot.sendTxUnconfirmed &&
+          !receiptFound &&
+          this.checkEvmReceipt &&
+          typeof fromChainId === "number"
+        ) {
+          const outcome = await this.checkEvmReceipt({
+            txHash: sendTxHash,
+            chainId: fromChainId,
+          });
+          if (outcome === "reverted") {
+            return { id: sendTxHash, status: "failed" } as BridgeTransferStatus;
+          }
+          if (outcome === "success") receiptFound = true;
+        }
         try {
           const url = new URL(`${this.apiUrl}/v2/status`);
           url.searchParams.append("transactionId", sendTxHash);
@@ -97,7 +124,13 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           } as BridgeTransferStatus;
         } catch (e) {
           const error = e as Error | ApiClientError;
-          if (error instanceof ApiClientError && error.status === 404) {
+          // A tx whose inclusion is unproven may simply not be mined yet, so
+          // Squid not knowing it is no proof of failure.
+          if (
+            error instanceof ApiClientError &&
+            error.status === 404 &&
+            !(snapshot.sendTxUnconfirmed && !receiptFound)
+          ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {
               return {

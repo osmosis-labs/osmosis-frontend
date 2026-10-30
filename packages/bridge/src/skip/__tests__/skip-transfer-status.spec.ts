@@ -251,6 +251,58 @@ describe("SkipTransferStatusProvider", () => {
     });
   });
 
+  describe("EVM transfers whose receipt wait failed", () => {
+    const unconfirmedSnapshot: TxSnapshot = {
+      ...baseTxSnapshot,
+      sendTxUnconfirmed: true,
+    };
+
+    const withReceipt = (outcome: "success" | "reverted" | undefined) => {
+      const check = jest.fn(async () => outcome);
+      const evmProvider = new SkipTransferStatusProvider(
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        SkipStatusProvider,
+        undefined,
+        check
+      );
+      evmProvider.statusReceiverDelegate = mockReceiver;
+      return { check, evmProvider };
+    };
+
+    it("resolves as failed when the receipt shows a revert", async () => {
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ state: "STATE_PENDING" })
+        )
+      );
+      const { check, evmProvider } = withReceipt("reverted");
+
+      await evmProvider.trackTxStatus(unconfirmedSnapshot);
+
+      expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "testTxHash",
+        "failed",
+        undefined
+      );
+    });
+
+    it("keeps polling when Skip errors and no receipt has turned up", async () => {
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ message: "tx not found" }, { status: 404 })
+        )
+      );
+      const { evmProvider } = withReceipt(undefined);
+
+      await expect(
+        evmProvider.trackTxStatus(unconfirmedSnapshot)
+      ).resolves.toBeUndefined();
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+  });
+
   describe("toTransferStatus", () => {
     it("maps completed states", () => {
       expect(toTransferStatus("STATE_COMPLETED_SUCCESS")).toBe("success");

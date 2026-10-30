@@ -1,3 +1,4 @@
+import { poll } from "@osmosis-labs/utils";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { http as httpMock, HttpResponse } from "msw";
 
@@ -158,6 +159,65 @@ describe("SquidTransferStatusProvider", () => {
 
     await provider.trackTxStatus(snapshot);
 
+    expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+  });
+
+  it("resolves an unconfirmed tx as failed when its receipt shows a revert", async () => {
+    // A reverted tx never reaches Squid, which only answers 404 for it.
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+    const check = jest.fn(async () => "reverted" as const);
+    const evmProvider = new SquidTransferStatusProvider(
+      "integratorId",
+      "mainnet" as BridgeEnvironment,
+      MockChains,
+      check
+    );
+    evmProvider.statusReceiverDelegate = mockReceiver;
+
+    await evmProvider.trackTxStatus(
+      createTxSnapshot({ sendTxUnconfirmed: true })
+    );
+
+    expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      "testTxHash",
+      "failed",
+      undefined
+    );
+  });
+
+  it("does not count 404s toward failed while an unconfirmed tx has no receipt", async () => {
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+    // poll past the 3 404s that would otherwise resolve it as failed
+    (poll as jest.Mock).mockImplementationOnce(async ({ fn, validate }) => {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const result = await fn();
+        if (validate(result)) return result;
+      }
+    });
+    const check = jest.fn(async () => undefined);
+    const evmProvider = new SquidTransferStatusProvider(
+      "integratorId",
+      "mainnet" as BridgeEnvironment,
+      MockChains,
+      check
+    );
+    evmProvider.statusReceiverDelegate = mockReceiver;
+
+    await evmProvider.trackTxStatus(
+      createTxSnapshot({ sendTxUnconfirmed: true })
+    );
+
+    expect(check).toHaveBeenCalledTimes(5);
+    expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
