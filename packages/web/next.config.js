@@ -1,6 +1,8 @@
 // @ts-check
 const path = require("path");
 
+const { securityHeaders } = require("./config/security-headers");
+
 /**
  * @type {import('next').NextConfig}
  **/
@@ -50,6 +52,23 @@ const config = {
   },
   async headers() {
     return [
+      // Each response must match exactly one of these two rules: a second CSP
+      // header would be enforced alongside the first, not instead of it.
+      {
+        source: "/:path((?!wormhole$).*)",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+        }),
+      },
+      {
+        source: "/wormhole",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+          allowEval: true,
+        }),
+      },
       {
         source: "/favicon.ico",
         headers: [
