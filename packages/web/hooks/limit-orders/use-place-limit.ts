@@ -27,6 +27,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { getQuotePeg } from "~/utils/limit-quote-peg";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -128,6 +129,48 @@ export const usePlaceLimit = ({
     []
   );
 
+  // Order pricing above still assumes 1 quote = $1. These only check that
+  // assumption, so a quote trading off its peg is warned about or blocked.
+  const isQuotePegChecked = !!quoteAsset && !isMarket;
+  // `isFetchedAfterMount` rather than `isLoading`: react-query resets a failed
+  // query to pending on each refetch, which would make the status flicker, and
+  // a price restored from the persisted cache must not count until refetched.
+  const {
+    data: quoteOnchainPriceData,
+    isFetchedAfterMount: isQuoteOnchainPriceFetched,
+    isError: isQuoteOnchainPriceError,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    { coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "" },
+    { enabled: isQuotePegChecked, refetchInterval: 30_000 }
+  );
+  // A failed refetch keeps the last price: treat it as unknown, not current.
+  const quoteOnchainPrice = isQuoteOnchainPriceError
+    ? undefined
+    : quoteOnchainPriceData;
+  const { data: usdcUsdPrice } = api.edge.assets.getUsdcCoinGeckoPrice.useQuery(
+    undefined,
+    {
+      enabled: isQuotePegChecked,
+      refetchInterval: 60_000,
+      // Unbatched: a batch waits for every call, so a slow CoinGecko response
+      // would otherwise hold back the onchain price that can block the order.
+      trpc: { context: { skipBatch: true } },
+    }
+  );
+  /** Undefined for market orders and while the onchain price loads. The
+   *  USDC price only adds the label check, so it isn't waited for. */
+  const quotePeg = useMemo(() => {
+    if (!isQuotePegChecked || !isQuoteOnchainPriceFetched) return;
+    return getQuotePeg(quoteOnchainPrice?.toDec(), usdcUsdPrice?.toDec());
+  }, [
+    isQuotePegChecked,
+    isQuoteOnchainPriceFetched,
+    quoteOnchainPrice,
+    usdcUsdPrice,
+  ]);
+  const quotePegStatus = quotePeg?.status;
+  const quoteUsdPrice = quotePeg?.usdPrice;
+
   const { price: baseAssetPrice } = usePrice({
     coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
   });
@@ -227,6 +270,7 @@ export const usePlaceLimit = ({
    */
   const paymentFiatValueAtMarket = useMemo(() => {
     if (isMarket || orderDirection !== "ask") return paymentFiatValue;
+    if (!priceState.spotPrice) return;
     return mulPrice(
       paymentTokenValue,
       new PricePretty(DEFAULT_VS_CURRENCY, priceState.spotPrice),
@@ -353,6 +397,7 @@ export const usePlaceLimit = ({
       }
 
       if (!limitMessages || limitMessages.length === 0) return;
+      if (quotePegStatus === "block") return;
 
       try {
         /**
@@ -483,6 +528,7 @@ export const usePlaceLimit = ({
       paymentTokenValue,
       isMarket,
       limitMessages,
+      quotePegStatus,
       marketState,
       isLedger,
       oneClickMessages,
@@ -571,20 +617,20 @@ export const usePlaceLimit = ({
     if (isMarket) {
       return marketState.tokenOutFiatValue;
     }
+    if (orderDirection === "ask") {
+      return new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
+          new Dec(0)
+      );
+    }
     // A bid's received base asset is valued at spot rather than the limit
     // price, so the review shows the loss on a bid above market.
-    return orderDirection === "ask"
-      ? new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
-            new Dec(0)
-        )
-      : new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          priceState.spotPrice?.mul(
-            expectedTokenAmountOut?.toDec() ?? new Dec(0)
-          ) ?? new Dec(0)
-        );
+    if (!priceState.spotPrice) return;
+    return new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      priceState.spotPrice.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0))
+    );
   }, [
     priceState.spotPrice,
     expectedTokenAmountOut,
@@ -604,6 +650,10 @@ export const usePlaceLimit = ({
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
+    }
+
+    if (!isMarket && quotePegStatus === "block") {
+      return "limitOrders.quoteOffPeg";
     }
 
     if (insufficientFunds) {
@@ -642,6 +692,7 @@ export const usePlaceLimit = ({
     orderbookError,
     priceState.priceError,
     paymentFiatValue,
+    quotePegStatus,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {
@@ -722,6 +773,8 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    quoteUsdPrice,
+    quotePegStatus,
     baseAssetPrice,
     reset,
     error,
@@ -757,15 +810,30 @@ const useLimitPrice = ({
   const [priceLocked, setPriceLock] = useState(false);
 
   const {
-    data: assetPrice,
+    data: assetPriceData,
     isLoading: loadingSpotPrice,
+    isFetchedAfterMount: isSpotPriceFetched,
+    isError: isSpotPriceError,
     isRefetching: isSpotPriceRefetching,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
+    {
+      refetchInterval: 5000,
+      // A locked price stops polling, except while there is no usable price.
+      enabled: (query) =>
+        !!baseDenom &&
+        (!priceLocked ||
+          query.state.data === undefined ||
+          query.state.status === "error"),
+    }
   );
+  // Only a price fetched since mount and not followed by a failure is current:
+  // the persisted cache restores prices up to a day old, and a failed refetch
+  // keeps the last one.
+  const assetPrice =
+    isSpotPriceFetched && !isSpotPriceError ? assetPriceData : undefined;
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
@@ -778,20 +846,22 @@ const useLimitPrice = ({
     return new Dec(MAX_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
   }, [normalizationFactor]);
 
-  // Decimal version of the spot price, defaults to 1
+  // Decimal version of the spot price. Undefined while loading or when the
+  // base asset has no price: unknown, never a stand-in value that the presets
+  // and market checks would treat as real.
   const spotPrice = useMemo(() => {
-    return assetPrice
-      ? new Dec(
-          formatPretty(
-            assetPrice.toDec(),
-            getPriceExtendedFormatOptions(assetPrice.toDec())
-          ).replace(/,/g, "")
-        )
-      : new Dec(1);
+    if (!assetPrice) return;
+    return new Dec(
+      formatPretty(
+        assetPrice.toDec(),
+        getPriceExtendedFormatOptions(assetPrice.toDec())
+      ).replace(/,/g, "")
+    );
   }, [assetPrice]);
 
   const setPriceAsPercentageOfSpotPrice = useCallback(
     (percent: Dec, lockPrice = true, format = true) => {
+      if (!spotPrice) return;
       const percentAdjusted =
         orderDirection === "bid"
           ? // Adjust negatively for bid orders
@@ -823,6 +893,14 @@ const useLimitPrice = ({
       if (!isValidNumericalRawInput(price)) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
+
+      // Without a market price there is no percentage to show.
+      if (!spotPrice) {
+        setPriceLock(true);
+        setOrderPrice(price);
+        setManualPercentAdjusted("");
+        return;
+      }
 
       const percentAdjusted = newPrice
         .quo(spotPrice)
@@ -923,6 +1001,10 @@ const useLimitPrice = ({
       return new Dec(orderPrice);
     }
 
+    // Placing is blocked without a market price (see `isValidPrice`), so this
+    // zero is never sent as an order price.
+    if (!spotPrice) return new Dec(0);
+
     const percent =
       manualPercentAdjusted.length > 0
         ? manualPercentAdjusted
@@ -948,13 +1030,18 @@ const useLimitPrice = ({
     () =>
       !!manualPercentAdjusted
         ? new Dec(manualPercentAdjusted).quo(new Dec(100))
-        : price.quo(spotPrice).sub(new Dec(1)),
+        : spotPrice
+          ? price.quo(spotPrice).sub(new Dec(1))
+          : new Dec(0),
     [price, spotPrice, manualPercentAdjusted]
   );
 
   // If the user is inputting a price that crosses over the spot price
-  const isBeyondOppositePrice =
-    orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
+  const isBeyondOppositePrice = !spotPrice
+    ? false
+    : orderDirection === "ask"
+      ? spotPrice.gt(price)
+      : spotPrice.lt(price);
 
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
@@ -978,11 +1065,19 @@ const useLimitPrice = ({
     reset();
   }
 
+  // A market price is required even for a typed price: the beyond-market
+  // warning and the loss acknowledgement depend on it.
   const isValidPrice =
-    isValidInputPrice ||
-    ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice));
+    Boolean(spotPrice) &&
+    (isValidInputPrice || !orderPrice || new Dec(orderPrice).isZero());
 
   const priceError = useMemo(() => {
+    if (!spotPrice) {
+      return isSpotPriceFetched
+        ? "limitOrders.marketPriceUnavailable"
+        : undefined;
+    }
+
     if (price.lt(minPrice)) {
       return "limitOrders.priceTooLow";
     }
@@ -997,7 +1092,15 @@ const useLimitPrice = ({
     )) {
       return "limitOrders.invalidPrice";
     }
-  }, [price, minPrice, maxPrice, isValidInputPrice, orderPrice, spotPrice]);
+  }, [
+    price,
+    minPrice,
+    maxPrice,
+    isValidInputPrice,
+    orderPrice,
+    spotPrice,
+    isSpotPriceFetched,
+  ]);
 
   return {
     spotPrice,

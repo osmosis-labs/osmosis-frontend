@@ -1422,6 +1422,10 @@
     "invalidPrice": "价格无效",
     "priceTooLow": "价格太低",
     "priceTooHigh": "价格太高",
+    "marketPriceUnavailable": "市场价格不可用",
+    "quoteOffPeg": "报价资产偏离 $1 过多",
+    "quoteOffPegWarning": "{denom} 当前交易价格为 {price}。限价假定 1 {denom} = $1。",
+    "quotePegUnverified": "无法核对 {denom} 与 $1 的价格。限价假定 1 {denom} = $1。",
     "unavailable": "不适用于{denom}",
     "orderHistoryHeaders": {
       "past": "过去的",

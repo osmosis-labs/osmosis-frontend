@@ -1422,6 +1422,10 @@
     "invalidPrice": "Prix invalide",
     "priceTooLow": "Prix trop bas",
     "priceTooHigh": "Prix trop élevé",
+    "marketPriceUnavailable": "Prix du marché indisponible",
+    "quoteOffPeg": "L'actif de cotation est trop éloigné de 1 $",
+    "quoteOffPegWarning": "{denom} s'échange à {price}. Les prix limites supposent 1 {denom} = 1 $.",
+    "quotePegUnverified": "Impossible de vérifier {denom} par rapport à 1 $. Les prix limites supposent 1 {denom} = 1 $.",
     "unavailable": "Indisponible pour {denom}",
     "orderHistoryHeaders": {
       "past": "Passé",

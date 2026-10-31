@@ -1422,6 +1422,10 @@
     "invalidPrice": "અમાન્ય કિંમત",
     "priceTooLow": "કિંમત ખૂબ ઓછી છે",
     "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
+    "marketPriceUnavailable": "બજાર કિંમત ઉપલબ્ધ નથી",
+    "quoteOffPeg": "ક્વોટ એસેટ $1 થી ઘણી દૂર છે",
+    "quoteOffPegWarning": "{denom} {price} પર ટ્રેડ થઈ રહ્યું છે. લિમિટ કિંમતો 1 {denom} = $1 માને છે.",
+    "quotePegUnverified": "{denom} ને $1 સામે ચકાસી શકાયું નહીં. લિમિટ કિંમતો 1 {denom} = $1 માને છે.",
     "unavailable": "{denom} માટે અનુપલબ્ધ",
     "orderHistoryHeaders": {
       "past": "ભૂતકાળ",

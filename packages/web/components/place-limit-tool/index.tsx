@@ -492,6 +492,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
       if (
         focused !== "token" ||
         !swapState.priceState.price ||
+        swapState.priceState.price.isZero() ||
         type === "market"
       )
         return;
@@ -512,6 +513,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
       if (
         focused !== "fiat" ||
         !swapState.priceState.price ||
+        swapState.priceState.price.isZero() ||
         type === "market"
       )
         return;
@@ -620,8 +622,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
         );
       }
 
-      return Boolean(swapState.error) || !swapState.isBalancesFetched;
+      return (
+        Boolean(swapState.error) ||
+        !swapState.isBalancesFetched ||
+        // Also covers the moment before the market price has loaded.
+        !swapState.priceState.isValidPrice
+      );
     }, [
+      swapState.priceState.isValidPrice,
       swapState.error,
       swapState.isBalancesFetched,
       swapState.isMarket,
@@ -637,6 +645,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     const isButtonLoading = useMemo(() => {
       return !swapState.isBalancesFetched;
     }, [swapState.isBalancesFetched]);
+
+    // Limit prices assume 1 quote = $1. Off by 5% or more blocks the order
+    // (see `swapState.error`); between 1% and 5% warns; unknown is noted on
+    // the review only.
+    const quotePegNote = useMemo(() => {
+      const denom = swapState.quoteAsset?.coinDenom ?? "";
+      if (swapState.quotePegStatus === "warn" && swapState.quoteUsdPrice) {
+        return t("limitOrders.quoteOffPegWarning", {
+          denom,
+          price: formatPretty(
+            new PricePretty(DEFAULT_VS_CURRENCY, swapState.quoteUsdPrice),
+            { maxDecimals: 4 }
+          ),
+        });
+      }
+      if (swapState.quotePegStatus === "unknown") {
+        return t("limitOrders.quotePegUnverified", { denom });
+      }
+      if (swapState.quotePegStatus === "block") {
+        return t("limitOrders.quoteOffPeg");
+      }
+    }, [
+      swapState.quoteAsset?.coinDenom,
+      swapState.quotePegStatus,
+      swapState.quoteUsdPrice,
+      t,
+    ]);
 
     const errorDisplay = useMemo(() => {
       if (
@@ -991,6 +1026,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
               orderDirection={orderDirection}
             />
           )}
+          {type === "limit" &&
+            swapState.quotePegStatus === "warn" &&
+            quotePegNote && (
+              <p className="caption pb-2 text-rust-400">{quotePegNote}</p>
+            )}
           {hasInsufficientFeeTokens && (
             <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-3">
               <Icon
@@ -1044,7 +1084,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
             priceOverride={
-              type === "limit"
+              type === "limit" && swapState.priceState.spotPrice
                 ? new PricePretty(
                     DEFAULT_VS_CURRENCY,
                     swapState.priceState.spotPrice
@@ -1074,7 +1114,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
           isConfirmationDisabled={
             isSendingTx ||
             swapState.isLoadingOneClickMessages ||
-            hasInsufficientFeeTokens
+            hasInsufficientFeeTokens ||
+            // The peg is re-polled while the review is open.
+            (type === "limit" && swapState.quotePegStatus === "block")
           }
           isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
@@ -1094,6 +1136,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
           fromAsset={swapState.marketState.fromAsset}
           toAsset={swapState.marketState.toAsset}
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
+          limitQuotePegNote={type === "limit" ? quotePegNote : undefined}
           quoteType={swapState.marketState.quoteType}
           priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
           quoteAmount={swapState.marketState.quote?.amount.toDec()}

@@ -1422,6 +1422,10 @@
     "invalidPrice": "잘못된 가격",
     "priceTooLow": "가격이 너무 낮음",
     "priceTooHigh": "가격이 너무 비싸요",
+    "marketPriceUnavailable": "시장 가격을 사용할 수 없습니다",
+    "quoteOffPeg": "견적 자산이 $1에서 너무 멀리 벗어났습니다",
+    "quoteOffPegWarning": "{denom}이(가) {price}에 거래되고 있습니다. 지정가는 1 {denom} = $1을 가정합니다.",
+    "quotePegUnverified": "{denom}을(를) $1과 비교할 수 없습니다. 지정가는 1 {denom} = $1을 가정합니다.",
     "unavailable": "{denom} 에는 사용할 수 없습니다.",
     "orderHistoryHeaders": {
       "past": "과거",

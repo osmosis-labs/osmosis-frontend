@@ -1422,6 +1422,10 @@
     "invalidPrice": "Nieprawidłowa cena",
     "priceTooLow": "Cena za niska",
     "priceTooHigh": "Cena za wysoka",
+    "marketPriceUnavailable": "Cena rynkowa niedostępna",
+    "quoteOffPeg": "Aktywo kwotowane jest zbyt daleko od 1 $",
+    "quoteOffPegWarning": "{denom} jest notowany po {price}. Ceny limitowe zakładają 1 {denom} = 1 $.",
+    "quotePegUnverified": "Nie udało się porównać {denom} z 1 $. Ceny limitowe zakładają 1 {denom} = 1 $.",
     "unavailable": "Niedostępne dla {denom}",
     "orderHistoryHeaders": {
       "past": "Przeszłość",

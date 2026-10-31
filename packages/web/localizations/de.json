@@ -1422,6 +1422,10 @@
     "invalidPrice": "Ungültiger Preis",
     "priceTooLow": "Preis zu niedrig",
     "priceTooHigh": "Preis zu hoch",
+    "marketPriceUnavailable": "Marktpreis nicht verfügbar",
+    "quoteOffPeg": "Quote-Asset weicht zu stark von $1 ab",
+    "quoteOffPegWarning": "{denom} wird zu {price} gehandelt. Limitpreise setzen 1 {denom} = $1 voraus.",
+    "quotePegUnverified": "{denom} konnte nicht mit $1 abgeglichen werden. Limitpreise setzen 1 {denom} = $1 voraus.",
     "unavailable": "Nicht verfügbar für {denom}",
     "orderHistoryHeaders": {
       "past": "Vergangenheit",

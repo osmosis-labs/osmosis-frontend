@@ -1422,6 +1422,10 @@
     "invalidPrice": "Geçersiz fiyat",
     "priceTooLow": "Fiyat çok düşük",
     "priceTooHigh": "Fiyat çok yüksek",
+    "marketPriceUnavailable": "Piyasa fiyatı kullanılamıyor",
+    "quoteOffPeg": "Kotasyon varlığı 1 $'dan çok uzak",
+    "quoteOffPegWarning": "{denom} {price} seviyesinden işlem görüyor. Limit fiyatları 1 {denom} = 1 $ varsayar.",
+    "quotePegUnverified": "{denom} 1 $ ile karşılaştırılamadı. Limit fiyatları 1 {denom} = 1 $ varsayar.",
     "unavailable": "{denom} için kullanılamıyor",
     "orderHistoryHeaders": {
       "past": "Geçmiş",

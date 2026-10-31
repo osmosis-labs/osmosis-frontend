@@ -1422,6 +1422,10 @@
     "invalidPrice": "قیمت نامعتبر",
     "priceTooLow": "قیمت خیلی پایین",
     "priceTooHigh": "قیمت خیلی بالاست",
+    "marketPriceUnavailable": "قیمت بازار در دسترس نیست",
+    "quoteOffPeg": "دارایی مظنه بیش از حد از ۱ دلار فاصله دارد",
+    "quoteOffPegWarning": "{denom} با قیمت {price} معامله می‌شود. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
+    "quotePegUnverified": "بررسی {denom} در برابر ۱ دلار ممکن نشد. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",
