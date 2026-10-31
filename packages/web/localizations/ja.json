@@ -1422,6 +1422,10 @@
     "invalidPrice": "無効な価格",
     "priceTooLow": "価格が低すぎる",
     "priceTooHigh": "価格が高すぎる",
+    "marketPriceUnavailable": "市場価格を取得できません",
+    "quoteOffPeg": "クォート資産が$1から大きく乖離しています",
+    "quoteOffPegWarning": "{denom}は{price}で取引されています。指値価格は1 {denom} = $1を前提としています。",
+    "quotePegUnverified": "{denom}を$1と照合できませんでした。指値価格は1 {denom} = $1を前提としています。",
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",

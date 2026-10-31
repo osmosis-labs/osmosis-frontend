@@ -1422,6 +1422,10 @@
     "invalidPrice": "價格無效",
     "priceTooLow": "價格太低",
     "priceTooHigh": "價格太高",
+    "marketPriceUnavailable": "市場價格不可用",
+    "quoteOffPeg": "報價資產偏離 $1 過多",
+    "quoteOffPegWarning": "{denom} 目前交易價格為 {price}。限價假定 1 {denom} = $1。",
+    "quotePegUnverified": "無法核對 {denom} 與 $1 的價格。限價假定 1 {denom} = $1。",
     "unavailable": "不適用於{denom}",
     "orderHistoryHeaders": {
       "past": "過去的",

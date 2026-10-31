@@ -1422,6 +1422,10 @@
     "invalidPrice": "Invalid price",
     "priceTooLow": "Price too low",
     "priceTooHigh": "Price too high",
+    "marketPriceUnavailable": "Market price unavailable",
+    "quoteOffPeg": "Quote asset is too far from $1",
+    "quoteOffPegWarning": "{denom} is trading at {price}. Limit prices assume 1 {denom} = $1.",
+    "quotePegUnverified": "Couldn't check {denom} against $1. Limit prices assume 1 {denom} = $1.",
     "unavailable": "Unavailable for {denom}",
     "orderHistoryHeaders": {
       "past": "Past",

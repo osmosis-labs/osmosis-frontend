@@ -1422,6 +1422,10 @@
     "invalidPrice": "Precio no válido",
     "priceTooLow": "Precio demasiado bajo",
     "priceTooHigh": "Precio demasiado alto",
+    "marketPriceUnavailable": "Precio de mercado no disponible",
+    "quoteOffPeg": "El activo de cotización está demasiado lejos de $1",
+    "quoteOffPegWarning": "{denom} cotiza a {price}. Los precios límite asumen 1 {denom} = $1.",
+    "quotePegUnverified": "No se pudo comprobar {denom} frente a $1. Los precios límite asumen 1 {denom} = $1.",
     "unavailable": "No disponible para {denom}",
     "orderHistoryHeaders": {
       "past": "Pasado",
