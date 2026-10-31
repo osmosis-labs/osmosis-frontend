@@ -1422,6 +1422,10 @@
     "invalidPrice": "Неверная цена",
     "priceTooLow": "Цена слишком низкая",
     "priceTooHigh": "Цена слишком высока",
+    "marketPriceUnavailable": "Рыночная цена недоступна",
+    "quoteOffPeg": "Котируемый актив слишком далёк от $1",
+    "quoteOffPegWarning": "{denom} торгуется по {price}. Лимитные цены предполагают 1 {denom} = $1.",
+    "quotePegUnverified": "Не удалось сверить {denom} с $1. Лимитные цены предполагают 1 {denom} = $1.",
     "unavailable": "Недоступно для {denom}",
     "orderHistoryHeaders": {
       "past": "Прошлое",

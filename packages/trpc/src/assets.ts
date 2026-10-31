@@ -196,6 +196,16 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
+  /** USDC's USD price from CoinGecko. Onchain prices are quoted in allUSDC,
+   *  so they can't show USDC itself moving off $1. */
+  getUsdcCoinGeckoPrice: publicProcedure.query(async ({ ctx }) => {
+    const price = await getAssetPrice({
+      ...ctx,
+      asset: { coinGeckoId: "usd-coin" },
+    });
+
+    return new PricePretty(DEFAULT_VS_CURRENCY, price);
+  }),
   getAssetPrices: publicProcedure
     .input(
       z.object({

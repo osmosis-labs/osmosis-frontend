@@ -1422,6 +1422,10 @@
     "invalidPrice": "Preț nevalid",
     "priceTooLow": "Pret prea mic",
     "priceTooHigh": "Pret prea mare",
+    "marketPriceUnavailable": "Preț de piață indisponibil",
+    "quoteOffPeg": "Activul de cotare este prea departe de 1 $",
+    "quoteOffPegWarning": "{denom} se tranzacționează la {price}. Prețurile limită presupun 1 {denom} = 1 $.",
+    "quotePegUnverified": "Nu s-a putut verifica {denom} față de 1 $. Prețurile limită presupun 1 {denom} = 1 $.",
     "unavailable": "Indisponibil pentru {denom}",
     "orderHistoryHeaders": {
       "past": "Trecut",
