@@ -1,7 +1,7 @@
-import {
-  isSendTxInclusionUnproven,
-  type TxSnapshot,
-} from "@osmosis-labs/bridge";
+import type { TxSnapshot } from "@osmosis-labs/bridge";
+// deep import: the package root pulls server-only provider code into the
+// client bundle
+import { isSendTxInclusionUnproven } from "@osmosis-labs/bridge/build/interface";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
