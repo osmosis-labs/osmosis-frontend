@@ -281,6 +281,10 @@ const BUILD_TIME_ASSET_PATHS = [
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", // ATOM
   "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC",
   "OSMO",
+  // ETH, below the cutoff (48-82 weekly views) but kept alongside BTC.
+  "ETH",
+  "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+  "WETH",
 ];
 
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => ({
