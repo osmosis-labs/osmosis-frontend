@@ -1,7 +1,4 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
-// deep import: the package root pulls server-only provider code into the
-// client bundle
-import { isSendTxInclusionUnproven } from "@osmosis-labs/bridge/build/interface";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
@@ -336,19 +333,16 @@ export const useMultiTxResume = () => {
           }
         }
 
-        // An EVM first step whose receipt wait failed may have reverted,
-        // which Skip never reports as failed: prove it from the receipt.
-        // Until the receipt turns up, its inclusion stays unproven.
-        const stored = transferHistoryStore.snapshots.find(
-          (s) => s.sendTxHash === snapshot.sendTxHash
-        );
-        let priorStepUnproven = !!stored && isSendTxInclusionUnproven(stored);
-        if (priorStepUnproven && snapshot.fromChain.chainType === "evm") {
-          const outcome = await checkEvmReceiptOutcome({
+        // An EVM first step may have reverted, which Skip never reports as
+        // failed: prove it from the receipt. Without a receipt (not mined
+        // yet, or the RPC didn't answer) its inclusion stays unproven.
+        let priorStepReceipt: "success" | "reverted" | undefined;
+        if (snapshot.fromChain.chainType === "evm") {
+          priorStepReceipt = await checkEvmReceiptOutcome({
             txHash: pendingStep.priorStepTxHash,
             chainId: snapshot.fromChain.chainId,
           });
-          if (outcome === "reverted") {
+          if (priorStepReceipt === "reverted") {
             transferHistoryStore.receiveNewTxStatus(
               snapshot.sendTxHash,
               "failed",
@@ -356,7 +350,6 @@ export const useMultiTxResume = () => {
             );
             return;
           }
-          if (outcome === "success") priorStepUnproven = false;
         }
 
         const arrival = await waitForSkipStepArrival({
@@ -373,7 +366,10 @@ export const useMultiTxResume = () => {
           // proof the funds are gone: keep the entry resumable. The same
           // holds for an EVM burn whose receipt hasn't turned up, which may
           // simply be slow to land.
-          abandonedIsFailed: !priorStepOnSolana && !priorStepUnproven,
+          abandonedIsFailed:
+            !priorStepOnSolana &&
+            (snapshot.fromChain.chainType !== "evm" ||
+              priorStepReceipt === "success"),
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(

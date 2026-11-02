@@ -814,16 +814,6 @@ const txSnapshotSchema = z.object({
    */
   solanaRecentBlockhash: z.string().optional(),
   /**
-   * Set when the tracked tx was broadcast but its receipt couldn't be
-   * fetched, so its inclusion is unproven. A status provider that treats
-   * "not found" as failed must keep polling instead: a tx still waiting to
-   * be mined is unknown to it too. Until the receipt is found (see
-   * `EvmReceiptCheck`), a reverted receipt is the only proof of failure.
-   * Describes `sendTxHash` only, so it is dropped when a multi-tx entry
-   * advances to its next step.
-   */
-  sendTxUnconfirmed: z.boolean().optional(),
-  /**
    * Present while a multi-transaction route is mid-flow: the next
    * user-signed step, so an interrupted transfer can be resumed from
    * history. Cleared (set to undefined) when the final step is signed.
@@ -887,23 +877,23 @@ export type EvmReceiptCheck = (params: {
   chainId: number;
 }) => Promise<"success" | "reverted" | undefined>;
 
-/** How long after an entry is recorded an unproven inclusion keeps holding
- *  off the status providers' failure handling. Past it, a tx with still no
- *  receipt was most likely dropped or replaced, so the usual "not found"
- *  rules apply again and polling ends. */
-const SEND_TX_UNCONFIRMED_GRACE_SECONDS = 30 * 60;
+/** How long after an EVM transfer is recorded its receipt is still awaited.
+ *  Past it, a tx with no receipt was most likely dropped or replaced, so
+ *  the providers' usual "not found" rules apply again. */
+const EVM_RECEIPT_GRACE_SECONDS = 30 * 60;
 
-/** Whether the tracked tx's inclusion is still unproven (see
- *  `sendTxUnconfirmed`) and within its grace period. */
-export function isSendTxInclusionUnproven(
-  snapshot: TxSnapshot,
-  receiptFound = false
-): boolean {
+/**
+ * Whether the tracked tx is an EVM source-chain tx whose receipt is still
+ * worth awaiting: until the receipt is found, "not found" from a status API
+ * may only mean the tx isn't mined or indexed yet, and a reverted receipt
+ * is the only proof of failure. A multi-tx entry that advanced tracks its
+ * final step on another chain (`trackingChainId`), which has no EVM receipt.
+ */
+export function awaitsEvmReceipt(snapshot: TxSnapshot): boolean {
   return (
-    !!snapshot.sendTxUnconfirmed &&
-    !receiptFound &&
-    Date.now() / 1000 - snapshot.createdAtUnix <
-      SEND_TX_UNCONFIRMED_GRACE_SECONDS
+    snapshot.fromChain.chainType === "evm" &&
+    snapshot.trackingChainId === undefined &&
+    Date.now() / 1000 - snapshot.createdAtUnix < EVM_RECEIPT_GRACE_SECONDS
   );
 }
 

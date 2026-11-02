@@ -823,7 +823,6 @@ export const useBridgeQuotes = ({
       nomicCheckpointIndex,
       pendingStep,
       solanaRecentBlockhash,
-      sendTxUnconfirmed,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
@@ -832,9 +831,6 @@ export const useBridgeQuotes = ({
       pendingStep?: TxSnapshot["pendingStep"];
       /** Set when `sendTxHash` is a Solana signature. */
       solanaRecentBlockhash?: string;
-      /** Set when `sendTxHash` was broadcast but its receipt couldn't be
-       *  fetched. */
-      sendTxUnconfirmed?: boolean;
     }): boolean => {
       if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
         throw new Error(
@@ -892,7 +888,6 @@ export const useBridgeQuotes = ({
           quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
-          sendTxUnconfirmed,
         });
         return true;
       }
@@ -980,15 +975,12 @@ export const useBridgeQuotes = ({
         }
       );
 
-      await waitForEvmReceipt(approveTxHash).catch(async (e) => {
+      await waitForEvmReceipt(approveTxHash).catch((e) => {
         // the approval may still land: refresh the quotes so a second
         // Confirm doesn't ask for another approval once it has
         if (e instanceof EvmTxStatusUnknownError) {
-          for (const quoteResult of quoteResults) {
-            await quoteResult.refetch();
-          }
+          void Promise.all(quoteResults.map((q) => q.refetch()));
         }
-        setIsApprovingToken(false);
         throw e;
       });
 
@@ -1068,11 +1060,7 @@ export const useBridgeQuotes = ({
         // tracking settle it instead of reporting a failure the user might
         // answer by sending again.
         if (e.txHash === broadcastHash) {
-          trackTransferStatus({
-            quote,
-            sendTxHash: e.txHash,
-            sendTxUnconfirmed: true,
-          });
+          trackTransferStatus({ quote, sendTxHash: e.txHash });
           onTransferProp?.();
           setTransferInitiated(true);
         }
@@ -1348,33 +1336,18 @@ export const useBridgeQuotes = ({
       }
       // The first step was broadcast but its receipt couldn't be fetched.
       // Close the flow so Confirm can't sign a second burn while this one
-      // may still land; the entry persisted at broadcast stays resumable
-      // from history. If it wasn't recorded or persisted, there is no
-      // Continue to offer: say so, as the confirmed path does.
+      // may still land; the entry recorded at broadcast stays resumable
+      // from history. If it wasn't recorded, there is no Continue to offer:
+      // say so, as the confirmed path does.
       if (
         e instanceof EvmTxStatusUnknownError &&
         e.txHash === firstStepBroadcastHash
       ) {
-        let entrySaved = entryRecorded;
-        if (entrySaved) {
-          transferHistoryStore.markSendTxUnconfirmed(e.txHash);
-          entrySaved = await transferHistoryStore.persistNow().then(
-            () => true,
-            (persistError) => {
-              console.error(
-                "Multi-tx transfer entry could not be persisted",
-                persistError
-              );
-              return false;
-            }
-          );
-        } else {
+        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        if (!entryRecorded) {
           console.error(
             "Multi-tx transfer entry was not recorded at broadcast"
           );
-        }
-        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
-        if (!entrySaved) {
           displayToast(
             {
               titleTranslationKey: "transfer.somethingIsntWorking",

@@ -162,7 +162,7 @@ describe("SquidTransferStatusProvider", () => {
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
-  it("resolves an unconfirmed tx as failed when its receipt shows a revert", async () => {
+  it("resolves an EVM tx as failed when its receipt shows a revert", async () => {
     // A reverted tx never reaches Squid, which only answers 404 for it.
     server.use(
       httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
@@ -178,9 +178,7 @@ describe("SquidTransferStatusProvider", () => {
     );
     evmProvider.statusReceiverDelegate = mockReceiver;
 
-    await evmProvider.trackTxStatus(
-      createTxSnapshot({ sendTxUnconfirmed: true })
-    );
+    await evmProvider.trackTxStatus(createTxSnapshot());
 
     expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
@@ -190,7 +188,7 @@ describe("SquidTransferStatusProvider", () => {
     );
   });
 
-  it("does not count 404s toward failed while an unconfirmed tx has no receipt", async () => {
+  it("does not count 404s toward failed while an EVM tx has no receipt", async () => {
     server.use(
       httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
         return new HttpResponse(null, { status: 404 });
@@ -212,9 +210,7 @@ describe("SquidTransferStatusProvider", () => {
     );
     evmProvider.statusReceiverDelegate = mockReceiver;
 
-    await evmProvider.trackTxStatus(
-      createTxSnapshot({ sendTxUnconfirmed: true })
-    );
+    await evmProvider.trackTxStatus(createTxSnapshot());
 
     expect(check).toHaveBeenCalledTimes(5);
     expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });

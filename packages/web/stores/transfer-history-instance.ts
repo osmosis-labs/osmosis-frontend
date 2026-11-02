@@ -39,8 +39,8 @@ export function getTransferHistoryStore(): TransferHistoryStore {
       process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
       network,
       ChainList,
-      // Resolves a transfer whose receipt wait failed: a reverted tx is
-      // only a 404 to Squid.
+      // Settles EVM transfers from their receipt: a reverted tx is only a
+      // 404 to Squid, and so is one not mined or indexed yet.
       checkEvmReceiptOutcome
     ),
     new SkipTransferStatusProvider(
@@ -75,7 +75,7 @@ export function getTransferHistoryStore(): TransferHistoryStore {
       // Resolves Solana-signed transfers from the chain: a tx that never
       // landed is invisible to Skip, including after a reload.
       checkSolanaSignatureOutcome,
-      // Same for an EVM tx whose receipt wait failed and that then reverted.
+      // Same for EVM transfers: a reverted tx never reaches Skip.
       checkEvmReceiptOutcome
     ),
     new IbcTransferStatusProvider(ChainList, AssetLists),

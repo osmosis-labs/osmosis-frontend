@@ -10,7 +10,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { isSendTxInclusionUnproven } from "../interface";
+import { awaitsEvmReceipt } from "../interface";
 import { SkipProviderId } from "./constants";
 import { SkipTxStatusResponse } from "./types";
 
@@ -75,9 +75,8 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
      */
     protected readonly checkSolanaSignature?: SolanaSignatureCheck,
     /**
-     * Optional. Resolves EVM transfers whose receipt wait failed after
-     * broadcast (`sendTxUnconfirmed`): a reverted tx never reaches Skip, so
-     * without this it stays pending.
+     * Optional. Resolves EVM transfers from their source-chain receipt: a
+     * reverted tx never reaches Skip, so without this it stays pending.
      */
     protected readonly checkEvmReceipt?: EvmReceiptCheck
   ) {
@@ -119,11 +118,12 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           }
         }
 
-        // An EVM tx whose receipt wait failed may have reverted, which Skip
-        // never sees: check the receipt until it turns up.
+        // A reverted EVM tx never reaches Skip: check the receipt until it
+        // turns up.
         if (
-          isSendTxInclusionUnproven(snapshot, receiptFound) &&
+          !receiptFound &&
           this.checkEvmReceipt &&
+          awaitsEvmReceipt(snapshot) &&
           typeof fromChainId === "number"
         ) {
           const outcome = await this.checkEvmReceipt({
@@ -135,15 +135,16 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           }
           if (outcome === "success") receiptFound = true;
         }
-        const inclusionUnproven = isSendTxInclusionUnproven(
-          snapshot,
-          receiptFound
-        );
+        // Until the receipt turns up, Skip not knowing the tx is no outcome:
+        // it may not be mined yet, and tracking it can wait until it is.
+        const receiptPending =
+          !receiptFound && !!this.checkEvmReceipt && awaitsEvmReceipt(snapshot);
 
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
             if (error instanceof Error && error.message.includes("not found")) {
+              if (receiptPending) return undefined;
               // if we get an error that it's not found, prompt skip to track it first
               // then try again
               await this.skipStatusProvider.trackTransaction(tx);
@@ -154,18 +155,9 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           })
           // For a Solana-signed tx, Skip not knowing it yet (or erroring)
           // is not an outcome: keep polling so the chain check above can
-          // still resolve it, rather than stopping on the error. The same
-          // holds for a tx whose inclusion is unproven: it may not be mined
-          // yet, so Skip not knowing it is not an outcome either.
+          // still resolve it, rather than stopping on the error.
           .catch((error) => {
             if (isSolanaSigned) return undefined;
-            if (
-              inclusionUnproven &&
-              error instanceof Error &&
-              error.message.includes("not found")
-            ) {
-              return undefined;
-            }
             throw error;
           });
 

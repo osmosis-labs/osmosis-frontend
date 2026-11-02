@@ -251,11 +251,8 @@ describe("SkipTransferStatusProvider", () => {
     });
   });
 
-  describe("EVM transfers whose receipt wait failed", () => {
-    const unconfirmedSnapshot: TxSnapshot = {
-      ...baseTxSnapshot,
-      sendTxUnconfirmed: true,
-    };
+  describe("EVM transfers awaiting their receipt", () => {
+    const evmSnapshot = baseTxSnapshot;
 
     const withReceipt = (outcome: "success" | "reverted" | undefined) => {
       const check = jest.fn(async () => outcome);
@@ -278,7 +275,7 @@ describe("SkipTransferStatusProvider", () => {
       );
       const { check, evmProvider } = withReceipt("reverted");
 
-      await evmProvider.trackTxStatus(unconfirmedSnapshot);
+      await evmProvider.trackTxStatus(evmSnapshot);
 
       expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
       expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
@@ -297,7 +294,7 @@ describe("SkipTransferStatusProvider", () => {
       const { evmProvider } = withReceipt(undefined);
 
       await expect(
-        evmProvider.trackTxStatus(unconfirmedSnapshot)
+        evmProvider.trackTxStatus(evmSnapshot)
       ).resolves.toBeUndefined();
       expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
     });
