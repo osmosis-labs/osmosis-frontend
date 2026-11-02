@@ -12,7 +12,6 @@ import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   type CoingeckoVsCurrencies,
   queryCoingeckoCoin,
-  queryCoingeckoCoinIds,
 } from "../../coingecko";
 import { querySupplyTotal } from "../../cosmos";
 import { queryAllTokenData, type TokenData } from "../../data-services";
@@ -305,8 +304,6 @@ export async function getAssetCoingeckoCoin({
   });
 }
 
-const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-
 /** How long token data, which includes prices, counts as fresh. */
 const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
 
@@ -582,17 +579,4 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
     exponent: tokenData.exponent,
     display: tokenData.display,
   };
-}
-
-/** Set of active CoinGecko IDs that CoinGecko has data for (is "active"). */
-export async function getActiveCoingeckoCoins() {
-  return await cachified({
-    cache: assetMarketCache,
-    ttl: 1000 * 60 * 60, // 1 hour
-    key: "coinGeckoIds",
-    getFreshValue: () =>
-      queryCoingeckoCoinIds().then(
-        (coins) => new Set(coins.map(({ id }) => id))
-      ),
-  });
 }
