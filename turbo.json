@@ -17,6 +17,9 @@
     },
     "lint": {},
     "lint:fix": {},
+    "pre-commit": {
+      "cache": false
+    },
     "dev": {
       "persistent": true
     },
