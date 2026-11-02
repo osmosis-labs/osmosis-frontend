@@ -1,6 +1,12 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
-import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import React, { memo, useCallback, useMemo, useState } from "react";
@@ -24,38 +30,72 @@ import { getLogoURIs } from "~/utils/logo-uri";
 
 interface OrderModalProps {
   order?: MappedLimitOrder;
+  /** The other history row for the same order, when the order was partly filled then cancelled. */
+  relatedOrder?: MappedLimitOrder;
   onRequestClose: () => void;
 }
 
-export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
-  return (
-    <ModalBase
-      isOpen={!!order}
-      onRequestClose={onRequestClose}
-      className="xl:!px-0 xl:!pb-0 xl:!pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
-    >
-      <OrderDetails
-        order={order}
-        isModal={true}
+export const OrderModal = memo(
+  ({ order, relatedOrder, onRequestClose }: OrderModalProps) => {
+    return (
+      <ModalBase
+        isOpen={!!order}
         onRequestClose={onRequestClose}
-      />
-    </ModalBase>
-  );
-});
+        className="xl:!px-0 xl:!pb-0 xl:!pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+      >
+        <OrderDetails
+          order={order}
+          relatedOrder={relatedOrder}
+          isModal={true}
+          onRequestClose={onRequestClose}
+        />
+      </ModalBase>
+    );
+  }
+);
 
 interface OrderDetailsProps {
   order?: MappedLimitOrder;
+  relatedOrder?: MappedLimitOrder;
   isModal: boolean;
   onRequestClose: () => void;
 }
 
 const OrderDetails = ({
   order,
+  relatedOrder,
   isModal,
   onRequestClose,
 }: OrderDetailsProps) => {
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
+
+  /**
+   * The history API splits a partly filled, cancelled order into a "cancelled" row
+   * (the unfilled input that was returned) and a "fullyClaimed" row (the filled input).
+   * Pair them so the modal can show what was received and what was returned.
+   */
+  const isPastOrder =
+    order?.status === "cancelled" || order?.status === "fullyClaimed";
+  const pastParts = isPastOrder ? [order, relatedOrder] : [];
+  const filledPart = pastParts.find((o) => o?.status === "fullyClaimed");
+  const returnedPart = pastParts.find((o) => o?.status === "cancelled");
+  // The conversion card shows the filled part when there is one, so "Bought" is what was received.
+  const displayOrder = filledPart ?? order;
+
+  const percentFilledOfPastOrder =
+    filledPart && returnedPart
+      ? new RatePretty(
+          new Dec(filledPart.placed_quantity).quo(
+            new Dec(filledPart.placed_quantity + returnedPart.placed_quantity)
+          )
+        )
+      : undefined;
+
+  const alreadyReceived =
+    order?.status === "partiallyFilled" && order.percentClaimed.isPositive()
+      ? order.output.mul(order.percentClaimed)
+      : undefined;
 
   const tokenIn = useMemo(() => {
     if (!order) return;
@@ -181,34 +221,36 @@ const OrderDetails = ({
         : "limitOrders.close";
   }, [order]);
 
-  const orderAmount = useMemo(() => {
-    return formatFiatPrice(
-      new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        order?.order_direction === "bid"
-          ? order?.placed_quantity /
-              Number(
-                new Dec(10)
-                  .pow(new Int(order?.quoteAsset?.decimals ?? 0))
-                  .toString()
-              )
-          : (order?.output.quo(
-              new Dec(10).pow(new Int(order?.quoteAsset?.decimals ?? 0))
-            ) ?? new Dec(0))
-      ),
-      2
-    );
-  }, [order]);
+  const orderAmount = formatFiatPrice(
+    new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      displayOrder?.order_direction === "bid"
+        ? displayOrder?.placed_quantity /
+            Number(
+              new Dec(10)
+                .pow(new Int(displayOrder?.quoteAsset?.decimals ?? 0))
+                .toString()
+            )
+        : (displayOrder?.output.quo(
+            new Dec(10).pow(new Int(displayOrder?.quoteAsset?.decimals ?? 0))
+          ) ?? new Dec(0))
+    ),
+    2
+  );
 
-  const [topText, bottomText] = useMemo(() => {
+  const [topText, bottomText] = (() => {
     if (!order) return ["", ""];
 
-    if (order.status === "filled" || order.status === "fullyClaimed") {
+    if (order.status === "filled" || filledPart) {
       return [t("limitOrders.sold"), t("transactions.bought")];
     }
 
+    if (returnedPart) {
+      return [t("limitOrders.returnedUnfilled"), ""];
+    }
+
     return [t("limitOrders.sell"), t("limitOrders.buy")];
-  }, [order]);
+  })();
 
   return (
     <div
@@ -276,7 +318,7 @@ const OrderDetails = ({
                     coinDenom: tokenIn?.symbol ?? "",
                     coinMinimalDenom: tokenIn?.coinMinimalDenom ?? "",
                   },
-                  order?.placed_quantity ?? new Dec(0)
+                  displayOrder?.placed_quantity ?? new Dec(0)
                 )
               )}
             </div>
@@ -285,53 +327,57 @@ const OrderDetails = ({
             </div>
           </div>
         </div>
-        <div className="flex h-10 w-14 items-center justify-center p-2">
-          <Icon
-            id="arrow-right"
-            width={24}
-            height={24}
-            className="rotate-90"
-            color={theme.colors.osmoverse[400]}
-          />
-        </div>
-        <div className="flex justify-between p-2">
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 overflow-hidden rounded-full">
-              <EntityImage
-                logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
-                name={tokenOut?.sourceDenom ?? ""}
-                symbol={tokenOut?.sourceDenom ?? ""}
-                height={40}
-                width={40}
+        {(!returnedPart || filledPart) && (
+          <>
+            <div className="flex h-10 w-14 items-center justify-center p-2">
+              <Icon
+                id="arrow-right"
+                width={24}
+                height={24}
+                className="rotate-90"
+                color={theme.colors.osmoverse[400]}
               />
             </div>
-            <div className="flex flex-col">
-              <div className="subtitle1 sm:body2">{bottomText}</div>
-              <div className="body1 sm:body2 text-osmoverse-300">
-                {tokenOut?.symbol}
+            <div className="flex justify-between p-2">
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
+                    name={tokenOut?.sourceDenom ?? ""}
+                    symbol={tokenOut?.sourceDenom ?? ""}
+                    height={40}
+                    width={40}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <div className="subtitle1 sm:body2">{bottomText}</div>
+                  <div className="body1 sm:body2 text-osmoverse-300">
+                    {tokenOut?.symbol}
+                  </div>
+                </div>
+              </div>
+              <div className="flex-end flex flex-col text-right">
+                <div className="subtitle1 sm:body2">
+                  {/* // TODO - clean this up to match tokenConversion */}
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: tokenOut?.decimals ?? 0,
+                        coinDenom: tokenOut?.symbol ?? "",
+                        coinMinimalDenom: tokenOut?.coinMinimalDenom ?? "",
+                      },
+                      displayOrder?.output ?? new Dec(0)
+                    )
+                  )}
+                </div>
+                <div className="body1 sm:body2 text-osmoverse-300">
+                  {orderAmount !== "<$0.01" && "~"}
+                  {orderAmount}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex-end flex flex-col text-right">
-            <div className="subtitle1 sm:body2">
-              {/* // TODO - clean this up to match tokenConversion */}
-              {formatPretty(
-                new CoinPretty(
-                  {
-                    coinDecimals: tokenOut?.decimals ?? 0,
-                    coinDenom: tokenOut?.symbol ?? "",
-                    coinMinimalDenom: tokenOut?.coinMinimalDenom ?? "",
-                  },
-                  order?.output ?? new Dec(0)
-                )
-              )}
-            </div>
-            <div className="body1 sm:body2 text-osmoverse-300">
-              {orderAmount !== "<$0.01" && "~"}
-              {orderAmount}
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
       <div className="flex flex-col py-2 px-4">
         <div className={classNames("flex flex-col py-3")}>
@@ -382,7 +428,75 @@ const OrderDetails = ({
               }
             />
           )}
+          {filledPart && returnedPart && (
+            <RecapRow
+              className="sm:py-0"
+              left={
+                <span className="subtitle1 sm:caption">
+                  {t("limitOrders.returnedUnfilled")}
+                </span>
+              }
+              right={
+                <span className="body2 sm:caption">
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: tokenIn?.decimals ?? 0,
+                        coinDenom: tokenIn?.symbol ?? "",
+                        coinMinimalDenom: tokenIn?.coinMinimalDenom ?? "",
+                      },
+                      returnedPart.placed_quantity
+                    )
+                  )}
+                </span>
+              }
+            />
+          )}
+          {percentFilledOfPastOrder && (
+            <RecapRow
+              className="sm:py-0"
+              left={
+                <span className="subtitle1 sm:caption">
+                  {t("limitOrders.percentFilled")}
+                </span>
+              }
+              right={
+                <span className="body2 sm:caption">
+                  {formatPretty(percentFilledOfPastOrder, { maxDecimals: 0 })}
+                </span>
+              }
+            />
+          )}
+          {alreadyReceived && (
+            <RecapRow
+              className="sm:py-0"
+              left={
+                <span className="subtitle1 sm:caption">
+                  {t("limitOrders.alreadyReceived")}
+                </span>
+              }
+              right={
+                <span className="body2 sm:caption">
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: tokenOut?.decimals ?? 0,
+                        coinDenom: tokenOut?.symbol ?? "",
+                        coinMinimalDenom: tokenOut?.coinMinimalDenom ?? "",
+                      },
+                      alreadyReceived
+                    )
+                  )}
+                </span>
+              }
+            />
+          )}
         </div>
+        {!!order && order.status !== "open" && (
+          <p className="caption text-osmoverse-300">
+            {t("limitOrders.payoutNote")}
+          </p>
+        )}
       </div>
       {!!order && !!buttonText && (
         <div className="flex items-center justify-center gap-3 pt-3">

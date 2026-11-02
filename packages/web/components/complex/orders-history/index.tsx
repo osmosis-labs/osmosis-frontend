@@ -99,6 +99,17 @@ export const OrderHistory = () => {
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
+  const relatedOrder = useMemo(
+    () =>
+      selectedOrder &&
+      orders.find(
+        (o) =>
+          o !== selectedOrder &&
+          o.order_id === selectedOrder.order_id &&
+          o.orderbookAddress === selectedOrder.orderbookAddress
+      ),
+    [orders, selectedOrder]
+  );
   const groups = useMemo(
     () =>
       Object.keys(groupedOrders).filter(
@@ -320,6 +331,7 @@ export const OrderHistory = () => {
       {isLargeScreen && (
         <OrderModal
           order={selectedOrder}
+          relatedOrder={relatedOrder}
           onRequestClose={() => setSelectedOrder(undefined)}
         />
       )}
@@ -403,11 +415,28 @@ const TableGroupHeader = ({
   return (
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
-        <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
-          {group === "pending"
-            ? t("limitOrders.orderHistoryHeaders.pending")
-            : t("limitOrders.orderHistoryHeaders.past")}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
+            {group === "pending"
+              ? t("limitOrders.orderHistoryHeaders.pending")
+              : t("limitOrders.orderHistoryHeaders.past")}
+          </span>
+          {group === "past" && (
+            <GenericDisclaimer
+              title={t("limitOrders.howPayoutsWork")}
+              body={t("limitOrders.payoutNote")}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
+                <Icon
+                  id="question"
+                  className="h-6 w-6 text-wosmongton-200"
+                  width={24}
+                  height={24}
+                />
+              </div>
+            </GenericDisclaimer>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -546,9 +575,11 @@ const TableOrderRow = memo(
               </p>
               <div className="md:body2 inline-flex items-center gap-2">
                 <span>
-                  {order_direction === "bid"
-                    ? t("limitOrders.buy")
-                    : t("limitOrders.sell")}{" "}
+                  {status === "cancelled"
+                    ? t("limitOrders.unfilled")
+                    : order_direction === "bid"
+                      ? t("limitOrders.buy")
+                      : t("limitOrders.sell")}{" "}
                   {formatFiatPrice(
                     new PricePretty(
                       DEFAULT_VS_CURRENCY,
@@ -579,6 +610,11 @@ const TableOrderRow = memo(
                   />
                 </div>
                 <span>{baseAsset?.symbol}</span>
+                {status === "cancelled" && (
+                  <span className="text-osmoverse-300">
+                    · {t("limitOrders.returned")}
+                  </span>
+                )}
               </div>
             </div>
           </div>

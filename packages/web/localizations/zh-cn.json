@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
     "creationInProgress": "该交易对的订单簿创建已在另一个标签页中进行",
     "creationAwaitingConfirmation": "此交易对之前的订单簿创建仍在等待链上确认。请几分钟后重试。",
-    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
+    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {

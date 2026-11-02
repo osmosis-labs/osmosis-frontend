@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "Kliknij, aby utworzyć orderbook dla tej pary.",
     "creationInProgress": "Tworzenie orderbooka dla tej pary jest już w toku w innej karcie",
     "creationAwaitingConfirmation": "Poprzednie tworzenie księgi zleceń dla tej pary nadal czeka na potwierdzenie onchain. Spróbuj ponownie za kilka minut.",
-    "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis."
+    "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis.",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {

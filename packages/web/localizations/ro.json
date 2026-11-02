@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "Faceți clic pentru a crea un orderbook pentru această pereche.",
     "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
-    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis."
+    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {

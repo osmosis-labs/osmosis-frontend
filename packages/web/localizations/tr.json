@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
     "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
     "creationAwaitingConfirmation": "Bu parite için önceki emir defteri oluşturma işlemi hâlâ zincir üstü onay bekliyor. Birkaç dakika sonra tekrar deneyin.",
-    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
+    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar.",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {

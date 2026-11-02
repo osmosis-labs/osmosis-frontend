@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "इस जोड़ी के लिए एक orderbook बनाने के लिए क्लिक करें।",
     "creationInProgress": "इस जोड़ी के लिए ऑर्डरबुक निर्माण पहले से ही दूसरे टैब में चल रहा है",
     "creationAwaitingConfirmation": "इस जोड़ी के लिए पिछला ऑर्डरबुक निर्माण अभी भी ऑनचेन पुष्टि की प्रतीक्षा में है। कुछ मिनट में फिर से प्रयास करें।",
-    "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।"
+    "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {

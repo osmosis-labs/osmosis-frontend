@@ -1450,7 +1450,13 @@
     "clickToCreateOrderbook": "클릭하여 이 쌍의 orderbook을 만드세요.",
     "creationInProgress": "이 페어의 오더북 생성이 다른 탭에서 이미 진행 중입니다",
     "creationAwaitingConfirmation": "이 페어에 대한 이전 오더북 생성이 아직 온체인 확인을 기다리고 있습니다. 몇 분 후에 다시 시도하세요.",
-    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다."
+    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다.",
+    "unfilled": "Unfilled",
+    "returned": "Returned",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
   },
   "tradeDetails": {
     "priceImpact": {
