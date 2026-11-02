@@ -887,6 +887,26 @@ export type EvmReceiptCheck = (params: {
   chainId: number;
 }) => Promise<"success" | "reverted" | undefined>;
 
+/** How long after an entry is recorded an unproven inclusion keeps holding
+ *  off the status providers' failure handling. Past it, a tx with still no
+ *  receipt was most likely dropped or replaced, so the usual "not found"
+ *  rules apply again and polling ends. */
+const SEND_TX_UNCONFIRMED_GRACE_SECONDS = 30 * 60;
+
+/** Whether the tracked tx's inclusion is still unproven (see
+ *  `sendTxUnconfirmed`) and within its grace period. */
+export function isSendTxInclusionUnproven(
+  snapshot: TxSnapshot,
+  receiptFound = false
+): boolean {
+  return (
+    !!snapshot.sendTxUnconfirmed &&
+    !receiptFound &&
+    Date.now() / 1000 - snapshot.createdAtUnix <
+      SEND_TX_UNCONFIRMED_GRACE_SECONDS
+  );
+}
+
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {
   /** Example: axelar */

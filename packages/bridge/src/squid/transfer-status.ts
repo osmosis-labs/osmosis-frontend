@@ -9,6 +9,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { isSendTxInclusionUnproven } from "../interface";
 import { SquidProviderId } from "./constants";
 import type { SquidStatusResponse } from "./types";
 
@@ -62,8 +63,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
         // receipt until it turns up, since Squid can't tell that from a tx
         // not mined yet.
         if (
-          snapshot.sendTxUnconfirmed &&
-          !receiptFound &&
+          isSendTxInclusionUnproven(snapshot, receiptFound) &&
           this.checkEvmReceipt &&
           typeof fromChainId === "number"
         ) {
@@ -129,7 +129,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           if (
             error instanceof ApiClientError &&
             error.status === 404 &&
-            !(snapshot.sendTxUnconfirmed && !receiptFound)
+            !isSendTxInclusionUnproven(snapshot, receiptFound)
           ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {

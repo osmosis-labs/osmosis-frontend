@@ -719,12 +719,12 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ??
         [];
       const merged = snapshots.map((local) => {
-        const winner = pickFurtherAlong(local);
+        const twin = stored.find((s) => keyOf(s) === keyOf(local));
+        const winner = pickFurtherAlong(local, twin);
         // Unproven inclusion is only ever resolved by the status providers,
         // so a copy that learned it must not lose it to the other copy. It
         // describes one hash: a copy at another step (advanced past it)
         // must not pass it on.
-        const twin = stored.find((s) => keyOf(s) === keyOf(local));
         const flagsWinnerTx = (copy?: TxSnapshot) =>
           copy?.sendTxUnconfirmed && copy.sendTxHash === winner.sendTxHash;
         return !winner.sendTxUnconfirmed &&
@@ -732,9 +732,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           ? { ...winner, sendTxUnconfirmed: true }
           : winner;
       });
-      function pickFurtherAlong(local: TxSnapshot): TxSnapshot {
-        const key = keyOf(local);
-        const storedTwin = stored.find((snapshot) => keyOf(snapshot) === key);
+      function pickFurtherAlong(
+        local: TxSnapshot,
+        storedTwin: TxSnapshot | undefined
+      ): TxSnapshot {
         if (!storedTwin) return local;
         // The step version orders advances AND restores (a restored step
         // has a pendingStep again but is NEWER than the advanced copy, so

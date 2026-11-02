@@ -1,4 +1,7 @@
-import type { TxSnapshot } from "@osmosis-labs/bridge";
+import {
+  isSendTxInclusionUnproven,
+  type TxSnapshot,
+} from "@osmosis-labs/bridge";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
@@ -336,9 +339,10 @@ export const useMultiTxResume = () => {
         // An EVM first step whose receipt wait failed may have reverted,
         // which Skip never reports as failed: prove it from the receipt.
         // Until the receipt turns up, its inclusion stays unproven.
-        let priorStepUnproven = !!transferHistoryStore.snapshots.find(
+        const stored = transferHistoryStore.snapshots.find(
           (s) => s.sendTxHash === snapshot.sendTxHash
-        )?.sendTxUnconfirmed;
+        );
+        let priorStepUnproven = !!stored && isSendTxInclusionUnproven(stored);
         if (priorStepUnproven && snapshot.fromChain.chainType === "evm") {
           const outcome = await checkEvmReceiptOutcome({
             txHash: pendingStep.priorStepTxHash,

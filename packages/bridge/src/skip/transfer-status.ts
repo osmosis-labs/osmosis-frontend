@@ -10,6 +10,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { isSendTxInclusionUnproven } from "../interface";
 import { SkipProviderId } from "./constants";
 import { SkipTxStatusResponse } from "./types";
 
@@ -121,8 +122,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
         // An EVM tx whose receipt wait failed may have reverted, which Skip
         // never sees: check the receipt until it turns up.
         if (
-          snapshot.sendTxUnconfirmed &&
-          !receiptFound &&
+          isSendTxInclusionUnproven(snapshot, receiptFound) &&
           this.checkEvmReceipt &&
           typeof fromChainId === "number"
         ) {
@@ -135,7 +135,10 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           }
           if (outcome === "success") receiptFound = true;
         }
-        const inclusionUnproven = snapshot.sendTxUnconfirmed && !receiptFound;
+        const inclusionUnproven = isSendTxInclusionUnproven(
+          snapshot,
+          receiptFound
+        );
 
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
@@ -153,9 +156,16 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           // is not an outcome: keep polling so the chain check above can
           // still resolve it, rather than stopping on the error. The same
           // holds for a tx whose inclusion is unproven: it may not be mined
-          // yet, so Skip rejecting it is not an outcome either.
+          // yet, so Skip not knowing it is not an outcome either.
           .catch((error) => {
-            if (isSolanaSigned || inclusionUnproven) return undefined;
+            if (isSolanaSigned) return undefined;
+            if (
+              inclusionUnproven &&
+              error instanceof Error &&
+              error.message.includes("not found")
+            ) {
+              return undefined;
+            }
             throw error;
           });
 

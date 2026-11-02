@@ -980,7 +980,17 @@ export const useBridgeQuotes = ({
         }
       );
 
-      await waitForEvmReceipt(approveTxHash);
+      await waitForEvmReceipt(approveTxHash).catch(async (e) => {
+        // the approval may still land: refresh the quotes so a second
+        // Confirm doesn't ask for another approval once it has
+        if (e instanceof EvmTxStatusUnknownError) {
+          for (const quoteResult of quoteResults) {
+            await quoteResult.refetch();
+          }
+        }
+        setIsApprovingToken(false);
+        throw e;
+      });
 
       for (const quoteResult of quoteResults) {
         await quoteResult.refetch();
