@@ -116,17 +116,6 @@
       "chainHalted": "Osmoz zinciri durduruldu, işlemler geçici olarak devre dışı bırakıldı."
     }
   },
-  "store": {
-    "headerTitle": "Deneyiminizi Süper Hızlı Hale Getirin",
-    "headerSubtitle": "Alım satım sadece ilk adım. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın.",
-    "featured": "Öne Çıkan",
-    "searchPlaceholder": "Ara",
-    "getFeatured": "Öne Çıkan Olun",
-    "featuredDescription": "Uygulama mağazasında başlatın ve binlerce kullanıcıya erişin. Listelenmek veya öne çıkan olmak istiyorsanız, bize ulaşın ve iletişimde olacağız.",
-    "applyButton": "Uygula",
-    "storeDisclaimer": "Belirli içerikler, Osmosis Labs veya bağlı ortaklıklarından herhangi biri ile bağlantılı olmayan üçüncü taraflar tarafından hazırlanmıştır ve Osmosis Labs, bu tür içeriklerden sorumlu değildir. Osmosis Labs, içerikteki hatalar veya gecikmelerden veya herhangi bir içeriğe dayalı olarak alınan eylemlerden sorumlu değildir. Bilgiler, yalnızca bilgilendirme amaçlı olarak sağlanmıştır ve yatırım tavsiyesi değildir. Bu, belirli bir dijital varlığı satın almak veya satmak veya belirli bir yatırım stratejisini kullanmak için bir öneri değildir. Osmosis Labs, sağlanan herhangi bir bilginin doğruluğu, uygunluğu veya geçerliliği veya belirli bir varlık için yapılan beyanlar konusunda hiçbir temsilde bulunmamaktadır. Gösterilen fiyatlar sadece gösterim amaçlıdır. Gerçek kripto para birimi fiyatları ve ilişkili istatistiklerde farklılıklar olabilir. Sunulan veriler, Osmosis Labs'in borsasında ve seçili diğer kripto para birimi borsalarında işlem gören varlıkları yansıtabilir.",
-    "allAppsHeader": "Tüm Uygulamalar"
-  },
   "createFirstPositionCta": {
     "title": "İlk Supercharged pozisyonunuzu oluşturun",
     "caption": "Bu uzun zamandır beklenen yükseltme, daha az sermaye ile daha fazla kazanmanıza olanak tanır.\n Deneyim seviyeniz ne olursa olsun dakikalar içinde çalışmaya başlayın.",
@@ -312,6 +301,7 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
+    "walletRequestTimedOut": "{wallet} zamanında yanıt vermedi. Hiçbir şey imzalanmadı veya gönderilmedi, lütfen tekrar deneyin.",
     "insufficientFeeTokens": {
       "title": "Yeterli bakiyeye sahip ücret tokeni yok",
       "body": "Ağ ücretini karşılamak için Osmosis üzerinde OSMO veya desteklenen başka bir ücret tokeni yatırın.",
@@ -395,11 +385,8 @@
     "info": "Bilgi",
     "pools": "Havuzlar",
     "stake": "Stake",
-    "store": "Uygulamalar",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
-    "more": "Daha",
-    "new": "YENİ",
     "settings": "Ayarlar"
   },
   "oneClickTrading": {
@@ -645,6 +632,8 @@
     "title": "Likiditeyi Kaldır"
   },
   "requestRejected": "Talep reddedildi",
+  "waitingForWallet": "Cüzdanınız bekleniyor...",
+  "signInMobileWallet": "Mobil cüzdanınızda imzalayın...",
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",
@@ -1172,10 +1161,6 @@
       "title": "Ozmoz Bölgesinde Ticaret",
       "description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX"
     },
-    "apps": {
-      "title": "Ozmoz Uygulama Mağazası",
-      "description": "Ticaret sadece ilk adımdır. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın"
-    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -1343,7 +1328,8 @@
       "errorState": {
         "title": "Emirleriniz yüklenemedi",
         "subtitle": "Lütfen birazdan tekrar deneyin."
-      }
+      },
+      "historyUnavailable": "Emir geçmişi şu anda kullanılamıyor. Açık emirleriniz gösteriliyor."
     },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",
@@ -1487,6 +1473,32 @@
     "dontShowAgain": "Bir daha gösterme",
     "dismiss": "Azletmek",
     "convert": "Dönüştürmek"
+  },
+  "forcedMigration": {
+    "remindMeLater": "Daha sonra hatırlat",
+    "deadline": "Son tarih: {date}",
+    "heldElsewhere": "Likidite havuzlarında da {symbols} tutuyorsunuz.",
+    "heldUnconvertible": "{symbols} varlığınız var, ancak dönüştürme şu anda kullanılamıyor. Yakında tekrar kontrol edin.",
+    "viewPortfolio": "Portföyü görüntüle",
+    "poolPosition": "Havuz #{poolId}",
+    "holdingsTitle": "Varlıklar",
+    "liquidityPoolsTitle": "Likidite havuzları",
+    "limitOrdersTitle": "Limit emirleri",
+    "bonded": "Bağlı",
+    "superfluidStaked": "Superfluid stake edildi",
+    "unlocking": "Kilit açılıyor",
+    "unlockingUntil": "{date} tarihine kadar kilit açılıyor",
+    "unlockEndsAfterDeadline": "Kilit açma {deadline} tarihinden sonra tamamlanır.",
+    "withdraw": "Çek",
+    "migratePosition": "Taşı",
+    "migratedAmountsNote": "Bir kısmı yeni havuza likidite olarak yatırılır; kalanı cüzdanınıza geri döner.",
+    "migrateUnavailable": "Taşıma şu anda kullanılamıyor",
+    "unlock": "Kilidi aç",
+    "cancelOrder": "Emri iptal et",
+    "claim": "Talep et",
+    "claimAndCancel": "Talep et ve iptal et",
+    "conversionUnavailable": "Dönüştürme şu anda kullanılamıyor, bu yüzden çekme duraklatıldı.",
+    "positionMoved": "Pozisyonun değeri açıldığından beri çok fazla değişti. Tekrar deneyin."
   },
   "assetVariantsConversion": {
     "title": "Varlıkları Standartlaştırın",

@@ -116,17 +116,6 @@
       "chainHalted": "Lanțul de osmoză este oprit, tranzacțiile sunt temporar dezactivate."
     }
   },
-  "store": {
-    "headerTitle": "Îmbunătățește-ți experiența",
-    "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
-    "featured": "Recomandat",
-    "searchPlaceholder": "Căutare",
-    "getFeatured": "Fii recomandat",
-    "featuredDescription": "Lansează-te pe magazinul de aplicații și obține acces la mii de utilizatori. Dacă dorești să fii listat sau recomandat, contactează-ne și vom fi în legătură.",
-    "applyButton": "Aplică",
-    "storeDisclaimer": "Anumite conținuturi au fost pregătite de terțe părți neafiliate cu Osmosis Labs sau cu oricare dintre afilierile sale, iar Osmosis Labs nu este responsabilă pentru astfel de conținuturi. Osmosis Labs nu este responsabilă pentru eventualele erori sau întârzieri în conținut sau pentru orice acțiuni întreprinse bazându-se pe orice conținut. Informațiile sunt furnizate numai în scop informativ și nu constituie sfaturi de investiții. Aceasta nu este o recomandare de a cumpăra sau vinde un anumit activ digital sau de a utiliza o anumită strategie de investiții. Osmosis Labs nu face nicio declarație cu privire la acuratețea, adecvarea sau validitatea oricăror informații furnizate sau pentru un anumit activ. Prețurile prezentate sunt doar în scop ilustrativ. Prețurile reale ale criptomonedelor și statisticile asociate pot varia. Datele prezentate pot reflecta active tranzacționate pe bursa Osmosis Labs și pe alte burse de criptomonede selectate.",
-    "allAppsHeader": "Toate aplicațiile"
-  },
   "createFirstPositionCta": {
     "title": "Creați-vă prima poziție Supercharged",
     "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
@@ -312,6 +301,7 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
+    "walletRequestTimedOut": "{wallet} nu a răspuns la timp. Nimic nu a fost semnat sau trimis, vă rugăm să încercați din nou.",
     "insufficientFeeTokens": {
       "title": "Niciun token de comision cu sold suficient",
       "body": "Depune OSMO sau un alt token de comision acceptat pe Osmosis pentru a acoperi comisionul de rețea.",
@@ -395,11 +385,8 @@
     "info": "Statistici",
     "pools": "Pool-uri",
     "stake": "Actiuni",
-    "store": "Aplicații",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
-    "more": "Mai mult",
-    "new": "NOU",
     "settings": "Setări"
   },
   "oneClickTrading": {
@@ -645,6 +632,8 @@
     "title": "Elimina Lichiditate"
   },
   "requestRejected": "Cerere respinsa",
+  "waitingForWallet": "Se așteaptă portofelul dumneavoastră...",
+  "signInMobileWallet": "Semnați în portofelul mobil...",
   "settings": {
     "filterDust": "Filtru de praf",
     "selectLanguage": "Selecteaza limba",
@@ -1172,10 +1161,6 @@
       "title": "Comerț în zona de osmoză",
       "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
     },
-    "apps": {
-      "title": "Magazin de aplicații Osmosis",
-      "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
-    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -1343,7 +1328,8 @@
       "errorState": {
         "title": "Ordinele tale nu au putut fi încărcate",
         "subtitle": "Te rugăm să încerci din nou în câteva momente."
-      }
+      },
+      "historyUnavailable": "Istoricul ordinelor nu este disponibil momentan. Sunt afișate ordinele tale deschise."
     },
     "aboveMarket": {
       "title": "Preț limită peste prețul pieței",
@@ -1487,6 +1473,32 @@
     "dontShowAgain": "Nu mai afișa",
     "dismiss": "Respingeți",
     "convert": "Convertit"
+  },
+  "forcedMigration": {
+    "remindMeLater": "Amintește-mi mai târziu",
+    "deadline": "Termen limită: {date}",
+    "heldElsewhere": "Deții și {symbols} în pool-uri de lichiditate.",
+    "heldUnconvertible": "Deții {symbols}, dar conversia nu este disponibilă acum. Revino în curând.",
+    "viewPortfolio": "Vezi portofoliul",
+    "poolPosition": "Pool #{poolId}",
+    "holdingsTitle": "Dețineri",
+    "liquidityPoolsTitle": "Pool-uri de lichiditate",
+    "limitOrdersTitle": "Ordine limită",
+    "bonded": "Blocat",
+    "superfluidStaked": "În staking superfluid",
+    "unlocking": "Se deblochează",
+    "unlockingUntil": "Se deblochează până la {date}",
+    "unlockEndsAfterDeadline": "Deblocarea se încheie după {deadline}.",
+    "withdraw": "Retrage",
+    "migratePosition": "Migrează",
+    "migratedAmountsNote": "O parte este depusă ca lichiditate în noul pool; restul revine în portofelul tău.",
+    "migrateUnavailable": "Migrarea nu este disponibilă acum",
+    "unlock": "Deblochează",
+    "cancelOrder": "Anulează ordinul",
+    "claim": "Revendică",
+    "claimAndCancel": "Revendică și anulează",
+    "conversionUnavailable": "Conversia nu este disponibilă acum, așa că retragerea este întreruptă.",
+    "positionMoved": "Valoarea poziției s-a schimbat prea mult de la deschidere. Încearcă din nou."
   },
   "assetVariantsConversion": {
     "title": "Standardizați activele",

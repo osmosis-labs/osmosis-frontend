@@ -86,6 +86,7 @@ export const OrderHistory = () => {
 
   const {
     orders,
+    historyUnavailable,
     isLoading,
     isError,
     fetchNextPage,
@@ -227,6 +228,11 @@ export const OrderHistory = () => {
 
   return (
     <div className="mt-3 flex flex-col overflow-x-scroll xl:overflow-visible">
+      {historyUnavailable && (
+        <p className="body2 mb-3 text-osmoverse-300">
+          {t("limitOrders.historyTable.historyUnavailable")}
+        </p>
+      )}
       <table
         className="relative min-w-[900px] table-auto xl:min-w-[100%]"
         ref={listRef}

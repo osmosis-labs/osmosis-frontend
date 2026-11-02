@@ -101,13 +101,16 @@ export function getSwapTxParameters({
       .toDec()
       .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
       .mul(new Dec(1).sub(new Dec(maxSlippage)))
-      .truncate()
-      .toString();
+      .truncate();
 
     return {
       routes,
       tokenIn,
-      tokenOutMinAmount,
+      // The chain rejects a minimum that isn't positive, which a small quote
+      // truncates to (1 unit at any slippage). 1 is the loosest valid bound.
+      tokenOutMinAmount: tokenOutMinAmount.isPositive()
+        ? tokenOutMinAmount.toString()
+        : "1",
     };
   } else {
     const routes: SwapTxRouteInGivenOut[] = [];

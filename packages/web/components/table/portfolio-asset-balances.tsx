@@ -37,6 +37,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
 import {
@@ -589,7 +590,21 @@ const AssetActionsCell: AssetCellComponent<{
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
   const needsConversion = coinMinimalDenom !== variantGroupKey;
-  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
+
+  // Only variants that convert 1:1 (members of an active alloy) come back as
+  // asset variants, so the button never opens a modal with nothing in it.
+  const { address } = useWallet();
+  const { assetVariants } = useConvertibleAssetVariants({
+    address,
+    enabled: Boolean(featureFlags.alloyedAssets) && needsConversion,
+  });
+  const isConvertible = Boolean(
+    assetVariants?.some(
+      (variant) => variant.amount.currency.coinMinimalDenom === coinMinimalDenom
+    )
+  );
+  const showConvertButton =
+    featureFlags.alloyedAssets && needsConversion && isConvertible;
 
   const actionOptions = getActionOptions(
     t,

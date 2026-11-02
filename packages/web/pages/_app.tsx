@@ -12,33 +12,20 @@ import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
-import {
-  ComponentType,
-  FunctionComponent,
-  ReactNode,
-  useEffect,
-  useMemo,
-} from "react";
+import { ComponentType, FunctionComponent, ReactNode, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
-import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
 import { wagmiConfig } from "~/config/wagmi";
-import {
-  MultiLanguageProvider,
-  useLocalStorageState,
-  useTranslation,
-} from "~/hooks";
+import { MultiLanguageProvider, useTranslation } from "~/hooks";
 import { ImmersiveBridge } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useNewApps } from "~/hooks/use-new-apps";
 import { useWallet } from "~/hooks/use-wallet";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { SEO } from "~/next-seo.config";
@@ -147,19 +134,6 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="pool" className="h-6 w-6" />,
         selectionTest: /\/pools/,
       },
-      {
-        label: t("menu.store"),
-        link: "/apps",
-        icon: <Icon id="apps" className="h-6 w-6" />,
-        selectionTest: /\/apps/,
-        badge: <AppsBadge appsLink="/apps" />,
-      },
-      {
-        label: t("menu.more"),
-        icon: <Icon id="dots-three-vertical" className="h-6 w-6" />,
-        link: "/",
-        showMore: true,
-      },
     ];
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
@@ -170,19 +144,22 @@ const MainLayoutWrapper: FunctionComponent<{
     t,
   ]);
 
-  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
-    () => [
-      {
-        label: t("menu.help"),
-        link: "https://support.osmosis.zone/",
-        icon: <Icon id="help-circle" className="h-6 w-6" />,
-      },
+  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(() => {
+    // Wait for the flag-gated primary menu so these links don't render first
+    // and then jump down when it appears.
+    if (!flags._isInitialized) {
+      return [];
+    }
+
+    return [
       {
         label: t("menu.vote"),
         link:
           osmosisWallet?.walletInfo?.governanceUrl ??
           "https://wallet.keplr.app/chains/osmosis?tab=governance",
         icon: <Icon id="vote" className="h-6 w-6" />,
+        // The wallet governance link doesn't work on mobile.
+        hideOnMobile: true,
       },
       {
         label: t("menu.info"),
@@ -194,57 +171,18 @@ const MainLayoutWrapper: FunctionComponent<{
         link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-6 w-6" />,
       },
-    ],
-    [t, osmosisWallet?.walletInfo?.governanceUrl]
-  );
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-6 w-6" />,
+      },
+    ];
+  }, [flags._isInitialized, t, osmosisWallet?.walletInfo?.governanceUrl]);
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
     </MainLayout>
-  );
-};
-
-export const AppsBadge: FunctionComponent<{ appsLink: string }> = ({
-  appsLink,
-}) => {
-  const { newApps, allApps } = useNewApps();
-  const router = useRouter();
-  const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<string[]>(
-    "viewed-apps",
-    []
-  );
-
-  /**
-   * Update the viewed app titles when the user navigates to the apps page.
-   *
-   * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
-   *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
-   *      This lets `AppsBadge` read the updated state through its own hook.
-   *   2. It simplifies the code by avoiding state management in two files.
-   *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
-   *      the viewed app titles change.
-   */
-  useEffect(() => {
-    if (router.pathname === appsLink && allApps.length > 0) {
-      setViewedAppTitles(allApps.map((app) => app.title));
-    }
-  }, [router.pathname, newApps, setViewedAppTitles, allApps, appsLink]);
-
-  if (
-    newApps.length === 0 ||
-    newApps.filter(
-      ({ title }) =>
-        !viewedAppTitles.some((viewedAppTitle) => viewedAppTitle === title)
-    ).length === 0
-  ) {
-    return null;
-  }
-
-  return (
-    <Pill className="!w-auto !px-0" animate>
-      <span className="button px-3 py-[2px]">{newApps.length}</span>
-    </Pill>
   );
 };
 

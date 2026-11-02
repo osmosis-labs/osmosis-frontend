@@ -116,17 +116,6 @@
       "chainHalted": "Łańcuch osmozy jest zatrzymany, transakcje są tymczasowo wyłączone."
     }
   },
-  "store": {
-    "headerTitle": "Podkręć swoje doświadczenie",
-    "headerSubtitle": "Handel to dopiero początek. Wykorzystaj swoje aktywa i osiągnij znacznie więcej dzięki dźwigni, skarbcem i innym rozwiązaniom.",
-    "featured": "Wyróżnione",
-    "searchPlaceholder": "Szukaj",
-    "getFeatured": "Zostań wyróżniony",
-    "featuredDescription": "Uruchom aplikację w sklepie z aplikacjami i uzyskaj dostęp do tysięcy użytkowników. Jeśli chcesz się pojawić na liście lub zostać wyróżnionym, skontaktuj się z nami, a my się odezwiemy.",
-    "applyButton": "Aplikuj",
-    "storeDisclaimer": "Niektóre treści zostały przygotowane przez osoby trzecie niezwiązane z Osmosis Labs ani żadnym z jego partnerów, a Osmosis Labs nie ponosi odpowiedzialności za takie treści. Osmosis Labs nie ponosi odpowiedzialności za błędy lub opóźnienia w treści ani za żadne działania podjęte w oparciu o jakąkolwiek treść. Informacje są dostarczane wyłącznie w celach informacyjnych i nie stanowią porady inwestycyjnej. To nie jest rekomendacja zakupu lub sprzedaży konkretnego aktywa cyfrowego ani stosowania konkretnej strategii inwestycyjnej. Osmosis Labs nie składa żadnych deklaracji co do dokładności, przydatności lub ważności żadnych dostarczonych informacji ani co do konkretnego aktywa. Ceny prezentowane są tylko w celach ilustracyjnych. Rzeczywiste ceny kryptowalut i powiązane dane statystyczne mogą się różnić. Prezentowane dane mogą odzwierciedlać aktywa handlowane na giełdzie Osmosis Labs oraz na wybranych innych giełdach kryptowalut.",
-    "allAppsHeader": "Wszystkie aplikacje"
-  },
   "createFirstPositionCta": {
     "title": "Stwórz swoją pierwszą superdoładowaną pozycję",
     "caption": "Ta długo oczekiwana aktualizacja pozwala zarabiać więcej przy mniejszym kapitale.\n Rozpocznij pracę w ciągu kilku minut, niezależnie od poziomu doświadczenia.",
@@ -312,6 +301,7 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
+    "walletRequestTimedOut": "{wallet} nie odpowiedział na czas. Nic nie zostało podpisane ani wysłane, spróbuj ponownie.",
     "insufficientFeeTokens": {
       "title": "Brak tokenów opłat z wystarczającym saldem",
       "body": "Wpłać OSMO lub inny obsługiwany token opłat w Osmosis, aby pokryć opłatę sieciową.",
@@ -395,11 +385,8 @@
     "info": "Statystyki",
     "pools": "Pule",
     "stake": "Stakuj",
-    "store": "Aplikacje",
     "vote": "Głosuj",
     "featureRequests": "Żądania funkcji",
-    "more": "Więcej",
-    "new": "NOWY",
     "settings": "Ustawienia"
   },
   "oneClickTrading": {
@@ -645,6 +632,8 @@
     "title": "Usuń Płynność"
   },
   "requestRejected": "Żądanie odrzucone",
+  "waitingForWallet": "Oczekiwanie na portfel...",
+  "signInMobileWallet": "Podpisz w portfelu mobilnym...",
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",
@@ -1172,10 +1161,6 @@
       "title": "Handluj w Strefie Osmozy",
       "description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX"
     },
-    "apps": {
-      "title": "Sklep z aplikacjami Osmosis",
-      "description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko"
-    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -1343,7 +1328,8 @@
       "errorState": {
         "title": "Nie udało się wczytać Twoich zleceń",
         "subtitle": "Spróbuj ponownie za chwilę."
-      }
+      },
+      "historyUnavailable": "Historia zleceń jest obecnie niedostępna. Wyświetlane są Twoje otwarte zlecenia."
     },
     "aboveMarket": {
       "title": "Cena graniczna powyżej ceny rynkowej",
@@ -1487,6 +1473,32 @@
     "dontShowAgain": "Nie pokazuj ponownie",
     "dismiss": "Odrzucać",
     "convert": "Konwertować"
+  },
+  "forcedMigration": {
+    "remindMeLater": "Przypomnij mi później",
+    "deadline": "Termin: {date}",
+    "heldElsewhere": "Masz też {symbols} w pulach płynności.",
+    "heldUnconvertible": "Masz {symbols}, ale konwersja jest teraz niedostępna. Sprawdź ponownie wkrótce.",
+    "viewPortfolio": "Zobacz portfel",
+    "poolPosition": "Pula #{poolId}",
+    "holdingsTitle": "Aktywa",
+    "liquidityPoolsTitle": "Pule płynności",
+    "limitOrdersTitle": "Zlecenia z limitem",
+    "bonded": "Zablokowane",
+    "superfluidStaked": "Superfluid staking",
+    "unlocking": "Odblokowywanie",
+    "unlockingUntil": "Odblokowywanie do {date}",
+    "unlockEndsAfterDeadline": "Odblokowanie zakończy się po {deadline}.",
+    "withdraw": "Wypłać",
+    "migratePosition": "Migruj",
+    "migratedAmountsNote": "Część trafia jako płynność do nowej puli, a reszta wraca do Twojego portfela.",
+    "migrateUnavailable": "Migracja jest teraz niedostępna",
+    "unlock": "Odblokuj",
+    "cancelOrder": "Anuluj zlecenie",
+    "claim": "Odbierz",
+    "claimAndCancel": "Odbierz i anuluj",
+    "conversionUnavailable": "Konwersja jest teraz niedostępna, więc wypłata jest wstrzymana.",
+    "positionMoved": "Wartość pozycji zmieniła się zbyt mocno od otwarcia. Spróbuj ponownie."
   },
   "assetVariantsConversion": {
     "title": "Standaryzacja aktywów",

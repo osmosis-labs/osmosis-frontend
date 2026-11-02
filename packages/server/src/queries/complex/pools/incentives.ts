@@ -170,6 +170,13 @@ export function getCachedPoolIncentivesMap(): Promise<
 }
 
 const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Ranges whose APR response was invalid (NaN). cachified doesn't keep failures, so
+ *  without this a range that never had a good value would re-query the data service on
+ *  every call. Only the failure is kept, never a value. */
+const invalidAprRanges = new LRUCache<string, Error>({
+  max: 1_000,
+  ttl: 30 * 1000, // 30 seconds
+});
 
 export function getConcentratedRangePoolApr({
   poolId,
@@ -180,12 +187,16 @@ export function getConcentratedRangePoolApr({
   lowerTick: string;
   upperTick: string;
 }): Promise<RatePretty | undefined> {
+  const key = `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`;
   return cachified({
     cache: aprCache,
-    key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
+    key,
     ttl: 30 * 1000, // 30 seconds
     staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - 30 * 1000,
     getFreshValue: async () => {
+      const invalid = invalidAprRanges.get(key);
+      if (invalid) throw invalid;
+
       const { APR } = await queryPriceRangeApr({
         lowerTickIndex: lowerTick,
         upperTickIndex: upperTick,
@@ -193,7 +204,11 @@ export function getConcentratedRangePoolApr({
       });
       const apr = APR / 100;
       // Throw rather than cache an unknown APR, so a bad response keeps the last good one.
-      if (isNaN(apr)) throw new Error(`Invalid range APR for pool ${poolId}`);
+      if (isNaN(apr)) {
+        const error = new Error(`Invalid range APR for pool ${poolId}`);
+        invalidAprRanges.set(key, error);
+        throw error;
+      }
       return new RatePretty(apr);
     },
   });

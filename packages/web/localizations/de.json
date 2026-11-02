@@ -116,17 +116,6 @@
       "chainHalted": "Die Osmosekette wird angehalten, Transaktionen werden vorübergehend deaktiviert."
     }
   },
-  "store": {
-    "headerTitle": "Erweitern Sie Ihr Erlebnis",
-    "headerSubtitle": "Der Handel ist nur der erste Schritt. Setzen Sie Ihr Vermögen ein und erreichen Sie mit Leverage, Tresoren und vielem mehr noch viel mehr.",
-    "featured": "Hervorgehoben",
-    "searchPlaceholder": "Suchen",
-    "getFeatured": "Werden Sie vorgestellt",
-    "featuredDescription": "Starten Sie im App Store und erhalten Sie Zugriff auf Tausende von Benutzern. Wenn Sie gelistet oder vorgestellt werden möchten, kontaktieren Sie uns und wir werden uns mit Ihnen in Verbindung setzen.",
-    "applyButton": "Anwenden",
-    "storeDisclaimer": "Bestimmte Inhalte wurden von Dritten erstellt, die nicht mit Osmosis Labs oder einem seiner verbundenen Unternehmen verbunden sind, und Osmosis Labs ist für diese Inhalte nicht verantwortlich. Osmosis Labs haftet nicht für Fehler oder Verzögerungen im Inhalt oder für Maßnahmen, die im Vertrauen auf Inhalte ergriffen werden. Die Informationen dienen ausschließlich Informationszwecken und stellen keine Anlageberatung dar. Dies ist keine Empfehlung zum Kauf oder Verkauf eines bestimmten digitalen Vermögenswerts oder zur Anwendung einer bestimmten Anlagestrategie. Osmosis Labs übernimmt keine Gewähr für die Genauigkeit, Eignung oder Gültigkeit der bereitgestellten Informationen oder für einen bestimmten Vermögenswert. Die angezeigten Preise dienen nur zur Veranschaulichung. Die tatsächlichen Kryptowährungspreise und zugehörigen Statistiken können variieren. Die dargestellten Daten können Vermögenswerte widerspiegeln, die an der Börse von Osmosis Labs und ausgewählten anderen Kryptowährungsbörsen gehandelt werden.",
-    "allAppsHeader": "Alle Apps"
-  },
   "createFirstPositionCta": {
     "title": "Erstellen Sie Ihre erste Supercharged-Position",
     "caption": "Dieses lang erwartete Upgrade ermöglicht es Ihnen, mit weniger Kapital mehr zu verdienen. Unabhängig von Ihrem Erfahrungsstand können Sie in wenigen Minuten loslegen.",
@@ -312,6 +301,7 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
+    "walletRequestTimedOut": "{wallet} hat nicht rechtzeitig geantwortet. Es wurde nichts signiert oder gesendet, bitte versuchen Sie es erneut.",
     "insufficientFeeTokens": {
       "title": "Keine Gebührentoken mit ausreichendem Guthaben",
       "body": "Zahle OSMO oder einen anderen unterstützten Gebührentoken auf Osmosis ein, um die Netzwerkgebühr zu decken.",
@@ -395,11 +385,8 @@
     "info": "Statistiken",
     "pools": "Pools",
     "stake": "Einsatz",
-    "store": "Apps",
     "vote": "Abstimmung",
     "featureRequests": "Funktionsanfragen",
-    "more": "Mehr",
-    "new": "NEU",
     "settings": "Einstellungen"
   },
   "oneClickTrading": {
@@ -645,6 +632,8 @@
     "title": "Liquidität entfernen"
   },
   "requestRejected": "Anfrage zurückgewiesen",
+  "waitingForWallet": "Warten auf Ihre Wallet...",
+  "signInMobileWallet": "Signieren Sie in Ihrer mobilen Wallet...",
   "settings": {
     "filterDust": "Staub filtern",
     "selectLanguage": "Sprache auswählen",
@@ -1172,10 +1161,6 @@
       "title": "Handel in der Osmosezone",
       "description": "Tauschen, verdienen und bauen Sie auf der führenden dezentralen Cosmos-Börse – dem größten Interchain-DEX"
     },
-    "apps": {
-      "title": "Osmose-App-Store",
-      "description": "Der Handel ist nur der erste Schritt. Setzen Sie Ihr Vermögen ein und erreichen Sie mit Leverage, Tresoren und vielem mehr noch viel mehr"
-    },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",
       "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"
@@ -1343,7 +1328,8 @@
       "errorState": {
         "title": "Ihre Orders konnten nicht geladen werden",
         "subtitle": "Bitte versuchen Sie es gleich noch einmal."
-      }
+      },
+      "historyUnavailable": "Der Orderverlauf ist derzeit nicht verfügbar. Ihre offenen Orders werden angezeigt."
     },
     "aboveMarket": {
       "title": "Limitpreis über Marktpreis",
@@ -1487,6 +1473,32 @@
     "dontShowAgain": "Nicht mehr anzeigen",
     "dismiss": "Zurückweisen",
     "convert": "Konvertieren"
+  },
+  "forcedMigration": {
+    "remindMeLater": "Später erinnern",
+    "deadline": "Frist: {date}",
+    "heldElsewhere": "Du hältst {symbols} auch in Liquiditätspools.",
+    "heldUnconvertible": "Du hältst {symbols}, aber die Umwandlung ist gerade nicht verfügbar. Schau bald wieder vorbei.",
+    "viewPortfolio": "Portfolio ansehen",
+    "poolPosition": "Pool #{poolId}",
+    "holdingsTitle": "Bestände",
+    "liquidityPoolsTitle": "Liquiditätspools",
+    "limitOrdersTitle": "Limit-Orders",
+    "bonded": "Gebunden",
+    "superfluidStaked": "Superfluid gestakt",
+    "unlocking": "Wird entsperrt",
+    "unlockingUntil": "Wird entsperrt bis {date}",
+    "unlockEndsAfterDeadline": "Die Entsperrung endet nach dem {deadline}.",
+    "withdraw": "Abziehen",
+    "migratePosition": "Migrieren",
+    "migratedAmountsNote": "Ein Teil davon wird als Liquidität im neuen Pool eingezahlt, der Rest geht an deine Wallet zurück.",
+    "migrateUnavailable": "Migration derzeit nicht verfügbar",
+    "unlock": "Entsperren",
+    "cancelOrder": "Order stornieren",
+    "claim": "Einfordern",
+    "claimAndCancel": "Einfordern und stornieren",
+    "conversionUnavailable": "Die Konvertierung ist derzeit nicht verfügbar, daher ist das Abziehen pausiert.",
+    "positionMoved": "Der Wert der Position hat sich seit dem Öffnen zu stark verändert. Versuche es erneut."
   },
   "assetVariantsConversion": {
     "title": "Standardisierung von Assets",

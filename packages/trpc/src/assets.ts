@@ -29,6 +29,7 @@ import {
   sortAssetSearchResults,
   TimeDuration,
   TimeFrame,
+  withSqsPriceFallback,
 } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import {
@@ -319,7 +320,7 @@ export const assetsRouter = createTRPCRouter({
       )
     )
     .query(
-      ({
+      async ({
         input: {
           search,
           onlyVerified,
@@ -336,19 +337,28 @@ export const assetsRouter = createTRPCRouter({
           maxPriceChange24h,
         },
         ctx,
-      }) =>
-        maybeCachePaginatedItems({
+      }) => {
+        const page = await maybeCachePaginatedItems({
           getFreshItems: async () => {
-            // Without market data the list would come back empty; report an outage with
-            // its own code so the client can tell it apart from other errors.
-            if (!(await isMarketDataAvailable())) {
+            // Without market data the liquidity and volume filters drop every asset, so
+            // the list would come back empty; report an outage with its own code so the
+            // client can tell it apart from other errors. A search with no such filter
+            // doesn't depend on market data: its rows carry unknown market fields and
+            // prices fall back to SQS.
+            const dependsOnMarketData = !(
+              search &&
+              minLiquidity === 0 &&
+              minVolume24h === undefined
+            );
+            const marketDataAvailable = await isMarketDataAvailable();
+            if (dependsOnMarketData && !marketDataAvailable) {
               throw new TRPCError({
                 code: "SERVICE_UNAVAILABLE",
                 message: "Market data is unavailable",
               });
             }
 
-            const assets = await mapGetMarketAssets({
+            const marketAssets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -359,7 +369,17 @@ export const assetsRouter = createTRPCRouter({
               minLiquidity,
               minVolume24h,
               maxPriceChange24h,
+              // during an outage no row has a price; only the returned page is priced
+              sqsPriceFallback: marketDataAvailable,
             });
+            // A search served during an outage shows no outage state, so the stale
+            // volume the data keeps is shown as unknown instead.
+            const assets = marketDataAvailable
+              ? marketAssets
+              : marketAssets.map((asset) => ({
+                  ...asset,
+                  volume24h: undefined,
+                }));
 
             // sorting
             if (sortInput) {
@@ -410,7 +430,16 @@ export const assetsRouter = createTRPCRouter({
           }),
           cursor,
           limit,
-        })
+        });
+
+        if (await isMarketDataAvailable()) return page;
+        return {
+          ...page,
+          items: await Promise.all(
+            page.items.map((asset) => withSqsPriceFallback({ ...ctx, asset }))
+          ),
+        };
+      }
     ),
   getCoingeckoCoin: publicProcedure
     .input(
@@ -743,7 +772,12 @@ export const assetsRouter = createTRPCRouter({
       );
 
       return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        // `sort` keeps rows without a listing date (last); this list excludes them.
+        marketAssets.filter(
+          (asset) =>
+            asset.priceChange24h !== undefined &&
+            asset.listingDate !== undefined
+        ),
         "listingDate"
       ).slice(0, topN);
     }),

@@ -35,6 +35,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   positionMigration: true,
   solanaSkipRoutes: false,
   inactiveValidatorAlerts: false,
+  forcedMigrations: true,
 };
 
 export function useFeatureFlags() {

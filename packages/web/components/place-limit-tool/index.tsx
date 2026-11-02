@@ -1076,6 +1076,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             swapState.isLoadingOneClickMessages ||
             hasInsufficientFeeTokens
           }
+          isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
           expectedOutput={swapState.expectedTokenAmountOut}
