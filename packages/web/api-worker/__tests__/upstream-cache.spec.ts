@@ -106,6 +106,26 @@ describe("upstream cache", () => {
     expect(ctx.upstream).toHaveBeenCalledTimes(3);
   });
 
+  it("does not cache the canonical orderbook list", async () => {
+    const orderbooks = "https://sqs.osmosis.zone/pools/canonical-orderbooks";
+    await ctx.call(orderbooks);
+    await ctx.call(orderbooks);
+    await ctx.flush();
+
+    expect(ctx.cache.entries.size).toBe(0);
+    expect(ctx.upstream).toHaveBeenCalledTimes(2);
+  });
+
+  it("forwards a Request body on a bypassed POST", async () => {
+    const original = new Request(POOLS, { method: "POST", body: "{}" });
+
+    await ctx.call(original);
+
+    expect(original.bodyUsed).toBe(false);
+    expect(ctx.upstream).toHaveBeenCalledTimes(1);
+    expect(ctx.upstream.mock.calls[0]?.[0]).toBe(original);
+  });
+
   it("keeps auth headers out of the cache key and the stored response", async () => {
     ctx.upstream.mockImplementation(async (_input, init) => {
       const headers = new Headers(init?.headers);

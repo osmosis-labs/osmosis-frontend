@@ -106,6 +106,16 @@ async function cachedFetch(
   init?: RequestInit
 ): Promise<Response> {
   const native = nativeFetch ?? globalThis.fetch.bind(globalThis);
+  // A non-GET/HEAD Request's body is moved by `new Request(input)`. Bypass
+  // before that copy so the original can still be sent.
+  const method = (
+    init?.method ?? (input instanceof Request ? input.method : "GET")
+  ).toUpperCase();
+  if (method !== "GET" && method !== "HEAD") {
+    count("bypass");
+    return native(input, init);
+  }
+
   const request = readRequest(input, init);
   if (!request || !cacheableMethod(request)) {
     count("bypass");
