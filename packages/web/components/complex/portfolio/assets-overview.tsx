@@ -38,16 +38,21 @@ import { api } from "~/utils/trpc";
 
 const CHART_CONTAINER_HEIGHT = 468;
 
+/** Returns undefined when there is no trustworthy baseline, so no change is shown. */
 const calculatePortfolioPerformance = (
   data: ChartPortfolioOverTimeResponse[] | undefined,
   dataPoint: DataPoint
-): {
-  selectedPercentageRatePretty: RatePretty;
-  selectedDifferencePricePretty: PricePretty;
-  totalPriceChange: number;
-} => {
+):
+  | {
+      selectedPercentageRatePretty: RatePretty;
+      selectedDifferencePricePretty: PricePretty;
+    }
+  | undefined => {
+  // No history (errored, loading or empty): never invent a change
+  if (!data || data.length === 0) return undefined;
+
   // Check if all values are 0, for instance if a user created a new wallet and has no transactions
-  const hasAllZeroValues = data?.every((point) => point.value === 0);
+  const hasAllZeroValues = data.every((point) => point.value === 0);
   if (
     hasAllZeroValues &&
     (dataPoint?.value === 0 || dataPoint?.value === undefined)
@@ -58,32 +63,22 @@ const calculatePortfolioPerformance = (
         DEFAULT_VS_CURRENCY,
         new Dec(0)
       ),
-      totalPriceChange: 0,
     };
   }
 
-  const openingPrice = data?.[0]?.value;
-  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
-  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
-  const selectedPercentage = selectedDifference / openingPriceWithFallback;
-  const selectedPercentageRatePretty = new RatePretty(
-    new Dec(selectedPercentage)
-  );
+  const openingPrice = data[0]?.value;
+  // A missing or zero opening value has no meaningful percentage change
+  if (!openingPrice || dataPoint?.value === undefined) return undefined;
 
-  const selectedDifferencePricePretty = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(selectedDifference)
-  );
-
-  const closingPrice = data?.[data.length - 1]?.value;
-  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
-
-  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
+  const selectedDifference = dataPoint.value - openingPrice;
+  const selectedPercentage = selectedDifference / openingPrice;
 
   return {
-    selectedPercentageRatePretty,
-    selectedDifferencePricePretty,
-    totalPriceChange,
+    selectedPercentageRatePretty: new RatePretty(new Dec(selectedPercentage)),
+    selectedDifferencePricePretty: new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      new Dec(selectedDifference)
+    ),
   };
 };
 
@@ -192,7 +187,7 @@ export const AssetsOverview: FunctionComponent<
     {
       enabled: Boolean(isWalletConnected && walletAddress),
       select: (data) => {
-        if (totalValue && !isTotalValueUnknown) {
+        if (totalValue && !isTotalValueUnknown && data.length > 0) {
           data[data.length - 1].value = +totalValue.toDec().toString();
         }
         return data;
@@ -215,8 +210,10 @@ export const AssetsOverview: FunctionComponent<
     totalValueRef.current = totalValue;
   }, [totalValue]);
 
-  const { selectedDifferencePricePretty, selectedPercentageRatePretty } =
-    calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
+  const performance = calculatePortfolioPerformance(
+    portfolioOverTimeData,
+    dataPoint
+  );
 
   const formattedDate =
     dataPoint.time && typeof dataPoint.time === "number"
@@ -298,12 +295,14 @@ export const AssetsOverview: FunctionComponent<
             )}
             isLoaded={isPortfolioOverTimeDataIsFetched}
           >
-            <PortfolioPerformance
-              selectedDifference={selectedDifferencePricePretty}
-              selectedPercentage={selectedPercentageRatePretty}
-              formattedDate={formattedDate}
-              showDate={showDate}
-            />
+            {performance && (
+              <PortfolioPerformance
+                selectedDifference={performance.selectedDifferencePricePretty}
+                selectedPercentage={performance.selectedPercentageRatePretty}
+                formattedDate={formattedDate}
+                showDate={showDate}
+              />
+            )}
           </SkeletonLoader>
           <div className="flex items-center gap-2 pt-6 lg:gap-1">
             <Button
