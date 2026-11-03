@@ -10,7 +10,10 @@
   "tsconfig": "../tsconfig.json",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  "workers_dev": true,
+  // Service binding only. A workers.dev or preview URL would skip the zone WAF
+  // and expose the RPC proxies and the swapped.com signer.
+  "workers_dev": false,
+  "preview_urls": false,
   "vars": {
     // Libraries read `NODE_ENV` at runtime through paths the build-time define in
     // run-wrangler.mjs does not rewrite (tRPC checks `globalThis.process.env.NODE_ENV`).

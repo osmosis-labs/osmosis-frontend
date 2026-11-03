@@ -224,6 +224,55 @@ describe("upstream cache", () => {
     ).toEqual(["pools", "pools", "pools", "pools"]);
   });
 
+  it("rejects an aborted caller and still finishes the shared read", async () => {
+    let entered: () => void = () => undefined;
+    const started = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    ctx.upstream.mockImplementation(async () => {
+      entered();
+      await gate;
+      return new Response("pools", { status: 200 });
+    });
+
+    const controller = new AbortController();
+    const done = runWithUpstreamCache(
+      () => undefined,
+      async () => {
+        const aborted = globalThis.fetch(POOLS, { signal: controller.signal });
+        const kept = globalThis.fetch(POOLS);
+        await started;
+        controller.abort();
+        await expect(aborted).rejects.toMatchObject({ name: "AbortError" });
+        release();
+        return kept.then((response) => response.text());
+      }
+    );
+
+    await expect(done).resolves.toBe("pools");
+    expect(ctx.upstream).toHaveBeenCalledTimes(1);
+    expect(ctx.upstream.mock.calls[0]?.[1]).toEqual(
+      expect.not.objectContaining({ signal: expect.anything() })
+    );
+  });
+
+  it("does not start an upstream read when the caller is already aborted", async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      runWithUpstreamCache(
+        () => undefined,
+        () => globalThis.fetch(POOLS, { signal: controller.signal })
+      )
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(ctx.upstream).not.toHaveBeenCalled();
+  });
+
   it("never makes one request wait on another request's upstream read", async () => {
     const release = gateUpstream();
 

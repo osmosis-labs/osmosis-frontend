@@ -87,7 +87,10 @@ function applyEdgeCache(
     if (!policy) return handler(request);
 
     const key = new Request(policy.key, { method: "GET" });
-    const hit = await cache.match(key);
+    const hit = await cache.match(key).catch((error: unknown) => {
+      console.error("Edge cache read failed", policy.key, error);
+      return undefined;
+    });
     if (hit) return toClientResponse(hit, request, policy, "HIT");
 
     const response = await handler(request);

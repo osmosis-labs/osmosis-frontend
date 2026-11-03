@@ -136,10 +136,50 @@ async function cachedFetch(
   }
 
   count("miss");
-  const body = await loadShared(key, () =>
-    readUpstream(native, request, rule, url)
+  // Reject this caller when its signal aborts. The shared read keeps running for
+  // any other caller in this request that is still waiting on it.
+  if (request.signal.aborted) throw abortReason(request.signal);
+  const body = await whenNotAborted(
+    loadShared(key, () => readUpstream(native, request, rule, url)),
+    request.signal
   );
   return toResponse(body);
+}
+
+/**
+ * The caller's view of `pending`. Aborts reject this promise and leave `pending` running.
+ */
+function whenNotAborted<T>(
+  pending: Promise<T>,
+  signal: AbortSignal
+): Promise<T> {
+  if (signal.aborted) return Promise.reject(abortReason(signal));
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(abortReason(signal));
+    signal.addEventListener("abort", onAbort, { once: true });
+    if (signal.aborted) {
+      signal.removeEventListener("abort", onAbort);
+      reject(abortReason(signal));
+      return;
+    }
+    pending.then(
+      (value) => {
+        signal.removeEventListener("abort", onAbort);
+        resolve(value);
+      },
+      (error: unknown) => {
+        signal.removeEventListener("abort", onAbort);
+        reject(error);
+      }
+    );
+  });
+}
+
+function abortReason(signal: AbortSignal): unknown {
+  return (
+    signal.reason ??
+    new DOMException("This operation was aborted", "AbortError")
+  );
 }
 
 function cacheableMethod(request: Request): boolean {
@@ -176,7 +216,8 @@ async function readUpstream(
   url: URL
 ): Promise<CachedBody> {
   // The caller's signal is not forwarded: one aborted consumer must not
-  // cancel the shared read the others are waiting on.
+  // cancel the shared read the others are waiting on. `cachedFetch` rejects
+  // that caller's own wait so its timeout still frees whatever it is holding.
   const response = await native(request.url, {
     method: "GET",
     headers: request.headers,
