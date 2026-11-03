@@ -55,6 +55,7 @@ class OsmosisSidecarRemoteRouter {
         route: routes,
         effective_fee,
         price_impact,
+        price_impact_unknown,
         liquidity_cap,
         liquidity_cap_overflow,
         tokens,
@@ -62,12 +63,16 @@ class OsmosisSidecarRemoteRouter {
 
       const swapFee = new Dec(effective_fee);
 
-      const priceImpact = new Dec(price_impact);
+      // A placeholder "0" must never read as a real 0% impact.
+      const priceImpact = price_impact_unknown
+        ? undefined
+        : new Dec(price_impact);
 
       return {
         amount: new Int(amount_out),
         swapFee,
         priceImpactTokenOut: priceImpact,
+        ...(price_impact_unknown ? { priceImpactUnknown: true } : {}),
         tokenInFeeAmount: tokenIn.amount.toDec().mul(swapFee).truncate(),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
@@ -135,17 +140,22 @@ class OsmosisSidecarRemoteRouter {
         price_impact,
         liquidity_cap,
         liquidity_cap_overflow,
+        price_impact_unknown,
         tokens,
       } = await apiClient<SidecarInGivenOutQuoteResponse>(queryUrl.toString());
 
       const swapFee = new Dec(effective_fee);
 
-      const priceImpact = new Dec(price_impact);
+      // A placeholder "0" must never read as a real 0% impact.
+      const priceImpact = price_impact_unknown
+        ? undefined
+        : new Dec(price_impact);
 
       return {
         amount: new Int(amount_in),
         swapFee,
         priceImpactTokenOut: priceImpact,
+        ...(price_impact_unknown ? { priceImpactUnknown: true } : {}),
         tokenInFeeAmount: new Dec(amount_in).mul(swapFee).truncate(),
         split: routes.map(({ pools, out_amount }) => ({
           initialAmount: new Int(out_amount),

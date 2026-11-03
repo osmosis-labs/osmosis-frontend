@@ -7,69 +7,92 @@ jest.mock("@osmosis-labs/utils", () => ({
   ...jest.requireActual("@osmosis-labs/utils"),
   apiClient: jest.fn(),
 }));
+jest.mock("../../../env", () => ({ SIDECAR_BASE_URL: "http://sqs.test" }));
 
-const mockApiClient = apiClient as jest.MockedFunction<typeof apiClient>;
+const route = [
+  {
+    in_amount: "100",
+    out_amount: "99",
+    pools: [
+      {
+        id: 1,
+        type: 0,
+        spread_factor: "0.002",
+        token_out_denom: "uosmo",
+        token_in_denom: "uatom",
+      },
+    ],
+  },
+];
 
-/** An in-given-out response as SQS returns it: pools listed from the
- *  output side, amount_in a bare integer string. */
-const inGivenOutResponse = {
-  amount_out: { denom: "uusdc", amount: "10000000" },
-  amount_in: "41234567",
-  effective_fee: "0.001",
-  price_impact: "-0.0042",
-  in_base_out_quote_spot_price: "4.1",
-  liquidity_cap: "29700",
-  liquidity_cap_overflow: false,
+const response = (extra: object, direction: "in" | "out") => ({
+  ...(direction === "in"
+    ? { amount_in: { denom: "uatom", amount: "100" }, amount_out: "99" }
+    : { amount_in: "100", amount_out: { denom: "uosmo", amount: "99" } }),
+  effective_fee: "0.002",
+  price_impact: "0",
+  route,
   tokens: [],
-  route: [
-    {
-      in_amount: "41234567",
-      out_amount: "10000000",
-      "has-cw-pool": false,
-      pools: [
-        {
-          id: 1464,
-          type: 2,
-          balances: { denom: "", amount: "" },
-          spread_factor: "0.0005",
-          taker_fee: "0.001",
-          token_in_denom: "uosmo",
-        },
-      ],
-    },
-  ],
-};
+  ...extra,
+});
 
-describe("routeByTokenOut", () => {
-  beforeEach(() => mockApiClient.mockReset());
+describe("sidecar router price impact", () => {
+  const tokenIn = { denom: "uatom", amount: new Int(100) };
+  const tokenOut = { denom: "uosmo", amount: new Int(99) };
 
-  it("carries the route liquidity cap through, so exact-out quotes can pick a tier from it", async () => {
-    mockApiClient.mockResolvedValueOnce(inGivenOutResponse);
+  it("maps price_impact_unknown to an undefined impact, both directions", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+    const flag = { price_impact_unknown: true };
 
-    const quote = await getSidecarRouter().routeByTokenOut(
-      { denom: "uusdc", amount: new Int("10000000") },
-      "uosmo"
-    );
+    mock.mockResolvedValueOnce(response(flag, "in"));
+    const exactIn = await router.routeByTokenIn(tokenIn, "uosmo");
+    mock.mockResolvedValueOnce(response(flag, "out"));
+    const exactOut = await router.routeByTokenOut(tokenOut, "uatom");
 
-    expect(quote.liquidityCap).toBe("29700");
-    expect(quote.liquidityCapOverflow).toBe(false);
-    // Adverse impact stays negative, as on exact-in.
-    expect(quote.priceImpactTokenOut?.toString()).toBe("-0.004200000000000000");
-    expect(quote.amount.toString()).toBe("41234567");
+    for (const quote of [exactIn, exactOut]) {
+      expect(quote.priceImpactTokenOut).toBeUndefined();
+      expect(quote.priceImpactUnknown).toBe(true);
+    }
   });
 
-  it("carries an overflowed cap through", async () => {
-    mockApiClient.mockResolvedValueOnce({
-      ...inGivenOutResponse,
-      liquidity_cap: "0",
-      liquidity_cap_overflow: true,
-    });
+  it("keeps the reported impact when the flag is absent", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+    const impact = { price_impact: "-0.01" };
 
-    const quote = await getSidecarRouter().routeByTokenOut(
-      { denom: "uusdc", amount: new Int("10000000") },
-      "uosmo"
+    mock.mockResolvedValueOnce(response(impact, "in"));
+    const exactIn = await router.routeByTokenIn(tokenIn, "uosmo");
+    mock.mockResolvedValueOnce(response(impact, "out"));
+    const exactOut = await router.routeByTokenOut(tokenOut, "uatom");
+
+    for (const quote of [exactIn, exactOut]) {
+      expect(quote.priceImpactTokenOut?.toString()).toBe(
+        "-0.010000000000000000"
+      );
+      expect(quote.priceImpactUnknown).toBeUndefined();
+    }
+  });
+});
+
+describe("sidecar router exact-out route liquidity", () => {
+  const tokenOut = { denom: "uosmo", amount: new Int(99) };
+
+  it("carries liquidity_cap and its overflow flag through, so exact-out quotes can pick a tier from it", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "29700", liquidity_cap_overflow: false }, "out")
     );
+    const quote = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(quote.liquidityCap).toBe("29700");
+    expect(quote.liquidityCapOverflow).toBe(false);
 
-    expect(quote.liquidityCapOverflow).toBe(true);
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "0", liquidity_cap_overflow: true }, "out")
+    );
+    const overflowed = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(overflowed.liquidityCapOverflow).toBe(true);
   });
 });
