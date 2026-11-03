@@ -31,7 +31,6 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 
   const { data: serverCategoryImageSamples } =
     api.edge.assets.getCategorySamples.useQuery(undefined, {
-      staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
     });
 
