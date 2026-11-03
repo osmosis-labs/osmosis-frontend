@@ -45,7 +45,7 @@ export function useOneClickTradingSwapReview({
   enabled: boolean;
 }) {
   const [previousIsOneClickEnabled, setPreviousIsOneClickEnabled] =
-    useLocalStorage("previous-one-click-enabled", true);
+    useLocalStorage("previous-one-click-enabled", false);
 
   const {
     isOneClickTradingEnabled: isEnabled,
@@ -63,7 +63,8 @@ export function useOneClickTradingSwapReview({
     setChanges,
   } = useOneClickTradingParams({
     oneClickTradingInfo,
-    defaultIsOneClickEnabled: previousIsOneClickEnabled,
+    // An active session always reads as on, whatever the stored choice says.
+    defaultIsOneClickEnabled: isEnabled ? true : previousIsOneClickEnabled,
   });
 
   const { wouldExceedSpendLimit, remainingSpendLimit } =
