@@ -27,13 +27,12 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepublishOnly": "yarn build",
-    "pre-commit": "lint-staged"
+    "prepublishOnly": "yarn build"
   },
   "lint-staged": {
     "*": [
-      "eslint",
-      "prettier --check"
+      "eslint --no-warn-ignored",
+      "prettier --check --ignore-unknown"
     ]
   },
   "dependencies": {

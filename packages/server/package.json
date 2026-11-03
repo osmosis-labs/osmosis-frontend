@@ -53,8 +53,8 @@
   },
   "lint-staged": {
     "*": [
-      "eslint",
-      "prettier --check"
+      "eslint --no-warn-ignored",
+      "prettier --check --ignore-unknown"
     ]
   }
 }
