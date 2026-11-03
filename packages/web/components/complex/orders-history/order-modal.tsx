@@ -88,8 +88,13 @@ const OrderDetails = ({
     isPastOrder &&
     order.percentFilled.isPositive() &&
     order.percentFilled.lt(new Dec(1));
+  // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0%" next to "Partly filled".
   const percentFilledOfPastOrder = isPartlyFilledPastOrder
-    ? new RatePretty(order.percentFilled)
+    ? new RatePretty(
+        order.percentFilled.lt(new Dec(0.01))
+          ? new Dec(0.01)
+          : order.percentFilled
+      )
     : undefined;
 
   const alreadyReceived =

@@ -104,7 +104,8 @@ export const OrderHistory = () => {
       selectedOrder &&
       orders.find(
         (o) =>
-          o !== selectedOrder &&
+          // Refetches replace the row objects, so tell the pair apart by status, not identity.
+          o.status !== selectedOrder.status &&
           o.order_id === selectedOrder.order_id &&
           o.orderbookAddress === selectedOrder.orderbookAddress
       ),
@@ -520,6 +521,15 @@ const TableOrderRow = memo(
           "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0"
         )}
         onClick={() => onOrderSelect(order)}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          // Ignore keys aimed at the row's own Cancel/Claim buttons.
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOrderSelect(order);
+          }
+        }}
       >
         <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
           <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">

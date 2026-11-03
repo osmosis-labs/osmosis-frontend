@@ -125,12 +125,14 @@ async function mapHistoricalToMapped(
   const percentFilledByOrder = new Map(
     historicalOrders
       .filter((o) => o.status === "cancelled")
-      .map((o): [string, Dec] => [
-        `${o.contract}-${o.order_id}`,
-        new Dec(o.claimed_quantity).quo(
-          new Dec(o.claimed_quantity).add(new Dec(o.quantity))
-        ),
-      ])
+      .map((o): [string, Dec] => {
+        // A real order never sums to zero, but a throw here would hide the user's whole history.
+        const total = new Dec(o.claimed_quantity).add(new Dec(o.quantity));
+        return [
+          `${o.contract}-${o.order_id}`,
+          total.isZero() ? new Dec(0) : new Dec(o.claimed_quantity).quo(total),
+        ];
+      })
   );
   return historicalOrders.map((o) => {
     const { quoteAsset, baseAsset } = orderbookDenoms[o.contract];
