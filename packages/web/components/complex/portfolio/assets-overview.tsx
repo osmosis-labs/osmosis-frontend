@@ -423,7 +423,7 @@ export const AssetsOverview: FunctionComponent<
             const currentPortfolioData = portfolioDataRef.current;
             const currentTotalValue = totalValueRef.current;
 
-            if (currentPortfolioData) {
+            if (currentPortfolioData && currentPortfolioData.length > 0) {
               setDataPoint(getLastDataPoint(currentPortfolioData));
             } else if (currentTotalValue) {
               setDataPoint({
