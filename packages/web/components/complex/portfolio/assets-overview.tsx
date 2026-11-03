@@ -19,11 +19,13 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import {
   PortfolioHistoricalChart,
   PortfolioHistoricalChartMinimized,
+  PortfolioHistoricalChartUnavailable,
 } from "~/components/complex/portfolio/historical-chart";
 import { PortfolioPerformance } from "~/components/complex/portfolio/performance";
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { PrivateText } from "~/components/privacy";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import {
@@ -38,16 +40,21 @@ import { api } from "~/utils/trpc";
 
 const CHART_CONTAINER_HEIGHT = 468;
 
+/** Returns undefined when there is no trustworthy baseline, so no change is shown. */
 const calculatePortfolioPerformance = (
   data: ChartPortfolioOverTimeResponse[] | undefined,
   dataPoint: DataPoint
-): {
-  selectedPercentageRatePretty: RatePretty;
-  selectedDifferencePricePretty: PricePretty;
-  totalPriceChange: number;
-} => {
+):
+  | {
+      selectedPercentageRatePretty: RatePretty;
+      selectedDifferencePricePretty: PricePretty;
+    }
+  | undefined => {
+  // No history (errored, loading or empty): never invent a change
+  if (!data || data.length === 0) return undefined;
+
   // Check if all values are 0, for instance if a user created a new wallet and has no transactions
-  const hasAllZeroValues = data?.every((point) => point.value === 0);
+  const hasAllZeroValues = data.every((point) => point.value === 0);
   if (
     hasAllZeroValues &&
     (dataPoint?.value === 0 || dataPoint?.value === undefined)
@@ -58,32 +65,22 @@ const calculatePortfolioPerformance = (
         DEFAULT_VS_CURRENCY,
         new Dec(0)
       ),
-      totalPriceChange: 0,
     };
   }
 
-  const openingPrice = data?.[0]?.value;
-  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
-  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
-  const selectedPercentage = selectedDifference / openingPriceWithFallback;
-  const selectedPercentageRatePretty = new RatePretty(
-    new Dec(selectedPercentage)
-  );
+  const openingPrice = data[0]?.value;
+  // A missing or zero opening value has no meaningful percentage change
+  if (!openingPrice || dataPoint?.value === undefined) return undefined;
 
-  const selectedDifferencePricePretty = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(selectedDifference)
-  );
-
-  const closingPrice = data?.[data.length - 1]?.value;
-  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
-
-  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
+  const selectedDifference = dataPoint.value - openingPrice;
+  const selectedPercentage = selectedDifference / openingPrice;
 
   return {
-    selectedPercentageRatePretty,
-    selectedDifferencePricePretty,
-    totalPriceChange,
+    selectedPercentageRatePretty: new RatePretty(new Dec(selectedPercentage)),
+    selectedDifferencePricePretty: new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      new Dec(selectedDifference)
+    ),
   };
 };
 
@@ -149,9 +146,16 @@ export const AssetsOverview: FunctionComponent<
     totalValue?: PricePretty;
     /** A held coin couldn't be priced, so the total is unknown rather than its sum. */
     isTotalValueUnknown?: boolean;
+    /** The unpriced coins behind `isTotalValueUnknown`; `totalValue` sums the priced ones. */
+    unpricedAssets?: { coinMinimalDenom: string; symbol?: string }[];
     isTotalValueFetched?: boolean;
   } & CustomClasses
-> = ({ totalValue, isTotalValueUnknown = false, isTotalValueFetched }) => {
+> = ({
+  totalValue,
+  isTotalValueUnknown = false,
+  unpricedAssets = [],
+  isTotalValueFetched,
+}) => {
   const { t } = useTranslation();
   const { startBridge, fiatRampSelection } = useBridgeStore(
     useShallow((state) => ({
@@ -184,6 +188,8 @@ export const AssetsOverview: FunctionComponent<
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
     error,
+    isFetching: isPortfolioOverTimeFetching,
+    refetch: refetchPortfolioOverTime,
   } = api.local.portfolio.getPortfolioOverTime.useQuery(
     {
       address,
@@ -192,7 +198,7 @@ export const AssetsOverview: FunctionComponent<
     {
       enabled: Boolean(isWalletConnected && walletAddress),
       select: (data) => {
-        if (totalValue && !isTotalValueUnknown) {
+        if (totalValue && !isTotalValueUnknown && data.length > 0) {
           data[data.length - 1].value = +totalValue.toDec().toString();
         }
         return data;
@@ -215,8 +221,10 @@ export const AssetsOverview: FunctionComponent<
     totalValueRef.current = totalValue;
   }, [totalValue]);
 
-  const { selectedDifferencePricePretty, selectedPercentageRatePretty } =
-    calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
+  const performance = calculatePortfolioPerformance(
+    portfolioOverTimeData,
+    dataPoint
+  );
 
   const formattedDate =
     dataPoint.time && typeof dataPoint.time === "number"
@@ -225,10 +233,17 @@ export const AssetsOverview: FunctionComponent<
         )
       : undefined;
 
-  // While not hovering a past point, an unknown total shows as unknown.
+  // While not hovering a past point, an unknown total shows only what is priced:
+  // the priced sum with a partial label, or "unavailable" if nothing is priced.
+  const isPartialTotal =
+    isTotalValueUnknown &&
+    !showDate &&
+    Boolean(totalValue?.toDec().isPositive());
   const totalDisplayValue =
     isTotalValueUnknown && !showDate
-      ? "–"
+      ? isPartialTotal
+        ? totalValue?.toString()
+        : t("portfolio.pricesUnavailable")
       : dataPoint.value !== undefined
         ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
         : totalValue?.toString();
@@ -237,7 +252,11 @@ export const AssetsOverview: FunctionComponent<
     "is-portfolio-chart-minimized",
     true
   );
-  const isChartMinimized = isChartMinimized_ || width < Breakpoint.lg;
+  // With no history to draw, the chart shrinks to a compact card. This is derived
+  // state only: the saved preference is never written because of an error.
+  const isHistoryError = Boolean(error) && !portfolioOverTimeData;
+  const isChartMinimized =
+    isChartMinimized_ || width < Breakpoint.lg || isHistoryError;
 
   const localizedPortfolioOverTimeData = useMemo(
     () => getLocalizedPortfolioOverTimeData(portfolioOverTimeData),
@@ -298,13 +317,33 @@ export const AssetsOverview: FunctionComponent<
             )}
             isLoaded={isPortfolioOverTimeDataIsFetched}
           >
-            <PortfolioPerformance
-              selectedDifference={selectedDifferencePricePretty}
-              selectedPercentage={selectedPercentageRatePretty}
-              formattedDate={formattedDate}
-              showDate={showDate}
-            />
+            {performance && (
+              <PortfolioPerformance
+                selectedDifference={performance.selectedDifferencePricePretty}
+                selectedPercentage={performance.selectedPercentageRatePretty}
+                formattedDate={formattedDate}
+                showDate={showDate}
+              />
+            )}
           </SkeletonLoader>
+          {isPartialTotal && unpricedAssets.length > 0 && (
+            <Tooltip
+              content={t("portfolio.unpricedAssetsTooltip", {
+                assets: unpricedAssets
+                  .map((asset) => asset.symbol ?? asset.coinMinimalDenom)
+                  .join(", "),
+              })}
+            >
+              <span className="body2 mt-1 w-fit cursor-help text-osmoverse-300">
+                {t(
+                  unpricedAssets.length === 1
+                    ? "portfolio.unpricedAssets"
+                    : "portfolio.unpricedAssets_plural",
+                  { count: unpricedAssets.length.toString() }
+                )}
+              </span>
+            </Tooltip>
+          )}
           <div className="flex items-center gap-2 pt-6 lg:gap-1">
             <Button
               className="flex h-[48px] items-center gap-2 !rounded-full md:gap-1"
@@ -371,29 +410,35 @@ export const AssetsOverview: FunctionComponent<
           )}
           as="div"
         >
-          <button
-            className={classNames(
-              "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
-            )}
-            onClick={() => setIsChartMinimized(false)}
-          >
-            <PortfolioHistoricalChartMinimized
-              data={localizedPortfolioOverTimeData as AreaData<Time>[]}
-              isFetched={isPortfolioOverTimeDataIsFetched}
-              error={error}
+          {isHistoryError ? (
+            <PortfolioHistoricalChartUnavailable
+              isRetrying={isPortfolioOverTimeFetching}
+              onRetry={() => void refetchPortfolioOverTime()}
             />
-            <div className="absolute z-50 h-full w-full">
-              <span className="body1 absolute top-2 right-3 text-osmoverse-400">
-                {getActiveRangeDateText(range)}
-              </span>
-              <Icon
-                id="resize-expand"
-                className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                height={16}
-                width={16}
+          ) : (
+            <button
+              className={classNames(
+                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
+              )}
+              onClick={() => setIsChartMinimized(false)}
+            >
+              <PortfolioHistoricalChartMinimized
+                data={localizedPortfolioOverTimeData as AreaData<Time>[]}
+                isFetched={isPortfolioOverTimeDataIsFetched}
               />
-            </div>
-          </button>
+              <div className="absolute z-50 h-full w-full">
+                <span className="body1 absolute top-2 right-3 text-osmoverse-400">
+                  {getActiveRangeDateText(range)}
+                </span>
+                <Icon
+                  id="resize-expand"
+                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                  height={16}
+                  width={16}
+                />
+              </div>
+            </button>
+          )}
         </Transition>
       </header>
 
@@ -417,14 +462,13 @@ export const AssetsOverview: FunctionComponent<
           setDataPoint={setDataPoint}
           range={range}
           setRange={setRange}
-          error={error}
           setShowDate={setShowDate}
           resetDataPoint={() => {
             // Use current ref values to ensure we have the latest data
             const currentPortfolioData = portfolioDataRef.current;
             const currentTotalValue = totalValueRef.current;
 
-            if (currentPortfolioData) {
+            if (currentPortfolioData && currentPortfolioData.length > 0) {
               setDataPoint(getLastDataPoint(currentPortfolioData));
             } else if (currentTotalValue) {
               setDataPoint({

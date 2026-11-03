@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Satın almak",
     "sell": "Satmak",
+    "chartTemporarilyUnavailable": "Grafik şu anda kullanılamıyor",
+    "pricesUnavailable": "Fiyatlar kullanılamıyor",
+    "unpricedAssets": "+ {count} varlık fiyatsız",
+    "unpricedAssets_plural": "+ {count} varlık fiyatsız",
+    "unpricedAssetsTooltip": "Toplama dahil değil: {assets}",
     "yourBalances": "Bakiyeleriniz",
     "yourPositions": "Pozisyonlarınız",
     "searchBalances": "Bakiyeleri ara",

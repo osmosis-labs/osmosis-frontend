@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "खरीदना",
     "sell": "बेचना",
+    "chartTemporarilyUnavailable": "चार्ट अभी उपलब्ध नहीं है",
+    "pricesUnavailable": "कीमतें उपलब्ध नहीं हैं",
+    "unpricedAssets": "+ {count} एसेट बिना कीमत के",
+    "unpricedAssets_plural": "+ {count} एसेट्स बिना कीमत के",
+    "unpricedAssetsTooltip": "कुल में शामिल नहीं: {assets}",
     "yourBalances": "आपका शेष",
     "yourPositions": "आपके पद",
     "searchBalances": "शेष राशि खोजें",

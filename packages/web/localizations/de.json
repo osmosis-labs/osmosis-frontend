@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Kaufen",
     "sell": "Verkaufen",
+    "chartTemporarilyUnavailable": "Diagramm derzeit nicht verfügbar",
+    "pricesUnavailable": "Preise nicht verfügbar",
+    "unpricedAssets": "+ {count} Asset ohne Preis",
+    "unpricedAssets_plural": "+ {count} Assets ohne Preis",
+    "unpricedAssetsTooltip": "Nicht in der Summe enthalten: {assets}",
     "yourBalances": "Ihre Guthaben",
     "yourPositions": "Ihre Positionen",
     "searchBalances": "Guthaben suchen",

@@ -35,26 +35,9 @@ export function getOrderbookHistoricalOrders({
     key: `orderbookHistoricalOrders-${userOsmoAddress}`,
     ttl: 1000 * 5, // 5 seconds
     getFreshValue: () =>
-      queryHistoricalOrders(userOsmoAddress).then(async (data) => {
-        const orders = data;
-        orders.forEach((o) => {
-          if (o.status === "cancelled" && o.claimed_quantity !== "0") {
-            const newOrder: HistoricalLimitOrder = {
-              ...o,
-              quantity: o.claimed_quantity,
-              status: "fullyClaimed",
-            };
-            orders.push(newOrder);
-          }
-        });
-
-        return await mapHistoricalToMapped(
-          orders,
-          userOsmoAddress,
-          assetLists,
-          chainList
-        );
-      }),
+      queryHistoricalOrders(userOsmoAddress).then((orders) =>
+        mapHistoricalToMapped(orders, userOsmoAddress, assetLists, chainList)
+      ),
   });
 }
 
@@ -120,32 +103,25 @@ async function mapHistoricalToMapped(
     assetLists,
     chainList
   );
-  // A cancelled order's record holds both its filled part (claimed_quantity) and its
-  // unfilled part (quantity), so its percent filled also applies to its synthetic filled row.
-  const percentFilledByOrder = new Map(
-    historicalOrders
-      .filter((o) => o.status === "cancelled")
-      .map((o): [string, Dec] => {
-        // A real order never sums to zero, but a throw here would hide the user's whole history.
-        const total = new Dec(o.claimed_quantity).add(new Dec(o.quantity));
-        return [
-          `${o.contract}-${o.order_id}`,
-          total.isZero() ? new Dec(0) : new Dec(o.claimed_quantity).quo(total),
-        ];
-      })
-  );
   return historicalOrders.map((o) => {
     const { quoteAsset, baseAsset } = orderbookDenoms[o.contract];
-    const quantityMin = parseInt(o.quantity);
-    const placedQuantityMin = parseInt(o.quantity);
     const price = tickToPrice(new Int(o.tick_id));
-    // Everything a past order filled has been paid out, so claimed equals filled.
+    // Numia's `quantity` is a cancelled order's unfilled input, which was returned, and
+    // `claimed_quantity` its filled input. A fully claimed order's `quantity` is the whole order.
+    // As with active orders, `quantity` below is what was left unfilled.
+    const isCancelled = o.status === "cancelled";
+    const totalFilled = parseInt(isCancelled ? o.claimed_quantity : o.quantity);
+    const quantity = isCancelled ? parseInt(o.quantity) : 0;
+    const placedQuantity = totalFilled + quantity;
+    // A real order never sums to zero, but a throw here would hide the user's whole history.
     const percentFilled =
-      percentFilledByOrder.get(`${o.contract}-${o.order_id}`) ?? new Dec(1);
+      placedQuantity === 0
+        ? new Dec(0)
+        : new Dec(totalFilled).quo(new Dec(placedQuantity));
     const output =
       o.order_direction === "bid"
-        ? new Dec(placedQuantityMin).quo(price)
-        : new Dec(placedQuantityMin).mul(price);
+        ? new Dec(placedQuantity).quo(price)
+        : new Dec(placedQuantity).mul(price);
 
     const normalizationFactor = new Dec(10).pow(
       new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
@@ -167,17 +143,16 @@ async function mapHistoricalToMapped(
             : 0
         )
         .unix(),
-      placed_quantity: parseInt(o.quantity),
-      placedQuantityMin,
-      quantityMin,
-      quantity: parseInt(o.quantity),
+      placed_quantity: placedQuantity,
+      quantity,
       price: price.quo(normalizationFactor),
       status: o.status as OrderStatus,
       tick_id: parseInt(o.tick_id),
       output,
+      // Everything a past order filled has been paid out, so claimed equals filled.
       percentClaimed: percentFilled,
       percentFilled,
-      totalFilled: parseInt(o.quantity),
+      totalFilled,
       orderbookAddress: o.contract,
       placed_tx: o.place_tx_hash,
     };

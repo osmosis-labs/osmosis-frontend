@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Kupić",
     "sell": "Sprzedać",
+    "chartTemporarilyUnavailable": "Wykres jest obecnie niedostępny",
+    "pricesUnavailable": "Ceny niedostępne",
+    "unpricedAssets": "+ {count} aktywo bez ceny",
+    "unpricedAssets_plural": "+ {count} aktywów bez ceny",
+    "unpricedAssetsTooltip": "Nie wliczono do sumy: {assets}",
     "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
     "searchBalances": "Wyszukaj salda",

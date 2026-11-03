@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Cumpără",
     "sell": "Vinde",
+    "chartTemporarilyUnavailable": "Graficul nu este disponibil momentan",
+    "pricesUnavailable": "Prețuri indisponibile",
+    "unpricedAssets": "+ {count} activ fără preț",
+    "unpricedAssets_plural": "+ {count} active fără preț",
+    "unpricedAssetsTooltip": "Nu este inclus în total: {assets}",
     "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
     "searchBalances": "Căutați solduri",

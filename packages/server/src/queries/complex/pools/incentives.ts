@@ -113,7 +113,8 @@ export function getCachedPoolIncentivesMap(): Promise<
         if (superfluidUpper && superfluidLower)
           incentiveTypes.push("superfluid");
         if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
-        if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+        // OSMO pool incentives ended when minting stopped, so boost must not depend on them.
+        if (boostUpper && boostLower) incentiveTypes.push("boost");
         if (
           !superfluidUpper &&
           !superfluidLower &&

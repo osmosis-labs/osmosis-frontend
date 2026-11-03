@@ -24,7 +24,10 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 
 import {
   ConcentratedDepositAmount,
@@ -62,7 +65,8 @@ export function getQuoteOverBaseMultiplier(
 
 /** Raw price input after the user typed `value`: invalid input is ignored, empty resets to "0". */
 export function reducePriceInput(prev: string, value: string): string {
-  const trimmed = value.trim();
+  const trimmed = normalizeDecimalSeparator(value.trim());
+  if (trimmed === null) return prev;
   if (trimmed === "") return "0";
   if (!isValidNumericalRawInput(trimmed)) return prev;
   return trimmed.startsWith(".") ? "0" + trimmed : trimmed;
