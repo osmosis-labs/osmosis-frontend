@@ -41,7 +41,7 @@ export const OrderModal = memo(
       <ModalBase
         isOpen={!!order}
         onRequestClose={onRequestClose}
-        className="xl:!px-0 xl:!pb-0 xl:!pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+        className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
       >
         <OrderDetails
           order={order}
@@ -256,7 +256,7 @@ const OrderDetails = ({
   return (
     <div
       className={classNames(
-        "flex w-full flex-col overflow-y-auto bg-osmoverse-900 xl:bg-osmoverse-850 xl:!py-6 xl:!px-8 sm:top-0 sm:rounded-none sm:!px-4"
+        "flex w-full flex-col overflow-y-auto bg-osmoverse-850 !py-6 !px-8 sm:top-0 sm:rounded-none sm:!px-4"
       )}
     >
       {!isModal && (
