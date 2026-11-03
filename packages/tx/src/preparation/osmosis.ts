@@ -843,8 +843,15 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
-  const amount0Min = applyClMinAmountTolerance(coin0.amount, maxSlippage);
-  const amount1Min = applyClMinAmountTolerance(coin1.amount, maxSlippage);
+  // calculate desired amounts with slippage
+  const amount0WithSlippage = applyClMinAmountTolerance(
+    coin0.amount,
+    maxSlippage
+  );
+  const amount1WithSlippage = applyClMinAmountTolerance(
+    coin1.amount,
+    maxSlippage
+  );
 
   // Fresh read from chain REST; a failed request throws before anything is
   // signed rather than being treated as "not staked".
@@ -857,19 +864,17 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
     ({ position_id }) => position_id === positionId
   );
 
-  // The superfluid add message has no minimum fields (the chain passes zero
-  // minimums), so it takes the entered amounts as-is.
   const msg = isSuperfluidStaked
     ? await makeAddToConcentratedLiquiditySuperfluidPositionMsg({
         positionId: BigInt(positionId),
         sender: context.address,
         tokenDesired0: {
           denom: coin0.denom,
-          amount: coin0.amount,
+          amount: amount0WithSlippage,
         },
         tokenDesired1: {
           denom: coin1.denom,
-          amount: coin1.amount,
+          amount: amount1WithSlippage,
         },
       })
     : await makeAddToPositionMsg({
@@ -877,8 +882,8 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
         amount1: coin1.amount,
         positionId: BigInt(positionId),
         sender: context.address,
-        tokenMinAmount0: amount0Min,
-        tokenMinAmount1: amount1Min,
+        tokenMinAmount0: amount0WithSlippage,
+        tokenMinAmount1: amount1WithSlippage,
       });
 
   return prepareTransaction(
