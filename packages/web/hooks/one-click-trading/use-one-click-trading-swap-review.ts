@@ -45,7 +45,7 @@ export function useOneClickTradingSwapReview({
   enabled: boolean;
 }) {
   const [previousIsOneClickEnabled, setPreviousIsOneClickEnabled] =
-    useLocalStorage("previous-one-click-enabled", true);
+    useLocalStorage("previous-one-click-enabled", false);
 
   const {
     isOneClickTradingEnabled: isEnabled,
