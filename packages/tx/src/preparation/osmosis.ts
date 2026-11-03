@@ -449,7 +449,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
         new Dec(maxSlippage).quo(new Dec(100))
       );
 
-      if (currentTick >= lowerTick && currentTick < upperTick) {
+      if (currentTick.gte(lowerTick) && currentTick.lt(upperTick)) {
         // Position consists of both tokens
         token_min_amount0 = baseCoin
           ? new Dec(baseCoin.amount)
@@ -464,7 +464,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
               .truncate()
               .toString()
           : token_min_amount1;
-      } else if (currentTick < lowerTick) {
+      } else if (currentTick.lt(lowerTick)) {
         // Position consists of 1 token only.
         token_min_amount0 = baseCoin
           ? new Dec(baseCoin.amount)
@@ -472,7 +472,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
               .truncate()
               .toString()
           : token_min_amount0;
-      } else if (currentTick >= upperTick) {
+      } else if (currentTick.gte(upperTick)) {
         // Position consists of 1 token only.
         token_min_amount1 = quoteCoin
           ? new Dec(quoteCoin.amount)
