@@ -819,8 +819,11 @@ const useLimitPrice = ({
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (rawPrice: string) => {
-      const price = normalizeDecimalSeparator(rawPrice);
-      if (price === null) return;
+      const normalizedPrice = normalizeDecimalSeparator(rawPrice);
+      if (normalizedPrice === null) return;
+      const price = normalizedPrice.startsWith(".")
+        ? "0" + normalizedPrice
+        : normalizedPrice;
       if (countDecimals(price) > 12) {
         return;
       }
