@@ -476,7 +476,21 @@ export class NomicBridgeProvider implements BridgeProvider {
       if (bitcoinCounterparty || isNomicBtc) {
         let transferTypes: BridgeSupportedAsset["transferTypes"] = [];
 
-        if (direction === "withdraw" && nomicWithdrawEnabled) {
+        // Withdrawals (allBTC swaps to nBTC, then Nomic) are only offered while
+        // nBTC withdrawals are not halted; this reappears when the halt is lifted.
+        const isNomicBtcWithdrawalHalted = this.ctx.assetLists
+          .flatMap(({ assets }) => assets)
+          .some(
+            (a) =>
+              a.coinMinimalDenom.toLowerCase() ===
+                this.nBTCMinimalDenom.toLowerCase() && a.haltWithdrawals
+          );
+
+        if (
+          direction === "withdraw" &&
+          nomicWithdrawEnabled &&
+          !isNomicBtcWithdrawalHalted
+        ) {
           transferTypes = ["quote"];
         } else if (direction === "deposit" && (isNomicBtc || isAllBtc)) {
           transferTypes = ["deposit-address"];
