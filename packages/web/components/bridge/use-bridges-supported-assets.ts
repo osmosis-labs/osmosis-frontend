@@ -7,6 +7,11 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { useEffect, useMemo, useRef } from "react";
 
+import {
+  ALL_BTC_WITHDRAWAL_DESTINATIONS,
+  isAllBtcDenom,
+  isAllowedAllBtcWithdrawalDestination,
+} from "~/config/btc-withdrawal";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -60,6 +65,12 @@ export const useBridgesSupportedAssets = ({
   const allowMultiTx = multiTxBridgeRoutes === true && direction === "deposit";
   // Kill switch for the Phantom-signed Solana routes, in both directions.
   const allowSolana = solanaSkipRoutes === true;
+
+  // Withdrawing allBTC itself (matched by denom). Withdrawing one of its
+  // variants (e.g. WBTC.eth.axl) keeps the unrestricted Squid/Skip routes.
+  const isAllBtcWithdrawal =
+    direction === "withdraw" &&
+    !!assets?.some((asset) => isAllBtcDenom(asset.coinMinimalDenom));
 
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
@@ -365,7 +376,11 @@ export const useBridgesSupportedAssets = ({
       ]
     );
 
-    return Object.fromEntries(assetEntriesByChainId) as Record<
+    // allBTC withdrawals are limited to a fixed token on Ethereum and Base.
+    // Applied to the merged output so the Skip family merge (the only source of
+    // allBTC's Ethereum/Base destinations) is untouched. Variant holders are
+    // not restricted: `assets` is the single selected variant on withdraw.
+    const supportedAssets = Object.fromEntries(assetEntriesByChainId) as Record<
       keyof AssetsByChainId,
       Omit<
         AssetsByChainId[string][number] & {
@@ -377,7 +392,20 @@ export const useBridgesSupportedAssets = ({
         "providerName"
       >[]
     >;
-  }, [successfulQueries]);
+
+    if (!isAllBtcWithdrawal) return supportedAssets;
+
+    return Object.fromEntries(
+      Object.entries(supportedAssets)
+        .filter(([chainId]) => chainId in ALL_BTC_WITHDRAWAL_DESTINATIONS)
+        .map(([chainId, chainAssets]) => [
+          chainId,
+          chainAssets.filter((asset) =>
+            isAllowedAllBtcWithdrawalDestination(chainId, asset.address)
+          ),
+        ])
+    ) as typeof supportedAssets;
+  }, [successfulQueries, isAllBtcWithdrawal]);
 
   const supportedChains = useMemo(() => {
     // Positional default hoists: for certain assets we prefer a specific
@@ -424,6 +452,12 @@ export const useBridgesSupportedAssets = ({
       asset.coinGeckoId === "cosmos";
 
     const hoistRules: HoistRule[] = [
+      // allBTC withdrawals -> Ethereum (WBTC) by default.
+      {
+        chainId: 1,
+        matchesAsset: (asset) =>
+          isAllBtcWithdrawal && isAllBtcDenom(asset.coinMinimalDenom),
+      },
       // USDC -> Ethereum, which holds the large majority of USDC supply.
       // Routing is left to the bridge providers (Skip may use CCTP, Axelar or
       // another path), so the route variant is the canonical `USDC` alloy that
@@ -485,6 +519,11 @@ export const useBridgesSupportedAssets = ({
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
+          .filter(
+            (chain) =>
+              !isAllBtcWithdrawal ||
+              chain.chainId in ALL_BTC_WITHDRAWAL_DESTINATIONS
+          )
           .sort((a, b) => {
             // Apply each active positional hoist: pin its destination chain
             // first. Only hoists whose destination route is usable are present.
@@ -515,7 +554,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries, direction, assets, variantAssets]);
+  }, [successfulQueries, direction, assets, variantAssets, isAllBtcWithdrawal]);
 
   /**
    * Loading until any provider has produced a chain the app itself can
