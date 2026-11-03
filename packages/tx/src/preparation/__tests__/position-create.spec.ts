@@ -39,14 +39,13 @@ describe("prepareCreateConcentratedLiquidityPositionMsg", () => {
       {
         currency: { coinMinimalDenom: "uusdc", coinDecimals: 6 },
         amount: "10",
-      } as unknown as { currency: Currency; amount: string },
-      "15"
+      } as unknown as { currency: Currency; amount: string }
     );
 
     expect(makeCreatePositionMsg).toHaveBeenCalledWith(
       expect.objectContaining({
-        tokenMinAmount0: "17000000",
-        tokenMinAmount1: "8500000",
+        tokenMinAmount0: "19000000",
+        tokenMinAmount1: "9500000",
       })
     );
   });
