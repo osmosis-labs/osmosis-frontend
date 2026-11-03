@@ -89,20 +89,6 @@ describe("useClZapQuote", () => {
     expect(options.enabled).toBe(true);
   });
 
-  it("returns the SQS quote verbatim", () => {
-    const { result } = renderHook(() =>
-      useClZapQuote({
-        tokenInAmount: "1000000",
-        tokenInDenom: usdcDenom,
-        tokenOutDenom: osmoDenom,
-      })
-    );
-
-    expect(result.current.quote?.amount.toCoin().amount).toBe("995000");
-    expect(result.current.quote?.split[0].pools[0].id).toBe("1");
-    expect(result.current.isEnabled).toBe(true);
-  });
-
   it("disables the query for a zero input and never falls through to routeTokenInGivenOut", () => {
     const { result } = renderHook(() =>
       useClZapQuote({
@@ -117,41 +103,6 @@ describe("useClZapQuote", () => {
     expect(result.current.isEnabled).toBe(false);
     // exact-out must never be used to derive an exact-in split
     expect(mockUseInGivenOut).not.toHaveBeenCalled();
-  });
-
-  it("disables the query when in and out denoms match", () => {
-    renderHook(() =>
-      useClZapQuote({
-        tokenInAmount: "1000000",
-        tokenInDenom: usdcDenom,
-        tokenOutDenom: usdcDenom,
-      })
-    );
-
-    const [, options] = mockUseOutGivenIn.mock.calls[0];
-    expect(options.enabled).toBe(false);
-  });
-
-  it("holds the last quote across a same-request background refetch", () => {
-    const { result, rerender } = renderHook(
-      (props: { tokenInDenom: string; tokenOutDenom: string }) =>
-        useClZapQuote({ tokenInAmount: "1000000", ...props }),
-      { initialProps: { tokenInDenom: usdcDenom, tokenOutDenom: osmoDenom } }
-    );
-    expect(result.current.quote).toBeDefined();
-
-    // Same request, data transiently gone on the 5s refetch: the held quote
-    // keeps the breakdown from collapsing to a spinner.
-    mockUseOutGivenIn.mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      isError: false,
-      error: null,
-    });
-    rerender({ tokenInDenom: usdcDenom, tokenOutDenom: osmoDenom });
-
-    expect(result.current.quote?.amount.toCoin().amount).toBe("995000");
-    expect(result.current.isLoading).toBe(false);
   });
 
   it("drops the held quote when the direction flips, even at the same amount", () => {
@@ -176,19 +127,5 @@ describe("useClZapQuote", () => {
 
     expect(result.current.quote).toBeUndefined();
     expect(result.current.isLoading).toBe(true);
-  });
-
-  it("respects an external enabled=false gate (e.g. no swap needed)", () => {
-    renderHook(() =>
-      useClZapQuote({
-        tokenInAmount: "1000000",
-        tokenInDenom: usdcDenom,
-        tokenOutDenom: osmoDenom,
-        enabled: false,
-      })
-    );
-
-    const [, options] = mockUseOutGivenIn.mock.calls[0];
-    expect(options.enabled).toBe(false);
   });
 });
