@@ -81,7 +81,7 @@ export const ForcedMigrationModal = () => {
   const isOpen = visibleMigrations.length > 0 && !migrating;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the per-denom fee errors that rows reported once the popup closes
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- clears the per-denom fee errors that rows reported once the popup closes
     if (!isOpen) setInsufficientFeeByDenom({});
   }, [isOpen]);
 

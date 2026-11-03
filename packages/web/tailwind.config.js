@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {

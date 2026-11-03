@@ -21,8 +21,8 @@
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "test:e2e": "yarn with-env jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)'",
-    "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
-    "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint": "oxlint src && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
     "prepublishOnly": "yarn build",
     "with-env": "dotenv -e ../web/.env -c --"
   },
@@ -37,15 +37,15 @@
     "zod": "^4.6.6"
   },
   "devDependencies": {
-    "eslint": "^9.39.5",
     "jest": "^30.5.2",
+    "oxlint": "^1.90.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "lint-staged": {
     "*": [
-      "eslint --no-warn-ignored",
+      "oxlint --no-error-on-unmatched-pattern",
       "prettier --check --ignore-unknown"
     ]
   }
