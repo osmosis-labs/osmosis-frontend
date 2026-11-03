@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Acheter",
     "sell": "Vendre",
+    "chartTemporarilyUnavailable": "Graphique indisponible pour le moment",
+    "pricesUnavailable": "Prix indisponibles",
+    "unpricedAssets": "+ {count} actif sans prix",
+    "unpricedAssets_plural": "+ {count} actifs sans prix",
+    "unpricedAssetsTooltip": "Non inclus dans le total : {assets}",
     "yourBalances": "Vos soldes",
     "yourPositions": "Vos postes",
     "searchBalances": "Rechercher des soldes",

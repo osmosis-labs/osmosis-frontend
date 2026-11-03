@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Купить",
     "sell": "Продавать",
+    "chartTemporarilyUnavailable": "График сейчас недоступен",
+    "pricesUnavailable": "Цены недоступны",
+    "unpricedAssets": "+ {count} актив без цены",
+    "unpricedAssets_plural": "+ {count} активов без цены",
+    "unpricedAssetsTooltip": "Не включено в итог: {assets}",
     "yourBalances": "Ваши балансы",
     "yourPositions": "Ваши позиции",
     "searchBalances": "Поиск остатков",
