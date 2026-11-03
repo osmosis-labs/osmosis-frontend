@@ -23,34 +23,34 @@ describe("applyClMinAmountTolerance", () => {
 });
 
 describe("initial full-range position minimums", () => {
-  it("uses base-unit amounts in the same denom order as tokensProvided", async () => {
+  it("binds base to min0 and quote to min1 in base units, with tokensProvided sorted", async () => {
     jest
       .mocked(makeCreatePositionMsg)
       .mockResolvedValue(
         {} as Awaited<ReturnType<typeof makeCreatePositionMsg>>
       );
-    // base sorts after quote, and decimals differ
+    // base (uosmo) sorts after quote (factory/...), and decimals differ
     await prepareCreateConcentratedLiquidityInitialFullRangePositionMsg(
       { address: "osmo1test" } as unknown as TransactionPreparationContext,
       "1",
       "",
       {
-        token: { coinMinimalDenom: "uusdc", coinDecimals: 6 },
+        token: { coinMinimalDenom: "uosmo", coinDecimals: 6 },
         amount: "100",
       } as never,
       {
-        token: { coinMinimalDenom: "aaa", coinDecimals: 18 },
+        token: { coinMinimalDenom: "factory/osmo1x/allUSDC", coinDecimals: 18 },
         amount: "2",
       } as never
     );
     expect(makeCreatePositionMsg).toHaveBeenCalledWith(
       expect.objectContaining({
         tokensProvided: [
-          { denom: "aaa", amount: "2000000000000000000" },
-          { denom: "uusdc", amount: "100000000" },
+          { denom: "factory/osmo1x/allUSDC", amount: "2000000000000000000" },
+          { denom: "uosmo", amount: "100000000" },
         ],
-        tokenMinAmount0: "1900000000000000000",
-        tokenMinAmount1: "95000000",
+        tokenMinAmount0: "95000000",
+        tokenMinAmount1: "1900000000000000000",
       })
     );
   });
