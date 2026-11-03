@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Cumpără",
     "sell": "Vinde",
+    "chartTemporarilyUnavailable": "Graficul nu este disponibil momentan",
+    "pricesUnavailable": "Prețuri indisponibile",
+    "unpricedAssets": "+ {count} activ fără preț",
+    "unpricedAssets_plural": "+ {count} active fără preț",
+    "unpricedAssetsTooltip": "Nu este inclus în total: {assets}",
     "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
     "searchBalances": "Căutați solduri",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "Faceți clic pentru a crea un orderbook pentru această pereche.",
     "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
-    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis."
+    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
+    "returned": "Returnat",
+    "partlyFilled": "Executat parțial",
+    "returnedUnfilled": "Returnat (neexecutat)",
+    "alreadyReceived": "Deja primit",
+    "howPayoutsWork": "Cum funcționează plățile?",
+    "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată."
   },
   "tradeDetails": {
     "priceImpact": {

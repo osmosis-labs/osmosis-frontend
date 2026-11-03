@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "買う",
     "sell": "売る",
+    "chartTemporarilyUnavailable": "チャートは現在利用できません",
+    "pricesUnavailable": "価格を取得できません",
+    "unpricedAssets": "+ 価格のない資産 {count} 件",
+    "unpricedAssets_plural": "+ 価格のない資産 {count} 件",
+    "unpricedAssetsTooltip": "合計に含まれていません: {assets}",
     "yourBalances": "残高",
     "yourPositions": "あなたの立場",
     "searchBalances": "残高を検索",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "クリックしてこのペアのorderbookを作成します。",
     "creationInProgress": "このペアのオーダーブック作成は別のタブで既に進行中です",
     "creationAwaitingConfirmation": "このペアの以前のオーダーブック作成は、まだオンチェーンでの確認待ちです。数分後にもう一度お試しください。",
-    "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。"
+    "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。",
+    "returned": "返却済み",
+    "partlyFilled": "一部約定",
+    "returnedUnfilled": "返却済み（未約定）",
+    "alreadyReceived": "受取済み",
+    "howPayoutsWork": "支払いの仕組み",
+    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「請求」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。"
   },
   "tradeDetails": {
     "priceImpact": {

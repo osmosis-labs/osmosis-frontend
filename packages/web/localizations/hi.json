@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "खरीदना",
     "sell": "बेचना",
+    "chartTemporarilyUnavailable": "चार्ट अभी उपलब्ध नहीं है",
+    "pricesUnavailable": "कीमतें उपलब्ध नहीं हैं",
+    "unpricedAssets": "+ {count} एसेट बिना कीमत के",
+    "unpricedAssets_plural": "+ {count} एसेट्स बिना कीमत के",
+    "unpricedAssetsTooltip": "कुल में शामिल नहीं: {assets}",
     "yourBalances": "आपका शेष",
     "yourPositions": "आपके पद",
     "searchBalances": "शेष राशि खोजें",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "इस जोड़ी के लिए एक orderbook बनाने के लिए क्लिक करें।",
     "creationInProgress": "इस जोड़ी के लिए ऑर्डरबुक निर्माण पहले से ही दूसरे टैब में चल रहा है",
     "creationAwaitingConfirmation": "इस जोड़ी के लिए पिछला ऑर्डरबुक निर्माण अभी भी ऑनचेन पुष्टि की प्रतीक्षा में है। कुछ मिनट में फिर से प्रयास करें।",
-    "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।"
+    "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।",
+    "returned": "वापस किया गया",
+    "partlyFilled": "आंशिक रूप से भरा गया",
+    "returnedUnfilled": "वापस किया गया (नहीं भरा गया)",
+    "alreadyReceived": "पहले ही प्राप्त",
+    "howPayoutsWork": "भुगतान कैसे होते हैं?",
+    "payoutNote": "भरी गई राशि आमतौर पर अपने आप आपके वॉलेट में भेज दी जाती है, अक्सर ऑर्डर भरने के साथ कई भुगतानों में, और यह आपके रद्द करने से घंटों या दिनों पहले आ सकती है। यदि किसी ऑर्डर पर “दावा करें” दिखता है, तो भरी गई राशि का कुछ हिस्सा अभी तक भुगतान नहीं हुआ है। रद्द करने पर केवल न भरी गई राशि वापस मिलती है।"
   },
   "tradeDetails": {
     "priceImpact": {

@@ -4,6 +4,7 @@ import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
@@ -13,6 +14,8 @@ import {
 } from "../../data-services";
 import { getOrderbookDenoms } from "./denoms";
 import type { MappedLimitOrder, OrderStatus } from "./types";
+
+dayjs.extend(utc);
 
 const orderbookHistoricalOrdersCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -32,26 +35,9 @@ export function getOrderbookHistoricalOrders({
     key: `orderbookHistoricalOrders-${userOsmoAddress}`,
     ttl: 1000 * 5, // 5 seconds
     getFreshValue: () =>
-      queryHistoricalOrders(userOsmoAddress).then(async (data) => {
-        const orders = data;
-        orders.forEach((o) => {
-          if (o.status === "cancelled" && o.claimed_quantity !== "0") {
-            const newOrder: HistoricalLimitOrder = {
-              ...o,
-              quantity: o.claimed_quantity,
-              status: "fullyClaimed",
-            };
-            orders.push(newOrder);
-          }
-        });
-
-        return await mapHistoricalToMapped(
-          orders,
-          userOsmoAddress,
-          assetLists,
-          chainList
-        );
-      }),
+      queryHistoricalOrders(userOsmoAddress).then((orders) =>
+        mapHistoricalToMapped(orders, userOsmoAddress, assetLists, chainList)
+      ),
   });
 }
 
@@ -119,14 +105,23 @@ async function mapHistoricalToMapped(
   );
   return historicalOrders.map((o) => {
     const { quoteAsset, baseAsset } = orderbookDenoms[o.contract];
-    const quantityMin = parseInt(o.quantity);
-    const placedQuantityMin = parseInt(o.quantity);
     const price = tickToPrice(new Int(o.tick_id));
-    const percentClaimed = new Dec(1);
+    // Numia's `quantity` is a cancelled order's unfilled input, which was returned, and
+    // `claimed_quantity` its filled input. A fully claimed order's `quantity` is the whole order.
+    // As with active orders, `quantity` below is what was left unfilled.
+    const isCancelled = o.status === "cancelled";
+    const totalFilled = parseInt(isCancelled ? o.claimed_quantity : o.quantity);
+    const quantity = isCancelled ? parseInt(o.quantity) : 0;
+    const placedQuantity = totalFilled + quantity;
+    // A real order never sums to zero, but a throw here would hide the user's whole history.
+    const percentFilled =
+      placedQuantity === 0
+        ? new Dec(0)
+        : new Dec(totalFilled).quo(new Dec(placedQuantity));
     const output =
       o.order_direction === "bid"
-        ? new Dec(placedQuantityMin).quo(price)
-        : new Dec(placedQuantityMin).mul(price);
+        ? new Dec(placedQuantity).quo(price)
+        : new Dec(placedQuantity).mul(price);
 
     const normalizationFactor = new Dec(10).pow(
       new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
@@ -139,22 +134,25 @@ async function mapHistoricalToMapped(
       order_direction: o.order_direction,
       order_id: parseInt(o.order_id),
       owner: userAddress,
-      placed_at: dayjs(
-        o.place_timestamp && o.place_timestamp.length > 0
-          ? o.place_timestamp
-          : 0
-      ).unix(),
-      placed_quantity: parseInt(o.quantity),
-      placedQuantityMin,
-      quantityMin,
-      quantity: parseInt(o.quantity),
+      // Numia sends UTC timestamps without a zone marker ("2026-11-02 23:34:44"),
+      // and this can run in the browser, so parse as UTC rather than local time.
+      placed_at: dayjs
+        .utc(
+          o.place_timestamp && o.place_timestamp.length > 0
+            ? o.place_timestamp
+            : 0
+        )
+        .unix(),
+      placed_quantity: placedQuantity,
+      quantity,
       price: price.quo(normalizationFactor),
       status: o.status as OrderStatus,
       tick_id: parseInt(o.tick_id),
       output,
-      percentClaimed,
-      percentFilled: new Dec(1),
-      totalFilled: parseInt(o.quantity),
+      // Everything a past order filled has been paid out, so claimed equals filled.
+      percentClaimed: percentFilled,
+      percentFilled,
+      totalFilled,
       orderbookAddress: o.contract,
       placed_tx: o.place_tx_hash,
     };

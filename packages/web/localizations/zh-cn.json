@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "买",
     "sell": "卖",
+    "chartTemporarilyUnavailable": "图表暂时不可用",
+    "pricesUnavailable": "价格不可用",
+    "unpricedAssets": "+ {count} 个资产无价格",
+    "unpricedAssets_plural": "+ {count} 个资产无价格",
+    "unpricedAssetsTooltip": "未计入总额：{assets}",
     "yourBalances": "您的余额",
     "yourPositions": "您的职位",
     "searchBalances": "搜索余额",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
     "creationInProgress": "该交易对的订单簿创建已在另一个标签页中进行",
     "creationAwaitingConfirmation": "此交易对之前的订单簿创建仍在等待链上确认。请几分钟后重试。",
-    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
+    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。",
+    "returned": "已退回",
+    "partlyFilled": "部分成交",
+    "returnedUnfilled": "已退回（未成交）",
+    "alreadyReceived": "已收到",
+    "howPayoutsWork": "付款如何进行？",
+    "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“认领”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。"
   },
   "tradeDetails": {
     "priceImpact": {

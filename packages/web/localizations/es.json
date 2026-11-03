@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
+    "chartTemporarilyUnavailable": "Gráfico no disponible en este momento",
+    "pricesUnavailable": "Precios no disponibles",
+    "unpricedAssets": "+ {count} activo sin precio",
+    "unpricedAssets_plural": "+ {count} activos sin precio",
+    "unpricedAssetsTooltip": "No incluido en el total: {assets}",
     "yourBalances": "Sus saldos",
     "yourPositions": "Tus posiciones",
     "searchBalances": "Buscar saldos",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "Haga clic para crear un orderbook para este par.",
     "creationInProgress": "Ya hay una creación de orderbook para este par en curso en otra pestaña",
     "creationAwaitingConfirmation": "Una creación anterior de libro de órdenes para este par sigue pendiente de confirmación onchain. Inténtalo de nuevo en unos minutos.",
-    "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis."
+    "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis.",
+    "returned": "Devuelto",
+    "partlyFilled": "Ejecutado parcialmente",
+    "returnedUnfilled": "Devuelto (no ejecutado)",
+    "alreadyReceived": "Ya recibido",
+    "howPayoutsWork": "¿Cómo funcionan los pagos?",
+    "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado."
   },
   "tradeDetails": {
     "priceImpact": {

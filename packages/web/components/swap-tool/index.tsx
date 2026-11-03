@@ -184,9 +184,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     // review modal, so this button label and that checkbox can never disagree
     // about what counts as high impact — including at the boundary, which the
     // previous `lt(new Dec(-0.05))` form got wrong by one tick.
-    const showPriceImpactWarning = quotedPriceImpact
-      ? priceImpactLoss(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
-      : false;
+    const showPriceImpactWarning =
+      Boolean(swapState.quote?.priceImpactUnknown) ||
+      (quotedPriceImpact
+        ? priceImpactLoss(quotedPriceImpact.toDec()).gte(HighPriceImpactGate)
+        : false);
 
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
@@ -844,10 +846,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
           overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
           priceImpactTokenOut={swapState.quote?.priceImpactTokenOut}
+          priceImpactUnknown={swapState.quote?.priceImpactUnknown}
           quoteAmount={swapState.quote?.amount.toDec()}
           outAssetPrice={swapState.outAmountInput.price}
           slippageSource={swapSlippage.source}
           slippageLiquidityUnknown={swapSlippage.liquidityUnknown}
+          swapFee={swapState.quote?.swapFee}
+          swapFeeFiat={swapState.tokenInFeeAmountFiatValue}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

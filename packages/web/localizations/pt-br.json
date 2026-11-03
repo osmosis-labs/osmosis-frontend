@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
+    "chartTemporarilyUnavailable": "Gráfico indisponível no momento",
+    "pricesUnavailable": "Preços indisponíveis",
+    "unpricedAssets": "+ {count} ativo sem preço",
+    "unpricedAssets_plural": "+ {count} ativos sem preço",
+    "unpricedAssetsTooltip": "Não incluído no total: {assets}",
     "yourBalances": "Seus saldos",
     "yourPositions": "Suas posições",
     "searchBalances": "Pesquisar saldos",
@@ -1436,7 +1441,13 @@
     "clickToCreateOrderbook": "Clique para criar um orderbook para este par.",
     "creationInProgress": "A criação de um orderbook para este par já está em andamento em outra aba",
     "creationAwaitingConfirmation": "Uma criação anterior de livro de ordens para este par ainda aguarda confirmação onchain. Tente novamente em alguns minutos.",
-    "createOrderbookDescription": "Criar um orderbook pool permite que limit orders sejam colocadas para este par de negociação na Osmosis."
+    "createOrderbookDescription": "Criar um orderbook pool permite que limit orders sejam colocadas para este par de negociação na Osmosis.",
+    "returned": "Devolvido",
+    "partlyFilled": "Parcialmente executado",
+    "returnedUnfilled": "Devolvido (não executado)",
+    "alreadyReceived": "Já recebido",
+    "howPayoutsWork": "Como funcionam os pagamentos?",
+    "payoutNote": "Os valores executados normalmente são pagos automaticamente na sua carteira, muitas vezes em vários pagamentos à medida que a ordem é executada, e podem chegar horas ou dias antes de você cancelar. Se uma ordem mostrar “Reivindique”, parte do valor executado ainda não foi paga. Cancelar devolve apenas o valor não executado."
   },
   "tradeDetails": {
     "priceImpact": {
