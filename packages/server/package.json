@@ -53,8 +53,8 @@
   },
   "lint-staged": {
     "*": [
-      "oxlint",
-      "prettier --check"
+      "oxlint --no-error-on-unmatched-pattern",
+      "prettier --check --ignore-unknown"
     ]
   }
 }

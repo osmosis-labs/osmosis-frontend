@@ -27,7 +27,6 @@
     "test": "jest",
     "lint": "oxlint src && prettier --check \"src/**/*\"",
     "lint:fix": "oxlint --fix src && prettier --write \"src/**/*\"",
-    "pre-commit": "lint-staged",
     "prepublishOnly": "yarn build",
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
@@ -36,8 +35,8 @@
   },
   "lint-staged": {
     "*": [
-      "oxlint",
-      "prettier --check"
+      "oxlint --no-error-on-unmatched-pattern",
+      "prettier --check --ignore-unknown"
     ]
   },
   "devDependencies": {
