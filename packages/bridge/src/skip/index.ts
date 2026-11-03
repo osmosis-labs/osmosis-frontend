@@ -698,6 +698,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain,
           transferFee,
           estimatedTime: route.estimated_route_duration_seconds,
+          viaAxelar: route.operations.some((op) => "axelar_transfer" in op),
           transactionRequest:
             transactionRequest.type === "cosmos" && estimatedGasFee?.gas
               ? {

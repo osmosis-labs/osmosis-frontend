@@ -290,6 +290,7 @@ describe("SkipBridgeProvider", () => {
         isAdditive: true,
       },
       estimatedTime: 30,
+      viaAxelar: true,
       transactionRequest: {
         type: "evm",
         to: "0xD397883c12b71ea39e0d9f6755030205f31A1c96",

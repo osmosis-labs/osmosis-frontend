@@ -574,6 +574,12 @@ export interface BridgeQuote {
    */
   quoteId?: string;
 
+  /**
+   * False when the route has no Axelar leg (CCTP, Eureka), so an Axelarscan
+   * link would not find the transfer. Unset where not known.
+   */
+  viaAxelar?: boolean;
+
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
 
@@ -756,6 +762,8 @@ const txSnapshotSchema = z.object({
    * intermediate chain (e.g. noble-1) rather than the route's from chain.
    */
   trackingChainId: z.string().optional(),
+  /** The quote's `viaAxelar`; false makes the explorer link skip Axelarscan. */
+  viaAxelar: z.boolean().optional(),
   /**
    * For a transfer whose tracked tx was signed on Solana: the tx's recent
    * blockhash. A Solana tx that has not landed by the time its blockhash
