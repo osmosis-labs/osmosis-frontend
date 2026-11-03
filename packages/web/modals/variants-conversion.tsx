@@ -129,7 +129,7 @@ export const AssetVariantsConversionModal = () => {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the per-denom fee errors that children reported once the modal closes
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- clears the per-denom fee errors that children reported once the modal closes
     if (!isOpen) setInsufficientFeeByDenom({});
   }, [isOpen]);
 

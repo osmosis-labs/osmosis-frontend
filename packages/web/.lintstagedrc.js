@@ -12,7 +12,7 @@ module.exports = {
 
     return [
       `prettier --check ${filePaths.join(" ")}`,
-      `eslint --max-warnings=0 ${filePaths.join(" ")}`,
+      `oxlint --max-warnings=0 ${filePaths.join(" ")}`,
     ];
   },
 };

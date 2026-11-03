@@ -1,7 +1,7 @@
 import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 import { createPublicClient } from "viem";
 
