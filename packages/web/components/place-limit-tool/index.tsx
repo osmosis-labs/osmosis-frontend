@@ -1096,6 +1096,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
           quoteType={swapState.marketState.quoteType}
           priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
+          priceImpactUnknown={swapState.marketState.quote?.priceImpactUnknown}
           quoteAmount={swapState.marketState.quote?.amount.toDec()}
           outAssetPrice={swapState.marketState.outAmountInput.price}
         />

@@ -86,6 +86,7 @@ export function getTradeWarnings({
     warnSlippage: tolerance.gte(HighSlippageToleranceGate),
 
     priceImpact: priceImpact ?? new Dec(0),
+    priceImpactUnknown: Boolean(priceImpactUnknown) && !isLimit,
     warnPriceImpact:
       (priceImpact?.gte(HighPriceImpactGate) ?? false) ||
       (Boolean(priceImpactUnknown) && !isLimit),
@@ -117,7 +118,9 @@ export function deriveTradeMemoFlags(
   if (!basis) return undefined;
 
   const flags: TxFeMemoFlags = {};
-  if (basis.warnPriceImpact) flags.priceImpact = basis.priceImpact;
+  if (basis.warnPriceImpact && !basis.priceImpactUnknown) {
+    flags.priceImpact = basis.priceImpact;
+  }
   if (basis.warnSlippage) flags.slippageTolerance = basis.slippage;
   if (basis.warnMarketFill && basis.marketFillDistance) {
     flags.marketFillDistance = basis.marketFillDistance;
