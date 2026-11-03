@@ -124,6 +124,11 @@ interface ReviewOrderProps {
   /** True when an automatic slippage was chosen without knowing the route's
    *  liquidity. */
   slippageLiquidityUnknown?: boolean;
+  /** The quote's swap (taker) fee rate. Undefined when the quote does not
+   *  report one; the market fee row is then hidden rather than shown as 0. */
+  swapFee?: RatePretty;
+  /** Fiat value of the swap fee, charged on the input token. */
+  swapFeeFiat?: PricePretty;
 }
 
 export function ReviewOrder({
@@ -160,6 +165,8 @@ export function ReviewOrder({
   orderType: orderTypeProp,
   slippageSource,
   slippageLiquidityUnknown = false,
+  swapFee,
+  swapFeeFiat,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const [manualSlippage, setManualSlippage] = useState("");
@@ -760,11 +767,16 @@ export function ReviewOrder({
                             ? "text-rust-400"
                             : "text-osmoverse-300"
                         )}
-                      >{`${
-                        outputDifference.toDec().isPositive() ? "-" : "+"
-                      }${new RatePretty(
-                        outputDifference.toDec().abs()
-                      )}`}</span>
+                      >
+                        <GenericDisclaimer
+                          title={t("tradeDetails.outputDifference.header")}
+                          body={t("tradeDetails.outputDifference.content")}
+                        >{`${
+                          outputDifference.toDec().isPositive() ? "-" : "+"
+                        }${new RatePretty(
+                          outputDifference.toDec().abs()
+                        )}`}</GenericDisclaimer>
+                      </span>
                     )}
                     <span className="sm:subtitle2">
                       {formatFiatPrice(
@@ -1002,6 +1014,47 @@ export function ReviewOrder({
                       <span className="sm:caption text-bullish-400">
                         {t("transfer.free")}
                       </span>
+                    }
+                  />
+                )}
+                {orderType === "market" && swapFee && (
+                  <RecapRow
+                    left={
+                      <GenericDisclaimer
+                        title={t("tradeDetails.swapFees.header")}
+                        body={t("tradeDetails.swapFees.content")}
+                      >
+                        {t("pools.aprBreakdown.swapFees")}
+                      </GenericDisclaimer>
+                    }
+                    right={
+                      swapFee.toDec().isZero() ? (
+                        <span className="sm:caption text-bullish-400">
+                          {t("transfer.free")}
+                        </span>
+                      ) : (
+                        <span className="sm:caption">
+                          {swapFeeFiat &&
+                            swapFeeFiat.toDec().gt(new Dec(0)) && (
+                              <span className="text-osmoverse-100">
+                                {swapFeeFiat.toDec().lte(new Dec(0.01)) ? (
+                                  <>&lt;$0.01</>
+                                ) : (
+                                  <>
+                                    ~
+                                    {formatPretty(swapFeeFiat, {
+                                      maxDecimals: 3,
+                                      maximumSignificantDigits: 4,
+                                    })}
+                                  </>
+                                )}{" "}
+                              </span>
+                            )}
+                          <span className="text-osmoverse-500">
+                            ({swapFee.toString()})
+                          </span>
+                        </span>
+                      )
                     }
                   />
                 )}
