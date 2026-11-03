@@ -4,6 +4,7 @@ import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
@@ -13,6 +14,8 @@ import {
 } from "../../data-services";
 import { getOrderbookDenoms } from "./denoms";
 import type { MappedLimitOrder, OrderStatus } from "./types";
+
+dayjs.extend(utc);
 
 const orderbookHistoricalOrdersCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -139,11 +142,15 @@ async function mapHistoricalToMapped(
       order_direction: o.order_direction,
       order_id: parseInt(o.order_id),
       owner: userAddress,
-      placed_at: dayjs(
-        o.place_timestamp && o.place_timestamp.length > 0
-          ? o.place_timestamp
-          : 0
-      ).unix(),
+      // Numia sends UTC timestamps without a zone marker ("2026-11-02 23:34:44"),
+      // and this can run in the browser, so parse as UTC rather than local time.
+      placed_at: dayjs
+        .utc(
+          o.place_timestamp && o.place_timestamp.length > 0
+            ? o.place_timestamp
+            : 0
+        )
+        .unix(),
       placed_quantity: parseInt(o.quantity),
       placedQuantityMin,
       quantityMin,
