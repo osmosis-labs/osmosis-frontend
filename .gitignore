@@ -13,6 +13,10 @@ src/styles/index.scss
 
 coverage
 
+# inlang writes its own project.inlang/.gitignore on first run; this covers
+# checkouts that already have a cache from CLI v2 or the editor extension.
+project.inlang/cache
+
 tsconfig.tsbuildinfo
 packages/web/e2e/keplr-extension-manifest
 

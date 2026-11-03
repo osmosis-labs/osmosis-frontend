@@ -18,7 +18,6 @@
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
     "build": "turbo build",
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
-    "build:libs": "turbo build --parallel --filter @osmosis-labs/math",
     "build:clean": "yarn clean && yarn install --immutable && yarn build",
     "clean": "turbo clean --parallel; rm -rf node_modules",
     "analyze": "turbo analyze",
@@ -26,15 +25,13 @@
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "pre-commit": "turbo run pre-commit --concurrency=1 --output-logs=errors-only",
-    "machine-translate": "inlang machine translate --project ./project.inlang && yarn lint:fix",
+    "pre-commit": "lint-staged",
+    "machine-translate": "bash ./scripts/machine-translate.sh",
     "lint:workspace": "sherif --ignore-package ./packages/e2e --ignore-dependency bitcoinjs-lib@^6.1.7",
     "lint:workspace:fix": "yarn lint:workspace -f",
-    "postinstall": "yarn lint:workspace"
+    "postinstall": "yarn lint:workspace && yarn hooks:install",
+    "hooks:install": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
-  "pre-commit": [
-    "pre-commit"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/osmosis-labs/osmosis-frontend.git"
@@ -47,7 +44,6 @@
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
-    "@inlang/cli": "^3.4.5",
     "@next/eslint-plugin-next": "15.5.28",
     "@typescript-eslint/eslint-plugin": "^8.71.0",
     "@typescript-eslint/parser": "^8.71.0",
@@ -69,7 +65,6 @@
     "jest-watch-typeahead": "^3.0.1",
     "lint-staged": "^17.6.0",
     "msw": "^2.15.0",
-    "pre-commit": "^2.0.0",
     "prettier": "^3.6.2",
     "sherif": "1.13.0",
     "ts-jest": "^29.4.14",

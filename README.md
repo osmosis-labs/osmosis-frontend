@@ -41,6 +41,8 @@ Make sure [node](https://nodejs.org/en/) = 22 and [yarn](https://yarnpkg.com/get
 yarn
 ```
 
+Installing also points git at the tracked `.githooks/` directory (`core.hooksPath`), whose pre-commit hook runs `lint-staged` on staged files. Run `yarn hooks:install` if you installed with scripts disabled.
+
 **First time setup** If you're on the Osmosis foundation team and have a Vercel account set up, optionally sign into turbo repo using your Vercel account, and link the repo. This could give you instant builds by sharing the remote cache on our Vercel project:
 
 ```bash
@@ -114,7 +116,14 @@ Lerna was removed along with the suspended release flow; reintroduce a publishin
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
 
-To add translations, you can manually edit the JSON translation files in `packages/web/translations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to add missing translations using AI from Inlang.
+To add translations, you can manually edit the JSON translation files in `packages/web/localizations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to fill missing translations with the [inlang CLI](https://inlang.com/m/2qj2w8pu/app-inlang-cli). It needs your own Google Translate or DeepL key:
+
+```bash
+INLANG_MACHINE_TRANSLATE_PROVIDER=deepl INLANG_DEEPL_API_KEY=... yarn machine-translate
+INLANG_MACHINE_TRANSLATE_PROVIDER=google INLANG_GOOGLE_TRANSLATE_API_KEY=... yarn machine-translate
+```
+
+Review the generated copy before committing, especially swap, bridge and withdraw strings.
 
 Note: we have tests in web package that ensure all localization files contain the same keys and that they're (best effort) all found within the TSX source files. These help keep our localizations up to date. To clean up localizations, check out the scripts in the web/localizations folder. They must be run using `node` within the localization folder.
 
