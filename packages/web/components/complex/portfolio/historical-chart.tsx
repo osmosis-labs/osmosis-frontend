@@ -18,9 +18,6 @@ interface PortfolioHistoricalChartProps {
   resetDataPoint: () => void;
   range: Range;
   setRange: (range: Range) => void;
-  error: unknown;
-  /** Re-runs the history query after a failure. */
-  onRetry: () => void;
   setShowDate: (show: boolean) => void;
   setIsChartMinimized: (isChartMinimized: boolean) => void;
 }
@@ -32,25 +29,12 @@ export const PortfolioHistoricalChart = ({
   resetDataPoint,
   range,
   setRange,
-  error,
-  onRetry,
   setShowDate,
   setIsChartMinimized,
 }: PortfolioHistoricalChartProps) => {
-  const { t } = useTranslation();
-
   return (
     <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
-      {error ? (
-        <div className="flex h-full flex-col items-center justify-center gap-4">
-          <span className="body1 text-osmoverse-300">
-            {t("portfolio.chartTemporarilyUnavailable")}
-          </span>
-          <Button variant="secondary" size="md" onClick={onRetry}>
-            {t("walletSelect.retry")}
-          </Button>
-        </div>
-      ) : !isFetched ? (
+      {!isFetched ? (
         <HistoricalChartSkeleton />
       ) : (
         <>
@@ -90,23 +74,44 @@ export const PortfolioHistoricalChart = ({
 export const PortfolioHistoricalChartMinimized = ({
   data,
   isFetched,
-  error,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
-  error: unknown;
 }) => {
-  const { t } = useTranslation();
   return (
     <div className="h-full w-full">
-      {error ? (
-        <div className="body2 flex h-full items-center justify-center text-osmoverse-300">
-          {t("portfolio.chartTemporarilyUnavailable")}
-        </div>
-      ) : !isFetched ? (
+      {!isFetched ? (
         <HistoricalChartSkeleton hideScales />
       ) : (
         <HistoricalChart data={data as AreaData<Time>[]} hideScales />
+      )}
+    </div>
+  );
+};
+
+/** Compact stand-in for the chart while the history is unavailable. It is not
+ *  the expand button, and does not touch the saved minimised preference. */
+export const PortfolioHistoricalChartUnavailable = ({
+  onRetry,
+  isRetrying,
+}: {
+  onRetry: () => void;
+  isRetrying: boolean;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="my-3 flex h-full w-full flex-col items-center justify-center gap-3 overflow-clip rounded-[1.25rem]">
+      {isRetrying ? (
+        <HistoricalChartSkeleton hideScales />
+      ) : (
+        <>
+          <span className="body2 text-osmoverse-300">
+            {t("portfolio.chartTemporarilyUnavailable")}
+          </span>
+          <Button variant="secondary" size="md" onClick={onRetry}>
+            {t("walletSelect.retry")}
+          </Button>
+        </>
       )}
     </div>
   );

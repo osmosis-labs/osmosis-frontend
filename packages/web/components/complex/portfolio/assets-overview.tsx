@@ -19,6 +19,7 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import {
   PortfolioHistoricalChart,
   PortfolioHistoricalChartMinimized,
+  PortfolioHistoricalChartUnavailable,
 } from "~/components/complex/portfolio/historical-chart";
 import { PortfolioPerformance } from "~/components/complex/portfolio/performance";
 import { DataPoint } from "~/components/complex/portfolio/types";
@@ -187,6 +188,7 @@ export const AssetsOverview: FunctionComponent<
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
     error,
+    isFetching: isPortfolioOverTimeFetching,
     refetch: refetchPortfolioOverTime,
   } = api.local.portfolio.getPortfolioOverTime.useQuery(
     {
@@ -250,7 +252,11 @@ export const AssetsOverview: FunctionComponent<
     "is-portfolio-chart-minimized",
     true
   );
-  const isChartMinimized = isChartMinimized_ || width < Breakpoint.lg;
+  // With no history to draw, the chart shrinks to a compact card. This is derived
+  // state only: the saved preference is never written because of an error.
+  const isHistoryError = Boolean(error) && !portfolioOverTimeData;
+  const isChartMinimized =
+    isChartMinimized_ || width < Breakpoint.lg || isHistoryError;
 
   const localizedPortfolioOverTimeData = useMemo(
     () => getLocalizedPortfolioOverTimeData(portfolioOverTimeData),
@@ -404,29 +410,35 @@ export const AssetsOverview: FunctionComponent<
           )}
           as="div"
         >
-          <button
-            className={classNames(
-              "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
-            )}
-            onClick={() => setIsChartMinimized(false)}
-          >
-            <PortfolioHistoricalChartMinimized
-              data={localizedPortfolioOverTimeData as AreaData<Time>[]}
-              isFetched={isPortfolioOverTimeDataIsFetched}
-              error={error}
+          {isHistoryError ? (
+            <PortfolioHistoricalChartUnavailable
+              isRetrying={isPortfolioOverTimeFetching}
+              onRetry={() => void refetchPortfolioOverTime()}
             />
-            <div className="absolute z-50 h-full w-full">
-              <span className="body1 absolute top-2 right-3 text-osmoverse-400">
-                {getActiveRangeDateText(range)}
-              </span>
-              <Icon
-                id="resize-expand"
-                className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                height={16}
-                width={16}
+          ) : (
+            <button
+              className={classNames(
+                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
+              )}
+              onClick={() => setIsChartMinimized(false)}
+            >
+              <PortfolioHistoricalChartMinimized
+                data={localizedPortfolioOverTimeData as AreaData<Time>[]}
+                isFetched={isPortfolioOverTimeDataIsFetched}
               />
-            </div>
-          </button>
+              <div className="absolute z-50 h-full w-full">
+                <span className="body1 absolute top-2 right-3 text-osmoverse-400">
+                  {getActiveRangeDateText(range)}
+                </span>
+                <Icon
+                  id="resize-expand"
+                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                  height={16}
+                  width={16}
+                />
+              </div>
+            </button>
+          )}
         </Transition>
       </header>
 
@@ -450,8 +462,6 @@ export const AssetsOverview: FunctionComponent<
           setDataPoint={setDataPoint}
           range={range}
           setRange={setRange}
-          error={error}
-          onRetry={() => void refetchPortfolioOverTime()}
           setShowDate={setShowDate}
           resetDataPoint={() => {
             // Use current ref values to ensure we have the latest data
