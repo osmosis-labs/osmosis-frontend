@@ -191,23 +191,44 @@ export const Staking: React.FC = memo(() => {
 
   const stakeCall = useCallback(() => {
     if (isReadyToSendTx && coin?.amount) {
-      prepareDelegateToValidatorSetMsg(transactionContext, coin, "")
+      prepareDelegateToValidatorSetMsg(transactionContext, coin, "", (tx) => {
+        if (tx.code === 0) stakeTabAmountConfig.reset();
+      })
         .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
+  }, [
+    isReadyToSendTx,
+    coin,
+    signAndBroadcast,
+    transactionContext,
+    stakeTabAmountConfig.reset,
+  ]);
 
   const unstakeCall = useCallback(() => {
     if (isReadyToSendTx && coin?.amount) {
-      prepareUndelegateFromRebalancedValidatorSet(transactionContext, coin, "")
+      prepareUndelegateFromRebalancedValidatorSet(
+        transactionContext,
+        coin,
+        "",
+        (tx) => {
+          if (tx.code === 0) unstakeTabAmountConfig.reset();
+        }
+      )
         .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
+  }, [
+    isReadyToSendTx,
+    coin,
+    signAndBroadcast,
+    transactionContext,
+    unstakeTabAmountConfig.reset,
+  ]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 
