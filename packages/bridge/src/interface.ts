@@ -1,6 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { RatePretty } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
@@ -15,6 +15,10 @@ export interface BridgeProviderContext {
   cache: LRUCache<string, CacheEntry>;
   assetLists: AssetList[];
   chainList: Chain[];
+
+  /** Current USD price of an Osmosis asset by minimal denom. Optional: when
+   *  absent or failing, route-checking of withdraw destinations is skipped. */
+  getAssetUsdPrice?(coinMinimalDenom: string): Promise<Dec>;
 
   /** Provides current timeout height for a chain of given chainId.
    *  If a destination address is provided, the bech32Prefix will be used to get the chain. */

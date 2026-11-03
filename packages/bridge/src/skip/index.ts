@@ -7,7 +7,7 @@ import {
   simulateCosmosTxBody,
 } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import {
   apiClient,
   EthereumChainInfo,
@@ -55,6 +55,11 @@ import { BridgeAssetMap } from "../utils/asset";
 import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
 import { SkipApiClient } from "./client";
 import { SkipProviderId } from "./constants";
+import {
+  findUnroutableCandidates,
+  isDefinitiveNoRouteError,
+  ROUTE_PROBE_USD,
+} from "./route-probe";
 import {
   SkipEstimatedFee,
   SkipEvmTx,
@@ -358,14 +363,27 @@ export class SkipBridgeProvider implements BridgeProvider {
                   msg.includes(
                     "Input amount is too low to cover"
                     // Could be Axelar or CCTP
-                  ) ||
-                  msg.includes(
-                    "Difference in USD value of route input and output is too large"
                   )
                 ) {
                   throw new BridgeQuoteError({
                     bridgeId: SkipBridgeProvider.ID,
                     errorType: "InsufficientAmountError",
+                    message: msg,
+                  });
+                }
+                // Thin liquidity (or a route Skip cannot price), not a small
+                // amount: a larger amount does not help.
+                if (
+                  msg.includes(
+                    "Difference in USD value of route input and output is too large"
+                  ) ||
+                  msg.includes(
+                    "Unable to determine if the estimated output is favorable"
+                  )
+                ) {
+                  throw new BridgeQuoteError({
+                    bridgeId: SkipBridgeProvider.ID,
+                    errorType: "InsufficientLiquidityError",
                     message: msg,
                   });
                 }
@@ -843,6 +861,27 @@ export class SkipBridgeProvider implements BridgeProvider {
       // the spread blows the argument limit ("Maximum call stack size
       // exceeded") and this provider returns empty until instance recycle.
       const counterparties = [...(assetListAsset?.counterparty ?? [])];
+      // The asset's own counterparties are always listed. Counterparties that
+      // only come from other variants in the family (below) are route-checked
+      // before they are offered as withdraw destinations.
+      const ownKeys = new Set(
+        counterparties.map((c) =>
+          "chainId" in c
+            ? BridgeAssetMap.makeKey(
+                c.chainId.toString(),
+                "address" in c ? c.address : c.sourceDenom
+              )
+            : BridgeAssetMap.makeKey(
+                c.chainName,
+                "sourceDenom" in c ? c.sourceDenom : ""
+              )
+        )
+      );
+      const mergeCandidates: {
+        key: string;
+        chainId: string;
+        denom: string;
+      }[] = [];
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
@@ -887,6 +926,20 @@ export class SkipBridgeProvider implements BridgeProvider {
               (a) => a.denom === counterparty.sourceDenom
             );
             if (skipSplAsset) {
+              const key = BridgeAssetMap.makeKey(
+                "solana",
+                counterparty.sourceDenom
+              );
+              if (
+                !ownKeys.has(
+                  BridgeAssetMap.makeKey("solana", counterparty.sourceDenom)
+                )
+              )
+                mergeCandidates.push({
+                  key,
+                  chainId: "solana",
+                  denom: skipSplAsset.denom,
+                });
               foundVariants.setAsset("solana", counterparty.sourceDenom, {
                 transferTypes: ["quote"],
                 chainId: "solana",
@@ -918,6 +971,21 @@ export class SkipBridgeProvider implements BridgeProvider {
         );
 
         if (!skipCounterparty) continue;
+
+        const candidateKey = BridgeAssetMap.makeKey(
+          counterparty.chainId.toString(),
+          address
+        );
+        if (
+          !ownKeys.has(candidateKey) &&
+          !mergeCandidates.some((c) => c.key === candidateKey)
+        ) {
+          mergeCandidates.push({
+            key: candidateKey,
+            chainId: counterparty.chainId.toString(),
+            denom: skipCounterparty.denom,
+          });
+        }
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -1002,6 +1070,24 @@ export class SkipBridgeProvider implements BridgeProvider {
         );
       }
 
+      // Withdrawals only: drop family-merge destinations Skip cannot route to
+      // from this asset. Shared-origin destinations are never route-checked.
+      if (direction === "withdraw") {
+        const sharedKeys = new Set(
+          sharedOriginAssets.map((a) =>
+            BridgeAssetMap.makeKey(a.chain_id, a.denom)
+          )
+        );
+        const unroutable = await this.findUnroutableWithdrawCandidates({
+          chain,
+          asset,
+          sourceDenom: chainAsset.denom,
+          decimals: chainAsset.decimals ?? asset.decimals,
+          candidates: mergeCandidates.filter((c) => !sharedKeys.has(c.key)),
+        });
+        for (const key of unroutable) foundVariants.delete(key);
+      }
+
       // TODO: when Skip supports new features
       // * CCTP variants
       // * EVM swappable variants
@@ -1028,6 +1114,63 @@ export class SkipBridgeProvider implements BridgeProvider {
       );
       return [];
     }
+  }
+
+  /**
+   * Keys of family-merge withdraw candidates Skip definitively cannot route
+   * to, checked with a real `/route` request (the quote request body) at a
+   * probe amount worth about $ROUTE_PROBE_USD of the source asset. Answers are
+   * cached per (source, destination) for 30 minutes. Fail-open: with no price
+   * for the source, or any answer that is not a definitive no-route (timeout,
+   * 5xx, rate limit), candidates are kept and left to the quote error.
+   */
+  protected async findUnroutableWithdrawCandidates({
+    chain,
+    asset,
+    sourceDenom,
+    decimals,
+    candidates,
+  }: {
+    chain: BridgeChain;
+    asset: BridgeAsset;
+    sourceDenom: string;
+    decimals: number | undefined;
+    candidates: { key: string; chainId: string; denom: string }[];
+  }): Promise<string[]> {
+    if (candidates.length === 0 || decimals == null) return [];
+    const price = await this.ctx
+      .getAssetUsdPrice?.(asset.address)
+      .catch(() => undefined);
+    if (!price || !price.isPositive()) return [];
+
+    const probeAmount = new Dec(ROUTE_PROBE_USD)
+      .quo(price)
+      .mul(DecUtils.getTenExponentN(decimals))
+      .truncate()
+      .toString();
+    if (probeAmount === "0") return [];
+
+    return findUnroutableCandidates(candidates, (candidate) =>
+      cachified({
+        cache: this.ctx.cache,
+        key: `${SkipBridgeProvider.ID}_route_probe_${sourceDenom}_${candidate.chainId}_${candidate.denom}`,
+        ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
+        getFreshValue: () =>
+          this.skipClient
+            .route({
+              source_asset_denom: sourceDenom,
+              source_asset_chain_id: chain.chainId.toString(),
+              dest_asset_denom: candidate.denom,
+              dest_asset_chain_id: candidate.chainId,
+              amount_in: probeAmount,
+            })
+            .then(() => true)
+            .catch((e) => {
+              if (isDefinitiveNoRouteError(e)) return false;
+              throw e;
+            }),
+      })
+    );
   }
 
   async getTransactionData(

@@ -8,9 +8,8 @@ import { isNil } from "@osmosis-labs/utils";
 import { useEffect, useMemo, useRef } from "react";
 
 import {
-  ALL_BTC_WITHDRAWAL_DESTINATIONS,
+  ALL_BTC_DEFAULT_WITHDRAWAL,
   isAllBtcDenom,
-  isAllowedAllBtcWithdrawalDestination,
 } from "~/config/btc-withdrawal";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -66,8 +65,7 @@ export const useBridgesSupportedAssets = ({
   // Kill switch for the Phantom-signed Solana routes, in both directions.
   const allowSolana = solanaSkipRoutes === true;
 
-  // Withdrawing allBTC itself (matched by denom). Withdrawing one of its
-  // variants (e.g. WBTC.eth.axl) keeps the unrestricted Squid/Skip routes.
+  // Withdrawing allBTC itself (matched by denom): default to WBTC on Ethereum.
   const isAllBtcWithdrawal =
     direction === "withdraw" &&
     !!assets?.some((asset) => isAllBtcDenom(asset.coinMinimalDenom));
@@ -220,25 +218,16 @@ export const useBridgesSupportedAssets = ({
   const hasInAppTransferSupport = useMemo(
     () =>
       successfulQueries.some(({ data }) =>
-        Object.entries(data?.supportedAssets.assetsByChainId ?? {}).some(
-          ([chainId, assets]) =>
-            assets.some(
-              (asset) =>
-                // allBTC withdrawals: only the locked destinations count, so
-                // another provider's route (e.g. Nomic's Bitcoin) cannot
-                // release the loading hold while Skip is still failing.
-                (!isAllBtcWithdrawal ||
-                  isAllowedAllBtcWithdrawalDestination(
-                    chainId,
-                    asset.address
-                  )) &&
-                asset.transferTypes.some(
-                  (type) => type === "quote" || type === "deposit-address"
-                )
+        Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
+          (assets) =>
+            assets.some((asset) =>
+              asset.transferTypes.some(
+                (type) => type === "quote" || type === "deposit-address"
+              )
             )
         )
       ),
-    [successfulQueries, isAllBtcWithdrawal]
+    [successfulQueries]
   );
 
   /**
@@ -385,11 +374,27 @@ export const useBridgesSupportedAssets = ({
       ]
     );
 
-    // allBTC withdrawals are limited to a fixed token on Ethereum and Base.
-    // Applied to the merged output so the Skip family merge (the only source of
-    // allBTC's Ethereum/Base destinations) is untouched. Variant holders are
-    // not restricted: `assets` is the single selected variant on withdraw.
-    const supportedAssets = Object.fromEntries(assetEntriesByChainId) as Record<
+    // allBTC withdrawals: WBTC first on Ethereum so it is the default token.
+    const orderedAssetEntries = isAllBtcWithdrawal
+      ? assetEntriesByChainId.map(([chainId, chainAssets]) => [
+          chainId,
+          String(chainId) === String(ALL_BTC_DEFAULT_WITHDRAWAL.chainId)
+            ? [...(chainAssets as { address: string }[])].sort(
+                (a, b) =>
+                  Number(
+                    b.address.toLowerCase() ===
+                      ALL_BTC_DEFAULT_WITHDRAWAL.address
+                  ) -
+                  Number(
+                    a.address.toLowerCase() ===
+                      ALL_BTC_DEFAULT_WITHDRAWAL.address
+                  )
+              )
+            : chainAssets,
+        ])
+      : assetEntriesByChainId;
+
+    return Object.fromEntries(orderedAssetEntries) as Record<
       keyof AssetsByChainId,
       Omit<
         AssetsByChainId[string][number] & {
@@ -401,19 +406,6 @@ export const useBridgesSupportedAssets = ({
         "providerName"
       >[]
     >;
-
-    if (!isAllBtcWithdrawal) return supportedAssets;
-
-    return Object.fromEntries(
-      Object.entries(supportedAssets)
-        .filter(([chainId]) => chainId in ALL_BTC_WITHDRAWAL_DESTINATIONS)
-        .map(([chainId, chainAssets]) => [
-          chainId,
-          chainAssets.filter((asset) =>
-            isAllowedAllBtcWithdrawalDestination(chainId, asset.address)
-          ),
-        ])
-    ) as typeof supportedAssets;
   }, [successfulQueries, isAllBtcWithdrawal]);
 
   const supportedChains = useMemo(() => {
@@ -463,7 +455,7 @@ export const useBridgesSupportedAssets = ({
     const hoistRules: HoistRule[] = [
       // allBTC withdrawals -> Ethereum (WBTC) by default.
       {
-        chainId: 1,
+        chainId: ALL_BTC_DEFAULT_WITHDRAWAL.chainId,
         matchesAsset: (asset) =>
           isAllBtcWithdrawal && isAllBtcDenom(asset.coinMinimalDenom),
       },
@@ -528,11 +520,6 @@ export const useBridgesSupportedAssets = ({
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
-          .filter(
-            (chain) =>
-              !isAllBtcWithdrawal ||
-              chain.chainId in ALL_BTC_WITHDRAWAL_DESTINATIONS
-          )
           .sort((a, b) => {
             // Apply each active positional hoist: pin its destination chain
             // first. Only hoists whose destination route is usable are present.
