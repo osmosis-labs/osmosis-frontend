@@ -533,8 +533,11 @@ const TableOrderRow = memo(
               width={24}
               height={24}
               className={classNames("h-6 w-6", {
-                "text-rust-400": order_direction === "ask",
-                "text-bullish-400": order_direction === "bid",
+                "text-osmoverse-500": status === "cancelled",
+                "text-rust-400":
+                  status !== "cancelled" && order_direction === "ask",
+                "text-bullish-400":
+                  status !== "cancelled" && order_direction === "bid",
               })}
             />
           </div>
