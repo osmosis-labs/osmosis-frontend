@@ -136,9 +136,15 @@ const OrderDetails = ({
         return (
           <div className="flex items-center justify-between">
             <span className="body2 sm:caption text-osmoverse-300">
-              {isPartlyFilledPastOrder
-                ? `${t("limitOrders.cancelled")} · ${t("limitOrders.partlyFilled")}`
-                : t("limitOrders.cancelled")}
+              {t("limitOrders.cancelled")}
+              {isPartlyFilledPastOrder && (
+                <>
+                  {" · "}
+                  <span className="text-bullish-400">
+                    {t("limitOrders.partlyFilled")}
+                  </span>
+                </>
+              )}
             </span>
           </div>
         );
