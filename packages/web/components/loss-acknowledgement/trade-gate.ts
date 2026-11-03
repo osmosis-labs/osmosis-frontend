@@ -19,6 +19,8 @@ export interface TradeWarningInput {
    * loss here, so callers pass the quote's value through untouched.
    */
   priceImpactTokenOut?: RatePretty;
+  /** SQS could not compute the impact; gated like a high impact (market trades only). */
+  priceImpactUnknown?: boolean;
   /** Configured slippage tolerance as a fraction (0..1), e.g. 0.005 = 0.5%. */
   slippage?: Dec;
   /** True limit order priced across the opposite side of the book. */
@@ -55,10 +57,13 @@ export interface TradeWarningInput {
  * - **Missing price-impact data fails open**, never closed: no impact figure
  *   means no impact gate, rather than a checkbox the user has no way to clear.
  *   Slippage is gated independently, so a quote without impact data is still
- *   gated on the tolerance the user chose.
+ *   gated on the tolerance the user chose. The exception is an impact SQS
+ *   explicitly reports as unknown (`priceImpactUnknown`), which is gated like
+ *   a high impact.
  */
 export function getTradeWarnings({
   priceImpactTokenOut,
+  priceImpactUnknown,
   slippage,
   isBeyondOppositePrice,
   percentAdjusted,
@@ -81,7 +86,9 @@ export function getTradeWarnings({
     warnSlippage: tolerance.gte(HighSlippageToleranceGate),
 
     priceImpact: priceImpact ?? new Dec(0),
-    warnPriceImpact: priceImpact?.gte(HighPriceImpactGate) ?? false,
+    warnPriceImpact:
+      (priceImpact?.gte(HighPriceImpactGate) ?? false) ||
+      (Boolean(priceImpactUnknown) && !isLimit),
 
     // The sign of `percentAdjusted` follows the order direction, not gain or
     // loss, so the distance past market is its magnitude.
