@@ -1153,11 +1153,13 @@ export function ReviewOrder({
                     </p>
                   )}
                   {hasActiveWarning(currentLossFigures) && (
-                    <LossAcknowledgementCheckbox
-                      label={t("limitOrders.lossAcknowledgement")}
-                      checked={hasAcknowledgedLoss}
-                      onCheckedChange={setLossAcknowledged}
-                    />
+                    <div className="pt-3">
+                      <LossAcknowledgementCheckbox
+                        label={t("limitOrders.lossAcknowledgement")}
+                        checked={hasAcknowledgedLoss}
+                        onCheckedChange={setLossAcknowledged}
+                      />
+                    </div>
                   )}
                   <div className="flex w-full justify-between gap-3 pt-3">
                     <Button
