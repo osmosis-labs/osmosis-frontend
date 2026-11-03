@@ -518,17 +518,9 @@ export async function prepareCreateConcentratedLiquidityInitialFullRangePosition
   quote: { token: AppCurrency; amount: string },
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
-  let token_min_amount0 = "0";
-  let token_min_amount1 = "0";
-
-  token_min_amount0 = base
-    ? applyClMinAmountTolerance(base.amount)
-    : token_min_amount0;
-
-  token_min_amount1 = quote
-    ? applyClMinAmountTolerance(quote.amount)
-    : token_min_amount1;
-
+  // The chain orders pool token0/token1 lexicographically by denom, and the
+  // minimums apply to those in that order, so derive them from the sorted,
+  // base-unit coins rather than the display amounts in base/quote order.
   const sortedCoins = [base, quote]
     .sort((a, b) =>
       a?.token.coinMinimalDenom.localeCompare(b?.token.coinMinimalDenom)
@@ -540,6 +532,9 @@ export async function prepareCreateConcentratedLiquidityInitialFullRangePosition
         .truncate()
         .toString(),
     }));
+
+  const token_min_amount0 = applyClMinAmountTolerance(sortedCoins[0].amount);
+  const token_min_amount1 = applyClMinAmountTolerance(sortedCoins[1].amount);
 
   const msg = await makeCreatePositionMsg({
     poolId: BigInt(poolId),
