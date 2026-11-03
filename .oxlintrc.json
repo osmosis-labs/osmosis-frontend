@@ -210,6 +210,7 @@
       "files": [
         "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
         "packages/web/playwright.config.ts",
+        "packages/web/api-worker/worker.ts",
         "packages/web/router/worker.ts",
         "packages/web/localizations/dayjs-locale-*.js"
       ],

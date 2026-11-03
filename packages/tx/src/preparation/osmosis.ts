@@ -465,7 +465,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
         currentSqrtPrice.mul(currentSqrtPrice).toDec()
       );
 
-      if (currentTick >= lowerTick && currentTick < upperTick) {
+      if (currentTick.gte(lowerTick) && currentTick.lt(upperTick)) {
         // Position consists of both tokens
         token_min_amount0 = baseCoin
           ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
@@ -474,12 +474,12 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
         token_min_amount1 = quoteCoin
           ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
           : token_min_amount1;
-      } else if (currentTick < lowerTick) {
+      } else if (currentTick.lt(lowerTick)) {
         // Position consists of 1 token only.
         token_min_amount0 = baseCoin
           ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
           : token_min_amount0;
-      } else if (currentTick >= upperTick) {
+      } else if (currentTick.gte(upperTick)) {
         // Position consists of 1 token only.
         token_min_amount1 = quoteCoin
           ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
