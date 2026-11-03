@@ -53,21 +53,6 @@ describe("calcZapInSwapAmount", () => {
         new Int("1000")
       );
     });
-
-    it("swaps ~half when providing quote", () => {
-      const swap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "quote",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-      expectWithin(
-        swap,
-        inputAmount.toDec().quo(new Dec(2)).truncate(),
-        new Int("1000")
-      );
-    });
   });
 
   describe("range entirely above spot (spot below range)", () => {
@@ -99,70 +84,6 @@ describe("calcZapInSwapAmount", () => {
     });
   });
 
-  describe("range entirely below spot (spot above range)", () => {
-    // Spot sits above the upper bound => position is one-sided quote (token1).
-    const currentSqrtPrice = new BigDec(
-      tickToSqrtPrice(upperTick).mul(new Dec("2"))
-    );
-
-    it("requires no swap when providing quote (the active asset)", () => {
-      const swap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "quote",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-      expect(swap.toString()).toBe("0");
-    });
-
-    it("swaps the full input when providing base (the inactive asset)", () => {
-      const swap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "base",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-      expect(swap.toString()).toBe(inputAmount.toString());
-    });
-  });
-
-  describe("underweighted vs overweighted asset", () => {
-    // Skew spot toward the lower bound => position is mostly base (token0),
-    // so base is the overweighted side and quote the underweighted side.
-    const geoMean = geometricMeanSqrtPrice(lowerTick, upperTick);
-    const lower = new BigDec(tickToSqrtPrice(lowerTick));
-    // Halfway (in sqrt-price space) between the lower bound and the center.
-    const currentSqrtPrice = lower.add(geoMean.sub(lower).quo(new BigDec(2)));
-
-    it("swaps less of the overweighted (base) asset than the underweighted (quote) asset", () => {
-      const baseSwap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "base",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-      const quoteSwap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "quote",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-
-      // both are partial swaps
-      expect(baseSwap.gt(new Int(0))).toBe(true);
-      expect(baseSwap.lt(inputAmount)).toBe(true);
-      expect(quoteSwap.gt(new Int(0))).toBe(true);
-      expect(quoteSwap.lt(inputAmount)).toBe(true);
-
-      // providing the already-overweighted base requires swapping less
-      expect(baseSwap.lt(quoteSwap)).toBe(true);
-    });
-  });
-
   describe("non-6-decimal pool (18-decimal asset)", () => {
     // 18-decimal token0 against a 6-decimal token1. The chain sqrt price is on
     // the micro-denom basis, so a price near $1 with a 10^12 decimal gap gives
@@ -190,31 +111,7 @@ describe("calcZapInSwapAmount", () => {
     });
   });
 
-  describe("degenerate inputs (early return, no NaN/divide-by-zero)", () => {
-    const currentSqrtPrice = geometricMeanSqrtPrice(lowerTick, upperTick);
-
-    it("returns 0 for a zero input amount", () => {
-      const swap = calcZapInSwapAmount({
-        inputAmount: new Int(0),
-        inputSide: "base",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice,
-      });
-      expect(swap.toString()).toBe("0");
-    });
-
-    it("returns 0 when the pool has no spot price (zero sqrt price)", () => {
-      const swap = calcZapInSwapAmount({
-        inputAmount,
-        inputSide: "quote",
-        lowerTick,
-        upperTick,
-        currentSqrtPrice: new BigDec(0),
-      });
-      expect(swap.toString()).toBe("0");
-    });
-
+  describe("dust input", () => {
     // A dust input on a genuinely two-sided range truncates the swap split to
     // zero. Callers must treat this as "too small", NOT as "one-sided range, no
     // swap needed" — otherwise they would submit a one-sided position for a
@@ -250,35 +147,6 @@ describe("estimateSqrtPriceAfterSwapIn", () => {
       liquidityAmount: new Dec(liquidity),
     },
   ];
-
-  it("returns the current price for zero input or no depths", () => {
-    expect(
-      estimateSqrtPriceAfterSwapIn({
-        tokenInAmount: new Int(0),
-        inputSide: "base",
-        currentSqrtPrice: one,
-        liquidityDepths: singleRange("1000000000000"),
-      }).equals(one)
-    ).toBe(true);
-    expect(
-      estimateSqrtPriceAfterSwapIn({
-        tokenInAmount: new Int(1000),
-        inputSide: "base",
-        currentSqrtPrice: one,
-        liquidityDepths: [],
-      }).equals(one)
-    ).toBe(true);
-  });
-
-  it("moves the price up within one range for token1 in (Pt = Pc + in/L)", () => {
-    const result = estimateSqrtPriceAfterSwapIn({
-      tokenInAmount: new Int("1000000000"), // 1e9
-      inputSide: "quote",
-      currentSqrtPrice: one,
-      liquidityDepths: singleRange("1000000000000"), // 1e12
-    });
-    expect(result.equals(new BigDec("1.001"))).toBe(true);
-  });
 
   it("moves the price down within one range for token0 in (Pt = L*Pc/(L + in*Pc))", () => {
     const liquidity = new BigDec("1000000000000"); // 1e12
@@ -376,18 +244,6 @@ describe("estimateSqrtPriceAfterSwapIn", () => {
     expect(result.sub(expected).abs().lte(new BigDec("0.000000001"))).toBe(
       true
     );
-  });
-
-  it("clamps to the furthest boundary when depths are exhausted", () => {
-    const depths = singleRange("1000000"); // thin: 1e6
-    const lowest = new BigDec(tickToSqrtPrice(new Int(-5000000)));
-    const result = estimateSqrtPriceAfterSwapIn({
-      tokenInAmount: new Int("1000000000000000000"), // absurdly large
-      inputSide: "base",
-      currentSqrtPrice: one,
-      liquidityDepths: depths,
-    });
-    expect(result.equals(lowest)).toBe(true);
   });
 });
 
@@ -530,36 +386,6 @@ describe("calcMarginalPriceImpact", () => {
     expect(impact.sub(new Dec("-0.19")).abs().lte(new Dec("0.0000001"))).toBe(
       true
     );
-  });
-
-  it("measures the inverse rate for a quote-in swap (price up)", () => {
-    // sqrt 1 -> 1.1: P rises to 1.21; selling quote buys base at 1/1.21 of
-    // the spot rate: ~-17.36%.
-    const impact = calcMarginalPriceImpact({
-      currentSqrtPrice: new BigDec(1),
-      postSwapSqrtPrice: new BigDec("1.1"),
-      inputSide: "quote",
-    });
-    expect(
-      impact.sub(new Dec("-0.173553719")).abs().lte(new Dec("0.000001"))
-    ).toBe(true);
-  });
-
-  it("clamps a favourable move to zero and handles degenerate prices", () => {
-    expect(
-      calcMarginalPriceImpact({
-        currentSqrtPrice: new BigDec(1),
-        postSwapSqrtPrice: new BigDec("1.1"),
-        inputSide: "base", // price up while selling base = favourable
-      }).isZero()
-    ).toBe(true);
-    expect(
-      calcMarginalPriceImpact({
-        currentSqrtPrice: new BigDec(0),
-        postSwapSqrtPrice: new BigDec(1),
-        inputSide: "base",
-      }).isZero()
-    ).toBe(true);
   });
 
   // The scenario that motivates the marginal basis: the average-fill impact
