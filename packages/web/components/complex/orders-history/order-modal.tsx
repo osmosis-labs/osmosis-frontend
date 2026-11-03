@@ -123,7 +123,7 @@ const OrderDetails = ({
   const statusComponent = (() => {
     if (!order) return;
 
-    // Opened from the filled part of a cancelled order, show the order's final status.
+    // Both rows of a partly filled, cancelled order show its final status and that it partly filled.
     switch (isPartlyFilledPastOrder ? "cancelled" : order.status) {
       case "open":
       case "partiallyFilled":
@@ -136,7 +136,9 @@ const OrderDetails = ({
         return (
           <div className="flex items-center justify-between">
             <span className="body2 sm:caption text-osmoverse-300">
-              Cancelled
+              {isPartlyFilledPastOrder
+                ? `${t("limitOrders.cancelled")} · ${t("limitOrders.partlyFilled")}`
+                : t("limitOrders.cancelled")}
             </span>
           </div>
         );
