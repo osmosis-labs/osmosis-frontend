@@ -1,4 +1,4 @@
-import { queryOsmosisCMS } from "./osmosis-cms";
+import { queryGithubFile } from "./file";
 
 interface GenericCmsData {
   localization?: string;
@@ -29,9 +29,9 @@ export const getTokenInfo = async (
     encodeURIComponent(coinMinimalDenom)
   )}.json`;
 
-  return queryOsmosisCMS({
+  // Read from the assetlists default branch. The fe-content commit pin does not apply to this repo.
+  return queryGithubFile<TokenCMSData>({
     repo: "osmosis-labs/assetlists",
     filePath,
-    commitHash: undefined,
   });
 };
