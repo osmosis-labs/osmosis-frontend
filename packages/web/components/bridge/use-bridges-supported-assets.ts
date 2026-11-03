@@ -4,13 +4,9 @@ import type {
   BridgeSupportedAsset,
 } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import { getAllBtcMinimalDenom, isNil } from "@osmosis-labs/utils";
 import { useEffect, useMemo, useRef } from "react";
 
-import {
-  ALL_BTC_DEFAULT_WITHDRAWAL,
-  isAllBtcDenom,
-} from "~/config/btc-withdrawal";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -64,11 +60,6 @@ export const useBridgesSupportedAssets = ({
   const allowMultiTx = multiTxBridgeRoutes === true && direction === "deposit";
   // Kill switch for the Phantom-signed Solana routes, in both directions.
   const allowSolana = solanaSkipRoutes === true;
-
-  // Withdrawing allBTC itself (matched by denom): default to WBTC on Ethereum.
-  const isAllBtcWithdrawal =
-    direction === "withdraw" &&
-    !!assets?.some((asset) => isAllBtcDenom(asset.coinMinimalDenom));
 
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
@@ -374,27 +365,7 @@ export const useBridgesSupportedAssets = ({
       ]
     );
 
-    // allBTC withdrawals: WBTC first on Ethereum so it is the default token.
-    const orderedAssetEntries = isAllBtcWithdrawal
-      ? assetEntriesByChainId.map(([chainId, chainAssets]) => [
-          chainId,
-          String(chainId) === String(ALL_BTC_DEFAULT_WITHDRAWAL.chainId)
-            ? [...(chainAssets as { address: string }[])].sort(
-                (a, b) =>
-                  Number(
-                    b.address.toLowerCase() ===
-                      ALL_BTC_DEFAULT_WITHDRAWAL.address
-                  ) -
-                  Number(
-                    a.address.toLowerCase() ===
-                      ALL_BTC_DEFAULT_WITHDRAWAL.address
-                  )
-              )
-            : chainAssets,
-        ])
-      : assetEntriesByChainId;
-
-    return Object.fromEntries(orderedAssetEntries) as Record<
+    return Object.fromEntries(assetEntriesByChainId) as Record<
       keyof AssetsByChainId,
       Omit<
         AssetsByChainId[string][number] & {
@@ -406,7 +377,7 @@ export const useBridgesSupportedAssets = ({
         "providerName"
       >[]
     >;
-  }, [successfulQueries, isAllBtcWithdrawal]);
+  }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
     // Positional default hoists: for certain assets we prefer a specific
@@ -452,13 +423,17 @@ export const useBridgesSupportedAssets = ({
         "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
       asset.coinGeckoId === "cosmos";
 
+    const isAllBtcAsset = (asset: MinimalAsset) => {
+      const allBtcDenom = getAllBtcMinimalDenom({ env: "mainnet" });
+      return (
+        !!allBtcDenom &&
+        asset.coinMinimalDenom.toLowerCase() === allBtcDenom.toLowerCase()
+      );
+    };
+
     const hoistRules: HoistRule[] = [
-      // allBTC withdrawals -> Ethereum (WBTC) by default.
-      {
-        chainId: ALL_BTC_DEFAULT_WITHDRAWAL.chainId,
-        matchesAsset: (asset) =>
-          isAllBtcWithdrawal && isAllBtcDenom(asset.coinMinimalDenom),
-      },
+      // allBTC -> Ethereum (WBTC). Matched by denom, not symbol.
+      { chainId: 1, matchesAsset: isAllBtcAsset },
       // USDC -> Ethereum, which holds the large majority of USDC supply.
       // Routing is left to the bridge providers (Skip may use CCTP, Axelar or
       // another path), so the route variant is the canonical `USDC` alloy that
@@ -550,7 +525,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries, direction, assets, variantAssets, isAllBtcWithdrawal]);
+  }, [successfulQueries, direction, assets, variantAssets]);
 
   /**
    * Loading until any provider has produced a chain the app itself can

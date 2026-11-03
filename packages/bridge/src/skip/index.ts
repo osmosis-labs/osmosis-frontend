@@ -1177,7 +1177,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return cachified({
         cache: this.ctx.cache,
-        key: `${SkipBridgeProvider.ID}_route_probe_${direction}_${osmosisDenom}_${candidate.chainId}_${candidate.denom}`,
+        key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
+          !isWithdraw && allowMultiTx === true ? "_multi" : ""
+        }_${osmosisDenom}_${candidate.chainId}_${candidate.denom}`,
         ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
         // A timeout rejects, so it is neither cached nor treated as a drop.
         getFreshValue: () =>
