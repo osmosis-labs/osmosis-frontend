@@ -1451,11 +1451,11 @@
     "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "Returnat",
+    "returnedUnfilled": "Returnat (neexecutat)",
+    "alreadyReceived": "Deja primit",
+    "howPayoutsWork": "Cum funcționează plățile?",
+    "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată."
   },
   "tradeDetails": {
     "priceImpact": {

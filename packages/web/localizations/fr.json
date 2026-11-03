@@ -1451,11 +1451,11 @@
     "creationInProgress": "Une création d'orderbook pour cette paire est déjà en cours dans un autre onglet",
     "creationAwaitingConfirmation": "Une création précédente de carnet d'ordres pour cette paire attend toujours sa confirmation onchain. Réessayez dans quelques minutes.",
     "createOrderbookDescription": "La création d'un orderbook pool permet de passer des ordres limites pour cette paire de trading sur Osmosis.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "Restitué",
+    "returnedUnfilled": "Restitué (non exécuté)",
+    "alreadyReceived": "Déjà reçu",
+    "howPayoutsWork": "Comment fonctionnent les paiements ?",
+    "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté."
   },
   "tradeDetails": {
     "priceImpact": {

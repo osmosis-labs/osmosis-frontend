@@ -1451,11 +1451,11 @@
     "creationInProgress": "이 페어의 오더북 생성이 다른 탭에서 이미 진행 중입니다",
     "creationAwaitingConfirmation": "이 페어에 대한 이전 오더북 생성이 아직 온체인 확인을 기다리고 있습니다. 몇 분 후에 다시 시도하세요.",
     "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "반환됨",
+    "returnedUnfilled": "반환됨 (미체결)",
+    "alreadyReceived": "이미 받음",
+    "howPayoutsWork": "지급은 어떻게 이루어지나요?",
+    "payoutNote": "체결된 금액은 보통 지갑으로 자동 지급되며, 주문이 체결되는 동안 여러 차례에 걸쳐 지급되는 경우가 많고, 취소하기 몇 시간 또는 며칠 전에 도착할 수 있습니다. 주문에 '청구'가 표시되면 체결된 금액의 일부가 아직 지급되지 않은 것입니다. 취소하면 미체결 금액만 반환됩니다."
   },
   "tradeDetails": {
     "priceImpact": {

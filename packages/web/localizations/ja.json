@@ -1451,11 +1451,11 @@
     "creationInProgress": "このペアのオーダーブック作成は別のタブで既に進行中です",
     "creationAwaitingConfirmation": "このペアの以前のオーダーブック作成は、まだオンチェーンでの確認待ちです。数分後にもう一度お試しください。",
     "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "返却済み",
+    "returnedUnfilled": "返却済み（未約定）",
+    "alreadyReceived": "受取済み",
+    "howPayoutsWork": "支払いの仕組み",
+    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「請求」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。"
   },
   "tradeDetails": {
     "priceImpact": {

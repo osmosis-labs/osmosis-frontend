@@ -1451,11 +1451,11 @@
     "creationInProgress": "Tworzenie orderbooka dla tej pary jest już w toku w innej karcie",
     "creationAwaitingConfirmation": "Poprzednie tworzenie księgi zleceń dla tej pary nadal czeka na potwierdzenie onchain. Spróbuj ponownie za kilka minut.",
     "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "Zwrócono",
+    "returnedUnfilled": "Zwrócono (niezrealizowane)",
+    "alreadyReceived": "Już otrzymano",
+    "howPayoutsWork": "Jak działają wypłaty?",
+    "payoutNote": "Zrealizowane kwoty są zwykle wypłacane automatycznie na Twój portfel, często w kilku wypłatach w miarę realizacji zlecenia, i mogą dotrzeć kilka godzin lub dni przed anulowaniem. Jeśli przy zleceniu widać „Złóż wniosek”, część zrealizowanej kwoty nie została jeszcze wypłacona. Anulowanie zwraca tylko niezrealizowaną kwotę."
   },
   "tradeDetails": {
     "priceImpact": {

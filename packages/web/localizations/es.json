@@ -1451,11 +1451,11 @@
     "creationInProgress": "Ya hay una creación de orderbook para este par en curso en otra pestaña",
     "creationAwaitingConfirmation": "Una creación anterior de libro de órdenes para este par sigue pendiente de confirmación onchain. Inténtalo de nuevo en unos minutos.",
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "Devuelto",
+    "returnedUnfilled": "Devuelto (no ejecutado)",
+    "alreadyReceived": "Ya recibido",
+    "howPayoutsWork": "¿Cómo funcionan los pagos?",
+    "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado."
   },
   "tradeDetails": {
     "priceImpact": {

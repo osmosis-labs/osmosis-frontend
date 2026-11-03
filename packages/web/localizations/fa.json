@@ -1451,11 +1451,11 @@
     "creationInProgress": "ایجاد دفتر سفارش برای این جفت در برگه دیگری در حال انجام است",
     "creationAwaitingConfirmation": "ایجاد قبلی دفتر سفارش برای این جفت هنوز در انتظار تأیید روی زنجیره است. چند دقیقه دیگر دوباره تلاش کنید.",
     "createOrderbookDescription": "ایجاد یک orderbook pool امکان ثبت limit orders برای این جفت معاملاتی در Osmosis را فراهم می‌کند.",
-    "returned": "Returned",
-    "returnedUnfilled": "Returned (unfilled)",
-    "alreadyReceived": "Already received",
-    "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "returned": "بازگردانده‌شده",
+    "returnedUnfilled": "بازگردانده‌شده (اجرانشده)",
+    "alreadyReceived": "قبلاً دریافت شده",
+    "howPayoutsWork": "پرداخت‌ها چگونه انجام می‌شوند؟",
+    "payoutNote": "مبالغ اجراشده معمولاً به‌طور خودکار به کیف پول شما واریز می‌شوند، اغلب در چند پرداخت همزمان با اجرای سفارش، و ممکن است ساعت‌ها یا روزها پیش از لغو سفارش برسند. اگر برای سفارشی «ادعا کنید» نمایش داده شود، بخشی از مبلغ اجراشده هنوز پرداخت نشده است. لغو سفارش فقط مبلغ اجرانشده را بازمی‌گرداند."
   },
   "tradeDetails": {
     "priceImpact": {
