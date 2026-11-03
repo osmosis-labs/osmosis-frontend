@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -12,9 +13,13 @@ import {
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
+import { useTradeViewExpandedParam } from "~/components/trade-view/use-trade-view-expanded";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { api } from "~/utils/trpc";
+
+/** Only the trade row widens when expanded; the rest keeps the widget's width. */
+const narrowColumn = "mx-auto w-[512px] max-w-full";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
 export type PreviousTrade = {
@@ -33,6 +38,11 @@ const Home = () => {
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
+  // Expanded, the trade tool lays out chart, widget and book side by side.
+  // The view is desktop only; the `xl:` classes below undo the wide layout
+  // at 1280px and narrower, where the trade tool ignores the flag.
+  const [expanded] = useTradeViewExpandedParam();
+
   return (
     <main className="relative flex overflow-auto pb-2 pt-8 h-content md:h-content-mobile">
       <div className="fixed inset-0 h-full w-full overflow-y-scroll bg-cover xl:static">
@@ -50,23 +60,44 @@ const Home = () => {
             sits under the navbar and its in-flow banner spacer, so only the
             32px gap applies; adding either height again double-counts it. */}
         <div
-          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0"
+          className={classNames(
+            "absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0",
+            // This layer is fixed to the viewport, so the wide expanded row
+            // must be kept clear of the sidebar.
+            { "pl-sidebar xl:pl-0": expanded }
+          )}
           style={
             {
               "--visible-banner-height": `${visibleBannerHeight}px`,
             } as CSSProperties
           }
         >
-          <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
-            {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          <div
+            className={classNames(
+              "flex flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5",
+              expanded
+                ? "w-full min-w-0 max-w-[1520px] px-8 xl:w-[512px] xl:max-w-none xl:px-0"
+                : "w-[512px]"
+            )}
+          >
+            {featureFlags.swapsAdBanner && (
+              <div className={classNames({ [narrowColumn]: expanded })}>
+                <SwapAdsBanner />
+              </div>
+            )}
             {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
             <ClientOnly>
               <TradeTool
+                bookLayout="expandable"
                 previousTrade={previousTrade}
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
-            {featureFlags.swapToolTopGainers && <TopGainers />}
+            {featureFlags.swapToolTopGainers && (
+              <div className={classNames({ [narrowColumn]: expanded })}>
+                <TopGainers />
+              </div>
+            )}
           </div>
         </div>
       </div>

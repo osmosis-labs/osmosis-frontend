@@ -1545,6 +1545,8 @@
     }
   },
   "tradeView": {
+    "expand": "Expand trade view",
+    "collapse": "Collapse trade view",
     "orderBook": "Order book"
   }
 }

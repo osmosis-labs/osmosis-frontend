@@ -15,7 +15,8 @@ jest.mock("nuqs", () => {
     parseAsStringLiteral: () => ({ withDefault: parser }),
     useQueryState: (
       key: string,
-      { defaultValue }: { defaultValue: unknown }
+      // A key read without a parser has no default.
+      { defaultValue }: { defaultValue: unknown } = { defaultValue: null }
     ) => {
       mockSetters[key] ??= jest.fn();
       return [mockQueryState[key] ?? defaultValue, mockSetters[key]];
@@ -50,6 +51,13 @@ jest.mock("~/components/swap-tool/swap-tool-tabs", () => ({
   SwapToolTabs: () => null,
 }));
 jest.mock("~/pages", () => ({}));
+jest.mock("~/components/trade-view/use-trade-view-expanded", () => ({
+  useTradeViewExpanded: () => ({
+    expanded: false,
+    isExpandable: false,
+    setExpanded: jest.fn(),
+  }),
+}));
 
 describe("TradeTool limit orders kill switch", () => {
   beforeEach(() => {
