@@ -17,10 +17,13 @@ export const PERSIST_EXCLUDED_KEYS = [
  * cannot restore.
  * v5: `edge.transactions.getTransactions` gained `transfers`.
  * v6: discard plain unit-class field dumps cached before the OpenNext
- * SuperJSON registry/constructor-identity fix (stage-cf shipped this as its
- * own v5, so both v5 lineages are dropped).
+ * SuperJSON registry/constructor-identity fix. Stage used its own v6 for the
+ * portfolio variant change, so this deployment's v6 is only the SuperJSON bust.
+ * v7: `local.portfolio.getPortfolioAssets` replaced `assetVariants` with
+ * unfiltered `assetVariantCandidates`, and `heldAssets` gained `amount` and
+ * `fiatValue`.
  */
-export const PERSIST_BUSTER = "v6";
+export const PERSIST_BUSTER = "v7";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

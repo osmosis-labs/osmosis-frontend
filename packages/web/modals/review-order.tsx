@@ -51,6 +51,7 @@ import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -75,6 +76,9 @@ interface ReviewOrderProps {
    */
   confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
+  /** True from the confirm click until the transaction attempt settles, i.e.
+   *  while a wallet prompt may be open. */
+  isAwaitingSignature?: boolean;
   slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
@@ -127,6 +131,7 @@ export function ReviewOrder({
   onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
+  isAwaitingSignature = false,
   slippageConfig,
   amountWithSlippage,
   fiatAmountWithSlippage,
@@ -200,6 +205,19 @@ export function ReviewOrder({
     parseAsString.withDefault("market")
   );
   const orderType = orderTypeProp ?? queryOrderType;
+
+  /** An active session with unchanged settings signs locally, so there is no
+   *  wallet prompt to wait on. Changing the settings sends a session tx that
+   *  the wallet does sign, and limit orders are always signed by the wallet. */
+  const signsWithOneClickSession =
+    show1CT &&
+    is1CTEnabled &&
+    !transaction1CTParamsChanges?.length &&
+    orderType !== "limit";
+  const walletPrompt = useWalletPrompt({
+    isLoading: isAwaitingSignature,
+    signsLocally: signsWithOneClickSession,
+  });
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   /**
@@ -1114,10 +1132,21 @@ export function ReviewOrder({
                         isSlippageBoundZeroOnChain ||
                         warningNeedsAcknowledgement
                       }
+                      isLoading={isAwaitingSignature}
+                      loadingText={walletPrompt.label}
                       className="body2 sm:caption !rounded-2xl"
                     >
                       <h6>{t("limitOrders.confirm")}</h6>
                     </Button>
+                    {walletPrompt.onCancel && (
+                      <Button
+                        mode="secondary"
+                        onClick={walletPrompt.onCancel}
+                        className="body2 sm:caption w-fit !rounded-2xl"
+                      >
+                        <h6>{t("limitOrders.cancel")}</h6>
+                      </Button>
+                    )}
                   </div>
                 </>
               )}

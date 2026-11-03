@@ -22,15 +22,15 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
-    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
+    "lint-test": "oxlint src && prettier --check \"src/**/*\"",
+    "lint-fix": "oxlint --fix src && prettier --write \"src/**/*\""
   },
   "dependencies": {
     "utility-types": "^3.10.0"
   },
   "devDependencies": {
-    "eslint": "^9.39.5",
     "jest": "^30.5.2",
+    "oxlint": "^1.90.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3"

@@ -251,7 +251,7 @@ export const CryptoFiatInput: FunctionComponent<{
   // the setters propagate to the parent's onChange, which can't run during render.
   useEffect(() => {
     if (pendingRatioUpdate && assetWithBalance && assetPrice) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- see above
+      // eslint-disable-next-line hooks-compat/set-state-in-effect -- see above
       onUpdateRatio({
         assetPrice,
         nextValue: fiatInputRaw,

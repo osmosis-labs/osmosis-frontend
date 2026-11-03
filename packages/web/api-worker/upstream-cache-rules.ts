@@ -17,7 +17,10 @@ export type UpstreamCacheRule = {
   path: RegExp;
   /** Seconds used when the upstream sends no freshness lifetime. */
   defaultTtlSeconds: number;
-  /** Hard cap. Price-like rules stay at or under 30s, and under the in-memory TTL. */
+  /**
+   * Hard cap. Spot prices stay at or under 30s. A historical chart may match
+   * its in-memory TTL when that TTL is the bucket width.
+   */
   maxTtlSeconds: number;
   /**
    * When set, both the fallback and the cap come from the URL. Used where one
@@ -153,8 +156,11 @@ export const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     id: "coingecko-market-chart",
     hosts: COINGECKO_HOSTS,
     path: /^\/api\/v3\/coins\/[^/]+\/market_chart\/range$/,
-    defaultTtlSeconds: 10,
-    maxTtlSeconds: 10,
+    // Matches `getCoinGeckoCoinMarketChart`: the range is bucketed (shortest
+    // bucket is 5 minutes) and the in-memory entry lives for that same 5
+    // minutes. A 10s cap left every isolate refetching CoinGecko inside one bucket.
+    defaultTtlSeconds: 5 * 60,
+    maxTtlSeconds: 5 * 60,
   },
   {
     id: "github-raw-content",

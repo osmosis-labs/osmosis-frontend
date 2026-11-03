@@ -49,6 +49,15 @@ const config = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/apps",
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

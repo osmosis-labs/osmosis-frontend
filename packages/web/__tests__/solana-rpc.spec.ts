@@ -1,6 +1,6 @@
 import { Readable, Writable } from "node:stream";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { delay, http, HttpResponse } from "msw";
 import type { NextApiRequest, NextApiResponse } from "next";
 

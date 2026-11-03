@@ -90,7 +90,7 @@ export const poolsRouter = createTRPCRouter({
     .input(
       GetInfinitePoolsSchema.merge(
         z.object({
-          sort: createSortSchema(marketIncentivePoolsSortKeys).default({
+          sort: createSortSchema(marketIncentivePoolsSortKeys).prefault({
             keyPath: "totalFiatValueLocked",
           }),
         })
