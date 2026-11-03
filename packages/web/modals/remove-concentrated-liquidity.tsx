@@ -61,7 +61,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props;
 
   const { t } = useTranslation();
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
@@ -252,26 +252,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     return [targetTotal, retained].filter((c) => c.toDec().isPositive());
   })();
 
-  // The sold-denom balance already in the wallet that the swap could draw on:
-  // the swap message spends a FIXED amount from the account balance, not
-  // specifically the withdrawal's outputs. If spot drift beyond the slippage
-  // buffer makes the withdraw deliver less than that amount, an existing
-  // balance covers some or all of the shortfall (it does not guarantee a
-  // revert). Surfaced as an explicit acknowledgement below whenever such a
-  // balance exists.
-  const existingBalanceAtRisk: CoinPretty | undefined = (() => {
-    if (!needsSwap || !requiredSwap || !swapExecutedIn || !account?.address)
-      return undefined;
-    const balance = queriesStore
-      .get(chainId)
-      .queryBalances.getQueryBech32Address(account.address)
-      .getBalanceFromCurrency(requiredSwap.tokenInCurrency);
-    if (!balance || !balance.toDec().isPositive()) return undefined;
-    return balance.toDec().lt(swapExecutedIn.toDec())
-      ? balance
-      : swapExecutedIn;
-  })();
-
   // A real target mix is selected but the swap leg can't be computed: the
   // pool query is loading, failed, or returned no usable spot price. This
   // must block submission — dispatching would silently execute a PLAIN
@@ -301,24 +281,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     setCostAcknowledged(false);
   }, [costContextKey]);
 
-  // Wallet-balance-at-risk acknowledgement: spending outside the position is
-  // possible (see `existingBalanceAtRisk`), so a passive caption is not
-  // enough — the user must explicitly confirm. Reset on the USER-CONTROLLED
-  // risk context: the sold denom, the projected swap amount (moves with the
-  // withdrawal percentage and the mix slider) and the slippage setting, so
-  // confirming a small exposure can't authorize a materially larger one.
-  // Deliberately NOT keyed on the quote or the live balance, which drift
-  // with every 5s requote and would hostilely uncheck the box.
-  const [balanceRiskAcknowledged, setBalanceRiskAcknowledged] = useState(false);
-  const balanceRiskContextKey = `${
-    requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
-  }:${requiredSwap?.swapInAmount.toString() ?? ""}:${zapSlippageConfig.slippage
-    .toDec()
-    .toString()}:${Boolean(existingBalanceAtRisk)}`;
-  useEffect(() => {
-    setBalanceRiskAcknowledged(false);
-  }, [balanceRiskContextKey]);
-
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled:
@@ -341,10 +303,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // withdrawal without any pool data. An error caption below the mix
         // slider says exactly that once the query has settled.
         mixUncomputable ||
-        (highCost && !costAcknowledged) ||
-        // Possible spending outside the position requires an explicit
-        // acknowledgement, not just a caption.
-        (Boolean(existingBalanceAtRisk) && !balanceRiskAcknowledged),
+        (highCost && !costAcknowledged),
       onClick: () =>
         (needsSwap ? zapOutLiquidity() : removeLiquidity())
           .then(() => props.onRequestClose())
@@ -560,45 +519,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                       checked={costAcknowledged}
                       onCheckedChange={(checked) =>
                         setCostAcknowledged(checked === true)
-                      }
-                    />
-                  </div>
-                )}
-
-                {/* The swap spends a fixed amount from the ACCOUNT balance,
-                    not specifically the withdrawal's outputs. When the wallet
-                    already holds the sold denom, a beyond-tolerance move can
-                    make the swap draw on that balance (covering some or all
-                    of any shortfall) instead of reverting — spending outside
-                    the position, so it requires an explicit acknowledgement,
-                    not just a caption. */}
-                {existingBalanceAtRisk && quote && quoteInSync && (
-                  <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
-                    <Icon
-                      id="alert-circle-filled"
-                      width={16}
-                      height={16}
-                      className="shrink-0 text-rust-300"
-                    />
-                    <p className="body2 flex-1 text-left text-rust-300">
-                      {t(
-                        "addConcentratedLiquidity.singleAsset.existingBalanceCaution",
-                        { amount: formatPretty(existingBalanceAtRisk) }
-                      )}
-                    </p>
-                    <label
-                      htmlFor="cl-zap-out-balance-ack"
-                      className="body2 shrink-0"
-                    >
-                      {t("transfer.confirm")}
-                    </label>
-                    <Checkbox
-                      id="cl-zap-out-balance-ack"
-                      variant="destructive"
-                      className="shrink-0"
-                      checked={balanceRiskAcknowledged}
-                      onCheckedChange={(checked) =>
-                        setBalanceRiskAcknowledged(checked === true)
                       }
                     />
                   </div>

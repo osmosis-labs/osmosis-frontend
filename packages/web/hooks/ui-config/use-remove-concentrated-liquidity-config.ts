@@ -56,9 +56,7 @@ export function useRemoveConcentratedLiquidityConfig(
    *  Undefined when no swap is needed or the quote isn't ready. */
   swapMinOut: CoinPretty | undefined;
   /** The sold-side amount the swap message actually spends (sold-side
-   *  currency). The swap spends from the whole account balance, so when the
-   *  wallet already holds the sold denom the modal sizes a caution row
-   *  against this. Undefined when no swap is needed or the plan isn't ready. */
+   *  currency). Undefined when no swap is needed or the plan isn't ready. */
   swapExecutedIn: CoinPretty | undefined;
   /** Expected output of the executed plan before the slippage floor
    *  (target-side currency); pairs with `swapExecutedIn` for the estimated
@@ -240,10 +238,9 @@ export function useRemoveConcentratedLiquidityConfig(
     // makes the withdraw deliver less than this input, the tx reverts only
     // when the existing balance plus the actual withdrawn amount is below
     // it; a pre-existing balance of the sold denom covers some or all of
-    // the shortfall (and is swapped) instead. That residual is surfaced to
-    // the user as an acknowledgement row when such a balance exists (the
-    // modal reads `swapExecutedIn` for it). Truncation is per-leg, so the
-    // actual total input is slightly below the full quote input.
+    // the shortfall (and is swapped, still at or above the min-out) instead.
+    // Truncation is per-leg, so the actual total input is slightly below the
+    // full quote input.
     const routes = zapQuote.quote.split.map((route) => ({
       pools: route.pools.map((routePool, i: number) => ({
         id: routePool.id,
@@ -437,8 +434,7 @@ export function useRemoveConcentratedLiquidityConfig(
           // swap spends from the account balance, so beyond-tolerance drift
           // can draw on a pre-existing sold-denom balance, covering some or
           // all of the shortfall instead of guaranteeing a revert (see
-          // sendZapOutOfConcentratedPositionMsg's doc and the modal's
-          // acknowledgement row).
+          // sendZapOutOfConcentratedPositionMsg's doc).
           const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
             .mul(slippageMultiplier)
             .truncate();
