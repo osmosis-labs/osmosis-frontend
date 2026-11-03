@@ -467,6 +467,12 @@ const TableOrderRow = memo(
       status,
     } = order;
 
+    // A cancelled row is the unfilled input, so name the asset that went back to the wallet.
+    const lineAsset =
+      status === "cancelled" && order_direction === "bid"
+        ? quoteAsset
+        : baseAsset;
+
     const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
     const formattedDate = placedAt.format("MMM D");
@@ -536,85 +542,102 @@ const TableOrderRow = memo(
         <td className="!px-0 !text-left">
           <div className="flex items-center">
             <div className="flex flex-col gap-1">
-              <p
-                className={classNames(
-                  "body2 md:caption inline-flex w-fit items-center gap-1 text-osmoverse-300",
-                  { "flex-row-reverse": order_direction === "bid" }
+              <p className="body2 md:caption inline-flex w-fit items-center gap-1 text-osmoverse-300">
+                {status === "cancelled" && (
+                  <span>{t("limitOrders.unfilled")} ·</span>
                 )}
-              >
-                <span>
-                  {formatPretty(
-                    new CoinPretty(
-                      {
-                        coinDecimals: baseAsset?.decimals ?? 0,
-                        coinDenom: baseAsset?.symbol ?? "",
-                        coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
-                      },
-                      order_direction === "ask" ? placed_quantity : output
-                    )
-                  )}
-                </span>
-                <Icon
-                  id="arrow-right"
-                  className="h-4 w-4"
-                  width={16}
-                  height={16}
-                />
-                <span>
-                  {formatPretty(
-                    new CoinPretty(
-                      {
-                        coinDecimals: quoteAsset?.decimals ?? 0,
-                        coinDenom: quoteAsset?.symbol ?? "",
-                        coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
-                      },
-                      order_direction === "ask" ? output : placed_quantity
-                    )
-                  )}
+                <span
+                  className={classNames("inline-flex items-center gap-1", {
+                    "flex-row-reverse": order_direction === "bid",
+                  })}
+                >
+                  <span>
+                    {formatPretty(
+                      new CoinPretty(
+                        {
+                          coinDecimals: baseAsset?.decimals ?? 0,
+                          coinDenom: baseAsset?.symbol ?? "",
+                          coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+                        },
+                        order_direction === "ask" ? placed_quantity : output
+                      )
+                    )}
+                  </span>
+                  <Icon
+                    id="arrow-right"
+                    className="h-4 w-4"
+                    width={16}
+                    height={16}
+                  />
+                  <span>
+                    {formatPretty(
+                      new CoinPretty(
+                        {
+                          coinDecimals: quoteAsset?.decimals ?? 0,
+                          coinDenom: quoteAsset?.symbol ?? "",
+                          coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
+                        },
+                        order_direction === "ask" ? output : placed_quantity
+                      )
+                    )}
+                  </span>
                 </span>
               </p>
               <div className="md:body2 inline-flex items-center gap-2">
                 <span>
-                  {status === "cancelled"
-                    ? t("limitOrders.unfilled")
-                    : order_direction === "bid"
-                      ? t("limitOrders.buy")
-                      : t("limitOrders.sell")}{" "}
-                  {formatFiatPrice(
-                    new PricePretty(
-                      DEFAULT_VS_CURRENCY,
-                      order_direction === "bid"
-                        ? placed_quantity /
-                            Number(
-                              new Dec(10)
-                                .pow(new Int(quoteAsset?.decimals ?? 0))
-                                .toString()
-                            )
-                        : output.quo(
-                            new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
-                          )
-                    ),
-                    2
-                  )}{" "}
-                  {t("limitOrders.of")}
+                  {status === "cancelled" ? (
+                    <>
+                      {t("limitOrders.returned")}{" "}
+                      {formatPretty(
+                        new CoinPretty(
+                          {
+                            coinDecimals: lineAsset?.decimals ?? 0,
+                            coinDenom: lineAsset?.symbol ?? "",
+                            coinMinimalDenom: lineAsset?.coinMinimalDenom ?? "",
+                          },
+                          placed_quantity
+                        ).hideDenom(true)
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {order_direction === "bid"
+                        ? t("limitOrders.buy")
+                        : t("limitOrders.sell")}{" "}
+                      {formatFiatPrice(
+                        new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          order_direction === "bid"
+                            ? placed_quantity /
+                                Number(
+                                  new Dec(10)
+                                    .pow(new Int(quoteAsset?.decimals ?? 0))
+                                    .toString()
+                                )
+                            : output.quo(
+                                new Dec(10).pow(
+                                  new Int(quoteAsset?.decimals ?? 0)
+                                )
+                              )
+                        ),
+                        2
+                      )}{" "}
+                      {t("limitOrders.of")}
+                    </>
+                  )}
                 </span>
                 <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                   <EntityImage
                     width={20}
                     height={20}
                     logoURIs={
-                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
+                      lineAsset?.rawAsset.logoURIs ?? { png: undefined }
                     }
-                    name={baseAsset?.rawAsset.name ?? ""}
-                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                    name={lineAsset?.rawAsset.name ?? ""}
+                    symbol={lineAsset?.rawAsset.symbol ?? ""}
                   />
                 </div>
-                <span>{baseAsset?.symbol}</span>
-                {status === "cancelled" && (
-                  <span className="text-osmoverse-300">
-                    · {t("limitOrders.returned")}
-                  </span>
-                )}
+                <span>{lineAsset?.symbol}</span>
               </div>
             </div>
           </div>
