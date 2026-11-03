@@ -558,7 +558,11 @@
       "depthNoOrders": "Aucun ordre ouvert",
       "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide",
       "depthUnavailable": "Données de profondeur indisponibles",
-      "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative..."
+      "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative...",
+      "depthClLegend": "Incl. pools CL",
+      "depthClLegendTooltip": "Les barres hachurées incluent la liquidité des pools de liquidité concentrée pour cette paire. Il s'agit de liquidité de courbe AMM, pas d'ordres en attente ; les quantités affichées sont uniquement des ordres.",
+      "depthClUnavailable": "Profondeur CL indisponible",
+      "depthRowWithCl": "Ordres : {orders} · Pools CL : {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "il y a {minutes} min",
     "buyWith": "Achetez avec {coinA} ou {coinB}",
     "orderHistory": "Historique des ordres",
+    "openOrderbook": "Ouvrir le carnet d'ordres",
     "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
     "tradeAnotherAsset": "Échangez un autre actif contre {coinDenom}",
     "sellAnAsset": "Vendre un actif",
@@ -1538,5 +1543,8 @@
       "stepTitle": "Convertir {symbol} en {symbol}.wh",
       "description": "Vous détenez {balance} {symbol} en tant qu actif allié. Wormhole fait le pont avec la variante {symbol}.wh, convertissez d abord puis faites le pont ci-dessous."
     }
+  },
+  "tradeView": {
+    "orderBook": "Carnet d'ordres"
   }
 }

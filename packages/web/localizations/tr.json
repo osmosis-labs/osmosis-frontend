@@ -558,7 +558,11 @@
       "depthNoOrders": "Açık emir yok",
       "depthNoOrdersDesc": "Bu emir defteri şu anda boş",
       "depthUnavailable": "Derinlik verisi mevcut değil",
-      "depthUnavailableDesc": "Emir defteri derinliği yüklenemedi. Yeniden deneniyor..."
+      "depthUnavailableDesc": "Emir defteri derinliği yüklenemedi. Yeniden deneniyor...",
+      "depthClLegend": "CL havuzları dahil",
+      "depthClLegendTooltip": "Taralı çubuklar bu parite için yoğunlaştırılmış likidite havuzlarının likiditesini içerir. Bu AMM eğrisi likiditesidir, bekleyen emir değildir; gösterilen miktarlar yalnızca emirlerdir.",
+      "depthClUnavailable": "CL derinliği kullanılamıyor",
+      "depthRowWithCl": "Emirler: {orders} · CL havuzları: {cl}"
     }
   },
   "pools": {
@@ -1364,6 +1368,7 @@
     "sellAnAsset": "Bir varlık sat",
     "swapAnAsset": "Bir varlığı takas et",
     "of": "değerinde",
+    "openOrderbook": "Emir defterini aç",
     "insufficientFunds": "Yetersiz bakiye",
     "startTrading": "İşlem yapmaya başla",
     "tradeFees": "İşlem ücretleri (emir gerçekleştiğinde)",
@@ -1538,5 +1543,8 @@
       "stepTitle": "{symbol} ı {symbol}.wh ye dönüştür",
       "description": "Alaşımlı varlık olarak {balance} {symbol} tutuyorsunuz. Wormhole {symbol}.wh varyantını köprüler, bu yüzden önce dönüştürün, sonra aşağıda köprüleyin."
     }
+  },
+  "tradeView": {
+    "orderBook": "Emir defteri"
   }
 }

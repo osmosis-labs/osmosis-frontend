@@ -558,7 +558,11 @@
       "depthNoOrders": "Brak otwartych zleceń",
       "depthNoOrdersDesc": "Ta księga zleceń jest obecnie pusta",
       "depthUnavailable": "Dane głębokości niedostępne",
-      "depthUnavailableDesc": "Nie można załadować głębokości arkusza zleceń. Ponawiam próbę..."
+      "depthUnavailableDesc": "Nie można załadować głębokości arkusza zleceń. Ponawiam próbę...",
+      "depthClLegend": "W tym pule CL",
+      "depthClLegendTooltip": "Kreskowane paski obejmują płynność z pul skoncentrowanej płynności dla tej pary. To płynność krzywej AMM, nie oczekujące zlecenia; pokazane ilości to tylko zlecenia.",
+      "depthClUnavailable": "Głębokość CL niedostępna",
+      "depthRowWithCl": "Zlecenia: {orders} · Pule CL: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "{minutes} min temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zleceń",
+    "openOrderbook": "Otwórz arkusz zleceń",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
     "tradeAnotherAsset": "Zamień inny zasób na {coinDenom}",
     "sellAnAsset": "Sprzedaj aktywa",
@@ -1538,5 +1543,8 @@
       "stepTitle": "Konwertuj {symbol} na {symbol}.wh",
       "description": "Posiadasz {balance} {symbol} jako aktywo stopowe. Wormhole mostkuje wariant {symbol}.wh, więc najpierw skonwertuj, a potem zmostkuj poniżej."
     }
+  },
+  "tradeView": {
+    "orderBook": "Arkusz zleceń"
   }
 }
