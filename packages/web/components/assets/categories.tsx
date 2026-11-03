@@ -1,85 +1,13 @@
 import { Popover } from "@headlessui/react";
+import { ASSET_CATEGORY_KEYS } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { FunctionComponent, useMemo, useRef } from "react";
 
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { api } from "~/utils/trpc";
 
 import { CustomClasses } from "../types";
 import { Icon } from "./icon";
-
-const staticCategoryAssetImageSamples = {
-  defi: [
-    "/tokens/generated/osmo.svg",
-    "/tokens/generated/usdy.svg",
-    "/tokens/generated/dydx.svg",
-  ],
-  privacy: [
-    "/tokens/generated/nam.svg",
-    "/tokens/generated/um.svg",
-    "/tokens/generated/scrt.png",
-  ],
-  ai: [
-    "/tokens/generated/akt.svg",
-    "/tokens/generated/fet.svg",
-    "/tokens/generated/orai.svg",
-  ],
-  meme: [
-    "/tokens/generated/doge.svg",
-    "/tokens/generated/huahua.svg",
-    "/tokens/generated/spice.png",
-  ],
-  liquid_staking: [
-    "/tokens/generated/stosmo.svg",
-    "/tokens/generated/milktia.svg",
-    "/tokens/generated/statom.svg",
-  ],
-  stablecoin: [
-    "/tokens/generated/usdc.svg",
-    "/tokens/generated/usdt.svg",
-    "/tokens/generated/eure.svg",
-  ],
-  bridges: [
-    "/tokens/generated/axl.svg",
-    "/tokens/generated/coreum.svg",
-    "/tokens/generated/grav.png",
-  ],
-  dweb: [
-    "/tokens/generated/akt.svg",
-    "/tokens/generated/p2p.svg",
-    "/tokens/generated/cheq.svg",
-  ],
-  rwa: [
-    "/tokens/generated/hash.svg",
-    "/tokens/generated/om.svg",
-    "/tokens/generated/paxg.atom.svg",
-  ],
-  gaming: [
-    "/tokens/generated/saga.svg",
-    "/tokens/generated/pasg.png",
-    "/tokens/generated/xpla.svg",
-  ],
-  oracles: [
-    "/tokens/generated/link.svg",
-    "/tokens/generated/pyth.svg",
-    "/tokens/generated/band.svg",
-  ],
-  social: [
-    "/tokens/generated/btsg.svg",
-    "/tokens/generated/like.svg",
-    "/tokens/generated/dsm.svg",
-  ],
-  nft_protocol: [
-    "/tokens/generated/stars.svg",
-    "/tokens/generated/flix.svg",
-    "/tokens/generated/lab.png",
-  ],
-  built_on_osmosis: ["/tokens/generated/mbrn.svg"],
-  depin: [
-    "/tokens/generated/akt.svg",
-    "/tokens/generated/fil.svg",
-    "/tokens/generated/synt.svg",
-  ],
-};
 
 export const AssetCategoriesSelectors: FunctionComponent<{
   selectedCategory?: string;
@@ -101,13 +29,23 @@ export const AssetCategoriesSelectors: FunctionComponent<{
 
   const divRef = useRef<HTMLDivElement>(null);
 
-  /** Static sample images combined with dynamic */
+  const { data: serverCategoryImageSamples } =
+    api.edge.assets.getCategorySamples.useQuery(undefined, {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+    });
+
+  /** Every category in display order (no images until the server samples load),
+   *  with the top market cap samples from the server and the client side ones on top. */
   const categoryAssetSampleImages: Record<string, string[]> = useMemo(
     () => ({
-      ...staticCategoryAssetImageSamples,
+      ...Object.fromEntries(
+        ASSET_CATEGORY_KEYS.map((category) => [category, [] as string[]])
+      ),
+      ...serverCategoryImageSamples,
       ...clientCategoryImageSamples,
     }),
-    [clientCategoryImageSamples]
+    [serverCategoryImageSamples, clientCategoryImageSamples]
   );
 
   /** Selected moved to front of list of categories. */

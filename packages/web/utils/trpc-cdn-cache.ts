@@ -16,6 +16,7 @@ const ASSETS_CDN_MAX_AGE_SECONDS: Record<string, number> = {
   "assets.getAssetHistoricalPrice": 60,
   "assets.getAssetPairHistoricalPrice": 60,
   "assets.getCoingeckoAssetHistoricalPrice": 60,
+  "assets.getCategorySamples": 300,
   "assets.getTopGainerAssets": 60,
   "assets.getTopNewAssets": 60,
   "assets.getTopUpcomingAssets": 60,
