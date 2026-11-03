@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "买",
     "sell": "卖",
+    "chartTemporarilyUnavailable": "Chart unavailable right now",
+    "pricesUnavailable": "Prices unavailable",
+    "unpricedAssets": "+ {count} asset without a price",
+    "unpricedAssets_plural": "+ {count} assets without a price",
+    "unpricedAssetsTooltip": "Not included in the total: {assets}",
     "yourBalances": "您的余额",
     "yourPositions": "您的职位",
     "searchBalances": "搜索余额",

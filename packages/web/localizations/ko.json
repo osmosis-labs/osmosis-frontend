@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "구입하다",
     "sell": "팔다",
+    "chartTemporarilyUnavailable": "Chart unavailable right now",
+    "pricesUnavailable": "Prices unavailable",
+    "unpricedAssets": "+ {count} asset without a price",
+    "unpricedAssets_plural": "+ {count} assets without a price",
+    "unpricedAssetsTooltip": "Not included in the total: {assets}",
     "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
     "searchBalances": "잔액 검색",

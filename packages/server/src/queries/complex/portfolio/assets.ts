@@ -70,6 +70,23 @@ function isCategoryValueUnknown(
   );
 }
 
+/** Coins in a category that SQS couldn't price although they should have a price,
+ *  identified by minimal denom and labelled from the asset list when listed. */
+export function getUnpricedAssets(
+  assetLists: AssetList[],
+  category: Category
+): UnpricedAsset[] {
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
+  return (category.account_coins_result ?? [])
+    .filter((coin) => isUnpricedCoin(assetLists, coin))
+    .map(({ coin }) => ({
+      coinMinimalDenom: coin.denom,
+      symbol: assetListAssets.find(
+        (asset) => asset.coinMinimalDenom === coin.denom
+      )?.symbol,
+    }));
+}
+
 export function getAllocations(
   categories: Categories,
   assetLists: AssetList[]
@@ -218,6 +235,11 @@ export type HeldAsset = {
   fiatValue: string;
 };
 
+export type UnpricedAsset = {
+  coinMinimalDenom: string;
+  symbol?: string;
+};
+
 export type PortfolioAssets = {
   all: Allocation[];
   assets: Allocation[];
@@ -225,6 +247,8 @@ export type PortfolioAssets = {
   totalCap: PricePretty;
   /** A held coin that should have a price couldn't be priced, so `totalCap` is unknown. */
   totalCapUnknown: boolean;
+  /** The coins behind `totalCapUnknown`. `totalCap` is the sum of the priced coins only. */
+  unpricedAssets: UnpricedAsset[];
   /** Variants grouped with a canonical asset. Only those passing
    *  `filterConvertibleAssetVariants` with `getAlloyStatuses` convert 1:1. */
   assetVariantCandidates: AssetVariant[];
@@ -302,6 +326,7 @@ export async function getPortfolioAssets({
       assetLists,
       categories["total-assets"]
     ),
+    unpricedAssets: getUnpricedAssets(assetLists, categories["total-assets"]),
     assetVariantCandidates,
     heldAssets,
   };

@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "買う",
     "sell": "売る",
+    "chartTemporarilyUnavailable": "Chart unavailable right now",
+    "pricesUnavailable": "Prices unavailable",
+    "unpricedAssets": "+ {count} asset without a price",
+    "unpricedAssets_plural": "+ {count} assets without a price",
+    "unpricedAssetsTooltip": "Not included in the total: {assets}",
     "yourBalances": "残高",
     "yourPositions": "あなたの立場",
     "searchBalances": "残高を検索",

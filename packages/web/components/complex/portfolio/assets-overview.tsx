@@ -24,6 +24,7 @@ import { PortfolioPerformance } from "~/components/complex/portfolio/performance
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { PrivateText } from "~/components/privacy";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import {
@@ -144,9 +145,16 @@ export const AssetsOverview: FunctionComponent<
     totalValue?: PricePretty;
     /** A held coin couldn't be priced, so the total is unknown rather than its sum. */
     isTotalValueUnknown?: boolean;
+    /** The unpriced coins behind `isTotalValueUnknown`; `totalValue` sums the priced ones. */
+    unpricedAssets?: { coinMinimalDenom: string; symbol?: string }[];
     isTotalValueFetched?: boolean;
   } & CustomClasses
-> = ({ totalValue, isTotalValueUnknown = false, isTotalValueFetched }) => {
+> = ({
+  totalValue,
+  isTotalValueUnknown = false,
+  unpricedAssets = [],
+  isTotalValueFetched,
+}) => {
   const { t } = useTranslation();
   const { startBridge, fiatRampSelection } = useBridgeStore(
     useShallow((state) => ({
@@ -179,6 +187,7 @@ export const AssetsOverview: FunctionComponent<
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
     error,
+    refetch: refetchPortfolioOverTime,
   } = api.local.portfolio.getPortfolioOverTime.useQuery(
     {
       address,
@@ -222,10 +231,17 @@ export const AssetsOverview: FunctionComponent<
         )
       : undefined;
 
-  // While not hovering a past point, an unknown total shows as unknown.
+  // While not hovering a past point, an unknown total shows only what is priced:
+  // the priced sum with a partial label, or "unavailable" if nothing is priced.
+  const isPartialTotal =
+    isTotalValueUnknown &&
+    !showDate &&
+    Boolean(totalValue?.toDec().isPositive());
   const totalDisplayValue =
     isTotalValueUnknown && !showDate
-      ? "–"
+      ? isPartialTotal
+        ? totalValue?.toString()
+        : t("portfolio.pricesUnavailable")
       : dataPoint.value !== undefined
         ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
         : totalValue?.toString();
@@ -304,6 +320,24 @@ export const AssetsOverview: FunctionComponent<
               />
             )}
           </SkeletonLoader>
+          {isPartialTotal && unpricedAssets.length > 0 && (
+            <Tooltip
+              content={t("portfolio.unpricedAssetsTooltip", {
+                assets: unpricedAssets
+                  .map((asset) => asset.symbol ?? asset.coinMinimalDenom)
+                  .join(", "),
+              })}
+            >
+              <span className="body2 mt-1 w-fit cursor-help text-osmoverse-300">
+                {t(
+                  unpricedAssets.length === 1
+                    ? "portfolio.unpricedAssets"
+                    : "portfolio.unpricedAssets_plural",
+                  { count: unpricedAssets.length.toString() }
+                )}
+              </span>
+            </Tooltip>
+          )}
           <div className="flex items-center gap-2 pt-6 lg:gap-1">
             <Button
               className="flex h-[48px] items-center gap-2 !rounded-full md:gap-1"
@@ -417,6 +451,7 @@ export const AssetsOverview: FunctionComponent<
           range={range}
           setRange={setRange}
           error={error}
+          onRetry={() => void refetchPortfolioOverTime()}
           setShowDate={setShowDate}
           resetDataPoint={() => {
             // Use current ref values to ensure we have the latest data

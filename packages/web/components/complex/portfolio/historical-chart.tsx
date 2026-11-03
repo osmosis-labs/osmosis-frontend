@@ -8,7 +8,7 @@ import {
 } from "~/components/chart/historical-chart";
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
-import { IconButton } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 interface PortfolioHistoricalChartProps {
@@ -19,6 +19,8 @@ interface PortfolioHistoricalChartProps {
   range: Range;
   setRange: (range: Range) => void;
   error: unknown;
+  /** Re-runs the history query after a failure. */
+  onRetry: () => void;
   setShowDate: (show: boolean) => void;
   setIsChartMinimized: (isChartMinimized: boolean) => void;
 }
@@ -31,6 +33,7 @@ export const PortfolioHistoricalChart = ({
   range,
   setRange,
   error,
+  onRetry,
   setShowDate,
   setIsChartMinimized,
 }: PortfolioHistoricalChartProps) => {
@@ -39,8 +42,13 @@ export const PortfolioHistoricalChart = ({
   return (
     <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
       {error ? (
-        <div className="error-message flex h-full items-center justify-center">
-          {t("errors.generic")}
+        <div className="flex h-full flex-col items-center justify-center gap-4">
+          <span className="body1 text-osmoverse-300">
+            {t("portfolio.chartTemporarilyUnavailable")}
+          </span>
+          <Button variant="secondary" size="md" onClick={onRetry}>
+            {t("walletSelect.retry")}
+          </Button>
         </div>
       ) : !isFetched ? (
         <HistoricalChartSkeleton />
@@ -92,8 +100,8 @@ export const PortfolioHistoricalChartMinimized = ({
   return (
     <div className="h-full w-full">
       {error ? (
-        <div className="error-message flex h-full items-center justify-center">
-          {t("errors.generic")}
+        <div className="body2 flex h-full items-center justify-center text-osmoverse-300">
+          {t("portfolio.chartTemporarilyUnavailable")}
         </div>
       ) : !isFetched ? (
         <HistoricalChartSkeleton hideScales />
