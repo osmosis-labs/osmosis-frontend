@@ -316,24 +316,24 @@
   "estimated": "Estimé",
   "halt": {
     "deposit": {
-      "bridge_down": "Les dépôts sont interrompus. La voie d'accès au pont autochtone est coupée.",
+      "bridge_down": "Dépôts suspendus. La route du pont natif est hors service.",
       "extended_unstable_market": "Les dépôts sont suspendus. L'actif est instable et inactif depuis une période prolongée.",
       "planned_shutdown": "Les dépôts sont suspendus. L'actif est programmé pour être mis hors service.",
-      "source_chain_killed": "Les dépôts sont suspendus. La chaîne d'approvisionnement est à l'arrêt.",
+      "source_chain_killed": "Dépôts suspendus. La chaîne source a cessé de fonctionner.",
       "manual": "Les dépôts sont suspendus, soyez prudents.",
-      "unknown": "Deposits halted."
+      "unknown": "Dépôts suspendus."
     },
     "withdrawal": {
-      "bridge_down": "Retraits interrompus. La voie de passage du pont autochtone est coupée.",
-      "source_chain_killed": "Les retraits sont suspendus. La chaîne source est hors service.",
+      "bridge_down": "Retraits suspendus. La route du pont natif est hors service.",
+      "source_chain_killed": "Retraits suspendus. La chaîne source a cessé de fonctionner.",
       "manual": "Retraits suspendus, soyez prudents.",
-      "unknown": "Withdrawals halted."
+      "unknown": "Retraits suspendus."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "La chaîne d'approvisionnement de cet actif a cessé ses activités.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "Le client IBC vers la chaîne de cet actif est instable.",
+    "source_chain_killed": "La chaîne source de cet actif a cessé de fonctionner.",
+    "market": "Cet actif présente depuis longtemps une liquidité et un volume d'échange très faibles.",
     "manual": "Instable, soyez prudent.",
     "unknown": "Instable, soyez prudent."
   },
@@ -1021,8 +1021,8 @@
     "balanceUnavailable": "Impossible de charger votre solde {chain}",
     "balanceUnavailableDescription": "Nous n'avons pas pu joindre {chain} pour vérifier votre solde, il peut donc s'afficher à 0. Vos fonds ne sont pas affectés. Réessayez ou utilisez les options ci-dessous.",
     "retryBalance": "Réessayer",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "Les dépôts de {asset} sont suspendus",
+    "withdrawalsHalted": "Les retraits de {asset} sont suspendus",
     "noNativeTransfers": "Transferts natifs indisponibles pour {asset}",
     "noNativeTransfersDescription": "Veuillez utiliser l’un des fournisseurs alternatifs ci-dessous.",
     "sendFromWalletOrExchange": "Envoyez depuis votre portefeuille ou échangez",
@@ -1313,10 +1313,10 @@
   "limitOrders": {
     "historyTable": {
       "columns": {
-        "order": "Commande",
+        "order": "Ordre",
         "amount": "Montant",
         "price": "Prix",
-        "orderPlaced": "Commande passée",
+        "orderPlaced": "Passé le",
         "status": "Statut"
       },
       "emptyState": {
@@ -1333,51 +1333,51 @@
     },
     "aboveMarket": {
       "title": "Prix limite au-dessus du prix du marché",
-      "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
+      "description": "Si vous continuez, votre ordre risque d'être exécuté à un prix défavorable."
     },
     "belowMarket": {
       "title": "Prix limite en dessous du prix du marché",
-      "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
+      "description": "Si vous continuez, votre ordre risque d'être exécuté à un prix défavorable."
     },
     "enterAnAmountTo": "Entrez un montant à",
-    "toSell": "à vendre",
+    "toSell": "vendre",
     "toBuy": "acheter",
     "sell": "Vendre",
     "sold": "Vendu",
-    "percentFilled": "Pourcentage rempli",
+    "percentFilled": "Pourcentage exécuté",
     "status": "Statut",
     "price": "Prix",
     "buy": "Acheter",
     "pay": "Payer",
-    "open": "Ouvrir",
-    "filled": "Rempli",
-    "claimable": "Réclamable",
-    "claimAndClose": "Réclamez et clôturez",
+    "open": "Ouvert",
+    "filled": "Exécuté",
+    "claimable": "À réclamer",
+    "claimAndClose": "Réclamer et clôturer",
     "close": "Fermer",
     "claim": "Réclamer",
     "accept": "Accepter",
     "cancelled": "Annulé",
     "cancel": "Annuler",
-    "daysAgo": "{days} il y a 4 jours",
-    "hoursAgo": "{hours} il y a h",
+    "daysAgo": "il y a {days} j",
+    "hoursAgo": "il y a {hours} h",
     "buyWith": "Achetez avec {coinA} ou {coinB}",
-    "orderHistory": "Historique des commandes",
+    "orderHistory": "Historique des ordres",
     "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
     "tradeAnotherAsset": "Échangez un autre actif contre {coinDenom}",
     "sellAnAsset": "Vendre un actif",
     "swapAnAsset": "Échanger un actif",
     "of": "de",
-    "insufficientFunds": "Fonds insuffisants",
+    "insufficientFunds": "Solde insuffisant",
     "startTrading": "Commencer à trader",
-    "tradeFees": "Frais de transaction (lorsque la commande est exécutée)",
-    "youNeed": "Vous avez besoin",
-    "stablecoin": "pièce stable",
-    "quoteUpdated": "Devis mis à jour",
-    "fundsOsmosisToBuyAssets": "fonds sur Osmosis pour acheter des actifs.",
+    "tradeFees": "Frais de transaction (lorsque l'ordre est exécuté)",
+    "youNeed": "Vous avez besoin de fonds en",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "Cotation mise à jour",
+    "fundsOsmosisToBuyAssets": "sur Osmosis pour acheter des actifs.",
     "chooseAnOption": "Choisissez une option pour continuer.",
     "lowerSlippageToleranceRecommended": "Une tolérance de glissement plus faible est recommandée.",
     "tryHigherSlippage": "Essayez une tolérance de glissement maximale plus élevée.",
-    "reviewTrade": "Revoir le commerce",
+    "reviewTrade": "Vérifier la transaction",
     "highPriceImpact": {
       "title": "L'impact sur le prix est élevé",
       "description": "Cette transaction modifie le prix du marché de {impact}, vous pourriez donc recevoir bien moins que le montant affiché."
@@ -1390,14 +1390,14 @@
     },
     "transferFromAnotherNetwork": "Transfert depuis un autre réseau ou portefeuille",
     "whatIsOrderClaim": {
-      "title": "Qu'est-ce qu'une réclamation de commande ?",
-      "description": "Dans la majorité des cas, lorsqu'un ordre limité est exécuté, les fonds sont automatiquement ajoutés à votre solde. Cependant, dans de rares cas, les fonds doivent être réclamés manuellement à partir de la commande exécutée.<inlang-LineFeed>\nCe processus de réclamation consiste à approuver une seule transaction dans votre portefeuille pour toutes les commandes exécutées non réclamées, ce qui entraîne des frais de réseau nominaux."
+      "title": "Qu'est-ce que la réclamation d'un ordre ?",
+      "description": "Dans la plupart des cas, lorsqu'un ordre à cours limité est exécuté, les fonds sont automatiquement ajoutés à votre solde. Dans de rares cas, toutefois, les fonds doivent être réclamés manuellement à partir de l'ordre exécuté.\n\nPour cela, il suffit d'approuver dans votre portefeuille une seule transaction pour tous les ordres exécutés non réclamés, ce qui entraîne des frais de réseau minimes."
     },
     "whatIsAStablecoin": {
       "title": "Qu’est-ce qu’un stablecoin ?",
       "description": "Les Stablecoins sont un type de crypto-monnaie dont la valeur est liée à un autre actif, comme une monnaie fiduciaire ou de l'or, pour maintenir un prix stable. Sur Osmosis, les principales pièces stables pour l'achat et la vente d'actifs sont l'USDC et l'USDT."
     },
-    "claimAll": "Réclamez tout",
+    "claimAll": "Tout réclamer",
     "addFunds": "Ajouter des fonds",
     "selectAnAssetTo": {
       "buy": "Sélectionnez un actif à acheter",
@@ -1408,27 +1408,27 @@
     "swapFromAnotherAsset": "Échanger depuis un autre actif",
     "connectYourWallet": "Connectez votre portefeuille",
     "toSeeYourBalances": "pour voir vos soldes",
-    "searchAssets": "Rechercher des ressources",
-    "below": "ci-dessous",
-    "above": "au-dessus de",
+    "searchAssets": "Rechercher des actifs",
+    "below": "en dessous du",
+    "above": "au-dessus du",
     "currentPrice": "prix actuel",
-    "whenDenomPriceIs": "Lorsque le prix {denom} est",
-    "orderType": "Type de commande",
+    "whenDenomPriceIs": "Lorsque le prix de {denom} est",
+    "orderType": "Type d'ordre",
     "confirm": "Confirmer",
     "market": "Marché",
     "limit": "Limite",
-    "trade": "Commerce",
+    "trade": "Trader",
     "swapToAnotherAsset": "Échanger vers un autre actif",
     "invalidPrice": "Prix invalide",
     "priceTooLow": "Prix trop bas",
     "priceTooHigh": "Prix trop élevé",
     "unavailable": "Indisponible pour {denom}",
     "orderHistoryHeaders": {
-      "past": "Passé",
+      "past": "Historique",
       "pending": "En attente",
-      "filled": "Commandes exécutées à réclamer"
+      "filled": "Ordres exécutés à réclamer"
     },
-    "priceReaches": "Si le prix {denom} atteint {price}",
+    "priceReaches": "Si le prix de {denom} atteint {price}",
     "belowMinimumAmount": "{amount} minimum",
     "noOrderbookForPair": "Aucun orderbook n'existe pour {base}/{quote}. Créez-en un pour activer les ordres limites pour cette paire.",
     "createOrderbook": "Créer un Orderbook",
@@ -1442,7 +1442,8 @@
     "returnedUnfilled": "Restitué (non exécuté)",
     "alreadyReceived": "Déjà reçu",
     "howPayoutsWork": "Comment fonctionnent les paiements ?",
-    "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté."
+    "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté.",
+    "limitOrder": "Ordre à cours limité"
   },
   "tradeDetails": {
     "priceImpact": {

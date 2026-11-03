@@ -134,7 +134,9 @@ const OrderDetails = ({
       case "partiallyFilled":
         return (
           <div className="flex items-center justify-between">
-            <span className="body2 sm:caption text-osmoverse-300">Open</span>
+            <span className="body2 sm:caption text-osmoverse-300">
+              {t("limitOrders.open")}
+            </span>
           </div>
         );
       case "cancelled":
@@ -155,11 +157,15 @@ const OrderDetails = ({
         );
       case "filled":
         return (
-          <span className="body2 sm:caption text-bullish-300">Claimable</span>
+          <span className="body2 sm:caption text-bullish-300">
+            {t("limitOrders.claimable")}
+          </span>
         );
       case "fullyClaimed":
         return (
-          <span className="body2 sm:caption text-bullish-400">Filled</span>
+          <span className="body2 sm:caption text-bullish-400">
+            {t("limitOrders.filled")}
+          </span>
         );
       default:
         return;
@@ -297,7 +303,7 @@ const OrderDetails = ({
             />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">Limit Order</div>
+            <div className="text-h5">{t("limitOrders.limitOrder")}</div>
             <div className="body1 capitalize text-osmoverse-300">
               {formattedDate}
             </div>
