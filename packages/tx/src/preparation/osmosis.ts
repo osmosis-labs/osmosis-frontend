@@ -510,6 +510,100 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
   );
 }
 
+/**
+ * Single-asset "zap-in" into a concentrated liquidity position: a swap and a
+ * create-position in one atomic transaction (one signature, one fee). The swap
+ * leg converts part of the provided asset into the counterparty so the two
+ * amounts match the position's required ratio; both messages revert together.
+ *
+ * The caller computes the swap split (via SQS) and the slippage-adjusted minima;
+ * this only composes the messages.
+ *
+ * @param swapIn SQS route(s), the token being swapped in, and the
+ *   slippage-adjusted minimum out amount (all micro amounts).
+ * @param tokensProvided Coins provided to the position, in micro amounts: the
+ *   un-swapped remainder plus the swap leg's guaranteed floor
+ *   (`tokenOutMinAmount`) on the swapped side, never the quoted expected
+ *   output, which the wallet is not guaranteed to hold after the swap.
+ * @param tokenMinAmount0 Slippage floor for token0 on the create-position leg.
+ * @param tokenMinAmount1 Slippage floor for token1 on the create-position leg.
+ */
+export async function prepareZapInToConcentratedPositionMsg(
+  context: TransactionPreparationContext,
+  poolId: string,
+  pool: Pick<ConcentratedPoolInfo, "tickSpacing">,
+  lowerTick: Int,
+  upperTick: Int,
+  swapIn: {
+    routes: {
+      pools: { id: string; tokenOutDenom: string }[];
+      tokenInAmount: string;
+    }[];
+    tokenInCoinMinimalDenom: string;
+    tokenOutMinAmount: string;
+  },
+  tokensProvided: { denom: string; amount: string }[],
+  tokenMinAmount0: string,
+  tokenMinAmount1: string,
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  if (
+    swapIn.routes.length < 1 ||
+    swapIn.routes.some((route) => route.pools.length < 1)
+  ) {
+    throw new Error("Zap-in requires a non-empty swap route");
+  }
+
+  // avoid serializing 0 ticks issue, mirroring create-position
+  if (lowerTick.isZero()) lowerTick = new Int(-pool.tickSpacing);
+  if (upperTick.isZero()) upperTick = new Int(pool.tickSpacing);
+
+  // The chain rejects coins that are not denom-sorted.
+  const sortedTokensProvided = [...tokensProvided].sort((a, b) =>
+    a.denom.localeCompare(b.denom)
+  );
+
+  return prepareTransaction(
+    "clZapInPosition",
+    async () => {
+      const swapMsg =
+        swapIn.routes.length === 1
+          ? await makeSwapExactAmountInMsg({
+              pools: swapIn.routes[0].pools,
+              tokenIn: {
+                coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                amount: swapIn.routes[0].tokenInAmount,
+              },
+              tokenOutMinAmount: swapIn.tokenOutMinAmount,
+              userOsmoAddress: context.address,
+            })
+          : await makeSplitRoutesSwapExactAmountInMsg({
+              routes: swapIn.routes,
+              tokenIn: { coinMinimalDenom: swapIn.tokenInCoinMinimalDenom },
+              tokenOutMinAmount: swapIn.tokenOutMinAmount,
+              userOsmoAddress: context.address,
+            });
+
+      const createPositionMsg = await makeCreatePositionMsg({
+        poolId: BigInt(poolId),
+        lowerTick: BigInt(lowerTick.toString()),
+        upperTick: BigInt(upperTick.toString()),
+        sender: context.address,
+        tokenMinAmount0,
+        tokenMinAmount1,
+        tokensProvided: sortedTokensProvided,
+      });
+
+      return [swapMsg, createPositionMsg];
+    },
+    memo,
+    undefined,
+    undefined,
+    onFulfill
+  );
+}
+
 export async function prepareCreateConcentratedLiquidityInitialFullRangePositionMsg(
   context: TransactionPreparationContext,
   poolId: string,

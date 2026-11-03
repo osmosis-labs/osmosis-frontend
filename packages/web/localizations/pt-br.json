@@ -34,7 +34,16 @@
     "low": "baixo",
     "buttonCreateAndStake": "Criar posição e participação",
     "estimated": "Estimado",
-    "estimatedInfo": "Esta é uma estimativa baseada nos preços atuais selecionados. A TAEG real pode variar. Se a posição sair do intervalo, a TAEG será de 0%."
+    "estimatedInfo": "Esta é uma estimativa baseada nos preços atuais selecionados. A TAEG real pode variar. Se a posição sair do intervalo, a TAEG será de 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Dos seus {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) serão trocados para {outDenom} para corresponder à proporção da posição.",
+      "noSwapNeeded": "Seu intervalo selecionado precisa apenas de {inputDenom}, portanto nenhuma troca é necessária.",
+      "valueIn": "Valor de entrada",
+      "valueOut": "Valor de saída",
+      "totalCost": "Custo total",
+      "totalCostWarning": "O custo total deste depósito é {totalCost}, incluindo o impacto no preço e as taxas de troca, o que reduz o valor que chega à sua posição.",
+      "quoteLoading": "Encontrando a melhor troca…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "O que é Liquidez Supercarregada?",

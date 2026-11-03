@@ -9,6 +9,7 @@ import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import type { PoolType } from "~/components/complex/pools-table";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { OsmosisChainInfo } from "~/config/chain";
 import {
   useAddConcentratedLiquidityConfig,
@@ -50,8 +51,44 @@ export const AddLiquidityModal: FunctionComponent<
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
     useState(false);
 
-  const { config: addConliqConfig, addLiquidity: addConLiquidity } =
-    useAddConcentratedLiquidityConfig(chainId, poolId);
+  const {
+    config: addConliqConfig,
+    addLiquidity: addConLiquidity,
+    zapInLiquidity,
+    zapQuote,
+    zapSlippageConfig,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
+    zapHighCost,
+    zapImpactPending,
+  } = useAddConcentratedLiquidityConfig(chainId, poolId);
+
+  // High total-cost acknowledgement for the single-asset zap-in, on the
+  // shared frozen-basis model: the identity is the trade (swap direction,
+  // projected swap amount, tick range), so editing any of them re-arms the
+  // checkbox; the total cost re-arms it when it worsens past tolerance, and
+  // raising the slippage re-arms it too. The 5s requote alone does not.
+  const zapCostIdentity = `${
+    addConliqConfig.requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
+  }>${addConliqConfig.requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
+    addConliqConfig.requiredSwap?.swapInAmount.toString() ?? ""
+  }:${addConliqConfig.tickRange[0].toString()}:${addConliqConfig.tickRange[1].toString()}`;
+  const {
+    hasAcknowledgedLoss: zapCostAcknowledged,
+    setLossAcknowledged: setZapCostAcknowledged,
+    warningNeedsAcknowledgement: zapCostNeedsAcknowledgement,
+  } = useLossAcknowledgement(
+    zapTotalCostPercent
+      ? {
+          identityKey: zapCostIdentity,
+          slippage: zapSlippageConfig.slippage.toDec(),
+          priceImpact: zapTotalCostPercent.toDec(),
+          warnSlippage: false,
+          warnPriceImpact: zapHighCost,
+        }
+      : undefined
+  );
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
@@ -72,10 +109,56 @@ export const AddLiquidityModal: FunctionComponent<
 
   const config = isConcentrated ? addConliqConfig : addLiquidityConfig;
 
+  // In single-asset mode, block submission until the swap quote is ready
+  // (unless the range is one-sided and no swap is needed). Also block on a
+  // quote error: a failed refetch can leave a stale held quote that would
+  // otherwise be broadcast.
+  const zapNotReady =
+    isConcentrated &&
+    addConliqConfig.singleAssetMode &&
+    Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
+    (zapQuote.isLoading ||
+      !zapQuote.quote ||
+      zapQuote.isError ||
+      Boolean(zapQuote.routerError) ||
+      // The swap routes through this pool and the depth data for the
+      // conservative (marginal) impact hasn't loaded: block until the gate
+      // can be evaluated on the overstated figure, never the average fill.
+      zapImpactPending);
+
+  // Block an empty or sub-precision/dust single-asset amount (an amount that
+  // rounds to zero micro units, or whose swap rounds to zero on a two-sided
+  // range) — it can't produce a valid position.
+  const zapInputInvalid =
+    isConcentrated &&
+    addConliqConfig.singleAssetMode &&
+    (addConliqConfig.singleAssetInputState === "empty" ||
+      addConliqConfig.singleAssetInputState === "too-small");
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: config.error !== undefined || isSendingMsg,
+      disabled:
+        config.error !== undefined ||
+        isSendingMsg ||
+        zapNotReady ||
+        zapInputInvalid ||
+        zapCostNeedsAcknowledgement,
       onClick: () => {
+        // Single-asset zap-in (CL only): swap + create position in one tx.
+        // Superfluid staking is full-range two-asset only, so it never applies
+        // here.
+        if (isConcentrated && addConliqConfig.singleAssetMode) {
+          // Every failure is toasted before the rejection reaches here:
+          // broadcast failures by the global tx-event handler, preflight
+          // failures by `zapInLiquidity` itself. The catch only consumes the
+          // rejection so the modal stays open for a retry instead of closing
+          // on an unhandled rejection.
+          zapInLiquidity()
+            .then(() => props.onRequestClose())
+            .catch(console.error);
+          return;
+        }
+
         // New CL position: move to next step if superfluid validator selection is needed
         if (isConcentrated && addConliqConfig.shouldBeSuperfluidStaked) {
           setShowSuperfluidValidatorModal(true);
@@ -236,6 +319,16 @@ export const AddLiquidityModal: FunctionComponent<
         >
           <AddConcLiquidity
             addLiquidityConfig={addConliqConfig}
+            zap={{
+              zapQuote,
+              zapSlippageConfig,
+              zapValueIn,
+              zapValueOut,
+              zapTotalCostPercent,
+              zapHighCost,
+              costAcknowledged: zapCostAcknowledged,
+              onCostAcknowledgedChange: setZapCostAcknowledged,
+            }}
             actionButton={accountActionButton}
             onRequestClose={props.onRequestClose}
           />
