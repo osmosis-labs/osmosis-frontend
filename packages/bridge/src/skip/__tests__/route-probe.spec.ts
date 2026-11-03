@@ -27,4 +27,17 @@ describe("route-checking withdraw destinations", () => {
     );
     expect(isDefinitiveNoRouteError(undefined)).toBe(false);
   });
+
+  it("keeps candidates still unresolved at the deadline", async () => {
+    const dead = await findUnroutableCandidates(
+      [{ key: "fast-dead" }, { key: "slow" }],
+      ({ key }) =>
+        key === "slow"
+          ? new Promise<boolean>(() => {})
+          : Promise.resolve(false),
+      5,
+      20
+    );
+    expect(dead).toEqual(["fast-dead"]);
+  });
 });

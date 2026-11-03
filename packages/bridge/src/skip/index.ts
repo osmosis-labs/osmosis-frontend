@@ -58,7 +58,9 @@ import { SkipProviderId } from "./constants";
 import {
   findUnroutableCandidates,
   isDefinitiveNoRouteError,
+  ROUTE_PROBE_REQUEST_TIMEOUT_MS,
   ROUTE_PROBE_USD,
+  withTimeout,
 } from "./route-probe";
 import {
   SkipEstimatedFee,
@@ -1138,9 +1140,14 @@ export class SkipBridgeProvider implements BridgeProvider {
     candidates: { key: string; chainId: string; denom: string }[];
   }): Promise<string[]> {
     if (candidates.length === 0 || decimals == null) return [];
-    const price = await this.ctx
-      .getAssetUsdPrice?.(asset.address)
-      .catch(() => undefined);
+    const price = await (
+      this.ctx.getAssetUsdPrice
+        ? withTimeout(
+            this.ctx.getAssetUsdPrice(asset.address),
+            ROUTE_PROBE_REQUEST_TIMEOUT_MS
+          )
+        : Promise.resolve(undefined)
+    ).catch(() => undefined);
     if (!price || !price.isPositive()) return [];
 
     const probeAmount = new Dec(ROUTE_PROBE_USD)
@@ -1155,20 +1162,24 @@ export class SkipBridgeProvider implements BridgeProvider {
         cache: this.ctx.cache,
         key: `${SkipBridgeProvider.ID}_route_probe_${sourceDenom}_${candidate.chainId}_${candidate.denom}`,
         ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
+        // A timeout rejects, so it is neither cached nor treated as a drop.
         getFreshValue: () =>
-          this.skipClient
-            .route({
-              source_asset_denom: sourceDenom,
-              source_asset_chain_id: chain.chainId.toString(),
-              dest_asset_denom: candidate.denom,
-              dest_asset_chain_id: candidate.chainId,
-              amount_in: probeAmount,
-            })
-            .then(() => true)
-            .catch((e) => {
-              if (isDefinitiveNoRouteError(e)) return false;
-              throw e;
-            }),
+          withTimeout(
+            this.skipClient
+              .route({
+                source_asset_denom: sourceDenom,
+                source_asset_chain_id: chain.chainId.toString(),
+                dest_asset_denom: candidate.denom,
+                dest_asset_chain_id: candidate.chainId,
+                amount_in: probeAmount,
+              })
+              .then(() => true)
+              .catch((e) => {
+                if (isDefinitiveNoRouteError(e)) return false;
+                throw e;
+              }),
+            ROUTE_PROBE_REQUEST_TIMEOUT_MS
+          ),
       })
     );
   }
