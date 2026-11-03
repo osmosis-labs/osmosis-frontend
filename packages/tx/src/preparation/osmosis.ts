@@ -65,6 +65,26 @@ import {
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
 
+/**
+ * Percentage below the entered amount that a concentrated liquidity deposit
+ * may use per token before the tx fails. A CL deposit consumes tokens at the
+ * pool price at inclusion, so one leg is legitimately used less than entered
+ * when the price moves after the quote. This is also the bound a sandwich can
+ * exploit, so keep it as tight as legitimate price movement allows.
+ */
+export const CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT = "5";
+
+/** `amount` reduced by `tolerancePercent`, truncated to an integer string. */
+export function applyClMinAmountTolerance(
+  amount: string,
+  tolerancePercent: string = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT
+): string {
+  return new Dec(amount)
+    .mul(new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100))))
+    .truncate()
+    .toString();
+}
+
 /** The slice of a concentrated pool's state needed to build a create-position tx. */
 export interface ConcentratedPoolInfo {
   tickSpacing: number;
@@ -385,7 +405,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
   superfluidValidatorAddress?: string,
   baseDeposit?: { currency: Currency; amount: string },
   quoteDeposit?: { currency: Currency; amount: string },
-  maxSlippage = "15",
+  maxSlippage = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT,
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
@@ -445,40 +465,24 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
         currentSqrtPrice.mul(currentSqrtPrice).toDec()
       );
 
-      const slippageMultiplier = new Dec(1).sub(
-        new Dec(maxSlippage).quo(new Dec(100))
-      );
-
       if (currentTick >= lowerTick && currentTick < upperTick) {
         // Position consists of both tokens
         token_min_amount0 = baseCoin
-          ? new Dec(baseCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
           : token_min_amount0;
 
         token_min_amount1 = quoteCoin
-          ? new Dec(quoteCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
           : token_min_amount1;
       } else if (currentTick < lowerTick) {
         // Position consists of 1 token only.
         token_min_amount0 = baseCoin
-          ? new Dec(baseCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
           : token_min_amount0;
       } else if (currentTick >= upperTick) {
         // Position consists of 1 token only.
         token_min_amount1 = quoteCoin
-          ? new Dec(quoteCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
           : token_min_amount1;
       }
     }
@@ -517,14 +521,12 @@ export async function prepareCreateConcentratedLiquidityInitialFullRangePosition
   let token_min_amount0 = "0";
   let token_min_amount1 = "0";
 
-  const slippageMultiplier = new Dec(1).sub(new Dec(15).quo(new Dec(100)));
-
   token_min_amount0 = base
-    ? new Dec(base.amount).mul(slippageMultiplier).truncate().toString()
+    ? applyClMinAmountTolerance(base.amount)
     : token_min_amount0;
 
   token_min_amount1 = quote
-    ? new Dec(quote.amount).mul(slippageMultiplier).truncate().toString()
+    ? applyClMinAmountTolerance(quote.amount)
     : token_min_amount1;
 
   const sortedCoins = [base, quote]
@@ -834,19 +836,12 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
     denom: string;
     amount: string;
   },
-  maxSlippage = "20",
+  maxSlippage = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT,
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
-  // calculate desired amounts with slippage
-  const amount0WithSlippage = new Dec(coin0.amount)
-    .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-    .truncate()
-    .toString();
-  const amount1WithSlippage = new Dec(coin1.amount)
-    .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-    .truncate()
-    .toString();
+  const amount0Min = applyClMinAmountTolerance(coin0.amount, maxSlippage);
+  const amount1Min = applyClMinAmountTolerance(coin1.amount, maxSlippage);
 
   // Fresh read from chain REST; a failed request throws before anything is
   // signed rather than being treated as "not staked".
@@ -859,17 +854,19 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
     ({ position_id }) => position_id === positionId
   );
 
+  // The superfluid add message has no minimum fields (the chain passes zero
+  // minimums), so it takes the entered amounts as-is.
   const msg = isSuperfluidStaked
     ? await makeAddToConcentratedLiquiditySuperfluidPositionMsg({
         positionId: BigInt(positionId),
         sender: context.address,
         tokenDesired0: {
           denom: coin0.denom,
-          amount: amount0WithSlippage,
+          amount: coin0.amount,
         },
         tokenDesired1: {
           denom: coin1.denom,
-          amount: amount1WithSlippage,
+          amount: coin1.amount,
         },
       })
     : await makeAddToPositionMsg({
@@ -877,8 +874,8 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
         amount1: coin1.amount,
         positionId: BigInt(positionId),
         sender: context.address,
-        tokenMinAmount0: amount0WithSlippage,
-        tokenMinAmount1: amount1WithSlippage,
+        tokenMinAmount0: amount0Min,
+        tokenMinAmount1: amount1Min,
       });
 
   return prepareTransaction(
