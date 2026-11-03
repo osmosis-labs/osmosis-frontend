@@ -16,6 +16,7 @@ import {
   getAssetWithUserBalance,
   getAssetWithVariants,
   getBridgeAsset,
+  getCategoryImageSamples,
   getCoinGeckoCoinMarketChart,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
@@ -781,6 +782,9 @@ export const assetsRouter = createTRPCRouter({
         "listingDate"
       ).slice(0, topN);
     }),
+  getCategorySamples: publicProcedure.query(({ ctx }) =>
+    getCategoryImageSamples(ctx)
+  ),
   getTopGainerAssets: publicProcedure
     .input(
       z.object({

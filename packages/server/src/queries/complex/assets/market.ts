@@ -1,4 +1,9 @@
-import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
+import {
+  ASSET_CATEGORY_KEYS,
+  type AssetList,
+  type Chain,
+  type MinimalAsset,
+} from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
 import cachified, { type CacheEntry } from "cachified";
@@ -579,4 +584,72 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
     exponent: tokenData.exponent,
     display: tokenData.display,
   };
+}
+
+const categoryImageSamplesCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Image urls of the top verified assets of each category, by market cap. Assets without
+ *  a market cap follow, ordered by 24h volume, then by denom so the order is stable.
+ *  Non-canonical variants are left out so one alloyed asset can't fill a category. Assets
+ *  without an image are skipped. Cached for an hour; an empty result (a data services
+ *  outage) is retried after a few seconds instead. Categories are `ASSET_CATEGORY_KEYS`. Matches by denom, not symbol. */
+export async function getCategoryImageSamples({
+  assetLists,
+  chainList,
+  perCategory = 3,
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  perCategory?: number;
+}): Promise<Record<string, string[]>> {
+  return cachified({
+    cache: categoryImageSamplesCache,
+    key: `category-image-samples-${perCategory}`,
+    ttl: 1000 * 60 * 60, // 1 hour
+    getFreshValue: async ({ metadata }) => {
+      const marketAssets = await mapGetMarketAssets({
+        assetLists,
+        chainList,
+        onlyVerified: true,
+        excludeVariants: true,
+        sqsPriceFallback: false,
+      });
+
+      const categoriesByDenom = new Map(
+        assetLists
+          .flatMap(({ assets }) => assets)
+          .map((asset) => [asset.coinMinimalDenom, asset.categories])
+      );
+
+      const zero = new Dec(0);
+      const compareDesc = (a: Dec | undefined, b: Dec | undefined) => {
+        const [x, y] = [a ?? zero, b ?? zero];
+        return x.equals(y) ? 0 : x.gt(y) ? -1 : 1;
+      };
+      const ranked = marketAssets
+        .filter((asset) => !!asset.coinImageUrl)
+        .sort(
+          (a, b) =>
+            compareDesc(a.marketCap?.toDec(), b.marketCap?.toDec()) ||
+            compareDesc(a.volume24h?.toDec(), b.volume24h?.toDec()) ||
+            a.coinMinimalDenom.localeCompare(b.coinMinimalDenom)
+        );
+
+      const samples: Record<string, string[]> = {};
+      for (const category of ASSET_CATEGORY_KEYS) {
+        const urls = ranked
+          .filter((asset) =>
+            categoriesByDenom.get(asset.coinMinimalDenom)?.includes(category)
+          )
+          .slice(0, perCategory)
+          .map((asset) => asset.coinImageUrl as string);
+        if (urls.length > 0) samples[category] = urls;
+      }
+
+      if (Object.keys(samples).length === 0) metadata.ttl = 1000 * 5;
+      return samples;
+    },
+  });
 }
