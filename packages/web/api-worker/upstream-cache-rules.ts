@@ -5,10 +5,12 @@
  * ones this repo actually calls (env defaults plus the production sidecar). An
  * unknown host never matches.
  *
- * Left out on purpose: SQS quote routes (price-like, one URL per amount),
- * Skip/Squid lists (an empty or rate-limited 200 would be pinned), LCD/RPC and
- * wasm smart queries (the same hosts and messages can carry an account), and
- * any path with an address, position, order or tx hash.
+ * Left out on purpose: `/pools/canonical-orderbooks` (a forced-fresh read has
+ * to see a pool that was just created; a shared entry hides it), SQS quote
+ * routes (price-like, one URL per amount), Skip/Squid lists (an empty or
+ * rate-limited 200 would be pinned), LCD/RPC and wasm smart queries (the same
+ * hosts and messages can carry an account), and any path with an address,
+ * position, order or tx hash.
  */
 
 export type UpstreamCacheRule = {
@@ -67,15 +69,6 @@ export const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     path: /^\/tokens\/prices$/,
     defaultTtlSeconds: 10,
     maxTtlSeconds: 10,
-  },
-  {
-    id: "sqs-canonical-orderbooks",
-    hosts: SIDECAR_HOSTS,
-    path: /^\/pools\/canonical-orderbooks$/,
-    // The forced-fresh in-memory read is 15s. A longer shared entry would
-    // hide a pool that read is trying to observe.
-    defaultTtlSeconds: 15,
-    maxTtlSeconds: 15,
   },
   {
     id: "numia-pools-apr",

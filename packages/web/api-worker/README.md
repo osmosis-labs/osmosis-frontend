@@ -6,10 +6,11 @@ The Cloudflare frontend's own backend. The OpenNext pages Worker keeps pages and
 calls. Vercel stays a monolith: `pages/api/*` and `middleware.ts` still build and
 serve there.
 
-| Branch      | Pages Worker                  | API Worker                        |
-| ----------- | ----------------------------- | --------------------------------- |
-| `stage-cf`  | `osmosis-frontend-stage`      | `osmosis-frontend-api-stage`      |
-| `master-cf` | `osmosis-frontend-production` | `osmosis-frontend-api-production` |
+| Branch      | Pages Worker                  | API Worker                                                                     |
+| ----------- | ----------------------------- | ------------------------------------------------------------------------------ |
+| `stage`     | Vercel                        | `osmosis-frontend-api-stage` (this config; deploy from here)                   |
+| `stage-cf`  | `osmosis-frontend-stage`      | same Worker name, bound by the pages Worker; do not deploy it from this branch |
+| `master-cf` | `osmosis-frontend-production` | `osmosis-frontend-api-production`                                              |
 
 The route table is `routes.ts`. It must list every file under `pages/api`; the Jest
 drift test fails when one is missing. Handlers live in `server/api-handlers` and are
@@ -25,7 +26,9 @@ is `PUBLIC_ENV_KEYS` in `run-wrangler.mjs`.
 Secrets are not written into `wrangler.jsonc` or the bundle. `nodejs_compat` on
 compatibility date `2026-09-01` copies vars and secrets onto `process.env` before the
 module body runs, so module-scope reads in `@osmosis-labs/server` see them. Set them
-with `wrangler secret put` (or `.dev.vars` for `cf:api:dev`):
+with `yarn wrangler secret put <NAME> -c api-worker/wrangler.jsonc` from `packages/web`
+(or `api-worker/.dev.vars` for `cf:api:dev`). A bare `wrangler secret put` does not
+select this config, and on `stage-cf` it would write the pages Worker instead:
 
 - `NUMIA_API_KEY`
 - `COINGECKO_API_KEY`
@@ -59,11 +62,17 @@ From `packages/web`:
 ```bash
 yarn cf:api:dry-run   # bundle only, writes .wrangler/api
 yarn cf:api:dev       # local Worker
-yarn cf:api:deploy    # wrangler deploy --keep-vars; do not run this by hand
+yarn cf:api:deploy    # deploys osmosis-frontend-api-stage
 ```
 
-Deploy this Worker before the pages Worker: until it exists, the `API` binding has
-nothing to call and Cloudflare `/api/*` fails.
+`stage` owns `osmosis-frontend-api-stage`. Run `yarn cf:api:deploy` from `packages/web`
+on that branch. `stage-cf` uses the same Worker name for its pages binding, so a
+deploy from that checkout overwrites this one. `master-cf` renames the Worker
+before its own deploy. There is no public URL: `workers_dev` and preview URLs are
+off, and the pages Worker reaches this one over the `API` service binding. Deploy
+this Worker before the pages Worker: until it exists, that binding has nothing to
+call and Cloudflare `/api/*` fails. Smoke-test with `yarn cf:api:dev` or
+`wrangler dev --remote -c api-worker/wrangler.jsonc`, not a workers.dev hostname.
 
 The `app-only` upstream exception (`sqsprod.osmosis.zone`, `rpc.app.osmosis.zone`,
 `lcd.app.osmosis.zone`) must cover this Worker as well as the pages Worker. Outside

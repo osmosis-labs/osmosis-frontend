@@ -16,8 +16,10 @@ const POOLS_URL = "https://app.test/api/pools";
 /** An in-memory stand-in for the Workers Cache API, keyed by URL. */
 class MemoryCache {
   readonly entries = new Map<string, Response>();
+  matchError: Error | undefined;
 
   async match(request: Request) {
+    if (this.matchError) throw this.matchError;
     return this.entries.get(request.url)?.clone();
   }
 
@@ -51,6 +53,17 @@ function setup(
 }
 
 describe("withApiEdgeCache", () => {
+  it("treats a cache read failure as a miss", async () => {
+    const { fetch, handler, cache } = setup();
+    cache.matchError = new Error("cache down");
+
+    const response = await fetch(POOLS_URL);
+
+    expect(response.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("MISS");
+    expect(await response.text()).toBe("pools");
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
   it("serves repeat GETs of a shared API response from the cache", async () => {
     const { fetch, handler } = setup();
 
