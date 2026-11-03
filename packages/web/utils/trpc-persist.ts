@@ -16,8 +16,13 @@ export const PERSIST_EXCLUDED_KEYS = [
  * v4: TanStack Query v5 cache format; v4 caches hold a "loading" status that v5
  * cannot restore.
  * v5: `edge.transactions.getTransactions` gained `transfers`.
+ * v6: `local.portfolio.getPortfolioAssets` replaced `assetVariants` with
+ * unfiltered `assetVariantCandidates`.
+ * v7: `local.portfolio.getPortfolioAssets` `heldAssets` gained `amount` and
+ * `fiatValue`.
+ * v8: `local.portfolio.getPortfolioAssets` gained `unpricedAssets`.
  */
-export const PERSIST_BUSTER = "v5";
+export const PERSIST_BUSTER = "v8";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

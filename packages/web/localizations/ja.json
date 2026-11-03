@@ -116,17 +116,6 @@
       "chainHalted": "浸透チェーンが停止し、トランザクションが一時的に無効になります。"
     }
   },
-  "store": {
-    "headerTitle": "体験をスーパーチャージ",
-    "headerSubtitle": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう。",
-    "featured": "特徴",
-    "searchPlaceholder": "検索",
-    "getFeatured": "注目を集める",
-    "featuredDescription": "App Store で起動すると、何千人ものユーザーがアクセスできるようになります。掲載または特集をご希望の場合は、ご連絡ください。ご連絡させていただきます。",
-    "applyButton": "適用する",
-    "storeDisclaimer": "特定のコンテンツは、Osmosis Labs またはその関連会社と提携していない第三者によって作成されており、Osmosis Labs はそのようなコンテンツについて責任を負いません。 Osmosis Labs は、コンテンツのエラーや遅延、またはコンテンツに依存して行われた行為に対して責任を負いません。情報は情報提供のみを目的として提供されており、投資アドバイスではありません。これは、特定のデジタル資産を売買したり、特定の投資戦略を採用したりすることを推奨するものではありません。 Osmosis Labs は、提供された情報または特定の資産の正確性、適合性、有効性についていかなる表明も行いません。表示されている価格は例示のみを目的としています。実際の暗号通貨の価格および関連する統計は異なる場合があります。提示されたデータは、Osmosis Labs の取引所および一部の他の暗号通貨取引所で取引された資産を反映している可能性があります。",
-    "allAppsHeader": "すべてのアプリ"
-  },
   "createFirstPositionCta": {
     "title": "最初のスーパーチャージポジションを作成する",
     "caption": "この待望のアップグレードにより、少ない資本でより多くの収益を得ることができます。経験のレベルに関係なく、数分で立ち上げて実行できます。",
@@ -203,6 +192,11 @@
   "portfolio": {
     "buy": "買う",
     "sell": "売る",
+    "chartTemporarilyUnavailable": "チャートは現在利用できません",
+    "pricesUnavailable": "価格を取得できません",
+    "unpricedAssets": "+ 価格のない資産 {count} 件",
+    "unpricedAssets_plural": "+ 価格のない資産 {count} 件",
+    "unpricedAssetsTooltip": "合計に含まれていません: {assets}",
     "yourBalances": "残高",
     "yourPositions": "あなたの立場",
     "searchBalances": "残高を検索",
@@ -312,6 +306,7 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "walletRequestTimedOut": "{wallet}が時間内に応答しませんでした。署名や送信は行われていません。もう一度お試しください。",
     "insufficientFeeTokens": {
       "title": "残高が十分な手数料トークンがありません",
       "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
@@ -395,11 +390,8 @@
     "info": "統計",
     "pools": "プール",
     "stake": "ステーク",
-    "store": "アプリ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
-    "more": "もっと",
-    "new": "新しい",
     "settings": "設定"
   },
   "oneClickTrading": {
@@ -645,6 +637,8 @@
     "title": "流動性の除去"
   },
   "requestRejected": "リクエストが拒否されました",
+  "waitingForWallet": "ウォレットの応答を待っています...",
+  "signInMobileWallet": "モバイルウォレットで署名してください...",
   "settings": {
     "filterDust": "フィルターダスト",
     "selectLanguage": "言語を選択する",
@@ -1172,10 +1166,6 @@
       "title": "浸透ゾーンでの貿易",
       "description": "主要な分散型 Cosmos 取引所 - 最大のインターチェーン DEX を交換し、獲得し、構築します"
     },
-    "apps": {
-      "title": "Osmosis App Store",
-      "description": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう"
-    },
     "disclaimer": {
       "title": "浸透に関する免責事項",
       "description": "主要な分散型コスモス取引所である Osmosis の免責事項とプライバシー ポリシーをお読みください。"
@@ -1343,7 +1333,8 @@
       "errorState": {
         "title": "注文を読み込めませんでした",
         "subtitle": "しばらくしてからもう一度お試しください。"
-      }
+      },
+      "historyUnavailable": "注文履歴は現在利用できません。未約定の注文を表示しています。"
     },
     "aboveMarket": {
       "title": "市場価格を上回る制限価格",
@@ -1450,7 +1441,13 @@
     "clickToCreateOrderbook": "クリックしてこのペアのorderbookを作成します。",
     "creationInProgress": "このペアのオーダーブック作成は別のタブで既に進行中です",
     "creationAwaitingConfirmation": "このペアの以前のオーダーブック作成は、まだオンチェーンでの確認待ちです。数分後にもう一度お試しください。",
-    "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。"
+    "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。",
+    "returned": "返却済み",
+    "partlyFilled": "一部約定",
+    "returnedUnfilled": "返却済み（未約定）",
+    "alreadyReceived": "受取済み",
+    "howPayoutsWork": "支払いの仕組み",
+    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「請求」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。"
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1487,6 +1484,32 @@
     "dontShowAgain": "今後表示しない",
     "dismiss": "却下する",
     "convert": "変換する"
+  },
+  "forcedMigration": {
+    "remindMeLater": "後で通知する",
+    "deadline": "期限: {date}",
+    "heldElsewhere": "流動性プールにも {symbols} を保有しています。",
+    "heldUnconvertible": "{symbols} を保有していますが、現在は変換できません。しばらくしてから再度ご確認ください。",
+    "viewPortfolio": "ポートフォリオを見る",
+    "poolPosition": "プール #{poolId}",
+    "holdingsTitle": "保有資産",
+    "liquidityPoolsTitle": "流動性プール",
+    "limitOrdersTitle": "指値注文",
+    "bonded": "ボンド中",
+    "superfluidStaked": "スーパーフルイドステーキング中",
+    "unlocking": "アンロック中",
+    "unlockingUntil": "{date} までアンロック中",
+    "unlockEndsAfterDeadline": "アンロックは {deadline} より後に完了します。",
+    "withdraw": "引き出す",
+    "migratePosition": "移行する",
+    "migratedAmountsNote": "一部は新しいプールに流動性として預け入れられ、残りはウォレットに戻ります。",
+    "migrateUnavailable": "現在移行できません",
+    "unlock": "アンロック",
+    "cancelOrder": "注文をキャンセル",
+    "claim": "請求する",
+    "claimAndCancel": "請求してキャンセル",
+    "conversionUnavailable": "現在変換できないため、引き出しは一時停止しています。",
+    "positionMoved": "開いてからポジションの価値が大きく変動しました。もう一度お試しください。"
   },
   "assetVariantsConversion": {
     "title": "資産を標準化する",

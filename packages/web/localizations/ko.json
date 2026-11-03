@@ -116,17 +116,6 @@
       "chainHalted": "Osmosis 체인이 중단되고 거래가 일시적으로 비활성화됩니다."
     }
   },
-  "store": {
-    "headerTitle": "경험을 강화하세요",
-    "headerSubtitle": "거래는 단지 첫걸음입니다. 자산을 활용하고 레버리지, 금고 등을 통해 더 많은 것을 이루십시오.",
-    "featured": "추천",
-    "searchPlaceholder": "검색",
-    "getFeatured": "추천 받기",
-    "featuredDescription": "앱 스토어에서 출시하여 수천 명의 사용자에게 액세스하세요. 나열되거나 추천받고 싶다면 연락하시면 연락드리겠습니다.",
-    "applyButton": "신청",
-    "storeDisclaimer": "특정 콘텐츠는 Osmosis Labs 또는 그 어떤 계열사와도 관련이 없는 제3자에 의해 준비되었으며 Osmosis Labs는 그러한 콘텐츠에 대한 책임을 지지 않습니다. Osmosis Labs는 콘텐츠의 오류 또는 지연에 대해 책임을 지지 않으며, 어떤 콘텐츠에 의존하여 취한 조치에 대해서도 책임을 지지 않습니다. 정보는 정보 제공 목적으로만 제공되며 투자 자문이 아닙니다. 이는 특정 디지털 자산을 사거나 팔거나 특정 투자 전략을 채택할 것을 권장하는 것이 아닙니다. Osmosis Labs는 제공된 정보의 정확성, 적합성 또는 유효성 또는 특정 자산에 대한 어떠한 표현도 하지 않습니다. 표시된 가격은 설명 목적으로만 사용되며, 실제 암호화폐 가격 및 관련 통계는 달라질 수 있습니다. 제시된 데이터는 Osmosis Labs 거래소 및 선택한 다른 암호화폐 거래소에서 거래된 자산을 반영할 수 있습니다.",
-    "allAppsHeader": "모든 앱"
-  },
   "createFirstPositionCta": {
     "title": "첫 번째 슈퍼차지 포지션 생성",
     "caption": "오랫동안 기다려온 이 업그레이드를 통해 적은 자본으로 더 많은 수익을 올릴 수 있습니다.\n 경험 수준에 관계없이 몇 분 안에 시작하고 실행할 수 있습니다.",
@@ -203,6 +192,11 @@
   "portfolio": {
     "buy": "구입하다",
     "sell": "팔다",
+    "chartTemporarilyUnavailable": "지금은 차트를 사용할 수 없습니다",
+    "pricesUnavailable": "가격을 사용할 수 없습니다",
+    "unpricedAssets": "+ 가격이 없는 자산 {count}개",
+    "unpricedAssets_plural": "+ 가격이 없는 자산 {count}개",
+    "unpricedAssetsTooltip": "합계에 포함되지 않음: {assets}",
     "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
     "searchBalances": "잔액 검색",
@@ -312,6 +306,7 @@
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
+    "walletRequestTimedOut": "{wallet}이(가) 제시간에 응답하지 않았습니다. 서명되거나 전송된 것은 없습니다. 다시 시도해 주세요.",
     "insufficientFeeTokens": {
       "title": "잔액이 충분한 수수료 토큰이 없습니다",
       "body": "네트워크 수수료를 충당하려면 Osmosis에 OSMO 또는 지원되는 다른 수수료 토큰을 입금하세요.",
@@ -395,11 +390,8 @@
     "info": "정보",
     "pools": "풀",
     "stake": "스테이킹",
-    "store": "앱",
     "vote": "투표",
     "featureRequests": "기능 요청",
-    "more": "더",
-    "new": "새로운",
     "settings": "설정"
   },
   "oneClickTrading": {
@@ -645,6 +637,8 @@
     "title": "유동성 해제하기"
   },
   "requestRejected": "요청이 거부됨",
+  "waitingForWallet": "지갑 응답을 기다리는 중...",
+  "signInMobileWallet": "모바일 지갑에서 서명하세요...",
   "settings": {
     "filterDust": "소액 필터",
     "selectLanguage": "언어 선택",
@@ -1172,10 +1166,6 @@
       "title": "Osmosis Zone에서 거래",
       "description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축"
     },
-    "apps": {
-      "title": "오스모시스 앱 스토어",
-      "description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오."
-    },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
@@ -1343,7 +1333,8 @@
       "errorState": {
         "title": "주문을 불러올 수 없습니다",
         "subtitle": "잠시 후 다시 시도해 주세요."
-      }
+      },
+      "historyUnavailable": "주문 내역을 지금 불러올 수 없습니다. 열려 있는 주문을 표시합니다."
     },
     "aboveMarket": {
       "title": "시장가보다 높은 가격 제한",
@@ -1450,7 +1441,13 @@
     "clickToCreateOrderbook": "클릭하여 이 쌍의 orderbook을 만드세요.",
     "creationInProgress": "이 페어의 오더북 생성이 다른 탭에서 이미 진행 중입니다",
     "creationAwaitingConfirmation": "이 페어에 대한 이전 오더북 생성이 아직 온체인 확인을 기다리고 있습니다. 몇 분 후에 다시 시도하세요.",
-    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다."
+    "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다.",
+    "returned": "반환됨",
+    "partlyFilled": "부분 체결",
+    "returnedUnfilled": "반환됨 (미체결)",
+    "alreadyReceived": "이미 받음",
+    "howPayoutsWork": "지급은 어떻게 이루어지나요?",
+    "payoutNote": "체결된 금액은 보통 지갑으로 자동 지급되며, 주문이 체결되는 동안 여러 차례에 걸쳐 지급되는 경우가 많고, 취소하기 몇 시간 또는 며칠 전에 도착할 수 있습니다. 주문에 '청구'가 표시되면 체결된 금액의 일부가 아직 지급되지 않은 것입니다. 취소하면 미체결 금액만 반환됩니다."
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1487,6 +1484,32 @@
     "dontShowAgain": "다시 표시하지 않기",
     "dismiss": "해고하다",
     "convert": "전환하다"
+  },
+  "forcedMigration": {
+    "remindMeLater": "나중에 알림",
+    "deadline": "마감일: {date}",
+    "heldElsewhere": "유동성 풀에도 {symbols}을(를) 보유하고 있습니다.",
+    "heldUnconvertible": "{symbols}을(를) 보유하고 있지만 지금은 변환할 수 없습니다. 잠시 후 다시 확인해 주세요.",
+    "viewPortfolio": "포트폴리오 보기",
+    "poolPosition": "풀 #{poolId}",
+    "holdingsTitle": "보유 자산",
+    "liquidityPoolsTitle": "유동성 풀",
+    "limitOrdersTitle": "지정가 주문",
+    "bonded": "본딩됨",
+    "superfluidStaked": "슈퍼플루이드 스테이킹됨",
+    "unlocking": "잠금 해제 중",
+    "unlockingUntil": "{date}까지 잠금 해제 중",
+    "unlockEndsAfterDeadline": "잠금 해제는 {deadline} 이후에 완료됩니다.",
+    "withdraw": "출금",
+    "migratePosition": "마이그레이션",
+    "migratedAmountsNote": "일부는 새 풀에 유동성으로 예치되고, 나머지는 지갑으로 돌아옵니다.",
+    "migrateUnavailable": "현재 마이그레이션할 수 없습니다",
+    "unlock": "잠금 해제",
+    "cancelOrder": "주문 취소",
+    "claim": "청구",
+    "claimAndCancel": "청구 후 취소",
+    "conversionUnavailable": "현재 변환할 수 없어 출금이 일시 중지되었습니다.",
+    "positionMoved": "열린 이후 포지션 가치가 너무 많이 변했습니다. 다시 시도하세요."
   },
   "assetVariantsConversion": {
     "title": "자산 표준화",

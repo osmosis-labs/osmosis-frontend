@@ -116,17 +116,6 @@
       "chainHalted": "Osmosis 鏈停止，交易暫時停用。"
     }
   },
-  "store": {
-    "headerTitle": "提升您的體驗",
-    "headerSubtitle": "交易僅僅是第一步。利用槓桿、金庫等手段投入您的資產，實現更多目標。",
-    "featured": "特色",
-    "searchPlaceholder": "搜索",
-    "getFeatured": "獲得特色",
-    "featuredDescription": "在應用商店上架並接觸成千上萬的用戶。如果您想上榜或被推薦，請聯繫我們，我們將保持溝通。",
-    "applyButton": "申請",
-    "storeDisclaimer": "部分內容由與 Osmosis Labs 或其任何附屬公司無關的第三方準備，Osmosis Labs 對此類內容不承擔責任。Osmosis Labs 不對內容中的任何錯誤或延遲，或因依賴任何內容而採取的任何行動承擔責任。信息僅供參考，不構成投資建議。這不是購買或出售特定數字資產或采用特定投資策略的建議。 Osmosis Labs 不對所提供的任何信息的准確性、適當性或有效性，或針對特定資產作出任何陳述。顯示的價格僅用於說明目的。實際加密貨幣價格及相關統計數據可能有所不同。所呈現的數據可能反映在 Osmosis Labs 交易所及選定的其他加密貨幣交易所上交易的資產。",
-    "allAppsHeader": "所有應用"
-  },
   "createFirstPositionCta": {
     "title": "創建您的第一個 Supercharged 職位",
     "caption": "這項期待已久的升級可以讓您以更少的資金賺取更多的錢。\n 無論您的經驗水平如何，只需幾分鐘即可啟動並運行。",
@@ -203,6 +192,11 @@
   "portfolio": {
     "buy": "買",
     "sell": "賣",
+    "chartTemporarilyUnavailable": "圖表暫時無法使用",
+    "pricesUnavailable": "價格無法使用",
+    "unpricedAssets": "+ {count} 個資產沒有價格",
+    "unpricedAssets_plural": "+ {count} 個資產沒有價格",
+    "unpricedAssetsTooltip": "未計入總額：{assets}",
     "yourBalances": "您的餘額",
     "yourPositions": "您的職位",
     "searchBalances": "搜尋餘額",
@@ -312,6 +306,7 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
+    "walletRequestTimedOut": "{wallet} 未及時回應。未簽署或發送任何內容，請重試。",
     "insufficientFeeTokens": {
       "title": "沒有餘額足夠的手續費代幣",
       "body": "請在 Osmosis 上存入 OSMO 或其他支援的手續費代幣以支付網路費用。",
@@ -395,11 +390,8 @@
     "info": "統計數據",
     "pools": "流動性池",
     "stake": "質押",
-    "store": "應用",
     "vote": "投票",
     "featureRequests": "功能請求",
-    "more": "更多的",
-    "new": "新的",
     "settings": "設定"
   },
   "oneClickTrading": {
@@ -645,6 +637,8 @@
     "title": "移除流動性"
   },
   "requestRejected": "請求已被拒絕",
+  "waitingForWallet": "正在等待您的錢包...",
+  "signInMobileWallet": "請在您的手機錢包中簽署...",
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
@@ -1172,10 +1166,6 @@
       "title": "滲透區貿易",
       "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
     },
-    "apps": {
-      "title": "滲透應用商店",
-      "description": "交易只是第一步。利用槓桿、金庫等，讓您的資產發揮作用並取得更多成就"
-    },
     "disclaimer": {
       "title": "滲透免責聲明",
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
@@ -1343,7 +1333,8 @@
       "errorState": {
         "title": "無法載入您的訂單",
         "subtitle": "請稍後再試。"
-      }
+      },
+      "historyUnavailable": "訂單歷史記錄暫時無法使用。正在顯示你的未完成訂單。"
     },
     "aboveMarket": {
       "title": "限價高於市場價格",
@@ -1450,7 +1441,13 @@
     "clickToCreateOrderbook": "點擊為此交易對建立 orderbook。",
     "creationInProgress": "該交易對的訂單簿創建已在另一個分頁中進行",
     "creationAwaitingConfirmation": "此交易對之前的訂單簿建立仍在等待鏈上確認。請幾分鐘後再試。",
-    "createOrderbookDescription": "建立 orderbook pool 可在 Osmosis 上為此交易對下 limit orders。"
+    "createOrderbookDescription": "建立 orderbook pool 可在 Osmosis 上為此交易對下 limit orders。",
+    "returned": "已退回",
+    "partlyFilled": "部分成交",
+    "returnedUnfilled": "已退回（未成交）",
+    "alreadyReceived": "已收到",
+    "howPayoutsWork": "付款如何運作？",
+    "payoutNote": "已成交的金額通常會自動支付到您的錢包，往往隨著訂單成交分多次支付，並且可能在您取消前數小時或數天就已入帳。如果訂單顯示「索賠」，表示部分已成交金額尚未支付。取消只會退回未成交的金額。"
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1487,6 +1484,32 @@
     "dontShowAgain": "不再顯示",
     "dismiss": "解僱",
     "convert": "轉變"
+  },
+  "forcedMigration": {
+    "remindMeLater": "稍後提醒我",
+    "deadline": "截止日期：{date}",
+    "heldElsewhere": "您也在流動性池中持有 {symbols}。",
+    "heldUnconvertible": "您持有 {symbols}，但目前無法轉換。請稍後再查看。",
+    "viewPortfolio": "查看投資組合",
+    "poolPosition": "池 #{poolId}",
+    "holdingsTitle": "持有資產",
+    "liquidityPoolsTitle": "流動性池",
+    "limitOrdersTitle": "限價單",
+    "bonded": "已綁定",
+    "superfluidStaked": "超流質押中",
+    "unlocking": "解鎖中",
+    "unlockingUntil": "解鎖至 {date}",
+    "unlockEndsAfterDeadline": "解鎖將於 {deadline} 之後完成。",
+    "withdraw": "提領",
+    "migratePosition": "遷移",
+    "migratedAmountsNote": "其中一部分作為流動性存入新池，其餘退回到您的錢包。",
+    "migrateUnavailable": "暫時無法遷移",
+    "unlock": "解鎖",
+    "cancelOrder": "取消訂單",
+    "claim": "領取",
+    "claimAndCancel": "領取並取消",
+    "conversionUnavailable": "目前無法轉換，因此提領已暫停。",
+    "positionMoved": "自開啟以來倉位價值變化過大，請重試。"
   },
   "assetVariantsConversion": {
     "title": "標準化資產",

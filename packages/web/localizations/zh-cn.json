@@ -116,17 +116,6 @@
       "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
-  "store": {
-    "headerTitle": "提升您的体验",
-    "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
-    "featured": "特色",
-    "searchPlaceholder": "搜索",
-    "getFeatured": "获得特色",
-    "featuredDescription": "在应用商店上架并接触成千上万的用户。如果您想上榜或被推荐，请联系我们，我们将保持沟通。",
-    "applyButton": "申请",
-    "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
-    "allAppsHeader": "所有应用"
-  },
   "createFirstPositionCta": {
     "title": "创建您的第一个 Supercharged 职位",
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
@@ -203,6 +192,11 @@
   "portfolio": {
     "buy": "买",
     "sell": "卖",
+    "chartTemporarilyUnavailable": "图表暂时不可用",
+    "pricesUnavailable": "价格不可用",
+    "unpricedAssets": "+ {count} 个资产无价格",
+    "unpricedAssets_plural": "+ {count} 个资产无价格",
+    "unpricedAssetsTooltip": "未计入总额：{assets}",
     "yourBalances": "您的余额",
     "yourPositions": "您的职位",
     "searchBalances": "搜索余额",
@@ -312,6 +306,7 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "walletRequestTimedOut": "{wallet} 未及时响应。未签名或发送任何内容，请重试。",
     "insufficientFeeTokens": {
       "title": "没有余额足够的手续费代币",
       "body": "请在 Osmosis 上充值 OSMO 或其他受支持的手续费代币以支付网络费用。",
@@ -395,11 +390,8 @@
     "info": "统计数据",
     "pools": "资金池",
     "stake": "质押",
-    "store": "应用",
     "vote": "投票",
     "featureRequests": "功能请求",
-    "more": "更多的",
-    "new": "新的",
     "settings": "设置"
   },
   "oneClickTrading": {
@@ -645,6 +637,8 @@
     "title": "移除流动性"
   },
   "requestRejected": "请求拒绝",
+  "waitingForWallet": "正在等待您的钱包...",
+  "signInMobileWallet": "请在您的手机钱包中签名...",
   "settings": {
     "filterDust": "滤尘",
     "selectLanguage": "选择语言",
@@ -1172,10 +1166,6 @@
       "title": "渗透区贸易",
       "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
     },
-    "apps": {
-      "title": "渗透应用商店",
-      "description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就"
-    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
@@ -1343,7 +1333,8 @@
       "errorState": {
         "title": "无法加载您的订单",
         "subtitle": "请稍后再试。"
-      }
+      },
+      "historyUnavailable": "订单历史记录暂时不可用。正在显示您的未结订单。"
     },
     "aboveMarket": {
       "title": "限制价格高于市场价格",
@@ -1450,7 +1441,13 @@
     "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
     "creationInProgress": "该交易对的订单簿创建已在另一个标签页中进行",
     "creationAwaitingConfirmation": "此交易对之前的订单簿创建仍在等待链上确认。请几分钟后重试。",
-    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
+    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。",
+    "returned": "已退回",
+    "partlyFilled": "部分成交",
+    "returnedUnfilled": "已退回（未成交）",
+    "alreadyReceived": "已收到",
+    "howPayoutsWork": "付款如何进行？",
+    "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“认领”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。"
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1487,6 +1484,32 @@
     "dontShowAgain": "不再显示",
     "dismiss": "解雇",
     "convert": "转变"
+  },
+  "forcedMigration": {
+    "remindMeLater": "稍后提醒我",
+    "deadline": "截止日期：{date}",
+    "heldElsewhere": "您还在流动性池中持有 {symbols}。",
+    "heldUnconvertible": "您持有 {symbols}，但目前无法转换。请稍后再查看。",
+    "viewPortfolio": "查看投资组合",
+    "poolPosition": "池 #{poolId}",
+    "holdingsTitle": "持有资产",
+    "liquidityPoolsTitle": "流动性池",
+    "limitOrdersTitle": "限价单",
+    "bonded": "已绑定",
+    "superfluidStaked": "超流质押中",
+    "unlocking": "解锁中",
+    "unlockingUntil": "解锁至 {date}",
+    "unlockEndsAfterDeadline": "解锁将在 {deadline} 之后完成。",
+    "withdraw": "提取",
+    "migratePosition": "迁移",
+    "migratedAmountsNote": "其中一部分作为流动性存入新池，其余退回到您的钱包。",
+    "migrateUnavailable": "暂时无法迁移",
+    "unlock": "解锁",
+    "cancelOrder": "取消订单",
+    "claim": "领取",
+    "claimAndCancel": "领取并取消",
+    "conversionUnavailable": "当前无法转换，因此提取已暂停。",
+    "positionMoved": "自打开以来仓位价值变化过大，请重试。"
   },
   "assetVariantsConversion": {
     "title": "标准化资产",

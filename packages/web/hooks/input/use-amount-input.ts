@@ -11,6 +11,7 @@ import {
   InsufficientBalanceForFeeError,
   isNil,
   isValidNumericalRawInput,
+  normalizeDecimalSeparator,
 } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -73,7 +74,9 @@ export function useAmountInput({
 
   const setAmount = useCallback(
     (amount: string) => {
-      let updatedAmount = amount.trim();
+      const normalizedAmount = normalizeDecimalSeparator(amount.trim());
+      if (normalizedAmount === null) return;
+      let updatedAmount = normalizedAmount;
       if (updatedAmount.startsWith(".")) {
         updatedAmount = "0" + updatedAmount;
       }

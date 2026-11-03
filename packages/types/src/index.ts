@@ -1,3 +1,4 @@
+export * from "./asset-categories";
 export * from "./asset-types";
 export * from "./authenticator-types";
 export * from "./chain-types";

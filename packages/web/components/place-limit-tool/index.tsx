@@ -4,6 +4,7 @@ import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   InsufficientBalanceForFeeError,
   isValidNumericalRawInput,
+  normalizeDecimalSeparator,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -335,6 +336,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
         rounding: boolean = false
       ) => {
         const isFocused = focused === amountType;
+        const normalizedValue =
+          value === undefined ? value : normalizeDecimalSeparator(value);
+        // Ambiguous or malformed comma input is rejected, not guessed.
+        if (normalizedValue === null) return;
+        value = normalizedValue;
         // Derived-field synchronization must not reset the user's slippage or
         // quote direction; only edits to the active field should do that.
         if (isFocused) resetSlippage();
@@ -1076,6 +1082,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             swapState.isLoadingOneClickMessages ||
             hasInsufficientFeeTokens
           }
+          isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
           expectedOutput={swapState.expectedTokenAmountOut}

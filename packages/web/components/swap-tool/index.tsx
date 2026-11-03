@@ -841,6 +841,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
           orderType="market"
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
+          isAwaitingSignature={isSendingTx}
           slippageConfig={slippageConfig}
           amountWithSlippage={amountWithSlippage}
           fiatAmountWithSlippage={fiatAmountWithSlippage}
@@ -862,6 +863,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
           outAssetPrice={swapState.outAmountInput.price}
           slippageSource={swapSlippage.source}
           slippageLiquidityUnknown={swapSlippage.liquidityUnknown}
+          swapFee={swapState.quote?.swapFee}
+          swapFeeFiat={swapState.tokenInFeeAmountFiatValue}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

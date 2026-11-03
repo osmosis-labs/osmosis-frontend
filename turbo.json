@@ -60,5 +60,6 @@
     "SKIP_API_KEY",
     "SOLANA_RPC_URL",
     "EVM_RPC_URL_*"
-  ]
+  ],
+  "globalDependencies": [".oxlintrc.json"]
 }

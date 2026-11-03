@@ -169,7 +169,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: Setup Node.js
@@ -325,7 +325,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: print environment_url and BRANCH_NAME
@@ -388,7 +388,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: print environment_url and BRANCH_NAME
@@ -443,7 +443,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: Setup Node.js
@@ -499,7 +499,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: Setup Node.js
@@ -546,7 +546,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: Setup Node.js
@@ -603,7 +603,7 @@ jobs:
             /package.json
             /yarn.lock
             /.yarnrc.yml
-            /.yarn-4.12.0.cjs
+            /.yarn-4.18.1.cjs
             /packages/*/package.json
             /packages/e2e/
       - name: Setup Node.js
