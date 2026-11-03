@@ -542,45 +542,41 @@ const TableOrderRow = memo(
         <td className="!px-0 !text-left">
           <div className="flex items-center">
             <div className="flex flex-col gap-1">
-              <p className="body2 md:caption inline-flex w-fit items-center gap-1 text-osmoverse-300">
-                {status === "cancelled" && (
-                  <span>{t("limitOrders.unfilled")} ·</span>
+              <p
+                className={classNames(
+                  "body2 md:caption inline-flex w-fit items-center gap-1 text-osmoverse-300",
+                  { "flex-row-reverse": order_direction === "bid" }
                 )}
-                <span
-                  className={classNames("inline-flex items-center gap-1", {
-                    "flex-row-reverse": order_direction === "bid",
-                  })}
-                >
-                  <span>
-                    {formatPretty(
-                      new CoinPretty(
-                        {
-                          coinDecimals: baseAsset?.decimals ?? 0,
-                          coinDenom: baseAsset?.symbol ?? "",
-                          coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
-                        },
-                        order_direction === "ask" ? placed_quantity : output
-                      )
-                    )}
-                  </span>
-                  <Icon
-                    id="arrow-right"
-                    className="h-4 w-4"
-                    width={16}
-                    height={16}
-                  />
-                  <span>
-                    {formatPretty(
-                      new CoinPretty(
-                        {
-                          coinDecimals: quoteAsset?.decimals ?? 0,
-                          coinDenom: quoteAsset?.symbol ?? "",
-                          coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
-                        },
-                        order_direction === "ask" ? output : placed_quantity
-                      )
-                    )}
-                  </span>
+              >
+                <span>
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: baseAsset?.decimals ?? 0,
+                        coinDenom: baseAsset?.symbol ?? "",
+                        coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+                      },
+                      order_direction === "ask" ? placed_quantity : output
+                    )
+                  )}
+                </span>
+                <Icon
+                  id="arrow-right"
+                  className="h-4 w-4"
+                  width={16}
+                  height={16}
+                />
+                <span>
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: quoteAsset?.decimals ?? 0,
+                        coinDenom: quoteAsset?.symbol ?? "",
+                        coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
+                      },
+                      order_direction === "ask" ? output : placed_quantity
+                    )
+                  )}
                 </span>
               </p>
               <div className="md:body2 inline-flex items-center gap-2">

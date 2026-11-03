@@ -1451,7 +1451,6 @@
     "creationInProgress": "Crearea unui orderbook pentru această pereche este deja în curs într-o altă filă",
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
-    "unfilled": "Unfilled",
     "returned": "Returned",
     "returnedUnfilled": "Returned (unfilled)",
     "alreadyReceived": "Already received",
