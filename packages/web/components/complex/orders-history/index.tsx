@@ -160,14 +160,6 @@ export const OrderHistory = () => {
 
   const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
-  const onOrderSelect = useCallback(
-    (order: MappedLimitOrder) => {
-      if (!isLargeScreen) return;
-      setSelectedOrder(order);
-    },
-    [isLargeScreen]
-  );
-
   if (showConnectWallet) {
     return (
       <div className="mx-auto my-6 flex flex-col justify-center gap-6 px-4 text-center">
@@ -314,7 +306,7 @@ export const OrderHistory = () => {
                   order={order}
                   style={style}
                   refetch={refetch}
-                  onOrderSelect={onOrderSelect}
+                  onOrderSelect={setSelectedOrder}
                 />
               );
             })
@@ -328,13 +320,11 @@ export const OrderHistory = () => {
           }
         }}
       />
-      {isLargeScreen && (
-        <OrderModal
-          order={selectedOrder}
-          relatedOrder={relatedOrder}
-          onRequestClose={() => setSelectedOrder(undefined)}
-        />
-      )}
+      <OrderModal
+        order={selectedOrder}
+        relatedOrder={relatedOrder}
+        onRequestClose={() => setSelectedOrder(undefined)}
+      />
     </div>
   );
 };
@@ -527,7 +517,7 @@ const TableOrderRow = memo(
         style={style}
         className={classNames(
           gridClasses,
-          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900 sm:[&>td]:!py-0"
+          "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0"
         )}
         onClick={() => onOrderSelect(order)}
       >

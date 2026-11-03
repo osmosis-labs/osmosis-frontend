@@ -105,7 +105,11 @@ const ClaimAndCloseButton = ({
   return (
     <button
       className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
-      onClick={claimAndClose}
+      onClick={(e) => {
+        // The row opens the order modal on click.
+        e.stopPropagation();
+        claimAndClose();
+      }}
       disabled={claiming}
     >
       <span className="body2 flex items-center text-wosmongton-200">
@@ -177,7 +181,11 @@ const CancelButton = ({
   return (
     <button
       className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
-      onClick={cancel}
+      onClick={(e) => {
+        // The row opens the order modal on click.
+        e.stopPropagation();
+        cancel();
+      }}
       disabled={cancelling}
     >
       <span className="body2 flex items-center whitespace-nowrap text-wosmongton-200">
