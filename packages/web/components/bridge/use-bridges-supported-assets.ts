@@ -220,16 +220,25 @@ export const useBridgesSupportedAssets = ({
   const hasInAppTransferSupport = useMemo(
     () =>
       successfulQueries.some(({ data }) =>
-        Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
-          (assets) =>
-            assets.some((asset) =>
-              asset.transferTypes.some(
-                (type) => type === "quote" || type === "deposit-address"
-              )
+        Object.entries(data?.supportedAssets.assetsByChainId ?? {}).some(
+          ([chainId, assets]) =>
+            assets.some(
+              (asset) =>
+                // allBTC withdrawals: only the locked destinations count, so
+                // another provider's route (e.g. Nomic's Bitcoin) cannot
+                // release the loading hold while Skip is still failing.
+                (!isAllBtcWithdrawal ||
+                  isAllowedAllBtcWithdrawalDestination(
+                    chainId,
+                    asset.address
+                  )) &&
+                asset.transferTypes.some(
+                  (type) => type === "quote" || type === "deposit-address"
+                )
             )
         )
       ),
-    [successfulQueries]
+    [successfulQueries, isAllBtcWithdrawal]
   );
 
   /**
