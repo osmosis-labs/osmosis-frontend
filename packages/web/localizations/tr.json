@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
+    "amountTooSmall": "Miktar çok küçük",
     "emptyAmount": "Miktar boş",
     "generic": "Hata",
     "highSwapFee": "Takas ücreti çok yüksek",

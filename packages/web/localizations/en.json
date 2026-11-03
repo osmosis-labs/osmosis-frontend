@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
+    "amountTooSmall": "Amount is too small",
     "emptyAmount": "Amount is empty",
     "generic": "Error",
     "highSwapFee": "Swap fee too high",

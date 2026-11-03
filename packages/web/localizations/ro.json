@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",
+    "amountTooSmall": "Suma este prea mică",
     "emptyAmount": "Suma lipseste",
     "generic": "Eroare",
     "highSwapFee": "Taxa de schimb este prea mare",

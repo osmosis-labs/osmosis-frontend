@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "depositNoBalance": "입금할 자산이 없습니다",
+    "amountTooSmall": "수량이 너무 적습니다",
     "emptyAmount": "수량이 비어있습니다",
     "generic": "에러",
     "highSwapFee": "교환 수수료가 너무 높습니다",

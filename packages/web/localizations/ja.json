@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "金額の計算に問題があります",
     "depositNoBalance": "預ける資産がありません",
+    "amountTooSmall": "金額が小さすぎます",
     "emptyAmount": "金額が空です",
     "generic": "エラー",
     "highSwapFee": "スワップ手数料が高すぎる",

@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
     "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
+    "amountTooSmall": "مقدار بسیار کم است",
     "emptyAmount": "مقدار خالی است",
     "generic": "خطا",
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
