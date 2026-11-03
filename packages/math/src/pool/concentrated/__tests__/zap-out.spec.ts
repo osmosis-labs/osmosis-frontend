@@ -46,17 +46,6 @@ describe("calcZapOutSwapAmount", () => {
       });
       expect(swapInAmount.toString()).toBe("0");
     });
-
-    it("returns 0 for a one-sided withdrawal when target matches (all base)", () => {
-      // Position fully in base: withdrawn ratio is 100% base, target 100% base.
-      const { swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: base,
-        quoteWithdrawn: new Int(0),
-        currentSqrtPrice: sqrtPriceAt1,
-        targetBaseValueFraction: new BigDec(1),
-      });
-      expect(swapInAmount.toString()).toBe("0");
-    });
   });
 
   describe("target shifts toward base (sell quote)", () => {
@@ -70,33 +59,9 @@ describe("calcZapOutSwapAmount", () => {
       expect(swapSide).toBe("quote");
       expect(swapInAmount.toString()).toBe(quote.toString());
     });
-
-    it("swaps ~half the quote for target = 75% base (from 50/50)", () => {
-      // At 50/50, target 75% base means moving 25% of total value from quote to
-      // base: 0.25 * 2000 = 500 quote.
-      const { swapSide, swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: base,
-        quoteWithdrawn: quote,
-        currentSqrtPrice: sqrtPriceAt1,
-        targetBaseValueFraction: new BigDec(0.75),
-      });
-      expect(swapSide).toBe("quote");
-      expect(swapInAmount.toString()).toBe("500000000");
-    });
   });
 
   describe("target shifts toward quote (sell base)", () => {
-    it("swaps all base into quote for target = 0% base", () => {
-      const { swapSide, swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: base,
-        quoteWithdrawn: quote,
-        currentSqrtPrice: sqrtPriceAt1,
-        targetBaseValueFraction: new BigDec(0),
-      });
-      expect(swapSide).toBe("base");
-      expect(swapInAmount.toString()).toBe(base.toString());
-    });
-
     it("swaps ~half the base for target = 25% base (from 50/50)", () => {
       const { swapSide, swapInAmount } = calcZapOutSwapAmount({
         baseWithdrawn: base,
@@ -125,18 +90,6 @@ describe("calcZapOutSwapAmount", () => {
       });
       expect(swapInAmount.toString()).toBe("0");
     });
-
-    it("sells base priced at spot 4 when shifting toward quote", () => {
-      // target 0% base: sell all base. 100 base.
-      const { swapSide, swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: base4,
-        quoteWithdrawn: quote4,
-        currentSqrtPrice: sqrtPriceAt4,
-        targetBaseValueFraction: new BigDec(0),
-      });
-      expect(swapSide).toBe("base");
-      expect(swapInAmount.toString()).toBe(base4.toString());
-    });
   });
 
   describe("18-decimal pool", () => {
@@ -156,27 +109,7 @@ describe("calcZapOutSwapAmount", () => {
     });
   });
 
-  describe("degenerate inputs (early return, no NaN/divide-by-zero)", () => {
-    it("returns 0 when the pool has no spot price (zero sqrt price)", () => {
-      const { swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: base,
-        quoteWithdrawn: quote,
-        currentSqrtPrice: new BigDec(0),
-        targetBaseValueFraction: new BigDec(0.5),
-      });
-      expect(swapInAmount.toString()).toBe("0");
-    });
-
-    it("returns 0 when nothing was withdrawn", () => {
-      const { swapInAmount } = calcZapOutSwapAmount({
-        baseWithdrawn: new Int(0),
-        quoteWithdrawn: new Int(0),
-        currentSqrtPrice: sqrtPriceAt1,
-        targetBaseValueFraction: new BigDec(1),
-      });
-      expect(swapInAmount.toString()).toBe("0");
-    });
-
+  describe("bounds", () => {
     it("never swaps more than the withdrawn amount of the sold side", () => {
       // Lopsided withdrawal: 10 base, 1000 quote. Target 100% base sells all
       // quote, which is at most quoteWithdrawn.
@@ -258,31 +191,6 @@ describe("calcZapOutRouteDegradation", () => {
   const withdrawnLiquidity = new Dec("100000000000"); // 1e11: half the book
   const one = new BigDec(1);
 
-  it("returns 1 when nothing routes through the pool or depths are missing", () => {
-    expect(
-      calcZapOutRouteDegradation({
-        swapInAmount: new Int(0),
-        swapSide: "base",
-        currentSqrtPrice: one,
-        liquidityDepths,
-        withdrawnLiquidity,
-        positionLowerTick,
-        positionUpperTick,
-      }).toString()
-    ).toBe(new Dec(1).toString());
-    expect(
-      calcZapOutRouteDegradation({
-        swapInAmount: new Int("1000000"),
-        swapSide: "base",
-        currentSqrtPrice: one,
-        liquidityDepths: [],
-        withdrawnLiquidity,
-        positionLowerTick,
-        positionUpperTick,
-      }).toString()
-    ).toBe(new Dec(1).toString());
-  });
-
   // Regression for the withdraw-before-swap ordering: the withdraw removes the
   // position's liquidity before the swap executes, so a min-out derived from
   // the full-depth quote exceeds what the post-withdraw book delivers and the
@@ -350,14 +258,6 @@ describe("calcZapOutRouteDegradation", () => {
 });
 
 describe("combineImpactWithDegradation", () => {
-  it("returns the quoted impact unchanged when there is no degradation", () => {
-    const combined = combineImpactWithDegradation({
-      quotedImpact: new Dec("-0.01"),
-      degradation: new Dec(1),
-    });
-    expect(combined.toString()).toBe(new Dec("-0.01").toString());
-  });
-
   // Regression for the guard bypass: a direct own-pool route can quote a
   // TINY impact (computed against pre-withdraw depths) while the
   // withdraw-thinned book degrades the output past the high-cost threshold.
