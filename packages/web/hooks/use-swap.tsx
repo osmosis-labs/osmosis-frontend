@@ -845,7 +845,9 @@ export function useSwap(
   // The price impact is computed directly from quote, ensuring most up-to-date state.
   // This guarantees consistency between token in and token out fiat values.
   const tokenOutFiatValue: PricePretty = useMemo(() => {
-    if (quoteType === "out-given-in") {
+    // A quote with unknown price impact has no impact figure to price the
+    // output from, so it takes the quoted-amount branch below.
+    if (quoteType === "out-given-in" && !quote?.priceImpactUnknown) {
       return getTokenOutFiatValue(
         quote?.priceImpactTokenOut?.toDec(),
         inAmountInput.fiatValue?.toDec()
@@ -859,6 +861,7 @@ export function useSwap(
   }, [
     inAmountInput.fiatValue,
     quote?.priceImpactTokenOut,
+    quote?.priceImpactUnknown,
     tokenInFeeAmountFiatValue,
     quoteType,
     outAmountInput.fiatValue,

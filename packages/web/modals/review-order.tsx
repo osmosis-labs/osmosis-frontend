@@ -105,6 +105,8 @@ interface ReviewOrderProps {
    * included). Optional because this modal is shared by all three tabs.
    */
   priceImpactTokenOut?: RatePretty;
+  /** SQS could not compute the quote's price impact. */
+  priceImpactUnknown?: boolean;
   /**
    * The quote's amount in display units, before slippage: the output for
    * exact-in, the input for exact-out. Undefined while there is no quote.
@@ -158,6 +160,7 @@ export function ReviewOrder({
   fromAsset,
   isBeyondOppositePrice = false,
   priceImpactTokenOut,
+  priceImpactUnknown,
   quoteAmount,
   outAssetPrice,
   quoteType,
@@ -365,6 +368,7 @@ export function ReviewOrder({
       ].join("|"),
       ...getTradeWarnings({
         priceImpactTokenOut,
+        priceImpactUnknown,
         slippage: slippageConfig?.slippage.toDec(),
         isBeyondOppositePrice,
         percentAdjusted,
@@ -380,6 +384,7 @@ export function ReviewOrder({
       quoteType,
       limitPriceFiat,
       priceImpactTokenOut,
+      priceImpactUnknown,
       slippageConfig?.slippage,
       isBeyondOppositePrice,
       percentAdjusted,
@@ -1106,9 +1111,9 @@ export function ReviewOrder({
                       {t("limitOrders.highPriceImpact.description", {
                         // Same rounding as the memo's `pi=`, so the figure the
                         // user is shown is the figure the tx records.
-                        impact: `${formatWarnPct(
-                          currentLossFigures.priceImpact
-                        )}%`,
+                        impact: priceImpactUnknown
+                          ? t("transfer.unknown")
+                          : `${formatWarnPct(currentLossFigures.priceImpact)}%`,
                       })}
                     </span>
                   </div>
