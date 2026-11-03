@@ -120,12 +120,26 @@ async function mapHistoricalToMapped(
     assetLists,
     chainList
   );
+  // A cancelled order's record holds both its filled part (claimed_quantity) and its
+  // unfilled part (quantity), so its percent filled also applies to its synthetic filled row.
+  const percentFilledByOrder = new Map(
+    historicalOrders
+      .filter((o) => o.status === "cancelled")
+      .map((o): [string, Dec] => [
+        `${o.contract}-${o.order_id}`,
+        new Dec(o.claimed_quantity).quo(
+          new Dec(o.claimed_quantity).add(new Dec(o.quantity))
+        ),
+      ])
+  );
   return historicalOrders.map((o) => {
     const { quoteAsset, baseAsset } = orderbookDenoms[o.contract];
     const quantityMin = parseInt(o.quantity);
     const placedQuantityMin = parseInt(o.quantity);
     const price = tickToPrice(new Int(o.tick_id));
-    const percentClaimed = new Dec(1);
+    // Everything a past order filled has been paid out, so claimed equals filled.
+    const percentFilled =
+      percentFilledByOrder.get(`${o.contract}-${o.order_id}`) ?? new Dec(1);
     const output =
       o.order_direction === "bid"
         ? new Dec(placedQuantityMin).quo(price)
@@ -159,8 +173,8 @@ async function mapHistoricalToMapped(
       status: o.status as OrderStatus,
       tick_id: parseInt(o.tick_id),
       output,
-      percentClaimed,
-      percentFilled: new Dec(1),
+      percentClaimed: percentFilled,
+      percentFilled,
       totalFilled: parseInt(o.quantity),
       orderbookAddress: o.contract,
       placed_tx: o.place_tx_hash,

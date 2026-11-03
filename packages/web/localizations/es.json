@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "Una creación anterior de libro de órdenes para este par sigue pendiente de confirmación onchain. Inténtalo de nuevo en unos minutos.",
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis.",
     "returned": "Devuelto",
+    "partlyFilled": "Ejecutado parcialmente",
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "howPayoutsWork": "¿Cómo funcionan los pagos?",

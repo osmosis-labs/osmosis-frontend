@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "このペアの以前のオーダーブック作成は、まだオンチェーンでの確認待ちです。数分後にもう一度お試しください。",
     "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。",
     "returned": "返却済み",
+    "partlyFilled": "一部約定",
     "returnedUnfilled": "返却済み（未約定）",
     "alreadyReceived": "受取済み",
     "howPayoutsWork": "支払いの仕組み",

@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
     "returned": "Returnat",
+    "partlyFilled": "Executat parțial",
     "returnedUnfilled": "Returnat (neexecutat)",
     "alreadyReceived": "Deja primit",
     "howPayoutsWork": "Cum funcționează plățile?",

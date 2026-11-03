@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "A previous orderbook creation for this pair is still awaiting confirmation onchain. Try again in a few minutes.",
     "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis.",
     "returned": "Returned",
+    "partlyFilled": "Partly filled",
     "returnedUnfilled": "Returned (unfilled)",
     "alreadyReceived": "Already received",
     "howPayoutsWork": "How do payouts work?",

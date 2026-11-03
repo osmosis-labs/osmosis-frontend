@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "આ જોડી માટે અગાઉનું ઓર્ડરબુક નિર્માણ હજી ઓનચેઇન પુષ્ટિની રાહ જોઈ રહ્યું છે. થોડી મિનિટોમાં ફરી પ્રયાસ કરો.",
     "createOrderbookDescription": "Orderbook pool બનાવવાથી Osmosis પર આ ટ્રેડિંગ જોડી માટે limit orders મૂકી શકાય છે.",
     "returned": "પરત કરેલ",
+    "partlyFilled": "આંશિક રીતે ભરાયેલ",
     "returnedUnfilled": "પરત કરેલ (ન ભરાયેલ)",
     "alreadyReceived": "પહેલેથી મળેલ",
     "howPayoutsWork": "ચુકવણી કેવી રીતે થાય છે?",

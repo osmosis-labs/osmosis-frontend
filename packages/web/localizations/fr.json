@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "Une création précédente de carnet d'ordres pour cette paire attend toujours sa confirmation onchain. Réessayez dans quelques minutes.",
     "createOrderbookDescription": "La création d'un orderbook pool permet de passer des ordres limites pour cette paire de trading sur Osmosis.",
     "returned": "Restitué",
+    "partlyFilled": "Partiellement exécuté",
     "returnedUnfilled": "Restitué (non exécuté)",
     "alreadyReceived": "Déjà reçu",
     "howPayoutsWork": "Comment fonctionnent les paiements ?",

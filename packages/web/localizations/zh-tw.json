@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "此交易對之前的訂單簿建立仍在等待鏈上確認。請幾分鐘後再試。",
     "createOrderbookDescription": "建立 orderbook pool 可在 Osmosis 上為此交易對下 limit orders。",
     "returned": "已退回",
+    "partlyFilled": "部分成交",
     "returnedUnfilled": "已退回（未成交）",
     "alreadyReceived": "已收到",
     "howPayoutsWork": "付款如何運作？",

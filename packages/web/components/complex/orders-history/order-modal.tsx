@@ -83,14 +83,14 @@ const OrderDetails = ({
   // The conversion card shows the filled part when there is one, so "Bought" is what was received.
   const displayOrder = filledPart ?? order;
 
-  const percentFilledOfPastOrder =
-    filledPart && returnedPart
-      ? new RatePretty(
-          new Dec(filledPart.placed_quantity).quo(
-            new Dec(filledPart.placed_quantity + returnedPart.placed_quantity)
-          )
-        )
-      : undefined;
+  // Past orders carry the whole order's fill, so this works even when the paired row isn't loaded.
+  const isPartlyFilledPastOrder =
+    isPastOrder &&
+    order.percentFilled.isPositive() &&
+    order.percentFilled.lt(new Dec(1));
+  const percentFilledOfPastOrder = isPartlyFilledPastOrder
+    ? new RatePretty(order.percentFilled)
+    : undefined;
 
   const alreadyReceived =
     order?.status === "partiallyFilled" && order.percentClaimed.isPositive()
@@ -123,7 +123,8 @@ const OrderDetails = ({
   const statusComponent = (() => {
     if (!order) return;
 
-    switch (order?.status) {
+    // Opened from the filled part of a cancelled order, show the order's final status.
+    switch (isPartlyFilledPastOrder ? "cancelled" : order.status) {
       case "open":
       case "partiallyFilled":
         return (

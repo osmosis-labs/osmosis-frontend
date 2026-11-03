@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "Eine frühere Orderbuch-Erstellung für dieses Paar wartet noch auf die Bestätigung onchain. Versuche es in ein paar Minuten erneut.",
     "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren.",
     "returned": "Zurückerstattet",
+    "partlyFilled": "Teilweise ausgeführt",
     "returnedUnfilled": "Zurückerstattet (nicht ausgeführt)",
     "alreadyReceived": "Bereits erhalten",
     "howPayoutsWork": "Wie funktionieren Auszahlungen?",

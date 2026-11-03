@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "इस जोड़ी के लिए पिछला ऑर्डरबुक निर्माण अभी भी ऑनचेन पुष्टि की प्रतीक्षा में है। कुछ मिनट में फिर से प्रयास करें।",
     "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।",
     "returned": "वापस किया गया",
+    "partlyFilled": "आंशिक रूप से भरा गया",
     "returnedUnfilled": "वापस किया गया (नहीं भरा गया)",
     "alreadyReceived": "पहले ही प्राप्त",
     "howPayoutsWork": "भुगतान कैसे होते हैं?",

@@ -465,6 +465,7 @@ const TableOrderRow = memo(
       price,
       placed_at,
       status,
+      percentFilled,
     } = order;
 
     // A cancelled row is the unfilled input, so name the asset that went back to the wallet.
@@ -483,8 +484,12 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return t("limitOrders.open");
         case "filled":
-        case "fullyClaimed":
           return t("limitOrders.filled");
+        case "fullyClaimed":
+          // The filled part of an order that was later cancelled.
+          return percentFilled.lt(new Dec(1))
+            ? t("limitOrders.partlyFilled")
+            : t("limitOrders.filled");
         case "cancelled":
           return t("limitOrders.cancelled");
       }

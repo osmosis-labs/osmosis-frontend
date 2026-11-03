@@ -1452,6 +1452,7 @@
     "creationAwaitingConfirmation": "Предыдущее создание книги ордеров для этой пары всё ещё ожидает подтверждения в сети. Повторите попытку через несколько минут.",
     "createOrderbookDescription": "Создание orderbook pool позволяет размещать limit orders для этой торговой пары на Osmosis.",
     "returned": "Возвращено",
+    "partlyFilled": "Частично исполнено",
     "returnedUnfilled": "Возвращено (неисполненная часть)",
     "alreadyReceived": "Уже получено",
     "howPayoutsWork": "Как работают выплаты?",
