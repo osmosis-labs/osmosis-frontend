@@ -395,6 +395,8 @@
     "settings": "સેટિંગ્સ"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} પ્રતિ દિવસ",
+    "spendLimitLeftToday": "આજે {amount} બાકી",
     "toast": {
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
-      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
+      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ 1 કલાક અને $5,000 USD ની દૈનિક ખર્ચ મર્યાદા પર સેટ છે.",
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "reviewOrder": {
       "recapRowTitle": "1-ક્લિક કરો ટ્રેડિંગ મર્યાદા",
       "enableTitle": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "enableDescription": "ઝડપી, સરળ વેપાર",
-      "paramsDescription": "{sessionLength} સત્ર સાથે {lossProtectionLimit} નુકશાન સુરક્ષા મર્યાદા",
+      "paramsDescription": "{sessionLength} સત્ર, {spendLimit} દૈનિક ખર્ચ મર્યાદા સાથે",
       "defaultSpendLimit": "$5,000 USD",
       "change": "બદલો",
       "edit": "સંપાદિત કરો",
       "exceeded": "વટાવી ગયો",
       "exceededTooltip": {
-        "title": "વર્તમાન નુકશાન-રક્ષણ મર્યાદા ઓળંગે છે",
+        "title": "તમારી દૈનિક ખર્ચ મર્યાદા કરતાં વધી જાય છે",
         "body": "તમારે તમારા વૉલેટમાં આ વ્યવહારને મેન્યુઅલી મંજૂર કરવો પડશે."
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-ક્લિક કરો ટ્રેડિંગ",
       "description": "1-ક્લિક ટ્રેડિંગ તમને તમારા વૉલેટમાં દરેક ટ્રાન્ઝેક્શન પર સહી કરવાની ઝંઝટ વિના આ ઉપકરણ પર સુરક્ષિત રીતે વેપાર કરવા દે છે.",
       "enableTitle": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
-      "spendLimitTitle": "નુકશાન રક્ષણ મર્યાદા",
+      "spendLimitTitle": "દૈનિક ખર્ચ મર્યાદા",
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "editSessionButton": "ફેરફારો સંગ્રહ",

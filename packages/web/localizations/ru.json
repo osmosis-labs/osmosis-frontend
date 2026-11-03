@@ -395,6 +395,8 @@
     "settings": "Настройки"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} в день",
+    "spendLimitLeftToday": "Осталось сегодня: {amount}",
     "toast": {
       "oneClickTradingActive": "Торговля в 1 клик активна",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Совершайте сделки быстрее и проще без хлопот, требующих одобрения нескольких кошельков.",
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
-      "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
+      "defaultParameters": "Настройки по умолчанию: 1 час и дневной лимит расходов 5000 USD.",
       "changeButton": "Изменить настройки"
     },
     "reviewOrder": {
       "recapRowTitle": "Лимит торговли в 1 клик",
       "enableTitle": "Начните торговлю в 1 клик",
       "enableDescription": "Более быстрая и простая торговля",
-      "paramsDescription": "{sessionLength} сессия с {spendLimit} лимит защиты от потерь",
+      "paramsDescription": "Сессия {sessionLength} с дневным лимитом расходов {spendLimit}",
       "defaultSpendLimit": "5000 долларов США",
       "change": "Изменять",
       "edit": "Редактировать",
       "exceeded": "Превышен",
       "exceededTooltip": {
-        "title": "Превышает текущий лимит защиты от потерь",
+        "title": "Превышает ваш дневной лимит расходов",
         "body": "Вам придется вручную одобрить эту транзакцию в своем кошельке."
       }
     },
@@ -441,7 +443,7 @@
       "header": "Торговля в 1 клик",
       "description": "1-Click Trading позволяет вам безопасно торговать на этом устройстве без необходимости подписывать каждую транзакцию в своем кошельке.",
       "enableTitle": "Включить торговлю в 1 клик",
-      "spendLimitTitle": "Лимит защиты от потерь",
+      "spendLimitTitle": "Дневной лимит расходов",
       "sessionPeriodTitle": "Период сессии",
       "startButton": "Начать торговлю в 1 клик",
       "editSessionButton": "Сохранить изменения",

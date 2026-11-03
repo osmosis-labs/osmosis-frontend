@@ -395,6 +395,8 @@
     "settings": "設定"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "每日 {amount}",
+    "spendLimitLeftToday": "今日剩餘 {amount}",
     "toast": {
       "oneClickTradingActive": "一鍵交易活躍",
       "oneClickTradingDisabled": "一鍵交易已停用",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "進行更快、更輕鬆的交易，無需多個錢包批准的麻煩。",
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
-      "defaultParameters": "預設為 1 小時，損失保護限額為 5,000 美元。",
+      "defaultParameters": "預設設定為 1 小時，每日支出限額為 5,000 美元。",
       "changeButton": "編輯設定"
     },
     "reviewOrder": {
       "recapRowTitle": "一鍵交易限額",
       "enableTitle": "開始一鍵交易",
       "enableDescription": "交易更快、更輕鬆",
-      "paramsDescription": "{sessionLength}會話，具有{spendLimit}丟失保護限制",
+      "paramsDescription": "{sessionLength}會話，每日支出限額為{spendLimit}",
       "defaultSpendLimit": "5,000 美元",
       "change": "改變",
       "edit": "編輯",
       "exceeded": "超過",
       "exceededTooltip": {
-        "title": "超過當前損失保護限制",
+        "title": "超出您的每日支出限額",
         "body": "您必須在錢包中手動批准此交易。"
       }
     },
@@ -441,7 +443,7 @@
       "header": "一鍵交易",
       "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
       "enableTitle": "啟用一鍵交易",
-      "spendLimitTitle": "損失保護限額",
+      "spendLimitTitle": "每日支出限額",
       "sessionPeriodTitle": "會議期間",
       "startButton": "開始一鍵交易",
       "editSessionButton": "儲存變更",

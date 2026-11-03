@@ -395,6 +395,8 @@
     "settings": "Einstellungen"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pro Tag",
+    "spendLimitLeftToday": "Heute noch {amount}",
     "toast": {
       "oneClickTradingActive": "1-Click-Handel aktiv",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
+      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem täglichen Ausgabenlimit von 5.000 USD festgelegt.",
       "changeButton": "Einstellungen bearbeiten"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Klick-Handelslimit",
       "enableTitle": "Starten Sie den 1-Klick-Handel",
       "enableDescription": "Schneller und einfacher handeln",
-      "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
+      "paramsDescription": "{sessionLength} Sitzung mit {spendLimit} täglichem Ausgabenlimit",
       "defaultSpendLimit": "5.000 USD",
       "change": "Ändern",
       "edit": "Bearbeiten",
       "exceeded": "Übertroffen",
       "exceededTooltip": {
-        "title": "Überschreitet die aktuelle Verlustschutzgrenze",
+        "title": "Überschreitet Ihr tägliches Ausgabenlimit",
         "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Verlustschutzgrenze",
+      "spendLimitTitle": "Tägliches Ausgabenlimit",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",

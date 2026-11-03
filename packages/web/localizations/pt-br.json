@@ -395,6 +395,8 @@
     "settings": "Configurações"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} por dia",
+    "spendLimitLeftToday": "{amount} restantes hoje",
     "toast": {
       "oneClickTradingActive": "Negociação em 1 Clique ativa",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
-      "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
+      "defaultParameters": "As configurações padrão são de 1 hora com um limite de gastos diário de 5.000 USD.",
       "changeButton": "Editar Configurações"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de negociação de 1 clique",
       "enableTitle": "Comece a negociar com 1 clique",
       "enableDescription": "Negociação mais rápida e fácil",
-      "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
+      "paramsDescription": "Sessão de {sessionLength} com limite de gastos diário de {spendLimit}",
       "defaultSpendLimit": "US$ 5.000",
       "change": "Mudar",
       "edit": "Editar",
       "exceeded": "Excedido",
       "exceededTooltip": {
-        "title": "Excede o limite atual de proteção contra perdas",
+        "title": "Excede o seu limite de gastos diário",
         "body": "Você terá que aprovar manualmente esta transação em sua carteira."
       }
     },
@@ -441,7 +443,7 @@
       "header": "Negociação em 1 clique",
       "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
       "enableTitle": "Habilite a negociação em 1 clique",
-      "spendLimitTitle": "Limite de proteção contra perdas",
+      "spendLimitTitle": "Limite de gastos diário",
       "sessionPeriodTitle": "Período da sessão",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
