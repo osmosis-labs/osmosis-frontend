@@ -13,10 +13,10 @@ export const ROUTE_PROBE_USD = 500;
 export const ROUTE_PROBE_CONCURRENCY = 5;
 
 /** Per-request cap for a probe or the price lookup; on expiry the answer is unknown. */
-export const ROUTE_PROBE_REQUEST_TIMEOUT_MS = 4_000;
+export const ROUTE_PROBE_REQUEST_TIMEOUT_MS = 3_000;
 
 /** Cap for the whole probe phase; candidates unresolved at the deadline are kept. */
-export const ROUTE_PROBE_DEADLINE_MS = 8_000;
+export const ROUTE_PROBE_DEADLINE_MS = 5_000;
 
 /** Rejects when `promise` has not settled within `ms` (the answer is unknown). */
 export const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
