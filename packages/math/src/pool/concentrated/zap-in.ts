@@ -337,3 +337,67 @@ export function calcZapInPositionMinima({
     tokenMinAmount1: used1.mul(buffer).truncate(),
   };
 }
+
+/**
+ * Total cost of a zap-in as a fraction of the input (swap fee plus adverse
+ * price impact, on the swapped slice only), with no fiat price needed, so the
+ * high-cost gate can be evaluated for unpriced assets too.
+ *
+ * - `priceImpact`: the worst known adverse impact (<= 0, SQS convention), or
+ *   undefined when none is known.
+ * - When the router could not compute its impact (`priceImpactUnknown`), or
+ *   no impact is known at all, the swap leg's cost is read from its quoted
+ *   output against the destination pool's spot price instead. That figure
+ *   already includes the fee.
+ *
+ * Returns undefined when neither basis is available.
+ */
+export function calcZapInCostFraction({
+  inputAmount,
+  swapInAmount,
+  tokenOutAmount,
+  inputSide,
+  currentSqrtPrice,
+  swapFee,
+  priceImpact,
+  priceImpactUnknown,
+}: {
+  inputAmount: Int;
+  swapInAmount: Int;
+  tokenOutAmount: Int;
+  inputSide: "base" | "quote";
+  currentSqrtPrice: BigDec;
+  swapFee: Dec;
+  priceImpact?: Dec;
+  priceImpactUnknown?: boolean;
+}): Dec | undefined {
+  if (inputAmount.lte(new Int(0)) || swapInAmount.lte(new Int(0)))
+    return undefined;
+
+  const legCosts: Dec[] = [];
+  if (priceImpact !== undefined) {
+    legCosts.push(
+      swapFee.sub(priceImpact.isNegative() ? priceImpact : new Dec(0))
+    );
+  }
+  if (
+    (priceImpactUnknown || priceImpact === undefined) &&
+    !currentSqrtPrice.isZero()
+  ) {
+    // spot = token1 per token0, on the micro-denom basis
+    const spot = currentSqrtPrice.mul(currentSqrtPrice);
+    const swapIn = new BigDec(swapInAmount);
+    const expectedOut =
+      inputSide === "base" ? swapIn.mul(spot) : swapIn.quo(spot);
+    if (expectedOut.isPositive()) {
+      const rate = new BigDec(tokenOutAmount).quo(expectedOut).toDec();
+      legCosts.push(rate.gte(new Dec(1)) ? new Dec(0) : new Dec(1).sub(rate));
+    }
+  }
+  if (legCosts.length === 0) return undefined;
+
+  const legCost = legCosts.reduce((worst, c) => (c.gt(worst) ? c : worst));
+  const fraction = new Dec(swapInAmount).quo(new Dec(inputAmount)).mul(legCost);
+  if (fraction.isNegative()) return new Dec(0);
+  return fraction.gt(new Dec(1)) ? new Dec(1) : fraction;
+}

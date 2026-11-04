@@ -6,6 +6,7 @@ import { calcAmount0Delta, calcAmount1Delta } from "../math";
 import { tickToSqrtPrice } from "../tick";
 import {
   calcMarginalPriceImpact,
+  calcZapInCostFraction,
   calcZapInPositionMinima,
   calcZapInSwapAmount,
   estimateSqrtPriceAfterSwapIn,
@@ -421,5 +422,37 @@ describe("calcMarginalPriceImpact", () => {
     });
     expect(averageImpact.lt(new Dec(0))).toBe(true);
     expect(marginalImpact.lt(averageImpact)).toBe(true);
+  });
+});
+
+describe("calcZapInCostFraction", () => {
+  it("prices the swap leg without fiat, from the impact or from the quoted output when it is unknown", () => {
+    const base = {
+      inputAmount: new Int(2_000_000),
+      swapInAmount: new Int(1_000_000),
+      inputSide: "base" as const,
+      // spot 0.04 token1 per token0
+      currentSqrtPrice: new BigDec(new Dec("0.2")),
+      swapFee: new Dec("0.002"),
+    };
+
+    // Known impact: half the input swapped at 3% impact + 0.2% fee.
+    expect(
+      calcZapInCostFraction({
+        ...base,
+        tokenOutAmount: new Int(38_720),
+        priceImpact: new Dec("-0.03"),
+      })!.toString()
+    ).toBe(new Dec("0.016").toString());
+
+    // Unknown impact must not read as a total loss of the swapped slice:
+    // 39,200 out against 40,000 at spot is a 2% leg cost, 1% of the input.
+    expect(
+      calcZapInCostFraction({
+        ...base,
+        tokenOutAmount: new Int(39_200),
+        priceImpactUnknown: true,
+      })!.toString()
+    ).toBe(new Dec("0.01").toString());
   });
 });

@@ -559,10 +559,12 @@ export async function prepareZapInToConcentratedPositionMsg(
   if (lowerTick.isZero()) lowerTick = new Int(-pool.tickSpacing);
   if (upperTick.isZero()) upperTick = new Int(pool.tickSpacing);
 
-  // The chain rejects coins that are not denom-sorted.
-  const sortedTokensProvided = [...tokensProvided].sort((a, b) =>
-    a.denom.localeCompare(b.denom)
-  );
+  // The chain rejects coins that are not denom-sorted, and any zero amount: a
+  // range that needs only the other token swaps the whole input, leaving
+  // nothing of the provided side.
+  const sortedTokensProvided = tokensProvided
+    .filter(({ amount }) => amount !== "0")
+    .sort((a, b) => a.denom.localeCompare(b.denom));
 
   return prepareTransaction(
     "clZapInPosition",

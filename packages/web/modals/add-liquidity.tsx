@@ -57,6 +57,7 @@ export const AddLiquidityModal: FunctionComponent<
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapMinReceived,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,
@@ -326,6 +327,7 @@ export const AddLiquidityModal: FunctionComponent<
             zap={{
               zapQuote,
               zapSlippageConfig,
+              zapMinReceived,
               zapValueIn,
               zapValueOut,
               zapTotalCostPercent,

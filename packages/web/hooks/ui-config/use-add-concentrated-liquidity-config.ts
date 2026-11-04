@@ -1,6 +1,7 @@
 import {
   BigDec,
   calcMarginalPriceImpact,
+  calcZapInCostFraction,
   calcZapInPositionMinima,
   estimateSqrtPriceAfterSwapIn,
 } from "@osmosis-labs/math";
@@ -24,16 +25,13 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { getChainInfo } from "~/config/chain";
-import {
-  getTokenInFeeAmountFiatValue,
-  getTokenOutFiatValue,
-} from "~/hooks/fiat-getters";
 import { usePrice } from "~/hooks/queries/assets/use-price";
-import {
-  SlippageConfig,
-  useSlippageConfig,
-} from "~/hooks/ui-config/use-slippage-config";
+import { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { ClZapQuote, useClZapQuote } from "~/hooks/use-cl-zap-quote";
+import {
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { api } from "~/utils/trpc";
 
@@ -841,16 +839,23 @@ export interface ZapInConfig {
   /** Swap + create-position in one atomic tx, for single-asset mode. */
   zapInLiquidity: () => Promise<void>;
   zapQuote: ReturnType<typeof useClZapQuote>;
-  /** The user's slippage for the swap leg. */
+  /** The swap leg's slippage, resolved like the swap tool's (typed value,
+   *  else the tier picked from the quote, else the default) and held in
+   *  manual mode, so what the input shows is what the transaction signs. */
   zapSlippageConfig: SlippageConfig;
-  /** Fiat value of the full single-asset deposit; undefined without a quote.
-   *  Same single-price calculation as `zapTotalCostPercent`. */
+  /** The swap leg's guaranteed minimum output (the quote less slippage), as
+   *  displayed and as submitted. */
+  zapMinReceived: CoinPretty | undefined;
+  /** Fiat value of the full single-asset deposit; undefined without a quote
+   *  or an input price. */
   zapValueIn: PricePretty | undefined;
-  /** Fiat value landing in the position (value in minus swap fees and price
-   *  impact on the swapped slice); undefined without a quote. */
+  /** Fiat value landing in the position: value in less `zapTotalCostPercent`;
+   *  undefined without a quote or an input price. */
   zapValueOut: PricePretty | undefined;
-  /** Combined zap-in cost as a fraction of value in. For a swap routed through
-   *  the destination pool this uses the POST-swap marginal impact when it is
+  /** Combined zap-in cost (swap fee + adverse price impact on the swapped
+   *  slice) as a fraction of the input, computed without fiat prices so the
+   *  gate also holds for unpriced assets. For a swap routed through the
+   *  destination pool this uses the POST-swap marginal impact when it is
    *  worse than the quoted average fill: arbitrage reverts the moved price
    *  against the in-range LPs, which the depositor is about to become. */
   zapTotalCostPercent: RatePretty | undefined;
@@ -898,9 +903,7 @@ function useZapIn({
   signAndBroadcast: ReturnType<typeof useWallet>["signAndBroadcast"];
   apiUtils: ReturnType<typeof api.useUtils>;
 }): ZapInConfig {
-  // Reuses the user's general swap slippage scope.
-  const zapSlippageConfig = useSlippageConfig();
-  const slippage = zapSlippageConfig.slippage.toDec();
+  const zapSlippageConfig = useSwapSlippageConfig();
 
   const {
     requiredSwap,
@@ -924,6 +927,29 @@ function useZapIn({
     enabled: singleAssetMode && Boolean(requiredSwap?.needsSwap),
   });
   const quote = zapQuote.quote;
+
+  // Same resolution as the swap tool: a typed value, else the tier for this
+  // quote's impact and route liquidity, else the default. There is no review
+  // step to latch the tier against, and no fee simulation before submit.
+  useSwapSlippage({
+    slippageConfig: zapSlippageConfig,
+    quote,
+    quoteType: "out-given-in",
+    feeError: undefined,
+    isReviewOpen: false,
+    isQuoteSettled: !zapQuote.isLoading && !zapQuote.isRefreshing,
+  });
+  const slippage = zapSlippageConfig.slippage.toDec();
+  // The swap leg's floor in micro units, computed once for display and submit.
+  const zapMinOutAmount = quote
+    ? new Dec(quote.amount.toCoin().amount)
+        .mul(new Dec(1).sub(slippage))
+        .truncate()
+    : undefined;
+  const zapMinReceived =
+    quote && zapMinOutAmount
+      ? new CoinPretty(quote.amount.currency, zapMinOutAmount)
+      : undefined;
 
   // Marginal impact of the destination-routed slice, over the pool's live
   // tick liquidity. The same simulation runs at submit time for the minima.
@@ -958,50 +984,39 @@ function useZapIn({
   }
   const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
 
-  // Value in, value out and total cost: one calculation shared by the
-  // breakdown rows, the rust styling and the Confirm gate, so display and gate
-  // can't diverge. Both sides are priced off the single token-in price, so
-  // value out can't exceed value in.
+  // Total cost: one fiat-free calculation shared by the breakdown rows, the
+  // rust styling and the Confirm gate, so display and gate can't diverge and
+  // an unpriced input still gates. Value in and out are only the fiat view of
+  // the same fraction.
+  let zapTotalCostPercent: RatePretty | undefined;
+  if (requiredSwap?.needsSwap && quote && clPool) {
+    // Worst of the quoted (average-fill) and marginal impacts.
+    const quotedImpact = quote.priceImpactTokenOut?.toDec();
+    const impact =
+      marginalImpact !== undefined &&
+      (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
+        ? marginalImpact
+        : quotedImpact;
+    const costFraction = calcZapInCostFraction({
+      inputAmount: requiredSwap.inputAmount,
+      swapInAmount: requiredSwap.swapInAmount,
+      tokenOutAmount: new Int(quote.amount.toCoin().amount),
+      inputSide: singleAssetSide,
+      currentSqrtPrice: clPool.currentSqrtPrice,
+      swapFee: quote.swapFee?.toDec() ?? new Dec(0),
+      priceImpact: impact,
+      priceImpactUnknown: Boolean(quote.priceImpactUnknown),
+    });
+    if (costFraction) zapTotalCostPercent = new RatePretty(costFraction);
+  }
   const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
   let zapValueIn: PricePretty | undefined;
   let zapValueOut: PricePretty | undefined;
-  let zapTotalCostPercent: RatePretty | undefined;
-  if (requiredSwap && quote && zapInputPrice) {
-    const valueIn = zapInputPrice.mul(
+  if (requiredSwap && zapTotalCostPercent && zapInputPrice) {
+    zapValueIn = zapInputPrice.mul(
       new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
     );
-    if (valueIn.toDec().isPositive()) {
-      const swapInValue = zapInputPrice.mul(
-        new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.swapInAmount)
-      );
-      const retainedValue = zapInputPrice.mul(
-        new CoinPretty(
-          requiredSwap.tokenInCurrency,
-          requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
-        )
-      );
-      // Worst of the quoted (average-fill) and marginal impacts.
-      const quotedImpact = quote.priceImpactTokenOut?.toDec();
-      const impact =
-        marginalImpact !== undefined &&
-        (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
-          ? marginalImpact
-          : quotedImpact;
-      const valueOut = retainedValue.add(
-        getTokenOutFiatValue(impact, swapInValue.toDec()).sub(
-          getTokenInFeeAmountFiatValue(
-            requiredSwap.tokenInCurrency,
-            quote.tokenInFeeAmount,
-            zapInputPrice
-          )
-        )
-      );
-      zapValueIn = valueIn;
-      zapValueOut = valueOut;
-      zapTotalCostPercent = new RatePretty(
-        valueIn.toDec().sub(valueOut.toDec()).quo(valueIn.toDec())
-      );
-    }
+    zapValueOut = zapValueIn.mul(new Dec(1).sub(zapTotalCostPercent.toDec()));
   }
   const zapHighCost = Boolean(
     singleAssetMode && zapTotalCostPercent?.toDec().gte(ZAP_HIGH_COST_THRESHOLD)
@@ -1079,9 +1094,7 @@ function useZapIn({
             tokenInAmount: route.initialAmount.toString(),
           }));
 
-          const tokenOutMinAmount = new Dec(quote.amount.toCoin().amount)
-            .mul(new Dec(1).sub(slippage))
-            .truncate();
+          const tokenOutMinAmount = zapMinOutAmount ?? new Int(0);
           if (tokenOutMinAmount.lte(new Int(0)))
             throw new Error("Swap output floor rounds to zero");
 
@@ -1194,6 +1207,7 @@ function useZapIn({
       signAndBroadcast,
       quote,
       zapQuote.isRefreshing,
+      zapMinOutAmount,
       slippage,
     ]
   );
@@ -1202,6 +1216,7 @@ function useZapIn({
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapMinReceived,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,

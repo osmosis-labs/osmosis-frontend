@@ -45,6 +45,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
+import { formatSlippagePercent, parseSlippageInput } from "~/utils/swap-review";
 import { api } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
@@ -71,6 +72,7 @@ export type ZapInDisplay = Pick<
   ZapInConfig,
   | "zapQuote"
   | "zapSlippageConfig"
+  | "zapMinReceived"
   | "zapValueIn"
   | "zapValueOut"
   | "zapTotalCostPercent"
@@ -467,11 +469,8 @@ const SingleAssetDeposit: FunctionComponent<{
   const slippageConfig = zap?.zapSlippageConfig;
   const needsSwap = Boolean(requiredSwap?.needsSwap);
 
-  // The floor the swap leg reverts below (mirrors `zapInLiquidity`).
-  const minReceived =
-    quote && slippageConfig
-      ? quote.amount.mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
-      : undefined;
+  // The floor the swap leg reverts below, as `zapInLiquidity` submits it.
+  const minReceived = zap?.zapMinReceived;
 
   // Value in vs value landing in the position: the gap is the all-in cost of
   // the zap (swap fee + price impact). All three figures come from the config
@@ -615,7 +614,7 @@ const SingleAssetDeposit: FunctionComponent<{
                       }
                     />
                   )}
-                  {totalCost && totalCostPercent && (
+                  {totalCostPercent && (
                     <RecapRow
                       left={
                         <Tooltip
@@ -635,12 +634,16 @@ const SingleAssetDeposit: FunctionComponent<{
                             isCostHigh ? "text-rust-400" : "text-osmoverse-200"
                           )}
                         >
-                          -
-                          {formatPretty(
-                            totalCost,
-                            getPriceExtendedFormatOptions(totalCost.toDec())
-                          )}{" "}
-                          ({formatPretty(totalCostPercent.maxDecimals(2))})
+                          {/* The percentage gates even without a fiat price;
+                              the fiat amount shows only when there is one. */}
+                          {totalCost
+                            ? `-${formatPretty(
+                                totalCost,
+                                getPriceExtendedFormatOptions(totalCost.toDec())
+                              )} (${formatPretty(
+                                totalCostPercent.maxDecimals(2)
+                              )})`
+                            : `-${formatPretty(totalCostPercent.maxDecimals(2))}`}
                         </span>
                       }
                     />
@@ -731,30 +734,46 @@ const SingleAssetDeposit: FunctionComponent<{
 });
 
 /** Editable slippage-tolerance input for the zap-in swap leg, mirroring the
- *  swap review's slippage box. */
+ *  swap review's: the placeholder is the tolerance that will be submitted
+ *  (the auto tier unless the user typed one), and clearing the field hands
+ *  control back to it. */
 const SlippageInput: FunctionComponent<{
   slippageConfig: ZapInDisplay["zapSlippageConfig"];
 }> = memo(({ slippageConfig }) => {
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const { setManualSlippage: commitSlippage, defaultManualSlippage } =
-    slippageConfig;
 
   const handleChange = useCallback(
     (value: string) => {
-      const parsed = Number(value);
-      if (value === "" || !Number.isFinite(parsed)) {
-        setManualSlippage("");
-        commitSlippage(defaultManualSlippage);
-        return;
+      const parsed = parseSlippageInput(value);
+      if (!parsed) return;
+      setManualSlippage(parsed.display);
+      if (parsed.display === "") {
+        slippageConfig.clearUserOverride();
+      } else if (parsed.commit !== undefined) {
+        slippageConfig.markUserOverride();
+        slippageConfig.setManualSlippage(parsed.commit);
       }
-      // Clamp so a negative or huge entry can't break the min-out math.
-      const clamped = Math.max(0, Math.min(50, parsed));
-      setManualSlippage(clamped.toString());
-      commitSlippage(new Dec(clamped).toString());
     },
-    [commitSlippage, defaultManualSlippage]
+    [slippageConfig]
   );
+
+  // An incomplete value ("1.", "0") must not leave the display out of step
+  // with the submitted tolerance: complete a positive value, else clear it.
+  const handleBlur = useCallback(() => {
+    setIsEditing(false);
+    if (manualSlippage === "") return;
+    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
+    const value = Number(manualSlippage);
+    if (value > 0) {
+      setManualSlippage(String(value));
+      slippageConfig.markUserOverride();
+      slippageConfig.setManualSlippage(String(value));
+    } else {
+      setManualSlippage("");
+      slippageConfig.clearUserOverride();
+    }
+  }, [manualSlippage, slippageConfig]);
 
   return (
     <div
@@ -769,15 +788,15 @@ const SlippageInput: FunctionComponent<{
         type="text"
         inputMode="decimal"
         minWidth={36}
-        placeholder={defaultManualSlippage + "%"}
+        placeholder={
+          // The tolerance that will be submitted, not a nominal default.
+          formatSlippagePercent(slippageConfig.slippage.toDec()) + "%"
+        }
         className="body2 w-fit bg-transparent px-0"
         inputClassName="body2 !bg-transparent text-right placeholder:text-wosmongton-300 focus:text-center transition-all focus-visible:outline-none"
         value={manualSlippage}
-        onFocus={() => {
-          slippageConfig.setIsManualSlippage(true);
-          setIsEditing(true);
-        }}
-        onBlur={() => setIsEditing(false)}
+        onFocus={() => setIsEditing(true)}
+        onBlur={handleBlur}
         onChange={(e) => handleChange(e.target.value)}
       />
       {manualSlippage !== "" && <span className="body2">%</span>}
