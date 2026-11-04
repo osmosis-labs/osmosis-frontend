@@ -11,6 +11,7 @@ import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { OsmosisChainInfo } from "~/config/chain";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
@@ -58,6 +59,8 @@ export const AddLiquidityModal: FunctionComponent<
     zapQuote,
     zapSlippageConfig,
     zapMinReceived,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,
@@ -71,6 +74,11 @@ export const AddLiquidityModal: FunctionComponent<
   // checkbox; the total cost re-arms it when it worsens past tolerance, and
   // raising the slippage re-arms it too. The derived swap amount is left out:
   // it moves with the pool price on every refetch.
+  // The same tolerance gate as the swap review: a high slippage tolerance
+  // needs the tick too, whatever the total cost.
+  const zapSlippageHigh = zapSlippageConfig.slippage
+    .toDec()
+    .gte(HighSlippageToleranceGate);
   const zapCostIdentity = `${
     addConliqConfig.requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
   }>${addConliqConfig.requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
@@ -86,7 +94,7 @@ export const AddLiquidityModal: FunctionComponent<
           identityKey: zapCostIdentity,
           slippage: zapSlippageConfig.slippage.toDec(),
           priceImpact: zapTotalCostPercent.toDec(),
-          warnSlippage: false,
+          warnSlippage: zapSlippageHigh,
           warnPriceImpact: zapHighCost,
         }
       : undefined
@@ -328,10 +336,13 @@ export const AddLiquidityModal: FunctionComponent<
               zapQuote,
               zapSlippageConfig,
               zapMinReceived,
+              zapSlippageSource,
+              zapSlippageLiquidityUnknown,
               zapValueIn,
               zapValueOut,
               zapTotalCostPercent,
               zapHighCost,
+              slippageHigh: zapSlippageHigh,
               costAcknowledged: zapCostAcknowledged,
               onCostAcknowledgedChange: setZapCostAcknowledged,
             }}

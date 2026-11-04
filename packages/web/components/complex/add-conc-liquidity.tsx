@@ -27,10 +27,13 @@ import {
 } from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { InputBox } from "~/components/input";
-import { AutosizeInput } from "~/components/input/autosize-input";
 import { Spinner } from "~/components/loaders/spinner";
 import { tError } from "~/components/localization";
-import { RouteLane } from "~/components/swap-tool/split-route";
+import {
+  SlippageToleranceRow,
+  useSlippageToleranceInput,
+} from "~/components/swap-tool/slippage-tolerance-row";
+import { RoutesTaken } from "~/components/swap-tool/trade-details";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -45,7 +48,6 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
-import { formatSlippagePercent, parseSlippageInput } from "~/utils/swap-review";
 import { api } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
@@ -73,11 +75,16 @@ export type ZapInDisplay = Pick<
   | "zapQuote"
   | "zapSlippageConfig"
   | "zapMinReceived"
+  | "zapSlippageSource"
+  | "zapSlippageLiquidityUnknown"
   | "zapValueIn"
   | "zapValueOut"
   | "zapTotalCostPercent"
   | "zapHighCost"
 > & {
+  /** The slippage tolerance is at or above the high-tolerance gate, so the
+   *  Confirm tick is required even when the total cost is low. */
+  slippageHigh: boolean;
   costAcknowledged: boolean;
   onCostAcknowledgedChange: (acknowledged: boolean) => void;
 };
@@ -467,6 +474,10 @@ const SingleAssetDeposit: FunctionComponent<{
   const zapQuote = zap?.zapQuote;
   const quote = zapQuote?.quote;
   const slippageConfig = zap?.zapSlippageConfig;
+  const slippageInput = useSlippageToleranceInput({
+    slippageConfig,
+    slippageSource: zap?.zapSlippageSource,
+  });
   const needsSwap = Boolean(requiredSwap?.needsSwap);
 
   // The floor the swap leg reverts below, as `zapInLiquidity` submits it.
@@ -649,9 +660,13 @@ const SingleAssetDeposit: FunctionComponent<{
                     />
                   )}
                   {slippageConfig && (
-                    <RecapRow
-                      left={t("swap.settings.slippage")}
-                      right={<SlippageInput slippageConfig={slippageConfig} />}
+                    <SlippageToleranceRow
+                      slippageConfig={slippageConfig}
+                      input={slippageInput}
+                      slippageSource={zap?.zapSlippageSource}
+                      slippageLiquidityUnknown={
+                        zap?.zapSlippageLiquidityUnknown
+                      }
                     />
                   )}
                   {quote.split.length > 0 && (
@@ -679,12 +694,10 @@ const SingleAssetDeposit: FunctionComponent<{
                             </div>
                           </DisclosureButton>
                           <DisclosurePanel className="flex w-full flex-col gap-2 pb-2">
-                            {quote.split.map((route) => (
-                              <RouteLane
-                                key={route.pools.map(({ id }) => id).join()}
-                                route={route}
-                              />
-                            ))}
+                            <RoutesTaken
+                              split={quote.split}
+                              isLoading={zapQuote?.isRefreshing}
+                            />
                           </DisclosurePanel>
                         </>
                       )}
@@ -693,7 +706,7 @@ const SingleAssetDeposit: FunctionComponent<{
                 </div>
               ))}
 
-            {isCostHigh && zap && (
+            {(isCostHigh || zap?.slippageHigh) && zap && (
               <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
                 <Icon
                   id="alert-circle-filled"
@@ -703,12 +716,20 @@ const SingleAssetDeposit: FunctionComponent<{
                 />
                 <p className="body2 flex-1 text-left text-rust-300">
                   {/* The gate flags on TOTAL cost (impact + swap fees), so the
-                      warning quotes that figure under its own label. */}
-                  {t("addConcentratedLiquidity.singleAsset.totalCostWarning", {
-                    totalCost: formatPretty(
-                      totalCostPercent ?? new RatePretty(0)
-                    ),
-                  })}
+                      warning quotes that figure under its own label. A high
+                      slippage tolerance alone gates with the swap review's
+                      acknowledgement copy; its warning sits in the slippage
+                      row above. */}
+                  {isCostHigh
+                    ? t(
+                        "addConcentratedLiquidity.singleAsset.totalCostWarning",
+                        {
+                          totalCost: formatPretty(
+                            totalCostPercent ?? new RatePretty(0)
+                          ),
+                        }
+                      )
+                    : t("limitOrders.lossAcknowledgement")}
                 </p>
                 <label
                   htmlFor="cl-zap-high-cost-ack"
@@ -729,77 +750,6 @@ const SingleAssetDeposit: FunctionComponent<{
             )}
           </div>
         )}
-    </div>
-  );
-});
-
-/** Editable slippage-tolerance input for the zap-in swap leg, mirroring the
- *  swap review's: the placeholder is the tolerance that will be submitted
- *  (the auto tier unless the user typed one), and clearing the field hands
- *  control back to it. */
-const SlippageInput: FunctionComponent<{
-  slippageConfig: ZapInDisplay["zapSlippageConfig"];
-}> = memo(({ slippageConfig }) => {
-  const [manualSlippage, setManualSlippage] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleChange = useCallback(
-    (value: string) => {
-      const parsed = parseSlippageInput(value);
-      if (!parsed) return;
-      setManualSlippage(parsed.display);
-      if (parsed.display === "") {
-        slippageConfig.clearUserOverride();
-      } else if (parsed.commit !== undefined) {
-        slippageConfig.markUserOverride();
-        slippageConfig.setManualSlippage(parsed.commit);
-      }
-    },
-    [slippageConfig]
-  );
-
-  // An incomplete value ("1.", "0") must not leave the display out of step
-  // with the submitted tolerance: complete a positive value, else clear it.
-  const handleBlur = useCallback(() => {
-    setIsEditing(false);
-    if (manualSlippage === "") return;
-    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
-    const value = Number(manualSlippage);
-    if (value > 0) {
-      setManualSlippage(String(value));
-      slippageConfig.markUserOverride();
-      slippageConfig.setManualSlippage(String(value));
-    } else {
-      setManualSlippage("");
-      slippageConfig.clearUserOverride();
-    }
-  }, [manualSlippage, slippageConfig]);
-
-  return (
-    <div
-      className={classNames(
-        "body2 flex w-fit items-center justify-center overflow-hidden rounded-lg px-2 py-0.5 text-center transition-all",
-        isEditing
-          ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900"
-          : "border border-osmoverse-700 bg-osmoverse-850"
-      )}
-    >
-      <AutosizeInput
-        type="text"
-        inputMode="decimal"
-        minWidth={36}
-        placeholder={
-          // The tolerance that will be submitted, not a nominal default.
-          formatSlippagePercent(slippageConfig.slippage.toDec()) + "%"
-        }
-        className="body2 w-fit bg-transparent px-0"
-        inputClassName="body2 !bg-transparent text-right placeholder:text-wosmongton-300 focus:text-center transition-all focus-visible:outline-none"
-        value={manualSlippage}
-        onFocus={() => setIsEditing(true)}
-        onBlur={handleBlur}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-      {manualSlippage !== "" && <span className="body2">%</span>}
     </div>
   );
 });

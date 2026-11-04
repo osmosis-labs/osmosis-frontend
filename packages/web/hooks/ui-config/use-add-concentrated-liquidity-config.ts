@@ -33,6 +33,7 @@ import {
   useSwapSlippageConfig,
 } from "~/hooks/use-swap-slippage";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
+import type { SlippageSource } from "~/utils/slippage";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
@@ -846,6 +847,10 @@ export interface ZapInConfig {
   /** The swap leg's guaranteed minimum output (the quote less slippage), as
    *  displayed and as submitted. */
   zapMinReceived: CoinPretty | undefined;
+  /** Where the swap leg's slippage came from (typed, auto tier, default). */
+  zapSlippageSource: SlippageSource;
+  /** True when the auto tier was picked without knowing route liquidity. */
+  zapSlippageLiquidityUnknown: boolean;
   /** Fiat value of the full single-asset deposit; undefined without a quote
    *  or an input price. */
   zapValueIn: PricePretty | undefined;
@@ -931,7 +936,10 @@ function useZapIn({
   // Same resolution as the swap tool: a typed value, else the tier for this
   // quote's impact and route liquidity, else the default. There is no review
   // step to latch the tier against, and no fee simulation before submit.
-  useSwapSlippage({
+  const {
+    source: zapSlippageSource,
+    liquidityUnknown: zapSlippageLiquidityUnknown,
+  } = useSwapSlippage({
     slippageConfig: zapSlippageConfig,
     quote,
     quoteType: "out-given-in",
@@ -1217,6 +1225,8 @@ function useZapIn({
     zapQuote,
     zapSlippageConfig,
     zapMinReceived,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,

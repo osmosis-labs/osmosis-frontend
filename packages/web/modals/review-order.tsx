@@ -16,7 +16,6 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { AutosizeInput } from "~/components/input/autosize-input";
 import {
   hasActiveWarning,
   needsAcknowledgement,
@@ -31,13 +30,16 @@ import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-lo
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
+import {
+  SlippageToleranceRow,
+  useSlippageToleranceInput,
+} from "~/components/swap-tool/slippage-tolerance-row";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button, Button as UIButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
-import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -60,8 +62,6 @@ import {
 } from "~/utils/formatter";
 import { SlippageSource } from "~/utils/slippage";
 import {
-  formatSlippagePercent,
-  parseSlippageInput,
   requiresValueDisparityAcknowledgement,
   slippageBoundTruncatesToZero,
 } from "~/utils/swap-review";
@@ -172,8 +172,10 @@ export function ReviewOrder({
   swapFeeFiat,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-  const [manualSlippage, setManualSlippage] = useState("");
-  const [isEditingSlippage, setIsEditingSlippage] = useState(false);
+  const slippageInput = useSlippageToleranceInput({
+    slippageConfig,
+    slippageSource,
+  });
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const [showOneClickTradingSettings, setShowOneClickTradingSettings] =
@@ -229,36 +231,6 @@ export function ReviewOrder({
     signsLocally: signsWithOneClickSession,
   });
   const { isMobile } = useWindowSize(Breakpoint.sm);
-
-  /**
-   * This warning and the acknowledgement checkbox must read the same number.
-   * While they did not, any tolerance between the two thresholds showed a loss
-   * warning with nothing to acknowledge and no gate behind it.
-   *
-   * Note the unit difference that made them easy to diverge: `manualSlippage`
-   * is a percentage string ("5"), while the config's value is already a
-   * fraction (0.05). The previous comparison also ran the typed value through
-   * `parseInt`, so 1.9% truncated to 1 and warned nowhere.
-   */
-  const manualSlippagePercent = Number(manualSlippage);
-  const effectiveSlippage = manualSlippage
-    ? new Dec(
-        Number.isFinite(manualSlippagePercent)
-          ? manualSlippagePercent.toString()
-          : "0"
-      ).quo(new Dec(100))
-    : slippageConfig?.slippage.toDec();
-  const isManualSlippageTooHigh =
-    effectiveSlippage?.gte(HighSlippageToleranceGate) ?? false;
-  const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
-
-  // The review notes an auto-adjusted tolerance, and one picked without
-  // knowing route liquidity, only while the user has not typed their own.
-  const showAutoAdjusted = manualSlippage === "" && slippageSource === "auto";
-  const showLiquidityUnknown =
-    manualSlippage === "" &&
-    slippageLiquidityUnknown &&
-    (slippageSource === "auto" || slippageSource === "default");
 
   /**
    * The quote the user is reviewing, which later quotes are compared against.
@@ -433,52 +405,7 @@ export function ReviewOrder({
   // Typed slippage belongs to one review. Cleared after the exit transition,
   // so the next review's first render already shows the submitted value as
   // the placeholder.
-  const clearTypedSlippage = useCallback(() => setManualSlippage(""), []);
-
-  const handleManualSlippageChange = useCallback(
-    (value: string) => {
-      const parsed = parseSlippageInput(value);
-      if (!parsed) return;
-
-      setManualSlippage(parsed.display);
-      if (parsed.display === "") {
-        // Clearing hands control back to the tool's own slippage, shown as
-        // the placeholder. A caller that sets slippage automatically picks it
-        // up from the cleared override; otherwise fall back to the preset
-        // (or one the fee-error path selected).
-        slippageConfig?.clearUserOverride();
-        if (slippageSource === undefined) {
-          slippageConfig?.setIsManualSlippage(false);
-        }
-      } else if (parsed.commit !== undefined) {
-        slippageConfig?.markUserOverride();
-        slippageConfig?.setManualSlippage(parsed.commit);
-      }
-    },
-    [slippageConfig, slippageSource]
-  );
-
-  // Leaving the field with an incomplete value ("1.", "0", "0.") must not
-  // leave the display out of step with the submitted tolerance: complete a
-  // positive value, otherwise clear it.
-  const handleManualSlippageBlur = useCallback(() => {
-    setIsEditingSlippage(false);
-    if (manualSlippage === "") return;
-    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
-
-    const value = Number(manualSlippage);
-    if (value > 0) {
-      setManualSlippage(String(value));
-      slippageConfig?.markUserOverride();
-      slippageConfig?.setManualSlippage(String(value));
-    } else {
-      setManualSlippage("");
-      slippageConfig?.clearUserOverride();
-      if (slippageSource === undefined) {
-        slippageConfig?.setIsManualSlippage(false);
-      }
-    }
-  }, [manualSlippage, slippageConfig, slippageSource]);
+  const { clearTypedSlippage } = slippageInput;
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -851,128 +778,12 @@ export function ReviewOrder({
                   />
                 )}
                 {slippageConfig && orderType === "market" && (
-                  <div className="flex flex-col gap-3">
-                    <RecapRow
-                      left={t("swap.settings.slippage")}
-                      right={
-                        <div className="flex items-center justify-end gap-2">
-                          {showAutoAdjusted && (
-                            <GenericDisclaimer
-                              title={t("swap.slippageAutoAdjustedTitle")}
-                              body={t("swap.slippageAutoAdjustedBody")}
-                            >
-                              <Icon
-                                id="alert-triangle"
-                                label={t("swap.slippageAutoAdjustedTitle")}
-                                width={16}
-                                height={16}
-                                className="text-ammelia-400"
-                              />
-                            </GenericDisclaimer>
-                          )}
-                          <div
-                            className={classNames(
-                              "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
-                              isEditingSlippage
-                                ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2"
-                                : "border border-osmoverse-700 bg-osmoverse-850 pr-2"
-                            )}
-                          >
-                            <AutosizeInput
-                              type="text"
-                              inputMode="decimal"
-                              minWidth={30}
-                              placeholder={
-                                // The tolerance that will be submitted, not a
-                                // nominal default.
-                                formatSlippagePercent(
-                                  slippageConfig.slippage.toDec()
-                                ) + "%"
-                              }
-                              className="sm:caption w-fit bg-transparent px-0"
-                              inputClassName={classNames(
-                                "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
-                                {
-                                  "text-rust-400 placeholder:text-rust-400":
-                                    isManualSlippageTooHigh,
-                                }
-                              )}
-                              value={manualSlippage}
-                              onFocus={() => setIsEditingSlippage(true)}
-                              onBlur={handleManualSlippageBlur}
-                              onChange={(e) => {
-                                handleManualSlippageChange(e.target.value);
-                              }}
-                            />
-                            {manualSlippage !== "" && (
-                              <span
-                                className={classNames({
-                                  "text-rust-400": isManualSlippageTooHigh,
-                                })}
-                              >
-                                %
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      }
-                    />
-                    {showLiquidityUnknown && (
-                      <p className="caption text-ammelia-400">
-                        {t("swap.routeLiquidityUnknown")}
-                      </p>
-                    )}
-                    {isManualSlippageTooHigh && (
-                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 px-5 py-2.5">
-                        <Icon
-                          id="alert-triangle"
-                          width={24}
-                          height={24}
-                          className="text-rust-400"
-                        />
-                        <div className="flex flex-col gap-1">
-                          <span className="body2 sm:caption">
-                            {t(
-                              "limitOrders.errors.tradeMayResultInLossOfValue"
-                            )}
-                          </span>
-                          <span className="body2 sm:caption text-osmoverse-300">
-                            {showAutoAdjusted
-                              ? t("swap.slippageAutoAdjustedHigh")
-                              : t(
-                                  "limitOrders.lowerSlippageToleranceRecommended"
-                                )}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    {isManualSlippageTooLow && (
-                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-osmoverse-alpha-800/[.54] p-5">
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 6.20101 17.799 1.5 12 1.5C6.20101 1.5 1.5 6.20101 1.5 12C1.5 17.799 6.20101 22.5 12 22.5ZM12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24ZM13.5 7.49976C13.5 8.32818 12.8284 8.99976 12 8.99976C11.1716 8.99976 10.5 8.32818 10.5 7.49976C10.5 6.67133 11.1716 5.99976 12 5.99976C12.8284 5.99976 13.5 6.67133 13.5 7.49976ZM11.25 10.4998C10.8358 10.4998 10.5 10.8355 10.5 11.2498V17.2498C10.5 17.664 10.8358 17.9998 11.25 17.9998H12.75C13.1642 17.9998 13.5 17.664 13.5 17.2498V11.2498C13.5 10.8355 13.1642 10.4998 12.75 10.4998H11.25Z"
-                            fill="#736CA3"
-                          />
-                        </svg>
-                        <div className="flex flex-col gap-1">
-                          <span className="body2 sm:caption">
-                            {t("limitOrders.errors.tradeMayNotExecuted")}
-                          </span>
-                          <span className="body2 sm:caption text-osmoverse-300">
-                            {t("limitOrders.tryHigherSlippage")}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <SlippageToleranceRow
+                    slippageConfig={slippageConfig}
+                    input={slippageInput}
+                    slippageSource={slippageSource}
+                    slippageLiquidityUnknown={slippageLiquidityUnknown}
+                  />
                 )}
                 {orderType === "market" && (
                   <hr className="my-2 text-osmoverse-700" />
