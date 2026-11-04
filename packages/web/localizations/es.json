@@ -416,7 +416,7 @@
       "introducingSubtitle": "Realice transacciones más rápidas y sencillas sin la molestia de múltiples aprobaciones de billetera.",
       "learnMore": "Aprende más",
       "startTradingButton": "Comience a operar con 1 clic",
-      "defaultParameters": "La configuración predeterminada es de 1 hora con un límite de gasto diario de 5000 USD.",
+      "defaultParameters": "La configuración predeterminada es de 7 días con un límite de gasto diario de 5000 USD.",
       "changeButton": "Editar ajustes"
     },
     "reviewOrder": {

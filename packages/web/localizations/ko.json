@@ -416,7 +416,7 @@
       "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
-      "defaultParameters": "기본 설정은 1시간, 일일 지출 한도 $5,000 USD입니다.",
+      "defaultParameters": "기본 설정은 7일, 일일 지출 한도 $5,000 USD입니다.",
       "changeButton": "설정 수정"
     },
     "reviewOrder": {

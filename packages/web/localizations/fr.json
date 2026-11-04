@@ -416,7 +416,7 @@
       "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
-      "defaultParameters": "Les paramètres par défaut sont fixés à 1 heure avec une limite de dépenses quotidienne de 5 000 USD.",
+      "defaultParameters": "Les paramètres par défaut sont fixés à 7 jours avec une limite de dépenses quotidienne de 5 000 USD.",
       "changeButton": "Modifier les paramètres"
     },
     "reviewOrder": {

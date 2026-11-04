@@ -416,7 +416,7 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD daily spending limit.",
+      "defaultParameters": "Default settings are set to 7 days with a $5,000 USD daily spending limit.",
       "changeButton": "Edit settings"
     },
     "reviewOrder": {
