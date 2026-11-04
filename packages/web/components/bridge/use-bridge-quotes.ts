@@ -10,11 +10,7 @@ import {
 } from "@osmosis-labs/bridge";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import {
-  getEvmExplorerUrl,
-  getNomicRelayerUrl,
-  isNil,
-} from "@osmosis-labs/utils";
+import { getEvmExplorerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -39,7 +35,6 @@ import {
   priceImpactLoss,
 } from "~/components/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
-import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
@@ -675,16 +670,14 @@ export const useBridgeQuotes = ({
   }
 
   // Check if value loss during transfer is too high (Skip bridge specific)
-  // Skip returns InsufficientAmountError when USD value difference is too large
+  // Skip returns InsufficientLiquidityError when the route's USD value
+  // difference is too large (thin liquidity) or it cannot price the route
   const isValueLossTooHigh = useMemo(() => {
     if (!someError?.message) return false;
 
-    const errorMsg = someError.message.toLowerCase();
-    return (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value") &&
-      errorMsg.includes("too large")
-    );
+    return someError.message
+      .toLowerCase()
+      .includes("insufficientliquidityerror");
   }, [someError]);
 
   // Check if transfer amount is insufficient to cover bridge/network fees
@@ -692,14 +685,7 @@ export const useBridgeQuotes = ({
   // 1. Bridge provider errors (server-side) - when bridge returns InsufficientAmountError
   // 2. Client-side calculation - when input amount minus fees is <= 0
   const isInsufficientFee = useMemo(() => {
-    // First check it's not the value loss error (handled separately)
     const errorMsg = someError?.message.toLowerCase() ?? "";
-    if (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value")
-    ) {
-      return false; // This is value loss, not insufficient fee
-    }
 
     // Check for bridge provider error responses
     // These errors come from the getQuoteByBridge edge function
@@ -819,24 +805,16 @@ export const useBridgeQuotes = ({
     ({
       sendTxHash,
       quote,
-      nomicCheckpointIndex,
       pendingStep,
       solanaRecentBlockhash,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
-      nomicCheckpointIndex?: number;
       /** Set for multi-tx transfers still awaiting a later user-signed step. */
       pendingStep?: TxSnapshot["pendingStep"];
       /** Set when `sendTxHash` is a Solana signature. */
       solanaRecentBlockhash?: string;
     }): boolean => {
-      if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
-        throw new Error(
-          "Nomic checkpoint index is required. Skipping tracking."
-        );
-      }
-
       if (
         inputAmountRaw !== "" &&
         availableBalance &&
@@ -866,6 +844,7 @@ export const useBridgeQuotes = ({
           status: "pending",
           type: "bridge-transfer",
           estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+          ...(quote.viaAxelar === false ? { viaAxelar: false } : {}),
           networkFee: quote.estimatedGasFee
             ? {
                 address: quote.estimatedGasFee.amount.currency.coinMinimalDenom,
@@ -883,7 +862,6 @@ export const useBridgeQuotes = ({
                 ...(quote.transferFee.isUnknown ? { isUnknown: true } : {}),
               }
             : undefined,
-          nomicCheckpointIndex,
           quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
@@ -1571,7 +1549,6 @@ export const useBridgeQuotes = ({
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     const gasFee = transactionRequest.gasFee;
-    let nomicCheckpointIndex: number | undefined;
 
     // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
     // frozen acknowledged basis — the sign-time guard in `onTransfer` has
@@ -1603,22 +1580,6 @@ export const useBridgeQuotes = ({
         ...(memoFlags && { preferNoSetMemo: true }),
       },
       {
-        /**
-         * This is a special case for Nomic withdrawals
-         * We need to get the checkpoint index in order to track the transaction
-         */
-        onSign: async () => {
-          if (quote.provider.id !== "Nomic") return;
-
-          const { getCheckpoint } = await import("nomic-bitcoin");
-          const { index } = await getCheckpoint({
-            relayers: getNomicRelayerUrl({
-              env: IS_TESTNET ? "testnet" : "mainnet",
-            }),
-          });
-          /** Add one since the current transfer is not included in the current index */
-          nomicCheckpointIndex = index + 1;
-        },
         onBroadcastFailed: (e?: Error) => {
           // Accepted, but its result couldn't be confirmed: the funds may be
           // en route, so record the transfer as onFulfill would and let its
@@ -1628,7 +1589,6 @@ export const useBridgeQuotes = ({
               // onFulfill's hashes are lowercase too.
               sendTxHash: e.txHash.toLowerCase(),
               quote,
-              nomicCheckpointIndex,
             });
             onTransferProp?.();
             setTransferInitiated(true);
@@ -1643,7 +1603,6 @@ export const useBridgeQuotes = ({
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
-              nomicCheckpointIndex,
             });
 
             onTransferProp?.();
@@ -1795,8 +1754,8 @@ export const useBridgeQuotes = ({
     };
   } else if (isValueLossTooHigh) {
     errorBoxMessage = {
-      heading: t("transfer.transferAmountTooLowValueLoss"),
-      description: t("transfer.valueLossTooHighToBridge"),
+      heading: t("transfer.routeLiquidityTooLow"),
+      description: t("transfer.routeLiquidityTooLowBody"),
     };
   } else if (isInsufficientFee) {
     errorBoxMessage = {
@@ -1816,8 +1775,9 @@ export const useBridgeQuotes = ({
   } else if (hasNoQuotes) {
     errorBoxMessage = {
       heading: isWithdraw
-        ? t("transfer.assetWithdrawalsUnavailable", {
-            asset: toAsset?.denom ?? "",
+        ? t("transfer.assetWithdrawalsToChainUnavailable", {
+            asset: fromAsset?.denom ?? "",
+            chain: toChain?.prettyName ?? "",
           })
         : t("transfer.assetsDepositsUnavailable", {
             asset: toAsset?.denom ?? "",

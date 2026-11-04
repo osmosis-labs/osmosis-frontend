@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
+    "amountTooSmall": "Betrag ist zu klein",
     "emptyAmount": "Der Betrag ist leer",
     "generic": "Fehler",
     "highSwapFee": "Swap-Gebühr zu hoch",
@@ -321,24 +322,24 @@
   "estimated": "Geschätzt",
   "halt": {
     "deposit": {
-      "bridge_down": "Einzahlungen gestoppt. Die einheimische Brückenverbindung ist gesperrt.",
-      "extended_unstable_market": "Die Einlagen wurden ausgesetzt. Das Vermögen ist seit längerer Zeit instabil und inaktiv.",
-      "planned_shutdown": "Einzahlungen wurden gestoppt. Die Anlage soll stillgelegt werden.",
-      "source_chain_killed": "Einzahlungen wurden gestoppt. Die Quellkette ist außer Betrieb.",
-      "manual": "Einzahlungen wurden gestoppt, Vorsicht ist geboten.",
-      "unknown": "Deposits halted."
+      "bridge_down": "Einzahlungen gestoppt. Die native Bridge-Route ist ausgefallen.",
+      "extended_unstable_market": "Einzahlungen gestoppt. Das Asset ist seit längerer Zeit instabil und inaktiv.",
+      "planned_shutdown": "Einzahlungen gestoppt. Das Asset soll eingestellt werden.",
+      "source_chain_killed": "Einzahlungen gestoppt. Die Quell-Chain hat den Betrieb eingestellt.",
+      "manual": "Einzahlungen gestoppt, Vorsicht ist geboten.",
+      "unknown": "Einzahlungen gestoppt."
     },
     "withdrawal": {
-      "bridge_down": "Auszahlungen gestoppt. Die einheimische Brückenverbindung ist gesperrt.",
-      "source_chain_killed": "Auszahlungen wurden gestoppt. Die Quellkette ist außer Betrieb.",
-      "manual": "Auszahlungen sind ausgesetzt, Vorsicht ist geboten.",
-      "unknown": "Withdrawals halted."
+      "bridge_down": "Auszahlungen gestoppt. Die native Bridge-Route ist ausgefallen.",
+      "source_chain_killed": "Auszahlungen gestoppt. Die Quell-Chain hat den Betrieb eingestellt.",
+      "manual": "Auszahlungen gestoppt, Vorsicht ist geboten.",
+      "unknown": "Auszahlungen gestoppt."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "Die Quellkette für dieses Asset ist nicht mehr in Betrieb.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "Der IBC-Client zur Chain dieses Assets war instabil.",
+    "source_chain_killed": "Die Quell-Chain dieses Assets hat den Betrieb eingestellt.",
+    "market": "Dieses Asset hatte über einen längeren Zeitraum sehr geringe Liquidität und ein sehr geringes Handelsvolumen.",
     "manual": "Instabil, Vorsicht ist geboten.",
     "unknown": "Instabil, Vorsicht ist geboten."
   },
@@ -395,6 +396,8 @@
     "settings": "Einstellungen"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pro Tag",
+    "spendLimitLeftToday": "Heute noch {amount}",
     "toast": {
       "oneClickTradingActive": "1-Click-Handel aktiv",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
+      "defaultParameters": "Die Standardeinstellungen sind auf 7 Tage mit einem täglichen Ausgabenlimit von 5.000 USD festgelegt.",
       "changeButton": "Einstellungen bearbeiten"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Klick-Handelslimit",
       "enableTitle": "Starten Sie den 1-Klick-Handel",
       "enableDescription": "Schneller und einfacher handeln",
-      "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
+      "paramsDescription": "{sessionLength} Sitzung mit {spendLimit} täglichem Ausgabenlimit",
       "defaultSpendLimit": "5.000 USD",
       "change": "Ändern",
       "edit": "Bearbeiten",
       "exceeded": "Übertroffen",
       "exceededTooltip": {
-        "title": "Überschreitet die aktuelle Verlustschutzgrenze",
+        "title": "Überschreitet Ihr tägliches Ausgabenlimit",
         "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Verlustschutzgrenze",
+      "spendLimitTitle": "Tägliches Ausgabenlimit",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
-      "review": "Rezension",
-      "deposit": "Kaution"
+      "review": "Rezension"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Unzureichende Mittel für Gebühren",
     "youNeedFundsToPay": "Sie benötigen Guthaben, um Netzwerk- und Überbrückungsgebühren für {chain} zu bezahlen.",
     "youNeedFundsToPayWithFee": "Der Betrag, den Sie zu überweisen versuchen, ist zu niedrig, um die Überbrückungsgebühr von {feeAmount} {feeCurrency} für {chain} zu decken. Bitte versuchen Sie einen größeren Betrag.",
-    "transferAmountTooLowValueLoss": "Überweisungsbetrag zu niedrig",
-    "valueLossTooHighToBridge": "Der Überweisungsbetrag ist nach Abzug der Gebühren zu niedrig. Der Wertverlust wäre zu hoch, um erfolgreich zu überbrücken. Bitte versuchen Sie es mit einem höheren Betrag.",
     "assetsDepositsUnavailable": "{asset} Einlagen sind nicht verfügbar",
-    "assetWithdrawalsUnavailable": "{asset} Abhebungen sind nicht verfügbar",
+    "assetWithdrawalsToChainUnavailable": "{asset}-Auszahlungen nach {chain} sind nicht verfügbar",
+    "routeLiquidityTooLow": "Nicht genug Liquidität für diese Route",
+    "routeLiquidityTooLowBody": "Für diese Überweisung ist derzeit nicht genug Liquidität zu einem fairen Preis vorhanden. Versuche ein anderes Netzwerk oder einen anderen Token oder versuche es später erneut.",
     "noAvailableDeposits": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld an Osmosis zu überweisen.",
     "noAvailableWithdrawals": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder legen Sie eine alternative Anwendung fest, um Ihr Geld von Osmosis zu überweisen.",
     "somethingIsntWorking": "Irgendetwas funktioniert nicht ...",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "Ihr {chain}-Guthaben konnte nicht geladen werden",
     "balanceUnavailableDescription": "{chain} war nicht erreichbar, daher wird Ihr Guthaben möglicherweise als 0 angezeigt. Ihre Gelder sind nicht betroffen. Versuchen Sie es erneut oder nutzen Sie die Optionen unten.",
     "retryBalance": "Erneut versuchen",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "Einzahlungen von {asset} sind gestoppt",
+    "withdrawalsHalted": "Auszahlungen von {asset} sind gestoppt",
     "noNativeTransfers": "Native Übertragungen für {asset} nicht verfügbar",
     "noNativeTransfersDescription": "Bitte verwenden Sie einen der folgenden alternativen Anbieter.",
-    "sendFromWalletOrExchange": "Senden Sie aus Ihrem Wallet oder Ihrer Börse",
-    "scanWithMobileWallet": "Scannen Sie mit Ihrer mobilen Geldbörse",
-    "or": "oder",
-    "copied": "Kopiert",
-    "copyToClipboard": "In die Zwischenablage kopieren",
-    "showQrCode": "QR-Code anzeigen",
-    "yourDepositAddress": "Ihre {denom} Einzahlungsadresse",
-    "copyAddressToClipboard": "Kopieren",
-    "copyAddress": "Adresse kopieren",
-    "receiveOnlyAsset": "Diese Adresse kann nur {denom} vom Netzwerk {network} empfangen. Das Senden anderer Assets kann zu einem dauerhaften Verlust führen.",
-    "minimumDeposit": "Mindesteinzahlung",
-    "nomic": {
-      "estimatedTime": "1-8 Std.",
-      "awaitingBtc": "Warten auf BTC",
-      "transferringYourBtc": "Übertragen Sie Ihre BTC",
-      "depositStatus": "Einzahlungsstatus",
-      "depositSuccess": "Einzahlung erfolgreich",
-      "pendingDeposit": "Ausstehende Einzahlung",
-      "estimatedAboutTime": "Geschätzt ca. {time}",
-      "from": "Aus",
-      "to": "Zu",
-      "asset": "Vermögenswert",
-      "amountBtc": "Betrag BTC",
-      "totalValue": "Gesamtwert",
-      "transactionHash": "Transaktions-Hash",
-      "viewOnExplorer": "Im Explorer anzeigen",
-      "totalFees": "Gesamtgebühren"
-    },
-    "doNotSendFundsToThisAddress": "Senden Sie kein Geld an diese Adresse.",
-    "addressExpired": "Diese Adresse ist abgelaufen. Bitte fordern Sie eine neue an.",
-    "addressAboutToExpire": "Diese Adresse läuft bald ab. Bitte fordern Sie eine neue Adresse an, um Geldverluste zu vermeiden.",
-    "createNewDepositAddress": "Neue Einzahlungsadresse erstellen",
-    "transactionDetails": "Details der Transaktion",
     "confirmAmount": "Betrag bestätigen",
     "enterChainAddress": "Geben Sie die Adresse {chain} ein",
     "wormholeRedeem": {
@@ -1318,10 +1287,10 @@
   "limitOrders": {
     "historyTable": {
       "columns": {
-        "order": "Befehl",
+        "order": "Order",
         "amount": "Menge",
         "price": "Preis",
-        "orderPlaced": "Bestellung aufgegeben",
+        "orderPlaced": "Platziert am",
         "status": "Status"
       },
       "emptyState": {
@@ -1338,50 +1307,50 @@
     },
     "aboveMarket": {
       "title": "Limitpreis über Marktpreis",
-      "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
+      "description": "Wenn Sie fortfahren, wird Ihre Order möglicherweise zu einem ungünstigen Preis ausgeführt."
     },
     "belowMarket": {
       "title": "Limitpreis unter Marktpreis",
-      "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
+      "description": "Wenn Sie fortfahren, wird Ihre Order möglicherweise zu einem ungünstigen Preis ausgeführt."
     },
-    "enterAnAmountTo": "Geben Sie einen Betrag ein, um",
-    "toSell": "Verkaufen",
-    "toBuy": "Kaufen",
+    "enterAnAmountTo": "Geben Sie einen Betrag ein, den Sie",
+    "toSell": "verkaufen möchten",
+    "toBuy": "kaufen möchten",
     "sell": "Verkaufen",
     "sold": "Verkauft",
-    "percentFilled": "Prozent gefüllt",
+    "percentFilled": "Prozent ausgeführt",
     "status": "Status",
     "price": "Preis",
     "buy": "Kaufen",
     "pay": "Zahlen",
     "open": "Offen",
-    "filled": "Gefüllt",
-    "claimable": "Einforderbar",
+    "filled": "Ausgeführt",
+    "claimable": "Beanspruchbar",
     "claimAndClose": "Beanspruchen und schließen",
     "close": "Schließen",
     "claim": "Beanspruchen",
     "accept": "Akzeptieren",
-    "cancelled": "Abgesagt",
+    "cancelled": "Storniert",
     "cancel": "Stornieren",
-    "daysAgo": "{days} vor Tagen",
+    "daysAgo": "vor {days} Tagen",
     "hoursAgo": "vor {hours} Stunden",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
-    "orderHistory": "Bestellverlauf",
+    "orderHistory": "Orderverlauf",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
     "tradeAnotherAsset": "Tauschen Sie einen anderen Vermögenswert gegen {coinDenom}",
     "sellAnAsset": "Einen Vermögenswert verkaufen",
     "swapAnAsset": "Tauschen Sie einen Vermögenswert aus",
     "of": "von",
-    "insufficientFunds": "Unzureichende Mittel",
-    "startTrading": "Mit dem handel beginnen",
+    "insufficientFunds": "Unzureichendes Guthaben",
+    "startTrading": "Mit dem Handel beginnen",
     "tradeFees": "Handelsgebühren (bei Auftragsausführung)",
-    "youNeed": "Du brauchst",
-    "stablecoin": "stabile Münze",
+    "youNeed": "Sie benötigen",
+    "stablecoin": "Stablecoins",
     "quoteUpdated": "Angebot aktualisiert",
-    "fundsOsmosisToBuyAssets": "Mittel auf Osmosis, um Vermögenswerte zu kaufen.",
+    "fundsOsmosisToBuyAssets": "auf Osmosis, um Assets zu kaufen.",
     "chooseAnOption": "Wählen Sie eine Option, um fortzufahren.",
-    "lowerSlippageToleranceRecommended": "Eine geringere Rutschtoleranz wird empfohlen.",
-    "tryHigherSlippage": "Versuchen Sie es mit einer höheren maximalen Schlupftoleranz.",
+    "lowerSlippageToleranceRecommended": "Eine geringere Slippage-Toleranz wird empfohlen.",
+    "tryHigherSlippage": "Versuchen Sie es mit einer höheren maximalen Slippage-Toleranz.",
     "reviewTrade": "Handel überprüfen",
     "highPriceImpact": {
       "title": "Preisauswirkungen sind hoch",
@@ -1393,16 +1362,16 @@
       "tradeMayResultInLossOfValue": "Ihr Handel kann zu einem erheblichen Wertverlust führen",
       "tradeMayNotExecuted": "Ihr Handel wird möglicherweise nicht ausgeführt"
     },
-    "transferFromAnotherNetwork": "Überweisung von einem anderen Netzwerk oder Wallet",
+    "transferFromAnotherNetwork": "Von einem anderen Netzwerk oder Wallet übertragen",
     "whatIsOrderClaim": {
-      "title": "Was ist eine Auftragsbeantragung?",
-      "description": "In den meisten Fällen werden bei der Ausführung einer Limit-Order Gelder automatisch Ihrem Konto gutgeschrieben. In einigen seltenen Fällen müssen Gelder jedoch manuell aus der ausgeführten Order angefordert werden.<inlang-LineFeed>\nBei diesem Anspruchsprozess wird für alle nicht beanspruchten, ausgeführten Bestellungen eine einzelne Transaktion in Ihrem Portemonnaie genehmigt, für die eine geringe Netzwerkgebühr anfällt."
+      "title": "Was bedeutet das Beanspruchen einer Order?",
+      "description": "In den meisten Fällen wird das Guthaben bei Ausführung einer Limit-Order automatisch Ihrem Konto gutgeschrieben. In seltenen Fällen muss es jedoch manuell aus der ausgeführten Order beansprucht werden.\n\nDafür genehmigen Sie in Ihrer Wallet eine einzige Transaktion für alle ausgeführten, noch nicht beanspruchten Orders. Dabei fällt eine geringe Netzwerkgebühr an."
     },
     "whatIsAStablecoin": {
       "title": "Was ist eine Stablecoin?",
       "description": "Stablecoins sind eine Art Kryptowährung, deren Wert an einen anderen Vermögenswert wie eine Fiat-Währung oder Gold gekoppelt ist, um einen stabilen Preis aufrechtzuerhalten. Auf Osmosis sind USDC und USDT die wichtigsten Stablecoins zum Kaufen und Verkaufen von Vermögenswerten."
     },
-    "claimAll": "Alles beanspruchen",
+    "claimAll": "Alle beanspruchen",
     "addFunds": "Guthaben hinzufügen",
     "selectAnAssetTo": {
       "buy": "Wählen Sie einen Vermögenswert zum Kauf aus",
@@ -1410,18 +1379,18 @@
     },
     "payWith": "Bezahlen mit",
     "receive": "Erhalten",
-    "swapFromAnotherAsset": "Swap von einem anderen Vermögenswert",
-    "connectYourWallet": "Verbinde dein Wallet",
+    "swapFromAnotherAsset": "Aus einem anderen Asset tauschen",
+    "connectYourWallet": "Verbinden Sie Ihre Wallet",
     "toSeeYourBalances": "um Ihre Guthaben einzusehen",
     "searchAssets": "Assets suchen",
-    "below": "unten",
+    "below": "unter",
     "above": "über",
-    "currentPrice": "derzeitiger Preis",
-    "whenDenomPriceIs": "Wenn der Preis {denom}",
-    "orderType": "Auftragsart",
+    "currentPrice": "dem aktuellen Preis",
+    "whenDenomPriceIs": "Wenn der Preis von {denom}",
+    "orderType": "Ordertyp",
     "confirm": "Bestätigen",
     "market": "Markt",
-    "limit": "Grenze",
+    "limit": "Limit",
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
     "invalidPrice": "Ungültiger Preis",
@@ -1429,12 +1398,12 @@
     "priceTooHigh": "Preis zu hoch",
     "unavailable": "Nicht verfügbar für {denom}",
     "orderHistoryHeaders": {
-      "past": "Vergangenheit",
+      "past": "Abgeschlossen",
       "pending": "Ausstehend",
-      "filled": "Ausgeführte Bestellungen zum Einfordern"
+      "filled": "Ausgeführte Orders zum Beanspruchen"
     },
-    "priceReaches": "Wenn der Preis {denom} {price} erreicht",
-    "belowMinimumAmount": "{amount} Minimum",
+    "priceReaches": "Wenn der Preis von {denom} {price} erreicht",
+    "belowMinimumAmount": "Mindestens {amount}",
     "noOrderbookForPair": "Für {base}/{quote} existiert kein Orderbuch. Erstellen Sie eines, um Limit-Orders für dieses Paar zu aktivieren.",
     "createOrderbook": "Orderbuch erstellen",
     "noOrderbookExists": "Kein Orderbuch für {denom}",
@@ -1447,7 +1416,8 @@
     "returnedUnfilled": "Zurückerstattet (nicht ausgeführt)",
     "alreadyReceived": "Bereits erhalten",
     "howPayoutsWork": "Wie funktionieren Auszahlungen?",
-    "payoutNote": "Ausgeführte Beträge werden in der Regel automatisch an Ihre Wallet ausgezahlt, oft in mehreren Auszahlungen, während die Order ausgeführt wird, und können Stunden oder Tage vor einer Stornierung eingehen. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt. Eine Stornierung erstattet nur den nicht ausgeführten Betrag."
+    "payoutNote": "Ausgeführte Beträge werden in der Regel automatisch an Ihre Wallet ausgezahlt, oft in mehreren Auszahlungen, während die Order ausgeführt wird, und können Stunden oder Tage vor einer Stornierung eingehen. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt. Eine Stornierung erstattet nur den nicht ausgeführten Betrag.",
+    "limitOrder": "Limit-Order"
   },
   "tradeDetails": {
     "priceImpact": {

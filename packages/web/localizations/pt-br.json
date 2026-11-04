@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problema ao calcular o valor",
     "depositNoBalance": "Você não tem ativos para depositar",
+    "amountTooSmall": "Quantia é muito pequena",
     "emptyAmount": "Quantia está vazia",
     "generic": "Erro",
     "highSwapFee": "Taxa de troca está muito alta",
@@ -321,24 +322,24 @@
   "estimated": "Estimado",
   "halt": {
     "deposit": {
-      "bridge_down": "Depósitos interrompidos. Rota da ponte indígena interditada.",
+      "bridge_down": "Depósitos suspensos. A rota da ponte nativa está fora do ar.",
       "extended_unstable_market": "Depósitos suspensos. O ativo está instável e inativo há um longo período.",
       "planned_shutdown": "Depósitos suspensos. O ativo está programado para ser desativado.",
-      "source_chain_killed": "Depósitos suspensos. A cadeia de suprimentos parou de operar.",
+      "source_chain_killed": "Depósitos suspensos. A cadeia de origem parou de operar.",
       "manual": "Depósitos suspensos, tenha cautela.",
-      "unknown": "Deposits halted."
+      "unknown": "Depósitos suspensos."
     },
     "withdrawal": {
-      "bridge_down": "Retiradas suspensas. Rota da ponte indígena interditada.",
+      "bridge_down": "Saques suspensos. A rota da ponte nativa está fora do ar.",
       "source_chain_killed": "Saques suspensos. A cadeia de origem parou de funcionar.",
-      "manual": "Retiradas suspensas, tenha cautela.",
-      "unknown": "Withdrawals halted."
+      "manual": "Saques suspensos, tenha cautela.",
+      "unknown": "Saques suspensos."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "A cadeia de suprimentos para este ativo cessou suas operações.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "O cliente IBC para a cadeia deste ativo tem estado instável.",
+    "source_chain_killed": "A cadeia de origem deste ativo encerrou suas operações.",
+    "market": "Este ativo tem tido liquidez e volume de negociação muito baixos por um longo período.",
     "manual": "Instável, tenha cautela.",
     "unknown": "Instável, tenha cautela."
   },
@@ -395,6 +396,8 @@
     "settings": "Configurações"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} por dia",
+    "spendLimitLeftToday": "{amount} restantes hoje",
     "toast": {
       "oneClickTradingActive": "Negociação em 1 Clique ativa",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
-      "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
+      "defaultParameters": "As configurações padrão são de 7 dias com um limite de gastos diário de 5.000 USD.",
       "changeButton": "Editar Configurações"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de negociação de 1 clique",
       "enableTitle": "Comece a negociar com 1 clique",
       "enableDescription": "Negociação mais rápida e fácil",
-      "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
+      "paramsDescription": "Sessão de {sessionLength} com limite de gastos diário de {spendLimit}",
       "defaultSpendLimit": "US$ 5.000",
       "change": "Mudar",
       "edit": "Editar",
       "exceeded": "Excedido",
       "exceededTooltip": {
-        "title": "Excede o limite atual de proteção contra perdas",
+        "title": "Excede o seu limite de gastos diário",
         "body": "Você terá que aprovar manualmente esta transação em sua carteira."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Negociação em 1 clique",
       "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
       "enableTitle": "Habilite a negociação em 1 clique",
-      "spendLimitTitle": "Limite de proteção contra perdas",
+      "spendLimitTitle": "Limite de gastos diário",
       "sessionPeriodTitle": "Período da sessão",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
-      "review": "Análise",
-      "deposit": "Depósito"
+      "review": "Análise"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Fundos insuficientes para taxas",
     "youNeedFundsToPay": "Você precisa de fundos para pagar taxas de rede e de ponte em {chain} .",
     "youNeedFundsToPayWithFee": "O valor que você está tentando transferir é muito baixo para cobrir a taxa de ponte de {feeAmount} {feeCurrency} em {chain}. Por favor, tente um valor maior.",
-    "transferAmountTooLowValueLoss": "Valor de transferência muito baixo",
-    "valueLossTooHighToBridge": "O valor de transferência é muito baixo após as taxas. A perda de valor seria muito alta para realizar a ponte com sucesso. Por favor, tente um valor maior.",
     "assetsDepositsUnavailable": "{asset} depósitos não estão disponíveis",
-    "assetWithdrawalsUnavailable": "{asset} retiradas não estão disponíveis",
+    "assetWithdrawalsToChainUnavailable": "Os saques de {asset} para {chain} não estão disponíveis",
+    "routeLiquidityTooLow": "Liquidez insuficiente para esta rota",
+    "routeLiquidityTooLowBody": "No momento não há liquidez suficiente para rotear esta transferência a um preço justo. Tente outra rede ou outro token, ou tente novamente mais tarde.",
     "noAvailableDeposits": "Atualmente nenhuma rota ou provedor disponível pode ser encontrado. Tente novamente mais tarde ou use um aplicativo alternativo para transferir seus fundos para o Osmosis.",
     "noAvailableWithdrawals": "Atualmente nenhuma rota ou provedor disponível pode ser encontrado. Tente novamente mais tarde ou configure um aplicativo alternativo para transferir seus fundos do Osmosis.",
     "somethingIsntWorking": "Algo não está funcionando…",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "Não foi possível carregar seu saldo em {chain}",
     "balanceUnavailableDescription": "Não conseguimos acessar {chain} para verificar seu saldo, então ele pode aparecer como 0. Seus fundos não foram afetados. Tente novamente ou use as opções abaixo.",
     "retryBalance": "Tentar novamente",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "Os depósitos de {asset} estão suspensos",
+    "withdrawalsHalted": "Os saques de {asset} estão suspensos",
     "noNativeTransfers": "Transferências nativas indisponíveis para {asset}",
     "noNativeTransfersDescription": "Por favor, use um dos provedores alternativos abaixo.",
-    "sendFromWalletOrExchange": "Envie da sua carteira ou bolsa",
-    "scanWithMobileWallet": "Digitalize com sua carteira móvel",
-    "or": "ou",
-    "copied": "Copiado",
-    "copyToClipboard": "Copiar para área de transferência",
-    "showQrCode": "Mostrar código QR",
-    "yourDepositAddress": "Seu endereço de depósito {denom}",
-    "copyAddressToClipboard": "Copiar endereço para área de transferência",
-    "copyAddress": "Copiar endereço",
-    "receiveOnlyAsset": "Este endereço só pode receber {denom} da rede {network} . Enviar quaisquer outros ativos pode resultar em perda permanente.",
-    "minimumDeposit": "Depósito mínimo",
-    "nomic": {
-      "estimatedTime": "1-8 h",
-      "awaitingBtc": "Aguardando BTC",
-      "transferringYourBtc": "Transferindo seu BTC",
-      "depositStatus": "Status do depósito",
-      "depositSuccess": "Depósito bem-sucedido",
-      "pendingDeposit": "Depósito pendente",
-      "estimatedAboutTime": "Estimado em cerca de {time}",
-      "from": "De",
-      "to": "Para",
-      "asset": "Ativo",
-      "amountBtc": "Quantidade BTC",
-      "totalValue": "Valor total",
-      "transactionHash": "Hash de transação",
-      "viewOnExplorer": "Ver no Explorer",
-      "totalFees": "Taxas totais"
-    },
-    "doNotSendFundsToThisAddress": "Não envie fundos para este endereço.",
-    "addressExpired": "Este endereço expirou. Solicite um novo.",
-    "addressAboutToExpire": "Este endereço está prestes a expirar. Solicite um novo endereço para evitar perda de fundos.",
-    "createNewDepositAddress": "Criar novo endereço de depósito",
-    "transactionDetails": "Detalhes da transação",
     "confirmAmount": "Confirmar valor",
     "enterChainAddress": "Insira o endereço {chain}",
     "wormholeRedeem": {
@@ -1319,9 +1288,9 @@
     "historyTable": {
       "columns": {
         "order": "Ordem",
-        "amount": "Quantia",
+        "amount": "Quantidade",
         "price": "Preço",
-        "orderPlaced": "Pedido feito",
+        "orderPlaced": "Ordem criada",
         "status": "Status"
       },
       "emptyState": {
@@ -1338,51 +1307,51 @@
     },
     "aboveMarket": {
       "title": "Preço limite acima do preço de mercado",
-      "description": "Se você prosseguir, sua ordem será processada como uma ordem de mercado a preço de mercado."
+      "description": "Se você prosseguir, sua ordem poderá ser executada a um preço desfavorável."
     },
     "belowMarket": {
       "title": "Preço limite abaixo do preço de mercado",
-      "description": "Se você prosseguir, sua ordem será processada como uma ordem de mercado a preço de mercado."
+      "description": "Se você prosseguir, sua ordem poderá ser executada a um preço desfavorável."
     },
     "enterAnAmountTo": "Insira um valor para",
     "toSell": "vender",
     "toBuy": "comprar",
     "sell": "Vender",
     "sold": "Vendido",
-    "percentFilled": "Porcentagem preenchida",
+    "percentFilled": "Porcentagem executada",
     "status": "Status",
     "price": "Preço",
     "buy": "Comprar",
     "pay": "Pagar",
-    "open": "Abrir",
-    "filled": "Preenchido",
-    "claimable": "Exigível",
-    "claimAndClose": "Reivindique e feche",
+    "open": "Aberto",
+    "filled": "Executado",
+    "claimable": "Disponível para resgate",
+    "claimAndClose": "Resgatar e fechar",
     "close": "Fechar",
-    "claim": "Alegar",
+    "claim": "Resgatar",
     "accept": "Aceitar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
-    "daysAgo": "{days} atrás",
-    "hoursAgo": "{hours} horas atrás",
+    "daysAgo": "há {days} d",
+    "hoursAgo": "há {hours} h",
     "buyWith": "Compre com {coinA} ou {coinB}",
-    "orderHistory": "Histórico de pedidos",
+    "orderHistory": "Histórico de ordens",
     "tradeAnotherAssetOr": "Negocie outro ativo por {coinA} ou {coinB}",
     "tradeAnotherAsset": "Negocie outro ativo por {coinDenom}",
     "sellAnAsset": "Vender um ativo",
     "swapAnAsset": "Trocar um ativo",
     "of": "de",
-    "insufficientFunds": "Fundos insuficientes",
+    "insufficientFunds": "Saldo insuficiente",
     "startTrading": "Comece a negociar",
-    "tradeFees": "Taxas comerciais (quando o pedido é preenchido)",
-    "youNeed": "Você precisa",
-    "stablecoin": "moeda estável",
+    "tradeFees": "Taxas de negociação (quando a ordem é executada)",
+    "youNeed": "Você precisa de",
+    "stablecoin": "stablecoins",
     "quoteUpdated": "Cotação atualizada",
-    "fundsOsmosisToBuyAssets": "fundos em Osmose para comprar ativos.",
+    "fundsOsmosisToBuyAssets": "na Osmosis para comprar ativos.",
     "chooseAnOption": "Escolha uma opção para continuar.",
     "lowerSlippageToleranceRecommended": "Recomenda-se uma menor tolerância ao deslizamento.",
-    "tryHigherSlippage": "Experimente uma tolerância máxima de escorregamento mais alta.",
-    "reviewTrade": "Revise o comércio",
+    "tryHigherSlippage": "Tente uma tolerância máxima de deslizamento maior.",
+    "reviewTrade": "Revisar negociação",
     "highPriceImpact": {
       "title": "O impacto no preço é alto",
       "description": "Esta negociação move o preço de mercado em {impact}, portanto você pode receber muito menos do que o valor exibido."
@@ -1395,14 +1364,14 @@
     },
     "transferFromAnotherNetwork": "Transferir de outra rede ou carteira",
     "whatIsOrderClaim": {
-      "title": "O que o pedido está reivindicando?",
-      "description": "Na maioria dos casos, quando uma ordem com limite é executada, os fundos são automaticamente adicionados ao seu saldo. No entanto, em alguns casos raros, os fundos devem ser reivindicados manualmente a partir do pedido preenchido.<inlang-LineFeed>\nEste processo de reivindicação envolve a aprovação de uma única transação em sua carteira para todos os pedidos preenchidos não reclamados, o que incorre em uma taxa de rede nominal."
+      "title": "O que é o resgate de uma ordem?",
+      "description": "Na maioria dos casos, quando uma ordem limitada é executada, os fundos são adicionados automaticamente ao seu saldo. Em alguns casos raros, porém, os fundos precisam ser resgatados manualmente da ordem executada.\n\nPara isso, basta aprovar na sua carteira uma única transação para todas as ordens executadas não resgatadas, o que gera uma pequena taxa de rede."
     },
     "whatIsAStablecoin": {
       "title": "O que é uma moeda estável?",
       "description": "Stablecoins são um tipo de criptomoeda cujo valor está atrelado a outro ativo, como uma moeda fiduciária ou ouro, para manter um preço estável. No Osmosis, as principais stablecoins para negociação de ativos são USDC e USDT."
     },
-    "claimAll": "Reivindique tudo",
+    "claimAll": "Resgatar tudo",
     "addFunds": "Adicionar fundos",
     "selectAnAssetTo": {
       "buy": "Selecione um ativo para comprar",
@@ -1414,27 +1383,27 @@
     "connectYourWallet": "Conecte sua carteira",
     "toSeeYourBalances": "para ver seus saldos",
     "searchAssets": "Pesquisar ativos",
-    "below": "abaixo",
-    "above": "acima",
+    "below": "abaixo do",
+    "above": "acima do",
     "currentPrice": "preço atual",
-    "whenDenomPriceIs": "Quando {denom} o preço é",
-    "orderType": "Tipo de pedido",
-    "confirm": "confirme",
+    "whenDenomPriceIs": "Quando o preço de {denom} for",
+    "orderType": "Tipo de ordem",
+    "confirm": "Confirmar",
     "market": "Mercado",
     "limit": "Limite",
-    "trade": "Troca",
+    "trade": "Negociar",
     "swapToAnotherAsset": "Trocar por outro ativo",
     "invalidPrice": "Preço inválido",
     "priceTooLow": "Preço muito baixo",
     "priceTooHigh": "Preço muito alto",
     "unavailable": "Indisponível para {denom}",
     "orderHistoryHeaders": {
-      "past": "Passado",
+      "past": "Histórico",
       "pending": "Pendente",
-      "filled": "Pedidos preenchidos para reivindicar"
+      "filled": "Ordens executadas para resgatar"
     },
-    "priceReaches": "Se o preço {denom} atingir {price}",
-    "belowMinimumAmount": "{amount} mínimo",
+    "priceReaches": "Se o preço de {denom} atingir {price}",
+    "belowMinimumAmount": "Mínimo de {amount}",
     "noOrderbookForPair": "Não existe nenhum orderbook para {base}/{quote}. Crie um para habilitar limit orders para este par.",
     "createOrderbook": "Criar Orderbook",
     "noOrderbookExists": "Sem orderbook para {denom}",
@@ -1447,7 +1416,8 @@
     "returnedUnfilled": "Devolvido (não executado)",
     "alreadyReceived": "Já recebido",
     "howPayoutsWork": "Como funcionam os pagamentos?",
-    "payoutNote": "Os valores executados normalmente são pagos automaticamente na sua carteira, muitas vezes em vários pagamentos à medida que a ordem é executada, e podem chegar horas ou dias antes de você cancelar. Se uma ordem mostrar “Reivindique”, parte do valor executado ainda não foi paga. Cancelar devolve apenas o valor não executado."
+    "payoutNote": "Os valores executados normalmente são pagos automaticamente na sua carteira, muitas vezes em vários pagamentos à medida que a ordem é executada, e podem chegar horas ou dias antes de você cancelar. Se uma ordem mostrar “Resgatar”, parte do valor executado ainda não foi paga. Cancelar devolve apenas o valor não executado.",
+    "limitOrder": "Ordem limitada"
   },
   "tradeDetails": {
     "priceImpact": {

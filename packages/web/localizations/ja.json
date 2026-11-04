@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "金額の計算に問題があります",
     "depositNoBalance": "預ける資産がありません",
+    "amountTooSmall": "金額が小さすぎます",
     "emptyAmount": "金額が空です",
     "generic": "エラー",
     "highSwapFee": "スワップ手数料が高すぎる",
@@ -321,24 +322,24 @@
   "estimated": "推定",
   "halt": {
     "deposit": {
-      "bridge_down": "預金の受け入れは停止されました。ネイティブブリッジのルートは通行止めです。",
-      "extended_unstable_market": "預金の受け入れが停止されました。資産は長期間にわたり不安定で、取引が停止しています。",
-      "planned_shutdown": "預金の受け入れを停止しました。当該施設は閉鎖予定です。",
-      "source_chain_killed": "入金が停止されました。供給チェーンが操業を停止しました。",
-      "manual": "入金が停止されています。ご注意ください。",
-      "unknown": "Deposits halted."
+      "bridge_down": "入金は停止中です。ネイティブブリッジのルートがダウンしています。",
+      "extended_unstable_market": "入金は停止中です。この資産は長期間にわたり不安定で、取引がほとんどありません。",
+      "planned_shutdown": "入金は停止中です。この資産は終了予定です。",
+      "source_chain_killed": "入金は停止中です。ソースチェーンは稼働を終了しました。",
+      "manual": "入金は停止中です。ご注意ください。",
+      "unknown": "入金は停止中です。"
     },
     "withdrawal": {
-      "bridge_down": "引き出しは停止されました。ネイティブブリッジルートは通行止めです。",
-      "source_chain_killed": "引き出しは停止されました。ソースチェーンは運用を停止しました。",
-      "manual": "引き出しは停止されています。ご注意ください。",
-      "unknown": "Withdrawals halted."
+      "bridge_down": "出金は停止中です。ネイティブブリッジのルートがダウンしています。",
+      "source_chain_killed": "出金は停止中です。ソースチェーンは稼働を終了しました。",
+      "manual": "出金は停止中です。ご注意ください。",
+      "unknown": "出金は停止中です。"
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "この資産の供給元チェーンは運用を停止しました。",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "この資産のチェーンへの IBC クライアントが不安定な状態です。",
+    "source_chain_killed": "この資産のソースチェーンは稼働を終了しました。",
+    "market": "この資産は長期間にわたり、流動性と取引量が非常に低い状態です。",
     "manual": "不安定な状態ですので、ご注意ください。",
     "unknown": "不安定な状態ですので、ご注意ください。"
   },
@@ -395,6 +396,8 @@
     "settings": "設定"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "1日あたり{amount}",
+    "spendLimitLeftToday": "本日の残り{amount}",
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "defaultParameters": "デフォルト設定は、7日間、1日の支出限度額 5,000 USD です。",
       "changeButton": "編集の設定"
     },
     "reviewOrder": {
       "recapRowTitle": "1クリック取引制限",
       "enableTitle": "ワンクリック取引を開始",
       "enableDescription": "より速く、より簡単に取引",
-      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "paramsDescription": "{sessionLength}のセッション、1日の支出限度額 {spendLimit}",
       "defaultSpendLimit": "5,000米ドル",
       "change": "変化",
       "edit": "編集",
       "exceeded": "超過",
       "exceededTooltip": {
-        "title": "現在の損失保護限度額を超えています",
+        "title": "1日の支出限度額を超えています",
         "body": "この取引はウォレットで手動で承認する必要があります。"
       }
     },
@@ -441,7 +444,7 @@
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "損失保護限度額",
+      "spendLimitTitle": "1日の支出限度額",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
-      "review": "レビュー",
-      "deposit": "デポジット"
+      "review": "レビュー"
     },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "手数料の資金が不足している",
     "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
     "youNeedFundsToPayWithFee": "転送しようとしている金額が低すぎて、{chain}での{feeAmount} {feeCurrency}のブリッジ手数料をカバーできません。より大きな金額をお試しください。",
-    "transferAmountTooLowValueLoss": "送金額が少なすぎます",
-    "valueLossTooHighToBridge": "手数料を差し引いた送金額が少なすぎます。ブリッジを正常に完了するには価値の損失が大きすぎます。より大きな金額をお試しください。",
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",
-    "assetWithdrawalsUnavailable": "{asset}引き出しは利用できません",
+    "assetWithdrawalsToChainUnavailable": "{asset}の{chain}への出金は利用できません",
+    "routeLiquidityTooLow": "このルートには十分な流動性がありません",
+    "routeLiquidityTooLowBody": "現在、この送金を適正な価格でルーティングするための流動性が不足しています。別のネットワークまたはトークンをお試しいただくか、後でもう一度お試しください。",
     "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
     "noAvailableWithdrawals": "現在、利用可能なルートまたはプロバイダーが見つかりません。後でもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションを設定してください。",
     "somethingIsntWorking": "何かがうまくいかない…",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "{chain}の残高を読み込めませんでした",
     "balanceUnavailableDescription": "残高を確認するために{chain}に接続できなかったため、0と表示される場合があります。資金には影響ありません。再試行するか、以下のオプションをご利用ください。",
     "retryBalance": "再試行",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "{asset} の入金は停止中です",
+    "withdrawalsHalted": "{asset} の出金は停止中です",
     "noNativeTransfers": "{asset}のネイティブ転送が利用不可",
     "noNativeTransfersDescription": "以下の代替プロバイダーのいずれかをご利用ください。",
-    "sendFromWalletOrExchange": "ウォレットまたは取引所から送金する",
-    "scanWithMobileWallet": "モバイルウォレットでスキャン",
-    "or": "または",
-    "copied": "コピーしました",
-    "copyToClipboard": "クリップボードにコピー",
-    "showQrCode": "QRコードを表示",
-    "yourDepositAddress": "{denom}入金アドレス",
-    "copyAddressToClipboard": "アドレスをクリップボードにコピー",
-    "copyAddress": "アドレスをコピー",
-    "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
-    "minimumDeposit": "最低入金額",
-    "nomic": {
-      "estimatedTime": "1-8時間",
-      "awaitingBtc": "BTCを待つ",
-      "transferringYourBtc": "BTCの送金",
-      "depositStatus": "預金状況",
-      "depositSuccess": "入金成功",
-      "pendingDeposit": "保留中の入金",
-      "estimatedAboutTime": "推定約{time}",
-      "from": "から",
-      "to": "に",
-      "asset": "資産",
-      "amountBtc": "金額 BTC",
-      "totalValue": "合計金額",
-      "transactionHash": "トランザクションハッシュ",
-      "viewOnExplorer": "エクスプローラーで見る",
-      "totalFees": "合計料金"
-    },
-    "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
-    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
-    "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",
-    "createNewDepositAddress": "新しい入金アドレスを作成する",
-    "transactionDetails": "取引の詳細",
     "confirmAmount": "金額を確認",
     "enterChainAddress": "{chain}アドレスを入力してください",
     "wormholeRedeem": {
@@ -1319,9 +1288,9 @@
     "historyTable": {
       "columns": {
         "order": "注文",
-        "amount": "額",
+        "amount": "数量",
         "price": "価格",
-        "orderPlaced": "注文済み",
+        "orderPlaced": "注文日時",
         "status": "状態"
       },
       "emptyState": {
@@ -1337,34 +1306,34 @@
       "historyUnavailable": "注文履歴は現在利用できません。未約定の注文を表示しています。"
     },
     "aboveMarket": {
-      "title": "市場価格を上回る制限価格",
-      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+      "title": "指値が市場価格を上回っています",
+      "description": "続行すると、注文が不利な価格で約定する可能性があります。"
     },
     "belowMarket": {
-      "title": "市場価格以下の制限価格",
-      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+      "title": "指値が市場価格を下回っています",
+      "description": "続行すると、注文が不利な価格で約定する可能性があります。"
     },
     "enterAnAmountTo": "金額を入力してください",
     "toSell": "売る",
     "toBuy": "購入する",
-    "sell": "売る",
-    "sold": "販売済み",
-    "percentFilled": "充填率",
+    "sell": "売却",
+    "sold": "売却済み",
+    "percentFilled": "約定率",
     "status": "状態",
     "price": "価格",
-    "buy": "買う",
-    "pay": "支払う",
-    "open": "開ける",
-    "filled": "満たされた",
-    "claimable": "請求可能",
-    "claimAndClose": "請求して終了",
-    "close": "近い",
-    "claim": "請求",
-    "accept": "受け入れる",
-    "cancelled": "キャンセル",
+    "buy": "購入",
+    "pay": "支払い",
+    "open": "注文中",
+    "filled": "約定済み",
+    "claimable": "受取可能",
+    "claimAndClose": "受け取ってクローズ",
+    "close": "クローズ",
+    "claim": "受け取る",
+    "accept": "承認",
+    "cancelled": "キャンセル済み",
     "cancel": "キャンセル",
     "daysAgo": "{days}日前",
-    "hoursAgo": "{hours}前",
+    "hoursAgo": "{hours}時間前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
@@ -1375,14 +1344,14 @@
     "insufficientFunds": "残高不足",
     "startTrading": "取引を始める",
     "tradeFees": "取引手数料（注文成立時）",
-    "youNeed": "必要なのは",
+    "youNeed": "資産を購入するには、Osmosis 上の",
     "stablecoin": "ステーブルコイン",
-    "quoteUpdated": "引用を更新しました",
-    "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
+    "quoteUpdated": "見積もりが更新されました",
+    "fundsOsmosisToBuyAssets": "資金が必要です。",
     "chooseAnOption": "続行するにはオプションを選択してください。",
-    "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
-    "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
-    "reviewTrade": "取引のレビュー",
+    "lowerSlippageToleranceRecommended": "スリッページ許容値を低くすることをお勧めします。",
+    "tryHigherSlippage": "最大スリッページ許容値を高く設定してみてください。",
+    "reviewTrade": "取引を確認",
     "highPriceImpact": {
       "title": "価格への影響が大きいです",
       "description": "この取引は市場価格を{impact}変動させるため、表示された金額を大きく下回る額を受け取る可能性があります。"
@@ -1395,34 +1364,34 @@
     },
     "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
     "whatIsOrderClaim": {
-      "title": "注文請求とは何ですか?",
-      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに、約定した注文から資金を手動で請求する必要がある場合もあります。<inlang-LineFeed><inlang-LineFeed>この請求プロセスでは、未請求のすべての約定済み注文に対してウォレット内の単一のトランザクションを承認する必要があり、少額のネットワーク料金が発生します。"
+      "title": "注文の受け取りとは？",
+      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに約定した注文から資金を手動で受け取る必要があります。\n\n受け取りには、未受け取りの約定済み注文すべてについて、ウォレットで 1 件のトランザクションを承認する必要があり、少額のネットワーク手数料がかかります。"
     },
     "whatIsAStablecoin": {
       "title": "ステーブルコインとは何ですか?",
       "description": "ステーブルコインは、法定通貨や金などの別の資産に価値が固定され、安定した価格を維持する暗号通貨の一種です。Osmosis では、資産の売買に使用される主なステーブルコインは USDC と USDT です。"
     },
-    "claimAll": "すべてを主張する",
+    "claimAll": "すべて受け取る",
     "addFunds": "資金を追加",
     "selectAnAssetTo": {
       "buy": "購入する資産を選択",
       "sell": "売却する資産を選択する"
     },
-    "payWith": "お支払い方法",
+    "payWith": "支払い",
     "receive": "受け取る",
     "swapFromAnotherAsset": "別の資産からのスワップ",
     "connectYourWallet": "ウォレットを接続する",
     "toSeeYourBalances": "残高を確認する",
     "searchAssets": "アセットを検索",
-    "below": "下に",
-    "above": "その上",
-    "currentPrice": "現在の価格",
+    "below": "低い",
+    "above": "高い",
+    "currentPrice": "（現在価格比）",
     "whenDenomPriceIs": "{denom}価格が",
     "orderType": "注文タイプ",
     "confirm": "確認する",
-    "market": "市場",
-    "limit": "制限",
-    "trade": "貿易",
+    "market": "成行",
+    "limit": "指値",
+    "trade": "取引",
     "swapToAnotherAsset": "別の資産に交換する",
     "invalidPrice": "無効な価格",
     "priceTooLow": "価格が低すぎる",
@@ -1430,11 +1399,11 @@
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",
-      "pending": "保留中",
-      "filled": "請求する注文を完了"
+      "pending": "注文中",
+      "filled": "受取待ちの約定済み注文"
     },
     "priceReaches": "{denom}価格が{price}に達した場合",
-    "belowMinimumAmount": "{amount}最小",
+    "belowMinimumAmount": "最小 {amount}",
     "noOrderbookForPair": "{base}/{quote}のorderbookが存在しません。このペアのlimit ordersを有効にするために作成してください。",
     "createOrderbook": "Orderbookを作成",
     "noOrderbookExists": "{denom}のorderbookなし",
@@ -1447,7 +1416,8 @@
     "returnedUnfilled": "返却済み（未約定）",
     "alreadyReceived": "受取済み",
     "howPayoutsWork": "支払いの仕組み",
-    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「請求」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。"
+    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「受け取る」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。",
+    "limitOrder": "指値注文"
   },
   "tradeDetails": {
     "priceImpact": {

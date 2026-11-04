@@ -1,5 +1,5 @@
 import { Chain } from "@osmosis-labs/types";
-import { poll } from "@osmosis-labs/utils";
+import { getEvmExplorerUrl, poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeEnvironment,
@@ -187,12 +187,22 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       return `https://solscan.io/tx/${sendTxHash}`;
     }
 
-    if (
+    const hasEvmEnd =
+      typeof fromChainId === "number" || typeof toChainId === "number";
+    // Routes without an Axelar leg (CCTP, Eureka) are not on Axelarscan:
+    // link the signed tx on its own chain instead.
+    const axelarScanned =
       snapshot.trackingChainId === undefined &&
-      (typeof fromChainId === "number" || typeof toChainId === "number")
-    ) {
+      hasEvmEnd &&
+      snapshot.viaAxelar !== false;
+
+    if (axelarScanned) {
       // EVM transfer
       return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    } else if (typeof explorerChainId === "number") {
+      return (
+        getEvmExplorerUrl({ hash: sendTxHash, chainId: explorerChainId }) ?? ""
+      );
     } else {
       const chain = this.chainList.find(
         (chain) => chain.chain_id === explorerChainId

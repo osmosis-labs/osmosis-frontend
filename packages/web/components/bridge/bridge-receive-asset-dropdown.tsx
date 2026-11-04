@@ -36,7 +36,6 @@ interface BridgeReceiveAssetDropdownProps {
  * named custom bridges; generic routers (Skip/Squid/IBC) stay unlabeled.
  */
 const bridgeRouteName: Partial<Record<Bridge, string>> = {
-  Nomic: "Nomic",
   Wormhole: "Wormhole",
 };
 

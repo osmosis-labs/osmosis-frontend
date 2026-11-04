@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",
+    "amountTooSmall": "Suma este prea mică",
     "emptyAmount": "Suma lipseste",
     "generic": "Eroare",
     "highSwapFee": "Taxa de schimb este prea mare",
@@ -321,24 +322,24 @@
   "estimated": "Estimată",
   "halt": {
     "deposit": {
-      "bridge_down": "Depozitele au fost oprite. Traseul podului nativ este oprit.",
+      "bridge_down": "Depozitele au fost oprite. Ruta podului nativ nu funcționează.",
       "extended_unstable_market": "Depozitele au fost oprite. Activul a fost instabil și inactiv pentru o perioadă extinsă de timp.",
       "planned_shutdown": "Depozitele au fost oprite. Activul este programat pentru închidere.",
       "source_chain_killed": "Depozitele au fost oprite. Lanțul sursă și-a încetat activitatea.",
       "manual": "Depozitele au fost oprite, fiți prudenți.",
-      "unknown": "Deposits halted."
+      "unknown": "Depozitele au fost oprite."
     },
     "withdrawal": {
-      "bridge_down": "Retragerile au fost oprite. Ruta podului nativ este oprită.",
+      "bridge_down": "Retragerile au fost oprite. Ruta podului nativ nu funcționează.",
       "source_chain_killed": "Retragerile au fost oprite. Lanțul sursă a încetat să funcționeze.",
       "manual": "Retragerile au fost oprite, fiți prudenți.",
-      "unknown": "Withdrawals halted."
+      "unknown": "Retragerile au fost oprite."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "Lanțul sursă pentru acest element și-a încetat activitatea.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "Clientul IBC către lanțul acestui activ a fost instabil.",
+    "source_chain_killed": "Lanțul sursă al acestui activ și-a încetat activitatea.",
+    "market": "Acest activ a avut o lichiditate și un volum de tranzacționare foarte scăzute pentru o perioadă extinsă.",
     "manual": "Instabil, fiți precauți.",
     "unknown": "Instabil, fiți precauți."
   },
@@ -395,6 +396,8 @@
     "settings": "Setări"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pe zi",
+    "spendLimitLeftToday": "{amount} rămași astăzi",
     "toast": {
       "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Efectuați tranzacții mai rapide și mai ușoare, fără bătaia de cap a aprobărilor multiple pentru portofel.",
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
-      "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
+      "defaultParameters": "Setările implicite sunt 7 zile cu o limită zilnică de cheltuieli de 5.000 USD.",
       "changeButton": "Editeaza setarile"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
       "enableTitle": "Începeți tranzacționarea cu 1 clic",
       "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
-      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "paramsDescription": "Sesiune de {sessionLength} cu limită zilnică de cheltuieli de {spendLimit}",
       "defaultSpendLimit": "5.000 USD",
       "change": "Schimba",
       "edit": "Edita",
       "exceeded": "Depășit",
       "exceededTooltip": {
-        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "title": "Depășește limita zilnică de cheltuieli",
         "body": "Va trebui să aprobați manual această tranzacție în portofel."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
       "enableTitle": "Activați tranzacționarea cu 1 clic",
-      "spendLimitTitle": "Limită de protecție împotriva pierderilor",
+      "spendLimitTitle": "Limită zilnică de cheltuieli",
       "sessionPeriodTitle": "Perioada de sesiune",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "editSessionButton": "Salvează modificările",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
-      "review": "Revizuire",
-      "deposit": "Depozit"
+      "review": "Revizuire"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
     "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
     "youNeedFundsToPayWithFee": "Suma pe care încercați să o transferați este prea mică pentru a acoperi taxa de conectare de {feeAmount} {feeCurrency} pe {chain}. Vă rugăm să încercați o sumă mai mare.",
-    "transferAmountTooLowValueLoss": "Suma de transfer este prea mică",
-    "valueLossTooHighToBridge": "Suma de transfer este prea mică după taxe. Pierderea de valoare ar fi prea mare pentru a finaliza cu succes conectarea. Vă rugăm să încercați o sumă mai mare.",
     "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
-    "assetWithdrawalsUnavailable": "Retragerile {asset} nu sunt disponibile",
+    "assetWithdrawalsToChainUnavailable": "Retragerile de {asset} către {chain} nu sunt disponibile",
+    "routeLiquidityTooLow": "Lichiditate insuficientă pentru această rută",
+    "routeLiquidityTooLowBody": "În acest moment nu există suficientă lichiditate pentru a direcționa acest transfer la un preț corect. Încearcă o altă rețea sau un alt token, sau încearcă din nou mai târziu.",
     "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
     "noAvailableWithdrawals": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să setați o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
     "somethingIsntWorking": "Ceva nu merge…",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "Soldul tău {chain} nu a putut fi încărcat",
     "balanceUnavailableDescription": "Nu am putut accesa {chain} pentru a verifica soldul, așa că poate apărea ca 0. Fondurile tale nu sunt afectate. Încearcă din nou sau folosește opțiunile de mai jos.",
     "retryBalance": "Încearcă din nou",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "Depozitele de {asset} sunt oprite",
+    "withdrawalsHalted": "Retragerile de {asset} sunt oprite",
     "noNativeTransfers": "Transferurile native sunt indisponibile pentru {asset}",
     "noNativeTransfersDescription": "Vă rugăm să utilizați unul dintre furnizorii alternativi de mai jos.",
-    "sendFromWalletOrExchange": "Trimiteți din portofel sau schimb",
-    "scanWithMobileWallet": "Scanați cu portofelul mobil",
-    "or": "sau",
-    "copied": "Copiat",
-    "copyToClipboard": "Copiați în clipboard",
-    "showQrCode": "Afișați codul QR",
-    "yourDepositAddress": "Adresa dvs. de depunere {denom}",
-    "copyAddressToClipboard": "Copiați adresa în clipboard",
-    "copyAddress": "Copiați adresa",
-    "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
-    "minimumDeposit": "Depozit minim",
-    "nomic": {
-      "estimatedTime": "1-8 ore",
-      "awaitingBtc": "În așteptarea BTC",
-      "transferringYourBtc": "Transferul dvs. BTC",
-      "depositStatus": "Starea depozitului",
-      "depositSuccess": "Depozit cu succes",
-      "pendingDeposit": "Depunerea în așteptare",
-      "estimatedAboutTime": "Estimată aproximativ {time}",
-      "from": "Din",
-      "to": "La",
-      "asset": "Atu",
-      "amountBtc": "Suma BTC",
-      "totalValue": "Valoarea totală",
-      "transactionHash": "Hash de tranzacție",
-      "viewOnExplorer": "Vizualizare pe explorer",
-      "totalFees": "Taxele totale"
-    },
-    "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
-    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
-    "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",
-    "createNewDepositAddress": "Creați o nouă adresă de depozit",
-    "transactionDetails": "Detalii tranzacție",
     "confirmAmount": "Confirmați suma",
     "enterChainAddress": "Introduceți adresa {chain}",
     "wormholeRedeem": {
@@ -1321,8 +1290,8 @@
         "order": "Ordin",
         "amount": "Cantitate",
         "price": "Preț",
-        "orderPlaced": "Comandă plasată",
-        "status": "stare"
+        "orderPlaced": "Ordin plasat",
+        "status": "Stare"
       },
       "emptyState": {
         "title": "Fără comenzi recente",
@@ -1338,35 +1307,35 @@
     },
     "aboveMarket": {
       "title": "Preț limită peste prețul pieței",
-      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+      "description": "Dacă continuați, ordinul dumneavoastră ar putea fi executat la un preț nefavorabil."
     },
     "belowMarket": {
       "title": "Preț limită sub prețul pieței",
-      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+      "description": "Dacă continuați, ordinul dumneavoastră ar putea fi executat la un preț nefavorabil."
     },
-    "enterAnAmountTo": "Introduceți o sumă la",
-    "toSell": "a vinde",
-    "toBuy": "să cumpere",
+    "enterAnAmountTo": "Introduceți suma de",
+    "toSell": "vândut",
+    "toBuy": "cumpărat",
     "sell": "Vinde",
     "sold": "Vândut",
-    "percentFilled": "Procent umplut",
+    "percentFilled": "Procent executat",
     "status": "Stare",
     "price": "Preţ",
     "buy": "Cumpără",
-    "pay": "A plati",
+    "pay": "Plătiți",
     "open": "Deschis",
-    "filled": "Umplut",
-    "claimable": "Revendicabil",
+    "filled": "Executat",
+    "claimable": "De revendicat",
     "claimAndClose": "Revendicați și închideți",
-    "close": "Aproape",
-    "claim": "Revendicare",
-    "accept": "Accept",
+    "close": "Închideți",
+    "claim": "Revendicați",
+    "accept": "Acceptați",
     "cancelled": "Anulat",
-    "cancel": "Anulare",
-    "daysAgo": "{days} zi în urmă",
-    "hoursAgo": "{hours} h în urmă",
+    "cancel": "Anulați",
+    "daysAgo": "acum {days} z",
+    "hoursAgo": "acum {hours} h",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
-    "orderHistory": "Istoric comenzi",
+    "orderHistory": "Istoric ordine",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
     "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
     "sellAnAsset": "Vinde un activ",
@@ -1374,15 +1343,15 @@
     "of": "de",
     "insufficientFunds": "Fonduri insuficiente",
     "startTrading": "Începeți să tranzacționați",
-    "tradeFees": "Taxe de tranzacționare (când comanda este completată)",
-    "youNeed": "Ai nevoie",
+    "tradeFees": "Taxe de tranzacționare (la executarea ordinului)",
+    "youNeed": "Aveți nevoie de fonduri în",
     "stablecoin": "stablecoin",
-    "quoteUpdated": "Citat actualizat",
-    "fundsOsmosisToBuyAssets": "fonduri pe Osmosis pentru a cumpăra active.",
+    "quoteUpdated": "Cotație actualizată",
+    "fundsOsmosisToBuyAssets": "pe Osmosis pentru a cumpăra active.",
     "chooseAnOption": "Alegeți o opțiune pentru a continua.",
     "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
     "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
-    "reviewTrade": "Examinați comerțul",
+    "reviewTrade": "Verificați tranzacția",
     "highPriceImpact": {
       "title": "Impactul asupra prețului este ridicat",
       "description": "Această tranzacție modifică prețul pieței cu {impact}, așa că ați putea primi mult mai puțin decât suma afișată."
@@ -1396,45 +1365,45 @@
     "transferFromAnotherNetwork": "Transfer din altă rețea sau portofel",
     "whatIsOrderClaim": {
       "title": "Ce este revendicarea ordinului?",
-      "description": "În majoritatea cazurilor, atunci când un ordin limită este completat, fondurile sunt adăugate automat la soldul dvs. Cu toate acestea, în unele cazuri rare, fondurile trebuie solicitate manual din comanda completată.<inlang-LineFeed>\nAcest proces de revendicare implică aprobarea unei singure tranzacții în portofel pentru toate comenzile completate nerevendicate care implică o taxă de rețea nominală."
+      "description": "În majoritatea cazurilor, când un ordin limită este executat, fondurile sunt adăugate automat în soldul dumneavoastră. Totuși, în cazuri rare, fondurile trebuie revendicate manual din ordinul executat.\n\nPentru aceasta, aprobați în portofel o singură tranzacție pentru toate ordinele executate nerevendicate, ceea ce implică o taxă de rețea minimă."
     },
     "whatIsAStablecoin": {
       "title": "Ce este o monedă stabilă?",
       "description": "Monedele stabile sunt un tip de criptomonedă a cărui valoare este legată de un alt activ, cum ar fi o monedă fiat sau aurul, pentru a menține un preț stabil. Pe Osmosis, principalele monede stabile pentru cumpărarea și vânzarea de active sunt USDC și USDT."
     },
-    "claimAll": "Revendica totul",
-    "addFunds": "Adăuga fonduri",
+    "claimAll": "Revendicați tot",
+    "addFunds": "Adăugați fonduri",
     "selectAnAssetTo": {
       "buy": "Selectați un activ de cumpărat",
       "sell": "Selectați un activ pentru a vinde"
     },
-    "payWith": "Plateste cu",
-    "receive": "A primi",
+    "payWith": "Plătiți cu",
+    "receive": "Primiți",
     "swapFromAnotherAsset": "Schimbați de la un alt activ",
     "connectYourWallet": "Conectați-vă portofelul",
     "toSeeYourBalances": "pentru a vă vedea soldurile",
     "searchAssets": "Căutați active",
-    "below": "de mai jos",
-    "above": "de mai sus",
-    "currentPrice": "pretul curent",
+    "below": "sub",
+    "above": "peste",
+    "currentPrice": "prețul curent",
     "whenDenomPriceIs": "Când prețul {denom} este",
-    "orderType": "Tip de comandă",
-    "confirm": "A confirma",
+    "orderType": "Tip de ordin",
+    "confirm": "Confirmați",
     "market": "Piaţă",
     "limit": "Limită",
-    "trade": "Comerț",
+    "trade": "Tranzacționare",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
     "invalidPrice": "Preț nevalid",
-    "priceTooLow": "Pret prea mic",
-    "priceTooHigh": "Pret prea mare",
+    "priceTooLow": "Preț prea mic",
+    "priceTooHigh": "Preț prea mare",
     "unavailable": "Indisponibil pentru {denom}",
     "orderHistoryHeaders": {
-      "past": "Trecut",
-      "pending": "In asteptarea",
-      "filled": "Comenzi completate pentru revendicare"
+      "past": "Istoric",
+      "pending": "În așteptare",
+      "filled": "Ordine executate de revendicat"
     },
     "priceReaches": "Dacă prețul {denom} atinge {price}",
-    "belowMinimumAmount": "{amount} minim",
+    "belowMinimumAmount": "Minimum {amount}",
     "noOrderbookForPair": "Nu există niciun orderbook pentru {base}/{quote}. Creați unul pentru a activa limit orders pentru această pereche.",
     "createOrderbook": "Creați Orderbook",
     "noOrderbookExists": "Niciun orderbook pentru {denom}",
@@ -1447,7 +1416,8 @@
     "returnedUnfilled": "Returnat (neexecutat)",
     "alreadyReceived": "Deja primit",
     "howPayoutsWork": "Cum funcționează plățile?",
-    "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată."
+    "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată.",
+    "limitOrder": "Ordin limită"
   },
   "tradeDetails": {
     "priceImpact": {

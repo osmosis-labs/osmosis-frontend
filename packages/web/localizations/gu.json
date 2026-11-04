@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
+    "amountTooSmall": "રકમ ખૂબ નાની છે",
     "emptyAmount": "રકમ ખાલી છે",
     "generic": "ભૂલ",
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
@@ -321,24 +322,24 @@
   "estimated": "અંદાજિત",
   "halt": {
     "deposit": {
-      "bridge_down": "થાપણો બંધ. મૂળ પુલનો માર્ગ બંધ છે.",
-      "extended_unstable_market": "થાપણો બંધ. સંપત્તિ લાંબા સમયથી અસ્થિર અને નિષ્ક્રિય છે.",
-      "planned_shutdown": "ડિપોઝિટ બંધ. સંપત્તિ બંધ થવાનું સુનિશ્ચિત થયેલ છે.",
-      "source_chain_killed": "ડિપોઝિટ બંધ થઈ ગઈ છે. સોર્સ ચેઈનનું સંચાલન બંધ થઈ ગયું છે.",
-      "manual": "ડિપોઝીટ બંધ, સાવધાની રાખો.",
-      "unknown": "Deposits halted."
+      "bridge_down": "જમા બંધ છે. નેટિવ બ્રિજ રૂટ બંધ છે.",
+      "extended_unstable_market": "જમા બંધ છે. સંપત્તિ લાંબા સમયથી અસ્થિર અને નિષ્ક્રિય છે.",
+      "planned_shutdown": "જમા બંધ છે. સંપત્તિ બંધ કરવાનું આયોજન છે.",
+      "source_chain_killed": "જમા બંધ છે. સોર્સ ચેઇને કામગીરી બંધ કરી દીધી છે.",
+      "manual": "જમા બંધ છે, સાવધાની રાખો.",
+      "unknown": "જમા બંધ છે."
     },
     "withdrawal": {
-      "bridge_down": "ઉપાડ બંધ. મૂળ પુલ માર્ગ બંધ છે.",
-      "source_chain_killed": "ઉપાડ બંધ થઈ ગયો છે. સોર્સ ચેઈન બંધ થઈ ગઈ છે.",
-      "manual": "ઉપાડ બંધ, સાવધાની રાખો.",
-      "unknown": "Withdrawals halted."
+      "bridge_down": "ઉપાડ બંધ છે. નેટિવ બ્રિજ રૂટ બંધ છે.",
+      "source_chain_killed": "ઉપાડ બંધ છે. સોર્સ ચેઇને કામગીરી બંધ કરી દીધી છે.",
+      "manual": "ઉપાડ બંધ છે, સાવધાની રાખો.",
+      "unknown": "ઉપાડ બંધ છે."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "આ સંપત્તિ માટે સ્રોત શૃંખલા બંધ થઈ ગઈ છે.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "આ સંપત્તિની ચેઇન સાથે જોડાયેલ IBC ક્લાયન્ટ અસ્થિર રહ્યો છે.",
+    "source_chain_killed": "આ સંપત્તિની સોર્સ ચેઇને કામગીરી બંધ કરી દીધી છે.",
+    "market": "આ સંપત્તિમાં લાંબા સમયથી ખૂબ ઓછી લિક્વિડિટી અને ટ્રેડિંગ વોલ્યુમ રહ્યું છે.",
     "manual": "અસ્થિર, સાવધાની રાખો.",
     "unknown": "અસ્થિર, સાવધાની રાખો."
   },
@@ -395,6 +396,8 @@
     "settings": "સેટિંગ્સ"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} પ્રતિ દિવસ",
+    "spendLimitLeftToday": "આજે {amount} બાકી",
     "toast": {
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
-      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
+      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ 7 દિવસ અને $5,000 USD ની દૈનિક ખર્ચ મર્યાદા પર સેટ છે.",
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "reviewOrder": {
       "recapRowTitle": "1-ક્લિક કરો ટ્રેડિંગ મર્યાદા",
       "enableTitle": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "enableDescription": "ઝડપી, સરળ વેપાર",
-      "paramsDescription": "{sessionLength} સત્ર સાથે {lossProtectionLimit} નુકશાન સુરક્ષા મર્યાદા",
+      "paramsDescription": "{sessionLength} સત્ર, {spendLimit} દૈનિક ખર્ચ મર્યાદા સાથે",
       "defaultSpendLimit": "$5,000 USD",
       "change": "બદલો",
       "edit": "સંપાદિત કરો",
       "exceeded": "વટાવી ગયો",
       "exceededTooltip": {
-        "title": "વર્તમાન નુકશાન-રક્ષણ મર્યાદા ઓળંગે છે",
+        "title": "તમારી દૈનિક ખર્ચ મર્યાદા કરતાં વધી જાય છે",
         "body": "તમારે તમારા વૉલેટમાં આ વ્યવહારને મેન્યુઅલી મંજૂર કરવો પડશે."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-ક્લિક કરો ટ્રેડિંગ",
       "description": "1-ક્લિક ટ્રેડિંગ તમને તમારા વૉલેટમાં દરેક ટ્રાન્ઝેક્શન પર સહી કરવાની ઝંઝટ વિના આ ઉપકરણ પર સુરક્ષિત રીતે વેપાર કરવા દે છે.",
       "enableTitle": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
-      "spendLimitTitle": "નુકશાન રક્ષણ મર્યાદા",
+      "spendLimitTitle": "દૈનિક ખર્ચ મર્યાદા",
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "editSessionButton": "ફેરફારો સંગ્રહ",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",
-      "review": "સમીક્ષા",
-      "deposit": "જમા"
+      "review": "સમીક્ષા"
     },
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "ફી માટે અપૂરતું ભંડોળ",
     "youNeedFundsToPay": "તમારે {chain} પર નેટવર્ક અને બ્રિજિંગ ફી ચૂકવવા માટે ભંડોળની જરૂર છે.",
     "youNeedFundsToPayWithFee": "તમે જે રકમ ટ્રાન્સફર કરવાનો પ્રયાસ કરી રહ્યાં છો તે {chain} પર {feeAmount} {feeCurrency} ની બ્રિજિંગ ફી આવરી લેવા માટે ખૂબ ઓછી છે. કૃપા કરીને મોટી રકમનો પ્રયાસ કરો.",
-    "transferAmountTooLowValueLoss": "ટ્રાન્સફર રકમ ખૂબ ઓછી છે",
-    "valueLossTooHighToBridge": "ફી પછી ટ્રાન્સફર રકમ ખૂબ ઓછી છે. બ્રિજને સફળતાપૂર્વક પૂર્ણ કરવા માટે મૂલ્ય નુકશાન ખૂબ વધારે હશે. કૃપા કરીને મોટી રકમનો પ્રયાસ કરો.",
     "assetsDepositsUnavailable": "{asset} થાપણો અનુપલબ્ધ છે",
-    "assetWithdrawalsUnavailable": "{asset} ઉપાડ અનુપલબ્ધ છે",
+    "assetWithdrawalsToChainUnavailable": "{chain} પર {asset} ઉપાડ ઉપલબ્ધ નથી",
+    "routeLiquidityTooLow": "આ રૂટ માટે પૂરતી લિક્વિડિટી નથી",
+    "routeLiquidityTooLowBody": "હાલમાં આ ટ્રાન્સફરને વાજબી ભાવે રૂટ કરવા માટે પૂરતી લિક્વિડિટી નથી. બીજું નેટવર્ક અથવા ટોકન અજમાવો, અથવા પછીથી ફરી પ્રયાસ કરો.",
     "noAvailableDeposits": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
     "noAvailableWithdrawals": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા ઓસ્મોસિસમાંથી તમારા ભંડોળને ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશન સેટ કરો.",
     "somethingIsntWorking": "કંઈક કામ કરતું નથી...",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "તમારું {chain} બેલેન્સ લોડ થઈ શક્યું નથી",
     "balanceUnavailableDescription": "તમારું બેલેન્સ તપાસવા માટે અમે {chain} સુધી પહોંચી શક્યા નથી, તેથી તે 0 તરીકે દેખાઈ શકે છે. તમારા ભંડોળને કોઈ અસર થઈ નથી. ફરી પ્રયાસ કરો અથવા નીચેના વિકલ્પોનો ઉપયોગ કરો.",
     "retryBalance": "ફરી પ્રયાસ કરો",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "{asset} જમા બંધ છે",
+    "withdrawalsHalted": "{asset} ઉપાડ બંધ છે",
     "noNativeTransfers": "{asset} માટે મૂળ ટ્રાન્સફર અનુપલબ્ધ",
     "noNativeTransfersDescription": "કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
-    "sendFromWalletOrExchange": "તમારા વૉલેટ અથવા એક્સચેન્જમાંથી મોકલો",
-    "scanWithMobileWallet": "તમારા મોબાઈલ વોલેટથી સ્કેન કરો",
-    "or": "અથવા",
-    "copied": "નકલ કરી",
-    "copyToClipboard": "ક્લિપબોર્ડ પર કૉપિ કરો",
-    "showQrCode": "QR કોડ બતાવો",
-    "yourDepositAddress": "તમારું {denom} જમા સરનામું",
-    "copyAddressToClipboard": "ક્લિપબોર્ડ પર સરનામાંની નકલ કરો",
-    "copyAddress": "સરનામું કૉપિ કરો",
-    "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
-    "minimumDeposit": "ન્યૂનતમ થાપણ",
-    "nomic": {
-      "estimatedTime": "1-8 કલાક",
-      "awaitingBtc": "BTC ની રાહ જોઈ રહ્યા છીએ",
-      "transferringYourBtc": "તમારું BTC ટ્રાન્સફર કરી રહ્યાં છીએ",
-      "depositStatus": "ડિપોઝિટ સ્થિતિ",
-      "depositSuccess": "જમા કરાવવામાં સફળતા",
-      "pendingDeposit": "બાકી થાપણ",
-      "estimatedAboutTime": "{time} વિશે અંદાજિત",
-      "from": "થી",
-      "to": "થી",
-      "asset": "એસેટ",
-      "amountBtc": "BTC રકમ",
-      "totalValue": "કુલ મૂલ્ય",
-      "transactionHash": "વ્યવહાર હેશ",
-      "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
-      "totalFees": "કુલ ફી"
-    },
-    "doNotSendFundsToThisAddress": "આ સરનામે ભંડોળ મોકલશો નહીં.",
-    "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો.",
-    "addressAboutToExpire": "આ સરનામું સમાપ્ત થવામાં છે. ભંડોળ ગુમાવવાનું ટાળવા માટે કૃપા કરીને નવા સરનામાની વિનંતી કરો.",
-    "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
-    "transactionDetails": "વ્યવહારની વિગતો",
     "confirmAmount": "રકમની પુષ્ટિ કરો",
     "enterChainAddress": "{chain} સરનામું દાખલ કરો",
     "wormholeRedeem": {
@@ -1321,7 +1290,7 @@
         "order": "ઓર્ડર",
         "amount": "રકમ",
         "price": "કિંમત",
-        "orderPlaced": "ઓર્ડર આપ્યો",
+        "orderPlaced": "ઓર્ડરનો સમય",
         "status": "સ્થિતિ"
       },
       "emptyState": {
@@ -1338,28 +1307,28 @@
     },
     "aboveMarket": {
       "title": "બજાર કિંમત ઉપર મર્યાદા કિંમત",
-      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+      "description": "જો તમે આગળ વધો, તો તમારો ઓર્ડર પ્રતિકૂળ કિંમતે ભરાઈ શકે છે."
     },
     "belowMarket": {
-      "title": "બજાર કિંમત નીચે કિંમત મર્યાદા",
-      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+      "title": "બજાર કિંમત નીચે મર્યાદા કિંમત",
+      "description": "જો તમે આગળ વધો, તો તમારો ઓર્ડર પ્રતિકૂળ કિંમતે ભરાઈ શકે છે."
     },
-    "enterAnAmountTo": "માટે રકમ દાખલ કરો",
+    "enterAnAmountTo": "રકમ દાખલ કરો",
     "toSell": "વેચવા માટે",
     "toBuy": "ખરીદવા માટે",
     "sell": "વેચો",
-    "sold": "વેચાય છે",
-    "percentFilled": "ટકા ભરેલ",
+    "sold": "વેચાયું",
+    "percentFilled": "ભરાયેલ ટકાવારી",
     "status": "સ્થિતિ",
     "price": "કિંમત",
     "buy": "ખરીદો",
-    "pay": "પે",
+    "pay": "ચૂકવો",
     "open": "ખુલ્લા",
-    "filled": "ભરેલ",
-    "claimable": "દાવો કરવા યોગ્ય",
-    "claimAndClose": "દાવો કરો અને બંધ કરો",
+    "filled": "ભરાયેલ",
+    "claimable": "મેળવી શકાય",
+    "claimAndClose": "મેળવો અને બંધ કરો",
     "close": "બંધ કરો",
-    "claim": "દાવો કરો",
+    "claim": "મેળવો",
     "accept": "સ્વીકારો",
     "cancelled": "રદ કરેલ",
     "cancel": "રદ કરો",
@@ -1372,13 +1341,13 @@
     "sellAnAsset": "સંપત્તિ વેચો",
     "swapAnAsset": "સંપત્તિ સ્વેપ કરો",
     "of": "ના",
-    "insufficientFunds": "અપૂરતું ભંડોળ",
+    "insufficientFunds": "અપૂરતું બેલેન્સ",
     "startTrading": "વેપાર શરૂ કરો",
     "tradeFees": "વેપાર ફી (જ્યારે ઓર્ડર ભરવામાં આવે છે)",
-    "youNeed": "તમને જરૂર છે",
-    "stablecoin": "stablecoin",
-    "quoteUpdated": "અવતરણ અપડેટ કર્યું",
-    "fundsOsmosisToBuyAssets": "અસ્કયામતો ખરીદવા માટે ઓસ્મોસિસ પર ભંડોળ.",
+    "youNeed": "સંપત્તિ ખરીદવા માટે તમને Osmosis પર",
+    "stablecoin": "સ્ટેબલકોઇન",
+    "quoteUpdated": "ભાવ અપડેટ થયો",
+    "fundsOsmosisToBuyAssets": "ભંડોળની જરૂર છે.",
     "chooseAnOption": "ચાલુ રાખવા માટે એક વિકલ્પ પસંદ કરો.",
     "lowerSlippageToleranceRecommended": "ઓછી સ્લિપેજ સહિષ્ણુતાની ભલામણ કરવામાં આવે છે.",
     "tryHigherSlippage": "ઉચ્ચ મહત્તમ સ્લિપેજ સહિષ્ણુતાનો પ્રયાસ કરો.",
@@ -1395,20 +1364,20 @@
     },
     "transferFromAnotherNetwork": "બીજા નેટવર્ક અથવા વૉલેટમાંથી ટ્રાન્સફર કરો",
     "whatIsOrderClaim": {
-      "title": "ઓર્ડરનો દાવો શું છે?",
-      "description": "મોટા ભાગના કિસ્સાઓમાં, જ્યારે મર્યાદા ઓર્ડર ભરવામાં આવે છે, ત્યારે ભંડોળ આપમેળે તમારા બેલેન્સમાં ઉમેરવામાં આવે છે. જો કે કેટલાક દુર્લભ કિસ્સાઓમાં, ભરેલા ઓર્ડરમાંથી મેન્યુઅલી ભંડોળનો દાવો કરવો આવશ્યક છે.<inlang-LineFeed>\nઆ દાવો કરવાની પ્રક્રિયામાં તમારા વૉલેટમાં એક જ વ્યવહારને મંજૂર કરવાનો સમાવેશ થાય છે, જેના માટે નજીવી નેટવર્ક ફી લેવામાં આવે છે."
+      "title": "ઓર્ડરમાંથી ભંડોળ મેળવવું શું છે?",
+      "description": "મોટાભાગના કિસ્સાઓમાં, લિમિટ ઓર્ડર ભરાય ત્યારે ભંડોળ આપમેળે તમારા બેલેન્સમાં ઉમેરાય છે. જોકે કેટલાક દુર્લભ કિસ્સાઓમાં, ભરાયેલા ઓર્ડરમાંથી ભંડોળ જાતે મેળવવું પડે છે.\n\nઆ માટે તમારે તમારા વૉલેટમાં બધા ભરાયેલા, હજી ન મેળવેલા ઓર્ડર માટે એક જ વ્યવહાર મંજૂર કરવો પડે છે, જેના પર નજીવી નેટવર્ક ફી લાગે છે."
     },
     "whatIsAStablecoin": {
       "title": "સ્ટેબલકોઈન શું છે?",
       "description": "સ્ટેબલકોઇન્સ એ ક્રિપ્ટોકરન્સીનો એક પ્રકાર છે જેની કિંમત સ્થિર કિંમત જાળવવા માટે અન્ય સંપત્તિ, જેમ કે ફિયાટ ચલણ અથવા સોનામાં મૂકવામાં આવે છે. ઓસ્મોસિસ પર, અસ્કયામતો ખરીદવા અને વેચવા માટેના પ્રાથમિક સ્ટેબલકોઈન્સ USDC અને USDT છે."
     },
-    "claimAll": "બધાનો દાવો કરો",
+    "claimAll": "બધું મેળવો",
     "addFunds": "ભંડોળ ઉમેરો",
     "selectAnAssetTo": {
       "buy": "ખરીદવા માટે સંપત્તિ પસંદ કરો",
       "sell": "વેચવા માટે સંપત્તિ પસંદ કરો"
     },
-    "payWith": "સાથે ચૂકવો",
+    "payWith": "ચૂકવો",
     "receive": "પ્રાપ્ત કરો",
     "swapFromAnotherAsset": "અન્ય સંપત્તિમાંથી સ્વેપ કરો",
     "connectYourWallet": "તમારું વૉલેટ કનેક્ટ કરો",
@@ -1416,25 +1385,25 @@
     "searchAssets": "સંપત્તિ શોધો",
     "below": "નીચે",
     "above": "ઉપર",
-    "currentPrice": "વર્તમાન ભાવ",
+    "currentPrice": "(વર્તમાન ભાવથી)",
     "whenDenomPriceIs": "જ્યારે {denom} કિંમત હોય છે",
     "orderType": "ઓર્ડરનો પ્રકાર",
     "confirm": "પુષ્ટિ કરો",
-    "market": "બજાર",
-    "limit": "મર્યાદા",
-    "trade": "વેપાર",
+    "market": "માર્કેટ",
+    "limit": "લિમિટ",
+    "trade": "ટ્રેડ",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
     "invalidPrice": "અમાન્ય કિંમત",
     "priceTooLow": "કિંમત ખૂબ ઓછી છે",
     "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
     "unavailable": "{denom} માટે અનુપલબ્ધ",
     "orderHistoryHeaders": {
-      "past": "ભૂતકાળ",
+      "past": "અગાઉના",
       "pending": "બાકી છે",
-      "filled": "દાવો કરવાના આદેશો ભર્યા"
+      "filled": "મેળવવાના બાકી ભરાયેલા ઓર્ડર"
     },
     "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે",
-    "belowMinimumAmount": "{amount} ન્યૂનતમ",
+    "belowMinimumAmount": "ન્યૂનતમ {amount}",
     "noOrderbookForPair": "{base}/{quote} માટે કોઈ orderbook અસ્તિત્વ ધરાવતું નથી. આ જોડી માટે limit orders સક્ષમ કરવા એક બનાવો.",
     "createOrderbook": "Orderbook બનાવો",
     "noOrderbookExists": "{denom} માટે કોઈ orderbook નથી",
@@ -1447,7 +1416,8 @@
     "returnedUnfilled": "પરત કરેલ (ન ભરાયેલ)",
     "alreadyReceived": "પહેલેથી મળેલ",
     "howPayoutsWork": "ચુકવણી કેવી રીતે થાય છે?",
-    "payoutNote": "ભરાયેલી રકમ સામાન્ય રીતે આપમેળે તમારા વૉલેટમાં ચૂકવાય છે, ઘણીવાર ઓર્ડર ભરાય તેમ અનેક ચુકવણીઓમાં, અને તમે રદ કરો તેના કલાકો કે દિવસો પહેલાં આવી શકે છે. જો કોઈ ઓર્ડર પર “દાવો કરો” દેખાય, તો ભરાયેલી રકમનો અમુક ભાગ હજી ચૂકવાયો નથી. રદ કરવાથી ફક્ત ન ભરાયેલી રકમ પરત થાય છે."
+    "payoutNote": "ભરાયેલી રકમ સામાન્ય રીતે આપમેળે તમારા વૉલેટમાં ચૂકવાય છે, ઘણીવાર ઓર્ડર ભરાય તેમ અનેક ચુકવણીઓમાં, અને તમે રદ કરો તેના કલાકો કે દિવસો પહેલાં આવી શકે છે. જો કોઈ ઓર્ડર પર “મેળવો” દેખાય, તો ભરાયેલી રકમનો અમુક ભાગ હજી ચૂકવાયો નથી. રદ કરવાથી ફક્ત ન ભરાયેલી રકમ પરત થાય છે.",
+    "limitOrder": "લિમિટ ઓર્ડર"
   },
   "tradeDetails": {
     "priceImpact": {

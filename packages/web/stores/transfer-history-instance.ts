@@ -1,7 +1,6 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
 import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
-import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import { makeIndexedKVStore } from "@osmosis-labs/utils";
@@ -79,7 +78,6 @@ export function getTransferHistoryStore(): TransferHistoryStore {
       checkEvmReceiptOutcome
     ),
     new IbcTransferStatusProvider(ChainList, AssetLists),
-    new NomicTransferStatusProvider(ChainList, network),
     // Kept after the Int3face bridge provider's removal so past int3face
     // transfers still render in transfer history; see the note on the class.
     new Int3faceTransferStatusProvider(ChainList, network),

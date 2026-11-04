@@ -14,6 +14,15 @@ export class InvalidNumberAmountError extends Error {
   }
 }
 
+/** A non-zero amount that rounds down to less than one base unit of the asset. */
+export class AmountTooSmallError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, AmountTooSmallError.prototype);
+  }
+}
+
 export class ZeroAmountError extends Error {
   constructor(m: string) {
     super(m);

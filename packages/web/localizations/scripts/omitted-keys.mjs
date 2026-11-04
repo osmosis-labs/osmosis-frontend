@@ -2,5 +2,4 @@
 export const omittedKeyPaths = [
   "assets.categories",
   "limitOrders.historyTable.columns",
-  "transfer.nomic.estimatedTime",
 ];
