@@ -34,7 +34,7 @@ test.describe("Test Select Swap Pair feature", () => {
   });
 
   test("User should be able to select BTC/USDC", async () => {
-    await swapPage.selectPair("nBTC", "USDC");
+    await swapPage.selectPair("BTC", "USDC");
     await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
   });
