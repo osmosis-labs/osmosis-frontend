@@ -1,6 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { RatePretty } from "@osmosis-labs/unit";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
@@ -83,18 +82,6 @@ export interface BridgeProvider {
   getTransactionStep?: (
     params: GetBridgeTransactionStepParams
   ) => Promise<CosmosBridgeTransactionRequest>;
-
-  /**
-   * If the provider supports deposit address transfers:
-   * Requests for a deposit address generated from the given params.
-   * Sending to the deposit address automatically triggers the transfer.
-   *
-   * @param params The parameters from a prior quote request.
-   * @returns A promise that resolves to a deposit address ready for signing.
-   */
-  getDepositAddress?: (
-    params: GetDepositAddressParams
-  ) => Promise<BridgeDepositAddress>;
 
   /**
    * Retrieves an external bridge URL for the given assets.
@@ -324,11 +311,11 @@ export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
 /**
  * Specifies the types of transfers supported by the asset.
- * This helps the frontend determine which assets can be quoted,
- * used for deposit addresses, or have external URLs.
+ * This helps the frontend determine which assets can be quoted
+ * or have external URLs.
  */
 export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
-  transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
+  transferTypes: z.array(z.enum(["quote", "external-url"])),
 });
 
 export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
@@ -365,42 +352,6 @@ export const getBridgeSupportedAssetsParams = z.object({
 
 export type GetBridgeSupportedAssetsParams = z.infer<
   typeof getBridgeSupportedAssetsParams
->;
-
-export interface BridgeDepositAddress {
-  depositAddress: string;
-  expirationTimeMs: number;
-  minimumDeposit: BridgeCoin;
-  networkFee: BridgeCoin;
-  providerFee: RatePretty;
-  estimatedTime: string;
-}
-
-export const getDepositAddressParamsSchema = z.object({
-  /**
-   * The originating chain information.
-   */
-  fromChain: bridgeChainSchema,
-  /**
-   * The destination chain information.
-   */
-  toChain: bridgeChainSchema,
-  /**
-   * The asset on the originating chain.
-   */
-  fromAsset: bridgeAssetSchema,
-  /**
-   * The asset on the destination chain.
-   */
-  toAsset: bridgeAssetSchema,
-  /**
-   * The address on the destination chain where the assets are to be received.
-   */
-  toAddress: z.string(),
-});
-
-export type GetDepositAddressParams = z.infer<
-  typeof getDepositAddressParamsSchema
 >;
 
 export const getBridgeExternalUrlSchema = z.object({
@@ -797,7 +748,6 @@ const txSnapshotSchema = z.object({
     })
   ),
   estimatedArrivalUnix: z.number(),
-  nomicCheckpointIndex: z.number().optional(),
   /** The quote's `quoteId`, sent with Squid status requests. */
   quoteId: z.string().optional(),
   /**

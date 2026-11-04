@@ -7,7 +7,6 @@ import {
   getBridgeQuoteSchema,
   getBridgeSupportedAssetsParams,
   getBridgeTransactionStepSchema,
-  getDepositAddressParamsSchema,
 } from "@osmosis-labs/bridge";
 import {
   DEFAULT_VS_CURRENCY,
@@ -16,11 +15,7 @@ import {
   getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
-import {
-  createTRPCRouter,
-  publicProcedure,
-  UserOsmoAddressSchema,
-} from "@osmosis-labs/trpc";
+import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
 import { isInsufficientFeeError } from "@osmosis-labs/tx";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
@@ -29,7 +24,6 @@ import {
   BitcoinChainInfo,
   DogecoinChainInfo,
   EthereumChainInfo,
-  getnBTCMinimalDenom,
   isNil,
   isSameVariant,
   LitecoinChainInfo,
@@ -893,188 +887,6 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       return {
         externalUrls: externalUrlsWithConvert,
-      };
-    }),
-
-  /**
-   * Provide the deposit address for a given bridge transfer.
-   */
-  getDepositAddress: publicProcedure
-    .input(getDepositAddressParamsSchema.extend({ bridge: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
-
-      const bridgeProvider =
-        bridgeProviders.bridges[
-          input.bridge as keyof typeof bridgeProviders.bridges
-        ];
-
-      if (!bridgeProvider) {
-        throw new Error("Invalid bridge provider id: " + input.bridge);
-      }
-
-      if (!("getDepositAddress" in bridgeProvider)) {
-        throw new Error("Bridge does not support deposit addresses");
-      }
-
-      const depositData = await bridgeProvider.getDepositAddress({
-        toAddress: input.toAddress,
-        fromChain: input.fromChain,
-        fromAsset: input.fromAsset,
-        toAsset: input.toAsset,
-        toChain: input.toChain,
-      });
-
-      if (!depositData) {
-        throw new Error("Failed to get deposit address");
-      }
-
-      const [assetPrice, feeAssetPrice] = await Promise.all([
-        getAssetPrice({
-          ...ctx,
-          asset: {
-            coinMinimalDenom: depositData.minimumDeposit.address,
-            address: depositData.minimumDeposit.address,
-            coinGeckoId: depositData.minimumDeposit.coinGeckoId,
-          },
-        }),
-        getAssetPrice({
-          ...ctx,
-          asset: {
-            coinMinimalDenom: depositData.networkFee.address,
-            address: depositData.networkFee.address,
-            coinGeckoId: depositData.networkFee.coinGeckoId,
-          },
-        }),
-      ]);
-
-      return {
-        depositData: {
-          ...depositData,
-          minimumDeposit: {
-            amount: new CoinPretty(
-              {
-                coinDecimals: depositData.minimumDeposit.decimals,
-                coinDenom: depositData.minimumDeposit.denom,
-                coinMinimalDenom: depositData.minimumDeposit.address,
-                coinGeckoId: depositData.minimumDeposit.coinGeckoId,
-              },
-              new Dec(depositData.minimumDeposit.amount)
-            ),
-            fiatValue: assetPrice
-              ? priceFromBridgeCoin(depositData.minimumDeposit, assetPrice)
-              : undefined,
-          },
-          networkFee: {
-            amount: new CoinPretty(
-              {
-                coinDecimals: depositData.networkFee.decimals,
-                coinDenom: depositData.networkFee.denom,
-                coinMinimalDenom: depositData.networkFee.address,
-                coinGeckoId: depositData.networkFee.coinGeckoId,
-              },
-              new Dec(depositData.networkFee.amount)
-            ),
-            fiatValue: feeAssetPrice
-              ? priceFromBridgeCoin(depositData.networkFee, feeAssetPrice)
-              : undefined,
-          },
-        },
-      };
-    }),
-
-  getNomicPendingDeposits: publicProcedure
-    .input(UserOsmoAddressSchema.required())
-    .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
-
-      const nomicBridgeProvider = bridgeProviders.bridges.Nomic;
-
-      const pendingDeposits = await nomicBridgeProvider.getPendingDeposits({
-        address: input.userOsmoAddress,
-      });
-
-      const btcMinimalDenom = IS_TESTNET
-        ? getnBTCMinimalDenom({ env: "testnet" })
-        : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
-
-      const btcPrice = await getAssetPrice({
-        ...ctx,
-        asset: {
-          coinMinimalDenom: btcMinimalDenom,
-        },
-      });
-
-      return {
-        pendingDeposits: pendingDeposits.map((deposit) => {
-          const amount = new Dec(deposit.amount);
-
-          return {
-            ...deposit,
-            userOsmoAddress: input.userOsmoAddress,
-            amount: new CoinPretty(
-              {
-                coinDecimals: deposit.networkFee.decimals,
-                coinDenom: deposit.networkFee.denom,
-                coinMinimalDenom: deposit.networkFee.address,
-                coinGeckoId: deposit.networkFee.coinGeckoId,
-              },
-              amount
-            ),
-            fiatValue: new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              btcPrice.mul(
-                amount.quo(
-                  DecUtils.getTenExponentN(deposit.networkFee.decimals)
-                )
-              )
-            ),
-            networkFee: {
-              amount: new CoinPretty(
-                {
-                  coinDecimals: deposit.networkFee.decimals,
-                  coinDenom: deposit.networkFee.denom,
-                  coinMinimalDenom: deposit.networkFee.address,
-                  coinGeckoId: deposit.networkFee.coinGeckoId,
-                },
-                new Dec(deposit.networkFee.amount)
-              ),
-              fiatValue: btcPrice
-                ? priceFromBridgeCoin(deposit.networkFee, btcPrice)
-                : undefined,
-            },
-            providerFee: {
-              amount: new CoinPretty(
-                {
-                  coinDecimals: deposit.providerFee.decimals,
-                  coinDenom: deposit.providerFee.denom,
-                  coinMinimalDenom: deposit.providerFee.address,
-                  coinGeckoId: deposit.providerFee.coinGeckoId,
-                },
-                new Dec(deposit.providerFee.amount)
-              ),
-              fiatValue: btcPrice
-                ? priceFromBridgeCoin(deposit.providerFee, btcPrice)
-                : undefined,
-            },
-          };
-        }),
       };
     }),
 });

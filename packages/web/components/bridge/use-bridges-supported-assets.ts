@@ -14,15 +14,13 @@ const supportedAssetsBridges: Bridge[] = [
   "Skip",
   "Squid",
   "IBC",
-  "Nomic",
   // Wormhole returns ["external-url"], so the recommended SOL withdraw is an
   // external-url hand-off rather than an in-app quote. That is now the only SOL
   // withdraw path: Int3face was the last in-app SOL quote and is gone.
   "Wormhole",
-  // include nomic, nitro, and penumbra for suggesting BTC + SOL + TRX assets and chains
-  // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
-  // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
-  "Nitro",
+  // Penumbra is included to suggest its assets and chains as external URL
+  // transfer options, even though it is not supported by the bridge providers natively yet.
+  // Once bridging is natively supported, we can add it to the `useBridgeQuotes` provider list.
   "Penumbra",
 ];
 
@@ -199,7 +197,7 @@ export const useBridgesSupportedAssets = ({
 
   /**
    * Whether any successful provider returned a chain the app itself can
-   * transfer through (a quote or deposit-address route). External-url-only
+   * transfer through (a quote route). External-url-only
    * results (e.g. Wormhole's Solana suggestion) don't count: they exist for
    * assets that ALSO have in-app routes, and must not release the failing-
    * provider hold below — otherwise a Skip outage on a Skip-only asset
@@ -211,11 +209,7 @@ export const useBridgesSupportedAssets = ({
       successfulQueries.some(({ data }) =>
         Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
           (assets) =>
-            assets.some((asset) =>
-              asset.transferTypes.some(
-                (type) => type === "quote" || type === "deposit-address"
-              )
-            )
+            assets.some((asset) => asset.transferTypes.includes("quote"))
         )
       ),
     [successfulQueries]
