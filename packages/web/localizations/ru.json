@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Проблема с расчетом суммы",
     "depositNoBalance": "У вас нет активов для депозита",
+    "amountTooSmall": "Сумма слишком мала",
     "emptyAmount": "Сумма пуста",
     "generic": "Ошибка",
     "highSwapFee": "Комиссия за своп слишком высока",

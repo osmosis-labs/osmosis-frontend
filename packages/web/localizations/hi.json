@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "राशि की गणना करने में समस्या",
     "depositNoBalance": "आपके पास जमा करने के लिए कोई संपत्ति नहीं है",
+    "amountTooSmall": "राशि बहुत छोटी है",
     "emptyAmount": "रकम खाली है",
     "generic": "गलती",
     "highSwapFee": "स्वैप शुल्क बहुत अधिक है",

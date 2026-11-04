@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你沒有資產存入",
+    "amountTooSmall": "幣額太小",
     "emptyAmount": "未提供數量",
     "generic": "錯誤",
     "highSwapFee": "兌換費太高",

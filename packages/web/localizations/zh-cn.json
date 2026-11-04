@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "计算金额溢出",
     "depositNoBalance": "您没有可以存入的资产",
+    "amountTooSmall": "数量太小",
     "emptyAmount": "数量为空",
     "generic": "错误",
     "highSwapFee": "交易费太高",

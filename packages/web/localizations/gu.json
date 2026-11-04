@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
+    "amountTooSmall": "રકમ ખૂબ નાની છે",
     "emptyAmount": "રકમ ખાલી છે",
     "generic": "ભૂલ",
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",

@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
+    "amountTooSmall": "Le montant est trop petit",
     "emptyAmount": "Le montant est vide",
     "generic": "Erreur",
     "highSwapFee": "Les frais d'échange sont trop importants",
