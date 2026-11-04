@@ -336,9 +336,8 @@ export const useMultiTxResume = () => {
         // An EVM first step may have reverted, which Skip never reports as
         // failed: prove it from the receipt. Without a receipt (not mined
         // yet, or the RPC didn't answer) its inclusion stays unproven.
-        let priorStepReceipt: "success" | "reverted" | undefined;
         if (snapshot.fromChain.chainType === "evm") {
-          priorStepReceipt = await checkEvmReceiptOutcome({
+          const priorStepReceipt = await checkEvmReceiptOutcome({
             txHash: pendingStep.priorStepTxHash,
             chainId: snapshot.fromChain.chainId,
           });
@@ -362,14 +361,11 @@ export const useMultiTxResume = () => {
           // haven't arrived yet as soon as the first check says so, not
           // only after the whole budget is spent
           onWaiting: stillInTransitToast,
-          // Skip abandoning a landed Solana burn is a tracking timeout, not
-          // proof the funds are gone: keep the entry resumable. The same
-          // holds for an EVM burn whose receipt hasn't turned up, which may
-          // simply be slow to land.
+          // Skip abandoning a landed Solana or EVM burn is a tracking
+          // timeout, not proof the funds are gone: keep the entry resumable.
+          // A reverted EVM burn was already marked failed above.
           abandonedIsFailed:
-            !priorStepOnSolana &&
-            (snapshot.fromChain.chainType !== "evm" ||
-              priorStepReceipt === "success"),
+            !priorStepOnSolana && snapshot.fromChain.chainType !== "evm",
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(
