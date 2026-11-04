@@ -321,24 +321,24 @@
   "estimated": "Estimado",
   "halt": {
     "deposit": {
-      "bridge_down": "Se han suspendido los depósitos. La ruta del puente indígena está cortada.",
+      "bridge_down": "Se han suspendido los depósitos. La ruta del puente nativo no funciona.",
       "extended_unstable_market": "Se suspendieron los depósitos. El activo ha estado inestable e inactivo durante un período prolongado.",
       "planned_shutdown": "Se han suspendido los depósitos. Está previsto el cierre del activo.",
-      "source_chain_killed": "Se han suspendido los depósitos. La cadena de suministro ha cesado su actividad.",
+      "source_chain_killed": "Se han suspendido los depósitos. La cadena de origen ha dejado de funcionar.",
       "manual": "Se han suspendido los depósitos, proceda con precaución.",
-      "unknown": "Deposits halted."
+      "unknown": "Se han suspendido los depósitos."
     },
     "withdrawal": {
-      "bridge_down": "Se han suspendido los retiros. La ruta del puente nativo está cortada.",
+      "bridge_down": "Se han suspendido los retiros. La ruta del puente nativo no funciona.",
       "source_chain_killed": "Se han suspendido los retiros. La cadena de origen ha cesado su funcionamiento.",
       "manual": "Se han suspendido los retiros, tenga precaución.",
-      "unknown": "Withdrawals halted."
+      "unknown": "Se han suspendido los retiros."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "La cadena de suministro de este activo ha cesado sus operaciones.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "El cliente IBC hacia la cadena de este activo ha sido inestable.",
+    "source_chain_killed": "La cadena de origen de este activo ha dejado de funcionar.",
+    "market": "Este activo ha tenido una liquidez y un volumen de negociación muy bajos durante un período prolongado.",
     "manual": "Inestable, tenga precaución.",
     "unknown": "Inestable, tenga precaución."
   },
@@ -1026,8 +1026,8 @@
     "balanceUnavailable": "No se pudo cargar tu saldo en {chain}",
     "balanceUnavailableDescription": "No pudimos conectar con {chain} para consultar tu saldo, por lo que puede aparecer como 0. Tus fondos no se ven afectados. Vuelve a intentarlo o usa las opciones de abajo.",
     "retryBalance": "Reintentar",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "Los depósitos de {asset} están suspendidos",
+    "withdrawalsHalted": "Los retiros de {asset} están suspendidos",
     "noNativeTransfers": "Transferencias nativas no disponibles para {asset}",
     "noNativeTransfersDescription": "Por favor, utilice uno de los proveedores alternativos a continuación.",
     "sendFromWalletOrExchange": "Envía desde tu billetera o exchange",
@@ -1321,7 +1321,7 @@
         "order": "Orden",
         "amount": "Cantidad",
         "price": "Precio",
-        "orderPlaced": "Pedido realizado",
+        "orderPlaced": "Orden colocada",
         "status": "Estado"
       },
       "emptyState": {
@@ -1338,51 +1338,51 @@
     },
     "aboveMarket": {
       "title": "Precio límite por encima del precio de mercado",
-      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+      "description": "Si continúa, su orden podría ejecutarse a un precio desfavorable."
     },
     "belowMarket": {
       "title": "Precio límite por debajo del precio de mercado",
-      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+      "description": "Si continúa, su orden podría ejecutarse a un precio desfavorable."
     },
     "enterAnAmountTo": "Introduzca una cantidad a",
     "toSell": "vender",
     "toBuy": "comprar",
     "sell": "Vender",
     "sold": "Vendido",
-    "percentFilled": "Porcentaje lleno",
+    "percentFilled": "Porcentaje ejecutado",
     "status": "Estado",
     "price": "Precio",
     "buy": "Comprar",
     "pay": "Pagar",
     "open": "Abierto",
-    "filled": "Completado",
-    "claimable": "Reclamable",
+    "filled": "Ejecutado",
+    "claimable": "Por reclamar",
     "claimAndClose": "Reclamar y cerrar",
-    "close": "Cerca",
-    "claim": "Afirmar",
+    "close": "Cerrar",
+    "claim": "Reclamar",
     "accept": "Aceptar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
-    "daysAgo": "{days} hace d",
-    "hoursAgo": "{hours} hace h",
+    "daysAgo": "hace {days} d",
+    "hoursAgo": "hace {hours} h",
     "buyWith": "Compre con {coinA} o {coinB}",
-    "orderHistory": "Historial de pedidos",
+    "orderHistory": "Historial de órdenes",
     "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
     "tradeAnotherAsset": "Cambie otro activo por {coinDenom}",
     "sellAnAsset": "Vender un activo",
     "swapAnAsset": "Intercambiar un activo",
     "of": "de",
-    "insufficientFunds": "Fondos insuficientes",
+    "insufficientFunds": "Saldo insuficiente",
     "startTrading": "Comienza a negociar",
-    "tradeFees": "Tarifas comerciales (cuando se completa el pedido)",
-    "youNeed": "Necesitas",
-    "stablecoin": "moneda estable",
+    "tradeFees": "Comisiones de trading (cuando se ejecuta la orden)",
+    "youNeed": "Necesita",
+    "stablecoin": "stablecoins",
     "quoteUpdated": "Cotización actualizada",
-    "fundsOsmosisToBuyAssets": "fondos en Osmosis para comprar activos.",
+    "fundsOsmosisToBuyAssets": "en Osmosis para comprar activos.",
     "chooseAnOption": "Elija una opción para continuar.",
     "lowerSlippageToleranceRecommended": "Se recomienda una menor tolerancia al deslizamiento.",
     "tryHigherSlippage": "Pruebe con una tolerancia máxima de deslizamiento más alta.",
-    "reviewTrade": "Revisar el comercio",
+    "reviewTrade": "Revisar operación",
     "highPriceImpact": {
       "title": "El impacto en el precio es alto",
       "description": "Esta operación mueve el precio de mercado un {impact}, por lo que podría recibir mucho menos que el importe mostrado."
@@ -1395,8 +1395,8 @@
     },
     "transferFromAnotherNetwork": "Transferir desde otra red o billetera",
     "whatIsOrderClaim": {
-      "title": "¿Qué reclama el pedido?",
-      "description": "En la mayoría de los casos, cuando se completa una orden limitada, los fondos se agregan automáticamente a su saldo. Sin embargo, en algunos casos excepcionales, los fondos deben reclamarse manualmente desde la orden completada.<inlang-LineFeed>\nEste proceso de reclamo implica aprobar una única transacción en su billetera para todos los pedidos ejecutados no reclamados, lo que genera una tarifa de red nominal."
+      "title": "¿Qué significa reclamar una orden?",
+      "description": "En la mayoría de los casos, cuando se ejecuta una orden límite, los fondos se añaden automáticamente a su saldo. Sin embargo, en algunos casos poco frecuentes, los fondos deben reclamarse manualmente desde la orden ejecutada.\n\nPara ello, debe aprobar en su billetera una única transacción para todas las órdenes ejecutadas no reclamadas, lo que conlleva una pequeña comisión de red."
     },
     "whatIsAStablecoin": {
       "title": "¿Qué es una moneda estable?",
@@ -1414,27 +1414,27 @@
     "connectYourWallet": "Conecta tu billetera",
     "toSeeYourBalances": "para ver tus saldos",
     "searchAssets": "Buscar activos",
-    "below": "abajo",
-    "above": "arriba",
+    "below": "por debajo del",
+    "above": "por encima del",
     "currentPrice": "precio actual",
-    "whenDenomPriceIs": "Cuando el precio {denom} es",
+    "whenDenomPriceIs": "Cuando el precio de {denom} sea",
     "orderType": "Tipo de orden",
     "confirm": "Confirmar",
     "market": "Mercado",
     "limit": "Límite",
-    "trade": "Comercio",
+    "trade": "Operar",
     "swapToAnotherAsset": "Cambiar a otro activo",
     "invalidPrice": "Precio no válido",
     "priceTooLow": "Precio demasiado bajo",
     "priceTooHigh": "Precio demasiado alto",
     "unavailable": "No disponible para {denom}",
     "orderHistoryHeaders": {
-      "past": "Pasado",
+      "past": "Historial",
       "pending": "Pendiente",
-      "filled": "Pedidos completados para reclamar"
+      "filled": "Órdenes ejecutadas por reclamar"
     },
-    "priceReaches": "Si el precio {denom} alcanza {price}",
-    "belowMinimumAmount": "{amount} mínimo",
+    "priceReaches": "Si el precio de {denom} alcanza {price}",
+    "belowMinimumAmount": "Mínimo {amount}",
     "noOrderbookForPair": "No existe ningún orderbook para {base}/{quote}. Cree uno para habilitar órdenes limitadas para este par.",
     "createOrderbook": "Crear Orderbook",
     "noOrderbookExists": "Sin orderbook para {denom}",
@@ -1447,7 +1447,8 @@
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "howPayoutsWork": "¿Cómo funcionan los pagos?",
-    "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado."
+    "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado.",
+    "limitOrder": "Orden límite"
   },
   "tradeDetails": {
     "priceImpact": {
