@@ -12,7 +12,7 @@ import { HighSlippageGate } from "~/config/trade-warnings";
 export const warnedSlippage = HighSlippageGate.add(new Dec(0.01));
 
 export const baseFigures = (overrides?: Partial<LossFigures>): LossFigures => ({
-  identityKey: "Nomic|osmosis-1|bitcoin|allBTC|sat|100000000",
+  identityKey: "Skip|osmosis-1|bitcoin|allBTC|sat|100000000",
   slippage: warnedSlippage,
   priceImpact: new Dec(0),
   warnSlippage: true,
