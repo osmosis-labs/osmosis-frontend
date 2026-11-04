@@ -30,64 +30,54 @@ import { getLogoURIs } from "~/utils/logo-uri";
 
 interface OrderModalProps {
   order?: MappedLimitOrder;
-  /** The other history row for the same order, when the order was partly filled then cancelled. */
-  relatedOrder?: MappedLimitOrder;
   onRequestClose: () => void;
 }
 
-export const OrderModal = memo(
-  ({ order, relatedOrder, onRequestClose }: OrderModalProps) => {
-    return (
-      <ModalBase
-        isOpen={!!order}
+export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
+  return (
+    <ModalBase
+      isOpen={!!order}
+      onRequestClose={onRequestClose}
+      className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+    >
+      <OrderDetails
+        order={order}
+        isModal={true}
         onRequestClose={onRequestClose}
-        className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
-      >
-        <OrderDetails
-          order={order}
-          relatedOrder={relatedOrder}
-          isModal={true}
-          onRequestClose={onRequestClose}
-        />
-      </ModalBase>
-    );
-  }
-);
+      />
+    </ModalBase>
+  );
+});
 
 interface OrderDetailsProps {
   order?: MappedLimitOrder;
-  relatedOrder?: MappedLimitOrder;
   isModal: boolean;
   onRequestClose: () => void;
 }
 
 const OrderDetails = ({
   order,
-  relatedOrder,
   isModal,
   onRequestClose,
 }: OrderDetailsProps) => {
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
 
-  /**
-   * The history API splits a partly filled, cancelled order into a "cancelled" row
-   * (the unfilled input that was returned) and a "fullyClaimed" row (the filled input).
-   * Pair them so the modal can show what was received and what was returned.
-   */
   const isPastOrder =
     order?.status === "cancelled" || order?.status === "fullyClaimed";
-  const pastParts = isPastOrder ? [order, relatedOrder] : [];
-  const filledPart = pastParts.find((o) => o?.status === "fullyClaimed");
-  const returnedPart = pastParts.find((o) => o?.status === "cancelled");
-  // The conversion card shows the filled part when there is one, so "Bought" is what was received.
-  const displayOrder = filledPart ?? order;
-
-  // Past orders carry the whole order's fill, so this works even when the paired row isn't loaded.
   const isPartlyFilledPastOrder =
     isPastOrder &&
     order.percentFilled.isPositive() &&
     order.percentFilled.lt(new Dec(1));
+  const isUnfilledCancel =
+    order?.status === "cancelled" && order.percentFilled.isZero();
+  // The conversion card shows a partly filled order's filled part, so "Bought" is what was received.
+  const shownQuantity = isPartlyFilledPastOrder
+    ? order.totalFilled
+    : order?.placed_quantity;
+  const shownOutput = isPartlyFilledPastOrder
+    ? order.output.mul(order.percentFilled)
+    : order?.output;
   // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0%" next to "Partly filled".
   const percentFilledOfPastOrder = isPartlyFilledPastOrder
     ? new RatePretty(
@@ -128,13 +118,14 @@ const OrderDetails = ({
   const statusComponent = (() => {
     if (!order) return;
 
-    // Both rows of a partly filled, cancelled order show its final status and that it partly filled.
-    switch (isPartlyFilledPastOrder ? "cancelled" : order.status) {
+    switch (order.status) {
       case "open":
       case "partiallyFilled":
         return (
           <div className="flex items-center justify-between">
-            <span className="body2 sm:caption text-osmoverse-300">Open</span>
+            <span className="body2 sm:caption text-osmoverse-300">
+              {t("limitOrders.open")}
+            </span>
           </div>
         );
       case "cancelled":
@@ -155,11 +146,15 @@ const OrderDetails = ({
         );
       case "filled":
         return (
-          <span className="body2 sm:caption text-bullish-300">Claimable</span>
+          <span className="body2 sm:caption text-bullish-300">
+            {t("limitOrders.claimable")}
+          </span>
         );
       case "fullyClaimed":
         return (
-          <span className="body2 sm:caption text-bullish-400">Filled</span>
+          <span className="body2 sm:caption text-bullish-400">
+            {t("limitOrders.filled")}
+          </span>
         );
       default:
         return;
@@ -238,15 +233,15 @@ const OrderDetails = ({
   const orderAmount = formatFiatPrice(
     new PricePretty(
       DEFAULT_VS_CURRENCY,
-      displayOrder?.order_direction === "bid"
-        ? displayOrder?.placed_quantity /
+      order?.order_direction === "bid"
+        ? (shownQuantity ?? 0) /
             Number(
               new Dec(10)
-                .pow(new Int(displayOrder?.quoteAsset?.decimals ?? 0))
+                .pow(new Int(order?.quoteAsset?.decimals ?? 0))
                 .toString()
             )
-        : (displayOrder?.output.quo(
-            new Dec(10).pow(new Int(displayOrder?.quoteAsset?.decimals ?? 0))
+        : (shownOutput?.quo(
+            new Dec(10).pow(new Int(order?.quoteAsset?.decimals ?? 0))
           ) ?? new Dec(0))
     ),
     2
@@ -255,11 +250,15 @@ const OrderDetails = ({
   const [topText, bottomText] = (() => {
     if (!order) return ["", ""];
 
-    if (order.status === "filled" || filledPart) {
+    if (
+      order.status === "filled" ||
+      order.status === "fullyClaimed" ||
+      isPartlyFilledPastOrder
+    ) {
       return [t("limitOrders.sold"), t("transactions.bought")];
     }
 
-    if (returnedPart) {
+    if (isUnfilledCancel) {
       return [t("limitOrders.returnedUnfilled"), ""];
     }
 
@@ -297,7 +296,7 @@ const OrderDetails = ({
             />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">Limit Order</div>
+            <div className="text-h5">{t("limitOrders.limitOrder")}</div>
             <div className="body1 capitalize text-osmoverse-300">
               {formattedDate}
             </div>
@@ -332,7 +331,7 @@ const OrderDetails = ({
                     coinDenom: tokenIn?.symbol ?? "",
                     coinMinimalDenom: tokenIn?.coinMinimalDenom ?? "",
                   },
-                  displayOrder?.placed_quantity ?? new Dec(0)
+                  shownQuantity ?? new Dec(0)
                 )
               )}
             </div>
@@ -341,7 +340,7 @@ const OrderDetails = ({
             </div>
           </div>
         </div>
-        {(!returnedPart || filledPart) && (
+        {!isUnfilledCancel && (
           <>
             <div className="flex h-10 w-14 items-center justify-center p-2">
               <Icon
@@ -380,7 +379,7 @@ const OrderDetails = ({
                         coinDenom: tokenOut?.symbol ?? "",
                         coinMinimalDenom: tokenOut?.coinMinimalDenom ?? "",
                       },
-                      displayOrder?.output ?? new Dec(0)
+                      shownOutput ?? new Dec(0)
                     )
                   )}
                 </div>
@@ -442,7 +441,7 @@ const OrderDetails = ({
               }
             />
           )}
-          {filledPart && returnedPart && (
+          {isPartlyFilledPastOrder && (
             <RecapRow
               className="sm:py-0"
               left={
@@ -459,7 +458,8 @@ const OrderDetails = ({
                         coinDenom: tokenIn?.symbol ?? "",
                         coinMinimalDenom: tokenIn?.coinMinimalDenom ?? "",
                       },
-                      returnedPart.placed_quantity
+                      // What a cancelled order left unfilled was returned to the wallet.
+                      order.quantity
                     )
                   )}
                 </span>

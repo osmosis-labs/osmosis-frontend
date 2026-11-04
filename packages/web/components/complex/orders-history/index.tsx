@@ -100,18 +100,6 @@ export const OrderHistory = () => {
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
-  const relatedOrder = useMemo(
-    () =>
-      selectedOrder &&
-      orders.find(
-        (o) =>
-          // Refetches replace the row objects, so tell the pair apart by status, not identity.
-          o.status !== selectedOrder.status &&
-          o.order_id === selectedOrder.order_id &&
-          o.orderbookAddress === selectedOrder.orderbookAddress
-      ),
-    [orders, selectedOrder]
-  );
   const groups = useMemo(
     () =>
       Object.keys(groupedOrders).filter(
@@ -329,7 +317,6 @@ export const OrderHistory = () => {
       />
       <OrderModal
         order={selectedOrder}
-        relatedOrder={relatedOrder}
         onRequestClose={() => setSelectedOrder(undefined)}
       />
     </div>
@@ -463,13 +450,21 @@ const TableOrderRow = memo(
       placed_at,
       status,
       percentFilled,
+      totalFilled,
     } = order;
 
-    // A cancelled row is the unfilled input, so name the asset that went back to the wallet.
+    // A cancelled order that partly filled is shown by what filled; the modal adds what was returned.
+    const isPartlyFilledCancel =
+      status === "cancelled" && percentFilled.isPositive();
+    const isUnfilledCancel = status === "cancelled" && !isPartlyFilledCancel;
+    const shownQuantity = isPartlyFilledCancel ? totalFilled : placed_quantity;
+    const shownOutput = isPartlyFilledCancel
+      ? output.mul(percentFilled)
+      : output;
+
+    // An unfilled cancel only returned its input, so name the asset that went back to the wallet.
     const lineAsset =
-      status === "cancelled" && order_direction === "bid"
-        ? quoteAsset
-        : baseAsset;
+      isUnfilledCancel && order_direction === "bid" ? quoteAsset : baseAsset;
 
     const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
@@ -483,12 +478,11 @@ const TableOrderRow = memo(
         case "filled":
           return t("limitOrders.filled");
         case "fullyClaimed":
-          // The filled part of an order that was later cancelled.
-          return percentFilled.lt(new Dec(1))
-            ? t("limitOrders.partlyFilled")
-            : t("limitOrders.filled");
+          return t("limitOrders.filled");
         case "cancelled":
-          return t("limitOrders.cancelled");
+          return isPartlyFilledCancel
+            ? t("limitOrders.partlyFilled")
+            : t("limitOrders.cancelled");
       }
     })();
 
@@ -544,11 +538,10 @@ const TableOrderRow = memo(
               width={24}
               height={24}
               className={classNames("h-6 w-6", {
-                "text-osmoverse-500": status === "cancelled",
-                "text-rust-400":
-                  status !== "cancelled" && order_direction === "ask",
+                "text-osmoverse-500": isUnfilledCancel,
+                "text-rust-400": !isUnfilledCancel && order_direction === "ask",
                 "text-bullish-400":
-                  status !== "cancelled" && order_direction === "bid",
+                  !isUnfilledCancel && order_direction === "bid",
               })}
             />
           </div>
@@ -570,7 +563,7 @@ const TableOrderRow = memo(
                         coinDenom: baseAsset?.symbol ?? "",
                         coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? placed_quantity : output
+                      order_direction === "ask" ? shownQuantity : shownOutput
                     )
                   )}
                 </span>
@@ -588,14 +581,14 @@ const TableOrderRow = memo(
                         coinDenom: quoteAsset?.symbol ?? "",
                         coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? output : placed_quantity
+                      order_direction === "ask" ? shownOutput : shownQuantity
                     )
                   )}
                 </span>
               </p>
               <div className="md:body2 inline-flex items-center gap-2">
                 <span>
-                  {status === "cancelled" ? (
+                  {isUnfilledCancel ? (
                     <>
                       {t("limitOrders.returned")}{" "}
                       {formatPretty(
@@ -618,13 +611,13 @@ const TableOrderRow = memo(
                         new PricePretty(
                           DEFAULT_VS_CURRENCY,
                           order_direction === "bid"
-                            ? placed_quantity /
+                            ? shownQuantity /
                                 Number(
                                   new Dec(10)
                                     .pow(new Int(quoteAsset?.decimals ?? 0))
                                     .toString()
                                 )
-                            : output.quo(
+                            : shownOutput.quo(
                                 new Dec(10).pow(
                                   new Int(quoteAsset?.decimals ?? 0)
                                 )
@@ -681,10 +674,12 @@ const TableOrderRow = memo(
               className={classNames(
                 {
                   "text-bullish-400":
-                    status === "filled" || status === "fullyClaimed",
+                    status === "filled" ||
+                    status === "fullyClaimed" ||
+                    isPartlyFilledCancel,
                   "text-osmoverse-300":
                     status === "open" || status === "partiallyFilled",
-                  "text-osmoverse-500": status === "cancelled",
+                  "text-osmoverse-500": isUnfilledCancel,
                 },
                 "md:body2"
               )}
