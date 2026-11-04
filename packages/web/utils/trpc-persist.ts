@@ -20,8 +20,9 @@ export const PERSIST_EXCLUDED_KEYS = [
  * unfiltered `assetVariantCandidates`.
  * v7: `local.portfolio.getPortfolioAssets` `heldAssets` gained `amount` and
  * `fiatValue`.
+ * v8: `local.portfolio.getPortfolioAssets` gained `unpricedAssets`.
  */
-export const PERSIST_BUSTER = "v7";
+export const PERSIST_BUSTER = "v8";
 
 /**
  * Which queries the persisted cache keeps. Only successful queries: v5

@@ -6,7 +6,10 @@ import {
   QuoteDirection,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 import { useCallback, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
@@ -885,7 +888,12 @@ const useLimitPrice = ({
 
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
-    (price: string) => {
+    (rawPrice: string) => {
+      const normalizedPrice = normalizeDecimalSeparator(rawPrice);
+      if (normalizedPrice === null) return;
+      const price = normalizedPrice.startsWith(".")
+        ? "0" + normalizedPrice
+        : normalizedPrice;
       if (countDecimals(price) > 12) {
         return;
       }
@@ -939,7 +947,10 @@ const useLimitPrice = ({
   // Adjusting the precentage also resets a user based input in order to maintain
   // a percentage related to the current spot price.
   const setManualPercentAdjustedSafe = useCallback(
-    (percentAdjusted: string) => {
+    (rawPercentAdjusted: string) => {
+      const normalized = normalizeDecimalSeparator(rawPercentAdjusted);
+      if (normalized === null) return;
+      let percentAdjusted = normalized;
       if (percentAdjusted.startsWith(".")) {
         percentAdjusted = "0" + percentAdjusted;
       }

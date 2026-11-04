@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Kupić",
     "sell": "Sprzedać",
+    "chartTemporarilyUnavailable": "Wykres jest obecnie niedostępny",
+    "pricesUnavailable": "Ceny niedostępne",
+    "unpricedAssets": "+ {count} aktywo bez ceny",
+    "unpricedAssets_plural": "+ {count} aktywów bez ceny",
+    "unpricedAssetsTooltip": "Nie wliczono do sumy: {assets}",
     "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
     "searchBalances": "Wyszukaj salda",
@@ -1440,7 +1445,13 @@
     "clickToCreateOrderbook": "Kliknij, aby utworzyć orderbook dla tej pary.",
     "creationInProgress": "Tworzenie orderbooka dla tej pary jest już w toku w innej karcie",
     "creationAwaitingConfirmation": "Poprzednie tworzenie księgi zleceń dla tej pary nadal czeka na potwierdzenie onchain. Spróbuj ponownie za kilka minut.",
-    "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis."
+    "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis.",
+    "returned": "Zwrócono",
+    "partlyFilled": "Częściowo zrealizowane",
+    "returnedUnfilled": "Zwrócono (niezrealizowane)",
+    "alreadyReceived": "Już otrzymano",
+    "howPayoutsWork": "Jak działają wypłaty?",
+    "payoutNote": "Zrealizowane kwoty są zwykle wypłacane automatycznie na Twój portfel, często w kilku wypłatach w miarę realizacji zlecenia, i mogą dotrzeć kilka godzin lub dni przed anulowaniem. Jeśli przy zleceniu widać „Złóż wniosek”, część zrealizowanej kwoty nie została jeszcze wypłacona. Anulowanie zwraca tylko niezrealizowaną kwotę."
   },
   "tradeDetails": {
     "priceImpact": {

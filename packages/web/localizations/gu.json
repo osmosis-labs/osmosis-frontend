@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "ખરીદો",
     "sell": "વેચો",
+    "chartTemporarilyUnavailable": "ચાર્ટ હમણાં ઉપલબ્ધ નથી",
+    "pricesUnavailable": "કિંમતો ઉપલબ્ધ નથી",
+    "unpricedAssets": "+ {count} એસેટ કિંમત વગરની",
+    "unpricedAssets_plural": "+ {count} એસેટ્સ કિંમત વગરની",
+    "unpricedAssetsTooltip": "કુલમાં સામેલ નથી: {assets}",
     "yourBalances": "તમારું બેલેન્સ",
     "yourPositions": "તમારી સ્થિતિ",
     "searchBalances": "બેલેન્સ શોધો",
@@ -1440,7 +1445,13 @@
     "clickToCreateOrderbook": "આ જોડી માટે orderbook બનાવવા ક્લિક કરો.",
     "creationInProgress": "આ જોડી માટે ઓર્ડરબુક બનાવવાનું બીજા ટૅબમાં પહેલેથી ચાલુ છે",
     "creationAwaitingConfirmation": "આ જોડી માટે અગાઉનું ઓર્ડરબુક નિર્માણ હજી ઓનચેઇન પુષ્ટિની રાહ જોઈ રહ્યું છે. થોડી મિનિટોમાં ફરી પ્રયાસ કરો.",
-    "createOrderbookDescription": "Orderbook pool બનાવવાથી Osmosis પર આ ટ્રેડિંગ જોડી માટે limit orders મૂકી શકાય છે."
+    "createOrderbookDescription": "Orderbook pool બનાવવાથી Osmosis પર આ ટ્રેડિંગ જોડી માટે limit orders મૂકી શકાય છે.",
+    "returned": "પરત કરેલ",
+    "partlyFilled": "આંશિક રીતે ભરાયેલ",
+    "returnedUnfilled": "પરત કરેલ (ન ભરાયેલ)",
+    "alreadyReceived": "પહેલેથી મળેલ",
+    "howPayoutsWork": "ચુકવણી કેવી રીતે થાય છે?",
+    "payoutNote": "ભરાયેલી રકમ સામાન્ય રીતે આપમેળે તમારા વૉલેટમાં ચૂકવાય છે, ઘણીવાર ઓર્ડર ભરાય તેમ અનેક ચુકવણીઓમાં, અને તમે રદ કરો તેના કલાકો કે દિવસો પહેલાં આવી શકે છે. જો કોઈ ઓર્ડર પર “દાવો કરો” દેખાય, તો ભરાયેલી રકમનો અમુક ભાગ હજી ચૂકવાયો નથી. રદ કરવાથી ફક્ત ન ભરાયેલી રકમ પરત થાય છે."
   },
   "tradeDetails": {
     "priceImpact": {

@@ -192,6 +192,11 @@
   "portfolio": {
     "buy": "Satın almak",
     "sell": "Satmak",
+    "chartTemporarilyUnavailable": "Grafik şu anda kullanılamıyor",
+    "pricesUnavailable": "Fiyatlar kullanılamıyor",
+    "unpricedAssets": "+ {count} varlık fiyatsız",
+    "unpricedAssets_plural": "+ {count} varlık fiyatsız",
+    "unpricedAssetsTooltip": "Toplama dahil değil: {assets}",
     "yourBalances": "Bakiyeleriniz",
     "yourPositions": "Pozisyonlarınız",
     "searchBalances": "Bakiyeleri ara",
@@ -1440,7 +1445,13 @@
     "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
     "creationInProgress": "Bu parite için orderbook oluşturma başka bir sekmede zaten devam ediyor",
     "creationAwaitingConfirmation": "Bu parite için önceki emir defteri oluşturma işlemi hâlâ zincir üstü onay bekliyor. Birkaç dakika sonra tekrar deneyin.",
-    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
+    "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar.",
+    "returned": "İade edildi",
+    "partlyFilled": "Kısmen gerçekleşti",
+    "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
+    "alreadyReceived": "Zaten alındı",
+    "howPayoutsWork": "Ödemeler nasıl çalışır?",
+    "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder."
   },
   "tradeDetails": {
     "priceImpact": {

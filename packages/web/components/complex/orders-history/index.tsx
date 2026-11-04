@@ -150,14 +150,6 @@ export const OrderHistory = () => {
 
   const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
-  const onOrderSelect = useCallback(
-    (order: MappedLimitOrder) => {
-      if (!isLargeScreen) return;
-      setSelectedOrder(order);
-    },
-    [isLargeScreen]
-  );
-
   if (showConnectWallet) {
     return (
       <div className="mx-auto my-6 flex flex-col justify-center gap-6 px-4 text-center">
@@ -309,7 +301,7 @@ export const OrderHistory = () => {
                   order={order}
                   style={style}
                   refetch={refetch}
-                  onOrderSelect={onOrderSelect}
+                  onOrderSelect={setSelectedOrder}
                 />
               );
             })
@@ -323,12 +315,10 @@ export const OrderHistory = () => {
           }
         }}
       />
-      {isLargeScreen && (
-        <OrderModal
-          order={selectedOrder}
-          onRequestClose={() => setSelectedOrder(undefined)}
-        />
-      )}
+      <OrderModal
+        order={selectedOrder}
+        onRequestClose={() => setSelectedOrder(undefined)}
+      />
     </div>
   );
 };
@@ -409,11 +399,28 @@ const TableGroupHeader = ({
   return (
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
-        <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
-          {group === "pending"
-            ? t("limitOrders.orderHistoryHeaders.pending")
-            : t("limitOrders.orderHistoryHeaders.past")}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
+            {group === "pending"
+              ? t("limitOrders.orderHistoryHeaders.pending")
+              : t("limitOrders.orderHistoryHeaders.past")}
+          </span>
+          {group === "past" && (
+            <GenericDisclaimer
+              title={t("limitOrders.howPayoutsWork")}
+              body={t("limitOrders.payoutNote")}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
+                <Icon
+                  id="question"
+                  className="h-6 w-6 text-wosmongton-200"
+                  width={24}
+                  height={24}
+                />
+              </div>
+            </GenericDisclaimer>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -442,7 +449,22 @@ const TableOrderRow = memo(
       price,
       placed_at,
       status,
+      percentFilled,
+      totalFilled,
     } = order;
+
+    // A cancelled order that partly filled is shown by what filled; the modal adds what was returned.
+    const isPartlyFilledCancel =
+      status === "cancelled" && percentFilled.isPositive();
+    const isUnfilledCancel = status === "cancelled" && !isPartlyFilledCancel;
+    const shownQuantity = isPartlyFilledCancel ? totalFilled : placed_quantity;
+    const shownOutput = isPartlyFilledCancel
+      ? output.mul(percentFilled)
+      : output;
+
+    // An unfilled cancel only returned its input, so name the asset that went back to the wallet.
+    const lineAsset =
+      isUnfilledCancel && order_direction === "bid" ? quoteAsset : baseAsset;
 
     const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
@@ -454,10 +476,13 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return t("limitOrders.open");
         case "filled":
+          return t("limitOrders.filled");
         case "fullyClaimed":
           return t("limitOrders.filled");
         case "cancelled":
-          return t("limitOrders.cancelled");
+          return isPartlyFilledCancel
+            ? t("limitOrders.partlyFilled")
+            : t("limitOrders.cancelled");
       }
     })();
 
@@ -493,9 +518,18 @@ const TableOrderRow = memo(
         style={style}
         className={classNames(
           gridClasses,
-          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900 sm:[&>td]:!py-0"
+          "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0"
         )}
         onClick={() => onOrderSelect(order)}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          // Ignore keys aimed at the row's own Cancel/Claim buttons.
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOrderSelect(order);
+          }
+        }}
       >
         <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
           <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
@@ -504,8 +538,10 @@ const TableOrderRow = memo(
               width={24}
               height={24}
               className={classNames("h-6 w-6", {
-                "text-rust-400": order_direction === "ask",
-                "text-bullish-400": order_direction === "bid",
+                "text-osmoverse-500": isUnfilledCancel,
+                "text-rust-400": !isUnfilledCancel && order_direction === "ask",
+                "text-bullish-400":
+                  !isUnfilledCancel && order_direction === "bid",
               })}
             />
           </div>
@@ -527,7 +563,7 @@ const TableOrderRow = memo(
                         coinDenom: baseAsset?.symbol ?? "",
                         coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? placed_quantity : output
+                      order_direction === "ask" ? shownQuantity : shownOutput
                     )
                   )}
                 </span>
@@ -545,46 +581,66 @@ const TableOrderRow = memo(
                         coinDenom: quoteAsset?.symbol ?? "",
                         coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? output : placed_quantity
+                      order_direction === "ask" ? shownOutput : shownQuantity
                     )
                   )}
                 </span>
               </p>
               <div className="md:body2 inline-flex items-center gap-2">
                 <span>
-                  {order_direction === "bid"
-                    ? t("limitOrders.buy")
-                    : t("limitOrders.sell")}{" "}
-                  {formatFiatPrice(
-                    new PricePretty(
-                      DEFAULT_VS_CURRENCY,
-                      order_direction === "bid"
-                        ? placed_quantity /
-                            Number(
-                              new Dec(10)
-                                .pow(new Int(quoteAsset?.decimals ?? 0))
-                                .toString()
-                            )
-                        : output.quo(
-                            new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
-                          )
-                    ),
-                    2
-                  )}{" "}
-                  {t("limitOrders.of")}
+                  {isUnfilledCancel ? (
+                    <>
+                      {t("limitOrders.returned")}{" "}
+                      {formatPretty(
+                        new CoinPretty(
+                          {
+                            coinDecimals: lineAsset?.decimals ?? 0,
+                            coinDenom: lineAsset?.symbol ?? "",
+                            coinMinimalDenom: lineAsset?.coinMinimalDenom ?? "",
+                          },
+                          placed_quantity
+                        ).hideDenom(true)
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {order_direction === "bid"
+                        ? t("limitOrders.buy")
+                        : t("limitOrders.sell")}{" "}
+                      {formatFiatPrice(
+                        new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          order_direction === "bid"
+                            ? shownQuantity /
+                                Number(
+                                  new Dec(10)
+                                    .pow(new Int(quoteAsset?.decimals ?? 0))
+                                    .toString()
+                                )
+                            : shownOutput.quo(
+                                new Dec(10).pow(
+                                  new Int(quoteAsset?.decimals ?? 0)
+                                )
+                              )
+                        ),
+                        2
+                      )}{" "}
+                      {t("limitOrders.of")}
+                    </>
+                  )}
                 </span>
                 <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                   <EntityImage
                     width={20}
                     height={20}
                     logoURIs={
-                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
+                      lineAsset?.rawAsset.logoURIs ?? { png: undefined }
                     }
-                    name={baseAsset?.rawAsset.name ?? ""}
-                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                    name={lineAsset?.rawAsset.name ?? ""}
+                    symbol={lineAsset?.rawAsset.symbol ?? ""}
                   />
                 </div>
-                <span>{baseAsset?.symbol}</span>
+                <span>{lineAsset?.symbol}</span>
               </div>
             </div>
           </div>
@@ -618,10 +674,12 @@ const TableOrderRow = memo(
               className={classNames(
                 {
                   "text-bullish-400":
-                    status === "filled" || status === "fullyClaimed",
+                    status === "filled" ||
+                    status === "fullyClaimed" ||
+                    isPartlyFilledCancel,
                   "text-osmoverse-300":
                     status === "open" || status === "partiallyFilled",
-                  "text-osmoverse-500": status === "cancelled",
+                  "text-osmoverse-500": isUnfilledCancel,
                 },
                 "md:body2"
               )}

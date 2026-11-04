@@ -48,6 +48,8 @@ export interface LossFigures {
    * snapshotting — the worsening comparison assumes larger = worse.
    */
   priceImpact: Dec;
+  /** The impact is unknown, so `priceImpact` is a placeholder and is not stamped. */
+  priceImpactUnknown?: boolean;
 
   /**
    * How far past the market price a true limit order is priced, as a positive

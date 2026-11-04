@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import path from "path";
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import * as prettier from "prettier";
 
 /** Generates a prettified TS file or appends to an existing TS file if `overwriteFile` is `false`.
