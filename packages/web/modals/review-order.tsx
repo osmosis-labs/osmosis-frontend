@@ -1079,7 +1079,7 @@ export function ReviewOrder({
                   }
                 />
               </div>
-              {limitQuotePegNote && orderType === "limit" && (
+              {limitQuotePegNote && (
                 <p className="caption px-2 text-osmoverse-300">
                   {limitQuotePegNote}
                 </p>

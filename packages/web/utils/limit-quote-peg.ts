@@ -4,8 +4,8 @@ import { Dec } from "@osmosis-labs/unit";
  *  every quote at exactly $1. */
 export type QuotePegStatus = "ok" | "warn" | "block" | "unknown";
 
-export const QUOTE_PEG_WARN_DEVIATION = new Dec("0.01");
-export const QUOTE_PEG_BLOCK_DEVIATION = new Dec("0.05");
+const QUOTE_PEG_WARN_DEVIATION = new Dec("0.01");
+const QUOTE_PEG_BLOCK_DEVIATION = new Dec("0.05");
 
 /**
  * Checks the quote's peg from two prices:

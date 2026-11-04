@@ -1032,11 +1032,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
               orderDirection={orderDirection}
             />
           )}
-          {type === "limit" &&
-            swapState.quotePegStatus === "warn" &&
-            quotePegNote && (
-              <p className="caption pb-2 text-rust-400">{quotePegNote}</p>
-            )}
+          {swapState.quotePegStatus === "warn" && (
+            <p className="caption pb-2 text-rust-400">{quotePegNote}</p>
+          )}
           {hasInsufficientFeeTokens && (
             <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-3">
               <Icon
@@ -1122,7 +1120,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             swapState.isLoadingOneClickMessages ||
             hasInsufficientFeeTokens ||
             // The peg is re-polled while the review is open.
-            (type === "limit" && swapState.quotePegStatus === "block")
+            swapState.quotePegStatus === "block"
           }
           isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
@@ -1142,7 +1140,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
           fromAsset={swapState.marketState.fromAsset}
           toAsset={swapState.marketState.toAsset}
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
-          limitQuotePegNote={type === "limit" ? quotePegNote : undefined}
+          limitQuotePegNote={quotePegNote}
           quoteType={swapState.marketState.quoteType}
           priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
           priceImpactUnknown={swapState.marketState.quote?.priceImpactUnknown}

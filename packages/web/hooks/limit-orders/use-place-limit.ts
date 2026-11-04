@@ -139,17 +139,13 @@ export const usePlaceLimit = ({
   // query to pending on each refetch, which would make the status flicker, and
   // a price restored from the persisted cache must not count until refetched.
   const {
-    data: quoteOnchainPriceData,
+    data: quoteOnchainPrice,
     isFetchedAfterMount: isQuoteOnchainPriceFetched,
     isError: isQuoteOnchainPriceError,
   } = api.edge.assets.getAssetPrice.useQuery(
     { coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "" },
     { enabled: isQuotePegChecked, refetchInterval: 30_000 }
   );
-  // A failed refetch keeps the last price: treat it as unknown, not current.
-  const quoteOnchainPrice = isQuoteOnchainPriceError
-    ? undefined
-    : quoteOnchainPriceData;
   const { data: usdcUsdPrice } = api.edge.assets.getUsdcCoinGeckoPrice.useQuery(
     undefined,
     {
@@ -164,10 +160,15 @@ export const usePlaceLimit = ({
    *  USDC price only adds the label check, so it isn't waited for. */
   const quotePeg = useMemo(() => {
     if (!isQuotePegChecked || !isQuoteOnchainPriceFetched) return;
-    return getQuotePeg(quoteOnchainPrice?.toDec(), usdcUsdPrice?.toDec());
+    // A failed refetch keeps the last price: treat it as unknown, not current.
+    return getQuotePeg(
+      isQuoteOnchainPriceError ? undefined : quoteOnchainPrice?.toDec(),
+      usdcUsdPrice?.toDec()
+    );
   }, [
     isQuotePegChecked,
     isQuoteOnchainPriceFetched,
+    isQuoteOnchainPriceError,
     quoteOnchainPrice,
     usdcUsdPrice,
   ]);
@@ -655,7 +656,7 @@ export const usePlaceLimit = ({
       return orderbookError;
     }
 
-    if (!isMarket && quotePegStatus === "block") {
+    if (quotePegStatus === "block") {
       return "limitOrders.quoteOffPeg";
     }
 
@@ -899,16 +900,10 @@ const useLimitPrice = ({
       }
 
       if (!isValidNumericalRawInput(price)) return;
+      // The price field isn't shown until there is a market price.
+      if (!spotPrice) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
-
-      // Without a market price there is no percentage to show.
-      if (!spotPrice) {
-        setPriceLock(true);
-        setOrderPrice(price);
-        setManualPercentAdjusted("");
-        return;
-      }
 
       const percentAdjusted = newPrice
         .quo(spotPrice)
@@ -1012,8 +1007,7 @@ const useLimitPrice = ({
       return new Dec(orderPrice);
     }
 
-    // Placing is blocked without a market price (see `isValidPrice`), so this
-    // zero is never sent as an order price.
+    // Placing is blocked without a market price (see `isValidPrice`).
     if (!spotPrice) return new Dec(0);
 
     const percent =
@@ -1048,11 +1042,9 @@ const useLimitPrice = ({
   );
 
   // If the user is inputting a price that crosses over the spot price
-  const isBeyondOppositePrice = !spotPrice
-    ? false
-    : orderDirection === "ask"
-      ? spotPrice.gt(price)
-      : spotPrice.lt(price);
+  const isBeyondOppositePrice =
+    !!spotPrice &&
+    (orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price));
 
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
