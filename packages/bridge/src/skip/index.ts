@@ -60,9 +60,11 @@ import {
   isDefinitiveNoRouteError,
   ROUTE_PROBE_REQUEST_TIMEOUT_MS,
   ROUTE_PROBE_USD,
+  RouteProbeCandidate,
   withTimeout,
 } from "./route-probe";
 import {
+  SkipAsset,
   SkipEstimatedFee,
   SkipEvmTx,
   SkipMsg,
@@ -863,28 +865,21 @@ export class SkipBridgeProvider implements BridgeProvider {
       // the spread blows the argument limit ("Maximum call stack size
       // exceeded") and this provider returns empty until instance recycle.
       const counterparties = [...(assetListAsset?.counterparty ?? [])];
-      // The asset's own counterparties are always listed. Counterparties that
-      // only come from other variants in the family (below) are route-checked
-      // before they are offered as withdraw destinations.
-      const ownKeys = new Set(
-        counterparties.map((c) =>
-          "chainId" in c
-            ? BridgeAssetMap.makeKey(
-                c.chainId.toString(),
-                "address" in c ? c.address : c.sourceDenom
-              )
-            : BridgeAssetMap.makeKey(
-                c.chainName,
-                "sourceDenom" in c ? c.sourceDenom : ""
-              )
-        )
-      );
-      const mergeCandidates: {
-        key: string;
-        chainId: string;
-        denom: string;
-        decimals: number | undefined;
-      }[] = [];
+      // Counterparties that only come from other variants in the family
+      // (appended below) are route-checked before they are offered. The
+      // asset's own counterparties, listed first, never are.
+      const ownCount = counterparties.length;
+      const mergeCandidates = new Map<string, RouteProbeCandidate>();
+      const noteMergeCandidate = (
+        index: number,
+        chainId: string,
+        address: string,
+        candidate: Omit<RouteProbeCandidate, "key">
+      ) => {
+        const key = BridgeAssetMap.makeKey(chainId, address);
+        if (index >= ownCount && !foundVariants.has(key))
+          mergeCandidates.set(key, { key, ...candidate });
+      };
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
@@ -898,7 +893,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         );
       }
 
-      for (const counterparty of counterparties) {
+      for (const [index, counterparty] of counterparties.entries()) {
         // check if supported by skip
         // Solana counterparties carry no chainId (NonCosmosCounterparty).
         // Skip routes SPL assets natively (e.g. allUSDC -> Solana USDC as a
@@ -929,21 +924,11 @@ export class SkipBridgeProvider implements BridgeProvider {
               (a) => a.denom === counterparty.sourceDenom
             );
             if (skipSplAsset) {
-              const key = BridgeAssetMap.makeKey(
-                "solana",
-                counterparty.sourceDenom
-              );
-              if (
-                !ownKeys.has(
-                  BridgeAssetMap.makeKey("solana", counterparty.sourceDenom)
-                )
-              )
-                mergeCandidates.push({
-                  key,
-                  chainId: "solana",
-                  denom: skipSplAsset.denom,
-                  decimals: counterparty.decimals,
-                });
+              noteMergeCandidate(index, "solana", counterparty.sourceDenom, {
+                chainId: "solana",
+                denom: skipSplAsset.denom,
+                decimals: counterparty.decimals,
+              });
               foundVariants.setAsset("solana", counterparty.sourceDenom, {
                 transferTypes: ["quote"],
                 chainId: "solana",
@@ -976,21 +961,11 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         if (!skipCounterparty) continue;
 
-        const candidateKey = BridgeAssetMap.makeKey(
-          counterparty.chainId.toString(),
-          address
-        );
-        if (
-          !ownKeys.has(candidateKey) &&
-          !mergeCandidates.some((c) => c.key === candidateKey)
-        ) {
-          mergeCandidates.push({
-            key: candidateKey,
-            chainId: counterparty.chainId.toString(),
-            denom: skipCounterparty.denom,
-            decimals: counterparty.decimals,
-          });
-        }
+        noteMergeCandidate(index, counterparty.chainId.toString(), address, {
+          chainId: counterparty.chainId.toString(),
+          denom: skipCounterparty.denom,
+          decimals: counterparty.decimals,
+        });
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -1043,6 +1018,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
 
       for (const sharedOriginAsset of sharedOriginAssets) {
+        // Shared-origin assets are never route-checked.
+        mergeCandidates.delete(
+          BridgeAssetMap.makeKey(
+            sharedOriginAsset.chain_id,
+            sharedOriginAsset.denom
+          )
+        );
         const chainInfo = sharedOriginAsset.is_evm
           ? {
               chainId: Number(sharedOriginAsset.chain_id),
@@ -1076,20 +1058,14 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
 
       // Drop family-merge destinations (withdraw) or sources (deposit) Skip
-      // cannot route. Own and shared-origin assets are never route-checked.
-      const sharedKeys = new Set(
-        sharedOriginAssets.map((a) =>
-          BridgeAssetMap.makeKey(a.chain_id, a.denom)
-        )
-      );
+      // cannot route.
       const unroutable = await this.findUnroutableTransferCandidates({
         direction,
         chain,
         asset,
-        osmosisDenom: chainAsset.denom,
-        osmosisDecimals: chainAsset.decimals ?? asset.decimals,
+        chainAsset,
         allowMultiTx,
-        candidates: mergeCandidates.filter((c) => !sharedKeys.has(c.key)),
+        candidates: [...mergeCandidates.values()],
       });
       for (const key of unroutable) foundVariants.delete(key);
 
@@ -1134,71 +1110,60 @@ export class SkipBridgeProvider implements BridgeProvider {
     direction,
     chain,
     asset,
-    osmosisDenom,
-    osmosisDecimals,
+    chainAsset,
     allowMultiTx,
     candidates,
   }: {
     direction: "deposit" | "withdraw";
     chain: BridgeChain;
     asset: BridgeAsset;
-    osmosisDenom: string;
-    osmosisDecimals: number | undefined;
+    chainAsset: SkipAsset;
     allowMultiTx?: boolean;
-    candidates: {
-      key: string;
-      chainId: string;
-      denom: string;
-      decimals: number | undefined;
-    }[];
+    candidates: RouteProbeCandidate[];
   }): Promise<string[]> {
-    if (candidates.length === 0) return [];
-    const price = await (
-      this.ctx.getAssetUsdPrice
-        ? withTimeout(
-            this.ctx.getAssetUsdPrice(asset.address),
-            ROUTE_PROBE_REQUEST_TIMEOUT_MS
-          )
-        : Promise.resolve(undefined)
+    if (candidates.length === 0 || !this.ctx.getAssetUsdPrice) return [];
+    const price = await withTimeout(
+      this.ctx.getAssetUsdPrice(asset.address),
+      ROUTE_PROBE_REQUEST_TIMEOUT_MS
     ).catch(() => undefined);
     if (!price || !price.isPositive()) return [];
 
     const isWithdraw = direction === "withdraw";
+    // Deposits offered only for multi-tx callers need it to route.
+    const multiTx = !isWithdraw && allowMultiTx === true;
+    const osmosis = {
+      denom: chainAsset.denom,
+      chainId: chain.chainId.toString(),
+      decimals: chainAsset.decimals ?? asset.decimals,
+    };
     return findUnroutableCandidates(candidates, async (candidate) => {
+      const [from, to] = isWithdraw
+        ? [osmosis, candidate]
+        : [candidate, osmosis];
       // The input amount is in the source token's own decimals.
-      const decimals = isWithdraw ? osmosisDecimals : candidate.decimals;
-      if (decimals == null) throw new Error("unknown decimals");
       const probeAmount = new Dec(ROUTE_PROBE_USD)
         .quo(price)
-        .mul(DecUtils.getTenExponentN(decimals))
+        .mul(DecUtils.getTenExponentN(from.decimals))
         .truncate()
         .toString();
-      if (probeAmount === "0") throw new Error("empty probe amount");
 
       return cachified({
         cache: this.ctx.cache,
         key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
-          !isWithdraw && allowMultiTx === true ? "_multi" : ""
-        }_${osmosisDenom}_${candidate.chainId}_${candidate.denom}`,
+          multiTx ? "_multi" : ""
+        }_${osmosis.denom}_${candidate.chainId}_${candidate.denom}`,
         ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
         // A timeout rejects, so it is neither cached nor treated as a drop.
         getFreshValue: () =>
           withTimeout(
             this.skipClient
               .route({
-                source_asset_denom: isWithdraw ? osmosisDenom : candidate.denom,
-                source_asset_chain_id: isWithdraw
-                  ? chain.chainId.toString()
-                  : candidate.chainId,
-                dest_asset_denom: isWithdraw ? candidate.denom : osmosisDenom,
-                dest_asset_chain_id: isWithdraw
-                  ? candidate.chainId
-                  : chain.chainId.toString(),
+                source_asset_denom: from.denom,
+                source_asset_chain_id: from.chainId,
+                dest_asset_denom: to.denom,
+                dest_asset_chain_id: to.chainId,
                 amount_in: probeAmount,
-                // Deposits offered only for multi-tx callers need it to route.
-                ...(!isWithdraw && allowMultiTx === true
-                  ? { allow_multi_tx: true }
-                  : {}),
+                ...(multiTx ? { allow_multi_tx: true } : {}),
               })
               .then(() => true)
               .catch((e) => {
