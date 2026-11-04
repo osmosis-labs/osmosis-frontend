@@ -14,15 +14,13 @@ const supportedAssetsBridges: Bridge[] = [
   "Skip",
   "Squid",
   "IBC",
-  "Nomic",
   // Wormhole returns ["external-url"], so the recommended SOL withdraw is an
   // external-url hand-off rather than an in-app quote. That is now the only SOL
   // withdraw path: Int3face was the last in-app SOL quote and is gone.
   "Wormhole",
-  // include nomic, nitro, and penumbra for suggesting BTC + SOL + TRX assets and chains
-  // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
-  // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
-  "Nitro",
+  // Penumbra is included to suggest its assets and chains as external URL
+  // transfer options, even though it is not supported by the bridge providers natively yet.
+  // Once bridging is natively supported, we can add it to the `useBridgeQuotes` provider list.
   "Penumbra",
 ];
 
@@ -199,7 +197,7 @@ export const useBridgesSupportedAssets = ({
 
   /**
    * Whether any successful provider returned a chain the app itself can
-   * transfer through (a quote or deposit-address route). External-url-only
+   * transfer through (a quote route). External-url-only
    * results (e.g. Wormhole's Solana suggestion) don't count: they exist for
    * assets that ALSO have in-app routes, and must not release the failing-
    * provider hold below — otherwise a Skip outage on a Skip-only asset
@@ -211,11 +209,7 @@ export const useBridgesSupportedAssets = ({
       successfulQueries.some(({ data }) =>
         Object.values(data?.supportedAssets.assetsByChainId ?? {}).some(
           (assets) =>
-            assets.some((asset) =>
-              asset.transferTypes.some(
-                (type) => type === "quote" || type === "deposit-address"
-              )
-            )
+            assets.some((asset) => asset.transferTypes.includes("quote"))
         )
       ),
     [successfulQueries]
@@ -235,12 +229,12 @@ export const useBridgesSupportedAssets = ({
    *       "denom": "USDC",
    *       "decimals": 6,
    *       "supportedVariants": {
-   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"], IBC: ["quote"] },
-   *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
-   *         "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote"], IBC: ["quote"] },
+   *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote"] },
+   *         "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote"] },
    *         "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C": { Skip: ["quote"], Axelar: ["quote"] },
-   *         "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
-   *         "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote"] },
+   *         "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote"] },
    *         "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45": { Skip: ["quote"] }
    *       }
    *     }
@@ -423,7 +417,13 @@ export const useBridgesSupportedAssets = ({
         "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
       asset.coinGeckoId === "cosmos";
 
+    const isAllBtcAsset = (asset: MinimalAsset) =>
+      asset.coinMinimalDenom ===
+      "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
+
     const hoistRules: HoistRule[] = [
+      // allBTC -> Ethereum (WBTC). Matched by denom, not symbol.
+      { chainId: 1, matchesAsset: isAllBtcAsset },
       // USDC -> Ethereum, which holds the large majority of USDC supply.
       // Routing is left to the bridge providers (Skip may use CCTP, Axelar or
       // another path), so the route variant is the canonical `USDC` alloy that

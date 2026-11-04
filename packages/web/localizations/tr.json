@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
+    "amountTooSmall": "Miktar çok küçük",
     "emptyAmount": "Miktar boş",
     "generic": "Hata",
     "highSwapFee": "Takas ücreti çok yüksek",
@@ -321,26 +322,26 @@
   "estimated": "Tahmini",
   "halt": {
     "deposit": {
-      "bridge_down": "Para yatırma işlemleri durduruldu. Yerli köprü güzergahı kapalı.",
+      "bridge_down": "Para yatırma işlemleri durduruldu. Yerel köprü rotası çalışmıyor.",
       "extended_unstable_market": "Para yatırma işlemleri durduruldu. Varlık uzun süredir istikrarsız ve hareketsiz durumda.",
-      "planned_shutdown": "Para yatırma işlemleri durduruldu. Tesisin kapatılması planlanıyor.",
+      "planned_shutdown": "Para yatırma işlemleri durduruldu. Varlığın kapatılması planlanıyor.",
       "source_chain_killed": "Para yatırma işlemleri durduruldu. Kaynak zinciri faaliyetlerini durdurdu.",
       "manual": "Para yatırma işlemleri durduruldu, dikkatli olun.",
-      "unknown": "Deposits halted."
+      "unknown": "Para yatırma işlemleri durduruldu."
     },
     "withdrawal": {
-      "bridge_down": "Para çekme işlemleri durduruldu. Yerli köprü güzergahı kapalı.",
+      "bridge_down": "Para çekme işlemleri durduruldu. Yerel köprü rotası çalışmıyor.",
       "source_chain_killed": "Para çekme işlemleri durduruldu. Kaynak zinciri faaliyetlerini durdurdu.",
       "manual": "Para çekme işlemleri durduruldu, dikkatli olun.",
-      "unknown": "Withdrawals halted."
+      "unknown": "Para çekme işlemleri durduruldu."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "Bu varlığın tedarik zinciri faaliyetlerini durdurmuştur.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
-    "manual": "Dengesiz, dikkatli olun.",
-    "unknown": "Dengesiz, dikkatli olun."
+    "ibc_client": "Bu varlığın zincirine bağlanan IBC istemcisi istikrarsız.",
+    "source_chain_killed": "Bu varlığın kaynak zinciri faaliyetlerini durdurdu.",
+    "market": "Bu varlık uzun süredir çok düşük likidite ve işlem hacmine sahip.",
+    "manual": "İstikrarsız, dikkatli olun.",
+    "unknown": "İstikrarsız, dikkatli olun."
   },
   "incentivizePool": {
     "title": "#{poolId} havuzunu teşvik et",
@@ -395,6 +396,8 @@
     "settings": "Ayarlar"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "Günlük {amount}",
+    "spendLimitLeftToday": "Bugün kalan: {amount}",
     "toast": {
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Birden fazla cüzdan onayıyla uğraşmadan daha hızlı ve daha kolay işlemler yapın.",
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
-      "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
+      "defaultParameters": "Varsayılan ayarlar 7 gün ve 5.000 USD günlük harcama limitidir.",
       "changeButton": "Ayarları düzenle"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Tıkla İşlem limiti",
       "enableTitle": "1-Tıkla İşlem Başlat",
       "enableDescription": "Daha hızlı, daha kolay ticaret",
-      "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
+      "paramsDescription": "{sessionLength} oturum, {spendLimit} günlük harcama limitiyle",
       "defaultSpendLimit": "5.000 ABD doları",
       "change": "Değiştirmek",
       "edit": "Düzenlemek",
       "exceeded": "Aşıldı",
       "exceededTooltip": {
-        "title": "Mevcut kayıp koruma sınırını aşar",
+        "title": "Günlük harcama limitinizi aşıyor",
         "body": "Bu işlemi cüzdanınızda manuel olarak onaylamanız gerekecektir."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
       "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
-      "spendLimitTitle": "Kayıp koruma limiti",
+      "spendLimitTitle": "Günlük harcama limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
-      "review": "Gözden geçirmek",
-      "deposit": "Depozito"
+      "review": "Gözden geçirmek"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
     "youNeedFundsToPayWithFee": "Transfer etmeye çalıştığınız miktar, {chain} üzerinde {feeAmount} {feeCurrency} köprüleme ücretini karşılamak için çok düşük. Lütfen daha büyük bir miktar deneyin.",
-    "transferAmountTooLowValueLoss": "Transfer miktarı çok düşük",
-    "valueLossTooHighToBridge": "Ücretlerden sonra transfer miktarı çok düşük. Değer kaybı köprüyü başarıyla tamamlamak için çok yüksek olacaktır. Lütfen daha büyük bir miktar deneyin.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
-    "assetWithdrawalsUnavailable": "{asset} çekimleri kullanılamaz",
+    "assetWithdrawalsToChainUnavailable": "{asset} için {chain} ağına çekimler kullanılamıyor",
+    "routeLiquidityTooLow": "Bu rota için yeterli likidite yok",
+    "routeLiquidityTooLowBody": "Şu anda bu transferi adil bir fiyattan yönlendirmek için yeterli likidite yok. Başka bir ağ veya token deneyin ya da daha sonra tekrar deneyin.",
     "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
     "noAvailableWithdrawals": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama ayarlayın.",
     "somethingIsntWorking": "Bir şeyler çalışmıyor…",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "{chain} bakiyeniz yüklenemedi",
     "balanceUnavailableDescription": "Bakiyenizi kontrol etmek için {chain} ağına ulaşamadık, bu yüzden 0 olarak görünebilir. Fonlarınız etkilenmedi. Tekrar deneyin veya aşağıdaki seçenekleri kullanın.",
     "retryBalance": "Tekrar dene",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "{asset} para yatırma işlemleri durduruldu",
+    "withdrawalsHalted": "{asset} para çekme işlemleri durduruldu",
     "noNativeTransfers": "{asset} için yerel transferler kullanılamıyor",
     "noNativeTransfersDescription": "Lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
-    "sendFromWalletOrExchange": "Cüzdanınızdan veya borsadan gönderin",
-    "scanWithMobileWallet": "Mobil cüzdanınızla tarayın",
-    "or": "veya",
-    "copied": "Kopyalandı",
-    "copyToClipboard": "Panoya kopyala",
-    "showQrCode": "QR kodunu göster",
-    "yourDepositAddress": "{denom} para yatırma adresiniz",
-    "copyAddressToClipboard": "Adresi panoya kopyala",
-    "copyAddress": "Adresi kopyala",
-    "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
-    "minimumDeposit": "Minimum mevduat",
-    "nomic": {
-      "estimatedTime": "1-8 saat",
-      "awaitingBtc": "BTC bekleniyor",
-      "transferringYourBtc": "BTC'nizi transfer etme",
-      "depositStatus": "Mevduat durumu",
-      "depositSuccess": "Para yatırma başarısı",
-      "pendingDeposit": "Bekleyen mevduat",
-      "estimatedAboutTime": "{time} hakkında tahmin edildi",
-      "from": "İtibaren",
-      "to": "İle",
-      "asset": "Varlık",
-      "amountBtc": "Miktar BTC",
-      "totalValue": "Toplam değer",
-      "transactionHash": "İşlem karması",
-      "viewOnExplorer": "Explorer'da görüntüle",
-      "totalFees": "Toplam ücretler"
-    },
-    "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",
-    "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin.",
-    "addressAboutToExpire": "Bu adresin süresi dolmak üzere. Lütfen para kaybetmemek için yeni bir adres talep edin.",
-    "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
-    "transactionDetails": "İşlem detayları",
     "confirmAmount": "Tutarı Onayla",
     "enterChainAddress": "{chain} adresini girin",
     "wormholeRedeem": {
@@ -1321,7 +1290,7 @@
         "order": "Emir",
         "amount": "Miktar",
         "price": "Fiyat",
-        "orderPlaced": "Sipariş Verildi",
+        "orderPlaced": "Emir tarihi",
         "status": "Durum"
       },
       "emptyState": {
@@ -1338,51 +1307,51 @@
     },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",
-      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+      "description": "Devam ederseniz emriniz istenmeyen bir fiyattan gerçekleşebilir."
     },
     "belowMarket": {
       "title": "Limit fiyatı piyasa fiyatının altında",
-      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+      "description": "Devam ederseniz emriniz istenmeyen bir fiyattan gerçekleşebilir."
     },
     "enterAnAmountTo": "Bir miktar girin",
-    "toSell": "satmak",
-    "toBuy": "satın almak",
-    "sell": "Satmak",
-    "sold": "Satılmış",
-    "percentFilled": "Yüzde doluluk oranı",
+    "toSell": "(satış)",
+    "toBuy": "(alış)",
+    "sell": "Sat",
+    "sold": "Satıldı",
+    "percentFilled": "Gerçekleşme yüzdesi",
     "status": "Durum",
     "price": "Fiyat",
-    "buy": "Satın almak",
-    "pay": "Ödemek",
+    "buy": "Al",
+    "pay": "Ödeme",
     "open": "Açık",
-    "filled": "Dolu",
-    "claimable": "Hak talebinde bulunulabilir",
+    "filled": "Gerçekleşti",
+    "claimable": "Talep edilebilir",
     "claimAndClose": "Talep et ve kapat",
-    "close": "Kapalı",
-    "claim": "İddia",
-    "accept": "Kabul etmek",
+    "close": "Kapat",
+    "claim": "Talep et",
+    "accept": "Kabul et",
     "cancelled": "İptal edildi",
-    "cancel": "İptal etmek",
+    "cancel": "İptal et",
     "daysAgo": "{days} gün önce",
     "hoursAgo": "{hours} saat önce",
     "buyWith": "{coinA} veya {coinB} ile satın alın",
-    "orderHistory": "Sipariş Geçmişi",
-    "tradeAnotherAssetOr": "{coinA} veya {coinB} ile başka bir varlıkla işlem yapın",
-    "tradeAnotherAsset": "{coinDenom} ile başka bir varlığı takas edin",
-    "sellAnAsset": "Bir varlık satmak",
-    "swapAnAsset": "Bir varlığı takas etme",
-    "of": "ile ilgili",
+    "orderHistory": "Emir geçmişi",
+    "tradeAnotherAssetOr": "Başka bir varlığı {coinA} veya {coinB} karşılığında takas edin",
+    "tradeAnotherAsset": "Başka bir varlığı {coinDenom} karşılığında takas edin",
+    "sellAnAsset": "Bir varlık sat",
+    "swapAnAsset": "Bir varlığı takas et",
+    "of": "değerinde",
     "insufficientFunds": "Yetersiz bakiye",
-    "startTrading": "Ticarete başla",
-    "tradeFees": "Ticaret ücretleri (sipariş tamamlandığında)",
-    "youNeed": "ihtiyacın var",
-    "stablecoin": "stabilcoin",
+    "startTrading": "İşlem yapmaya başla",
+    "tradeFees": "İşlem ücretleri (emir gerçekleştiğinde)",
+    "youNeed": "Varlık satın almak için Osmosis'te",
+    "stablecoin": "stablecoin",
     "quoteUpdated": "Teklif güncellendi",
-    "fundsOsmosisToBuyAssets": "varlık satın almak için Osmosis'e fon sağlıyor.",
+    "fundsOsmosisToBuyAssets": "bakiyesine ihtiyacınız var.",
     "chooseAnOption": "Devam etmek için bir seçenek seçin.",
     "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
     "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
-    "reviewTrade": "Ticareti inceleyin",
+    "reviewTrade": "İşlemi incele",
     "highPriceImpact": {
       "title": "Fiyat etkisi yüksek",
       "description": "Bu işlem piyasa fiyatını {impact} oranında değiştirir, bu nedenle gösterilen tutardan çok daha azını alabilirsiniz."
@@ -1395,35 +1364,35 @@
     },
     "transferFromAnotherNetwork": "Başka bir ağdan veya cüzdandan aktarma",
     "whatIsOrderClaim": {
-      "title": "Sipariş talebi nedir?",
-      "description": "Çoğu durumda, bir limit emri yerine getirildiğinde fonlar otomatik olarak bakiyenize eklenir. Ancak bazı nadir durumlarda, fonların doldurulan siparişten manuel olarak talep edilmesi gerekir.<inlang-LineFeed>\nBu hak talebinde bulunma süreci, nominal bir ağ ücreti gerektiren tüm talep edilmemiş doldurulmuş siparişler için cüzdanınızda tek bir işlemin onaylanmasını içerir."
+      "title": "Emir talebi nedir?",
+      "description": "Çoğu durumda, bir limit emir gerçekleştiğinde fonlar otomatik olarak bakiyenize eklenir. Ancak nadiren de olsa fonların gerçekleşen emirden manuel olarak talep edilmesi gerekir.\n\nBunun için, talep edilmemiş tüm gerçekleşen emirler için cüzdanınızda tek bir işlemi onaylamanız yeterlidir. Bu işlem için küçük bir ağ ücreti alınır."
     },
     "whatIsAStablecoin": {
       "title": "Stablecoin nedir?",
       "description": "Stablecoin'ler, sabit bir fiyatı korumak için değeri fiat para birimi veya altın gibi başka bir varlığa sabitlenen bir tür kripto para birimidir. Osmosis'te varlık alım ve satımında kullanılan başlıca stablecoin'ler USDC ve USDT'dir."
     },
-    "claimAll": "Tümünü talep edin",
-    "addFunds": "Fon Ekle",
+    "claimAll": "Tümünü talep et",
+    "addFunds": "Fon ekle",
     "selectAnAssetTo": {
       "buy": "Satın almak için bir varlık seçin",
       "sell": "Satılacak bir varlık seçin"
     },
-    "payWith": "İle ödemek",
-    "receive": "Almak",
+    "payWith": "Ödenecek",
+    "receive": "Alınacak",
     "swapFromAnotherAsset": "Başka bir varlıktan takas",
     "connectYourWallet": "Cüzdanınızı bağlayın",
     "toSeeYourBalances": "bakiyenizi görmek için",
     "searchAssets": "Varlıkları arayın",
     "below": "altında",
-    "above": "üstünde",
-    "currentPrice": "Mevcut fiyat",
+    "above": "üzerinde",
+    "currentPrice": "(mevcut fiyata göre)",
     "whenDenomPriceIs": "{denom} fiyatı şu olduğunda",
-    "orderType": "Sipariş türü",
-    "confirm": "Onaylamak",
-    "market": "Pazar",
-    "limit": "Sınır",
-    "trade": "Ticaret",
-    "swapToAnotherAsset": "Başka bir varlığa geç",
+    "orderType": "Emir türü",
+    "confirm": "Onayla",
+    "market": "Piyasa",
+    "limit": "Limit",
+    "trade": "İşlem",
+    "swapToAnotherAsset": "Başka bir varlıkla takas et",
     "invalidPrice": "Geçersiz fiyat",
     "priceTooLow": "Fiyat çok düşük",
     "priceTooHigh": "Fiyat çok yüksek",
@@ -1434,11 +1403,11 @@
     "unavailable": "{denom} için kullanılamıyor",
     "orderHistoryHeaders": {
       "past": "Geçmiş",
-      "pending": "Askıda olması",
-      "filled": "Talep edilecek siparişler tamamlandı"
+      "pending": "Bekleyen",
+      "filled": "Talep edilecek gerçekleşen emirler"
     },
-    "priceReaches": "{denom} fiyatı {price} ulaşırsa",
-    "belowMinimumAmount": "{amount} minimum",
+    "priceReaches": "{denom} fiyatı {price} seviyesine ulaşırsa",
+    "belowMinimumAmount": "En az {amount}",
     "noOrderbookForPair": "{base}/{quote} için herhangi bir orderbook mevcut değil. Bu çift için limit orders'ı etkinleştirmek üzere bir tane oluşturun.",
     "createOrderbook": "Orderbook Oluştur",
     "noOrderbookExists": "{denom} için orderbook yok",
@@ -1451,7 +1420,8 @@
     "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
     "alreadyReceived": "Zaten alındı",
     "howPayoutsWork": "Ödemeler nasıl çalışır?",
-    "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder."
+    "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder.",
+    "limitOrder": "Limit emir"
   },
   "tradeDetails": {
     "priceImpact": {

@@ -18,8 +18,6 @@ export type AvailableFlags =
   | "alloyedAssets"
   | "assetAlerts"
   | "incentivizePool"
-  | "bridgeDepositAddress"
-  | "nomicWithdrawAmount"
   | "swapToolTopGainers"
   | "swapped"
   | "onrampmoney"

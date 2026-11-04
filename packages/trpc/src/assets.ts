@@ -22,7 +22,6 @@ import {
   getPoolAssetPairHistoricalPrice,
   getUpcomingAssets,
   getUserAssetsTotal,
-  IS_TESTNET,
   isMarketDataAvailable,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
@@ -33,13 +32,7 @@ import {
   withSqsPriceFallback,
 } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
-import {
-  compareCommon,
-  getAllBtcMinimalDenom,
-  getnBTCMinimalDenom,
-  isNil,
-  sort,
-} from "@osmosis-labs/utils";
+import { compareCommon, isNil, sort } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -142,44 +135,6 @@ export const assetsRouter = createTRPCRouter({
         ...ctx,
         anyDenom: findMinDenomOrSymbol,
       });
-
-      /**
-       * Manually include Nomic and BTC assets in the list.
-       * These assets are not variants of each other and cannot be automatically linked
-       * from our asset list. We do this to display them in the receive asset dropdown
-       * and enable conversion to alloy or native.
-       */
-      if (
-        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
-        getnBTCMinimalDenom({
-          env: IS_TESTNET ? "testnet" : "mainnet",
-        }).toLowerCase()
-      ) {
-        const allBtcAsset = getAsset({
-          ...ctx,
-          anyDenom:
-            getAllBtcMinimalDenom({
-              env: IS_TESTNET ? "testnet" : "mainnet",
-            }) ?? "",
-        });
-        if (allBtcAsset) canonicalAssetWithVariants.push(allBtcAsset);
-      }
-
-      if (
-        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
-        (
-          getAllBtcMinimalDenom({ env: IS_TESTNET ? "testnet" : "mainnet" }) ??
-          ""
-        ).toLowerCase()
-      ) {
-        const nBTCAsset = getAsset({
-          ...ctx,
-          anyDenom: getnBTCMinimalDenom({
-            env: IS_TESTNET ? "testnet" : "mainnet",
-          }),
-        });
-        if (nBTCAsset) canonicalAssetWithVariants.push(nBTCAsset);
-      }
 
       return canonicalAssetWithVariants;
     }),

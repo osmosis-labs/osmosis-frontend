@@ -269,11 +269,11 @@ export const OneClickTradingSettings = ({
 
   const remainingSpendLimit =
     initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
-      ? `${formatSpendLimit(
+      ? formatSpendLimit(
           initialTransaction1CTParams.spendLimit.sub(
             amountSpentData.amountSpent
           )
-        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+        )
       : undefined;
 
   const changesWithoutIsEnabled = changes.filter((c) => c !== "isEnabled");
@@ -457,11 +457,14 @@ export const OneClickTradingSettings = ({
                           {remainingSpendLimit &&
                           isOneClickTradingEnabled &&
                           !changes.includes("spendLimit")
-                            ? remainingSpendLimit
-                            : formatSpendLimit(
-                                transaction1CTParams?.spendLimit
-                              )}{" "}
-                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
+                            ? t("oneClickTrading.spendLimitLeftToday", {
+                                amount: remainingSpendLimit,
+                              })
+                            : t("oneClickTrading.spendLimitPerDay", {
+                                amount: `${formatSpendLimit(
+                                  transaction1CTParams?.spendLimit
+                                )} ${transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}`,
+                              })}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -590,8 +593,10 @@ export const OneClickTradingSettings = ({
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                   subtitle={
-                    isOneClickTradingEnabled
-                      ? `${remainingSpendLimit} ${t("remaining")}`
+                    isOneClickTradingEnabled && remainingSpendLimit
+                      ? t("oneClickTrading.spendLimitLeftToday", {
+                          amount: remainingSpendLimit,
+                        })
                       : undefined
                   }
                 />
