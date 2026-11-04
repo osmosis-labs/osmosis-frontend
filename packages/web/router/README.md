@@ -36,7 +36,7 @@ in `/_next/data` 404s per `x-osmosis-backend` after each step.
 
 ## Operating it
 
-`CF_PERCENT` lives in `wrangler.jsonc` and starts at `0`. A deploy resets dashboard
+`CF_PERCENT` lives in `wrangler.jsonc` and is currently `100`. A deploy resets dashboard
 edits, so change it in the file and deploy. In an emergency, set it to `0` in the
 dashboard, then commit the same value.
 
@@ -68,5 +68,36 @@ exception for `sqsprod.osmosis.zone`, `rpc.app.osmosis.zone` and
    measure the router's own overhead.
 3. Raise to 1%, then 5%, comparing 5xx and API error rates, latency, chunk-load and
    Worker CPU-limit errors per `x-osmosis-backend` before each step. Fallbacks hide
-   page failures from users, so count responses with `x-osmosis-fallback` (and the
-   router's "threw on a page load" logs) as Cloudflare errors when comparing.
+   page failures from users, so count `router_upstream` events with `backend = cf` and
+   `outcome = http_error|exception` as Cloudflare errors when comparing.
+
+## Checking routing and errors
+
+After deploying, open Workers & Pages → osmosis-frontend-router → Observability
+→ Logs. Structured console events include:
+
+- `router_request`: `selectedBackend`, `routeReason` (override/crawler/bucket),
+  `servedBy`, final `status`, and `fallback` (null when no retry occurred).
+  Filter `servedBy = vercel` to identify remaining Vercel traffic.
+- `router_upstream`: one event per upstream attempt, with `backend`, `status`
+  (when a response arrived), `outcome`, and `durationMs` to response headers.
+  Filter `outcome = http_error` or `outcome = exception` for failures, including
+  failures hidden by a successful fallback. These events use console.error.
+- Both events carry `method`, `path` (at most 512 characters, no query string),
+  and `rayId`. Cookies, bodies, and exception messages are not logged.
+
+Static asset retries also set `x-osmosis-fallback: cf-404|vercel-404`.
+A recovered asset 404 is a build mismatch, not necessarily an application failure.
+
+For a live stream from the repository root:
+
+```bash
+yarn workspace @osmosis-labs/web exec wrangler tail -c router/wrangler.jsonc --format json
+```
+
+Do not filter only by failed invocation status: a fallback can return 200 while an
+upstream attempt failed. Also inspect osmosis-frontend-production's Errors metrics
+and logs for CPU/memory limits and runtime exceptions. Router logs describe upstream
+responses/exceptions; they do not capture browser JavaScript errors, failures inside
+a successful HTTP response, or errors while streaming a response body.
+Live tails can be sampled under load; use Worker metrics for overall error rates.
