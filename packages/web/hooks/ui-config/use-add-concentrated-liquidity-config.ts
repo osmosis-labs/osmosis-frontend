@@ -1062,7 +1062,8 @@ function useZapIn({
             return;
           }
 
-          if (!quote) throw new Error("Swap quote not ready");
+          if (!quote || zapQuote.isRefreshing)
+            throw new Error("Swap quote not ready");
 
           const routes = quote.split.map((route) => ({
             pools: route.pools.map((routePool, i: number) => ({
@@ -1186,6 +1187,7 @@ function useZapIn({
       transactionContext,
       signAndBroadcast,
       quote,
+      zapQuote.isRefreshing,
       slippage,
     ]
   );

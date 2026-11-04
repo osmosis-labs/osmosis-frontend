@@ -65,14 +65,15 @@ export const AddLiquidityModal: FunctionComponent<
   } = useAddConcentratedLiquidityConfig(chainId, poolId);
 
   // High total-cost acknowledgement for the single-asset zap-in, on the
-  // shared frozen-basis model: the identity is the trade (swap direction,
-  // projected swap amount, tick range), so editing any of them re-arms the
+  // shared frozen-basis model: the identity is the trade the user set (swap
+  // direction, entered amount, tick range), so editing any of them re-arms the
   // checkbox; the total cost re-arms it when it worsens past tolerance, and
-  // raising the slippage re-arms it too. The 5s requote alone does not.
+  // raising the slippage re-arms it too. The derived swap amount is left out:
+  // it moves with the pool price on every refetch.
   const zapCostIdentity = `${
     addConliqConfig.requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
   }>${addConliqConfig.requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
-    addConliqConfig.requiredSwap?.swapInAmount.toString() ?? ""
+    addConliqConfig.requiredSwap?.inputAmount.toString() ?? ""
   }:${addConliqConfig.tickRange[0].toString()}:${addConliqConfig.tickRange[1].toString()}`;
   const {
     hasAcknowledgedLoss: zapCostAcknowledged,
@@ -119,6 +120,9 @@ export const AddLiquidityModal: FunctionComponent<
     Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
     (zapQuote.isLoading ||
       !zapQuote.quote ||
+      // Held quote for a previous swap amount: its route amounts don't match
+      // the current split.
+      zapQuote.isRefreshing ||
       zapQuote.isError ||
       Boolean(zapQuote.routerError) ||
       // The swap routes through this pool and the depth data for the

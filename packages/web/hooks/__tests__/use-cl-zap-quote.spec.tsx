@@ -103,6 +103,35 @@ describe("useClZapQuote", () => {
     expect(mockUseInGivenOut).not.toHaveBeenCalled();
   });
 
+  it("holds the quote across an amount change but flags it as refreshing", () => {
+    const { result, rerender } = renderHook(
+      ({ tokenInAmount }: { tokenInAmount: string }) =>
+        useClZapQuote({
+          tokenInAmount,
+          tokenInDenom: usdcDenom,
+          tokenOutDenom: osmoDenom,
+        }),
+      { initialProps: { tokenInAmount: "1000000" } }
+    );
+    const held = result.current.quote;
+    expect(held).toBeDefined();
+    expect(result.current.isRefreshing).toBe(false);
+
+    // The pool price moved, so the derived swap amount changed: the held
+    // quote stays on screen but must be flagged so submit stays blocked.
+    mockUseOutGivenIn.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    });
+    rerender({ tokenInAmount: "1000100" });
+
+    expect(result.current.quote).toBe(held);
+    expect(result.current.isRefreshing).toBe(true);
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it("drops the held quote when the direction flips, even at the same amount", () => {
     const { result, rerender } = renderHook(
       (props: { tokenInDenom: string; tokenOutDenom: string }) =>

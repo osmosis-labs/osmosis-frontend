@@ -555,7 +555,14 @@ const SingleAssetDeposit: FunctionComponent<{
                     : t("transfer.transferAmountTooLowValueLoss")}
                 </p>
               ) : (
-                <div className="mx-auto flex w-full max-w-lg flex-col">
+                <div
+                  className={classNames(
+                    "mx-auto flex w-full max-w-lg flex-col transition-opacity",
+                    // Held quote for a previous amount: keep the layout, dim
+                    // it until the current quote lands (submit is disabled).
+                    { "opacity-50": zapQuote?.isRefreshing }
+                  )}
+                >
                   {minReceived && (
                     <RecapRow
                       left={t("receiveAtLeast")}

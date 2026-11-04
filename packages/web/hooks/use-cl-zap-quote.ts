@@ -79,18 +79,17 @@ export function useClZapQuote({
     }
   );
 
-  // Hold the last successful quote so the breakdown doesn't collapse to a
-  // spinner on each 5s background refetch (mirrors the swap tool's
-  // `useLatestWhen` over its quote). The reset key is the full request:
-  // amount, input denom AND output denom. Amount alone is not enough: in a
-  // centered range, switching the provided side commonly produces the
-  // identical swap amount, and reusing the opposite-direction quote would
-  // compose its route with the new token-in denom. After any of the three
-  // changes the held quote is dropped and the consumer shows loading.
+  // Hold the last successful quote while the next request loads, so the
+  // breakdown doesn't collapse when the swap amount moves (it is re-derived
+  // from the pool's live price every refetch). The reset key is the direction
+  // only: reusing an opposite-direction quote would compose its route with
+  // the new token-in denom, so a side switch drops it and the consumer shows
+  // loading. A held quote for an older amount is flagged `isRefreshing` and
+  // must not be submitted.
   const heldQuote = useLatestWhen(
     freshQuote,
     (quote) => Boolean(quote),
-    `${tokenInAmount}|${tokenInDenom}|${tokenOutDenom}`
+    `${tokenInDenom}|${tokenOutDenom}`
   );
 
   // Don't fall back to the held quote when the latest fetch errored: holding it
@@ -109,6 +108,8 @@ export function useClZapQuote({
     // Only surface loading on the genuine first fetch (no quote to show yet),
     // not on background refetches — that's what caused the flicker.
     isLoading: isEnabled && isLoading && !quote,
+    /** Showing a held quote for a previous amount while the current one loads. */
+    isRefreshing: isEnabled && !freshQuote && Boolean(quote),
     isError,
     error,
     /** Typed router error for `tError`-based copy; undefined when no error. */
