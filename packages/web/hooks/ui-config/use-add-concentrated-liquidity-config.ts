@@ -911,10 +911,16 @@ function useZapIn({
     tickRange,
   } = config;
 
+  // Denoms come from the selected side, not `requiredSwap`, so they stay put
+  // while the amount is briefly empty mid-edit and the held quote survives.
+  const sideCurrency =
+    singleAssetSide === "base" ? clPool?.baseCurrency : clPool?.quoteCurrency;
+  const otherCurrency =
+    singleAssetSide === "base" ? clPool?.quoteCurrency : clPool?.baseCurrency;
   const zapQuote = useClZapQuote({
     tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
-    tokenInDenom: requiredSwap?.tokenInCurrency.coinMinimalDenom ?? "",
-    tokenOutDenom: requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
+    tokenInDenom: sideCurrency?.coinMinimalDenom ?? "",
+    tokenOutDenom: otherCurrency?.coinMinimalDenom ?? "",
     enabled: singleAssetMode && Boolean(requiredSwap?.needsSwap),
   });
   const quote = zapQuote.quote;
