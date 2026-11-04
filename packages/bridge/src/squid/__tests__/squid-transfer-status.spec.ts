@@ -188,34 +188,41 @@ describe("SquidTransferStatusProvider", () => {
     );
   });
 
-  it("does not count 404s toward failed while an EVM tx has no receipt", async () => {
-    server.use(
-      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
-        return new HttpResponse(null, { status: 404 });
-      })
-    );
-    // poll past the 3 404s that would otherwise resolve it as failed
-    (poll as jest.Mock).mockImplementationOnce(async ({ fn, validate }) => {
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const result = await fn();
-        if (validate(result)) return result;
-      }
-    });
-    const check = jest.fn(async () => undefined);
-    const evmProvider = new SquidTransferStatusProvider(
-      "integratorId",
-      "mainnet" as BridgeEnvironment,
-      MockChains,
-      check
-    );
-    evmProvider.statusReceiverDelegate = mockReceiver;
+  it.each([
+    ["has no receipt", undefined, 5],
+    // found once, then not re-checked; Squid may still be indexing it
+    ["has landed but Squid hasn't indexed it", "success" as const, 1],
+  ])(
+    "does not count 404s toward failed while an EVM tx %s",
+    async (_, receipt, checks) => {
+      server.use(
+        httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+          return new HttpResponse(null, { status: 404 });
+        })
+      );
+      // poll past the 3 404s that would otherwise resolve it as failed
+      (poll as jest.Mock).mockImplementationOnce(async ({ fn, validate }) => {
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const result = await fn();
+          if (validate(result)) return result;
+        }
+      });
+      const check = jest.fn(async () => receipt);
+      const evmProvider = new SquidTransferStatusProvider(
+        "integratorId",
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        check
+      );
+      evmProvider.statusReceiverDelegate = mockReceiver;
 
-    await evmProvider.trackTxStatus(createTxSnapshot());
+      await evmProvider.trackTxStatus(createTxSnapshot());
 
-    expect(check).toHaveBeenCalledTimes(5);
-    expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
-    expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
-  });
+      expect(check).toHaveBeenCalledTimes(checks);
+      expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    }
+  );
 
   it("should generate correct explorer URL", () => {
     const snapshot = createTxSnapshot({

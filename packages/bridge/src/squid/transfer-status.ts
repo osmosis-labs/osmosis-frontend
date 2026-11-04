@@ -112,12 +112,12 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           } as BridgeTransferStatus;
         } catch (e) {
           const error = e as Error | ApiClientError;
-          // Until the receipt turns up, Squid not knowing the tx is no
-          // proof of failure: it may not be mined or indexed yet.
+          // Within the receipt window, Squid not knowing the tx is no proof
+          // of failure: it may not be mined, or (once landed) not indexed yet.
           if (
             error instanceof ApiClientError &&
             error.status === 404 &&
-            receipt !== "awaiting"
+            receipt === "settled"
           ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {

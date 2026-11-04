@@ -880,7 +880,9 @@ export type EvmReceiptCheck = (params: {
 /** How long after an EVM transfer is recorded its receipt is still awaited.
  *  Past it, a tx with no receipt was most likely dropped or replaced, so
  *  the providers' usual "not found" rules apply again. */
-const EVM_RECEIPT_GRACE_SECONDS = 30 * 60;
+// Shorter than the providers' poll lifetime (50 attempts at 30s, about 25
+// minutes), so the rules for after the window still run in an open tab.
+const EVM_RECEIPT_GRACE_SECONDS = 20 * 60;
 
 /**
  * Per-transfer receipt tracking for a provider's poll loop. Call the result
@@ -890,17 +892,18 @@ const EVM_RECEIPT_GRACE_SECONDS = 30 * 60;
  * - "reverted": the receipt proves the tx failed.
  * - "awaiting": no receipt yet, so "not found" from the status API may only
  *   mean the tx isn't mined or indexed yet and is no outcome.
- * - "settled": the receipt was found, or there is nothing to await.
+ * - "landed": the receipt proves the tx succeeded, but the status API may
+ *   not have indexed it yet, so "not found" is still no failure.
+ * - "settled": past the window, or there is nothing to await.
  */
 export function createEvmReceiptWatch(
   snapshot: TxSnapshot,
   checkEvmReceipt?: EvmReceiptCheck
-): () => Promise<"reverted" | "awaiting" | "settled"> {
+): () => Promise<"reverted" | "awaiting" | "landed" | "settled"> {
   let receiptFound = false;
   return async () => {
     const { sendTxHash, fromChain } = snapshot;
     if (
-      receiptFound ||
       !checkEvmReceipt ||
       fromChain.chainType !== "evm" ||
       snapshot.trackingChainId !== undefined ||
@@ -908,6 +911,7 @@ export function createEvmReceiptWatch(
     ) {
       return "settled";
     }
+    if (receiptFound) return "landed";
     if (typeof fromChain.chainId === "number") {
       const outcome = await checkEvmReceipt({
         txHash: sendTxHash,
@@ -916,7 +920,7 @@ export function createEvmReceiptWatch(
       if (outcome === "reverted") return "reverted";
       if (outcome === "success") {
         receiptFound = true;
-        return "settled";
+        return "landed";
       }
     }
     return "awaiting";
