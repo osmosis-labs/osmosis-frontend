@@ -99,8 +99,8 @@ export function useAmountInput({
       // check validity of raw input
       if (!isValidNumericalRawInput(updatedAmount)) return;
 
-      // Typing a digit past the asset's decimals leaves the input unchanged,
-      // and a pasted value is cut to the asset's decimals.
+      // Any input is cut to the asset's decimals: a digit typed at the end
+      // past the limit is ignored, and an insertion drops the last digit.
       if (currency) {
         updatedAmount = truncateToDecimals(
           updatedAmount,
