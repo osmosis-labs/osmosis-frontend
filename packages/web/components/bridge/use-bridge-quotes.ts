@@ -80,8 +80,7 @@ class EvmTxRevertedError extends Error {
 class EvmTxStatusUnknownError extends Error {
   constructor(
     readonly txHash: Address,
-    readonly chainId: number,
-    readonly reason: unknown
+    readonly chainId: number
   ) {
     super(`Status of transaction ${txHash} is unknown`);
   }
@@ -948,8 +947,8 @@ export const useBridgeQuotes = ({
     const waitForEvmReceipt = async (hash: Address) => {
       const receipt = await waitForTransactionReceipt(publicClient, {
         hash,
-      }).catch((e) => {
-        throw new EvmTxStatusUnknownError(hash, chainId, e);
+      }).catch(() => {
+        throw new EvmTxStatusUnknownError(hash, chainId);
       });
       if (receipt.status === "reverted") {
         throw new EvmTxRevertedError(hash);

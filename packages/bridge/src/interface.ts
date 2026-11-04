@@ -883,18 +883,44 @@ export type EvmReceiptCheck = (params: {
 const EVM_RECEIPT_GRACE_SECONDS = 30 * 60;
 
 /**
- * Whether the tracked tx is an EVM source-chain tx whose receipt is still
- * worth awaiting: until the receipt is found, "not found" from a status API
- * may only mean the tx isn't mined or indexed yet, and a reverted receipt
- * is the only proof of failure. A multi-tx entry that advanced tracks its
- * final step on another chain (`trackingChainId`), which has no EVM receipt.
+ * Per-transfer receipt tracking for a provider's poll loop. Call the result
+ * once per poll while the tx is an EVM source-chain tx within the grace
+ * window (a multi-tx entry that advanced tracks its final step on another
+ * chain, which has no EVM receipt):
+ * - "reverted": the receipt proves the tx failed.
+ * - "awaiting": no receipt yet, so "not found" from the status API may only
+ *   mean the tx isn't mined or indexed yet and is no outcome.
+ * - "settled": the receipt was found, or there is nothing to await.
  */
-export function awaitsEvmReceipt(snapshot: TxSnapshot): boolean {
-  return (
-    snapshot.fromChain.chainType === "evm" &&
-    snapshot.trackingChainId === undefined &&
-    Date.now() / 1000 - snapshot.createdAtUnix < EVM_RECEIPT_GRACE_SECONDS
-  );
+export function createEvmReceiptWatch(
+  snapshot: TxSnapshot,
+  checkEvmReceipt?: EvmReceiptCheck
+): () => Promise<"reverted" | "awaiting" | "settled"> {
+  let receiptFound = false;
+  return async () => {
+    const { sendTxHash, fromChain } = snapshot;
+    if (
+      receiptFound ||
+      !checkEvmReceipt ||
+      fromChain.chainType !== "evm" ||
+      snapshot.trackingChainId !== undefined ||
+      Date.now() / 1000 - snapshot.createdAtUnix >= EVM_RECEIPT_GRACE_SECONDS
+    ) {
+      return "settled";
+    }
+    if (typeof fromChain.chainId === "number") {
+      const outcome = await checkEvmReceipt({
+        txHash: sendTxHash,
+        chainId: fromChain.chainId,
+      });
+      if (outcome === "reverted") return "reverted";
+      if (outcome === "success") {
+        receiptFound = true;
+        return "settled";
+      }
+    }
+    return "awaiting";
+  };
 }
 
 /** Plugin to fetch status of many transactions from a remote source. */

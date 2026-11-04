@@ -10,7 +10,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { awaitsEvmReceipt } from "../interface";
+import { createEvmReceiptWatch } from "../interface";
 import { SkipProviderId } from "./constants";
 import { SkipTxStatusResponse } from "./types";
 
@@ -91,8 +91,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
     } = snapshot;
-    // set once the source-chain receipt proves the tx was included
-    let receiptFound = false;
+    const watchReceipt = createEvmReceiptWatch(snapshot, this.checkEvmReceipt);
 
     await poll({
       fn: async () => {
@@ -120,31 +119,17 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
 
         // A reverted EVM tx never reaches Skip: check the receipt until it
         // turns up.
-        if (
-          !receiptFound &&
-          this.checkEvmReceipt &&
-          awaitsEvmReceipt(snapshot) &&
-          typeof fromChainId === "number"
-        ) {
-          const outcome = await this.checkEvmReceipt({
-            txHash: sendTxHash,
-            chainId: fromChainId,
-          });
-          if (outcome === "reverted") {
-            return { id: sendTxHash, status: "failed" as const };
-          }
-          if (outcome === "success") receiptFound = true;
+        const receipt = await watchReceipt();
+        if (receipt === "reverted") {
+          return { id: sendTxHash, status: "failed" as const };
         }
-        // Until the receipt turns up, Skip not knowing the tx is no outcome:
-        // it may not be mined yet, and tracking it can wait until it is.
-        const receiptPending =
-          !receiptFound && !!this.checkEvmReceipt && awaitsEvmReceipt(snapshot);
 
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
             if (error instanceof Error && error.message.includes("not found")) {
-              if (receiptPending) return undefined;
+              // not mined yet: nothing to track until it is
+              if (receipt === "awaiting") return undefined;
               // if we get an error that it's not found, prompt skip to track it first
               // then try again
               await this.skipStatusProvider.trackTransaction(tx);

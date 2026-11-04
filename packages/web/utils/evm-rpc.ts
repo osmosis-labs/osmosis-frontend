@@ -84,7 +84,7 @@ export async function checkEvmReceiptOutcome({
       createPublicClient({ chain, transport: getClientEvmRpcTransport(chain) }),
       { hash: txHash as Address }
     );
-    return receipt.status === "reverted" ? "reverted" : "success";
+    return receipt.status;
   } catch {
     return undefined; // not found or unanswered: undecided, not negative
   }

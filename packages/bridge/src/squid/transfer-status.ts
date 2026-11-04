@@ -9,7 +9,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { awaitsEvmReceipt } from "../interface";
+import { createEvmReceiptWatch } from "../interface";
 import { SquidProviderId } from "./constants";
 import type { SquidStatusResponse } from "./types";
 
@@ -55,29 +55,15 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       toChain: { chainId: toChainId },
       quoteId,
     } = snapshot;
-    // set once the source-chain receipt proves the tx was included
-    let receiptFound = false;
+    const watchReceipt = createEvmReceiptWatch(snapshot, this.checkEvmReceipt);
     await poll({
       fn: async () => {
         // Squid can't tell a reverted tx from one not mined or indexed yet:
         // check the receipt until it turns up.
-        if (
-          !receiptFound &&
-          this.checkEvmReceipt &&
-          awaitsEvmReceipt(snapshot) &&
-          typeof fromChainId === "number"
-        ) {
-          const outcome = await this.checkEvmReceipt({
-            txHash: sendTxHash,
-            chainId: fromChainId,
-          });
-          if (outcome === "reverted") {
-            return { id: sendTxHash, status: "failed" } as BridgeTransferStatus;
-          }
-          if (outcome === "success") receiptFound = true;
+        const receipt = await watchReceipt();
+        if (receipt === "reverted") {
+          return { id: sendTxHash, status: "failed" } as BridgeTransferStatus;
         }
-        const receiptPending =
-          !receiptFound && !!this.checkEvmReceipt && awaitsEvmReceipt(snapshot);
         try {
           const url = new URL(`${this.apiUrl}/v2/status`);
           url.searchParams.append("transactionId", sendTxHash);
@@ -131,7 +117,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           if (
             error instanceof ApiClientError &&
             error.status === 404 &&
-            !receiptPending
+            receipt !== "awaiting"
           ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {
