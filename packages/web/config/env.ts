@@ -14,8 +14,6 @@ export const WALLETCONNECT_PROJECT_KEY =
 export const WALLETCONNECT_RELAY_URL =
   process.env.NEXT_PUBLIC_WALLETCONNECT_RELAY_URL;
 
-export const HISTORICAL_DATA_URL = process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL;
-
 export const TWITTER_PUBLIC_URL = "https://x.com";
 export const ALLOYED_ASSETS_DASHBOARD_URL = "https://alloyed.osmosis.zone";
 export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";

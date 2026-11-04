@@ -6740,7 +6740,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
     "@radix-ui/react-checkbox": "npm:^1.3.11"
-    "@radix-ui/react-label": "npm:^2.1.15"
     "@radix-ui/react-radio-group": "npm:^1.4.7"
     "@radix-ui/react-select": "npm:^2.3.7"
     "@radix-ui/react-slider": "npm:^1.4.7"
@@ -6833,7 +6832,6 @@ __metadata:
     ts-jest: "npm:^29.4.14"
     tsx: "npm:^4.22.4"
     typescript: "npm:6.0.3"
-    use-debugger-hooks: "npm:^1.3.0"
     utility-types: "npm:^3.10.0"
     viem: "npm:~2.41.2"
     wagmi: "npm:^2.19.5"
@@ -7784,25 +7782,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/7afa00d12d7f52b5067034108eb7d5551928f9d52875589f858ea1d5117cac3684f8ea291d4f09a88b9499bc4bb6e3279e4a9073d7c8feb15a855d28656b53a4
-  languageName: node
-  linkType: hard
-
-"@radix-ui/react-label@npm:^2.1.15":
-  version: 2.1.15
-  resolution: "@radix-ui/react-label@npm:2.1.15"
-  dependencies:
-    "@radix-ui/react-primitive": "npm:2.1.10"
-  peerDependencies:
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-  checksum: 10c0/e1ef6d359488460c2a5e16b0f6513260553dca497db4f5b7d287e5fa38b3623335ff30ede278f5c1f0187fefaa571ecaf45c23f9b26ffefb262e96592f14783b
   languageName: node
   linkType: hard
 
@@ -25867,15 +25846,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/f887488c6e6075cdad4962979da1714b217bcb1ee009a9e57ce9a844bcfc4c3a99e93983dfc2e5af9e0913824d24e730090ff255e902c516dcb58d2d3837e01c
-  languageName: node
-  linkType: hard
-
-"use-debugger-hooks@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "use-debugger-hooks@npm:1.3.0"
-  peerDependencies:
-    react: ">=16"
-  checksum: 10c0/7bac7e7a4339c4c05d0dc2ef5338c087b6890c15dfa377ca0a7ce391e879d91bcc629b844bee773b69c50c808bcf7d4ffdf3f5fddbcc895e64d7561a8813e798
   languageName: node
   linkType: hard
 

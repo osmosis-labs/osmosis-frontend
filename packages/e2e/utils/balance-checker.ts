@@ -150,33 +150,6 @@ function validateAddress(address: string): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetches the human-readable balance of a specific denomination for a wallet.
- */
-export async function getBalance(
-  address: string,
-  denom: string
-): Promise<number> {
-  const url = `${REST_ENDPOINT}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
-  const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch balances: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const data = (await response.json()) as BalanceResponse;
-  const balance = data.balances.find((b) => b.denom === denom);
-  if (!balance) return 0;
-
-  const tokenInfo = Object.values(TOKEN_DENOMS).find(
-    (t) => t.denom === denom
-  );
-  const decimals = tokenInfo?.decimals ?? 6;
-  return parseFloat(balance.amount) / Math.pow(10, decimals);
-}
-
-/**
  * Fetches all non-zero balances for an address.
  * Returns a map of denom → human-readable balance.
  */
