@@ -1119,8 +1119,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             isSendingTx ||
             swapState.isLoadingOneClickMessages ||
             hasInsufficientFeeTokens ||
-            // The peg is re-polled while the review is open.
-            swapState.quotePegStatus === "block"
+            // The peg and market price are re-polled while the review is open.
+            swapState.quotePegStatus === "block" ||
+            (type === "limit" && !swapState.priceState.isValidPrice)
           }
           isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
