@@ -30,7 +30,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
-import { getQuotePeg } from "~/utils/limit-quote-peg";
+import { getQuotePegStatus } from "~/utils/limit-quote-peg";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -146,34 +146,15 @@ export const usePlaceLimit = ({
     { coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "" },
     { enabled: isQuotePegChecked, refetchInterval: 30_000 }
   );
-  const { data: usdcUsdPrice } = api.edge.assets.getUsdcCoinGeckoPrice.useQuery(
-    undefined,
-    {
-      enabled: isQuotePegChecked,
-      refetchInterval: 60_000,
-      // Unbatched: a batch waits for every call, so a slow CoinGecko response
-      // would otherwise hold back the onchain price that can block the order.
-      trpc: { context: { skipBatch: true } },
-    }
-  );
-  /** Undefined for market orders and while the onchain price loads. The
-   *  USDC price only adds the label check, so it isn't waited for. */
-  const quotePeg = useMemo(() => {
-    if (!isQuotePegChecked || !isQuoteOnchainPriceFetched) return;
-    // A failed refetch keeps the last price: treat it as unknown, not current.
-    return getQuotePeg(
-      isQuoteOnchainPriceError ? undefined : quoteOnchainPrice?.toDec(),
-      usdcUsdPrice?.toDec()
-    );
-  }, [
-    isQuotePegChecked,
-    isQuoteOnchainPriceFetched,
-    isQuoteOnchainPriceError,
-    quoteOnchainPrice,
-    usdcUsdPrice,
-  ]);
-  const quotePegStatus = quotePeg?.status;
-  const quoteUsdPrice = quotePeg?.usdPrice;
+  // A failed refetch keeps the last price: treat it as unknown, not current.
+  const quotePrice = isQuoteOnchainPriceError
+    ? undefined
+    : quoteOnchainPrice?.toDec();
+  /** Undefined for market orders and while the onchain price loads. */
+  const quotePegStatus =
+    isQuotePegChecked && isQuoteOnchainPriceFetched
+      ? getQuotePegStatus(quotePrice)
+      : undefined;
 
   const { price: baseAssetPrice } = usePrice({
     coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
@@ -777,7 +758,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
-    quoteUsdPrice,
+    quotePrice,
     quotePegStatus,
     baseAssetPrice,
     reset,

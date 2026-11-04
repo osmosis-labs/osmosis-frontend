@@ -8,37 +8,17 @@ const QUOTE_PEG_WARN_DEVIATION = new Dec("0.01");
 const QUOTE_PEG_BLOCK_DEVIATION = new Dec("0.05");
 
 /**
- * Checks the quote's peg from two prices:
- * - its onchain (SQS) price, quoted in allUSDC like the base asset's spot
- *   price. The order's tick is off from the chosen price by exactly this
- *   factor, so it alone can block.
- * - USDC's USD price (CoinGecko). It only makes the "$" labels approximate,
- *   so moving off $1 warns but never blocks: the order still rests where the
- *   user put it relative to the market.
- *
- * Unknown when the onchain price is unknown; a missing USDC price skips only
- * the label check.
- *
- * @returns the status and the quote's best-known USD price, for display.
+ * Checks the quote's onchain (SQS) price, quoted in allUSDC like the base
+ * asset's spot price. The order's tick is off from the chosen price by
+ * exactly this factor. Unknown when the price is unknown.
  */
-export function getQuotePeg(
-  quoteOnchainPrice: Dec | undefined,
-  usdcUsdPrice: Dec | undefined
-): { status: QuotePegStatus; usdPrice?: Dec } {
-  if (!quoteOnchainPrice?.isPositive()) return { status: "unknown" };
+export function getQuotePegStatus(
+  quoteOnchainPrice: Dec | undefined
+): QuotePegStatus {
+  if (!quoteOnchainPrice?.isPositive()) return "unknown";
 
-  const usdPrice = usdcUsdPrice?.isPositive()
-    ? quoteOnchainPrice.mul(usdcUsdPrice)
-    : quoteOnchainPrice;
-  const onchainDeviation = quoteOnchainPrice.sub(new Dec(1)).abs();
-  const usdDeviation = usdPrice.sub(new Dec(1)).abs();
-
-  if (onchainDeviation.gte(QUOTE_PEG_BLOCK_DEVIATION))
-    return { status: "block", usdPrice };
-  if (
-    onchainDeviation.gte(QUOTE_PEG_WARN_DEVIATION) ||
-    usdDeviation.gte(QUOTE_PEG_WARN_DEVIATION)
-  )
-    return { status: "warn", usdPrice };
-  return { status: "ok", usdPrice };
+  const deviation = quoteOnchainPrice.sub(new Dec(1)).abs();
+  if (deviation.gte(QUOTE_PEG_BLOCK_DEVIATION)) return "block";
+  if (deviation.gte(QUOTE_PEG_WARN_DEVIATION)) return "warn";
+  return "ok";
 }

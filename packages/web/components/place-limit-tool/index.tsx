@@ -657,11 +657,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     // the review only.
     const quotePegNote = useMemo(() => {
       const denom = swapState.quoteAsset?.coinDenom ?? "";
-      if (swapState.quotePegStatus === "warn" && swapState.quoteUsdPrice) {
+      if (swapState.quotePegStatus === "warn" && swapState.quotePrice) {
         return t("limitOrders.quoteOffPegWarning", {
           denom,
           price: formatPretty(
-            new PricePretty(DEFAULT_VS_CURRENCY, swapState.quoteUsdPrice),
+            new PricePretty(DEFAULT_VS_CURRENCY, swapState.quotePrice),
             { maxDecimals: 4 }
           ),
         });
@@ -675,7 +675,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     }, [
       swapState.quoteAsset?.coinDenom,
       swapState.quotePegStatus,
-      swapState.quoteUsdPrice,
+      swapState.quotePrice,
       t,
     ]);
 
