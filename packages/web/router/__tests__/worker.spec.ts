@@ -45,6 +45,10 @@ function setup({
   };
 }
 
+beforeEach(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
 afterEach(() => jest.restoreAllMocks());
 
 describe("router", () => {
@@ -189,5 +193,124 @@ describe("router", () => {
 
     expect(response.headers.get(BACKEND_HEADER)).toBe("vercel");
     expect(production).not.toHaveBeenCalled();
+  });
+});
+
+describe("router observability", () => {
+  it.each([
+    [
+      "https://app.test/?secret=private",
+      { "user-agent": "Googlebot" },
+      "crawler",
+    ],
+    ["https://app.test/?osmo_backend=vercel&secret=private", {}, "override"],
+  ])(
+    "explains Vercel traffic at 100%: %s",
+    async (url, headers, routeReason) => {
+      const { route } = setup({ percent: "100" });
+      await route(url, undefined, { headers });
+      expect(console.log).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: "router_request",
+          routeReason,
+          servedBy: "vercel",
+          status: 200,
+        })
+      );
+      expect(
+        JSON.stringify((console.log as jest.Mock).mock.calls)
+      ).not.toContain("private");
+    }
+  );
+
+  it("records a masked Cloudflare failure and the successful retry", async () => {
+    const { route } = setup({
+      cf: () => new Response("error", { status: 503 }),
+    });
+    await route("https://app.test/pools", CF_COOKIE);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "router_upstream",
+        backend: "cf",
+        status: 503,
+        outcome: "http_error",
+      })
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "router_request",
+        servedBy: "vercel",
+        status: 200,
+        fallback: "cf-503",
+      })
+    );
+  });
+
+  it("records both exceptions when the fallback also fails", async () => {
+    const { route } = setup({
+      cf: () => {
+        throw new Error("private upstream details");
+      },
+      vercel: () => {
+        throw new TypeError("private fallback details");
+      },
+    });
+    await expect(route("https://app.test/pools", CF_COOKIE)).rejects.toThrow(
+      TypeError
+    );
+    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backend: "cf",
+        outcome: "exception",
+        errorType: "Error",
+      })
+    );
+    expect(console.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backend: "vercel",
+        outcome: "exception",
+        errorType: "TypeError",
+      })
+    );
+    expect(
+      JSON.stringify((console.error as jest.Mock).mock.calls)
+    ).not.toContain("private");
+  });
+
+  it("identifies missing Cloudflare assets retried on Vercel", async () => {
+    const { route } = setup({ cf: () => new Response(null, { status: 404 }) });
+    const response = await route(
+      "https://app.test/_next/static/old.js",
+      CF_COOKIE,
+      {
+        headers: { "sec-fetch-dest": "script" },
+      }
+    );
+    expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-404");
+    expect(console.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "router_request",
+        fallback: "cf-404",
+        servedBy: "vercel",
+      })
+    );
+  });
+
+  it("logs API errors without retrying them", async () => {
+    const { route, origin } = setup({
+      cf: () => new Response(null, { status: 500 }),
+    });
+    await route("https://app.test/api/pools", CF_COOKIE, {
+      headers: { "sec-fetch-dest": "empty" },
+    });
+    expect(console.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        backend: "cf",
+        status: 500,
+        outcome: "http_error",
+      })
+    );
+    expect(origin).not.toHaveBeenCalled();
   });
 });
