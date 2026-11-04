@@ -417,7 +417,13 @@ export const useBridgesSupportedAssets = ({
         "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
       asset.coinGeckoId === "cosmos";
 
+    const isAllBtcAsset = (asset: MinimalAsset) =>
+      asset.coinMinimalDenom ===
+      "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
+
     const hoistRules: HoistRule[] = [
+      // allBTC -> Ethereum (WBTC). Matched by denom, not symbol.
+      { chainId: 1, matchesAsset: isAllBtcAsset },
       // USDC -> Ethereum, which holds the large majority of USDC supply.
       // Routing is left to the bridge providers (Skip may use CCTP, Axelar or
       // another path), so the route variant is the canonical `USDC` alloy that

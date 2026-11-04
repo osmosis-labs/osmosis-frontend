@@ -416,6 +416,8 @@ export const bridgeTransferRouter = createTRPCRouter({
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
           getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+          getAssetUsdPrice: (coinMinimalDenom) =>
+            getAssetPrice({ ...ctx, asset: { coinMinimalDenom } }),
         }
       );
 

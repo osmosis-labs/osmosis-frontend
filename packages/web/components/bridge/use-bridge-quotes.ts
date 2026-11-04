@@ -647,16 +647,14 @@ export const useBridgeQuotes = ({
   }
 
   // Check if value loss during transfer is too high (Skip bridge specific)
-  // Skip returns InsufficientAmountError when USD value difference is too large
+  // Skip returns InsufficientLiquidityError when the route's USD value
+  // difference is too large (thin liquidity) or it cannot price the route
   const isValueLossTooHigh = useMemo(() => {
     if (!someError?.message) return false;
 
-    const errorMsg = someError.message.toLowerCase();
-    return (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value") &&
-      errorMsg.includes("too large")
-    );
+    return someError.message
+      .toLowerCase()
+      .includes("insufficientliquidityerror");
   }, [someError]);
 
   // Check if transfer amount is insufficient to cover bridge/network fees
@@ -664,14 +662,7 @@ export const useBridgeQuotes = ({
   // 1. Bridge provider errors (server-side) - when bridge returns InsufficientAmountError
   // 2. Client-side calculation - when input amount minus fees is <= 0
   const isInsufficientFee = useMemo(() => {
-    // First check it's not the value loss error (handled separately)
     const errorMsg = someError?.message.toLowerCase() ?? "";
-    if (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value")
-    ) {
-      return false; // This is value loss, not insufficient fee
-    }
 
     // Check for bridge provider error responses
     // These errors come from the getQuoteByBridge edge function
@@ -1676,8 +1667,8 @@ export const useBridgeQuotes = ({
     };
   } else if (isValueLossTooHigh) {
     errorBoxMessage = {
-      heading: t("transfer.transferAmountTooLowValueLoss"),
-      description: t("transfer.valueLossTooHighToBridge"),
+      heading: t("transfer.routeLiquidityTooLow"),
+      description: t("transfer.routeLiquidityTooLowBody"),
     };
   } else if (isInsufficientFee) {
     errorBoxMessage = {
@@ -1697,8 +1688,9 @@ export const useBridgeQuotes = ({
   } else if (hasNoQuotes) {
     errorBoxMessage = {
       heading: isWithdraw
-        ? t("transfer.assetWithdrawalsUnavailable", {
-            asset: toAsset?.denom ?? "",
+        ? t("transfer.assetWithdrawalsToChainUnavailable", {
+            asset: fromAsset?.denom ?? "",
+            chain: toChain?.prettyName ?? "",
           })
         : t("transfer.assetsDepositsUnavailable", {
             asset: toAsset?.denom ?? "",
