@@ -395,6 +395,8 @@
     "settings": "Settings"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} per day",
+    "spendLimitLeftToday": "{amount} left today",
     "toast": {
       "oneClickTradingActive": "1-Click Trading active",
       "oneClickTradingDisabled": "1-Click Trading disabled",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
+      "defaultParameters": "Default settings are set to 7 days with a $5,000 USD daily spending limit.",
       "changeButton": "Edit settings"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Click Trading limit",
       "enableTitle": "Start 1-Click Trading",
       "enableDescription": "Quicker, easier trading",
-      "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
+      "paramsDescription": "{sessionLength} session with {spendLimit} daily spending limit",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Change",
       "edit": "Edit",
       "exceeded": "Exceeded",
       "exceededTooltip": {
-        "title": "Exceeds current loss-protection limit",
+        "title": "Exceeds your daily spending limit",
         "body": "You will have to manually approve this transaction in your wallet."
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Loss protection limit",
+      "spendLimitTitle": "Daily spending limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",

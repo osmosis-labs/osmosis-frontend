@@ -395,6 +395,8 @@
     "settings": "설정"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "하루 {amount}",
+    "spendLimitLeftToday": "오늘 {amount} 남음",
     "toast": {
       "oneClickTradingActive": "1-클릭 거래 활성화",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
-      "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
+      "defaultParameters": "기본 설정은 7일, 일일 지출 한도 $5,000 USD입니다.",
       "changeButton": "설정 수정"
     },
     "reviewOrder": {
       "recapRowTitle": "1-클릭 거래 한도",
       "enableTitle": "1-클릭 트레이딩 시작",
       "enableDescription": "더 빠르고 쉬운 거래",
-      "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
+      "paramsDescription": "{sessionLength} 세션, 일일 지출 한도 {spendLimit}",
       "defaultSpendLimit": "5,000달러",
       "change": "변화",
       "edit": "편집하다",
       "exceeded": "초과했습니다",
       "exceededTooltip": {
-        "title": "현재 손실 보호 한도를 초과합니다.",
+        "title": "일일 지출 한도를 초과합니다",
         "body": "지갑에서 이 거래를 수동으로 승인해야 합니다."
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-클릭 거래",
       "description": "1-클릭 거래를 사용하면 지갑의 모든 거래에 서명하는 번거로움 없이 이 장치에서 안전하게 거래할 수 있습니다.",
       "enableTitle": "1-클릭 거래 활성화",
-      "spendLimitTitle": "손실 보호 한도",
+      "spendLimitTitle": "일일 지출 한도",
       "sessionPeriodTitle": "세션 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",

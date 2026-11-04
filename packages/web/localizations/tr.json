@@ -395,6 +395,8 @@
     "settings": "Ayarlar"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "Günlük {amount}",
+    "spendLimitLeftToday": "Bugün kalan: {amount}",
     "toast": {
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Birden fazla cüzdan onayıyla uğraşmadan daha hızlı ve daha kolay işlemler yapın.",
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
-      "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
+      "defaultParameters": "Varsayılan ayarlar 7 gün ve 5.000 USD günlük harcama limitidir.",
       "changeButton": "Ayarları düzenle"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Tıkla İşlem limiti",
       "enableTitle": "1-Tıkla İşlem Başlat",
       "enableDescription": "Daha hızlı, daha kolay ticaret",
-      "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
+      "paramsDescription": "{sessionLength} oturum, {spendLimit} günlük harcama limitiyle",
       "defaultSpendLimit": "5.000 ABD doları",
       "change": "Değiştirmek",
       "edit": "Düzenlemek",
       "exceeded": "Aşıldı",
       "exceededTooltip": {
-        "title": "Mevcut kayıp koruma sınırını aşar",
+        "title": "Günlük harcama limitinizi aşıyor",
         "body": "Bu işlemi cüzdanınızda manuel olarak onaylamanız gerekecektir."
       }
     },
@@ -441,7 +443,7 @@
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
       "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
-      "spendLimitTitle": "Kayıp koruma limiti",
+      "spendLimitTitle": "Günlük harcama limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",

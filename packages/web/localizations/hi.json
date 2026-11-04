@@ -395,6 +395,8 @@
     "settings": "समायोजन"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} प्रति दिन",
+    "spendLimitLeftToday": "आज {amount} शेष",
     "toast": {
       "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "एकाधिक वॉलेट अनुमोदन की परेशानी के बिना त्वरित, आसान व्यापार करें।",
       "learnMore": "और अधिक जानें",
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
-      "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
+      "defaultParameters": "डिफ़ॉल्ट सेटिंग 7 दिन और $5,000 USD की दैनिक खर्च सीमा पर सेट हैं।",
       "changeButton": "विन्यास बदलें"
     },
     "reviewOrder": {
       "recapRowTitle": "1-क्लिक ट्रेडिंग सीमा",
       "enableTitle": "1-क्लिक ट्रेडिंग शुरू करें",
       "enableDescription": "तीव्र एवं आसान व्यापार",
-      "paramsDescription": "{sessionLength} सत्र {lossProtectionLimit} हानि सुरक्षा सीमा के साथ",
+      "paramsDescription": "{sessionLength} सत्र, {spendLimit} दैनिक खर्च सीमा के साथ",
       "defaultSpendLimit": "$5,000 अमरीकी डॉलर",
       "change": "परिवर्तन",
       "edit": "संपादन करना",
       "exceeded": "पार हो गई",
       "exceededTooltip": {
-        "title": "वर्तमान हानि-सुरक्षा सीमा पार हो गई",
+        "title": "आपकी दैनिक खर्च सीमा से अधिक है",
         "body": "आपको अपने वॉलेट में इस लेनदेन को मैन्युअल रूप से अनुमोदित करना होगा।"
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-ट्रेडिंग पर क्लिक करें",
       "description": "1-क्लिक ट्रेडिंग आपको अपने वॉलेट में प्रत्येक लेनदेन पर हस्ताक्षर करने की परेशानी के बिना इस डिवाइस पर सुरक्षित रूप से व्यापार करने की सुविधा देता है।",
       "enableTitle": "1-क्लिक ट्रेडिंग सक्षम करें",
-      "spendLimitTitle": "हानि सुरक्षा सीमा",
+      "spendLimitTitle": "दैनिक खर्च सीमा",
       "sessionPeriodTitle": "सत्र अवधि",
       "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "editSessionButton": "परिवर्तनों को सुरक्षित करें",

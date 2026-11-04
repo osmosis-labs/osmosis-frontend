@@ -395,6 +395,8 @@
     "settings": "設定"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "1日あたり{amount}",
+    "spendLimitLeftToday": "本日の残り{amount}",
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "defaultParameters": "デフォルト設定は、7日間、1日の支出限度額 5,000 USD です。",
       "changeButton": "編集の設定"
     },
     "reviewOrder": {
       "recapRowTitle": "1クリック取引制限",
       "enableTitle": "ワンクリック取引を開始",
       "enableDescription": "より速く、より簡単に取引",
-      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "paramsDescription": "{sessionLength}のセッション、1日の支出限度額 {spendLimit}",
       "defaultSpendLimit": "5,000米ドル",
       "change": "変化",
       "edit": "編集",
       "exceeded": "超過",
       "exceededTooltip": {
-        "title": "現在の損失保護限度額を超えています",
+        "title": "1日の支出限度額を超えています",
         "body": "この取引はウォレットで手動で承認する必要があります。"
       }
     },
@@ -441,7 +443,7 @@
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "損失保護限度額",
+      "spendLimitTitle": "1日の支出限度額",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",

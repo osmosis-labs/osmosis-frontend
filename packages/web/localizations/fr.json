@@ -395,6 +395,8 @@
     "settings": "Paramètres"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} par jour",
+    "spendLimitLeftToday": "{amount} restants aujourd’hui",
     "toast": {
       "oneClickTradingActive": "Trading en 1 clic actif",
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
-      "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
+      "defaultParameters": "Les paramètres par défaut sont fixés à 7 jours avec une limite de dépenses quotidienne de 5 000 USD.",
       "changeButton": "Modifier les paramètres"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de trading en 1 clic",
       "enableTitle": "Commencez à trader en 1 clic",
       "enableDescription": "Des échanges plus rapides et plus faciles",
-      "paramsDescription": "Session {sessionLength} avec limite de protection contre les pertes {lossProtectionLimit}",
+      "paramsDescription": "Session de {sessionLength} avec une limite de dépenses quotidienne de {spendLimit}",
       "defaultSpendLimit": "5 000 USD",
       "change": "Changement",
       "edit": "Modifier",
       "exceeded": "Dépassé",
       "exceededTooltip": {
-        "title": "Dépasse la limite actuelle de protection contre les pertes",
+        "title": "Dépasse votre limite de dépenses quotidienne",
         "body": "Vous devrez approuver manuellement cette transaction dans votre portefeuille."
       }
     },
@@ -441,7 +443,7 @@
       "header": "Trading en 1 clic",
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
       "enableTitle": "Activer le trading en 1 clic",
-      "spendLimitTitle": "Limite de protection contre les pertes",
+      "spendLimitTitle": "Limite de dépenses quotidienne",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",

@@ -395,6 +395,8 @@
     "settings": "Setări"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pe zi",
+    "spendLimitLeftToday": "{amount} rămași astăzi",
     "toast": {
       "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
@@ -414,20 +416,20 @@
       "introducingSubtitle": "Efectuați tranzacții mai rapide și mai ușoare, fără bătaia de cap a aprobărilor multiple pentru portofel.",
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
-      "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
+      "defaultParameters": "Setările implicite sunt 7 zile cu o limită zilnică de cheltuieli de 5.000 USD.",
       "changeButton": "Editeaza setarile"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
       "enableTitle": "Începeți tranzacționarea cu 1 clic",
       "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
-      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "paramsDescription": "Sesiune de {sessionLength} cu limită zilnică de cheltuieli de {spendLimit}",
       "defaultSpendLimit": "5.000 USD",
       "change": "Schimba",
       "edit": "Edita",
       "exceeded": "Depășit",
       "exceededTooltip": {
-        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "title": "Depășește limita zilnică de cheltuieli",
         "body": "Va trebui să aprobați manual această tranzacție în portofel."
       }
     },
@@ -441,7 +443,7 @@
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
       "enableTitle": "Activați tranzacționarea cu 1 clic",
-      "spendLimitTitle": "Limită de protecție împotriva pierderilor",
+      "spendLimitTitle": "Limită zilnică de cheltuieli",
       "sessionPeriodTitle": "Perioada de sesiune",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "editSessionButton": "Salvează modificările",

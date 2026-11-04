@@ -1352,14 +1352,25 @@ const OneClickTradingActiveSessionParamsEdit = ({
       onClick={onClick}
     >
       <span className="body1 text-wosmongton-200 whitespace-nowrap">
-        {changes.includes("spendLimit") ? (
-          <span className="text-bullish-400">
-            {transactionParams?.spendLimit.toString()}
+        {changes.includes("spendLimit") || !remainingSpendLimit ? (
+          <span
+            className={
+              changes.includes("spendLimit") ? "text-bullish-400" : undefined
+            }
+          >
+            {t("oneClickTrading.spendLimitPerDay", {
+              amount: transactionParams?.spendLimit.toString() ?? "",
+            })}
           </span>
         ) : (
-          <span> {remainingSpendLimit} </span>
+          <span>
+            {" "}
+            {t("oneClickTrading.spendLimitLeftToday", {
+              amount: remainingSpendLimit,
+            })}{" "}
+          </span>
         )}
-        {" / "}
+        {" · "}
         {changes.includes("sessionPeriod") &&
         transactionParams?.sessionPeriod.end ? (
           <span className="text-bullish-400">
