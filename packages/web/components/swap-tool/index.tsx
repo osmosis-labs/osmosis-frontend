@@ -163,7 +163,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     }
 
     const outputDifference = useMemo(() => {
-      if (quoteType === "in-given-out") {
+      // Without a price impact from SQS, only the fiat comparison below can
+      // say anything; the fee alone would read as a real difference.
+      if (
+        quoteType === "in-given-out" &&
+        !swapState.quote?.priceImpactUnknown
+      ) {
         // priceImpactTokenOut is (effectivePrice / spotPrice) - 1, negative
         // for an adverse trade, and excludes the swap fee. Negate the impact
         // and add the fee so the figure matches the exact-in fiat branch
@@ -185,6 +190,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       swapState.inAmountInput?.fiatValue,
       swapState.tokenOutFiatValue,
       swapState.quote?.priceImpactTokenOut,
+      swapState.quote?.priceImpactUnknown,
       swapState.quote?.swapFee,
     ]);
 
