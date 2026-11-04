@@ -15,8 +15,10 @@
 
 import { readBodyText } from "~/server/api-handlers/request-body";
 
-/** A batch of a few dozen reports fits comfortably. */
-const MAX_BODY_BYTES = 32 * 1024;
+/** Chromium batches reports and each one carries the full policy text, so a
+ *  report is roughly 1.5 KB. A batch over the cap is refused whole, and log
+ *  output is bounded by `MAX_REPORTS_PER_REQUEST` either way. */
+const MAX_BODY_BYTES = 256 * 1024;
 const MAX_REPORTS_PER_REQUEST = 20;
 
 /** Violations caused by browser extensions injecting into the page. They are
